@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:basic_1="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_nqKJkC60EeOmU_SY2Ov9KA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-_Cv4C61EeOmU_SY2Ov9KA" featurename="children" parentElementId="goko.application.partstack">
+    <elements xsi:type="basic:Part" xmi:id="_AVJAIC62EeOmU_SY2Ov9KA" elementId="goko.application.parts.base.commandpanel" contributionURI="bundleclass://org.goko.base.commandpanel/org.goko.base.commandpanel.CommandPanelPart" label="Command panel" iconURI="platform:/plugin/org.goko.base.commandpanel/icons/joystick.png"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Xj6wYKe2EeO5kOF6XMJyEQ" featurename="partDescriptor" parentElementId="goko.application">
+    <elements xsi:type="basic_1:PartDescriptor" xmi:id="_cjfowKe2EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.partdescriptor.0" label="Test" contributionURI="bundleclass://org.goko.base.commandpanel/org.goko.test.TestPart"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ySVFAKe8EeO5kOF6XMJyEQ" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_0lyVYKe8EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_FSCQQKe9EeO5kOF6XMJyEQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8CpvkKe8EeO5kOF6XMJyEQ" featurename="children" parentElementId="goko.menu.window.view">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9rCpsKe8EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.handledmenuitem.0" label="Test aprt" command="_FSCQQKe9EeO5kOF6XMJyEQ">
+      <parameters xmi:id="_ftFywKe9EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.parameter.0" name="org.goko.commands.toggleView.viewName" value="org.goko.base.commandpanel.partdescriptor.0"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_D5Lm8Ke9EeO5kOF6XMJyEQ" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_FSCQQKe9EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.command.0" commandName="toggleTestPart">
+      <parameters xmi:id="_Hw44UKe9EeO5kOF6XMJyEQ" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>
