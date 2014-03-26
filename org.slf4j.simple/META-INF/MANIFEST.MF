@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Simple
+Bundle-SymbolicName: org.slf4j.simple
+Bundle-Version: 1.0.0
+Bundle-Vendor: slf4j.org
+Export-Package: org.apache.commons.logging,
+ org.apache.commons.logging.impl,
+ org.slf4j.impl
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

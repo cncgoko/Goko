@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="startup" configuration-policy="optional" enabled="true" name="org.goko.core">
+   <implementation class="org.goko.core.common.service.ServiceManager"/>
+ <reference bind="setLogService" cardinality="1..1" interface="org.osgi.service.log.LogService" name="LogService" policy="static" unbind="removeLogService"/>
+ <reference cardinality="1..1" interface="org.goko.core.connection.IConnectionService" name="IConnectionService" policy="static"/>
+ <reference cardinality="1..1" interface="org.goko.core.controller.IControllerService" name="IControllerService" policy="static"/>
+ <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
+ 
+</scr:component>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_kMlOEN3kEeKx6K4yFMzKwA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lKqm8N3kEeKx6K4yFMzKwA" featurename="children" parentElementId="goko.application.partstack"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3G2KkAxFEeOHAtsV431cHw" featurename="children" parentElementId="goko.menu.tools">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_BH_fYAxGEeOHAtsV431cHw" elementId="goko.menu.tools.tinyg.settings" label="TinyG Configuration" command="_kVVVQAymEeOcDqoQnBHULw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KqPskAylEeOcDqoQnBHULw" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_RH5FcAylEeOcDqoQnBHULw" contributionURI="bundleclass://org.goko.tinyg/org.goko.tinyg.handlers.TinyGConfigurationOpenHandler" command="_kVVVQAymEeOcDqoQnBHULw"/>
+    <elements xsi:type="commands:Handler" xmi:id="___BiYAzYEeOTG-9JmiFUsg" contributionURI="bundleclass://org.goko.tinyg/org.goko.tinyg.handlers.TinyGConfigurationRefreshHandler" command="_9euI0AzYEeOTG-9JmiFUsg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ibiiEAymEeOcDqoQnBHULw" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_kVVVQAymEeOcDqoQnBHULw" elementId="goko.tinyg.command.configuration" commandName="TinyG Settings" description="TinyG"/>
+    <elements xsi:type="commands:Command" xmi:id="_9euI0AzYEeOTG-9JmiFUsg" elementId="org.goko.tinyg.commands.configuration.refresh" commandName="Refresh configuration"/>
+  </fragments>
+</fragment:ModelFragments>

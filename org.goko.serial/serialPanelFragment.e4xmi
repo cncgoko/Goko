@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_F5sC8N0WEeKC274TynxXSA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_q36CMN0WEeKC274TynxXSA" featurename="children" parentElementId="goko.application.partstack" positionInList="">
+    <elements xsi:type="basic:Part" xmi:id="_s_mHcN0WEeKC274TynxXSA" elementId="goko.application.parts.connection.serial" contributionURI="bundleclass://org.goko.serial/org.goko.serial.SerialConnectionPart" label="Serial connection" iconURI="platform:/plugin/org.goko.serial/icons/server_connect.png"/>
+    <elements xsi:type="basic:Part" xmi:id="_Ma5JAONfEeKc9fMx5rnYPQ" elementId="goko.application.parts.connection.console" contributionURI="bundleclass://org.goko.serial/org.goko.serial.SerialConsolePart" label="Serial console" iconURI="platform:/plugin/org.goko.serial/icons/terminal-medium.png"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_U8E5EOTiEeKE_76IH8LeWQ" featurename="children" parentElementId="goko.menu.window.view">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_3RmeIOTqEeKE_76IH8LeWQ" elementId="goko.application.parts.connection.serial.showconsole" label="Serial console" command="_dTnesD8qEeOV84c-W_LF1A">
+      <parameters xmi:id="_8_ab4OTyEeKE_76IH8LeWQ" elementId="" name="org.goko.commands.toggleView.viewName" value="goko.application.parts.connection.console"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SXOH8OToEeKE_76IH8LeWQ" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_c1adwOTrEeKE_76IH8LeWQ" elementId="" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_dTnesD8qEeOV84c-W_LF1A"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_boxGcD8qEeOV84c-W_LF1A" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_dTnesD8qEeOV84c-W_LF1A" elementId="org.goko.serial.commands.toggleView" commandName="toggleSerialConsoleViewCommand">
+      <parameters xmi:id="_-Y9VEKe7EeO5kOF6XMJyEQ" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

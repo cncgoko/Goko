@@ -1,0 +1,200 @@
+<project name="integration" default="testAll" basedir=".">
+
+	<!--
+		This build file is usually run indirectly via Maven.
+		
+		When running this build file through Ant directly, you must
+		define the currentVersion property on the command line, e.g.:
+		
+		ant  -DcurrentVersion=1.5.4-SNAPSHOT	
+	-->
+	
+	<echo message="compile classpath: ${compile_classpath}" />
+	<echo message="runtime classpath: ${runtime_classpath}" />
+	<echo message="test classpath:    ${test_classpath}" />
+	<echo message="plugin classpath:  ${plugin_classpath}" />
+
+
+	<path id="path142Binding">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-1.4.2.jar" />
+	</path >
+
+	<path id="path150Binding">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-1.5.0.jar" />
+	</path >
+
+	<path id="path1511API">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="./lib/slf4j-api-1.5.11.jar" />
+		<pathelement location="../slf4j-simple/target/slf4j-simple-${currentVersion}.jar" />
+	</path >
+
+	<path id="path1511Binding">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-1.5.11.jar" />
+	</path >
+
+  <!--<path id="pathIncompatible">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-INCOMPATIBLE.jar" />
+	</path >
+  -->
+
+	<path id="pathCurrent">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="../slf4j-simple/target/slf4j-simple-${currentVersion}.jar" />
+	</path >
+
+	
+	<path id="incompatibleMultiBinding">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-1.5.0.jar" />
+		<pathelement location="./lib/slf4j-nop-1.5.6.jar" />
+	</path >
+
+  <path id="multiBinding">
+ 		<pathelement location="target/test-classes/" />
+ 		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+    <pathelement location="../slf4j-simple/target/slf4j-simple-${currentVersion}.jar" />
+    <pathelement location="../slf4j-nop/target/slf4j-nop-${currentVersion}.jar" />
+ 	</path >
+
+  <path id="binding166">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-1.6.6.jar" />
+	</path >
+
+  <path id="binding2099">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-api/target/slf4j-api-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-simple-2.0.99.jar" />
+	</path >
+
+
+  <path id="api166">
+		<pathelement location="target/test-classes/" />
+		<pathelement location="../slf4j-simple/target/slf4j-simple-${currentVersion}.jar" />
+		<pathelement location="./lib/slf4j-api-1.6.6.jar" />
+	</path >
+
+
+	<!-- this is really very ugly, but it's the only way to circumvent
+  	     http://jira.codehaus.org/browse/MANTRUN-95
+	-->
+	<taskdef name="junit" classpath="${plugin_classpath};${compile_classpath}" 
+           classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" />
+
+	<target name="init">
+		<mkdir dir="target/unit-reports" />
+	</target>
+
+	<target name="testAll" depends="init, 
+		            testMissingSingletonMethod,
+                testMismatch, 
+                testMatch,
+		            testMultiBinding,
+		            testIncompatibleMultiBinding,
+                testFuture_16Series">
+	</target>
+
+
+	<target name="testMissingSingletonMethod">
+
+    <junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="path142Binding" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports"
+            outfile="TEST-142BININDING" 
+            name="org.slf4j.MissingSingletonMethodAssertionTest" />
+		</junit>
+
+    <junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="path150Binding" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-150BINDING" 
+            name="org.slf4j.MissingSingletonMethodAssertionTest" />
+		</junit>
+
+  </target>
+
+	<target name="testMismatch">
+
+    <junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="path1511API" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-MISMATCH-1511API" 
+            name="org.slf4j.VersionMismatchAssertionTest" />
+		</junit>
+
+
+    <junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="path1511Binding" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-MISMATCH-1511Binding" 
+            name="org.slf4j.VersionMismatchAssertionTest" />
+		</junit>
+
+	</target>
+
+	<target name="testMatch">
+		<junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="pathCurrent" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-Match" 
+            name="org.slf4j.CompatibilityAssertionTest" />
+		</junit>
+	</target>
+
+	<target name="testIncompatibleMultiBinding">
+		<junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="incompatibleMultiBinding" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-IncompatibleMultiBinding"
+            name="org.slf4j.IncompatibleMultiBindingAssertionTest" />
+		</junit>
+	</target>
+
+  <target name="testMultiBinding">
+ 		<junit printsummary="yes" fork="no" haltonfailure="yes">
+ 			<classpath refid="multiBinding" />
+ 			<formatter type="plain" />
+ 			<test fork="yes" todir="target/unit-reports"
+             outfile="TEST-MultiBinding"
+             name="org.slf4j.MultiBindingAssertionTest" />
+ 		</junit>
+ 	</target>
+
+	<target name="testFuture_16Series">
+		<junit printsummary="yes" fork="no" haltonfailure="yes">
+			<classpath refid="binding166" />
+			<formatter type="plain" />
+			<test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-binding166"
+            name="org.slf4j.CompatibilityAssertionTest" />
+		</junit>
+
+    
+    <junit printsummary="yes" fork="no" haltonfailure="yes">
+      <classpath refid="api166" />
+      <formatter type="plain" />
+      <test fork="yes" todir="target/unit-reports" 
+            outfile="TEST-api166"
+            name="org.slf4j.CompatibilityAssertionTest" />
+		</junit>
+
+	</target>
+</project>

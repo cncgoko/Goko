@@ -1,0 +1,15 @@
+integrator
+org.apache.commons.logging
+org.apache.commons.logging.impl
+org.apache.log4j
+org.dummy
+org.slf4j
+org.slf4j.bridge
+org.slf4j.cal10n_dummy
+org.slf4j.dummyExt
+org.slf4j.helpers
+org.slf4j.impl
+org.slf4j.instrumentation
+org.slf4j.issue
+org.slf4j.profiler
+org.slf4j.test_osgi

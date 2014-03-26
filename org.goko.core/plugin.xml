@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="org.goko.commands.default"
+         name="Goko basics commands"
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.goko.commands.default.toggleView"
+            name="Toggle View Command">
+         <commandParameter
+               id="org.goko.commands.default.toggleView.viewName"
+               name="View name"
+               optional="false">
+         </commandParameter>
+      </command>
+   </extension>
+   <extension
+         id="org.goko.handlers.default"
+         name="Goko basics handlers"
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="common.handlers.ToggleViewHandler"
+            commandId="org.goko.commands.default.toggleView">
+      </handler>
+   </extension>
+
+</plugin>

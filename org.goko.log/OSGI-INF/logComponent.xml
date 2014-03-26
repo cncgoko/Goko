@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="startup" name="org.goko.log">
+   <implementation class="org.goko.log.GokoLogConsoleReader"/>
+   <reference bind="addLogReaderService" cardinality="1..1" interface="org.osgi.service.log.LogReaderService" name="LogReaderService" policy="static" unbind="removeLogReaderService"/>
+</scr:component>

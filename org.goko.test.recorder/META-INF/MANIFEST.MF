@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Recorder
+Bundle-SymbolicName: org.goko.test.recorder
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.goko.test.recorder.Activator
+Require-Bundle: org.goko.core,
+ javax.annotation,
+ javax.inject
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Service-Component: OSGI-INF/Recorder.xml
+Import-Package: javax.annotation,
+ org.osgi.framework;version="1.3.0"
+Bundle-ActivationPolicy: lazy
