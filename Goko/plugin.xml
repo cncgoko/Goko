@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="org.goko.ui.gkPreferencePages" name="Goko Preferences page" schema="schema/org.goko.ui.gkPreferencePages.exsd"/>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="Goko"
+            application="org.eclipse.e4.ui.workbench.swt.E4Application">
+         <property
+               name="appName"
+               value="Goko">
+         </property>
+         <property
+               name="applicationXMI"
+               value="Goko/Application.e4xmi">
+         </property>
+         <property
+               name="applicationCSS"
+               value="platform:/plugin/Goko/css/default.css">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/launch/Makerbot16.png,icons/launch/Makerbot32.png,icons/launch/Makerbot48.png,icons/launch/Makerbot64.png,icons/launch/Makerbot128.png">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="id2"
+         point="org.eclipse.e4.workbench.model">
+      <processor
+            beforefragment="true"
+            class="org.eclipse.e4.ui.workbench.addons.swt.MinMaxProcessor">
+      </processor>
+      <processor
+            beforefragment="true"
+            class="org.eclipse.e4.ui.workbench.addons.swt.DnDProcessor">
+      </processor>
+      <processor
+            beforefragment="true"
+            class="org.eclipse.e4.ui.workbench.addons.swt.CleanupProcessor">
+      </processor>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePages">
+      <page
+            class="goko.dialog.GokoGeneralPreferences"
+            id="Goko.preferencePages.general"
+            name="General">
+      </page>
+      <page
+            category="Goko.preferencePages.general"
+            class="goko.dialog.GokoGeneralPreferences"
+            id="Goko.preferencePages.general.page1"
+            name="Test">
+      </page>
+   </extension>
+
+</plugin>
