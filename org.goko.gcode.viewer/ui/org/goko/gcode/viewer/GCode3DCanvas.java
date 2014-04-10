@@ -48,7 +48,7 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.gcode.viewer.camera.AbstractCamera;
 import org.goko.gcode.viewer.camera.OrthographicCamera;
 import org.goko.gcode.viewer.camera.PerspectiveCamera;
@@ -61,12 +61,16 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	private Point3d currentPosition;
 	private GLContext glcontext;
 	private AbstractCamera camera;
-	private IGCodeCommandProvider commandProvider;
+	private IGCodeProvider commandProvider;
 	private GlGCodeRendererFactory rendererFactory;
-	@Inject IControllerService conteollerService;
+	private boolean renderEnabled;
+
+	@Inject
+	IControllerService conteollerService;
 
 	public GCode3DCanvas(Composite parent, int style, GLData data) {
 		super(parent, style, data);
+		renderEnabled = true;
 		rendererFactory = new GlGCodeRendererFactory();
 		camera 			= new PerspectiveCamera(this);
 		setCurrent();
@@ -222,7 +226,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		if(commandProvider != null){
 			GCodeContext context =  new GCodeContext();
 
-			List<GCodeCommand> lstGcode = new ArrayList(commandProvider.getGCodeCommands());
+			List<GCodeCommand> lstGcode = new ArrayList<GCodeCommand>(commandProvider.getGCodeCommands());
 			for (GCodeCommand gCodeCommand : lstGcode) {
 				AbstractGCodeGlRenderer<GCodeCommand> renderer = rendererFactory.getRenderer(gCodeCommand);
 				if(renderer != null){
@@ -250,6 +254,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	 * @param gl
 	 */
 	protected void drawGrid(GL2 gl){
+
 		 gl.glLineWidth(0.1f);
 
 		gl.glBegin(GL2.GL_LINES);
@@ -307,23 +312,27 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 
 	protected void render(){
 		GL2 gl = glcontext.getGL().getGL2();
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-		gl.glClearColor(.19f, .19f, .23f, 1.0f);
+		if(renderEnabled){
 
-		setup(gl);
-		if(showGrid){
-			drawGrid(gl);
+			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+			gl.glClearColor(.19f, .19f, .23f, 1.0f);
+
+			setup(gl);
+			if(showGrid){
+				drawGrid(gl);
+			}
+			drawAxis(gl);
+
+			try {
+				drawGCode(gl);
+			} catch (GkException e) {
+				e.printStackTrace();
+			}
+
+			drawTool(gl);
 		}
-		drawAxis(gl);
-
-		try {
-			drawGCode(gl);
-		} catch (GkException e) {
-			e.printStackTrace();
-		}
-
-		drawTool(gl);
 	}
 
 	/**
@@ -362,14 +371,14 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	/**
 	 * @return the commandProvider
 	 */
-	public IGCodeCommandProvider getCommandProvider() {
+	public IGCodeProvider getCommandProvider() {
 		return commandProvider;
 	}
 
 	/**
 	 * @param commandProvider the commandProvider to set
 	 */
-	public void setCommandProvider(IGCodeCommandProvider commandProvider) {
+	public void setCommandProvider(IGCodeProvider commandProvider) {
 		this.commandProvider = commandProvider;
 	}
 
