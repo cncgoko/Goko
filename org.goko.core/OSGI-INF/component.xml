@@ -5,5 +5,6 @@
  <reference cardinality="1..1" interface="org.goko.core.connection.IConnectionService" name="IConnectionService" policy="static"/>
  <reference cardinality="1..1" interface="org.goko.core.controller.IControllerService" name="IControllerService" policy="static"/>
  <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
+ <reference cardinality="1..1" interface="org.goko.core.execution.IGCodeExecutionTimeService" name="IGCodeExecutionTimeService" policy="static"/>
  
 </scr:component>

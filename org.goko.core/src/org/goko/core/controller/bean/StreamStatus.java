@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
 
 /**
  * A class designed to follow the status of command sending
@@ -32,7 +32,7 @@ import org.goko.core.gcode.bean.IGCodeCommandProvider;
  * @author PsyKo
  *
  */
-public class StreamStatus implements IGCodeCommandProvider{
+public class StreamStatus implements IGCodeProvider{
 	private List<GCodeCommand> lstGCodeCommand;
 	private List<GCodeCommand> lstGCodeCommandToSend;
 	private List<GCodeCommand> lstSentGCodeCommand;

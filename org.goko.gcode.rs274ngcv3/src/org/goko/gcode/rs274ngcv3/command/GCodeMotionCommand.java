@@ -30,13 +30,19 @@ import org.goko.core.gcode.bean.GCodeContext;
  *
  */
 public class GCodeMotionCommand extends GCodeCommand {
-	/** Feedrate of the command */
+	/** Feed rate of the command */
 	private BigDecimal feedrate;
+
+	public GCodeMotionCommand() {
+		setType(Rs274Type.MOTION_COMMAND);
+	}
 
 	@Override
 	public void updateContext(GCodeContext context) {
 		super.updateContext(context);
-		context.setFeedrate(feedrate);
+		if(feedrate != null){
+			context.setFeedrate(feedrate);
+		}
 	}
 	/**
 	 * @return the feedrate

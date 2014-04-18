@@ -20,29 +20,52 @@
 package org.goko.core.gcode.bean.provider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
 
 /**
- * Basic command provider
+ * Basic command provider for a single command
  *
  * @author PsyKo
  *
  */
-public class BaseGCodeCommandProvider implements IGCodeCommandProvider{
+public class BaseGCodeProvider implements IGCodeProvider{
 	/** The commands */
 	private List<GCodeCommand> lstCommands;
 
-	public BaseGCodeCommandProvider(GCodeCommand command){
-		lstCommands = new ArrayList<GCodeCommand>();
-		lstCommands.add(command);
+	/**
+	 * @param lstCommands
+	 */
+	public BaseGCodeProvider(List<GCodeCommand> lstCommands) {
+		super();
+		this.lstCommands = Collections.synchronizedList(new ArrayList<GCodeCommand>());
+		Collections.copy(this.lstCommands, lstCommands);
 	}
 
+
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeProvider#getGCodeCommands()
+	 */
 	@Override
 	public List<GCodeCommand> getGCodeCommands() {
 		return lstCommands;
 	}
 
+	public synchronized boolean hasNext(){
+		return !CollectionUtils.isEmpty(this.lstCommands);
+	}
+
+	public synchronized GCodeCommand unstackNextCommand() throws GkException{
+		if(CollectionUtils.isNotEmpty(lstCommands)){
+			return lstCommands.remove(0);
+		}
+		throw new GkTechnicalException("No more command available...");
+	}
 }

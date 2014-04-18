@@ -53,7 +53,7 @@ import org.goko.gcode.viewer.camera.AbstractCamera;
 import org.goko.gcode.viewer.camera.OrthographicCamera;
 import org.goko.gcode.viewer.camera.PerspectiveCamera;
 import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
-import org.goko.gcode.viewer.generator.GlGCodeRendererFactory;
+import org.goko.gcode.viewer.generator.buffered.GlGCodeBufferedRendererFactory;
 
 public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintListener {
 	/** Display grid ??*/
@@ -62,7 +62,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	private GLContext glcontext;
 	private AbstractCamera camera;
 	private IGCodeProvider commandProvider;
-	private GlGCodeRendererFactory rendererFactory;
+	private GlGCodeBufferedRendererFactory rendererFactory;
 	private boolean renderEnabled;
 
 	@Inject
@@ -71,7 +71,8 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	public GCode3DCanvas(Composite parent, int style, GLData data) {
 		super(parent, style, data);
 		renderEnabled = true;
-		rendererFactory = new GlGCodeRendererFactory();
+		//rendererFactory = new GlGCodeBufferedRendererFactory();
+		rendererFactory = new GlGCodeBufferedRendererFactory();
 		camera 			= new PerspectiveCamera(this);
 		setCurrent();
 		GLProfile glprofile = GLProfile.get(GLProfile.GL2);
@@ -89,7 +90,9 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	@Inject
 	@Optional
 	private void getNotified(@UIEventTopic("gcodefile") GCodeFile file){
+		rendererFactory.clear();
 		setGCodeFile(file);
+
 	}
 
 	public void setGCodeFile(GCodeFile gCodeFile){
@@ -174,7 +177,6 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 			int height = 3;
 			int nbPts = 10;
 			Vector3d u = new Vector3d();
-			Vector3d v = new Vector3d();
 			double angle = Math.PI * 2 / 10;
 
 			for(int i = 0; i <= nbPts; i++){
@@ -233,20 +235,9 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 					renderer.render(context, gCodeCommand, gl);
 				}
 				gCodeCommand.updateContext(context);
-				// TODO : mettre en buffer pour redraw plus rapide
 			}
 		}
-		/*
-		gl.glColor3d(0.8, 0.8, 0.8);
-		int i = 0;
-		for (Point3d p : vertices) {
-			Point3d color = colors.get(i);
-			gl.glColor3d(color.x, color.y, color.z);
-			gl.glVertex3d(p.x, p.y, p.z);
-			i++;
 
-		}*/
-		//gl.glEnd();
 	}
 
 	/**
@@ -261,7 +252,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		// Main divisions
 		gl.glColor4d(0.4, 0.4, 0.4, 0.7);
 		int size = 30;
-		for(int i = -30; i <= 30 ; i+=10){
+		for(int i = -size; i <= size ; i+=10){
 			gl.glVertex3d(i, -size, 0);
 			gl.glVertex3d(i, size, 0);
 			gl.glVertex3d(-size,i, 0);
@@ -269,7 +260,9 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		}
 		gl.glEnd();
 		gl.glLineWidth(0.5f);
+		gl.glLineStipple(4, (short)0xA0A0);
 		gl.glBegin(GL2.GL_LINES);
+
 		gl.glColor4d(0.6, 0.6, 0.6, 0.1);
 		for(int i = -size; i <= size ; i++){
 			if(i % 10 != 0){
@@ -279,6 +272,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 				gl.glVertex3d(size,i, 0);
 			}
 		}
+		gl.glDisable(GL2.GL_LINE_STIPPLE);
 		// sub divisions
 		gl.glEnd();
 	}
@@ -305,16 +299,17 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	public void paintControl(PaintEvent e) {
 		setCurrent();
 		glcontext.makeCurrent();
+
 		render();
 		swapBuffers();
+
 		glcontext.release();
+
 	}
 
 	protected void render(){
 		GL2 gl = glcontext.getGL().getGL2();
-
 		if(renderEnabled){
-
 			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
 			gl.glClearColor(.19f, .19f, .23f, 1.0f);
@@ -383,5 +378,17 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	}
 
 
+	public boolean isRenderEnabled(){
+		return renderEnabled;
+	}
+
+	public boolean getRenderEnabled(){
+		return renderEnabled;
+	}
+
+	public void setRenderEnabled(boolean enabled){
+		renderEnabled = enabled;
+		redraw();
+	}
 
 }

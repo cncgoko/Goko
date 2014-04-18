@@ -22,96 +22,29 @@ package org.goko.core.gcode.bean;
 import java.math.BigDecimal;
 
 public class GCodeContext {
-	private BigDecimal positionX;
-	private BigDecimal positionY;
-	private BigDecimal positionZ;
-	private BigDecimal positionA;
-	private BigDecimal positionB;
-	private BigDecimal positionC;
+//	private BigDecimal positionX;
+//	private BigDecimal positionY;
+//	private BigDecimal positionZ;
+//	private BigDecimal positionA;
+//	private BigDecimal positionB;
+//	private BigDecimal positionC;
+	private Tuple6b position;
 	private BigDecimal feedrate;
 	private boolean isMetric;
 	private boolean isAbsolute = true;
 	private int currentPlane;
 
+
 	public GCodeContext() {
-		positionX = new BigDecimal(0);
-		positionY = new BigDecimal(0);
-		positionZ = new BigDecimal(0);
-		positionA = new BigDecimal(0);
-		positionB = new BigDecimal(0);
-		positionC = new BigDecimal(0);
+		position = new Tuple6b();
 	}
-	/**
-	 * @return the positionX
-	 */
-	public BigDecimal getPositionX() {
-		return positionX;
-	}
-	/**
-	 * @param positionX the positionX to set
-	 */
-	public void setPositionX(BigDecimal positionX) {
-		this.positionX = positionX;
-	}
-	/**
-	 * @return the positionY
-	 */
-	public BigDecimal getPositionY() {
-		return positionY;
-	}
-	/**
-	 * @param positionY the positionY to set
-	 */
-	public void setPositionY(BigDecimal positionY) {
-		this.positionY = positionY;
-	}
-	/**
-	 * @return the positionZ
-	 */
-	public BigDecimal getPositionZ() {
-		return positionZ;
-	}
-	/**
-	 * @param positionZ the positionZ to set
-	 */
-	public void setPositionZ(BigDecimal positionZ) {
-		this.positionZ = positionZ;
-	}
-	/**
-	 * @return the positionA
-	 */
-	public BigDecimal getPositionA() {
-		return positionA;
-	}
-	/**
-	 * @param positionA the positionA to set
-	 */
-	public void setPositionA(BigDecimal positionA) {
-		this.positionA = positionA;
-	}
-	/**
-	 * @return the positionB
-	 */
-	public BigDecimal getPositionB() {
-		return positionB;
-	}
-	/**
-	 * @param positionB the positionB to set
-	 */
-	public void setPositionB(BigDecimal positionB) {
-		this.positionB = positionB;
-	}
-	/**
-	 * @return the positionC
-	 */
-	public BigDecimal getPositionC() {
-		return positionC;
-	}
-	/**
-	 * @param positionC the positionC to set
-	 */
-	public void setPositionC(BigDecimal positionC) {
-		this.positionC = positionC;
+
+	public GCodeContext(GCodeContext context) {
+		this.position = new Tuple6b(context.position);
+		this.feedrate = context.feedrate;
+		this.isAbsolute = context.isAbsolute;
+		this.isMetric = context.isMetric;
+		this.currentPlane = context.currentPlane;
 	}
 	/**
 	 * @return the feedrate
@@ -148,6 +81,20 @@ public class GCodeContext {
 	 */
 	public void setAbsolute(boolean isAbsolute) {
 		this.isAbsolute = isAbsolute;
+	}
+
+	/**
+	 * @return the position
+	 */
+	public Tuple6b getPosition() {
+		return position;
+	}
+
+	/**
+	 * @param position the position to set
+	 */
+	public void setPosition(Tuple6b position) {
+		this.position = position;
 	}
 
 

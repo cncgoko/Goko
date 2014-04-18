@@ -19,12 +19,11 @@
  */
 package org.goko.tinyg.controller;
 
-import javax.vecmath.Point3d;
-
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
@@ -73,19 +72,23 @@ public class TinyGControllerUtility {
 	}
 
 
-	protected static Point3d updatePosition(Point3d lastKnownPosition, JsonObject statusReport){
-		Point3d newPosition = new Point3d(lastKnownPosition);
+	protected static Tuple6b updatePosition(Tuple6b lastKnownPosition, JsonObject statusReport){
+		Tuple6b newPosition = new Tuple6b(lastKnownPosition);
 		JsonValue newPositionX = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_X);
 		JsonValue newPositionY = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_Y);
 		JsonValue newPositionZ = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_Z);
+		JsonValue newPositionA = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_A);
 		if(newPositionX != null){
-			newPosition.x = newPositionX.asBigDecimal().doubleValue();
+			newPosition.setX(newPositionX.asBigDecimal());
 		}
 		if(newPositionY != null){
-			newPosition.y = newPositionY.asBigDecimal().doubleValue();
+			newPosition.setY(newPositionY.asBigDecimal());
 		}
 		if(newPositionZ != null){
-			newPosition.z = newPositionZ.asBigDecimal().doubleValue();
+			newPosition.setZ(newPositionZ.asBigDecimal());
+		}
+		if(newPositionA != null){
+			newPosition.setA(newPositionA.asBigDecimal());
 		}
 		return newPosition;
 	}

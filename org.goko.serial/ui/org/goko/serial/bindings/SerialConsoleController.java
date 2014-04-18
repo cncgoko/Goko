@@ -59,7 +59,6 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 
 	public void clearConsole() {
 		getDataModel().setConsole("");
-		getDataModel().getBuffer().delete(0, getDataModel().getBuffer().length());
 	}
 
 	public void sendCurrentCommand() {
@@ -102,11 +101,8 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 	@Override
 	public void onDataReceived(List<Byte> data) throws GkException {
 		if(getDataModel().isEnabled()){
-			synchronized (getDataModel().getBuffer()) {
-
-				appendTextToConsoleWidget(GkUtils.toString(data),SWT.COLOR_BLACK);
-				updateCarretPosition();
-			}
+			appendTextToConsoleWidget(GkUtils.toString(data),SWT.COLOR_BLACK);
+			updateCarretPosition();
 		}
 	}
 
@@ -160,16 +156,12 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 	@Override
 	public void onDataSent(List<Byte> data) throws GkException {
 		if(getDataModel().isEnabled()){
-			synchronized (getDataModel().getBuffer()) {
-				appendTextToConsoleWidget(GkUtils.toString(data),SWT.COLOR_BLUE);
-				updateCarretPosition();
-			}
+			appendTextToConsoleWidget(GkUtils.toString(data),SWT.COLOR_BLUE);
+			updateCarretPosition();
+
 		}
 	}
 
-	private void refreshConsole() {
-		getDataModel().setConsole(getDataModel().getBuffer().toString());
-	}
 
 	/**
 	 * @return the consoleWidget

@@ -62,16 +62,16 @@ public class SerialConsoleBindings extends AbstractModelObject {
 	/**
 	 * @return the buffer
 	 */
-	public StringBuffer getBuffer() {
-		return buffer;
-	}
+//	public StringBuffer getBuffer() {
+//		return buffer;
+	//}
 
 	/**
 	 * @param buffer the buffer to set
 	 */
-	public void setBuffer(StringBuffer buffer) {
-		firePropertyChange("buffer", this.buffer, this.buffer = buffer);
-	}
+//	public void setBuffer(StringBuffer buffer) {
+//		firePropertyChange("buffer", this.buffer, this.buffer = buffer);
+//	}
 
 	/**
 	 * @return the console

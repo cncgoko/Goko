@@ -49,7 +49,4 @@ public class GlGCodeRendererFactory {
 		return null;
 	}
 
-	public <T extends GCodeCommand> void addRenderer(AbstractGCodeGlRenderer<T> renderer) throws GkException{
-		this.mapRenderer.put(renderer.getClass(), renderer);
-	}
 }

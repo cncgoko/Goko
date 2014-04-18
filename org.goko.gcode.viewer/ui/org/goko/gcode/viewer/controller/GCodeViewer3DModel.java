@@ -22,7 +22,7 @@ package org.goko.gcode.viewer.controller;
 import javax.vecmath.Point3d;
 
 import org.goko.common.bindings.AbstractModelObject;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
 
 /**
  * GCode 3D viewer model class
@@ -35,8 +35,9 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 
 	private Point3d currentPosition;
 
-	private IGCodeCommandProvider commandProvider;
+	private IGCodeProvider commandProvider;
 
+	private boolean enabled;
 	/**
 	 * @return the showGrid
 	 */
@@ -53,6 +54,19 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	public void setShowGrid(boolean showGrid) {
 		firePropertyChange("showGrid",this.showGrid, this.showGrid = showGrid);
 	}
+
+	public boolean isEnabled(){
+		return enabled;
+	}
+	public boolean getEnabled(){
+		return enabled;
+	}
+	/**
+	 * @param showGrid the showGrid to set
+	 */
+	public void setEnabled(boolean enabled) {
+		firePropertyChange("enabled",this.enabled, this.enabled = enabled);
+	}
 	/**
 	 * @return the currentPosition
 	 */
@@ -68,13 +82,13 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	/**
 	 * @return the commandProvider
 	 */
-	public IGCodeCommandProvider getCommandProvider() {
+	public IGCodeProvider getCommandProvider() {
 		return commandProvider;
 	}
 	/**
 	 * @param commandProvider the commandProvider to set
 	 */
-	public void setCommandProvider(IGCodeCommandProvider commandProvider) {
+	public void setCommandProvider(IGCodeProvider commandProvider) {
 		firePropertyChange("commandProvider",this.commandProvider, this.commandProvider = commandProvider);
 	}
 }

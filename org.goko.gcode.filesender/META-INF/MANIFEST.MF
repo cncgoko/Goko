@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.e4.core.di;bundle-version="1.1.0",
  javax.annotation,
  org.eclipse.core.databinding;bundle-version="1.4.1",
  org.eclipse.core.databinding.beans;bundle-version="1.2.200",
- org.eclipse.core.databinding.property;bundle-version="1.4.200"
+ org.eclipse.core.databinding.property;bundle-version="1.4.200",
+ org.eclipse.swt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.jface.text,
  org.eclipse.jface.text.presentation,

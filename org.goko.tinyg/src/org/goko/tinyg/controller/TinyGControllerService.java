@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.buffer.ByteCommandBuffer;
@@ -29,12 +28,12 @@ import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
-import org.goko.core.controller.bean.StreamStatus;
-import org.goko.core.controller.bean.StreamStatusUpdate;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeCommandState;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
+import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionQueue;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
@@ -67,7 +66,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	/** Buffer for incoming data	 */
 	private ByteCommandBuffer incomingBuffer;
 	/** Current position of the machine	 */
-	private Point3d position;
+	private Tuple6b position;
 	/** Current velocity	 */
 	private BigDecimal velocity;
 	/** Line broker for sent commands */
@@ -77,7 +76,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	/** The tread used to handle incoming data */
 	private ExecutorService incomingDataThread;
 	/** The current StreamStatus */
-	private StreamStatus streamStatus;
+	private GCodeStreamedExecutionQueue executionQueue;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -100,11 +99,11 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	public void start() throws GkException {
 		configuration 			= new TinyGConfiguration();
 		incomingBuffer  		= new ByteCommandBuffer((byte) '\n');
-		position 				= new Point3d();
+		position 				= new Tuple6b();
 		lineBroker				= (byte) '\n';
 		actionFactory 			= new TinyGActionFactory(this);
 		incomingDataThread 		= Executors.newSingleThreadExecutor();
-		//state 					= MachineState.UNDEFINED;
+
 		valueStore = new MachineValueStore();
 		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.STATE, "State", "The state of TinyG controller board", MachineState.class),
 								new MachineValue<MachineState>(DefaultControllerValues.STATE, MachineState.UNDEFINED));
@@ -141,37 +140,23 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 */
 	@Override
 	public Point3d getPosition() throws GkException {
-		return position;
-	}
-
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#sendCommands(java.util.List)
-	 */
-	@Override
-	public StreamStatus sendCommands(List<GCodeCommand> commands) throws GkException {
-		if(!getConnectionService().isConnected()){
-			throw new GkFunctionalException("Cannot send command. Connection service is not connected");
-		}
-		streamStatus = new StreamStatus(commands);
-		ExecutorService exec = Executors.newSingleThreadExecutor();
-		currentSendingRunnable = new GCodeSendingRunnable(streamStatus, this);
-		exec.execute(currentSendingRunnable);
-
-		return streamStatus;
+		return new Point3d( position.getX().doubleValue(),position.getY().doubleValue(),position.getZ().doubleValue());
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#sendCommand(org.goko.core.gcode.bean.GCodeCommand)
+	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
 	 */
 	@Override
-	public void sendCommand(GCodeCommand command) throws GkException{
+	public GCodeExecutionQueue executeGCode(IGCodeProvider gcodeProvider) throws GkException{
 		if(!getConnectionService().isConnected()){
 			throw new GkFunctionalException("Cannot send command. Connection service is not connected");
 		}
-		JsonValue jsonCommand = TinyGControllerUtility.toJson(command);
-		getConnectionService().send( GkUtils.toBytesList( jsonCommand.toString() + (char)getLineBroker() ));
-	//	availableBuffer -= 1;
+		executionQueue = new GCodeStreamedExecutionQueue(gcodeProvider);
+		ExecutorService executor 	= Executors.newSingleThreadExecutor();
+		currentSendingRunnable 	= new GCodeSendingRunnable(executionQueue, this);
+		executionQueue.start();
+		executor.execute(currentSendingRunnable);
+		return executionQueue;
 	}
 
 	public void sendTogether(List<GCodeCommand> commands) throws GkException{
@@ -181,16 +166,6 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 			commandBuffer.append(jsonCommand.toString() + (char)getLineBroker() );
 		}
 		getConnectionService().send( GkUtils.toBytesList( commandBuffer.toString() ));
-	}
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#sendFile(org.goko.core.gcode.bean.GCodeFile)
-	 */
-	@Override
-	public StreamStatus sendFile(IGCodeCommandProvider gCodeFile) throws GkException {
-		updateQueueReport();
-		StreamStatus status = sendCommands(gCodeFile.getGCodeCommands());
-		super.notifyListeners(new StreamStatusUpdate(status));
-		return status;
 	}
 
 	@Override
@@ -367,10 +342,11 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 			JsonObject statusReportObject = (JsonObject) statusReport;
 			this.position = TinyGControllerUtility.updatePosition(position, statusReportObject);
 
-			valueStore.updateValue(DefaultControllerValues.POSITION, position);
-			valueStore.updateValue(DefaultControllerValues.POSITION_X, new BigDecimal(position.x).setScale(3, BigDecimal.ROUND_HALF_EVEN));
-			valueStore.updateValue(DefaultControllerValues.POSITION_Y, new BigDecimal(position.y).setScale(3, BigDecimal.ROUND_HALF_EVEN));
-			valueStore.updateValue(DefaultControllerValues.POSITION_Z, new BigDecimal(position.z).setScale(3, BigDecimal.ROUND_HALF_EVEN));
+			valueStore.updateValue(DefaultControllerValues.POSITION, getPosition());
+			valueStore.updateValue(DefaultControllerValues.POSITION_X, position.getX().setScale(3, BigDecimal.ROUND_HALF_EVEN));
+			valueStore.updateValue(DefaultControllerValues.POSITION_Y, position.getY().setScale(3, BigDecimal.ROUND_HALF_EVEN));
+			valueStore.updateValue(DefaultControllerValues.POSITION_Z, position.getZ().setScale(3, BigDecimal.ROUND_HALF_EVEN));
+			valueStore.updateValue(DefaultControllerValues.POSITION_A, position.getA().setScale(3, BigDecimal.ROUND_HALF_EVEN));
 			/*
 			 * Update velocity
 			 */
@@ -395,19 +371,23 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 * @throws GkTechnicalException
 	 */
 	private void handleGCodeResponse(JsonValue jsonValue) throws GkException {
-		String receivedCommand = jsonValue.asString();
-		if(streamStatus != null && streamStatus.hasPendingCommand()){
-			GCodeCommand pendingCommand = streamStatus.getNextPendingCommand();
+		if(executionQueue != null){
+			String 			receivedCommand = jsonValue.asString();
+			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand);
+			executionQueue.confirmCommand(parsedCommand);
+		}
+		/*if(executionQueue != null && executionQueue.hasPendingCommand()){
+			GCodeCommand pendingCommand = executionQueue.getNextPendingCommand();
 			GCodeCommand parsedCommand = getGcodeService().parseCommand(receivedCommand);
 			if( ObjectUtils.equals(pendingCommand, parsedCommand)){
-				GCodeCommand command = streamStatus.unstackNextPendingCommand();
-				streamStatus.addAcknowledgedCommand(command);
+				GCodeCommand command = executionQueue.unstackNextPendingCommand();
+				executionQueue.addAcknowledgedCommand(command);
 				command.setState(new GCodeCommandState(GCodeCommandState.EXECUTED));
-				notifyListeners(new StreamStatusUpdate(streamStatus));
+				notifyListeners(new StreamStatusUpdate(executionQueue));
 			}else{
 				LOG.debug("  /!\\  Cannot confirm GCode command "+receivedCommand);
 			}
-		}
+		}*/
 	}
 
 	/** (inheritDoc)
@@ -641,7 +621,9 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 
 	@Override
 	public void cancelFileSending() throws GkException {
-		currentSendingRunnable.clearStreamingStatus();
+		if(executionQueue != null){
+			executionQueue.stop();
+		}
 		stopMotion();
 	}
 

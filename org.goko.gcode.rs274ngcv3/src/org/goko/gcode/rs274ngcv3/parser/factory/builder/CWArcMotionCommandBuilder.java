@@ -22,6 +22,7 @@ package org.goko.gcode.rs274ngcv3.parser.factory.builder;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeWord;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.gcode.rs274ngcv3.command.GCodeArcCommand;
 
 public class CWArcMotionCommandBuilder extends AbstractMotionCommandBuilder<GCodeArcCommand>{
@@ -51,31 +52,34 @@ public class CWArcMotionCommandBuilder extends AbstractMotionCommandBuilder<GCod
 	public void completeCommand(GCodeArcCommand commandToComplete, GCodeCommand command) throws GkException {
 		super.completeCommand(commandToComplete, command);
 // TODO : support for plane selection
+		Tuple6b endpoint = new Tuple6b(null,null,null,null,null,null);
 
 		GCodeWord endPointXWord = findWordByLetter("X", command);
 		if(endPointXWord != null){
-			commandToComplete.setEndpointX(endPointXWord.getValue());
+			endpoint.setX(endPointXWord.getValue());
 		}
 		GCodeWord endPointYWord = findWordByLetter("Y", command);
 		if(endPointYWord != null){
-			commandToComplete.setEndpointY(endPointYWord.getValue());
+			endpoint.setY(endPointYWord.getValue());
 		}
 		GCodeWord endPointZWord = findWordByLetter("Z", command);
 		if(endPointZWord != null){
-			commandToComplete.setEndpointZ(endPointZWord.getValue());
+			endpoint.setZ(endPointZWord.getValue());
 		}
 		GCodeWord endPointAWord = findWordByLetter("A", command);
 		if(endPointAWord != null){
-			commandToComplete.setEndpointA(endPointAWord.getValue());
+			endpoint.setA(endPointAWord.getValue());
 		}
 		GCodeWord endPointBWord = findWordByLetter("B", command);
 		if(endPointBWord != null){
-			commandToComplete.setEndpointB(endPointBWord.getValue());
+			endpoint.setB(endPointBWord.getValue());
 		}
 		GCodeWord endPointCWord = findWordByLetter("C", command);
 		if(endPointCWord != null){
-			commandToComplete.setEndpointC(endPointCWord.getValue());
+			endpoint.setC(endPointCWord.getValue());
 		}
+		commandToComplete.setEndpoint(endpoint);
+
 		GCodeWord radiusWord = findWordByLetter("R", command);
 		if(radiusWord != null){
 			commandToComplete.setRadius(radiusWord.getValue());

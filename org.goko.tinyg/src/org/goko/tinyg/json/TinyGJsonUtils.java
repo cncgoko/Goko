@@ -46,6 +46,7 @@ public class TinyGJsonUtils {
 	public static final String STATUS_REPORT_POSITION_X = "posx";
 	public static final String STATUS_REPORT_POSITION_Y = "posy";
 	public static final String STATUS_REPORT_POSITION_Z = "posz";
+	public static final String STATUS_REPORT_POSITION_A = "posa";
 	public static final String STATUS_REPORT_VELOCITY = "vel";
 	public static final String STATUS_REPORT_STATE = "stat";
 

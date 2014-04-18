@@ -19,9 +19,8 @@
  */
 package org.goko.gcode.rs274ngcv3.command;
 
-import java.math.BigDecimal;
-
 import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.Tuple6b;
 
 /**
  * Linear motion command
@@ -29,127 +28,78 @@ import org.goko.core.gcode.bean.GCodeContext;
  *
  */
 public abstract class LinearMotionGCodeCommand extends GCodeMotionCommand {
-	private BigDecimal endpointX;
+/*	private BigDecimal endpointX;
 	private BigDecimal endpointY;
 	private BigDecimal endpointZ;
 	private BigDecimal endpointA;
 	private BigDecimal endpointB;
-	private BigDecimal endpointC;
+	private BigDecimal endpointC;*/
 
+	private Tuple6b endpoint;
+	/**
+	 *
+	 */
+	protected LinearMotionGCodeCommand() {
+		super();
+		setType(Rs274Type.MOTION_LINEAR_COMMAND);
+	}
 	@Override
 	public void updateContext(GCodeContext context) {
 		super.updateContext(context);
 		if(context.isAbsolute()){
-			if(endpointX != null) {
-				context.setPositionX(endpointX);
-			}
-			if(endpointY != null) {
-				context.setPositionY(endpointY);
-			}
-			if(endpointZ != null) {
-				context.setPositionZ(endpointZ);
-			}
-			if(endpointA != null) {
-				context.setPositionA(endpointA);
-			}
-			if(endpointB != null) {
-				context.setPositionB(endpointB);
-			}
-			if(endpointC != null) {
-				context.setPositionC(endpointC);
-			}
+			context.getPosition().updateAbsolute(endpoint);
+//			if(endpointX != null) {
+//				context.setPositionX(endpointX);
+//			}
+//			if(endpointY != null) {
+//				context.setPositionY(endpointY);
+//			}
+//			if(endpointZ != null) {
+//				context.setPositionZ(endpointZ);
+//			}
+//			if(endpointA != null) {
+//				context.setPositionA(endpointA);
+//			}
+//			if(endpointB != null) {
+//				context.setPositionB(endpointB);
+//			}
+//			if(endpointC != null) {
+//				context.setPositionC(endpointC);
+//			}
 		}else{
-			if(endpointX != null) {
-				context.setPositionZ( context.getPositionX().add(endpointX));
-			}
-			if(endpointY != null) {
-				context.setPositionZ( context.getPositionY().add(endpointY));
-			}
-			if(endpointZ != null) {
-				context.setPositionZ( context.getPositionZ().add(endpointZ));
-			}
-			if(endpointA != null) {
-				context.setPositionZ( context.getPositionA().add(endpointA));
-			}
-			if(endpointB != null) {
-				context.setPositionZ( context.getPositionB().add(endpointB));
-			}
-			if(endpointC != null) {
-				context.setPositionZ( context.getPositionC().add(endpointC));
-			}
+			context.getPosition().updateRelative(endpoint);
+//			if(endpointX != null) {
+//				context.setPositionZ( context.getPositionX().add(endpointX));
+//			}
+//			if(endpointY != null) {
+//				context.setPositionZ( context.getPositionY().add(endpointY));
+//			}
+//			if(endpointZ != null) {
+//				context.setPositionZ( context.getPositionZ().add(endpointZ));
+//			}
+//			if(endpointA != null) {
+//				context.setPositionZ( context.getPositionA().add(endpointA));
+//			}
+//			if(endpointB != null) {
+//				context.setPositionZ( context.getPositionB().add(endpointB));
+//			}
+//			if(endpointC != null) {
+//				context.setPositionZ( context.getPositionC().add(endpointC));
+//			}
 		}
 	}
+
 	/**
-	 * @return the endpointX
+	 * @return the endpoint
 	 */
-	public BigDecimal getEndpointX() {
-		return endpointX;
+	public Tuple6b getEndpoint() {
+		return endpoint;
 	}
 	/**
-	 * @param endpointX the endpointX to set
+	 * @param endpoint the endpoint to set
 	 */
-	public void setEndpointX(BigDecimal endpointX) {
-		this.endpointX = endpointX;
-	}
-	/**
-	 * @return the endpointY
-	 */
-	public BigDecimal getEndpointY() {
-		return endpointY;
-	}
-	/**
-	 * @param endpointY the endpointY to set
-	 */
-	public void setEndpointY(BigDecimal endpointY) {
-		this.endpointY = endpointY;
-	}
-	/**
-	 * @return the endpointZ
-	 */
-	public BigDecimal getEndpointZ() {
-		return endpointZ;
-	}
-	/**
-	 * @param endpointZ the endpointZ to set
-	 */
-	public void setEndpointZ(BigDecimal endpointZ) {
-		this.endpointZ = endpointZ;
-	}
-	/**
-	 * @return the endpointA
-	 */
-	public BigDecimal getEndpointA() {
-		return endpointA;
-	}
-	/**
-	 * @param endpointA the endpointA to set
-	 */
-	public void setEndpointA(BigDecimal endpointA) {
-		this.endpointA = endpointA;
-	}
-	/**
-	 * @return the endpointB
-	 */
-	public BigDecimal getEndpointB() {
-		return endpointB;
-	}
-	/**
-	 * @param endpointB the endpointB to set
-	 */
-	public void setEndpointB(BigDecimal endpointB) {
-		this.endpointB = endpointB;
-	}
-	/**
-	 * @return the endpointC
-	 */
-	public BigDecimal getEndpointC() {
-		return endpointC;
-	}
-	/**
-	 * @param endpointC the endpointC to set
-	 */
-	public void setEndpointC(BigDecimal endpointC) {
-		this.endpointC = endpointC;
+	public void setEndpoint(Tuple6b endpoint) {
+		this.endpoint = endpoint;
 	}
 
 }

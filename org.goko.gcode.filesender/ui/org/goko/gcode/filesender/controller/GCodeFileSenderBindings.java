@@ -30,7 +30,7 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	private String fileName;
 	private String fileSize;
 	private String fileLastUpdate;
-	private String gCodeDocument;
+	private GCodeDocumentProvider gCodeDocument;
 	private int sentCommandCount;
 	private int totalCommandCount;
 	private Integer completedCommandCount;
@@ -40,6 +40,7 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	private String elapsedTime;
 	private String remainingTime;
 	private Date startDate;
+	private int selectedCommand;
 
 	/**
 	 * @return the filepath
@@ -100,14 +101,14 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	/**
 	 * @return the gCodeDocument
 	 */
-	public String getgCodeDocument() {
+	public GCodeDocumentProvider getgCodeDocument() {
 		return gCodeDocument;
 	}
 
 	/**
 	 * @param gCodeDocument the gCodeDocument to set
 	 */
-	public void setgCodeDocument(String gCodeDocument) {
+	public void setgCodeDocument(GCodeDocumentProvider gCodeDocument) {
 		firePropertyChange("gCodeDocument", this.gCodeDocument, this.gCodeDocument = gCodeDocument);
 	}
 
@@ -248,6 +249,22 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	public void setRemainingTime(String remainingTime) {
 		firePropertyChange("remainingTime", this.remainingTime, this.remainingTime = remainingTime);
 	}
+
+	/**
+	 * @return the selectedCommand
+	 */
+	public int getSelectedCommand() {
+		return selectedCommand;
+	}
+
+	/**
+	 * @param selectedCommand the selectedCommand to set
+	 */
+	public void setSelectedCommand(int selectedCommand) {
+		firePropertyChange("selectedCommand", this.selectedCommand, this.selectedCommand = selectedCommand);
+	}
+
+
 
 
 }

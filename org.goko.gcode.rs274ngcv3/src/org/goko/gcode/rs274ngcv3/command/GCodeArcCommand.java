@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import javax.vecmath.Point3d;
 
 import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.Tuple6b;
 
 /**
  * An extended GCodeCommand describing an arc command (usually G02 or G03)
@@ -32,13 +33,14 @@ import org.goko.core.gcode.bean.GCodeContext;
  */
 public class GCodeArcCommand extends GCodeMotionCommand {
 	/** The endpoint of the arc */
-	private BigDecimal endpointX;
+	/*private BigDecimal endpointX;
 	private BigDecimal endpointY;
 	private BigDecimal endpointZ;
 	private BigDecimal endpointA;
 	private BigDecimal endpointB;
 	private BigDecimal endpointC;
-
+*/
+	private Tuple6b endpoint;
 	/** The I offset */
 	private BigDecimal offsetI;
 	/** The J offset */
@@ -57,6 +59,7 @@ public class GCodeArcCommand extends GCodeMotionCommand {
 	 */
 	public GCodeArcCommand(boolean clockwise) {
 		super();
+		this.setType(Rs274Type.MOTION_ARC_COMMAND);
 		this.clockwise = clockwise;
 	}
 
@@ -65,7 +68,8 @@ public class GCodeArcCommand extends GCodeMotionCommand {
 		// TODO Auto-generated method stub
 		super.updateContext(context);
 		if(context.isAbsolute()){
-			if(endpointX != null) {
+			context.getPosition().updateAbsolute(endpoint);
+		/*	if(endpointX != null) {
 				context.setPositionX(endpointX);
 			}
 			if(endpointY != null) {
@@ -82,9 +86,10 @@ public class GCodeArcCommand extends GCodeMotionCommand {
 			}
 			if(endpointC != null) {
 				context.setPositionC(endpointC);
-			}
+			}*/
 		}else{
-			if(endpointX != null) {
+			context.getPosition().updateRelative(endpoint);
+		/*	if(endpointX != null) {
 				context.setPositionZ( context.getPositionX().add(endpointX));
 			}
 			if(endpointY != null) {
@@ -101,7 +106,7 @@ public class GCodeArcCommand extends GCodeMotionCommand {
 			}
 			if(endpointC != null) {
 				context.setPositionZ( context.getPositionC().add(endpointC));
-			}
+			}*/
 		}
 	}
 	/**
@@ -184,90 +189,6 @@ public class GCodeArcCommand extends GCodeMotionCommand {
 	}
 
 	/**
-	 * @return the endpointX
-	 */
-	public BigDecimal getEndpointX() {
-		return endpointX;
-	}
-
-	/**
-	 * @param endpointX the endpointX to set
-	 */
-	public void setEndpointX(BigDecimal endpointX) {
-		this.endpointX = endpointX;
-	}
-
-	/**
-	 * @return the endpointY
-	 */
-	public BigDecimal getEndpointY() {
-		return endpointY;
-	}
-
-	/**
-	 * @param endpointY the endpointY to set
-	 */
-	public void setEndpointY(BigDecimal endpointY) {
-		this.endpointY = endpointY;
-	}
-
-	/**
-	 * @return the endpointZ
-	 */
-	public BigDecimal getEndpointZ() {
-		return endpointZ;
-	}
-
-	/**
-	 * @param endpointZ the endpointZ to set
-	 */
-	public void setEndpointZ(BigDecimal endpointZ) {
-		this.endpointZ = endpointZ;
-	}
-
-	/**
-	 * @return the endpointA
-	 */
-	public BigDecimal getEndpointA() {
-		return endpointA;
-	}
-
-	/**
-	 * @param endpointA the endpointA to set
-	 */
-	public void setEndpointA(BigDecimal endpointA) {
-		this.endpointA = endpointA;
-	}
-
-	/**
-	 * @return the endpointB
-	 */
-	public BigDecimal getEndpointB() {
-		return endpointB;
-	}
-
-	/**
-	 * @param endpointB the endpointB to set
-	 */
-	public void setEndpointB(BigDecimal endpointB) {
-		this.endpointB = endpointB;
-	}
-
-	/**
-	 * @return the endpointC
-	 */
-	public BigDecimal getEndpointC() {
-		return endpointC;
-	}
-
-	/**
-	 * @param endpointC the endpointC to set
-	 */
-	public void setEndpointC(BigDecimal endpointC) {
-		this.endpointC = endpointC;
-	}
-
-	/**
 	 * @return the radius
 	 */
 	public BigDecimal getRadius() {
@@ -279,6 +200,20 @@ public class GCodeArcCommand extends GCodeMotionCommand {
 	 */
 	public void setRadius(BigDecimal radius) {
 		this.radius = radius;
+	}
+
+	/**
+	 * @return the endpoint
+	 */
+	public Tuple6b getEndpoint() {
+		return endpoint;
+	}
+
+	/**
+	 * @param endpoint the endpoint to set
+	 */
+	public void setEndpoint(Tuple6b endpoint) {
+		this.endpoint = endpoint;
 	}
 
 

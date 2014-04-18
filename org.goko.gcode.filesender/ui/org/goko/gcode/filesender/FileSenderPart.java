@@ -71,13 +71,9 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	private Label lblLastupdate;
 	private GCodeEditor gCodeTextDisplay;
 
-	private Label completedCommandsCountTxt;
-
 	private Label sentCommandsCountTxt;
 
 	private ProgressBar progressSentCommand;
-
-	private ProgressBar progressCompletedCommand;
 
 	private Label totalCommandCountTxt;
 
@@ -88,6 +84,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	private Label remainingTimeLbl;
 
 	private Label elapsedTimeLbl;
+	private int id = 1;
 
 	@Inject
 	public FileSenderPart(IEclipseContext context) {
@@ -272,7 +269,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		Label lblSentCommands = new Label(composite_4, SWT.NONE);
 		lblSentCommands.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblSentCommands, true, true);
-		lblSentCommands.setText("Sent commands :");
+		lblSentCommands.setText("Progress :");
 
 				progressSentCommand = new ProgressBar(composite_4, SWT.NONE);
 				progressSentCommand.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -285,22 +282,6 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		sentCommandsCountTxt.setLayoutData(gd_sentCommandsCountTxt);
 		formToolkit.adapt(sentCommandsCountTxt, true, true);
 		sentCommandsCountTxt.setText("--");
-
-				Label lblRemainingCommands = new Label(composite_4, SWT.NONE);
-				formToolkit.adapt(lblRemainingCommands, true, true);
-				lblRemainingCommands.setText("Completed commands :");
-
-		progressCompletedCommand = new ProgressBar(composite_4, SWT.NONE);
-		progressCompletedCommand.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(progressCompletedCommand, true, true);
-		new Label(composite_4, SWT.NONE);
-
-				completedCommandsCountTxt = new Label(composite_4, SWT.NONE);
-				GridData gd_completedCommandsCountTxt = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-				gd_completedCommandsCountTxt.widthHint = 80;
-				completedCommandsCountTxt.setLayoutData(gd_completedCommandsCountTxt);
-				formToolkit.adapt(completedCommandsCountTxt, true, true);
-				completedCommandsCountTxt.setText("--");
 
 				Composite composite_6 = new Composite(grpControls, SWT.NONE);
 				formToolkit.adapt(composite_6);
@@ -321,7 +302,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 				Label lblRemainingTime = new Label(composite_6, SWT.NONE);
 				formToolkit.adapt(lblRemainingTime, true, true);
-				lblRemainingTime.setText("Remaining time :");
+				lblRemainingTime.setText("Estimated time :");
 
 				remainingTimeLbl = new Label(composite_6, SWT.NONE);
 				GridData gd_remainingTimeLbl = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -338,14 +319,13 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		formToolkit.paintBordersFor(grpGcodeEditor);
 
 		gCodeTextDisplay = new GCodeEditor(grpGcodeEditor, null, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		StyledText styledText = gCodeTextDisplay.getTextWidget();
+		final StyledText styledText = gCodeTextDisplay.getTextWidget();
 		styledText.setEditable(false);
 		styledText.setIndent(5);
 		styledText.setMarginColor(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		styledText.setLeftMargin(20);
 		styledText.setFont(SWTResourceManager.getFont("Consolas", 10, SWT.NORMAL));
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
 		initCustomBindings();
 	}
 
@@ -361,13 +341,12 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		this.getController().addTextDisplayBinding(lblName, "fileName");
 
 		this.getController().addGCodeViewerBinding(gCodeTextDisplay);
-		this.getController().addTextDisplayBinding(completedCommandsCountTxt, "completedCommandCount");
 		this.getController().addTextDisplayBinding(sentCommandsCountTxt, "sentCommandCount");
 		this.getController().addTextDisplayBinding(totalCommandCountTxt, "totalCommandCount");
 
 
 		this.getController().addEnableBinding(btnSendFile, "streamingAllowed");
-		this.getController().addEnableBinding(btnCancel, "streamingInProgress");
+		// this.getController().addEnableBinding(btnCancel, "streamingInProgress");
 		// Progress bar bindings
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue(progressSentCommand, "maximum");
@@ -375,12 +354,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 			Binding binding = getController().getBindingContext().bindValue(widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
-		{
-			IObservableValue widgetObserver = PojoObservables.observeValue(progressCompletedCommand, "maximum");
-			IObservableValue modelObserver  = BeanProperties.value("totalCommandCount").observe(getDataModel());
 
-			Binding binding = getController().getBindingContext().bindValue(widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
-		}
 
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue(progressSentCommand, "selection");
@@ -388,12 +362,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 			Binding binding = getController().getBindingContext().bindValue(widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
-		{
-			IObservableValue widgetObserver = PojoObservables.observeValue(progressCompletedCommand, "selection");
-			IObservableValue modelObserver  = BeanProperties.value("completedCommandCount").observe(getDataModel());
 
-			Binding binding = getController().getBindingContext().bindValue(widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
-		}
 	}
 
 

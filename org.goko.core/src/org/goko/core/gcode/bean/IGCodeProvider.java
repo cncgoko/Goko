@@ -26,11 +26,12 @@ import java.util.List;
  * @author PsyKo
  *
  */
-public interface IGCodeCommandProvider {
+public interface IGCodeProvider {
 
 	/**
 	 * Return the list of GCode commands provided by this provider
 	 * @return a {@link List} of {@link GCodeCommand}
 	 */
 	List<GCodeCommand> getGCodeCommands();
+
 }

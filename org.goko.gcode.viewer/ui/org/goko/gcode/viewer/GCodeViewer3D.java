@@ -64,7 +64,10 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	}
 
 	@PostConstruct
-    public void createPartControl( Composite compositeParent, IEclipseContext context ) throws GkException {
+    public void createPartControl( Composite superCompositeParent, IEclipseContext context ) throws GkException {
+		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
+		formToolkit.adapt(compositeParent);
+		formToolkit.paintBordersFor(compositeParent);
 		GLData gldata = new GLData();
         gldata.doubleBuffer = true;
         GridLayout gl_compositeParent = new GridLayout(1, false);
@@ -74,7 +77,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         compositeParent.setLayout(gl_compositeParent);
 
         Composite composite = new Composite(compositeParent, SWT.NONE);
-        GridLayout gl_composite = new GridLayout(2, false);
+        GridLayout gl_composite = new GridLayout(3, false);
         gl_composite.verticalSpacing = 3;
         gl_composite.marginHeight = 3;
         composite.setLayout(gl_composite);
@@ -104,10 +107,18 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         glcanvas = new GCode3DCanvas(compositeParent, SWT.NO_BACKGROUND, gldata);
         glcanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         ContextInjectionFactory.inject(glcanvas, context);
-        glcanvas.setCurrent();
+      //  glcanvas.setCurrent();
+
+
+        Button btnEnabledView = new Button(composite, SWT.CHECK);
+        formToolkit.adapt(btnEnabledView, true, true);
+
+        btnEnabledView.setText("Enable 3D view");
 
         getController().addSelectionBinding(btnShowGrid, "showGrid");
 		getController().addPropertyBinding(glcanvas, "showGrid", "showGrid");
+		getController().addSelectionBinding(btnEnabledView, "enabled");
+		getController().addPropertyBinding(glcanvas, "renderEnabled", "enabled");
 		getController().addPropertyBinding(glcanvas, "currentPosition", "currentPosition");
 		getController().addPropertyBinding(glcanvas, "commandProvider", "commandProvider");
     }

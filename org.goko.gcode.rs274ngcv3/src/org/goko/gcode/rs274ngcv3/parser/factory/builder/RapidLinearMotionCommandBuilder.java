@@ -24,7 +24,7 @@ import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeWord;
 import org.goko.gcode.rs274ngcv3.command.RapidLinearMotionGCodeCommand;
 
-public class RapidLinearMotionCommandBuilder extends AbstractMotionCommandBuilder<RapidLinearMotionGCodeCommand>{
+public class RapidLinearMotionCommandBuilder extends LinearMotionCommandBuilder<RapidLinearMotionGCodeCommand>{
 	protected static final GCodeWord G0_WORD = new GCodeWord("G0");
 
 	/** (inheritDoc)
@@ -44,36 +44,5 @@ public class RapidLinearMotionCommandBuilder extends AbstractMotionCommandBuilde
 		completeCommand(g0Command, command);
 		return g0Command;
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.parser.factory.builder.AbstractMotionCommandBuilder#completeCommand(org.goko.gcode.rs274ngcv3.command.GCodeMotionCommand, org.goko.core.gcode.bean.GCodeCommand)
-	 */
-	@Override
-	public void completeCommand(RapidLinearMotionGCodeCommand commandToComplete, GCodeCommand command) throws GkException {
-		GCodeWord endPointXWord = findWordByLetter("X", command);
-		if(endPointXWord != null){
-			commandToComplete.setEndpointX(endPointXWord.getValue());
-		}
-		GCodeWord endPointYWord = findWordByLetter("Y", command);
-		if(endPointYWord != null){
-			commandToComplete.setEndpointY(endPointYWord.getValue());
-		}
-		GCodeWord endPointZWord = findWordByLetter("Z", command);
-		if(endPointZWord != null){
-			commandToComplete.setEndpointZ(endPointZWord.getValue());
-		}
-		GCodeWord endPointAWord = findWordByLetter("A", command);
-		if(endPointAWord != null){
-			commandToComplete.setEndpointA(endPointAWord.getValue());
-		}
-		GCodeWord endPointBWord = findWordByLetter("B", command);
-		if(endPointBWord != null){
-			commandToComplete.setEndpointB(endPointBWord.getValue());
-		}
-		GCodeWord endPointCWord = findWordByLetter("C", command);
-		if(endPointCWord != null){
-			commandToComplete.setEndpointC(endPointCWord.getValue());
-		}
-	};
 
 }

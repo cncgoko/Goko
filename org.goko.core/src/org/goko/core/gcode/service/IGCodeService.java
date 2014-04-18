@@ -24,7 +24,7 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
 
 public interface IGCodeService extends IGokoService{
 	/**
@@ -34,7 +34,7 @@ public interface IGCodeService extends IGokoService{
 	 * @throws GkException GkException
 	 */
 
-	IGCodeCommandProvider parse(String filepath) throws GkException;
+	IGCodeProvider parse(String filepath) throws GkException;
 
 	/**
 	 * Parse a command

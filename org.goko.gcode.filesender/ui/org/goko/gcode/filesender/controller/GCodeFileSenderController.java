@@ -36,21 +36,25 @@ import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.goko.common.bindings.AbstractController;
+import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.EventListener;
+import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
-import org.goko.core.controller.bean.StreamStatus;
-import org.goko.core.controller.bean.StreamStatusUpdate;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.execution.IGCodeExecutionTimeService;
+import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.provider.GCodeCommandExecutionEvent;
+import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.filesender.editor.GCodeEditor;
-import org.goko.gcode.filesender.editor.GCodeFileTextRenderer;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
  * GCode file sender controller
@@ -70,6 +74,9 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Inject
 	private IControllerService controllerService;
 	private Timer timer;
+	@Inject
+	private IGCodeExecutionTimeService timeService;
+
 	/**
 	 * Constructor
 	 * @param bindings the data model
@@ -77,6 +84,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public GCodeFileSenderController(GCodeFileSenderBindings bindings) {
 		super(bindings);
 		getDataModel().setStreamingInProgress(false);
+		GokoEventBus.getInstance().register(this);
 	}
 
 	/** (inheritDoc)
@@ -105,7 +113,6 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			getDataModel().setFileName( StringUtils.EMPTY );
 			getDataModel().setFilePath( StringUtils.EMPTY);
 			getDataModel().setFileLastUpdate( StringUtils.EMPTY );
-			getDataModel().setgCodeDocument( StringUtils.EMPTY );
 			getDataModel().setFileSize( StringUtils.EMPTY );
 			notifyException(e);
 		}
@@ -151,9 +158,13 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	}
 
 	protected void parseFile() throws GkException{
-		IGCodeCommandProvider gcodeFile = gCodeService.parse(getDataModel().getFilePath());
-		getDataModel().setgCodeDocument(GCodeFileTextRenderer.renderCommands(gcodeFile));
+		IGCodeProvider gcodeFile = gCodeService.parse(getDataModel().getFilePath());
+		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
+
+		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));
+		getDataModel().setgCodeDocument(new GCodeDocumentProvider(gcodeFile));
 		eventBroker.post("gcodefile", gcodeFile);
+
 	}
 
 	public void addGCodeViewerBinding(GCodeEditor gCodeTextDisplay) {
@@ -162,24 +173,37 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		IObservableValue modelObserver  = BeanProperties.value("gCodeDocument").observe(getDataModel());
 
 		UpdateValueStrategy strategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
-		strategy.setConverter(new StringToDocumentConverter());
+
+		getBindings().add( getBindingContext().bindValue(widgetObserver, modelObserver,null,strategy) );
+
+		initCommandSelectionBindings(gCodeTextDisplay);
+	}
+
+	private void initCommandSelectionBindings(GCodeEditor gCodeTextDisplay) {
+		IObservableValue widgetObserver = PojoProperties.value("selectedCommand").observe(gCodeTextDisplay);
+		IObservableValue modelObserver  = BeanProperties.value("selectedCommand").observe(getDataModel());
+
+		UpdateValueStrategy strategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
 
 		getBindings().add( getBindingContext().bindValue(widgetObserver, modelObserver,null,strategy) );
 	}
 
 	public void startFileStreaming(){
 		try{
-			IGCodeCommandProvider gcodeFile = gCodeService.parse(getDataModel().getFilePath());
-			StreamStatus status = controllerService.sendFile(gcodeFile);
+			IGCodeProvider 		gcodeFile = gCodeService.parse(getDataModel().getFilePath());
+			GCodeExecutionQueue queue = controllerService.executeGCode(gcodeFile);
 
-			getDataModel().setSentCommandCount( status.getSentGCodeCommands().size() );
-			getDataModel().setTotalCommandCount( status.getAllGCodeCommand().size() );
-			getDataModel().setCompletedCommandCount( status.getAknowledgedGCodeCommand().size() );
 
+			getDataModel().setSentCommandCount( 0 );
+			getDataModel().setTotalCommandCount( queue.getCommandCount() );
 			getDataModel().setStartDate(new Date());
 
-			getDataModel().setTotalCommandCount(status.getAllGCodeCommand().size());
+			queue.addListener(this);
+
 			updateDisplayedTime();
+			if(timer != null){
+				timer.stop();
+			}
 			timer = new Timer(200, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -204,11 +228,11 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void updateDisplayedTime(){
 		long elapsedTime = new Date().getTime() - getDataModel().getStartDate().getTime();
 		getDataModel().setElapsedTime(getDurationAsString(elapsedTime));
-		if(getDataModel().getCompletedCommandCount() > 0){
+	/*	if(getDataModel().getCompletedCommandCount() > 0){
 			long milliPerCommand = elapsedTime / getDataModel().getCompletedCommandCount();
 			int remainingCommand = getDataModel().getTotalCommandCount() - getDataModel().getCompletedCommandCount();
 			getDataModel().setRemainingTime(getDurationAsString(remainingCommand * milliPerCommand));
-		}
+		}*/
 
 	}
 
@@ -243,17 +267,12 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		}
 	}
 
-	@EventListener(StreamStatusUpdate.class)
-	public void onStreamStatusUpdate(StreamStatusUpdate update){
-		StreamStatus status = update.getStatus();
-		getDataModel().setSentCommandCount( status.getSentGCodeCommands().size() );
-		getDataModel().setTotalCommandCount( status.getAllGCodeCommand().size() );
-		getDataModel().setCompletedCommandCount( status.getAknowledgedGCodeCommand().size() );
-		if(status.hasPendingCommand()){
-			getDataModel().setStreamingInProgress(true);
-		}else{
-			getDataModel().setStreamingInProgress(false);
-		}
+	@EventListener(GCodeCommandExecutionEvent.class)
+	public void onStreamStatusUpdate(GCodeCommandExecutionEvent event){
+		GCodeExecutionQueue queue = event.getExecutionQueue();
+		getDataModel().setSentCommandCount( queue.getExecutedCommandCount() );
+		getDataModel().setTotalCommandCount( queue.getCommandCount() );
+
 	}
 
 	/**
@@ -270,4 +289,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		this.controllerService = controllerService;
 	}
 
+	@Subscribe
+	public void onGCodeCommandSelection(GCodeCommandSelectionEvent evt){
+		getDataModel().setSelectedCommand(evt.getGCodeCommand().getId());
+	}
 }

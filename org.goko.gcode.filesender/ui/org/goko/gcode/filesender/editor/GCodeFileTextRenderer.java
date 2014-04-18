@@ -12,7 +12,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeFile;
 import org.goko.core.gcode.bean.GCodeWord;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
 
 /**
  * Transform a GCode file into a text representation
@@ -49,11 +49,10 @@ public class GCodeFileTextRenderer {
 	 * @return a String
 	 * @throws GkException GkException
 	 */
-	public static String renderCommands(IGCodeCommandProvider provider) throws GkException{
+	public static String renderCommands(IGCodeProvider provider) throws GkException{
 		StringBuffer txtFile = new StringBuffer();
 
 		for(GCodeCommand gLine : provider.getGCodeCommands()){
-			//txtFile.append(gLine.toString());
 			txtFile.append(render(gLine));
 			txtFile.append(EOL);
 		}
@@ -66,7 +65,7 @@ public class GCodeFileTextRenderer {
 	 * @param gLine GCodeLine to render
 	 * @return a String
 	 */
-	private static String render(GCodeCommand gLine) {
+	public static String render(GCodeCommand gLine) {
 		StringBuffer txtLine = new StringBuffer();
 		if(StringUtils.isNotBlank(gLine.getLineNumber())){
 			txtLine.append(gLine.getLineNumber());

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GCodeFile implements IGCodeCommandProvider {
+public class GCodeFile implements IGCodeProvider {
 	/** The original file */
 	private File file;
 	/** The parsed data */
@@ -32,7 +32,7 @@ public class GCodeFile implements IGCodeCommandProvider {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.IGCodeCommandProvider#getGCodeCommands()
+	 * @see org.goko.core.gcode.bean.IGCodeProvider#getGCodeCommands()
 	 */
 	@Override
 	public final List<GCodeCommand> getGCodeCommands() {

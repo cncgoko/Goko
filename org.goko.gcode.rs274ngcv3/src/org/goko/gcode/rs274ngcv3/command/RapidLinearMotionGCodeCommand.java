@@ -21,4 +21,7 @@ package org.goko.gcode.rs274ngcv3.command;
 
 public class RapidLinearMotionGCodeCommand extends LinearMotionGCodeCommand{
 
+	public RapidLinearMotionGCodeCommand() {
+		setType(Rs274Type.MOTION_RAPID_LINEAR_COMMAND);
+	}
 }

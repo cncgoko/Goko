@@ -28,6 +28,7 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.gcode.bean.GCodeCommandState;
 import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.gcode.rs274ngcv3.command.GCodeArcCommand;
 import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
 
@@ -56,33 +57,26 @@ public class CWArcGCodeRenderer extends AbstractGCodeGlRenderer<GCodeArcCommand>
 			gl.glColor3d(G03_COLOR.x, G03_COLOR.y, G03_COLOR.z);
 		}
 
-		gl.glVertex3d(context.getPositionX().doubleValue(), context.getPositionY().doubleValue(), context.getPositionZ().doubleValue());
+		gl.glVertex3d(context.getPosition().getX().doubleValue(), context.getPosition().getY().doubleValue(), context.getPosition().getZ().doubleValue());
 
-		Double x = context.getPositionX().doubleValue();
-		Double y = context.getPositionY().doubleValue();
-		Double z = context.getPositionZ().doubleValue();
+		Tuple6b tuple = new Tuple6b(context.getPosition());
+		Double x = context.getPosition().getX().doubleValue();
+		Double y = context.getPosition().getY().doubleValue();
+		Double z = context.getPosition().getZ().doubleValue();
 
 		Point3d center = new Point3d(x + command.getOffsetIDouble(), y + command.getOffsetJDouble(), z + command.getOffsetKDouble());
 
 		Vector3d v1 = new Vector3d(x - center.x, y - center.y, z - center.z);
 
 		/* ** */
-		if(!context.isAbsolute()){
-			x = add(x, command.getEndpointX());
-			y = add(y, command.getEndpointY());
-			z = add(z, command.getEndpointZ());
+		if(context.isAbsolute()){
+			tuple.updateAbsolute(command.getEndpoint());
 		}else{
-			if(command.getEndpointX() != null){
-				x = command.getEndpointX().doubleValue();
-			}
-			if(command.getEndpointY() != null){
-				y = command.getEndpointY().doubleValue();
-			}
-			if(command.getEndpointZ() != null){
-				z= command.getEndpointZ().doubleValue();
-			}
+			tuple.updateRelative(command.getEndpoint());
 		}
-
+		x = tuple.getX().doubleValue();
+		y = tuple.getY().doubleValue();
+		z = tuple.getZ().doubleValue();
 		Vector3d v2 = new Vector3d(x - center.x, y - center.y, z - center.z);
 
 		double smallestAngle = StrictMath.atan2(v1.y,v1.x) - StrictMath.atan2(v2.y,v2.x);
@@ -103,6 +97,9 @@ public class CWArcGCodeRenderer extends AbstractGCodeGlRenderer<GCodeArcCommand>
 		}
 
 		int nbPoints = 8;
+		// Adaptive points count
+		double arcLength = Math.abs(angle * v1.length());
+		nbPoints = (int) (arcLength * 8 );
 		Matrix3d rot = new Matrix3d();
 		rot.rotZ(angle / (nbPoints + 1));
 		for(int i = 0; i < nbPoints; i++){

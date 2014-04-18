@@ -10,10 +10,8 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
-import org.goko.core.controller.bean.StreamStatus;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeFile;
-import org.goko.core.gcode.bean.IGCodeCommandProvider;
+import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
 
 /**
  * Interface definition for the controller.
@@ -29,27 +27,12 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	 * @throws GkException an exception
 	 */
 	Point3d getPosition() throws GkException;
-
 	/**
-	 * Sends a list of commands
-	 * @param commands the list of commands to send
-	 * @throws GkException an exception
+	 * Executes the GCode contained in the gcodeProvider
+	 * @param gcodeProvider the {@link IGCodeProvider}
+	 * @throws GkException GkException
 	 */
-	StreamStatus sendCommands(List<GCodeCommand> commands) throws GkException;
-
-	/**
-	 * Sends a single command
-	 * @param command the command to send
-	 * @throws GkException an exception
-	 */
-	void sendCommand(GCodeCommand command) throws GkException;
-
-	/**
-	 * Sends a GCode file
-	 * @param gCodeFile the {@link GCodeFile} to send
-	 * @throws GkException an exception
-	 */
-	StreamStatus sendFile(IGCodeCommandProvider gCodeFile) throws GkException;
+	GCodeExecutionQueue executeGCode(IGCodeProvider gcodeProvider) throws GkException;
 
 	/**
 	 * Determine if the controller is ready to stream a file

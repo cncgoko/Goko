@@ -10,9 +10,30 @@ import org.apache.commons.lang3.StringUtils;
 
 
 public class GCodeCommand {
+	/**
+	 *  Identifier
+	 */
+	private Integer id;
+	/**
+	 * Line number if any
+	 */
 	private String lineNumber;
+	/**
+	 * Comment if any
+	 */
 	private String comment;
+	/**
+	 * The list of GCodeWords
+	 */
 	private List<GCodeWord> lstGCodeWords;
+	/**
+	 * The type of the command
+	 */
+	private String type;
+	/**
+	 * The state of the command
+	 */
+	// TODO : remove state from command
 	private GCodeCommandState state;
 
 	public GCodeCommand() {
@@ -58,8 +79,8 @@ public class GCodeCommand {
 		this.comment = comment;
 	}
 
-	public void updateContext(GCodeContext context){
-
+	public void updateContext(final GCodeContext context){
+		// Nothing to do here
 	}
 
 	@Override
@@ -135,6 +156,34 @@ public class GCodeCommand {
 	 */
 	public void setState(GCodeCommandState state) {
 		this.state = state;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public Integer getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

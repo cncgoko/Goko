@@ -34,10 +34,12 @@ import org.goko.gcode.rs274ngcv3.parser.factory.GCodeCommandFactory;
  */
 public class GCodeParser {
 	private GCodeCommandFactory factory;
+	private int currentId = 1;
 
 	public GCodeParser() {
 		factory = new GCodeCommandFactory();
 	}
+
 	public List<GCodeCommand> createGCodeCommand(List<GCodeToken> tokens) throws GkException{
 		List<GCodeCommand> lstGCodeCommand = new ArrayList<GCodeCommand>();
 		List<GCodeToken> tmpLstTokens = new ArrayList<GCodeToken>();
@@ -45,6 +47,7 @@ public class GCodeParser {
 		for (GCodeToken gCodeToken : tokens) {
 			if(gCodeToken.getType() == GCodeTokenType.NEW_LINE){
 				GCodeCommand command = factory.create(tmpLstTokens);
+				command.setId(currentId++);
 				lstGCodeCommand.add( command ); //createAtomGCodeCommand(tmpLstTokens) );
 				tmpLstTokens.clear();
 			}else{
@@ -52,7 +55,9 @@ public class GCodeParser {
 			}
 		}
 		// Let's compute the final GCodeCommand
-		lstGCodeCommand.add( factory.create(tmpLstTokens) );
+		GCodeCommand command = factory.create(tmpLstTokens);
+		command.setId(currentId++);
+		lstGCodeCommand.add( command );
 		return lstGCodeCommand;
 	}
 

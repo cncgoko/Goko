@@ -24,12 +24,9 @@ import java.math.BigDecimal;
 import javax.media.opengl.GL2;
 import javax.vecmath.Point3d;
 
-import org.goko.core.gcode.bean.GCodeCommandState;
-import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.gcode.rs274ngcv3.command.FeedrateLinearMotionGCodeCommand;
-import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
 
-public class FeedrateLinearGCodeRenderer extends AbstractGCodeGlRenderer<FeedrateLinearMotionGCodeCommand> {
+public class FeedrateLinearGCodeRenderer extends LinearGCodeRenderer<FeedrateLinearMotionGCodeCommand> {
 
 	private static Point3d G01_COLOR = new Point3d(0.14,0.33,0.80);
 
@@ -41,52 +38,28 @@ public class FeedrateLinearGCodeRenderer extends AbstractGCodeGlRenderer<Feedrat
 		return FeedrateLinearMotionGCodeCommand.class;
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
-	 */
-	@Override
-	public void render(GCodeContext context, FeedrateLinearMotionGCodeCommand command, GL2 gl) {
-		gl.glBegin(GL2.GL_LINE_STRIP);
-		// Let's redraw the current position with the accurate color
-		if(command.getState().isState(GCodeCommandState.EXECUTED) || command.getState().isState(GCodeCommandState.SENT)){
-			gl.glColor3d(0.4,0.4,0.4);
-		}else{
-			gl.glColor3d(G01_COLOR.x, G01_COLOR.y, G01_COLOR.z);
-		}
-		gl.glVertex3d(context.getPositionX().doubleValue(), context.getPositionY().doubleValue(), context.getPositionZ().doubleValue());
-
-		Double x = context.getPositionX().doubleValue();
-		Double y = context.getPositionY().doubleValue();
-		Double z = context.getPositionZ().doubleValue();
-		if(!context.isAbsolute()){
-			x = add(x, command.getEndpointX());
-			y = add(y, command.getEndpointY());
-			z = add(z, command.getEndpointZ());
-		}else{
-			if(command.getEndpointX() != null){
-				x = command.getEndpointX().doubleValue();
-			}
-			if(command.getEndpointY() != null){
-				y = command.getEndpointY().doubleValue();
-			}
-			if(command.getEndpointZ() != null){
-				z= command.getEndpointZ().doubleValue();
-			}
-		}
-		if(command.getState().isState(GCodeCommandState.EXECUTED) || command.getState().isState(GCodeCommandState.SENT)){
-			gl.glColor3d(0.4,0.4,0.4);
-		}else{
-			gl.glColor3d(G01_COLOR.x, G01_COLOR.y, G01_COLOR.z);
-		}
-		gl.glVertex3d(x, y, z);
-		gl.glEnd();
-	}
 
 	protected double add(double position, BigDecimal delta){
 		if( delta == null){
 			return position;
 		}
 		return position + delta.doubleValue();
+	}
+
+	@Override
+	protected void enableLineStyle(GL2 gl) {
+		// Nothing to do
+	}
+
+	@Override
+	protected void disableLineStyle(GL2 gl) {
+		// Nothing to do
+
+	}
+
+	@Override
+	protected void setColor(GL2 gl) {
+		gl.glColor3d(G01_COLOR.x, G01_COLOR.y, G01_COLOR.z);
 	}
 
 }
