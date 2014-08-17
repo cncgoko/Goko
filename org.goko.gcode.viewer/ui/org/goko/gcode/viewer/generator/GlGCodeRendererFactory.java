@@ -23,28 +23,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.gcode.viewer.generator.renderer.CCWArcGCodeRenderer;
 import org.goko.gcode.viewer.generator.renderer.CWArcGCodeRenderer;
 import org.goko.gcode.viewer.generator.renderer.FeedrateLinearGCodeRenderer;
 import org.goko.gcode.viewer.generator.renderer.RapidGCodeRenderer;
 
 public class GlGCodeRendererFactory {
-	private Map<Class<?>, AbstractGCodeGlRenderer<?>> mapRenderer;
+	private Map<String, AbstractGCodeGlRenderer> mapRenderer;
 
 	public GlGCodeRendererFactory() {
-		this.mapRenderer = new HashMap<Class<?>, AbstractGCodeGlRenderer<?>>();
+		this.mapRenderer = new HashMap<String, AbstractGCodeGlRenderer>();
 		registerRenderer(new FeedrateLinearGCodeRenderer());
 		registerRenderer(new RapidGCodeRenderer());
 		registerRenderer(new CWArcGCodeRenderer());
+		registerRenderer(new CCWArcGCodeRenderer());
 	}
 
-	public void registerRenderer(AbstractGCodeGlRenderer<?> renderer){
-		mapRenderer.put(renderer.getRenderedCommandClass(), renderer);
+	public void registerRenderer(AbstractGCodeGlRenderer renderer){
+		mapRenderer.put(renderer.getSupportedMotionType(), renderer);
 	}
-	@SuppressWarnings("unchecked")
-	public <T extends GCodeCommand> AbstractGCodeGlRenderer<T> getRenderer(T command) throws GkException{
-		if(mapRenderer.containsKey(command.getClass())){
-			return (AbstractGCodeGlRenderer<T>) mapRenderer.get(command.getClass());
+
+	public AbstractGCodeGlRenderer getRenderer(GCodeContext context) throws GkException{
+		if(mapRenderer.containsKey(context.getMotionMode())){
+			return mapRenderer.get(context.getMotionMode());
 		}
 		return null;
 	}

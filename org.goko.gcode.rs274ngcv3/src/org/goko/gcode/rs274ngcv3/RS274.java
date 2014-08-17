@@ -17,23 +17,11 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.gcode.rs274ngcv3.command;
+package org.goko.gcode.rs274ngcv3;
 
-import org.goko.core.gcode.bean.GCodeCommand;
-
-public class GCodeRawCommand extends GCodeCommand {
-	String rawCommand;
-
-	/**
-	 * @param rawCommand
-	 */
-	public GCodeRawCommand(String rawCommand) {
-		super();
-		this.rawCommand = rawCommand;
-	}
-
-	@Override
-	public String toString() {
-		return rawCommand;
-	}
+public class RS274 {
+	public final static String MOTION_MODE_RAPID = "g0";
+	public final static String MOTION_MODE_CONTROLLED = "g1" ;
+	public final static String MOTION_MODE_ARC_CW = "g2" ;
+	public final static String MOTION_MODE_ARC_CCW = "g3" ;
 }

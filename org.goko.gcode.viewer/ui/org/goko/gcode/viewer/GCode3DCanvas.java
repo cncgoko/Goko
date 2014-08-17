@@ -28,6 +28,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL2ES1;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLEventListener;
@@ -35,20 +36,25 @@ import javax.media.opengl.GLProfile;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.service.IGCodeService;
 import org.goko.gcode.viewer.camera.AbstractCamera;
 import org.goko.gcode.viewer.camera.OrthographicCamera;
 import org.goko.gcode.viewer.camera.PerspectiveCamera;
@@ -64,23 +70,31 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	private IGCodeProvider commandProvider;
 	private GlGCodeBufferedRendererFactory rendererFactory;
 	private boolean renderEnabled;
+	private Font overlayFont;
+	private Font disabledFont;
+	private boolean forceRedraw = false;
 
 	@Inject
 	IControllerService conteollerService;
+	@Inject
+	IGCodeService gcodeService;
 
 	public GCode3DCanvas(Composite parent, int style, GLData data) {
 		super(parent, style, data);
+
 		renderEnabled = true;
-		//rendererFactory = new GlGCodeBufferedRendererFactory();
 		rendererFactory = new GlGCodeBufferedRendererFactory();
 		camera 			= new PerspectiveCamera(this);
+		overlayFont = new Font(getDisplay(), "Tahoma", 10, SWT.BOLD);
 		setCurrent();
 		GLProfile glprofile = GLProfile.get(GLProfile.GL2);
-
+		GLCapabilities caps = new GLCapabilities(glprofile);
+		caps.setHardwareAccelerated(true);
 		glcontext = GLDrawableFactory.getFactory(glprofile).createExternalGLContext();
 
 		addPaintListener(this);
 	}
+
 
 	@Override
 	public void display(GLAutoDrawable gl) {
@@ -90,13 +104,15 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	@Inject
 	@Optional
 	private void getNotified(@UIEventTopic("gcodefile") GCodeFile file){
-		rendererFactory.clear();
+
 		setGCodeFile(file);
 
 	}
 
 	public void setGCodeFile(GCodeFile gCodeFile){
 		this.commandProvider = gCodeFile;
+		rendererFactory.clear();
+		forceRedraw = true;
 		redraw();
 	}
 
@@ -122,6 +138,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
         gl.glPolygonMode(GL2.GL_BACK, GL2GL3.GL_FILL);
         gl.glLineWidth(1);
         gl.glEnable(GL.GL_DEPTH_TEST);
+
 
         float pos[] = {10,10,10};
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, pos, 0);
@@ -154,6 +171,32 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		gl.glEnd();
 	}
 
+	protected void drawPathToTool(GL2 gl){
+		if(currentPosition == null){
+			currentPosition = new Point3d(0,0,0);
+		}
+
+		gl.glLineWidth(1.5f);
+
+		gl.glEnable(GL2.GL_LINE_STIPPLE);
+		gl.glLineStipple(4, (short)0xAAAA);
+
+		gl.glBegin(GL2.GL_LINE_STRIP);
+		gl.glColor3d(1, 0, 0);
+		gl.glVertex3d(0, 0, 0);
+		gl.glVertex3d(currentPosition.x, 0, 0);
+		gl.glColor3d(0, 1, 0);
+		gl.glVertex3d(currentPosition.x, 0, 0);
+		gl.glVertex3d(currentPosition.x, currentPosition.y, 0);
+		gl.glColor3d(0, 0, 1);
+		gl.glVertex3d(currentPosition.x, currentPosition.y, 0);
+		gl.glVertex3d(currentPosition.x, currentPosition.y, currentPosition.z);
+
+		gl.glEnd();
+		gl.glDisable(GL2.GL_LINE_STIPPLE);
+
+
+	}
 	protected void drawTool(GL2 gl){
 		if(currentPosition == null){
 			currentPosition = new Point3d(0,0,0);
@@ -213,7 +256,13 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 			for(int i = 0; i <= nbPts; i++){
 				double cosA = Math.cos( i * angle);
 				double sinA = Math.sin( i * angle);
+				u.x =  (radius *cosA);
+				u.y =  (radius * sinA);
+				u.z = 0;
+				u.normalize();
+				gl.glNormal3d(u.x, u.y, u.z);
 				gl.glVertex3d(currentPosition.x + radius *cosA, currentPosition.y + radius * sinA, currentPosition.z + height);
+				gl.glNormal3d(u.x, u.y, u.z);
 				gl.glVertex3d(currentPosition.x + radius *cosA, currentPosition.y + radius * sinA, currentPosition.z + height + 6);
 			}
 			gl.glEnd();
@@ -224,22 +273,45 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	}
 	protected void drawGCode(GL2 gl) throws GkException{
 		gl.glLineWidth(1.3f);
+		if(forceRedraw){
+			forceGCodeRedraw(gl);
+		}else{
+			if(commandProvider != null){
+				GCodeContext context =  new GCodeContext();
+				GCodeContext postContext = null;
 
-		if(commandProvider != null){
-			GCodeContext context =  new GCodeContext();
-
-			List<GCodeCommand> lstGcode = new ArrayList<GCodeCommand>(commandProvider.getGCodeCommands());
-			for (GCodeCommand gCodeCommand : lstGcode) {
-				AbstractGCodeGlRenderer<GCodeCommand> renderer = rendererFactory.getRenderer(gCodeCommand);
-				if(renderer != null){
-					renderer.render(context, gCodeCommand, gl);
+				List<GCodeCommand> lstGcode = new ArrayList<GCodeCommand>(commandProvider.getGCodeCommands());
+				for (GCodeCommand gCodeCommand : lstGcode) {
+					AbstractGCodeGlRenderer renderer = rendererFactory.getRenderer(postContext, gCodeCommand);
+					if(renderer != null){
+						renderer.render(context, postContext, gCodeCommand, gl);
+					}
 				}
-				gCodeCommand.updateContext(context);
 			}
 		}
 
 	}
 
+	protected void forceGCodeRedraw(GL2 gl) throws GkException{
+		if(commandProvider != null){
+			rendererFactory.clear();
+			GCodeContext context =  new GCodeContext();
+			GCodeContext postContext = null;
+
+			List<GCodeCommand> lstGcode = new ArrayList<GCodeCommand>(commandProvider.getGCodeCommands());
+			for (GCodeCommand gCodeCommand : lstGcode) {
+
+				postContext =  new GCodeContext(context);
+				gcodeService.update(postContext, gCodeCommand);
+				AbstractGCodeGlRenderer renderer = rendererFactory.getRenderer(postContext, gCodeCommand);
+				if(renderer != null){
+					renderer.render(context, postContext, gCodeCommand, gl);
+				}
+				gcodeService.update(context, gCodeCommand);
+			}
+		}
+		forceRedraw = false;
+	}
 	/**
 	 * Draw grids
 	 * @param gl
@@ -251,7 +323,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		gl.glBegin(GL2.GL_LINES);
 		// Main divisions
 		gl.glColor4d(0.4, 0.4, 0.4, 0.7);
-		int size = 30;
+		int size = 100;
 		for(int i = -size; i <= size ; i+=10){
 			gl.glVertex3d(i, -size, 0);
 			gl.glVertex3d(i, size, 0);
@@ -294,40 +366,59 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		// TODO Auto-generated method stub
 
 	}
+	@Override
+	public void setFont(Font font) {
+		// TODO Auto-generated method stub
+		super.setFont(font);
+	}
 
 	@Override
 	public void paintControl(PaintEvent e) {
-		setCurrent();
-		glcontext.makeCurrent();
+		if(renderEnabled){
+			setCurrent();
+			glcontext.makeCurrent();
 
-		render();
-		swapBuffers();
+			render();
+			swapBuffers();
 
-		glcontext.release();
+			glcontext.release();
+		}else{
+			e.gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+			e.gc.fillRectangle(new Rectangle(e.x,e.y,e.width,e.height));
+	        e.gc.setFont(overlayFont);
+	        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+	        e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			String disabled = "-- Disabled --";
+			int width = e.gc.getFontMetrics().getAverageCharWidth() * StringUtils.length(disabled);
+			int height = e.gc.getFontMetrics().getHeight();
+	        e.gc.drawString(disabled, e.x + e.width / 2 - width /2, e.y + e.height / 2 - height);
 
+
+		}
 	}
 
 	protected void render(){
 		GL2 gl = glcontext.getGL().getGL2();
-		if(renderEnabled){
-			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-			gl.glClearColor(.19f, .19f, .23f, 1.0f);
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-			setup(gl);
-			if(showGrid){
-				drawGrid(gl);
-			}
-			drawAxis(gl);
+		gl.glClearColor(.19f, .19f, .23f, 1.0f);
 
-			try {
-				drawGCode(gl);
-			} catch (GkException e) {
-				e.printStackTrace();
-			}
-
-			drawTool(gl);
+		setup(gl);
+		if(showGrid){
+			drawGrid(gl);
 		}
+		drawAxis(gl);
+
+		try {
+			drawGCode(gl);
+		} catch (GkException e) {
+			e.printStackTrace();
+		}
+
+		drawTool(gl);
+		drawPathToTool(gl);
+
 	}
 
 	/**
@@ -360,7 +451,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	 */
 	public void setCurrentPosition(Point3d currentPosition) {
 		this.currentPosition = currentPosition;
-		redraw();
+		this.redraw();
 	}
 
 	/**

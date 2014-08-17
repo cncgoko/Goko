@@ -24,6 +24,7 @@ public class GCodeCommandState {
 	public static final int SENT = 1;
 	public static final int EXECUTED = 2;
 	public static final int CONFIRMED = 3;
+	public static final int IGNORED = 4;
 
 	public int state;
 

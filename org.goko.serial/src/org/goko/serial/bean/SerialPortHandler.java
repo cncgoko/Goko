@@ -16,7 +16,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.event.EventListenerList;
 
-import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.serial.ISerialDataListener;
@@ -75,17 +74,16 @@ public class SerialPortHandler implements SerialPortEventListener {
 				inStream.read(buffer);
 
 				final byte[] newBuffer = Arrays.copyOf(buffer, buffer.length);
-				LOG.info("Received from Serial "+GkUtils.toStringReplaceCRLF(newBuffer));
-				notifierThread.execute(new Runnable() {
+				/*notifierThread.execute(new Runnable() {
 					@Override
 					public void run() {
-						try {
+						try {*/
 							notifySerialDataListeners(newBuffer);
-						} catch (GkException e) {
+						/*} catch (GkException e) {
 							e.printStackTrace();
 						}
 					}
-				});
+				});*/
 
 			}
 		} catch (Exception e) {

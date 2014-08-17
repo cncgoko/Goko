@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_wyBcoNwYEeKC274TynxXSA" elementId="goko.application" bindingContexts="_wyBcodwYEeKC274TynxXSA">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" width="500" height="400">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" iconURI="platform:/plugin/Goko/icons/launch/Makerbot24.png" width="500" height="400">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_wyCDw9wYEeKC274TynxXSA" elementId="goko.perspectivestack.main">
       <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main">
         <children xsi:type="basic:PartSashContainer" xmi:id="_wyCDxdwYEeKC274TynxXSA" elementId="goko.partsashcontainer.main">
@@ -16,18 +16,18 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_tvXhAAxJEeOHAtsV431cHw" elementId="goko.menu.window" label="Window">
         <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View"/>
-      </children>
-      <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.tools" label="Tools">
+        <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.tools" label="Tools"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_4jfc8NViEeOx56hryHQKyQ" elementId="goko.menuseparator.1"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_WRhasDXDEeODiJsoHSNCjQ" elementId="goko.handledmenuitem.0" label="Preferences" command="_i52IoBAdEeOTXNaDwRiLUA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_wyCDwdwYEeKC274TynxXSA" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwtwYEeKC274TynxXSA" label="About" command="_wyCDuNwYEeKC274TynxXSA"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_Yr_DYNVjEeOx56hryHQKyQ" elementId="goko.menu.controller" label="Controller"/>
     </mainMenu>
     <trimBars xmi:id="_wyCDx9wYEeKC274TynxXSA" elementId="goko.trim.top">
       <children xsi:type="menu:ToolBar" xmi:id="_wyCDyNwYEeKC274TynxXSA" elementId="toolbar:goko.toolbar">
-        <children xsi:type="menu:HandledToolItem" xmi:id="_wyCDydwYEeKC274TynxXSA" iconURI="platform:/plugin/Goko/icons/sample.gif" command="_wyCDstwYEeKC274TynxXSA"/>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_wyCDytwYEeKC274TynxXSA" iconURI="platform:/plugin/Goko/icons/save_edit.gif" command="_wyCDtdwYEeKC274TynxXSA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_wyCDytwYEeKC274TynxXSA" iconURI="platform:/plugin/Goko/icons/open.png" command="_wyCDtdwYEeKC274TynxXSA"/>
       </children>
     </trimBars>
   </children>

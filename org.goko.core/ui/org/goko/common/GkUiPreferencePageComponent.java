@@ -29,7 +29,7 @@ import org.goko.common.bindings.ErrorEvent;
 import org.goko.common.bindings.WarningEvent;
 import org.goko.core.common.event.EventListener;
 
-public abstract class GkUiPreferencePageComponent<C extends AbstractController<D>, D extends AbstractModelObject> extends PreferencePage implements IWorkbenchPreferencePage{
+public abstract class GkUiPreferencePageComponent<C extends AbstractController<D>, D extends AbstractModelObject> extends PreferencePage implements IWorkbenchPreferencePage {
 	GkUiComponentProxy<C, D> uiComponent;
 
 	public GkUiPreferencePageComponent(C abstractController) {

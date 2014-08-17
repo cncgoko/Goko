@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
@@ -31,6 +32,9 @@ import org.goko.serial.bean.SerialPortHandler;
  */
 public class SerialConnectionManager {
 
+	protected static SerialPortHandler openPort(String owner, String portName, int baud) throws GkException{
+		return SerialConnectionManager.openPort(owner, portName, baud,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE, true, true);
+	}
 	/**
 	 * Open the specified port
 	 * @param portName the name of the port
@@ -38,7 +42,7 @@ public class SerialConnectionManager {
 	 * @return
 	 * @throws GkException GkException
 	 */
-	protected static SerialPortHandler openPort(String owner, String portName, int baud) throws GkException{
+	protected static SerialPortHandler openPort(String owner, String portName, int baud, int dataBits, int parityBits,int stopBits, boolean rtsCts, boolean xonXoff) throws GkException{
 		try {
 			CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
 
@@ -47,9 +51,16 @@ public class SerialConnectionManager {
 			if ( commPort instanceof SerialPort )
 			{
 			    SerialPort serialPort = (SerialPort) commPort;
-			    serialPort.setSerialPortParams(baud,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+			    serialPort.setSerialPortParams(baud, dataBits ,stopBits,parityBits);
 
-			    serialPort.setFlowControlMode( SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT | SerialPort.FLOWCONTROL_XONXOFF_OUT | SerialPort.FLOWCONTROL_XONXOFF_IN );
+			    int flowControl = 0;
+			    if(xonXoff){
+			    	flowControl |= SerialPort.FLOWCONTROL_XONXOFF_OUT | SerialPort.FLOWCONTROL_XONXOFF_IN;
+			    }
+			    if(rtsCts){
+			    	flowControl |= SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT;
+			    }
+			    serialPort.setFlowControlMode( flowControl  );
 			    serialPort.setRTS(true);
 			    InputStream in = serialPort.getInputStream();
 			    OutputStream out = serialPort.getOutputStream();
@@ -149,12 +160,78 @@ public class SerialConnectionManager {
 		Object baudRateObj = param.get(SerialConnectionParameter.BAUDRATE.toString());
 		if(baudRateObj == null ||
 				baudRateObj != null && !(baudRateObj instanceof Integer)	){
-			throw new GkFunctionalException("Error while connecting : Baudrate is not set or is not an integer");
+			throw new GkFunctionalException("Error while connecting : Baudrate is not set or is not a String");
 		}
-		Integer baudrate = (Integer) baudRateObj;
+		Integer baudrate = (Integer)baudRateObj;
 
 		return baudrate;
 	}
+	// TODO : make sure data, stop and parity are amongst allowed values
+	protected static Integer checkDataBits(Map<String,Object> param) throws GkException{
+		Integer dataBits = SerialPort.DATABITS_8;
+		Object dataBitsObj = param.get(SerialConnectionParameter.DATABITS.toString());
+		if(dataBitsObj != null && !(dataBitsObj instanceof String)	){
+			throw new GkFunctionalException("Error while connecting : Data bits is not set or is not a String");
+		}
+		if(dataBitsObj != null ){
+			dataBits = Integer.valueOf((String)dataBitsObj);
+		}
+
+		return dataBits;
+	}
+
+	protected static Integer checkStopBits(Map<String,Object> param) throws GkException{
+		Integer stopBits = SerialPort.STOPBITS_1;
+		Object stopBitsObj = param.get(SerialConnectionParameter.STOPBITS.toString());
+		if(stopBitsObj != null && !(stopBitsObj instanceof String)	){
+			throw new GkFunctionalException("Error while connecting : Stop bits is not set or is not a String");
+		}
+		if(stopBitsObj != null ){
+			stopBits = Integer.valueOf((String)stopBitsObj);
+		}
+
+		return stopBits;
+	}
+
+	protected static Integer checkParityBits(Map<String,Object> param) throws GkException{
+		Integer parityBits = SerialPort.PARITY_NONE;
+		Object parityBitsObj = param.get(SerialConnectionParameter.PARITY.toString());
+		if(parityBitsObj != null && !(parityBitsObj instanceof String)	){
+			throw new GkFunctionalException("Error while connecting : Parity bits is not set or is not a String");
+		}
+		if(parityBitsObj != null ){
+			parityBits = Integer.valueOf((String)parityBitsObj);
+		}
+
+		return parityBits;
+	}
+
+	protected static boolean checkRcsCts(Map<String,Object> param) throws GkException{
+		boolean rcsCts = false;
+		Object rcsCtsObj = param.get(SerialConnectionParameter.RCSCTS.toString());
+		if(rcsCtsObj != null && !(rcsCtsObj instanceof String)	){
+			throw new GkFunctionalException("Error while connecting : RCS/CTS bits is not set or is not a String");
+		}
+		if(rcsCtsObj != null ){
+			rcsCts = BooleanUtils.toBoolean((String)rcsCtsObj);
+		}
+
+		return rcsCts;
+	}
+
+	protected static boolean checkXonXoff(Map<String,Object> param) throws GkException{
+		boolean xonXoff = false;
+		Object xonXoffObj = param.get(SerialConnectionParameter.XONXOFF.toString());
+		if(xonXoffObj != null && !(xonXoffObj instanceof String)	){
+			throw new GkFunctionalException("Error while connecting : Xon/Xoff bits is not set or is not a String");
+		}
+		if(xonXoffObj != null ){
+			xonXoff = BooleanUtils.toBoolean((String)xonXoffObj);
+		}
+
+		return xonXoff;
+	}
+
 	/**
 	 * Check the if the requested connection is available
 	 * @param param the connection parameters

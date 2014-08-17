@@ -100,7 +100,7 @@ public class DROPreferencesPage extends GkUiPreferencePageComponent<DROPreferenc
 			public void mouseUp(MouseEvent e) {
 				DROControllerValueProposalDialog dialog = new DROControllerValueProposalDialog(getShell(), context);
 				ContextInjectionFactory.inject(DROControllerValueProposalDialog.class, context);
-				List<MachineValueDefinition> lstToAdd = (List<MachineValueDefinition>) dialog.open();
+				List<MachineValueDefinition> lstToAdd = dialog.openAndGetData();
 
 				getController().addValuesToDisplay(lstToAdd);
 			}

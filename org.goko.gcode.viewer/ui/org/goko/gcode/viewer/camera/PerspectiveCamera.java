@@ -180,4 +180,9 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		distance = Math.min(1000, Math.max(1, distance));
 		update();
 	}
+
+	@Override
+	public String getLabel() {
+		return "Perspective";
+	}
 }

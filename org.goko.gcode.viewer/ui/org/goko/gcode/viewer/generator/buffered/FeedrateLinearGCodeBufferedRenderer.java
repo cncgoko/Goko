@@ -19,28 +19,26 @@
  */
 package org.goko.gcode.viewer.generator.buffered;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.media.opengl.GL2;
 import javax.vecmath.Point3d;
 
-import org.goko.gcode.rs274ngcv3.command.FeedrateLinearMotionGCodeCommand;
+import org.goko.core.gcode.bean.GCodeCommandState;
 
-public class FeedrateLinearGCodeBufferedRenderer extends LinearGCodeBufferedRenderer<FeedrateLinearMotionGCodeCommand> {
+public class FeedrateLinearGCodeBufferedRenderer extends LinearGCodeBufferedRenderer {
 
-	public FeedrateLinearGCodeBufferedRenderer( Map<Integer, List<Point3d>> buffer) {
+	public FeedrateLinearGCodeBufferedRenderer(Map<Integer, BufferedRenderingData> buffer) {
 		super(buffer);
 	}
 
 	private static Point3d G01_COLOR = new Point3d(0.14,0.33,0.80);
+	private static Point3d G01_COLOR_EXECUTED = new Point3d(0.3,0.3,0.3);
 
-	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getRenderedCommandClass()
-	 */
+
 	@Override
-	public Class<FeedrateLinearMotionGCodeCommand> getRenderedCommandClass() {
-		return FeedrateLinearMotionGCodeCommand.class;
+	public String getSupportedMotionType() {
+		return "g1";
 	}
 
 	@Override
@@ -56,7 +54,12 @@ public class FeedrateLinearGCodeBufferedRenderer extends LinearGCodeBufferedRend
 
 	@Override
 	protected void setColor(GL2 gl) {
-		gl.glColor3d(G01_COLOR.x, G01_COLOR.y, G01_COLOR.z);
+		if(getRenderedCommand() != null &&
+				(getRenderedCommand().getState().isState(GCodeCommandState.SENT) || getRenderedCommand().getState().isState(GCodeCommandState.EXECUTED))){
+			gl.glColor3d(G01_COLOR_EXECUTED.x, G01_COLOR_EXECUTED.y, G01_COLOR_EXECUTED.z);
+		}else{
+			gl.glColor3d(G01_COLOR.x, G01_COLOR.y, G01_COLOR.z);
+		}
 	}
 
 }

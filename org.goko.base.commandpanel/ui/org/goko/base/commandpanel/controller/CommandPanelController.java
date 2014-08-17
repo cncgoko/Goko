@@ -19,16 +19,24 @@
  */
 package org.goko.base.commandpanel.controller;
 
+import java.math.BigDecimal;
+
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.goko.base.commandpanel.Activator;
+import org.goko.base.commandpanel.CommandPanelParameter;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -36,6 +44,8 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
+import org.goko.core.log.GkLog;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * Command panel controller
@@ -44,6 +54,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
  *
  */
 public class CommandPanelController  extends AbstractController<CommandPanelModel> {
+	private final static GkLog LOG = GkLog.getLogger(CommandPanelController.class);
 	@Inject
 	private IControllerService controllerService;
 
@@ -79,8 +90,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				try {
 					refreshExecutableAction();
 				} catch (GkException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 				}
 			}
 		});
@@ -104,13 +114,17 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 					try {
 						action.execute(parameters);
 					} catch (GkException e1) {
-						e1.printStackTrace();
+						LOG.error(e1);
 					}
 				}
 			});
 		}
 	}
-
+	@Inject
+	@Optional
+	public void settingChanged(@Preference(nodePath=Activator.PREFERENCE_NODE, value=CommandPanelParameter.JOG_FEEDRATE) String val){
+		System.err.println(val);
+	}
 	public void bindJogButton(Button widget, final String axis) throws GkException {
 		if(controllerService.isControllerAction(DefaultControllerAction.JOG_START)
 				&& controllerService.isControllerAction(DefaultControllerAction.JOG_STOP)){
@@ -121,9 +135,9 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				@Override
 				public void mouseDown(MouseEvent e) {
 					try {
-						actionStart.execute(axis, getDataModel().getJogSpeed());
+						actionStart.execute(axis, String.valueOf(getDataModel().getJogSpeed()));
 					} catch (GkException e1) {
-
+						LOG.error(e1);
 					}
 				}
 				@Override
@@ -131,11 +145,33 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 					try {
 						actionStop.execute(axis);
 					} catch (GkException e1) {
-						e1.printStackTrace();
+						LOG.error(e1);
 					}
 				}
 			});
 		}
+	}
+
+	public void initilizeValues() {
+		getDataModel().setJogSpeed( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_FEEDRATE, StringUtils.EMPTY)) );
+	}
+
+	public void saveValues() {
+		//Cette facon d'utiliser les preferences est la bonne
+		if(getDataModel() != null){
+			getPreferences().put(CommandPanelParameter.JOG_FEEDRATE, getDataModel().getJogSpeed().toPlainString());
+
+			try {  // Non necessaire tests seuelemtn
+				getPreferences().flush();
+			} catch (BackingStoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private IEclipsePreferences getPreferences(){
+		return Activator.getPreferences();
 	}
 
 }

@@ -1,0 +1,42 @@
+.MPartStack.active.noFocus{
+	background-color: #d2e1f0;
+}
+
+CTabFolder {
+	swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');	 
+	swt-outer-keyline-color: #B6BCCC; 
+ 	swt-corner-radius: 12; 
+ 	swt-shadow-visible: true; 
+	swt-shadow-color: #d2e1f0;	
+ 	swt-selected-tab-fill: #ffffff; 
+ 	swt-tab-outline: #d2e1f0; 
+ 	swt-unselected-tabs-color: #d2e1f0;
+ 	padding:5px;
+}
+
+.MPartSashContainer{
+	border-color: #FF0000;
+	border-width:1; 
+
+}
+.MPartStack{
+	border-color: #00FF00;
+	border-width:1; 
+	padding:6px;
+}
+.MPerspective{
+	//background-color: #d2e1f0;
+}
+
+.MPart{
+	border-color: #B6BCCC;
+	border-width:1; 
+	background-color: #FFFFFF;
+}
+CTabItem:selected { 
+	font-weight: bold;
+} 
+
+.DragFeedback {
+ background-color: #00FF00;
+}

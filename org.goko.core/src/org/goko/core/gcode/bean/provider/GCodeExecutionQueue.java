@@ -77,7 +77,7 @@ public class GCodeExecutionQueue  extends EventDispatcher implements IGCodeProvi
 	 */
 	private void init(List<GCodeCommand> lstCommands){
 		this.lstCommands = Collections.synchronizedList(new ArrayList<GCodeCommand>(lstCommands));
-		this.currentIndex = 0;
+		this.currentIndex = -1;
 		this.commandCount = CollectionUtils.size(this.lstCommands);
 	}
 
@@ -94,7 +94,7 @@ public class GCodeExecutionQueue  extends EventDispatcher implements IGCodeProvi
 	 * @return <code>true</code> if there is one or more commands remaining, <code>false</code> otherwise
 	 */
 	public synchronized boolean hasNext(){
-		return isStarted() && this.currentIndex < commandCount;
+		return isStarted() && this.currentIndex < commandCount - 1;
 	}
 
 	/**
@@ -104,7 +104,19 @@ public class GCodeExecutionQueue  extends EventDispatcher implements IGCodeProvi
 	 */
 	public synchronized GCodeCommand unstackNextCommand() throws GkException{
 		if(hasNext()){
-			return lstCommands.get(currentIndex++);
+			currentIndex = currentIndex+1;
+			return lstCommands.get(currentIndex);
+		}
+		throw new GkTechnicalException("No more command available...");
+	}
+	/**
+	 * Return the next command from this execution queue without removing it
+	 * @return the next {@link GCodeCommand} to execute
+	 * @throws GkException GkException
+	 */
+	public synchronized GCodeCommand getNextCommand() throws GkException{
+		if(hasNext()){
+			return lstCommands.get(currentIndex + 1);
 		}
 		throw new GkTechnicalException("No more command available...");
 	}

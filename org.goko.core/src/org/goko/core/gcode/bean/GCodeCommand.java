@@ -79,14 +79,11 @@ public class GCodeCommand {
 		this.comment = comment;
 	}
 
-	public void updateContext(final GCodeContext context){
-		// Nothing to do here
-	}
-
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		if(StringUtils.isNotBlank(getLineNumber())){
+			buffer.append("N");
 			buffer.append(getLineNumber());
 		}
 

@@ -26,6 +26,8 @@ import org.goko.common.bindings.AbstractModelObject;
 import org.goko.common.bindings.ErrorEvent;
 import org.goko.common.bindings.WarningEvent;
 import org.goko.core.common.event.EventListener;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 
 public abstract class GkUiComponent<C extends AbstractController<D>, D extends AbstractModelObject> {
 	private C controller;
@@ -81,4 +83,12 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 		this.dataModel = dataModel;
 	}
 
+	protected void displayMessage(GkException e){
+		if(e instanceof GkFunctionalException){
+			displayWarning(new WarningEvent(e.getMessage()));
+		}else{
+			displayError(new ErrorEvent(e, "Goko"));
+		}
+
+	}
 }

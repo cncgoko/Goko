@@ -39,7 +39,6 @@ import org.goko.gcode.rs274ngcv3.parser.ModalGroup;
 public class GCodeCommandFactory {
 	private List<ModalGroup> modalGroups;
 	private ModalGroup motionGroup;
-	private GCodeMotionCommandFactory motionFactory;
 
 	public GCodeCommandFactory() {
 		this.modalGroups = new ArrayList<ModalGroup>();
@@ -61,20 +60,12 @@ public class GCodeCommandFactory {
 		this.modalGroups.add( new ModalGroup("M7","M9"));
 		this.modalGroups.add( new ModalGroup("M8","M9"));
 		this.modalGroups.add( new ModalGroup("M48", "M49"));
-		this.motionFactory = new GCodeMotionCommandFactory();
 	}
 
 	public GCodeCommand create(List<GCodeToken> tokens) throws GkException{
 		GCodeCommand command = createBaseCommand(tokens);
 		verifyModality(command);
-		GCodeWord motionWord = findMotionWord(command);
-		if(motionWord != null){
-			GCodeCommand specializedCommand = specializeMotionCommand(command, motionWord);
-			if(specializedCommand != null){
-				return specializedCommand;
-			}
-		}
-		// Generic command
+
 		return command;
 	}
 
@@ -87,9 +78,7 @@ public class GCodeCommandFactory {
 		return null;
 	}
 
-	protected GCodeCommand specializeMotionCommand(GCodeCommand command, GCodeWord motionWord) throws GkException{
-		return motionFactory.buildCommand(command, motionWord);
-	}
+
 
 	protected GCodeCommand createBaseCommand(List<GCodeToken> tokens) throws GkException{
 		GCodeCommand command = new GCodeCommand();

@@ -23,26 +23,41 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 
 public class GkCombo< T extends LabeledValue> extends ComboViewer {
+	private List<T> choices;
 
 	public GkCombo(Combo list) {
-		super(list);		
-		setContentProvider(new ArrayContentProvider());		
+		super(list);
+		setContentProvider(new ArrayContentProvider());
 		setLabelProvider(new LabelledValueContentProvider());
-		
+
 	}
-		
+
 	public GkCombo(Composite composite, int style) {
 		super(composite, style);
-		setContentProvider(new ArrayContentProvider());		
+		setContentProvider(new ArrayContentProvider());
 		setLabelProvider(new LabelledValueContentProvider());
 	}
 
-	public void setInput(List<T> input){		
+	public void setInput(List<T> input){
 		setInput((Object) input);
+		this.choices = input;
 	}
-		
+
+	public List<T> getChoices() {
+		return choices;
+	}
+
+	@Override
+	public ISelection getSelection() {
+		ISelection tmp = super.getSelection();;
+		return tmp;
+	}
+
+
+
 }

@@ -21,19 +21,19 @@ package org.goko.gcode.viewer.generator.renderer;
 
 import javax.media.opengl.GL2;
 
+import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.gcode.rs274ngcv3.command.LinearMotionGCodeCommand;
 import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
 
-public abstract class LinearGCodeRenderer<T extends LinearMotionGCodeCommand> extends AbstractGCodeGlRenderer<T> {
+public abstract class LinearGCodeRenderer extends AbstractGCodeGlRenderer {
 
 	/** (inheritDoc)
 	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
 	 */
 	@Override
-	public void render(GCodeContext context, T command, GL2 gl) {
+	public void render(GCodeContext preContext,GCodeContext postContext, GCodeCommand command, GL2 gl) {
 		enableLineStyle(gl);
 		gl.glBegin(GL2.GL_LINE_STRIP);
 		// Let's redraw the current position with the accurate color
@@ -42,15 +42,9 @@ public abstract class LinearGCodeRenderer<T extends LinearMotionGCodeCommand> ex
 		}else{
 			setColor(gl);
 		}
-		gl.glVertex3d(context.getPosition().getX().doubleValue(), context.getPosition().getY().doubleValue(), context.getPosition().getZ().doubleValue());
+		gl.glVertex3d(preContext.getPosition().getX().doubleValue(), preContext.getPosition().getY().doubleValue(), preContext.getPosition().getZ().doubleValue());
 
-		Tuple6b tuple = new Tuple6b(context.getPosition());
-
-		if(context.isAbsolute()){
-			tuple.updateAbsolute(command.getEndpoint());
-		}else{
-			tuple.updateRelative(command.getEndpoint());
-		}
+		Tuple6b tuple = new Tuple6b(postContext.getPosition());
 
 		if(command.getState().isState(GCodeCommandState.EXECUTED) || command.getState().isState(GCodeCommandState.SENT)){
 			gl.glColor3d(0.4,0.4,0.4);
@@ -60,7 +54,6 @@ public abstract class LinearGCodeRenderer<T extends LinearMotionGCodeCommand> ex
 		gl.glVertex3d(tuple.getX().doubleValue(), tuple.getY().doubleValue(), tuple.getZ().doubleValue());
 		gl.glEnd();
 		disableLineStyle(gl);
-		gl.glFlush();
 	}
 
 	protected abstract void enableLineStyle(GL2 gl);

@@ -5,6 +5,7 @@
          id="id1"
          point="org.eclipse.e4.workbench.model">
       <fragment
+            apply="initial"
             uri="fragments/gcodeViewer.e4xmi">
       </fragment>
    </extension>

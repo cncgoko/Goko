@@ -109,7 +109,7 @@ public class GkGCodeService implements IGCodeService {
 	 */
 	@Override
 	public void update(GCodeContext context, GCodeCommand command) throws GkException {
-		command.updateContext(context);
+		GCodeContextUpdater.updateContext(context, command);
 	}
 
 

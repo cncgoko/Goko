@@ -65,7 +65,7 @@ public class ModalGroup {
 				if(firstWordFromGroup == null){
 					firstWordFromGroup = gCodeWord;
 				}else{
-					throw new GkFunctionalException("GCode modality exception : the word '"+firstWordFromGroup+"' and '"+gCodeWord+"' can't be in the same command.");
+					throw new GkFunctionalException("GCode modality exception : the word '"+firstWordFromGroup+"' and '"+gCodeWord+"' can't be in the same command ["+command.toString()+"].");
 				}
 			}
 		}

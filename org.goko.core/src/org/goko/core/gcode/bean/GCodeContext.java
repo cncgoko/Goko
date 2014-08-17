@@ -22,12 +22,8 @@ package org.goko.core.gcode.bean;
 import java.math.BigDecimal;
 
 public class GCodeContext {
-//	private BigDecimal positionX;
-//	private BigDecimal positionY;
-//	private BigDecimal positionZ;
-//	private BigDecimal positionA;
-//	private BigDecimal positionB;
-//	private BigDecimal positionC;
+	private String motionMode;
+	private Tuple6b offset;
 	private Tuple6b position;
 	private BigDecimal feedrate;
 	private boolean isMetric;
@@ -37,14 +33,18 @@ public class GCodeContext {
 
 	public GCodeContext() {
 		position = new Tuple6b();
+		offset = new Tuple6b();
+		this.motionMode = "G0";
 	}
 
 	public GCodeContext(GCodeContext context) {
 		this.position = new Tuple6b(context.position);
+		this.offset = new Tuple6b(context.offset);
 		this.feedrate = context.feedrate;
 		this.isAbsolute = context.isAbsolute;
 		this.isMetric = context.isMetric;
 		this.currentPlane = context.currentPlane;
+		this.motionMode = context.motionMode;
 	}
 	/**
 	 * @return the feedrate
@@ -95,6 +95,48 @@ public class GCodeContext {
 	 */
 	public void setPosition(Tuple6b position) {
 		this.position = position;
+	}
+
+	/**
+	 * @return the motionMode
+	 */
+	public String getMotionMode() {
+		return motionMode;
+	}
+
+	/**
+	 * @param motionMode the motionMode to set
+	 */
+	public void setMotionMode(String motionMode) {
+		this.motionMode = motionMode;
+	}
+
+	/**
+	 * @return the offset
+	 */
+	public Tuple6b getOffset() {
+		return offset;
+	}
+
+	/**
+	 * @param offset the offset to set
+	 */
+	public void setOffset(Tuple6b offset) {
+		this.offset = offset;
+	}
+
+	/**
+	 * @return the currentPlane
+	 */
+	public int getCurrentPlane() {
+		return currentPlane;
+	}
+
+	/**
+	 * @param currentPlane the currentPlane to set
+	 */
+	public void setCurrentPlane(int currentPlane) {
+		this.currentPlane = currentPlane;
 	}
 
 

@@ -56,30 +56,6 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 	 * READ/WRITE PREFERENCES METHODS
 	 */
 	protected List<MachineValueDefinition> getSavedValues() throws GkException{
-
-
-		/*List<String> lstString = new ArrayList<String>();
-		List<MachineValueDefinition> lst = new ArrayList<MachineValueDefinition>();
-		String serializedList = preferences.get(IDROPreferencesConstants.KEY_VALUES_ID_LIST, StringUtils.EMPTY);
-		if(StringUtils.isNotBlank(serializedList)){
-
-			InputStream out = new ByteArrayInputStream(serializedList.getBytes()) ;
-			try {
-				ObjectInputStream str = new ObjectInputStream(out);
-				try {
-					lstString = (List<String>) str.readObject();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-		for (String definitionId  : lstString) {
-			lst.add(controllerService.getMachineValueDefinition(definitionId));
-		}*/
 		return droService.getDisplayedMachineValueDefinition();
 	}
 
@@ -88,7 +64,7 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 		try {
 			droService.saveDisplayedMachineValueDefinition(getDataModel().getDisplayedValuesTypedList());
 		} catch (GkException e) {
-			e.printStackTrace();
+			notifyException(e);
 			return;
 		}
 	}
@@ -101,7 +77,13 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 		List<MachineValueDefinition> lst = getSavedValues();
 
 		getDataModel().getDisplayedValuesTypedList().clear();
-		getDataModel().getDisplayedValuesTypedList().addAll(lst);
+		for (MachineValueDefinition machineValueDefinition : lst) {
+			MachineValueDefinition definition = controllerService.findMachineValueDefinition(machineValueDefinition.getId());
+			if(definition != null){
+				getDataModel().getDisplayedValuesTypedList().add(definition);
+			}
+		}
+
 
 	}
 

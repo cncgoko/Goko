@@ -81,6 +81,7 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	List<MachineValueDefinition> getMachineValueDefinition() throws GkException;
 
 	MachineValueDefinition getMachineValueDefinition(String id) throws GkException;
+	MachineValueDefinition findMachineValueDefinition(String id) throws GkException;
 
 	void cancelFileSending() throws GkException;
 

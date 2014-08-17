@@ -19,49 +19,47 @@
  */
 package org.goko.gcode.viewer.generator.renderer;
 
-import java.math.BigDecimal;
-
 import javax.media.opengl.GL2;
 import javax.vecmath.Point3d;
 
-import org.goko.gcode.rs274ngcv3.command.RapidLinearMotionGCodeCommand;
+import org.goko.gcode.rs274ngcv3.RS274;
 
-public class RapidGCodeRenderer extends LinearGCodeRenderer<RapidLinearMotionGCodeCommand> {
+public class RapidGCodeRenderer extends LinearGCodeRenderer {
 
 	private static Point3d G00_COLOR = new Point3d(1,0.27,0);
 
-
 	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getRenderedCommandClass()
+	 * @see org.goko.gcode.viewer.generator.renderer.LinearGCodeRenderer#enableLineStyle(javax.media.opengl.GL2)
 	 */
-	@Override
-	public Class<RapidLinearMotionGCodeCommand> getRenderedCommandClass() {
-		return RapidLinearMotionGCodeCommand.class;
-	}
-
-
-	protected double add(double position, BigDecimal delta){
-		if( delta == null){
-			return position;
-		}
-		return position + delta.doubleValue();
-	}
-
 	@Override
 	protected void enableLineStyle(GL2 gl) {
 		gl.glEnable(GL2.GL_LINE_STIPPLE);
 		gl.glLineStipple(4, (short)0xAAAA);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.renderer.LinearGCodeRenderer#disableLineStyle(javax.media.opengl.GL2)
+	 */
 	@Override
 	protected void disableLineStyle(GL2 gl) {
 		gl.glDisable(GL2.GL_LINE_STIPPLE);
 
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.renderer.LinearGCodeRenderer#setColor(javax.media.opengl.GL2)
+	 */
 	@Override
 	protected void setColor(GL2 gl) {
 		gl.glColor3d(G00_COLOR.x, G00_COLOR.y, G00_COLOR.z);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getSupportedMotionType()
+	 */
+	@Override
+	public String getSupportedMotionType() {
+		return RS274.MOTION_MODE_RAPID;
 	}
 
 }

@@ -19,13 +19,19 @@
  */
 package org.goko.gcode.viewer;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.PersistState;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -50,6 +56,8 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
     private GCode3DCanvas glcanvas;
 
     private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
+    private static final String VIEWER_ENABLED = "org.goko.gcode.viewer.enabled";
+    private static final String VIEWER_GRID_ENABLED = "org.goko.gcode.viewer.gridEnabled";
 
     /**
      * Part constructor
@@ -64,7 +72,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	}
 
 	@PostConstruct
-    public void createPartControl( Composite superCompositeParent, IEclipseContext context ) throws GkException {
+    public void createPartControl( Composite superCompositeParent, IEclipseContext context,MPart part ) throws GkException {
 		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
 		formToolkit.adapt(compositeParent);
 		formToolkit.paintBordersFor(compositeParent);
@@ -121,11 +129,29 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		getController().addPropertyBinding(glcanvas, "renderEnabled", "enabled");
 		getController().addPropertyBinding(glcanvas, "currentPosition", "currentPosition");
 		getController().addPropertyBinding(glcanvas, "commandProvider", "commandProvider");
+
+		Map<String, String> state = part.getPersistedState();
+		String viewerEnabledStr = state.get(VIEWER_ENABLED);
+		if(StringUtils.isNotEmpty(viewerEnabledStr)){
+			getDataModel().setEnabled(BooleanUtils.toBoolean(viewerEnabledStr));
+		}
+		String gridEnabledStr = state.get(VIEWER_GRID_ENABLED);
+		if(StringUtils.isNotEmpty(gridEnabledStr)){
+			getDataModel().setShowGrid(BooleanUtils.toBoolean(gridEnabledStr));
+		}
     }
 
 	@PreDestroy
 	public void dispose() {
 
+	}
+
+	@PersistState
+	public void persist(MPart part) {
+		if(getDataModel() != null){
+			part.getPersistedState().put(VIEWER_ENABLED, String.valueOf(getDataModel().isEnabled()));
+			part.getPersistedState().put(VIEWER_GRID_ENABLED, String.valueOf(getDataModel().isShowGrid()));
+		}
 	}
 
 	@Focus

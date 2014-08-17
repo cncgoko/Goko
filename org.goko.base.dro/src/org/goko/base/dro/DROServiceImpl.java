@@ -76,6 +76,7 @@ public class DROServiceImpl implements IDROService{
 		return getDisplayedValuesFromPreferences();
 	}
 
+
 	@Override
 	public void saveDisplayedMachineValueDefinition( List<MachineValueDefinition> lstMachineValueDefinition) throws GkException {
 		List<String> lstId = new ArrayList<String>();
@@ -99,10 +100,16 @@ public class DROServiceImpl implements IDROService{
 	private List<MachineValueDefinition> getDisplayedValuesFromPreferences() throws GkException {
 		List<MachineValueDefinition> lstMachineValues = new ArrayList<MachineValueDefinition>();
 		String serializedList = preferences.get(IDROPreferencesConstants.KEY_VALUES_ID_LIST, StringUtils.EMPTY);
+		if(true){
+			String t = "0";
+		}
 		if(StringUtils.isNotEmpty(serializedList)){
 			List<String> lstId = deserialize(serializedList);
 			for (String id : lstId) {
-				lstMachineValues.add( controllerService.getMachineValueDefinition(id) );
+				MachineValueDefinition definition = controllerService.findMachineValueDefinition(id);
+				if(definition != null){
+					lstMachineValues.add( definition );
+				}
 			}
 		}
 		return lstMachineValues;

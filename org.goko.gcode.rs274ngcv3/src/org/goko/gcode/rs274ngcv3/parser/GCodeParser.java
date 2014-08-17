@@ -48,6 +48,7 @@ public class GCodeParser {
 			if(gCodeToken.getType() == GCodeTokenType.NEW_LINE){
 				GCodeCommand command = factory.create(tmpLstTokens);
 				command.setId(currentId++);
+				command.setLineNumber(String.valueOf(currentId));
 				lstGCodeCommand.add( command ); //createAtomGCodeCommand(tmpLstTokens) );
 				tmpLstTokens.clear();
 			}else{
@@ -57,6 +58,7 @@ public class GCodeParser {
 		// Let's compute the final GCodeCommand
 		GCodeCommand command = factory.create(tmpLstTokens);
 		command.setId(currentId++);
+		command.setLineNumber(String.valueOf(currentId));
 		lstGCodeCommand.add( command );
 		return lstGCodeCommand;
 	}

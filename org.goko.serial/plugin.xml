@@ -5,15 +5,28 @@
          id="id1"
          point="org.eclipse.e4.workbench.model">
       <fragment
+            apply="initial"
             uri="serialPanelFragment.e4xmi">
       </fragment>
    </extension>
    <extension
          point="Goko.org.goko.ui.gkPreferencePages">
       <page
+            class="org.goko.serial.preferences.SerialMainPreferencePage"
+            id="org.goko.serial.preferences.main"
+            name="Serial">
+      </page>
+      <page
+            category="org.goko.serial.preferences.main"
             class="org.goko.serial.preferences.SerialConsolePreferences"
             id="org.goko.serial.consolePreferences"
-            name="Serial console">
+            name="Console">
+      </page>
+      <page
+            category="org.goko.serial.preferences.main"
+            class="org.goko.serial.preferences.SerialConnectionPreferences"
+            id="org.goko.serial.page2"
+            name="Connection">
       </page>
    </extension>
 

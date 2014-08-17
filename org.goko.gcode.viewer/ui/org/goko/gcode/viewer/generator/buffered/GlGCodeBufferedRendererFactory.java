@@ -20,36 +20,39 @@
 package org.goko.gcode.viewer.generator.buffered;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.vecmath.Point3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
 
 public class GlGCodeBufferedRendererFactory {
-	private Map<Class<?>, AbstractGCodeGlRenderer<?>> mapRenderer;
-	private Map<Integer, List<Point3d>> buffer;
+	private Map<String, AbstractGCodeGlRenderer> mapRenderer;
+	private Map<Integer, BufferedRenderingData> buffer;
 
 	public GlGCodeBufferedRendererFactory() {
-		this.mapRenderer = new HashMap<Class<?>, AbstractGCodeGlRenderer<?>>();
-		this.buffer = new HashMap<Integer, List<Point3d>>();
+		this.mapRenderer = new HashMap<String, AbstractGCodeGlRenderer>();
+		this.buffer = new HashMap<Integer, BufferedRenderingData>();
 		registerRenderer(new FeedrateLinearGCodeBufferedRenderer(buffer));
 		registerRenderer(new RapidGCodeBufferedRenderer(buffer));
 		registerRenderer(new CWArcGCodeBufferedRenderer(buffer));
+		registerRenderer(new CCWArcGCodeBufferedRenderer(buffer));
 	}
 
 
-	public void registerRenderer(AbstractGCodeGlRenderer<?> renderer){
-		mapRenderer.put(renderer.getRenderedCommandClass(), renderer);
+	public void registerRenderer(AbstractGCodeGlRenderer renderer){
+		mapRenderer.put(renderer.getSupportedMotionType(), renderer);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends GCodeCommand> AbstractGCodeGlRenderer<T> getRenderer(T command) throws GkException{
-		if(mapRenderer.containsKey(command.getClass())){
-			return (AbstractGCodeGlRenderer<T>) mapRenderer.get(command.getClass());
+	public AbstractGCodeGlRenderer getRenderer(GCodeContext context, GCodeCommand command) throws GkException{
+		if(buffer.containsKey(command.getId())){
+			return buffer.get(command.getId()).getRenderer();
+		}else{
+			if(context != null && mapRenderer.containsKey(context.getMotionMode())){
+				return  mapRenderer.get(context.getMotionMode());
+			}
 		}
 		return null;
 	}

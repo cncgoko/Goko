@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -30,6 +31,8 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.PersistState;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -44,6 +47,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.goko.common.GkUiUtils;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
@@ -86,104 +90,131 @@ public class SerialConnectionPart {
 	 * @throws GkException
 	 */
 	@PostConstruct
-	public void createControls(Composite parent)  {
+	public void createControls(Composite parent, MPart part)  {
 		try{
-		GridLayout gl_parent = new GridLayout(1, false);
-		gl_parent.marginWidth = 0;
-		gl_parent.marginHeight = 0;
-		parent.setLayout(gl_parent);
+			GridLayout gl_parent = new GridLayout(1, false);
+			gl_parent.marginWidth = 0;
+			gl_parent.marginHeight = 0;
+			parent.setLayout(gl_parent);
 
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		formToolkit.adapt(composite);
-		formToolkit.paintBordersFor(composite);
-		composite.setLayout(new GridLayout(2, false));
+			Composite composite = new Composite(parent, SWT.NONE);
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+			formToolkit.adapt(composite);
+			formToolkit.paintBordersFor(composite);
+			composite.setLayout(new GridLayout(2, false));
 
-		lblStatus = formToolkit.createLabel(composite, "Status :", SWT.NONE);
-		lblStatus.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblStatus.setBounds(0, 0, 55, 15);
+			lblStatus = formToolkit.createLabel(composite, "Status :", SWT.NONE);
+			lblStatus.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+			lblStatus.setBounds(0, 0, 55, 15);
 
-		Composite composite_3 = formToolkit.createComposite(composite, SWT.NONE);
-		formToolkit.paintBordersFor(composite_3);
-		composite_3.setLayout(new GridLayout(2, false));
+			Composite composite_3 = formToolkit.createComposite(composite, SWT.NONE);
+			formToolkit.paintBordersFor(composite_3);
+			composite_3.setLayout(new GridLayout(2, false));
 
-		lblDisconnected = formToolkit.createLabel(composite_3, "Disconnected", SWT.NONE);
-		lblDisconnected.setImage(ResourceManager.getPluginImage("org.goko.serial", "icons/bullet_red.png"));
+			lblDisconnected = formToolkit.createLabel(composite_3, "Disconnected", SWT.NONE);
+			lblDisconnected.setImage(ResourceManager.getPluginImage("org.goko.serial", "icons/bullet_red.png"));
 
-		lblDisconnected_1 = formToolkit.createLabel(composite_3, "Disconnected", SWT.NONE);
+			lblDisconnected_1 = formToolkit.createLabel(composite_3, "Disconnected", SWT.NONE);
 
-		Label lblSerialPort = new Label(composite, SWT.NONE);
-		lblSerialPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblSerialPort.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		formToolkit.adapt(lblSerialPort, true, true);
-		lblSerialPort.setText("Serial port :");
+			Label lblSerialPort = new Label(composite, SWT.NONE);
+			lblSerialPort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+			lblSerialPort.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+			formToolkit.adapt(lblSerialPort, true, true);
+			lblSerialPort.setText("Serial port :");
 
-		Composite composite_1 = new Composite(composite, SWT.NONE);
-		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		formToolkit.adapt(composite_1);
-		formToolkit.paintBordersFor(composite_1);
-		GridLayout gl_composite_1 = new GridLayout(3, false);
-		gl_composite_1.marginWidth = 0;
-		gl_composite_1.marginHeight = 0;
-		composite_1.setLayout(gl_composite_1);
+			Composite composite_1 = new Composite(composite, SWT.NONE);
+			composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+			formToolkit.adapt(composite_1);
+			formToolkit.paintBordersFor(composite_1);
+			GridLayout gl_composite_1 = new GridLayout(3, false);
+			gl_composite_1.marginWidth = 0;
+			gl_composite_1.marginHeight = 0;
+			composite_1.setLayout(gl_composite_1);
 
-		comboSerialPort = new GkCombo<LabeledValue>(composite_1, SWT.NONE  | SWT.READ_ONLY);
-		Combo combo = comboSerialPort.getCombo();
-		GridData gd_combo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_combo.widthHint = 40;
-		combo.setLayoutData(gd_combo);
-
-
-		comboBaudrate = new GkCombo<LabeledValue>(composite_1, SWT.NONE  | SWT.READ_ONLY);
-		Combo combo_1 = comboBaudrate.getCombo();
-		GridData gd_combo_1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_combo_1.widthHint = 40;
-		combo_1.setLayoutData(gd_combo_1);
+			comboSerialPort = new GkCombo<LabeledValue>(composite_1, SWT.NONE  | SWT.READ_ONLY);
+			Combo combo = comboSerialPort.getCombo();
+			GridData gd_combo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+			gd_combo.widthHint = 40;
+			combo.setLayoutData(gd_combo);
 
 
-		Button button = formToolkit.createButton(composite_1, "", SWT.NONE);
-		button.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				controller.refreshSerialPortList();
-			}
-		});
+			comboBaudrate = new GkCombo<LabeledValue>(composite_1, SWT.NONE  | SWT.READ_ONLY);
+			Combo combo_1 = comboBaudrate.getCombo();
+			GridData gd_combo_1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+			gd_combo_1.widthHint = 40;
+			combo_1.setLayoutData(gd_combo_1);
 
-		button.setImage(ResourceManager.getPluginImage("org.goko.serial", "icons/arrow-circle-double.png"));
-		new Label(composite, SWT.NONE);
 
-		Composite composite_2 = formToolkit.createComposite(composite, SWT.NONE);
-		formToolkit.paintBordersFor(composite_2);
-		composite_2.setLayout(new GridLayout(2, false));
+			Button button = formToolkit.createButton(composite_1, "", SWT.NONE);
+			button.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseUp(MouseEvent e) {
+					controller.refreshSerialPortList();
+				}
+			});
 
-		btnConnect = formToolkit.createButton(composite_2, "Connect", SWT.NONE);
-		btnConnect.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				controller.connect();
-			}
-		});
-		btnConnect.setEnabled(false);
+			button.setImage(ResourceManager.getPluginImage("org.goko.serial", "icons/arrow-circle-double.png"));
+			new Label(composite, SWT.NONE);
 
-		btnDisconnect = formToolkit.createButton(composite_2, "Disconnect", SWT.NONE);
-		btnDisconnect.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				controller.disconnect();
-			}
-		});
-		btnDisconnect.setEnabled(false);
-		btnDisconnect.setBounds(0, 0, 75, 25);
-		m_bindingContext = initDataBindings();
+			Composite composite_2 = formToolkit.createComposite(composite, SWT.NONE);
+			formToolkit.paintBordersFor(composite_2);
+			composite_2.setLayout(new GridLayout(2, false));
+
+			btnConnect = formToolkit.createButton(composite_2, "Connect", SWT.NONE);
+			btnConnect.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseUp(MouseEvent e) {
+					controller.connect();
+				}
+			});
+			btnConnect.setEnabled(false);
+
+			btnDisconnect = formToolkit.createButton(composite_2, "Disconnect", SWT.NONE);
+			btnDisconnect.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseUp(MouseEvent e) {
+					controller.disconnect();
+				}
+			});
+			btnDisconnect.setEnabled(false);
+			btnDisconnect.setBounds(0, 0, 75, 25);
+			m_bindingContext = initDataBindings();
+			applyPersistedStates(part);
 		}catch(GkException e){
 			LOG.error(e);
 		}
 	}
 
+	protected void applyPersistedStates(MPart part) throws GkException{
+		String baudrateStr = part.getPersistedState().get(SerialConnectionController.PERSISTED_BAUDRATE);
+
+		if(StringUtils.isNotBlank(baudrateStr)){
+			LabeledValue<Integer> baudrate = GkUiUtils.getLabelledValueByKey(Integer.valueOf(baudrateStr), controller.getDataModel().getChoiceBaudrate());
+			if(baudrate != null){
+				controller.getDataModel().setBaudrate(baudrate);
+			}
+		}
+
+		String commPortStr = part.getPersistedState().get(SerialConnectionController.PERSISTED_COMMPORT);
+
+		if(StringUtils.isNotBlank(baudrateStr)){
+			LabeledValue<String> commPort = GkUiUtils.getLabelledValueByKey(commPortStr, controller.getDataModel().getChoiceSerialPort());
+			if(commPort != null){
+				controller.getDataModel().setSerialPort(commPort);
+			}
+		}
+	}
 	@PreDestroy
 	public void dispose() {
 	}
 
+	@PersistState
+	public void persist(MPart part) {
+		if(controller.getDataModel() != null){
+			part.getPersistedState().put(SerialConnectionController.PERSISTED_BAUDRATE, String.valueOf(controller.getDataModel().getBaudrate().getValue()));
+			part.getPersistedState().put(SerialConnectionController.PERSISTED_COMMPORT, controller.getDataModel().getSerialPort().getValue());
+		}
+	}
 	@Focus
 	public void setFocus() {
 		// TODO	Set the focus to control

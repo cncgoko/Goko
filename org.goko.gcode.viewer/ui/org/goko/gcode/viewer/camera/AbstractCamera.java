@@ -21,7 +21,7 @@ package org.goko.gcode.viewer.camera;
 
 
 public abstract class AbstractCamera {
-
+	public abstract String getLabel();
 	public abstract void setup();
 	public abstract void updatePosition();
 }

@@ -27,17 +27,17 @@ import javax.media.opengl.GL2;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.gcode.rs274ngcv3.command.LinearMotionGCodeCommand;
 import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
 
-public abstract class LinearGCodeBufferedRenderer<T extends LinearMotionGCodeCommand> extends AbstractGCodeGlRenderer<T> {
+public abstract class LinearGCodeBufferedRenderer extends AbstractGCodeGlRenderer {
 
 
-	private Map<Integer, List<Point3d>> buffer;
+	private Map<Integer, BufferedRenderingData> buffer;
 
-	public LinearGCodeBufferedRenderer(Map<Integer, List<Point3d>> buffer) {
+	public LinearGCodeBufferedRenderer(Map<Integer, BufferedRenderingData> buffer) {
 		this.buffer = buffer;
 	}
 
@@ -45,15 +45,17 @@ public abstract class LinearGCodeBufferedRenderer<T extends LinearMotionGCodeCom
 	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
 	 */
 	@Override
-	public final void render(GCodeContext context, T command, GL2 gl) {
-		List<Point3d> lstPoint = null;
-		if(!buffer.containsKey(command.getId())){
-			lstPoint = addGeometryToBuffer(context, command);
-			buffer.put(command.getId(), lstPoint);
-		}else{
-			lstPoint = buffer.get(command.getId());
-		}
+	public final void render(GCodeContext preContext,GCodeContext postContext, GCodeCommand command, GL2 gl) {
+		setRenderedCommand(command);
+		BufferedRenderingData renderingData = null;
 
+		if(!buffer.containsKey(command.getId())){
+			renderingData = addGeometryToBuffer(preContext, postContext, command);
+			buffer.put(command.getId(), renderingData);
+		}else{
+			renderingData = buffer.get(command.getId());
+		}
+		List<Point3d> lstPoint = renderingData.getPoints();
 		if(CollectionUtils.isNotEmpty(lstPoint)){
 
 			enableLineStyle(gl);
@@ -67,17 +69,16 @@ public abstract class LinearGCodeBufferedRenderer<T extends LinearMotionGCodeCom
 		}
 	}
 
-	private List<Point3d> addGeometryToBuffer(GCodeContext context, T command) {
-		List<Point3d> lst = new ArrayList<Point3d>();
-		lst.add( new Point3d(context.getPosition().getX().doubleValue(), context.getPosition().getY().doubleValue(), context.getPosition().getZ().doubleValue()));
 
-		GCodeContext endContext = new GCodeContext(context);
-		command.updateContext(endContext);
-		Tuple6b tuple = endContext.getPosition();
+	private BufferedRenderingData addGeometryToBuffer(GCodeContext preContext,GCodeContext postContext, GCodeCommand command) {
+		List<Point3d> lst = new ArrayList<Point3d>();
+		lst.add( new Point3d(preContext.getPosition().getX().doubleValue(), preContext.getPosition().getY().doubleValue(), preContext.getPosition().getZ().doubleValue()));
+
+		Tuple6b tuple = postContext.getPosition();
 
 		lst.add( new Point3d(tuple.getX().doubleValue(), tuple.getY().doubleValue(), tuple.getZ().doubleValue()));
 
-		return lst;
+		return new BufferedRenderingData(this, lst);
 	}
 
 

@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.goko.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.eclipse.core.runtime;version="3.4.0",
+Import-Package: com.ibm.icu.text;version="52.1.0",
+ org.eclipse.core.runtime;version="3.4.0",
  org.eclipse.e4.ui.model.application.ui.basic,
  org.osgi.framework;version="1.3.0",
  org.osgi.service.log;version="1.3.0"
@@ -41,6 +42,7 @@ Export-Package: com.google.common.eventbus,
  org.goko.common.bindings.converters,
  org.goko.common.bindings.validator,
  org.goko.common.elements.combo,
+ org.goko.common.elements.combo.v2,
  org.goko.common.elements.list,
  org.goko.common.events,
  org.goko.common.handlers,
@@ -75,7 +77,8 @@ Require-Bundle: org.eclipse.core.databinding;bundle-version="[1.4.1,1.4.5)",
  org.goko.log;bundle-version="1.0.0",
  org.eclipse.core.databinding.property;bundle-version="1.4.200",
  org.eclipse.core.databinding.beans;bundle-version="1.2.200",
- org.eclipse.jface.databinding;bundle-version="[1.6.200,1.6.201]",
+ org.eclipse.jface.databinding;bundle-version="[1.6.200,1.7.0)",
  org.eclipse.e4.ui.model.workbench,
- org.eclipse.e4.ui.model.workbench
+ org.eclipse.e4.ui.model.workbench,
+ org.eclipse.jface
 Bundle-Activator: org.goko.core.internal.GokoCoreActivator

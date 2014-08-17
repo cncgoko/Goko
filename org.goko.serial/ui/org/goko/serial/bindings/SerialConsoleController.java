@@ -59,6 +59,7 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 
 	public void clearConsole() {
 		getDataModel().setConsole("");
+		consoleWidget.setText("");
 	}
 
 	public void sendCurrentCommand() {
@@ -67,6 +68,7 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 				String cmdText = getDataModel().getCurrentCommand() + getDataModel().getEndLineToken().getValue();
 				addCommandHistory(cmdText);
 				resetCommandHistoryIndex();
+				getDataModel().setCurrentCommand( StringUtils.EMPTY );
 				List<Byte> data = GkUtils.toBytesList(cmdText);
 				connectionService.send(data);
 			}
@@ -76,8 +78,7 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 	}
 
 	public void resetCommandHistoryIndex() {
-		getDataModel().setCommandHistoryIndex(-1);
-		getDataModel().setCurrentCommand( StringUtils.EMPTY );
+		getDataModel().setCommandHistoryIndex(0);
 	}
 
 	private void addCommandHistory(String command) {
@@ -86,14 +87,16 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 
 	public void selectPreviousCommandInHistory() {
 		int index = getDataModel().getCommandHistoryIndex();
-		if(index + 1 < CollectionUtils.size( getDataModel().getCommandHistory() ) ){
-			index = index + 1;
-			getDataModel().setCommandHistoryIndex(index);
+		if(getDataModel().getCommandHistory().size() > 0){
+			if(index + 1 <= CollectionUtils.size( getDataModel().getCommandHistory() ) ){
+				index = index + 1;
+				getDataModel().setCommandHistoryIndex(index);
+			}
+			//int reversedIndex = getDataModel().getCommandHistory().size() - index;
+			index = Math.max(0, Math.min(index, getDataModel().getCommandHistory().size()));
+			String cmd = getDataModel().getCommandHistory().get( getDataModel().getCommandHistory().size() - index);
+			getDataModel().setCurrentCommand( cmd );
 		}
-		//int reversedIndex = getDataModel().getCommandHistory().size() - index;
-		index = Math.max(0, Math.min(index, getDataModel().getCommandHistory().size() - 1));
-		String cmd = getDataModel().getCommandHistory().get(index);
-		getDataModel().setCurrentCommand( cmd );
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.connection.IConnectionDataListener#onDataReceived(java.util.List)
@@ -112,7 +115,6 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 				@Override
 				public void run() {
 					int initialCharCount = consoleWidget.getCharCount();
-
 					consoleWidget.append(text);
 
 					StyleRange[] ranges = new StyleRange[1];
@@ -129,8 +131,12 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 
 						if(consoleWidget.getCharCount() > maxChar){
 							int delta = consoleWidget.getCharCount() - maxChar;
-							consoleWidget.setText( StringUtils.substring(consoleWidget.getText(), delta));
+							//consoleWidget.setText( StringUtils.substring(consoleWidget.getText(), delta));
+							getDataModel().setConsole( StringUtils.substring(consoleWidget.getText(), delta));
+							updateCarretPosition();
 						}
+					}else{
+						getDataModel().setConsole( consoleWidget.getText());
 					}
 				}
 			});

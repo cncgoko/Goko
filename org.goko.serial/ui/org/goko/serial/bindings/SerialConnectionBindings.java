@@ -125,7 +125,7 @@ public class SerialConnectionBindings extends AbstractModelObject {
 	public void setConnected(boolean connected) {
 		firePropertyChange("connected", this.connected, this.connected = connected);
 		setDisconnectionAllowed(connected);
-		//setConnectionAllowed(!connected && StringUtils.isNotBlank(getSelectedComPort()));
+		setConnectionAllowed(!connected);
 		if(connected){
 			setConnectionImage( ResourceManager.getPluginImage("org.goko.serial", "icons/bullet_green.png"));
 			setConnectionStatus( "Connected" );

@@ -23,12 +23,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -51,9 +52,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
 
-public class CommandPanelPart extends
-		GkUiComponent<CommandPanelController, CommandPanelModel> {
-	private DataBindingContext m_bindingContext;
+public class CommandPanelPart extends GkUiComponent<CommandPanelController, CommandPanelModel> {
 	private final FormToolkit formToolkit = new FormToolkit(
 			Display.getDefault());
 	private Button btnHome;
@@ -78,7 +77,10 @@ public class CommandPanelPart extends
 	private Button btnJogAPos;
 	private Button btnResetA;
 
-	private static final String JOG_FEEDRATE = "org.goko.base.commandpanel.jog.feedrate";
+	@Inject @Preference
+	IEclipsePreferences prefs;
+
+
 
 	@Inject
 	public CommandPanelPart(IEclipseContext context) throws GkException {
@@ -93,9 +95,8 @@ public class CommandPanelPart extends
 	 * @throws GkException
 	 */
 	@PostConstruct
-	public void createControls(Composite parent/*, @Named(IServiceConstants.ACTIVE_PART)MPart part*/) throws GkException {
-		//Map<String, String> state = part.getPersistedState();
-		String jogSpeed = "1500";//state.get(JOG_FEEDRATE);
+	public void createControls(Composite parent, MPart part) throws GkException {
+
 		parent.setLayout(new FormLayout());
 
 		Composite composite = formToolkit.createComposite(parent, SWT.NONE);
@@ -130,16 +131,11 @@ public class CommandPanelPart extends
 		lblJogSpeed.setText("Jog speed :");
 
 		txtJogFeed = new Text(composite_5, SWT.BORDER);
-		txtJogFeed.setText("500");
 		GridData gd_txtJogFeed = new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1);
 		gd_txtJogFeed.widthHint = 60;
 		txtJogFeed.setLayoutData(gd_txtJogFeed);
 		formToolkit.adapt(txtJogFeed, true, true);
-		if(StringUtils.isNotBlank(jogSpeed)){
-			txtJogFeed.setText(jogSpeed);
-		}
-
 		Composite composite_4 = new Composite(grpManualJog, SWT.NONE);
 		formToolkit.adapt(composite_4);
 		formToolkit.paintBordersFor(composite_4);
@@ -344,13 +340,13 @@ public class CommandPanelPart extends
 		gd_btnSpindleOff.heightHint = 35;
 		btnSpindleOff.setLayoutData(gd_btnSpindleOff);
 
-		getDataModel().setJogSpeed( Activator.getPreferenceStore().getString(JOG_FEEDRATE) );
 
-		initCustomBindings();
+		getController().initilizeValues();
+		initCustomBindings(part);
 
 	}
 
-	protected void initCustomBindings() throws GkException {
+	protected void initCustomBindings(MPart part) throws GkException {
 		getController().bindEnableControlWithAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindButtonToExecuteAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindEnableControlWithAction(btnStart,DefaultControllerAction.START);
@@ -402,16 +398,14 @@ public class CommandPanelPart extends
 	}
 
 	@PersistState
-	public void persist() {
-		if(getDataModel() != null){
-			Activator.getPreferenceStore().putValue(JOG_FEEDRATE, getDataModel().getJogSpeed());
-		}
+	public void persist(MPart part) {
+		getController().saveValues();
 	}
 
 	@Focus
 	public void setFocus() throws GkException {
 		getController().refreshExecutableAction();
-
+		getController().saveValues();
 
 	}
 }

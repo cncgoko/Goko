@@ -30,7 +30,7 @@ import org.goko.core.gcode.bean.GCodeContext;
  *
  * @param <T>
  */
-public interface IGCodeCommandExecutionTimeCalculator<T extends GCodeCommand> {
+public interface IGCodeCommandExecutionTimeCalculator {
 
 	/**
 	 * Compute the execution time
@@ -38,5 +38,5 @@ public interface IGCodeCommandExecutionTimeCalculator<T extends GCodeCommand> {
 	 * @return long describing the number of seconds
 	 * @throws GkException GkException
 	 */
-	double evaluateExecutionTime(GCodeContext context, T command) throws GkException;
+	double evaluateExecutionTime(GCodeContext preContext,GCodeContext postContext, GCodeCommand command) throws GkException;
 }

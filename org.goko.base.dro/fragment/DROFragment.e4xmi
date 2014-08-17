@@ -3,7 +3,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9yneMBsbEeOU8qLhR-YcdQ" featurename="children" parentElementId="goko.application.partstack">
     <elements xsi:type="basic:Part" xmi:id="_-9Z2UBsbEeOU8qLhR-YcdQ" elementId="goko.application.parts.base.dro" contributionURI="bundleclass://org.goko.base.dro/org.goko.base.dro.DisplayReadOut" label="DRO" iconURI="platform:/plugin/org.goko.base.dro/icons/compass.png" closeable="true">
       <toolbar xmi:id="_KPKAkDqbEeOE7ee0Ogu8Dw" elementId="org.goko.base.dro.toolbar.0">
-        <children xsi:type="menu:DirectToolItem" xmi:id="_QGEwoDqbEeOE7ee0Ogu8Dw" elementId="org.goko.base.dro.directtoolitem.0" label="Settings" iconURI="platform:/plugin/org.goko.base.dro/icons/eye.png" tooltip="Configure displayed values"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_QGEwoDqbEeOE7ee0Ogu8Dw" elementId="org.goko.base.dro.directtoolitem.0" label="Settings" iconURI="platform:/plugin/org.goko.base.dro/icons/gear.png" tooltip="Configure displayed values"/>
       </toolbar>
     </elements>
   </fragments>
@@ -15,8 +15,8 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_IThF0D8mEeOV84c-W_LF1A" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_J1FmQD8mEeOV84c-W_LF1A" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_3DfvgD8lEeOV84c-W_LF1A"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p2ftQD8mEeOV84c-W_LF1A" featurename="children" parentElementId="goko.menu.window.view">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_qJ5xcD8mEeOV84c-W_LF1A" label="Show DRO " command="_3DfvgD8lEeOV84c-W_LF1A">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p2ftQD8mEeOV84c-W_LF1A" featurename="children" parentElementId="goko.menu.tools">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_qJ5xcD8mEeOV84c-W_LF1A" label="Digital Read Out" iconURI="platform:/plugin/org.goko.base.dro/icons/compass.png" command="_3DfvgD8lEeOV84c-W_LF1A">
       <parameters xmi:id="_vHtvQD8mEeOV84c-W_LF1A" elementId="" name="org.goko.commands.toggleView.viewName" value="goko.application.parts.base.dro"/>
     </elements>
   </fragments>

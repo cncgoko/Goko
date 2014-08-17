@@ -19,6 +19,7 @@ import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.log.GkLog;
+import org.goko.internal.SerialActivator;
 import org.goko.serial.bean.SerialPortHandler;
 
 
@@ -31,21 +32,22 @@ import org.goko.serial.bean.SerialPortHandler;
 public class SerialConnectionService implements IConnectionService, ISerialDataListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(SerialConnectionService.class);
-
-	/** Service ID */
-	private static final String SERVICE_ID = "Serial connection service";
-
+	/**
+	 *  Service ID
+	 */
+	private static final String SERVICE_ID = "Serial Connection Service";
 	/**
 	 * The list of currently opened serial ports
 	 */
-	SerialPortHandler serialPortHandler;
+	private SerialPortHandler serialPortHandler;
+
 	/**
 	 * The data listeners
 	 */
 	List<WeakReference<IConnectionDataListener>> inputListeners;
 	List<WeakReference<IConnectionDataListener>> outputListeners;
 	List<WeakReference<IConnectionListener>> connectionListeners;
-
+	private boolean flowControlXonXoff;
 	/** XON character */
 	private static final byte XON = 0x11;
 	private static final byte XOFF = 0x13;
@@ -66,15 +68,21 @@ public class SerialConnectionService implements IConnectionService, ISerialDataL
 		String portName = SerialConnectionManager.checkPortName(param);
 		Integer baudrate = SerialConnectionManager.checkBaudrate(param);
 
+		Integer dataBits 	= SerialConnectionManager.checkDataBits(param);
+		Integer parityBits 	= SerialConnectionManager.checkParityBits(param);
+		Integer stopBits 	= SerialConnectionManager.checkStopBits(param);
+		boolean rtsCts 		= SerialConnectionManager.checkRcsCts(param);
+		boolean xonXoff		= SerialConnectionManager.checkXonXoff(param);
+		this.flowControlXonXoff = xonXoff;
 		if(!SerialConnectionManager.isSerialPortAvailable(portName)){
 			throw new GkFunctionalException("Error while connecting : Port "+portName+" is currently owned by another application.");
 		}
 
-		serialPortHandler = SerialConnectionManager.openPort("Goko", portName, baudrate);
+		serialPortHandler = SerialConnectionManager.openPort("Goko", portName, baudrate, dataBits, parityBits, stopBits, rtsCts, xonXoff);
 		serialPortHandler.addSerialDataListener(this);
 
 		notifyConnectionListeners(EnumConnectionEvent.CONNECTED);
-		LOG.info("Connection successfully established on "+ portName +", baudrate "+baudrate);
+		LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ dataBits +", parity bits: "+ parityBits +",stop bits: "+stopBits);
 		List<Byte> lst = new ArrayList<Byte>();
 		lst.add(XON);
 		send(lst);
@@ -97,8 +105,8 @@ public class SerialConnectionService implements IConnectionService, ISerialDataL
 			    serialPortHandler.getOutStream().close();
 			    serialPortHandler.clearOutputBuffer();
 
-
 			    serialPort.close();
+			    serialPortHandler = null;
 			    notifyConnectionListeners(EnumConnectionEvent.DISCONNECTED);
 			}
 		}catch(IOException e){
@@ -158,6 +166,7 @@ public class SerialConnectionService implements IConnectionService, ISerialDataL
 		inputListeners = new ArrayList<WeakReference<IConnectionDataListener>>();
 		outputListeners = new ArrayList<WeakReference<IConnectionDataListener>>();
 		connectionListeners = new ArrayList<WeakReference<IConnectionListener>>();
+		SerialActivator.getPreferenceStore();
 	}
 
 	/** (inheritDoc)
@@ -220,12 +229,16 @@ public class SerialConnectionService implements IConnectionService, ISerialDataL
 	public void onDataReceived(byte[] data) throws GkException {
 		List<Byte> listData = new ArrayList<Byte>();
 		for(byte d : data){
-			if(d == XOFF){
-				serialPortHandler.setXOff();
-				LOG.info(" Setting Xoff");
-			}else if(d == XON){
-				serialPortHandler.setXOn();
-				LOG.info(" Setting Xon");
+			if(flowControlXonXoff){
+				if(d == XOFF){
+					serialPortHandler.setXOff();
+					LOG.info(" Setting Xoff");
+				}else if(d == XON){
+					serialPortHandler.setXOn();
+					LOG.info(" Setting Xon");
+				}else{
+					listData.add(d);
+				}
 			}else{
 				listData.add(d);
 			}
@@ -247,6 +260,11 @@ public class SerialConnectionService implements IConnectionService, ISerialDataL
 	@Override
 	public void addConnectionListener(IConnectionListener listener) throws GkException {
 		this.connectionListeners.add(new WeakReference<IConnectionListener>(listener));
+	}
+
+	@Override
+	public void removeInputDataListener(IConnectionDataListener listener) throws GkException {
+		inputListeners.remove(listener);
 	}
 
 

@@ -29,7 +29,6 @@ import javax.vecmath.Point3d;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeWord;
-import org.goko.core.gcode.bean.IGCodeProvider;
 
 public class GLGCodeBuilder {
 	private static final String FAST_MOTION_MODE = "G0";
@@ -60,14 +59,6 @@ public class GLGCodeBuilder {
 		colorsByMode.put("G2", G02_COLOR);
 		colorsByMode.put("G3", G02_COLOR);
 	}
-
-	public void generateGCode(IGCodeProvider provider){
-		for(GCodeCommand gCodeCommand : provider.getGCodeCommands()){
-			parseGCodeCommand(gCodeCommand);
-		}
-
-	}
-
 
 	public void parseGCodeCommand(GCodeCommand gCodeCommand){
 		if(containsWord(gCodeCommand, FAST_MOTION_MODE)){

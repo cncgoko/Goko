@@ -149,4 +149,9 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 		zoomOffset = Math.max(0.1, zoomOffset * (1+event.count/30.0) );
 		update();
 	}
+
+	@Override
+	public String getLabel() {
+		return "Orthographic";
+	}
 }

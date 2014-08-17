@@ -17,11 +17,28 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.gcode.rs274ngcv3.command;
+package org.goko.common.bindings.converters;
 
-public class Rs274Type {
-	public static final String MOTION_COMMAND = "motionCommand";
-	public static final String MOTION_ARC_COMMAND = "motionArcCommand";
-	public static final String MOTION_LINEAR_COMMAND = "motionLinearCommand";
-	public static final String MOTION_RAPID_LINEAR_COMMAND = "motionRapidLinearCommand";
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.databinding.conversion.Converter;
+
+public class StringDoubleConverter extends Converter {
+
+	public StringDoubleConverter() {
+		super(String.class, Double.class);
+	}
+
+	@Override
+	public Object convert(Object fromObject) {
+
+		if(fromObject instanceof String){
+			String strValue = (String) fromObject;
+			if(StringUtils.defaultString(strValue).matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")){
+				return Double.valueOf(strValue);
+			}
+		}
+		return null;
+	}
+
+
 }

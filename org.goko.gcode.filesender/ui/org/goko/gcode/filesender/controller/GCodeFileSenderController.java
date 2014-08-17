@@ -191,6 +191,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void startFileStreaming(){
 		try{
 			IGCodeProvider 		gcodeFile = gCodeService.parse(getDataModel().getFilePath());
+			eventBroker.post("gcodefile", gcodeFile);
 			GCodeExecutionQueue queue = controllerService.executeGCode(gcodeFile);
 
 
@@ -203,13 +204,14 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			updateDisplayedTime();
 			if(timer != null){
 				timer.stop();
+			}else{
+				timer = new Timer(200, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						updateDisplayedTime();
+					}
+				});
 			}
-			timer = new Timer(200, new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					updateDisplayedTime();
-				}
-			});
 			timer.start();
 			getDataModel().setStreamingInProgress(true);
 		}catch(GkException e){
@@ -228,11 +230,6 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void updateDisplayedTime(){
 		long elapsedTime = new Date().getTime() - getDataModel().getStartDate().getTime();
 		getDataModel().setElapsedTime(getDurationAsString(elapsedTime));
-	/*	if(getDataModel().getCompletedCommandCount() > 0){
-			long milliPerCommand = elapsedTime / getDataModel().getCompletedCommandCount();
-			int remainingCommand = getDataModel().getTotalCommandCount() - getDataModel().getCompletedCommandCount();
-			getDataModel().setRemainingTime(getDurationAsString(remainingCommand * milliPerCommand));
-		}*/
 
 	}
 
@@ -260,6 +257,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 					|| MachineState.PROGRAM_STOP.equals( newState)
 					|| MachineState.READY.equals( newState)){
 				getDataModel().setStreamingInProgress(false);
+				updateStreamingAllowed();
 				if(timer != null){
 					timer.stop();
 				}

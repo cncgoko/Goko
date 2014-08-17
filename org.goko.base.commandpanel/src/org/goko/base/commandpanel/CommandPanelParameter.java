@@ -17,11 +17,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.gcode.rs274ngcv3.command;
+package org.goko.base.commandpanel;
 
-public class RapidLinearMotionGCodeCommand extends LinearMotionGCodeCommand{
-
-	public RapidLinearMotionGCodeCommand() {
-		setType(Rs274Type.MOTION_RAPID_LINEAR_COMMAND);
-	}
+public class CommandPanelParameter {
+	public static final String JOG_FEEDRATE = "org.goko.base.commandpanel.jog.feedrate";
 }

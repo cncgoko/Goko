@@ -34,10 +34,15 @@ import org.goko.common.bindings.AbstractController;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
+import org.goko.internal.SerialActivator;
 import org.goko.serial.SerialConnectionService;
 import org.goko.serial.bean.SerialConnectionParameter;
 
 public class SerialConnectionController extends AbstractController<SerialConnectionBindings> implements PropertyChangeListener {
+	/** Baudrate persisted name */
+	public final static String PERSISTED_BAUDRATE = "org.goko.serial.persisted.baudrate";
+	/** Comm port persisted name */
+	public final static String PERSISTED_COMMPORT = "org.goko.serial.persisted.commport";
 	/** Connection service */
 	@Inject
 	IConnectionService service;
@@ -60,9 +65,34 @@ public class SerialConnectionController extends AbstractController<SerialConnect
 	 */
 	public void connect(){
 		try {
+			String dataBits = SerialActivator.getPreferenceStore().getString(SerialConnectionParameter.DATABITS.toString());
+			if(StringUtils.isBlank(dataBits)){
+				dataBits = SerialActivator.getPreferenceStore().getDefaultString(SerialConnectionParameter.DATABITS.toString());
+			}
+			String stopBits = SerialActivator.getPreferenceStore().getString(SerialConnectionParameter.STOPBITS.toString());
+			if(StringUtils.isBlank(stopBits)){
+				stopBits = SerialActivator.getPreferenceStore().getDefaultString(SerialConnectionParameter.STOPBITS.toString());
+			}
+			String parity   = SerialActivator.getPreferenceStore().getString(SerialConnectionParameter.PARITY.toString());
+			if(StringUtils.isBlank(parity)){
+				parity = SerialActivator.getPreferenceStore().getDefaultString(SerialConnectionParameter.PARITY.toString());
+			}
+			String rcscts	= SerialActivator.getPreferenceStore().getString(SerialConnectionParameter.RCSCTS.toString());
+			if(StringUtils.isBlank(rcscts)){
+				rcscts = SerialActivator.getPreferenceStore().getDefaultString(SerialConnectionParameter.RCSCTS.toString());
+			}
+			String xonXoff	= SerialActivator.getPreferenceStore().getString(SerialConnectionParameter.XONXOFF.toString());
+			if(StringUtils.isBlank(xonXoff)){
+				xonXoff = SerialActivator.getPreferenceStore().getDefaultString(SerialConnectionParameter.XONXOFF.toString());
+			}
 			Map<String, Object> param = new HashMap<String, Object>();
-			param.put(SerialConnectionParameter.PORTNAME.toString(), getDataModel().getSerialPort().getValue());
-			param.put(SerialConnectionParameter.BAUDRATE.toString(), getDataModel().getBaudrate().getValue()  );
+			param.put(SerialConnectionParameter.PORTNAME.toString(), 	getDataModel().getSerialPort().getValue());
+			param.put(SerialConnectionParameter.BAUDRATE.toString(), 	getDataModel().getBaudrate().getValue()  );
+			param.put(SerialConnectionParameter.PARITY.toString(), 		parity  );
+			param.put(SerialConnectionParameter.DATABITS.toString(), 	dataBits  );
+			param.put(SerialConnectionParameter.STOPBITS.toString(), 	stopBits  );
+			param.put(SerialConnectionParameter.RCSCTS.toString(), 		rcscts  );
+			param.put(SerialConnectionParameter.XONXOFF.toString(), 		xonXoff  );
 
 			getSerialConnectionService().connect(param);
 

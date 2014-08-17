@@ -29,5 +29,8 @@ public interface DefaultControllerValues {
 	static final String POSITION_A		= "GkDefaultControllerValue.PositionA";
 	static final String VELOCITY		= "GkDefaultControllerValue.Velocity";
 	static final String SPINDLE_STATE	= "GkDefaultControllerValue.SpindleState";
+	static final String UNITS 			= "GkDefaultControllerValue.Units";
+	static final String COORDINATES 	= "GkDefaultControllerValue.Coordinates";
+	static final String DISTANCE_MODE	= "GkDefaultControllerValue.DistanceMode";
 
 }

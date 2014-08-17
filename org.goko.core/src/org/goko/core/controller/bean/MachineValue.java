@@ -28,6 +28,7 @@ package org.goko.core.controller.bean;
 public class MachineValue<T> {
 	private String idDescriptor;
 	private T value;
+	private String unit;
 
 	/**
 	 * @param idDescriptor
@@ -129,6 +130,20 @@ public class MachineValue<T> {
 	 */
 	public void setIdDescriptor(String idDescriptor) {
 		this.idDescriptor = idDescriptor;
+	}
+
+	/**
+	 * @return the unit
+	 */
+	public String getUnit() {
+		return unit;
+	}
+
+	/**
+	 * @param unit the unit to set
+	 */
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 

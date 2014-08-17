@@ -24,10 +24,25 @@ import javax.media.opengl.GL2;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 
-public abstract class AbstractGCodeGlRenderer<T extends GCodeCommand> {
+public abstract class AbstractGCodeGlRenderer {
+	/** The rendered command */
+	protected GCodeCommand renderedCommand;
 
+	public abstract String getSupportedMotionType();
 
-	public abstract Class<T> getRenderedCommandClass();
+	public abstract void render(GCodeContext preContext,GCodeContext postContext, GCodeCommand command, GL2 gl);
 
-	public abstract void render(GCodeContext context, T command, GL2 gl);
+	/**
+	 * @return the renderedCommand
+	 */
+	public GCodeCommand getRenderedCommand() {
+		return renderedCommand;
+	}
+
+	/**
+	 * @param renderedCommand the renderedCommand to set
+	 */
+	public void setRenderedCommand(GCodeCommand renderedCommand) {
+		this.renderedCommand = renderedCommand;
+	}
 }

@@ -21,7 +21,7 @@ package org.goko.common.bindings.validator;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -35,11 +35,13 @@ public class StringRealNumberValidator implements IValidator {
 	@Override
 	public IStatus validate(Object value) {
 		if(value instanceof BigDecimal ||
-			value instanceof Integer ){
+			value instanceof Integer ||
+			value instanceof Double ||
+			value instanceof Float ){
 			return ValidationStatus.ok();
 		}
 		if(value != null && value instanceof String &&
-				NumberUtils.isNumber(String.valueOf(value))){
+				StringUtils.defaultIfBlank(value.toString(), StringUtils.EMPTY).matches("-?[0-9]+(\\.[0-9]*)?")){
 			return ValidationStatus.ok();
 		}
 		return ValidationStatus.error("Invalid number : value '"+String.valueOf(value)+"' is not a valid number.");

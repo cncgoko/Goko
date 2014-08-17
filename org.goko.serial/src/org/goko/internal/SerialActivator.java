@@ -19,10 +19,13 @@
  */
 package org.goko.internal;
 
+import gnu.io.SerialPort;
+
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.goko.serial.bean.SerialConnectionParameter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -34,6 +37,7 @@ public class SerialActivator implements BundleActivator {
 	public static final IScopeContext SCOPE_CONTEXT = ConfigurationScope.INSTANCE;
     public static final String PREFERENCE_NODE = "org.goko.serial";
 
+
 	static BundleContext getContext() {
 		return context;
 	}
@@ -43,9 +47,19 @@ public class SerialActivator implements BundleActivator {
 
         if(preferenceStore == null) {
             preferenceStore = new ScopedPreferenceStore(SCOPE_CONTEXT, PREFERENCE_NODE);
+            initSerialDefaultPreferences();
         }
         return preferenceStore;
     }
+
+	private static void initSerialDefaultPreferences() {
+		SerialActivator.getPreferenceStore().setDefault(SerialConnectionParameter.DATABITS.toString(), 	String.valueOf(SerialPort.DATABITS_8));
+		SerialActivator.getPreferenceStore().setDefault(SerialConnectionParameter.STOPBITS.toString(), 	String.valueOf(SerialPort.STOPBITS_1));
+		SerialActivator.getPreferenceStore().setDefault(SerialConnectionParameter.PARITY.toString(), 	String.valueOf(SerialPort.PARITY_NONE));
+		SerialActivator.getPreferenceStore().setDefault(SerialConnectionParameter.RCSCTS.toString(), 	String.valueOf(true));
+		SerialActivator.getPreferenceStore().setDefault(SerialConnectionParameter.XONXOFF.toString(), 	String.valueOf(true));
+	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -54,7 +68,6 @@ public class SerialActivator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		SerialActivator.context = bundleContext;
-
 	}
 
 	/*

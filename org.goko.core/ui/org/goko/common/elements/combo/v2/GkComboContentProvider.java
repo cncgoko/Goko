@@ -17,8 +17,12 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.gcode.rs274ngcv3.command;
+package org.goko.common.elements.combo.v2;
 
-public class FeedrateLinearMotionGCodeCommand extends LinearMotionGCodeCommand {
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+
+public class GkComboContentProvider extends ArrayContentProvider implements IStructuredContentProvider{
+
 
 }

@@ -84,7 +84,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	private Label remainingTimeLbl;
 
 	private Label elapsedTimeLbl;
-	private int id = 1;
+
 
 	@Inject
 	public FileSenderPart(IEclipseContext context) {
@@ -150,8 +150,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 													getController().setGCodeFilepath(filePath);
 												}
 											} catch (GkException e1) {
-											//	statusReporter.show(Status.ERROR, "Error", e1, 1);
-												e1.printStackTrace();
+												getController().notifyException(e1);
 											}
 										}
 

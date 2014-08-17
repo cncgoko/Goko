@@ -19,47 +19,56 @@
  */
 package org.goko.gcode.viewer.generator.renderer;
 
-import java.math.BigDecimal;
-
 import javax.media.opengl.GL2;
 import javax.vecmath.Point3d;
 
-import org.goko.gcode.rs274ngcv3.command.FeedrateLinearMotionGCodeCommand;
+import org.goko.core.gcode.bean.GCodeCommandState;
+import org.goko.gcode.rs274ngcv3.RS274;
 
-public class FeedrateLinearGCodeRenderer extends LinearGCodeRenderer<FeedrateLinearMotionGCodeCommand> {
+public class FeedrateLinearGCodeRenderer extends LinearGCodeRenderer {
 
 	private static Point3d G01_COLOR = new Point3d(0.14,0.33,0.80);
+	private static Point3d G01_COLOR_EXECUTED = new Point3d(0.3,0.3,0.3);
+
 
 	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getRenderedCommandClass()
+	 * @see org.goko.gcode.viewer.generator.renderer.LinearGCodeRenderer#enableLineStyle(javax.media.opengl.GL2)
 	 */
-	@Override
-	public Class<FeedrateLinearMotionGCodeCommand> getRenderedCommandClass() {
-		return FeedrateLinearMotionGCodeCommand.class;
-	}
-
-
-	protected double add(double position, BigDecimal delta){
-		if( delta == null){
-			return position;
-		}
-		return position + delta.doubleValue();
-	}
-
 	@Override
 	protected void enableLineStyle(GL2 gl) {
 		// Nothing to do
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.renderer.LinearGCodeRenderer#disableLineStyle(javax.media.opengl.GL2)
+	 */
 	@Override
 	protected void disableLineStyle(GL2 gl) {
 		// Nothing to do
 
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.renderer.LinearGCodeRenderer#setColor(javax.media.opengl.GL2)
+	 */
 	@Override
 	protected void setColor(GL2 gl) {
+		if(getRenderedCommand() != null &&
+				(getRenderedCommand().getState().isState(GCodeCommandState.SENT) || getRenderedCommand().getState().isState(GCodeCommandState.EXECUTED))){
+			gl.glColor3d(G01_COLOR_EXECUTED.x, G01_COLOR_EXECUTED.y, G01_COLOR_EXECUTED.z);
+		}
 		gl.glColor3d(G01_COLOR.x, G01_COLOR.y, G01_COLOR.z);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getSupportedMotionType()
+	 */
+	/** (inheritDoc)
+	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getSupportedMotionType()
+	 */
+	@Override
+	public String getSupportedMotionType() {
+		return RS274.MOTION_MODE_CONTROLLED;
 	}
 
 }

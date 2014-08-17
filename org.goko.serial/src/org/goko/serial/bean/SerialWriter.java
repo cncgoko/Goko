@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.goko.core.log.GkLog;
+
 /**
  * Runnable to send data to Serial
  *
@@ -15,6 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class SerialWriter implements Runnable {
+	/** LOG */
+	private static final GkLog LOG = GkLog.getLogger(SerialWriter.class);
 	/** Output stream */
 	private OutputStream output;
 	/** Data buffer */
@@ -53,7 +58,6 @@ public class SerialWriter implements Runnable {
     	try {
     		bufferLock.lock();
     		getBuffer().addAll(0, command);
-    		//simpleBuffer.addAll(0, command);
     	}finally{
     		bufferLock.unlock();
     	}
@@ -68,7 +72,6 @@ public class SerialWriter implements Runnable {
     	try {
     		bufferLock.lock();
     		getBuffer().addAll(command);
-    		//simpleBuffer.addAll(command);
     	}finally{
     		bufferLock.unlock();
     	}
@@ -118,15 +121,30 @@ public class SerialWriter implements Runnable {
 
         try{
         	while(!stopped){
-				while(getBuffer().size() > 0 && isClearToSend()){
-        			try{
-        				bufferLock.lock();
-				        getOutput().write( getBuffer().remove(0) );
+        		int i = 0;
+        		long t1 = System.currentTimeMillis();
 
-        			}finally{
-        				bufferLock.unlock();
+    			try{
+    				bufferLock.lock();
+    				//i++;
+    				//getOutput().write( getBuffer().remove(0) );
+    				//while(getBuffer().size() > 0 && isClearToSend()){
+    				if(getBuffer().size() > 0 && isClearToSend()){
+	    				i += getBuffer().size();
 
-		            }
+	    				getOutput().write( ArrayUtils.toPrimitive(getBuffer().toArray( new Byte[]{})) );
+
+	    				//getBuffer().clear();
+    				}
+    				getOutput().flush();
+    			}finally{
+    				bufferLock.unlock();
+
+	            }
+
+				if(i != 0){
+					long t2 = System.currentTimeMillis();
+					System.err.println("TTTT Sending "+i+" bytes took "+(t2-t1)+" ms");
 				}
         	}
         }
@@ -150,9 +168,11 @@ public class SerialWriter implements Runnable {
 	/**
 	 * @return the buffer
 	 */
-	public List<Byte> getBuffer() {
+	protected List<Byte> getBuffer() {
 		return buffer;
 	}
+
+
 
 	public void clearOutputBuffer() {
 		try {

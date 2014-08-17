@@ -21,6 +21,8 @@ package org.goko.core.gcode.bean;
 
 import java.math.BigDecimal;
 
+import javax.vecmath.Point3d;
+
 public class Tuple6b {
 	private BigDecimal x;
 	private BigDecimal y;
@@ -47,7 +49,17 @@ public class Tuple6b {
 		this.b = new BigDecimal("0");
 		this.c = new BigDecimal("0");
 	}
-
+	/**
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public Tuple6b(double x, double y, double z) {
+		super();
+		this.x = new BigDecimal(String.valueOf(x));
+		this.y = new BigDecimal(String.valueOf(y));
+		this.z = new BigDecimal(String.valueOf(z));
+	}
 	/**
 	 * @param x
 	 * @param y
@@ -204,5 +216,8 @@ public class Tuple6b {
 		this.c = c;
 	}
 
+	public Point3d toPoint3d(){
+		return new Point3d(getX().doubleValue(), getY().doubleValue(), getZ().doubleValue());
+	}
 
 }

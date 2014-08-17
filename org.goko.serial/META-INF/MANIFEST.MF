@@ -25,11 +25,12 @@ Require-Bundle: org.goko.core;bundle-version="1.0.0",
  Goko;bundle-version="1.0.0",
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.di.extensions,
- org.eclipse.equinox.preferences
+ org.eclipse.equinox.preferences,
+ org.eclipse.jface.text;bundle-version="3.9.0"
 Bundle-ClassPath: .,
  libs/rxtx-2.2pre2-bins/RXTXcomm.jar
 Service-Component: OSGI-INF/component.xml
-Import-Package: javax.annotation,
+Import-Package: javax.annotation;version="1.2.0",
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.ui.model.application.ui.menu,
@@ -38,3 +39,4 @@ Import-Package: javax.annotation,
 Bundle-NativeCode: libs/rxtx-2.2pre2-bins/win64/rxtxSerial.dll;osname=win32;processor=x86_64,
  libs/rxtx-2.2pre2-bins/win32/rxtxSerial.dll;osname=win32;processor=x86
 Bundle-ActivationPolicy: lazy
+Export-Package: org.goko.serial.preferences

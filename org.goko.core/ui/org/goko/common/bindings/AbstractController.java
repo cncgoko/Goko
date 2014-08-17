@@ -32,6 +32,9 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.core.databinding.observable.IChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
@@ -48,19 +51,25 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Widget;
 import org.goko.common.bindings.converters.NegateBooleanConverter;
+import org.goko.common.bindings.validator.StringBigDecimalValidator;
 import org.goko.common.bindings.validator.StringRealNumberValidator;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
+import org.goko.common.elements.combo.v2.GkCombo2;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+
+import com.ibm.icu.text.DecimalFormat;
+import com.ibm.icu.text.DecimalFormatSymbols;
 
 public abstract class AbstractController<T extends AbstractModelObject> extends EventDispatcher{
 	private DataBindingContext bindingContext;
@@ -74,14 +83,53 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	}
 
 	/**
-	 * Initialisation method
+	 * Initialization method
 	 * @throws GkException GkException
 	 */
 	public abstract void initialize() throws GkException;
 
 	public void addBigDecimalModifyBinding(Object source, String property) throws GkException{
-		addTextModifyBinding(source, property,new StringRealNumberValidator());
+	/*	DecimalFormat format = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		format.setDecimalFormatSymbols(symbols);
+
+		StringToNumberConverter stringConverter = StringToNumberConverter.toBigDecimal(format);
+		NumberToStringConverter numberConverter = NumberToStringConverter.fromBigDecimal(format);
+
+		addTextModifyBinding(source, property,new StringBigDecimalValidator(), stringConverter, numberConverter);*/
+		addBigDecimalModifyBinding(source, getDataModel(), property);
 	}
+
+	public void addBigDecimalModifyBinding(Object source, Object model, String property) throws GkException{
+		DecimalFormat format = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		format.setDecimalFormatSymbols(symbols);
+
+		StringToNumberConverter stringConverter = StringToNumberConverter.toBigDecimal(format);
+		NumberToStringConverter numberConverter = NumberToStringConverter.fromBigDecimal(format);
+
+		addTextModifyBinding(source, model, property,new StringBigDecimalValidator(), stringConverter, numberConverter);
+	}
+
+	public void addDoubleModifyBinding(Object source, String property) throws GkException{
+		DecimalFormat format = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		format.setDecimalFormatSymbols(symbols);
+
+		StringToNumberConverter stringConverter = StringToNumberConverter.toDouble(format, false);
+		NumberToStringConverter numberConverter = NumberToStringConverter.fromDouble(format, false);
+
+		addTextModifyBinding(source, property,new StringRealNumberValidator(), stringConverter, numberConverter);
+	}
+
+	public void addIntegerModifyBinding(Object source, String property) throws GkException{
+		StringToNumberConverter converter = StringToNumberConverter.toInteger(false);
+		addTextModifyBinding(source, property,new StringRealNumberValidator(), converter);
+	}
+
 
 	/**
 	 * Binding between an object and a property, based on text modification
@@ -94,17 +142,36 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	}
 
 	public void addTextModifyBinding(Object source, String property, IValidator validator) throws GkException{
-		verifyGetter(dataModel,property);
-		verifySetter(dataModel,property);
+		addTextModifyBinding(source, property, validator, null);
+	}
+
+	public void addTextModifyBinding(Object source, String property, IValidator validator, IConverter targetToModel ) throws GkException{
+		addTextModifyBinding(source, property, validator, targetToModel, null);
+	}
+
+	public void addTextModifyBinding(Object source, String property, IValidator validator, IConverter targetToModel, IConverter modelToTarget) throws GkException{
+		addTextModifyBinding(source, dataModel, property, validator, targetToModel, modelToTarget);
+	}
+
+	protected void addTextModifyBinding(Object source, Object model, String property, IValidator validator, IConverter targetToModel, IConverter modelToTarget) throws GkException{
+		verifyGetter(model,property);
+		verifySetter(model,property);
 
 		IObservableValue widgetObserver = WidgetProperties.text(SWT.Modify).observe(source);
-		IObservableValue modelObserver  = BeanProperties.value(property).observe(dataModel);
-		UpdateValueStrategy updateStrategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
+		IObservableValue modelObserver  = BeanProperties.value(property).observe(model);
+		UpdateValueStrategy targetToModelUpdateStrategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
 		if(validator != null){
-			updateStrategy.setBeforeSetValidator(validator);
-
+			targetToModelUpdateStrategy.setAfterGetValidator(validator);
 		}
-		Binding binding = bindingContext.bindValue(widgetObserver, modelObserver, updateStrategy, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		if(targetToModel != null){
+			targetToModelUpdateStrategy.setConverter(targetToModel);
+		}
+		UpdateValueStrategy modelToTargetUpdateStrategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
+		if(modelToTarget != null){
+			modelToTargetUpdateStrategy.setConverter(modelToTarget);
+		}		//
+		Binding binding = bindingContext.bindValue(widgetObserver, modelObserver, targetToModelUpdateStrategy, modelToTargetUpdateStrategy);
+
 		bindings.add(binding);
 		if(validator != null){
 			ControlDecorationSupport.create(binding, SWT.RIGHT | SWT.TOP);
@@ -161,22 +228,83 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	}
 
 	/**
+	 * Binding between an GkCombo and a property, based on items list
+	 * @param source the UI object
+	 * @param property the name of the property
+	 * @throws GkException GkException
+	 */
+	public void addItemsBinding(GkCombo2<?> source, String property) throws GkException{
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+
+		ObservableListContentProvider listContentProvider = new ObservableListContentProvider();
+		IObservableMap observeMap = PojoObservables.observeMap(listContentProvider.getKnownElements(), LabeledValue.class, "label");
+		source.setLabelProvider(new ObservableMapLabelProvider(observeMap));
+		source.setContentProvider(listContentProvider);
+
+		source.setInput(BeanProperties.list(property).observe(dataModel));
+
+	}
+
+	/**
 	 * Binding between an object and a property, based on item selection
 	 * @param source the UI object
 	 * @param property the name of the property
 	 * @throws GkException GkException
 	 */
 	public void addItemSelectionBinding(ComboViewer source, String property) throws GkException{
-		verifyGetter(dataModel,property);
-		verifySetter(dataModel,property);
+		addItemSelectionBinding(source, dataModel, property);
+	}
+	/**
+	 * Binding between an object and a property, based on item selection
+	 * @param source the UI object
+	 * @param property the name of the property
+	 * @throws GkException GkException
+	 */
+	public void addItemSelectionBinding(ComboViewer source, Object modelObject, String property) throws GkException{
+		verifyGetter(modelObject,property);
+		verifySetter(modelObject,property);
 
 		IObservableValue target = ViewersObservables.observeSingleSelection(source);
-		IObservableValue model = BeansObservables.observeValue(dataModel, property);
+		IObservableValue model = BeansObservables.observeValue(modelObject, property);
 
 		Binding binding = bindingContext.bindValue(target, model,null,null);
 		bindings.add(binding);
 	}
 
+	public <T> void addItemValueSelectionBinding(final GkCombo2<T> source, Object modelObject, String property) throws GkException{
+		verifyGetter(modelObject,property);
+		verifySetter(modelObject,property);
+
+		IObservableValue target = ViewersObservables.observeSingleSelection(source);
+		IObservableValue model = BeansObservables.observeValue(modelObject, property);
+		/*Converter comboToModelConverter = new Converter(LabeledValue.class, Object.class ){
+			@Override
+			public Object convert(Object fromObject) {
+				return ((LabeledValue)fromObject).getValue();
+			}
+		};
+		Converter modelToComboConverter = new Converter(Object.class, LabeledValue.class ){
+			@Override
+			public Object convert(Object fromObject) {
+				T obj = null;
+				try {
+					return GkUiUtils.getLabelledValueByKey(obj, source.getChoices());
+				} catch (GkException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+		UpdateValueStrategy comboToModelConverterStrategy = new UpdateValueStrategy().setConverter(comboToModelConverter);
+		UpdateValueStrategy modelToComboConverterStrategy = new UpdateValueStrategy().setConverter(modelToComboConverter);*/
+		Binding binding = bindingContext.bindValue(target, model,null,null);
+		bindings.add(binding);
+	}
+
+	public void addTableViewerInputBinding(){
+
+	}
 
 	public void addSelectionBinding(Object target, String property) throws GkException {
 		verifyGetter(dataModel,property);
@@ -185,6 +313,16 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		IObservableValue observeSelectionBtnCheckButtonObserveWidget = WidgetProperties.selection().observe(target);
 		IObservableValue enabledBindingsObserveValue = BeanProperties.value(property).observe(dataModel);
 		bindingContext.bindValue(observeSelectionBtnCheckButtonObserveWidget, enabledBindingsObserveValue, null, null);
+
+	}
+
+	public void addTableSelectionBinding(TableViewer target, String property) throws GkException {
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+
+		IObservableValue observeSelectionTableObserveWidget = ViewersObservables.observeSingleSelection(target);
+		IObservableValue enabledBindingsObserveValue = BeanProperties.value(property).observe(dataModel);
+		bindingContext.bindValue(observeSelectionTableObserveWidget, enabledBindingsObserveValue, null, null);
 
 	}
 
@@ -278,11 +416,16 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		String firstLetter = StringUtils.substring(property, 0,1);
 		String otherLetters = StringUtils.substring(property, 1);
 		String getterName = "get"+ StringUtils.upperCase(firstLetter)+otherLetters;
-		try {
-			return source.getClass().getDeclaredMethod(getterName);
-		} catch (NoSuchMethodException | SecurityException e) {
-			throw new GkTechnicalException("Cannot find getter (looking for '"+getterName+"') for property '"+property+"' on object "+source.getClass());
+
+		Method[] methodArray = source.getClass().getMethods();
+		for (Method method : methodArray) {
+			if(StringUtils.equals(getterName, method.getName())){
+				return method;
+			}
 		}
+
+		throw new GkTechnicalException("Cannot find getter (looking for '"+getterName+"') for property '"+property+"' on object "+source.getClass()+". Make sure it's public and correctly spelled");
+
 	}
 	/**
 	 * Make sure the setter for the given property exists
@@ -294,11 +437,24 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		String firstLetter = StringUtils.substring(property, 0,1);
 		String otherLetters = StringUtils.substring(property, 1);
 		String setterName = "set"+ StringUtils.upperCase(firstLetter)+otherLetters;
-		try {
-			Method getMethod = verifyGetter(source, property);
-			source.getClass().getDeclaredMethod(setterName, getMethod.getReturnType());
-		} catch (NoSuchMethodException | SecurityException e) {
-			throw new GkTechnicalException("Cannot find setter (looking for '"+setterName+"') for property '"+property+"' on object "+source.getClass());
+		boolean found = false;
+
+		Method getMethod = verifyGetter(source, property);
+		Method[] methodArray = source.getClass().getMethods();
+		for (Method method : methodArray) {
+			if(StringUtils.equals(setterName, method.getName())){
+				Class<?>[] paramsArray = method.getParameterTypes();
+				if(paramsArray != null && paramsArray.length == 1 && paramsArray[0] == getMethod.getReturnType()){
+					found = true;
+					break;
+				}
+
+			}
+		}
+		//source.getClass().getDeclaredMethod(setterName, getMethod.getReturnType());
+
+		if(!found){
+			throw new GkTechnicalException("Cannot find setter (looking for '"+setterName+"') for property '"+property+"' on object "+source.getClass()+". Make sure it's public and correctly spelled");
 		}
 	}
 
@@ -322,7 +478,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		return CollectionUtils.isEmpty(lstStatus);
 	}
 
-	protected void notifyException(Exception e){
+	public void notifyException(Exception e){
 		if(e instanceof GkFunctionalException){
 			notifyWarning(((GkFunctionalException)e).getLocalizedMessage());
 			return;

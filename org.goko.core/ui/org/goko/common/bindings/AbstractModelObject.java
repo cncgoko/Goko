@@ -52,7 +52,7 @@ public abstract class AbstractModelObject {
 	}
 
 	protected void firePropertyChange(String propertyName,  Object oldValue, Object newValue) {
-	  changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+		  changeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	/**

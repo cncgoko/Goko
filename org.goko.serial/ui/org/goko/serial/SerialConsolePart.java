@@ -19,15 +19,21 @@
  */
 package org.goko.serial;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.PersistState;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -54,11 +60,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.serial.bindings.SerialConsoleBindings;
 import org.goko.serial.bindings.SerialConsoleController;
 
-public class SerialConsolePart extends
-		GkUiComponent<SerialConsoleController, SerialConsoleBindings> {
+public class SerialConsolePart extends GkUiComponent<SerialConsoleController, SerialConsoleBindings> {
 	private Text currentCommandTxt;
-	private final FormToolkit formToolkit = new FormToolkit(
-			Display.getDefault());
+	private final FormToolkit formToolkit = new FormToolkit( Display.getDefault());
 
 	private StyledText styledText;
 	private Label lblLineEnd;
@@ -70,7 +74,9 @@ public class SerialConsolePart extends
 	private Button lockScrollButton;
 	private Composite composite_1;
 	private Composite composite_3;
-	private int cachedTopIndex;
+
+	private static final String CONSOLE_ENABLED = "org.goko.serial.consoleEnabled";
+	private static final String CONSOLE_SCROLL_LOCKED = "org.goko.serial.consoleScrollLocked";
 
 	@Inject
 	public SerialConsolePart(IEclipseContext context) {
@@ -79,7 +85,6 @@ public class SerialConsolePart extends
 		try {
 			getController().initialize();
 		} catch (GkException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -91,10 +96,8 @@ public class SerialConsolePart extends
 	 *             GkException
 	 */
 	@PostConstruct
-	public void createControls(final Composite parent) throws GkException {
+	public void createControls(final Composite parent, MPart part) throws GkException {
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-		// parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-
 		Composite composite = new Composite(parent, SWT.NONE);
 		formToolkit.adapt(composite);
 		formToolkit.paintBordersFor(composite);
@@ -120,6 +123,8 @@ public class SerialConsolePart extends
 				} else {
 					if (e.keyCode == SWT.ARROW_UP) {
 						getController().selectPreviousCommandInHistory();
+					}else{
+						getController().resetCommandHistoryIndex();
 					}
 				}
 			}
@@ -188,7 +193,7 @@ public class SerialConsolePart extends
 		styledText = new StyledText(composite_3, style);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
 				1, 1));
-
+		styledText.setWordWrap(false);
 		styledText.setFont(SWTResourceManager
 				.getFont("Consolas", 9, SWT.NORMAL));
 		styledText.setCapture(true);
@@ -197,11 +202,11 @@ public class SerialConsolePart extends
 		formToolkit.adapt(styledText);
 		formToolkit.paintBordersFor(styledText);
 
-		initDataBindings();
+		initDataBindings(part);
 		getController().setConsoleWidget(styledText);
 	}
 
-	protected DataBindingContext initDataBindings() throws GkException {
+	protected DataBindingContext initDataBindings(MPart part) throws GkException {
 		DataBindingContext bindingContext = new DataBindingContext();
 
 		getController().addTextDisplayBinding(styledText, "console");
@@ -216,6 +221,24 @@ public class SerialConsolePart extends
 		IObservableValue backgroundBindingsObserveValue = BeanProperties.value( "background").observe(getDataModel());
 		bindingContext.bindValue(observeBackgroundStyledTextObserveWidget, backgroundBindingsObserveValue, new UpdateValueStrategy( UpdateValueStrategy.POLICY_NEVER), null);
 		//
+
+		Map<String, String> state = part.getPersistedState();
+		String consoleEnabledStr = state.get(CONSOLE_ENABLED);
+		if(StringUtils.isNotEmpty(consoleEnabledStr)){
+			getDataModel().setEnabled(BooleanUtils.toBoolean(consoleEnabledStr));
+		}
+		String consoleScrollStr = state.get(CONSOLE_SCROLL_LOCKED);
+		if(StringUtils.isNotEmpty(consoleScrollStr)){
+			getDataModel().setLockScroll(BooleanUtils.toBoolean(consoleScrollStr));
+		}
 		return bindingContext;
+	}
+
+	@PersistState
+	public void persist(MPart part) {
+		if(getDataModel() != null){
+			part.getPersistedState().put(CONSOLE_ENABLED, String.valueOf(getDataModel().isEnabled()));
+			part.getPersistedState().put(CONSOLE_SCROLL_LOCKED, String.valueOf(getDataModel().isLockScroll()));
+		}
 	}
 }
