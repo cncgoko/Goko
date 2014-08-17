@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_e1oTQNLTEeOYCoZclXkiMg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1BTEMNLTEeOYCoZclXkiMg" featurename="children" parentElementId="goko.application.partstack">
+    <elements xsi:type="basic:Part" xmi:id="_2vTeINLTEeOYCoZclXkiMg" elementId="goko.application.tools.centerfinder" contributionURI="bundleclass://org.goko.tools.centerfinder/org.goko.tools.centerfinder.CenterFinderPart" label="Center finder" iconURI="platform:/plugin/org.goko.tools.centerfinder/icons/geolocation.png" closeable="true"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_HZxI8NLXEeOYCoZclXkiMg" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_I4o6sNLXEeOYCoZclXkiMg" elementId="org.goko.tools.centerfinder.toggleView" commandName="toggleCenterFinderView">
+      <parameters xmi:id="_sYtg8NLXEeOYCoZclXkiMg" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LoGKkNLXEeOYCoZclXkiMg" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_OnO1MNLXEeOYCoZclXkiMg" elementId="org.goko.tools.centerfinder.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_I4o6sNLXEeOYCoZclXkiMg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SLMrMNLXEeOYCoZclXkiMg" featurename="children" parentElementId="goko.menu.tools">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_TgC-QNLXEeOYCoZclXkiMg" elementId="org.goko.tools.centerfinder.handledmenuitem.show" label="Center finder" iconURI="platform:/plugin/org.goko.tools.centerfinder/icons/geolocation.png" command="_I4o6sNLXEeOYCoZclXkiMg">
+      <parameters xmi:id="_0Gx_4NLXEeOYCoZclXkiMg" elementId="" name="org.goko.commands.toggleView.viewName" value="goko.application.tools.centerfinder"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>
