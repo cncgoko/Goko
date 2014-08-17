@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.goko.tinyg.TinyGControllerServiceSelector">
+   <implementation class="org.goko.tinyg.service.TinyGControllerServiceSelector"/>
+   <service>
+      <provide interface="org.goko.core.controller.IControllerService"/>
+      <provide interface="org.goko.tinyg.service.ITinyGControllerServiceSelector"/>
+   </service>
+   <reference bind="registerFirmwareService" cardinality="1..n" interface="org.goko.tinyg.service.ITinyGControllerFirmwareService" name="ITinyGControllerFirmwareService" policy="static"/>
+</scr:component>

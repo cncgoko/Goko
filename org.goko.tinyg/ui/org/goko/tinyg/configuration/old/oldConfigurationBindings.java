@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.tinyg.configuration.bindings;
+package org.goko.tinyg.configuration.old;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,10 +26,8 @@ import java.util.List;
 import org.eclipse.core.internal.databinding.BindingStatus;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.common.elements.combo.LabeledValue;
-import org.goko.tinyg.configuration.bindings.wrapper.TinyGAAxisSettingsWrapper;
-import org.goko.tinyg.configuration.bindings.wrapper.TinyGLinearAxisSettingsWrapper;
 
-public class ConfigurationBindings extends AbstractModelObject{
+public class oldConfigurationBindings extends AbstractModelObject{
 	// Identification setting
 	private BigDecimal hardwareVersion;
 	private BigDecimal firmwareBuild;
@@ -75,6 +73,22 @@ public class ConfigurationBindings extends AbstractModelObject{
 	private BigDecimal stepAngleM4;
 	private BigDecimal travelPerRevM4;
 
+	// Current axis params
+	private BigDecimal velocityMaximum;
+	private BigDecimal maximumFeedrate;
+	private BigDecimal travelMaximum;
+	private BigDecimal jerkMaximum;
+	private BigDecimal jerkHoming;
+	private BigDecimal junctionDeviation;
+	private BigDecimal radiusValue;
+	private BigDecimal searchVelocity;
+	private BigDecimal latchVelocity;
+	private BigDecimal zeroBackoff;
+
+	private LabeledValue<String> selectedAxis;
+	private LabeledValue<BigDecimal> maxSwitchMode;
+	private LabeledValue<BigDecimal> minSwitchMode;
+
 	private List<LabeledValue<BigDecimal>> choicesMotorMapping;
 	private List<LabeledValue<BigDecimal>> choicesMicrosteps;
 	private List<LabeledValue<BigDecimal>> choicesPowerManagement;
@@ -91,7 +105,6 @@ public class ConfigurationBindings extends AbstractModelObject{
 	private List<LabeledValue<BigDecimal>> choicesDistanceMode;
 	private List<LabeledValue<BigDecimal>> choicesBaudrate;
 	private List<LabeledValue<BigDecimal>> choicesSwitchType;
-	private List<LabeledValue<BigDecimal>> choicesAxisMode;
 
 	// Motor params
 	private LabeledValue<BigDecimal>  axisForMotor1;
@@ -123,12 +136,7 @@ public class ConfigurationBindings extends AbstractModelObject{
 	private LabeledValue<BigDecimal> motor4Polarity;
 	private LabeledValue<BigDecimal> motor4PowerManagement;
 
-	private TinyGLinearAxisSettingsWrapper xAxisWrapper;
-	private TinyGLinearAxisSettingsWrapper yAxisWrapper;
-	private TinyGLinearAxisSettingsWrapper zAxisWrapper;
-	private TinyGAAxisSettingsWrapper aAxisWrapper;
-
-	public ConfigurationBindings() {
+	public oldConfigurationBindings() {
 		this.choicesMotorMapping = new ArrayList<LabeledValue<BigDecimal>>();
 		choicesMotorMapping.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "X axis"));
 		choicesMotorMapping.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Y axis"));
@@ -167,6 +175,8 @@ public class ConfigurationBindings extends AbstractModelObject{
 		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Homing only"));
 		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "Limit only"));
 		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("3"), "Homing and limit"));
+
+		selectedAxis = new LabeledValue<String>("x", "X axis");
 
 		choicesPlaneSelection 	= new ArrayList<LabeledValue<BigDecimal>>();
 		choicesPlaneSelection.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "XY Plane - G17"));
@@ -225,15 +235,7 @@ public class ConfigurationBindings extends AbstractModelObject{
 		choicesSwitchType.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Normally open"));
 		choicesSwitchType.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Normally closed"));
 
-		choicesAxisMode = new ArrayList<LabeledValue<BigDecimal>>();
-		choicesAxisMode.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Normal"));
-
-		xAxisWrapper = new TinyGLinearAxisSettingsWrapper(null, "x");
-		yAxisWrapper = new TinyGLinearAxisSettingsWrapper(null, "y");
-		zAxisWrapper = new TinyGLinearAxisSettingsWrapper(null, "z");
-		aAxisWrapper = new TinyGAAxisSettingsWrapper(null, "a");
 	}
-
 
 	/**
 	 * @return the hardwareVersion
@@ -424,7 +426,8 @@ public class ConfigurationBindings extends AbstractModelObject{
 	 * @param statusinterval the statusinterval to set
 	 */
 	public void setStatusinterval(BigDecimal statusinterval) {
-		firePropertyChange("statusinterval", this.statusinterval,this.statusinterval = statusinterval);
+		firePropertyChange("statusinterval", this.statusinterval,
+				this.statusinterval = statusinterval);
 	}
 
 	/**
@@ -657,6 +660,200 @@ public class ConfigurationBindings extends AbstractModelObject{
 				this.choicesDistanceMode = choicesDistanceMode);
 	}
 
+	/**
+	 * @return the velocityMaximum
+	 */
+	public BigDecimal getVelocityMaximum() {
+		return velocityMaximum;
+	}
+
+	/**
+	 * @param velocityMaximum the velocityMaximum to set
+	 */
+	public void setVelocityMaximum(BigDecimal velocityMaximum) {
+		firePropertyChange("velocityMaximum", this.velocityMaximum,
+				this.velocityMaximum = velocityMaximum);
+	}
+
+	/**
+	 * @return the maximumFeedrate
+	 */
+	public BigDecimal getMaximumFeedrate() {
+		return maximumFeedrate;
+	}
+
+	/**
+	 * @param maximumFeedrate the maximumFeedrate to set
+	 */
+	public void setMaximumFeedrate(BigDecimal maximumFeedrate) {
+		firePropertyChange("maximumFeedrate", this.maximumFeedrate,
+				this.maximumFeedrate = maximumFeedrate);
+	}
+
+	/**
+	 * @return the travelMaximum
+	 */
+	public BigDecimal getTravelMaximum() {
+		return travelMaximum;
+	}
+
+	/**
+	 * @param travelMaximum the travelMaximum to set
+	 */
+	public void setTravelMaximum(BigDecimal travelMaximum) {
+		firePropertyChange("travelMaximum", this.travelMaximum,
+				this.travelMaximum = travelMaximum);
+	}
+
+	/**
+	 * @return the jerkMaximum
+	 */
+	public BigDecimal getJerkMaximum() {
+		return jerkMaximum;
+	}
+
+	/**
+	 * @param jerkMaximum the jerkMaximum to set
+	 */
+	public void setJerkMaximum(BigDecimal jerkMaximum) {
+		firePropertyChange("jerkMaximum", this.jerkMaximum,
+				this.jerkMaximum = jerkMaximum);
+	}
+
+	/**
+	 * @return the jerkHoming
+	 */
+	public BigDecimal getJerkHoming() {
+		return jerkHoming;
+	}
+
+	/**
+	 * @param jerkHoming the jerkHoming to set
+	 */
+	public void setJerkHoming(BigDecimal jerkHoming) {
+		firePropertyChange("jerkHoming", this.jerkHoming,
+				this.jerkHoming = jerkHoming);
+	}
+
+	/**
+	 * @return the junctionDeviation
+	 */
+	public BigDecimal getJunctionDeviation() {
+		return junctionDeviation;
+	}
+
+	/**
+	 * @param junctionDeviation the junctionDeviation to set
+	 */
+	public void setJunctionDeviation(BigDecimal junctionDeviation) {
+		firePropertyChange("junctionDeviation", this.junctionDeviation,
+				this.junctionDeviation = junctionDeviation);
+	}
+
+	/**
+	 * @return the radiusValue
+	 */
+	public BigDecimal getRadiusValue() {
+		return radiusValue;
+	}
+
+	/**
+	 * @param radiusValue the radiusValue to set
+	 */
+	public void setRadiusValue(BigDecimal radiusValue) {
+		firePropertyChange("radiusValue", this.radiusValue,
+				this.radiusValue = radiusValue);
+	}
+
+	/**
+	 * @return the searchVelocity
+	 */
+	public BigDecimal getSearchVelocity() {
+		return searchVelocity;
+	}
+
+	/**
+	 * @param searchVelocity the searchVelocity to set
+	 */
+	public void setSearchVelocity(BigDecimal searchVelocity) {
+		firePropertyChange("searchVelocity", this.searchVelocity,
+				this.searchVelocity = searchVelocity);
+	}
+
+	/**
+	 * @return the latchVelocity
+	 */
+	public BigDecimal getLatchVelocity() {
+		return latchVelocity;
+	}
+
+	/**
+	 * @param latchVelocity the latchVelocity to set
+	 */
+	public void setLatchVelocity(BigDecimal latchVelocity) {
+		firePropertyChange("latchVelocity", this.latchVelocity,
+				this.latchVelocity = latchVelocity);
+	}
+
+	/**
+	 * @return the zeroBackoff
+	 */
+	public BigDecimal getZeroBackoff() {
+		return zeroBackoff;
+	}
+
+	/**
+	 * @param zeroBackoff the zeroBackoff to set
+	 */
+	public void setZeroBackoff(BigDecimal zeroBackoff) {
+		firePropertyChange("zeroBackoff", this.zeroBackoff,
+				this.zeroBackoff = zeroBackoff);
+	}
+
+	/**
+	 * @return the selectedAxis
+	 */
+	public LabeledValue<String> getSelectedAxis() {
+		return selectedAxis;
+	}
+
+	/**
+	 * @param selectedAxis the selectedAxis to set
+	 */
+	public void setSelectedAxis(LabeledValue<String> selectedAxis) {
+		firePropertyChange("selectedAxis", this.selectedAxis,
+				this.selectedAxis = selectedAxis);
+	}
+
+	/**
+	 * @return the maxSwitchMode
+	 */
+	public LabeledValue<BigDecimal> getMaxSwitchMode() {
+		return maxSwitchMode;
+	}
+
+	/**
+	 * @param maxSwitchMode the maxSwitchMode to set
+	 */
+	public void setMaxSwitchMode(LabeledValue<BigDecimal> maxSwitchMode) {
+		firePropertyChange("maxSwitchMode", this.maxSwitchMode,
+				this.maxSwitchMode = maxSwitchMode);
+	}
+
+	/**
+	 * @return the minSwitchMode
+	 */
+	public LabeledValue<BigDecimal> getMinSwitchMode() {
+		return minSwitchMode;
+	}
+
+	/**
+	 * @param minSwitchMode the minSwitchMode to set
+	 */
+	public void setMinSwitchMode(LabeledValue<BigDecimal> minSwitchMode) {
+		firePropertyChange("minSwitchMode", this.minSwitchMode,
+				this.minSwitchMode = minSwitchMode);
+	}
 
 	/**
 	 * @return the choicesMotorMapping
@@ -1421,63 +1618,4 @@ public class ConfigurationBindings extends AbstractModelObject{
 	public void setValidationMessages(List<BindingStatus> bindingStatus) {
 		firePropertyChange("validationMessages", this.validationMessages, this.validationMessages = bindingStatus);
 	}
-
-	/**
-	 * @return the xAxisWrapper
-	 */
-	public TinyGLinearAxisSettingsWrapper getxAxisWrapper() {
-		return xAxisWrapper;
-	}
-
-
-	/**
-	 * @param xAxisWrapper the xAxisWrapper to set
-	 */
-	public void setxAxisWrapper(TinyGLinearAxisSettingsWrapper xAxisWrapper) {
-		this.xAxisWrapper = xAxisWrapper;
-	}
-
-
-	/**
-	 * @return the choicesAxisMode
-	 */
-	public List<LabeledValue<BigDecimal>> getChoicesAxisMode() {
-		return choicesAxisMode;
-	}
-
-
-	/**
-	 * @param choicesAxisMode the choicesAxisMode to set
-	 */
-	public void setChoicesAxisMode(List<LabeledValue<BigDecimal>> choicesAxisMode) {
-		firePropertyChange("this.choicesAxisMode", this.choicesAxisMode,
-				this.choicesAxisMode = choicesAxisMode);
-	}
-
-
-	/**
-	 * @return the yAxisWrapper
-	 */
-	public TinyGLinearAxisSettingsWrapper getyAxisWrapper() {
-		return yAxisWrapper;
-	}
-
-
-	/**
-	 * @return the zAxisWrapper
-	 */
-	public TinyGLinearAxisSettingsWrapper getzAxisWrapper() {
-		return zAxisWrapper;
-	}
-
-
-	/**
-	 * @return the aAxisWrapper
-	 */
-	public TinyGAAxisSettingsWrapper getaAxisWrapper() {
-		return aAxisWrapper;
-	}
-
-
-
 }

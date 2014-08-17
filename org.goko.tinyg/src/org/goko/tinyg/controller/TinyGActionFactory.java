@@ -51,13 +51,13 @@ public class TinyGActionFactory {
 		createJogStopAction();
 	}
 
-	private void createJogStartAction(){
-		TinyGStartJogAction action = new TinyGStartJogAction(controllerService);
+	private void createJogStopAction(){
+		TinyGStopJogAction action = new TinyGStopJogAction(controllerService);
 		mapAction.put(action.getId(), action);
 	}
 
-	private void createJogStopAction(){
-		TinyGStopJogAction action = new TinyGStopJogAction(controllerService);
+	private void createJogStartAction(){
+		TinyGStartJogAction action = new TinyGStartJogAction(controllerService);
 		mapAction.put(action.getId(), action);
 	}
 	private void createResetZeroAction() {

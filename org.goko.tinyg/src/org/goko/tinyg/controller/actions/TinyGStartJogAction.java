@@ -21,8 +21,10 @@ package org.goko.tinyg.controller.actions;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.MachineState;
+import org.goko.tinyg.controller.EnumTinyGAxis;
 import org.goko.tinyg.controller.TinyGControllerService;
 
 /**
@@ -50,7 +52,13 @@ public class TinyGStartJogAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public void execute(Object... parameters) throws GkException {
-		getControllerService().stopMotion();
+		if(parameters.length != 2){
+			throw new GkFunctionalException("TinyGStartJogAction expects exactly 2 parameter : axis and speed");
+		}
+		String 			axis 	 = getStringParameter(parameters[0]);
+		EnumTinyGAxis 	enumAxis = EnumTinyGAxis.getEnum(axis);
+		String 			feed 	 = getStringParameter(parameters[1]);
+		getControllerService().startJog(enumAxis, feed);
 	}
 
 	/** (inheritDoc)
@@ -58,7 +66,7 @@ public class TinyGStartJogAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public String getId() {
-		return DefaultControllerAction.JOG_STOP;
+		return DefaultControllerAction.JOG_START;
 	}
 
 }

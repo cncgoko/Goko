@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.tinyg.configuration.bindings;
+package org.goko.tinyg.configuration.old;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -29,24 +29,22 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.common.GkUiUtils;
 import org.goko.common.bindings.AbstractController;
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
-import org.goko.tinyg.configuration.bindings.wrapper.TinyGLinearAxisSettingsWrapper;
 import org.goko.tinyg.controller.TinyGControllerService;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
-import org.goko.tinyg.controller.configuration.TinyGSetting;
 import org.goko.tinyg.service.ITinyGControllerFirmwareService;
 
-public class ConfigurationController extends AbstractController<ConfigurationBindings> implements PropertyChangeListener {
-	private static final GkLog LOG = GkLog.getLogger(ConfigurationController.class);
+public class oldConfigurationController extends AbstractController<oldConfigurationBindings> implements PropertyChangeListener {
+	private static final GkLog LOG = GkLog.getLogger(oldConfigurationController.class);
 	@Inject
 	private ITinyGControllerFirmwareService controllerService;
 	/**
 	 * Constructor
 	 * @param binding
 	 */
-	public ConfigurationController(ConfigurationBindings binding) {
+	public oldConfigurationController(oldConfigurationBindings binding) {
 		super(binding);
 		binding.addPropertyChangeListener(this);
 	}
@@ -57,6 +55,26 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 	@Override
 	public void initialize() throws GkException {
 		controllerService.addListener(this);
+	}
+
+	public void applyAxisSetting() throws GkException{
+		TinyGConfiguration cfg =  getControllerService().getConfiguration();
+		String axis = getDataModel().getSelectedAxis().getValue();
+
+		cfg.setSetting(axis, TinyGConfiguration.VELOCITY_MAXIMUM, getDataModel().getVelocityMaximum());
+		cfg.setSetting(axis, TinyGConfiguration.FEEDRATE_MAXIMUM,getDataModel().getMaximumFeedrate());
+		cfg.setSetting(axis, TinyGConfiguration.TRAVEL_MAXIMUM,getDataModel().getTravelMaximum());
+		cfg.setSetting(axis, TinyGConfiguration.JERK_MAXIMUM,getDataModel().getJerkMaximum());
+		cfg.setSetting(axis, TinyGConfiguration.JERK_HOMING,getDataModel().getJerkHoming());
+		cfg.setSetting(axis, TinyGConfiguration.JUNCTION_DEVIATION,getDataModel().getJunctionDeviation());
+		cfg.setSetting(axis, TinyGConfiguration.RADIUS_SETTING,getDataModel().getRadiusValue());
+		cfg.setSetting(axis, TinyGConfiguration.MINIMUM_SWITCH_MODE,getDataModel().getMinSwitchMode().getValue());
+		cfg.setSetting(axis, TinyGConfiguration.MAXIMUM_SWITCH_MODE,getDataModel().getMaxSwitchMode().getValue());
+		cfg.setSetting(axis, TinyGConfiguration.SEARCH_VELOCITY,getDataModel().getSearchVelocity());
+		cfg.setSetting(axis, TinyGConfiguration.LATCH_VELOCITY,getDataModel().getLatchVelocity());
+		cfg.setSetting(axis, TinyGConfiguration.ZERO_BACKOFF,getDataModel().getZeroBackoff());
+
+		getControllerService().setConfiguration(cfg);
 	}
 
 	/**
@@ -98,11 +116,6 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		// Apply motors settings
 		applyMotorSetting(cfg);
 
-		//
-		applyAxisConfiguration(cfg, "x", getDataModel().getxAxisWrapper());
-		applyAxisConfiguration(cfg, "y", getDataModel().getyAxisWrapper());
-		applyAxisConfiguration(cfg, "z", getDataModel().getzAxisWrapper());
-		applyAxisConfiguration(cfg, "a", getDataModel().getaAxisWrapper());
 		getControllerService().setConfiguration(cfg);
 	}
 
@@ -157,6 +170,7 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		refreshCommunicationSettings();
 		refreshAxisConfiguration();
 		refreshMotorConfiguration();
+		getDataModel().setSelectedAxis(getDataModel().getChoicesConfigurableAxes().get(0));
 	}
 
 	public void refreshGlobalSettings() throws GkException{
@@ -176,7 +190,7 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		TinyGConfiguration cfg = getControllerService().getConfiguration();
 
 		BigDecimal planeSelection = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.DEFAULT_PLANE_SELECTION, BigDecimal.class);
-		getDataModel().setDefaultPlaneSelection( GkUiUtils.getLabelledValueByKey(planeSelection, getDataModel().getChoicesPlaneSelection()) );
+		getDataModel().setDefaultPlaneSelection( GkUiUtils.getLabelledValueByKey(planeSelection, getDataModel().getChoicesMotorMapping()) );
 
 		BigDecimal units = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.DEFAULT_UNITS_MODE, BigDecimal.class);
 		getDataModel().setDefaultUnitsMode( GkUiUtils.getLabelledValueByKey(units, getDataModel().getChoicesUnits()) );
@@ -318,22 +332,26 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 
 	public void refreshAxisConfiguration() throws GkException{
 		TinyGConfiguration cfg = getControllerService().getConfiguration();
-		getDataModel().getxAxisWrapper().setConfiguration(cfg);
-		getDataModel().getyAxisWrapper().setConfiguration(cfg);
-		getDataModel().getzAxisWrapper().setConfiguration(cfg);
-		getDataModel().getaAxisWrapper().setConfiguration(cfg);
-	}
+		LabeledValue<String> selectedAxis = getDataModel().getSelectedAxis();
+
+		getDataModel().setMaximumFeedrate( 	cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.FEEDRATE_MAXIMUM, BigDecimal.class) );
+		getDataModel().setVelocityMaximum( 	cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.VELOCITY_MAXIMUM, BigDecimal.class) );
+		getDataModel().setTravelMaximum( 	cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.TRAVEL_MAXIMUM, BigDecimal.class) );
+		getDataModel().setJerkMaximum( 		cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.JERK_MAXIMUM, BigDecimal.class) );
+		getDataModel().setJerkHoming( 		cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.JERK_HOMING, BigDecimal.class) );
+		getDataModel().setJunctionDeviation( cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.JUNCTION_DEVIATION, BigDecimal.class) );
+		getDataModel().setRadiusValue( 		cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.RADIUS_SETTING, BigDecimal.class) );
+		getDataModel().setSearchVelocity(	cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.SEARCH_VELOCITY, BigDecimal.class) );
+		getDataModel().setLatchVelocity( 	cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.LATCH_VELOCITY, BigDecimal.class) );
+		getDataModel().setZeroBackoff( 		cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.ZERO_BACKOFF, BigDecimal.class) );
+
+		BigDecimal minSwitchMode = cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.MINIMUM_SWITCH_MODE, BigDecimal.class) ;
+		getDataModel().setMinSwitchMode(GkUiUtils.getLabelledValueByKey(minSwitchMode, getDataModel().getChoicesSwitchModes()));
+
+		BigDecimal maxSwitchMode = cfg.getSetting(selectedAxis.getValue(), TinyGConfiguration.MAXIMUM_SWITCH_MODE, BigDecimal.class) ;
+		getDataModel().setMaxSwitchMode(GkUiUtils.getLabelledValueByKey(maxSwitchMode, getDataModel().getChoicesSwitchModes()));
 
 
-	private void applyAxisConfiguration(TinyGConfiguration cfg, String targetGroup, TinyGLinearAxisSettingsWrapper wrapper) throws GkException{
-		TinyGGroupSettings grp = cfg.getGroup(targetGroup);
-		TinyGGroupSettings wrapperGrp = wrapper.getConfiguration().getGroup(targetGroup);
-
-		for (TinyGSetting setting : grp.getSettings()) {
-			// On passe la valeur du wrapper dans la config
-			Object wrapperValue = wrapper.getConfiguration().getSetting(wrapperGrp.getGroupIdentifier(), setting.getIdentifier(), setting.getType());
-			cfg.setSetting(grp.getGroupIdentifier(), setting.getIdentifier(),wrapperValue);
-		}
 	}
 
 	/**
@@ -363,7 +381,6 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 			e.printStackTrace();
 		}
 	}
-
 
 
 }

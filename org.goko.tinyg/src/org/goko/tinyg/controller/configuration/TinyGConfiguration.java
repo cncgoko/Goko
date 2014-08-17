@@ -27,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
+import org.goko.tinyg.controller.configuration.type.TinyGStringSetting;
 
 
 
@@ -115,41 +117,41 @@ public class TinyGConfiguration {
 		groups.add(new TinyGMotorSettings("3"));
 		groups.add(new TinyGMotorSettings("4"));
 
-		groups.add( new TinyGAxisSettings(X_AXIS_SETTINGS));
-		groups.add( new TinyGAxisSettings(Y_AXIS_SETTINGS));
-		groups.add( new TinyGAxisSettings(Z_AXIS_SETTINGS));
-		groups.add( new TinyGAxisSettings(A_AXIS_SETTINGS));
-		groups.add( new TinyGAxisSettings(B_AXIS_SETTINGS));
-		groups.add( new TinyGAxisSettings(C_AXIS_SETTINGS));
+		groups.add( new TinyGLinearAxisSettings(X_AXIS_SETTINGS));
+		groups.add( new TinyGLinearAxisSettings(Y_AXIS_SETTINGS));
+		groups.add( new TinyGLinearAxisSettings(Z_AXIS_SETTINGS));
+		groups.add( new TinyGRotationalAxisSettings(A_AXIS_SETTINGS));
+		//groups.add( new TinyGAxisSettings(B_AXIS_SETTINGS));
+		//groups.add( new TinyGAxisSettings(C_AXIS_SETTINGS));
 
 		TinyGGroupSettings sysgroup = new TinyGGroupSettings(SYSTEM_SETTINGS);
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(FIRMWARE_BUILD 			,new BigDecimal("0"), true));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(FIRMWARE_VERSION 			,new BigDecimal("0"), true));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(HARDWARE_VERSION 			,new BigDecimal("0"), true));
-		sysgroup.addSetting(new TinyGSetting<String>(UNIQUE_ID						,"0", true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_BUILD 			,new BigDecimal("0"), true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_VERSION 			,new BigDecimal("0"), true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(HARDWARE_VERSION 			,new BigDecimal("0"), true));
+		sysgroup.addSetting(new TinyGStringSetting(UNIQUE_ID						,"0", true));
 
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(JUNCTION_ACCELERATION 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(CHORDAL_TOLERANCE 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(SWITCH_TYPE 				,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(MOTOR_DISABLE_TIMEOUT		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JUNCTION_ACCELERATION 		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(CHORDAL_TOLERANCE 			,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(SWITCH_TYPE 				,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(MOTOR_DISABLE_TIMEOUT		,new BigDecimal("0")));
 
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(JSON_MODE 					,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(JSON_VERBOSITY 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(TEXT_MODE_VERBOSITY 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(QUEUE_REPORT_VERBOSITY		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(STATUS_REPORT_VERBOSITY 	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(STATUS_REPORT_INTERVAL 	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(IGNORE_CR_LF_ON_RX 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(ENABLE_CR_ON_TX 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(ENABLE_CHARACTER_ECHO 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(ENABLE_XON_XOFF 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(BAUD_RATE 					,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_MODE 					,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_VERBOSITY 			,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(TEXT_MODE_VERBOSITY 		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(QUEUE_REPORT_VERBOSITY		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_VERBOSITY 	,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_INTERVAL 	,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(IGNORE_CR_LF_ON_RX 		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CR_ON_TX 			,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CHARACTER_ECHO 		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_XON_XOFF 			,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(BAUD_RATE 					,new BigDecimal("0")));
 
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(DEFAULT_PLANE_SELECTION	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(DEFAULT_UNITS_MODE			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(DEFAULT_COORDINATE_SYSTEM 	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(DEFAULT_PATH_CONTROL		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGSetting<BigDecimal>(DEFAULT_DISTANCE_MODE 		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PLANE_SELECTION	,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_UNITS_MODE			,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_COORDINATE_SYSTEM 	,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PATH_CONTROL		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_DISTANCE_MODE 		,new BigDecimal("0")));
 
 		groups.add(sysgroup);
 	}
@@ -159,6 +161,15 @@ public class TinyGConfiguration {
 	 */
 	public List<TinyGGroupSettings> getGroups() {
 		return groups;
+	}
+
+	public TinyGGroupSettings getGroup(String identifier) {
+		for (TinyGGroupSettings tinyGGroupSettings : groups) {
+			if(StringUtils.equals(tinyGGroupSettings.getGroupIdentifier(), identifier)){
+				return tinyGGroupSettings;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -274,7 +285,7 @@ public class TinyGConfiguration {
 	private <T> void setSetting(TinyGGroupSettings group, String identifier, T value) throws GkException{
 		for(TinyGSetting<?> setting : group.getSettings()){
 			if(StringUtils.equalsIgnoreCase( setting.getIdentifier(), identifier ) ){
-				if(setting.getType() != value.getClass()){
+				if(value != null && setting.getType() != value.getClass()){
 					throw new GkTechnicalException("Setting '"+identifier+"' type mismatch. Expecting "+setting.getType()+"', got'"+value.getClass()+"'. ");
 				}
 				((TinyGSetting<T>)setting).setValue(value);

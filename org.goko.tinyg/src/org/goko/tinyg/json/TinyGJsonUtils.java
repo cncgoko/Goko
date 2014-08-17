@@ -42,18 +42,23 @@ public class TinyGJsonUtils {
 	public static final String STATUS_REPORT = "sr";
 	public static final String QUEUE_REPORT = "qr";
 	public static final String GCODE_COMMAND = "gc";
+	public static final String LINE_REPORT = "n";
 
 	public static final String STATUS_REPORT_POSITION_X = "posx";
 	public static final String STATUS_REPORT_POSITION_Y = "posy";
 	public static final String STATUS_REPORT_POSITION_Z = "posz";
 	public static final String STATUS_REPORT_POSITION_A = "posa";
+	public static final String STATUS_REPORT_UNITS = "unit";
+	public static final String STATUS_REPORT_COORDINATES = "coor";
+	public static final String STATUS_REPORT_DISTANCE_MODE = "dist";
 	public static final String STATUS_REPORT_VELOCITY = "vel";
 	public static final String STATUS_REPORT_STATE = "stat";
 
-	public static final int FOOTER_STATUS_CODE_INDEX = 2;
-	public static final int FOOTER_BYTES_COUNT_INDEX = 3;
-	public static final int FOOTER_CHECKSUM_INDEX = 4;
+	public static final int FOOTER_STATUS_CODE_INDEX = 1;
+	public static final int FOOTER_BYTES_COUNT_INDEX = 2;
+	public static final int FOOTER_CHECKSUM_INDEX = 3;
 	private static final int HASHMASK = 9999;
+
 
 
 	/**
@@ -90,7 +95,7 @@ public class TinyGJsonUtils {
 		JsonObject jsonParams = new JsonObject();
 		for(TinyGSetting setting : group.getSettings()){
 			// Make sure we have to export the setting
-			if(setting.isReadOnly()){
+			if(setting.isReadOnly() || setting.getValue() == null){
 				continue;
 			}
 			if(setting.getType() == BigDecimal.class){
@@ -104,7 +109,7 @@ public class TinyGJsonUtils {
 
 	public static JsonObject toJson(TinyGSetting setting){
 		// Make sure we have to export the setting
-		if(setting.isReadOnly()){
+		if(setting == null || setting.isReadOnly() || setting.getValue() == null){
 			return null;
 		}
 		JsonObject jsonParams = new JsonObject();
@@ -136,8 +141,12 @@ public class TinyGJsonUtils {
 	 * @return {@link JsonObject}
 	 */
 	public static JsonObject toCompleteJson(TinyGGroupSettings group){
-		JsonObject jsonGroup = new JsonObject();
-		jsonGroup.add(group.getGroupIdentifier(), toJson(group));
+		JsonObject jsonGroup = null;
+		JsonObject jsonGroupContent = toJson(group);
+		if(jsonGroupContent != null && !jsonGroupContent.isEmpty()){
+			jsonGroup = new JsonObject();
+			jsonGroup.add(group.getGroupIdentifier(), jsonGroupContent);
+		}
 		return jsonGroup;
 	}
 

@@ -1,5 +1,7 @@
 package org.goko.tinyg.configuration;
 
+import java.math.BigDecimal;
+
 import javax.annotation.PostConstruct;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -7,10 +9,12 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -30,16 +34,20 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
+import org.goko.common.elements.combo.v2.GkCombo2;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.configuration.bindings.ConfigurationBindings;
 import org.goko.tinyg.configuration.bindings.ConfigurationController;
+import org.goko.tinyg.configuration.bindings.wrapper.TinyGAAxisSettingsWrapper;
+import org.goko.tinyg.configuration.bindings.wrapper.TinyGLinearAxisSettingsWrapper;
+import org.goko.tinyg.controller.configuration.TinyGLinearAxisSettings;
 import org.goko.tinyg.controller.events.ConfigurationUpdateEvent;
 
-public class ConfigurationDialog extends Dialog{
+public class TinyGConfigurationDialog extends Dialog{
 	/** LOG */
-	private static final GkLog LOG = GkLog.getLogger(ConfigurationDialog.class);
+	private static final GkLog LOG = GkLog.getLogger(TinyGConfigurationDialog.class);
 
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Text txtFirmwareversion;
@@ -56,12 +64,6 @@ public class ConfigurationDialog extends Dialog{
 	private Text txtTravelPerRevM3;
 	private Text txtStepAngleM4;
 	private Text txtTravelPerRevM4;
-	private Text txtMaxVelocity;
-	private Text txtMaxFeedrate;
-	private Text txtMaxTravel;
-	private Text txtMaxJerk;
-	private Text txtJunctionDeviation;
-	private Text txtRadiusValue;
 	private ConfigurationController controller;
 	private GkCombo<LabeledValue> motor1mapping;
 	private GkCombo<LabeledValue> motor2mapping;
@@ -71,13 +73,6 @@ public class ConfigurationDialog extends Dialog{
 	private GkCombo<LabeledValue> comboMicrostepsM2;
 	private GkCombo<LabeledValue> comboMicrostepsM3;
 	private GkCombo<LabeledValue> comboMicrostepsM4;
-	private GkCombo<LabeledValue> axisSelectionCombo;
-	private GkCombo<LabeledValue> comboMinSwitchMode;
-	private GkCombo<LabeledValue> comboMaxSwitchMode;
-	private Text txtJerkHoming;
-	private Text txtSearchVelocity;
-	private Text txtLatchVelocity;
-	private Text txtZeroBackoff;
 	private GkCombo<LabeledValue> comboPolarityM1;
 	private GkCombo<LabeledValue> comboPolarityM2;
 	private GkCombo<LabeledValue> comboPolarityM3;
@@ -106,9 +101,78 @@ public class ConfigurationDialog extends Dialog{
 	private GkCombo<LabeledValue> comboSwitchType;
 	private CLabel labelValidationMessages;
 	private GkCombo<LabeledValue> comboBaudrate;
+	private Text xvm;
+	private Text xfr;
+	private Text xtn;
+	private Text xtm;
+	private Text xjm;
+	private Text xjh;
+	private Text xjd;
+	private Text xsv;
+	private Text xlv;
+	private Text xlb;
+	private Text xzb;
+	private Text yvm;
+	private Text zvm;
+	private Text avm;
+	private Text yfr;
+	private Text ytn;
+	private Text ytm;
+	private Text yjm;
+	private Text yjh;
+	private Text yjd;
+	private Text ara;
+	private Text ysv;
+	private Text ylv;
+	private Text ylb;
+	private Text yzb;
+	private Text zfr;
+	private Text ztn;
+	private Text ztm;
+	private Text zjm;
+	private Text zjh;
+	private Text zjd;
+	private Text zsv;
+	private Text zlv;
+	private Text zlb;
+	private Text zzb;
+	private Text asv;
+	private Text alv;
+	private Text alb;
+	private Text azb;
+	private Text afr;
+	private Text atn;
+	private Text atm;
+	private Text ajm;
+	private Text ajh;
+	private Text ajd;
+
+	private GkCombo2<BigDecimal> xamCombo;
+
+	private GkCombo2<BigDecimal> yamCombo;
+
+	private GkCombo2<BigDecimal> zamCombo;
+
+	private GkCombo2<BigDecimal> aamCombo;
+
+	private GkCombo2<BigDecimal> xsnCombo;
+
+	private GkCombo2<BigDecimal> ysnCombo;
+
+	private GkCombo2<BigDecimal> zsnCombo;
+
+	private GkCombo2<BigDecimal> asnCombo;
+
+	private GkCombo2<BigDecimal> xsmCombo;
+
+	private GkCombo2<BigDecimal> ysmCombo;
+
+	private GkCombo2<BigDecimal> zsmCombo;
+
+	private GkCombo2<BigDecimal> asmCombo;
 
 
-	public ConfigurationDialog(Shell shell, IEclipseContext context) {
+	public TinyGConfigurationDialog(Shell shell, IEclipseContext context) {
 		super(shell);
 		controller = new ConfigurationController(new ConfigurationBindings());
 		ContextInjectionFactory.inject(controller, context);
@@ -140,6 +204,7 @@ public class ConfigurationDialog extends Dialog{
 			public void run() {
 				try {
 					controller.refreshConfiguration();
+
 				} catch (GkException e) {
 					e.printStackTrace();
 				}
@@ -177,7 +242,10 @@ public class ConfigurationDialog extends Dialog{
 		formSystem.getBody().setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		Composite composite_4 = new Composite(formSystem.getBody(), SWT.NONE);
-		composite_4.setLayout(new GridLayout(1, false));
+		GridLayout gl_composite_4 = new GridLayout(1, false);
+		gl_composite_4.marginWidth = 10;
+		gl_composite_4.marginHeight = 10;
+		composite_4.setLayout(gl_composite_4);
 		formToolkit.adapt(composite_4);
 		formToolkit.paintBordersFor(composite_4);
 
@@ -762,7 +830,7 @@ public class ConfigurationDialog extends Dialog{
 		composite_13.setLayout(new GridLayout(1, false));
 
 		Section sctnNewSection_2 = formToolkit.createSection(composite_13, Section.TWISTIE | Section.TITLE_BAR);
-		sctnNewSection_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		sctnNewSection_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		formToolkit.paintBordersFor(sctnNewSection_2);
 		sctnNewSection_2.setText("Axis");
 		sctnNewSection_2.setExpanded(true);
@@ -772,176 +840,380 @@ public class ConfigurationDialog extends Dialog{
 		sctnNewSection_2.setClient(composite_14);
 		composite_14.setLayout(new GridLayout(1, false));
 
-		Composite composite_15 = formToolkit.createComposite(composite_14, SWT.NONE);
-		formToolkit.paintBordersFor(composite_15);
-		composite_15.setLayout(new GridLayout(2, false));
+		Composite composite_1 = new Composite(composite_14, SWT.NONE);
+		composite_1.setLayout(new GridLayout(5, false));
+		GridData gd_composite_1 = new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1);
+		gd_composite_1.heightHint = 124;
+		composite_1.setLayoutData(gd_composite_1);
+		formToolkit.adapt(composite_1);
+		formToolkit.paintBordersFor(composite_1);
+		new Label(composite_1, SWT.NONE);
 
-		formToolkit.createLabel(composite_15, "Axis selection :", SWT.NONE);
+		Label lblXAxis = new Label(composite_1, SWT.NONE);
+		lblXAxis.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		lblXAxis.setAlignment(SWT.CENTER);
+		GridData gd_lblXAxis = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_lblXAxis.widthHint = 80;
+		lblXAxis.setLayoutData(gd_lblXAxis);
+		formToolkit.adapt(lblXAxis, true, true);
+		lblXAxis.setText("X axis");
 
-		axisSelectionCombo = new  GkCombo<LabeledValue>(composite_15, SWT.NONE | SWT.READ_ONLY);
-		Combo combo_26 = axisSelectionCombo.getCombo();
-		GridData gd_combo_26 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_combo_26.widthHint = 80;
-		combo_26.setLayoutData(gd_combo_26);
+		Label lblYAxis = new Label(composite_1, SWT.NONE);
+		GridData gd_lblYAxis = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_lblYAxis.widthHint = 80;
+		lblYAxis.setLayoutData(gd_lblYAxis);
+		lblYAxis.setText("Y axis");
+		lblYAxis.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		lblYAxis.setAlignment(SWT.CENTER);
+		formToolkit.adapt(lblYAxis, true, true);
 
-		Label label = formToolkit.createSeparator(composite_14, SWT.HORIZONTAL);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		Label lblZAxis = new Label(composite_1, SWT.NONE);
+		GridData gd_lblZAxis = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_lblZAxis.widthHint = 80;
+		lblZAxis.setLayoutData(gd_lblZAxis);
+		lblZAxis.setText("Z axis");
+		lblZAxis.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		lblZAxis.setAlignment(SWT.CENTER);
+		formToolkit.adapt(lblZAxis, true, true);
 
-		Composite composite_16 = formToolkit.createComposite(composite_14, SWT.NONE);
-		composite_16.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		Label lblAAxis = new Label(composite_1, SWT.NONE);
+		GridData gd_lblAAxis = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_lblAAxis.widthHint = 80;
+		lblAAxis.setLayoutData(gd_lblAAxis);
+		lblAAxis.setText("A axis");
+		lblAAxis.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		lblAAxis.setAlignment(SWT.CENTER);
+		formToolkit.adapt(lblAAxis, true, true);
 
-		formToolkit.paintBordersFor(composite_16);
-		composite_16.setLayout(new GridLayout(2, false));
-
-		Label lblVelocityMaximum = formToolkit.createLabel(composite_16, "Velocity maximum :", SWT.NONE);
-		lblVelocityMaximum.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		txtMaxVelocity = formToolkit.createText(composite_16, "", SWT.NONE);
-		GridData gd_txtMaxVelocity = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_txtMaxVelocity.widthHint = 80;
-		txtMaxVelocity.setLayoutData(gd_txtMaxVelocity);
-
-		Label lblMaximumFeedRate = formToolkit.createLabel(composite_16, "Maximum feed rate :", SWT.NONE);
-		lblMaximumFeedRate.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		txtMaxFeedrate = formToolkit.createText(composite_16, "", SWT.NONE);
-		GridData gd_txtMaxFeedrate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtMaxFeedrate.widthHint = 80;
-		txtMaxFeedrate.setLayoutData(gd_txtMaxFeedrate);
-
-		Label lblMaximumTravel = formToolkit.createLabel(composite_16, "Travel maximum :", SWT.NONE);
-		lblMaximumTravel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		txtMaxTravel = formToolkit.createText(composite_16, "", SWT.NONE);
-		GridData gd_txtMaxTravel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtMaxTravel.widthHint = 80;
-		txtMaxTravel.setLayoutData(gd_txtMaxTravel);
-
-		Label lblMaximumJerk = formToolkit.createLabel(composite_16, "Jerk maximum :", SWT.NONE);
-		lblMaximumJerk.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		txtMaxJerk = formToolkit.createText(composite_16, "", SWT.NONE);
-		GridData gd_txtMaxJerk = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtMaxJerk.widthHint = 80;
-		txtMaxJerk.setLayoutData(gd_txtMaxJerk);
-
-		Label lblJerkHoming = new Label(composite_16, SWT.NONE);
-		lblJerkHoming.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(lblJerkHoming, true, true);
-		lblJerkHoming.setText("Jerk homing :");
-
-		txtJerkHoming = new Text(composite_16, SWT.BORDER);
-		GridData gd_txtJerkHoming = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_txtJerkHoming.widthHint = 80;
-		txtJerkHoming.setLayoutData(gd_txtJerkHoming);
-		formToolkit.adapt(txtJerkHoming, true, true);
-
-		Label lblJunctionDeviation = formToolkit.createLabel(composite_16, "Junction deviation :", SWT.NONE);
-		lblJunctionDeviation.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		txtJunctionDeviation = formToolkit.createText(composite_16, "", SWT.NONE);
-		GridData gd_txtJunctionDeviation = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtJunctionDeviation.widthHint = 80;
-		txtJunctionDeviation.setLayoutData(gd_txtJunctionDeviation);
-
-		Label lblRadiusValue = formToolkit.createLabel(composite_16, "Radius value :", SWT.NONE);
-		lblRadiusValue.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		txtRadiusValue = formToolkit.createText(composite_16, "", SWT.NONE);
-		GridData gd_txtRadiusValue = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtRadiusValue.widthHint = 80;
-		txtRadiusValue.setLayoutData(gd_txtRadiusValue);
-
-		Label lblSwitchMode = formToolkit.createLabel(composite_16, "Minimum switch mode :", SWT.NONE);
-		lblSwitchMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-
-		comboMinSwitchMode = new GkCombo<LabeledValue>(composite_16, SWT.NONE | SWT.READ_ONLY);
-		Combo combo_27 = comboMinSwitchMode.getCombo();
-		GridData gd_combo_27 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_combo_27.widthHint = 80;
-		combo_27.setLayoutData(gd_combo_27);
-
-		Label lblNewLabel = new Label(composite_16, SWT.NONE);
+		Label lblNewLabel = new Label(composite_1, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblNewLabel, true, true);
-		lblNewLabel.setText("Maximum switch mode :");
+		lblNewLabel.setText("Axis mode");
 
-		comboMaxSwitchMode = new GkCombo<LabeledValue>(composite_16, SWT.NONE | SWT.READ_ONLY);
-		Combo combo_28 = comboMaxSwitchMode.getCombo();
-		GridData gd_combo_28 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_combo_28.widthHint = 80;
-		combo_28.setLayoutData(gd_combo_28);
+		xamCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo xam = xamCombo.getCombo();
+		xam.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.paintBordersFor(xam);
 
-		Label lblSearchVelocity = new Label(composite_16, SWT.NONE);
+		yamCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo yam = yamCombo.getCombo();
+		yam.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.paintBordersFor(yam);
+
+		zamCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo zam = zamCombo.getCombo();
+		zam.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(zam);
+
+		aamCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo aam = aamCombo.getCombo();
+		aam.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(aam);
+
+		Label lblVelocityMax = new Label(composite_1, SWT.NONE);
+		lblVelocityMax.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblVelocityMax, true, true);
+		lblVelocityMax.setText("Velocity max.");
+
+		xvm = new Text(composite_1, SWT.BORDER);
+		xvm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xvm, true, true);
+
+		yvm = new Text(composite_1, SWT.BORDER);
+		yvm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(yvm, true, true);
+
+		zvm = new Text(composite_1, SWT.BORDER);
+		zvm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zvm, true, true);
+
+		avm = new Text(composite_1, SWT.BORDER);
+		avm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(avm, true, true);
+
+		Label lblFeedrateMax = new Label(composite_1, SWT.NONE);
+		lblFeedrateMax.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblFeedrateMax, true, true);
+		lblFeedrateMax.setText("Feedrate max.");
+
+		xfr = new Text(composite_1, SWT.BORDER);
+		xfr.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xfr, true, true);
+
+		yfr = new Text(composite_1, SWT.BORDER);
+		yfr.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(yfr, true, true);
+
+		zfr = new Text(composite_1, SWT.BORDER);
+		zfr.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zfr, true, true);
+
+		afr = new Text(composite_1, SWT.BORDER);
+		afr.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(afr, true, true);
+
+		Label lblTravelMin = new Label(composite_1, SWT.NONE);
+		lblTravelMin.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblTravelMin, true, true);
+		lblTravelMin.setText("Travel min.");
+
+		xtn = new Text(composite_1, SWT.BORDER);
+		xtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xtn, true, true);
+
+		ytn = new Text(composite_1, SWT.BORDER);
+		ytn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ytn, true, true);
+
+		ztn = new Text(composite_1, SWT.BORDER);
+		ztn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ztn, true, true);
+
+		atn = new Text(composite_1, SWT.BORDER);
+		atn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(atn, true, true);
+
+		Label lblTravelMax = new Label(composite_1, SWT.NONE);
+		lblTravelMax.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblTravelMax, true, true);
+		lblTravelMax.setText("Travel max.");
+
+		xtm = new Text(composite_1, SWT.BORDER);
+		xtm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xtm, true, true);
+
+		ytm = new Text(composite_1, SWT.BORDER);
+		ytm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ytm, true, true);
+
+		ztm = new Text(composite_1, SWT.BORDER);
+		ztm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ztm, true, true);
+
+		atm = new Text(composite_1, SWT.BORDER);
+		atm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(atm, true, true);
+
+		Label lblJerkMax = new Label(composite_1, SWT.NONE);
+		lblJerkMax.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblJerkMax, true, true);
+		lblJerkMax.setText("Jerk max.");
+
+		xjm = new Text(composite_1, SWT.BORDER);
+		xjm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xjm, true, true);
+
+		yjm = new Text(composite_1, SWT.BORDER);
+		yjm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(yjm, true, true);
+
+		zjm = new Text(composite_1, SWT.BORDER);
+		zjm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zjm, true, true);
+
+		ajm = new Text(composite_1, SWT.BORDER);
+		ajm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ajm, true, true);
+
+		Label lblJerkHoming = new Label(composite_1, SWT.NONE);
+		lblJerkHoming.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblJerkHoming, true, true);
+		lblJerkHoming.setText("Jerk homing");
+
+		xjh = new Text(composite_1, SWT.BORDER);
+		xjh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xjh, true, true);
+
+		yjh = new Text(composite_1, SWT.BORDER);
+		yjh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(yjh, true, true);
+
+		zjh = new Text(composite_1, SWT.BORDER);
+		zjh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zjh, true, true);
+
+		ajh = new Text(composite_1, SWT.BORDER);
+		ajh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ajh, true, true);
+
+		Label lblJunctionDeviation = new Label(composite_1, SWT.NONE);
+		lblJunctionDeviation.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblJunctionDeviation, true, true);
+		lblJunctionDeviation.setText("Junction deviation");
+
+		xjd = new Text(composite_1, SWT.BORDER);
+		xjd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xjd, true, true);
+
+		yjd = new Text(composite_1, SWT.BORDER);
+		yjd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(yjd, true, true);
+
+		zjd = new Text(composite_1, SWT.BORDER);
+		zjd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zjd, true, true);
+
+		ajd = new Text(composite_1, SWT.BORDER);
+		ajd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ajd, true, true);
+
+		Label lblRadiusSetting = new Label(composite_1, SWT.NONE);
+		lblRadiusSetting.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblRadiusSetting, true, true);
+		lblRadiusSetting.setText("Radius setting");
+		new Label(composite_1, SWT.NONE);
+		new Label(composite_1, SWT.NONE);
+		new Label(composite_1, SWT.NONE);
+
+		ara = new Text(composite_1, SWT.BORDER);
+		ara.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ara, true, true);
+
+		Label lblMinSwitchMode = new Label(composite_1, SWT.NONE);
+		lblMinSwitchMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblMinSwitchMode, true, true);
+		lblMinSwitchMode.setText("Min. switch mode");
+
+		xsnCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo xsn = xsnCombo.getCombo();
+		xsn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.paintBordersFor(xsn);
+
+		ysnCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo ysn = ysnCombo.getCombo();
+		ysn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(ysn);
+
+		zsnCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo zsn = zsnCombo.getCombo();
+		zsn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(zsn);
+
+		asnCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo asn = asnCombo.getCombo();
+		asn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(asn);
+
+		Label lblMaxSwitchMode = new Label(composite_1, SWT.NONE);
+		lblMaxSwitchMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblMaxSwitchMode, true, true);
+		lblMaxSwitchMode.setText("Max. switch mode");
+
+		xsmCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo xsm = xsmCombo.getCombo();
+		xsm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.paintBordersFor(xsm);
+
+		ysmCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo ysm = ysmCombo.getCombo();
+		ysm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(ysm);
+
+		zsmCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo zsm = zsmCombo.getCombo();
+		zsm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(zsm);
+
+		asmCombo = new GkCombo2<BigDecimal>(composite_1, SWT.READ_ONLY);
+		Combo asm = asmCombo.getCombo();
+		asm.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.paintBordersFor(asm);
+
+		Label lblSearchVelocity = new Label(composite_1, SWT.NONE);
 		lblSearchVelocity.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblSearchVelocity, true, true);
-		lblSearchVelocity.setText("Search velocity :");
+		lblSearchVelocity.setText("Search velocity");
 
-		txtSearchVelocity = new Text(composite_16, SWT.BORDER);
-		GridData gd_txtSearchVelocity = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_txtSearchVelocity.widthHint = 80;
-		txtSearchVelocity.setLayoutData(gd_txtSearchVelocity);
-		formToolkit.adapt(txtSearchVelocity, true, true);
+		xsv = new Text(composite_1, SWT.BORDER);
+		xsv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xsv, true, true);
 
-		Label lblLatchVelocity = new Label(composite_16, SWT.NONE);
+		ysv = new Text(composite_1, SWT.BORDER);
+		ysv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ysv, true, true);
+
+		zsv = new Text(composite_1, SWT.BORDER);
+		zsv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zsv, true, true);
+
+		asv = new Text(composite_1, SWT.BORDER);
+		asv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(asv, true, true);
+
+		Label lblLatchVelocity = new Label(composite_1, SWT.NONE);
 		lblLatchVelocity.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblLatchVelocity, true, true);
-		lblLatchVelocity.setText("Latch velocity :");
+		lblLatchVelocity.setText("Latch velocity");
 
-		txtLatchVelocity = new Text(composite_16, SWT.BORDER);
-		GridData gd_txtLatchVelocity = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_txtLatchVelocity.widthHint = 80;
-		txtLatchVelocity.setLayoutData(gd_txtLatchVelocity);
-		formToolkit.adapt(txtLatchVelocity, true, true);
+		xlv = new Text(composite_1, SWT.BORDER);
+		xlv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xlv, true, true);
 
-		Label lblZeroBackoff = new Label(composite_16, SWT.NONE);
+		ylv = new Text(composite_1, SWT.BORDER);
+		ylv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ylv, true, true);
+
+		zlv = new Text(composite_1, SWT.BORDER);
+		zlv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zlv, true, true);
+
+		alv = new Text(composite_1, SWT.BORDER);
+		alv.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(alv, true, true);
+
+		Label lblLatchBackoff = new Label(composite_1, SWT.NONE);
+		lblLatchBackoff.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(lblLatchBackoff, true, true);
+		lblLatchBackoff.setText("Latch backoff");
+
+		xlb = new Text(composite_1, SWT.BORDER);
+		xlb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xlb, true, true);
+
+		ylb = new Text(composite_1, SWT.BORDER);
+		ylb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(ylb, true, true);
+
+		zlb = new Text(composite_1, SWT.BORDER);
+		zlb.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+		formToolkit.adapt(zlb, true, true);
+
+		alb = new Text(composite_1, SWT.BORDER);
+		alb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(alb, true, true);
+
+		Label lblZeroBackoff = new Label(composite_1, SWT.NONE);
 		lblZeroBackoff.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblZeroBackoff, true, true);
-		lblZeroBackoff.setText("Zero backoff :");
+		lblZeroBackoff.setText("Zero backoff");
 
-		txtZeroBackoff = new Text(composite_16, SWT.BORDER);
-		GridData gd_txtZeroBackoff = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd_txtZeroBackoff.widthHint = 80;
-		txtZeroBackoff.setLayoutData(gd_txtZeroBackoff);
-		formToolkit.adapt(txtZeroBackoff, true, true);
+		xzb = new Text(composite_1, SWT.BORDER);
+		xzb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(xzb, true, true);
 
-		Button btnApply = new Button(composite_13, SWT.NONE);
-		btnApply.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(btnApply, true, true);
-		btnApply.setText("Apply axis settings");
+		yzb = new Text(composite_1, SWT.BORDER);
+		yzb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(yzb, true, true);
+
+		zzb = new Text(composite_1, SWT.BORDER);
+		zzb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(zzb, true, true);
+
+		azb = new Text(composite_1, SWT.BORDER);
+		azb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		formToolkit.adapt(azb, true, true);
 		labelValidationMessages = new CLabel(frmNewForm.getHead(), SWT.NONE);
 		frmNewForm.setHeadClient(labelValidationMessages);
 		labelValidationMessages.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		labelValidationMessages.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/cross-circle.png"));
 		labelValidationMessages.setForeground(SWTResourceManager.getColor(0, 0, 0));
-
-		/*Composite composite_1 = new Composite(parent, SWT.NONE);
-		composite_1.setLayout(new GridLayout(2, false));
-		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-		Button btnNewButton = new Button(composite_1, SWT.NONE);
-		btnNewButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				try {
-					if(controller.validate()){
-						controller.applySettingChanges();
-					}
-				} catch (GkException e1) {
-					GkLog.error(e1);
-				}
-			}
-		});
-		btnNewButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-		btnNewButton.setText("Apply");
-
-		Button btnCancel = new Button(composite_1, SWT.NONE);
-		btnCancel.setText("Cancel");
-
-		m_bindingContext = initDataBindings();
-*/
 		initCustomDataBindings();
 		controller.refreshConfiguration();
+	}
+
+
+
+	protected void createColumn(TableViewer tableViewer, String title, int columnIndex){
 	}
 
 	@EventListener(ConfigurationUpdateEvent.class)
@@ -962,11 +1234,6 @@ public class ConfigurationDialog extends Dialog{
 
 		this.controller.addTextModifyBinding(txtFirmwarebuild, 			"firmwareBuild");
 		this.controller.addTextModifyBinding(txtFirmwareversion, 		"firmwareVersion");
-		this.controller.addTextModifyBinding(txtJunctionDeviation, 		"junctionDeviation");
-		this.controller.addBigDecimalModifyBinding(txtMaxJerk, 				"maxJerk");
-		this.controller.addBigDecimalModifyBinding(txtMaxTravel, 				"maxTravel");
-		this.controller.addBigDecimalModifyBinding(txtMaxVelocity, 			"maxVelocity");
-		this.controller.addBigDecimalModifyBinding(txtRadiusValue, 			"radiusValue");
 
 		this.controller.addBigDecimalModifyBinding(txtStatusinterval, 		"statusinterval");
 		this.controller.addBigDecimalModifyBinding(txtStepAngleM1, 			"stepAngleM1");
@@ -998,30 +1265,9 @@ public class ConfigurationDialog extends Dialog{
 		this.controller.addItemsBinding(comboDistanceMode		,  "choicesDistanceMode");
 		this.controller.addItemSelectionBinding(comboDistanceMode, "defaultDistanceMode");
 
-		this.controller.addItemsBinding(axisSelectionCombo, 	"choicesConfigurableAxes");
-		this.controller.addItemSelectionBinding(axisSelectionCombo, "selectedAxis");
-
 		this.controller.addItemsBinding(comboBaudrate, 	"choicesBaudrate");
 		this.controller.addItemSelectionBinding(comboBaudrate, "baudrate");
-
-		/*
-		 * Axis values
-		 */
-		this.controller.addBigDecimalModifyBinding(txtMaxFeedrate, 		"maximumFeedrate");
-		this.controller.addBigDecimalModifyBinding(txtMaxVelocity, 		"velocityMaximum");
-		this.controller.addBigDecimalModifyBinding(txtMaxTravel, 			"travelMaximum");
-		this.controller.addBigDecimalModifyBinding(txtMaxJerk, 			"jerkMaximum");
-		this.controller.addBigDecimalModifyBinding(txtJunctionDeviation, 	"junctionDeviation");
-		this.controller.addBigDecimalModifyBinding(txtRadiusValue, 		"radiusValue");
-		this.controller.addBigDecimalModifyBinding(txtSearchVelocity, 	"searchVelocity");
-		this.controller.addBigDecimalModifyBinding(txtLatchVelocity, 		"latchVelocity");
-		this.controller.addBigDecimalModifyBinding(txtZeroBackoff, 		"zeroBackoff");
-		this.controller.addBigDecimalModifyBinding(txtJerkHoming, 		"jerkHoming");
-		this.controller.addBigDecimalModifyBinding(txtDeviceId, 			"uniqueId");
-		this.controller.addItemsBinding(comboMaxSwitchMode, "choicesSwitchModes");
-		this.controller.addItemSelectionBinding(comboMaxSwitchMode, "maxSwitchMode");
-		this.controller.addItemsBinding(comboMinSwitchMode, "choicesSwitchModes");
-		this.controller.addItemSelectionBinding(comboMinSwitchMode, "minSwitchMode");
+		this.controller.addTextModifyBinding(txtDeviceId, 			"uniqueId");
 
 		/*
 		 *  Motor values
@@ -1094,8 +1340,108 @@ public class ConfigurationDialog extends Dialog{
 		this.controller.addCheckboxSelectionBinding(chckboxEnableXonXoff, "enableXonXoff" );
 		this.controller.addCheckboxSelectionBinding(chckboxEnableEcho, "enableEcho" );
 
+		initAxisBindings();
 	}
 
+
+	private void initAxisBindings() throws GkException{
+		{
+			TinyGLinearAxisSettingsWrapper modelObject = controller.getDataModel().getxAxisWrapper();
+
+			this.controller.addItemsBinding(xamCombo, "choicesAxisMode");
+			this.controller.addItemValueSelectionBinding(xamCombo, modelObject, "am");
+
+			this.controller.addItemsBinding(xsmCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(xsmCombo, modelObject, "sx");
+			this.controller.addItemsBinding(xsnCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(xsnCombo, modelObject, "sn");
+
+			this.controller.addBigDecimalModifyBinding(xvm, modelObject, TinyGLinearAxisSettings.VELOCITY_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(xfr, modelObject, TinyGLinearAxisSettings.FEEDRATE_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(xtn, modelObject, TinyGLinearAxisSettings.TRAVEL_MINIMUM);
+			this.controller.addBigDecimalModifyBinding(xtm, modelObject, TinyGLinearAxisSettings.TRAVEL_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(xjm, modelObject, TinyGLinearAxisSettings.JERK_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(xjh, modelObject, TinyGLinearAxisSettings.JERK_HOMING);
+			this.controller.addBigDecimalModifyBinding(xjd, modelObject, TinyGLinearAxisSettings.JUNCTION_DEVIATION);
+			this.controller.addBigDecimalModifyBinding(xsv, modelObject, TinyGLinearAxisSettings.SEARCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(xlv, modelObject, TinyGLinearAxisSettings.LATCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(xlb, modelObject, TinyGLinearAxisSettings.LATCH_BACKOFF);
+			this.controller.addBigDecimalModifyBinding(xzb, modelObject, TinyGLinearAxisSettings.ZERO_BACKOFF);
+		}
+
+		{
+			TinyGLinearAxisSettingsWrapper modelObject = controller.getDataModel().getyAxisWrapper();
+
+			this.controller.addItemsBinding(yamCombo, "choicesAxisMode");
+			this.controller.addItemValueSelectionBinding(yamCombo, modelObject, "am");
+
+			this.controller.addItemsBinding(ysmCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(ysmCombo, modelObject, "sx");
+			this.controller.addItemsBinding(ysnCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(ysnCombo, modelObject, "sn");
+
+			this.controller.addBigDecimalModifyBinding(yvm, modelObject, TinyGLinearAxisSettings.VELOCITY_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(yfr, modelObject, TinyGLinearAxisSettings.FEEDRATE_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(ytn, modelObject, TinyGLinearAxisSettings.TRAVEL_MINIMUM);
+			this.controller.addBigDecimalModifyBinding(ytm, modelObject, TinyGLinearAxisSettings.TRAVEL_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(yjm, modelObject, TinyGLinearAxisSettings.JERK_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(yjh, modelObject, TinyGLinearAxisSettings.JERK_HOMING);
+			this.controller.addBigDecimalModifyBinding(yjd, modelObject, TinyGLinearAxisSettings.JUNCTION_DEVIATION);
+			this.controller.addBigDecimalModifyBinding(ysv, modelObject, TinyGLinearAxisSettings.SEARCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(ylv, modelObject, TinyGLinearAxisSettings.LATCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(ylb, modelObject, TinyGLinearAxisSettings.LATCH_BACKOFF);
+			this.controller.addBigDecimalModifyBinding(yzb, modelObject, TinyGLinearAxisSettings.ZERO_BACKOFF);
+		}
+
+		{
+			TinyGLinearAxisSettingsWrapper modelObject = controller.getDataModel().getzAxisWrapper();
+
+			this.controller.addItemsBinding(zamCombo, "choicesAxisMode");
+			this.controller.addItemValueSelectionBinding(zamCombo, modelObject, "am");
+
+			this.controller.addItemsBinding(zsmCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(zsmCombo, modelObject, "sx");
+			this.controller.addItemsBinding(zsnCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(zsnCombo, modelObject, "sn");
+
+			this.controller.addBigDecimalModifyBinding(zvm, modelObject, TinyGLinearAxisSettings.VELOCITY_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(zfr, modelObject, TinyGLinearAxisSettings.FEEDRATE_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(ztn, modelObject, TinyGLinearAxisSettings.TRAVEL_MINIMUM);
+			this.controller.addBigDecimalModifyBinding(ztm, modelObject, TinyGLinearAxisSettings.TRAVEL_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(zjm, modelObject, TinyGLinearAxisSettings.JERK_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(zjh, modelObject, TinyGLinearAxisSettings.JERK_HOMING);
+			this.controller.addBigDecimalModifyBinding(zjd, modelObject, TinyGLinearAxisSettings.JUNCTION_DEVIATION);
+			this.controller.addBigDecimalModifyBinding(zsv, modelObject, TinyGLinearAxisSettings.SEARCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(zlv, modelObject, TinyGLinearAxisSettings.LATCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(zlb, modelObject, TinyGLinearAxisSettings.LATCH_BACKOFF);
+			this.controller.addBigDecimalModifyBinding(zzb, modelObject, TinyGLinearAxisSettings.ZERO_BACKOFF);
+		}
+
+		{
+			TinyGAAxisSettingsWrapper modelObject = controller.getDataModel().getaAxisWrapper();
+
+			this.controller.addItemsBinding(aamCombo, "choicesAxisMode");
+			this.controller.addItemValueSelectionBinding(aamCombo, modelObject, "am");
+
+			this.controller.addItemsBinding(asmCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(asmCombo, modelObject, "sx");
+			this.controller.addItemsBinding(asnCombo, "choicesSwitchModes");
+			this.controller.addItemValueSelectionBinding(asnCombo, modelObject, "sn");
+
+			this.controller.addBigDecimalModifyBinding(avm, modelObject, TinyGLinearAxisSettings.VELOCITY_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(afr, modelObject, TinyGLinearAxisSettings.FEEDRATE_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(atn, modelObject, TinyGLinearAxisSettings.TRAVEL_MINIMUM);
+			this.controller.addBigDecimalModifyBinding(atm, modelObject, TinyGLinearAxisSettings.TRAVEL_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(ajm, modelObject, TinyGLinearAxisSettings.JERK_MAXIMUM);
+			this.controller.addBigDecimalModifyBinding(ajh, modelObject, TinyGLinearAxisSettings.JERK_HOMING);
+			this.controller.addBigDecimalModifyBinding(ajd, modelObject, TinyGLinearAxisSettings.JUNCTION_DEVIATION);
+			this.controller.addBigDecimalModifyBinding(asv, modelObject, TinyGLinearAxisSettings.SEARCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(alv, modelObject, TinyGLinearAxisSettings.LATCH_VELOCITY);
+			this.controller.addBigDecimalModifyBinding(alb, modelObject, TinyGLinearAxisSettings.LATCH_BACKOFF);
+			this.controller.addBigDecimalModifyBinding(azb, modelObject, TinyGLinearAxisSettings.ZERO_BACKOFF);
+			this.controller.addBigDecimalModifyBinding(ara, modelObject, TinyGLinearAxisSettings.RADIUS_SETTING);
+		}
+	}
 
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
@@ -1114,4 +1460,8 @@ public class ConfigurationDialog extends Dialog{
 
 	}
 
+	@Override
+	protected Point getInitialSize() {
+		return new Point(611, 772);
+	}
 }

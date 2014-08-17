@@ -23,25 +23,10 @@ import java.math.BigDecimal;
 
 import org.goko.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
 
-public class TinyGMotorSettings extends TinyGGroupSettings {
-	private static final String MOTOR_AXIS_MAPPING 		= "ma";
-	private static final String STEP_ANGLE 				= "sa";
-	private static final String TRAVEL_PER_REVOLUTION 	= "tr";
-	private static final String MICROSTEPS 				= "mi";
-	private static final String POLARITY 				= "po";
-	private static final String POWER_MODE 				= "pm";
+public class TinyGRotationalAxisSettings extends TinyGLinearAxisSettings{
 
-
-
-	public TinyGMotorSettings(String motor){
+	public TinyGRotationalAxisSettings(String motor){
 		super(motor);
-		addSetting(new TinyGBigDecimalSetting(MOTOR_AXIS_MAPPING, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(STEP_ANGLE, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TRAVEL_PER_REVOLUTION,new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(MICROSTEPS, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(POLARITY, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(POWER_MODE, 			new BigDecimal("0")));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.RADIUS_SETTING, 		new BigDecimal("0")));
 	}
-
-
 }

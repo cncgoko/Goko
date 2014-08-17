@@ -5,6 +5,7 @@
          id="id1"
          point="org.eclipse.e4.workbench.model">
       <fragment
+            apply="initial"
             uri="fragments/TinyGFragment.e4xmi">
       </fragment>
    </extension>
@@ -20,6 +21,14 @@
                style="push">
          </command>
       </menuContribution>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePages">
+      <page
+            class="org.goko.tinyg.configuration.TinyGFirmwarePreferencePage"
+            id="org.goko.tinyg.firmwarePreferences"
+            name="TinyG">
+      </page>
    </extension>
 
 </plugin>

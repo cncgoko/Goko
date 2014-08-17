@@ -19,23 +19,20 @@
  */
 package org.goko.tinyg.controller.configuration;
 
-import java.math.BigDecimal;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A generic TinyG setting
  * @author PsyKo
  *
  */
-public class TinyGSetting<T> {
+public abstract class TinyGSetting<T> {
 	/** The string identifier of the setting */
 	private String identifier;
 	/** The value of the setting */
 	private T value;
 	/** Read only mode */
 	private boolean readOnly;
-	
+
 	/**
 	 * @param identifier  string identifier of the setting
 	 * @param value value of the setting
@@ -47,7 +44,7 @@ public class TinyGSetting<T> {
 		this.value = value;
 		this.readOnly = readonly;
 	}
-	
+
 	/**
 	 * @param identifier  string identifier of the setting
 	 * @param value value of the setting
@@ -55,7 +52,7 @@ public class TinyGSetting<T> {
 	public TinyGSetting(String identifier, T value) {
 		this(identifier, value, false);
 	}
-	
+
 	/**
 	 * @return the identifier
 	 */
@@ -74,16 +71,16 @@ public class TinyGSetting<T> {
 	 * @return the value
 	 */
 	public T getValue() {
-		return value;
+		return clone(value);
 	}
 
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(T value) {
-		this.value = value;
+		this.value = clone(value);
 	}
-	
+
 	public Class getType(){
 		return value.getClass();
 	}
@@ -101,5 +98,6 @@ public class TinyGSetting<T> {
 	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
 	}
-	
+
+	protected abstract T clone(T value);
 }

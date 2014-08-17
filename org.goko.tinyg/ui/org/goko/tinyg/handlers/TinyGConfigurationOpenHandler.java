@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IControllerService;
-import org.goko.tinyg.configuration.ConfigurationDialog;
+import org.goko.tinyg.configuration.TinyGConfigurationDialog;
 import org.goko.tinyg.controller.TinyGControllerService;
 
 /**
@@ -52,7 +52,7 @@ public class TinyGConfigurationOpenHandler {
 	}
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, IControllerService service, IEclipseContext context) {
-		ConfigurationDialog cfgPanel = new ConfigurationDialog(shell, context);
+		TinyGConfigurationDialog cfgPanel = new TinyGConfigurationDialog(shell, context);
 
 		cfgPanel.open();
 	}

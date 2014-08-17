@@ -48,7 +48,7 @@ public class TinyGControllerUtility {
 				copy.setSetting(group.getGroupIdentifier(), setting.getIdentifier(), setting.getValue());
 			}
 		}
-		return baseCfg;
+		return copy;
 	}
 
 	/**

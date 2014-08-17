@@ -18,7 +18,6 @@
  */
 package org.goko.tinyg.controller.configuration;
 
-import java.math.BigDecimal;
 
 
 public class TinyGAxisSettings extends TinyGGroupSettings {
@@ -26,6 +25,7 @@ public class TinyGAxisSettings extends TinyGGroupSettings {
 	public static final String AXIS_MODE 			= "am";
 	public static final String VELOCITY_MAXIMUM 	= "vm";
 	public static final String FEEDRATE_MAXIMUM 	= "fr";
+	public static final String TRAVEL_MINIMUM 		= "tn";
 	public static final String TRAVEL_MAXIMUM 		= "tm";
 	public static final String JERK_MAXIMUM 		= "jm";
 	public static final String JERK_HOMING 			= "jh";
@@ -36,21 +36,9 @@ public class TinyGAxisSettings extends TinyGGroupSettings {
 	public static final String SEARCH_VELOCITY		= "sv";
 	public static final String LATCH_VELOCITY 		= "lv";
 	public static final String ZERO_BACKOFF 		= "zb";
+	public static final String LATCH_BACKOFF 		= "lb";
 
 	public TinyGAxisSettings(String motor){
 		super(motor);
-		addSetting(new TinyGSetting<BigDecimal>(AXIS_MODE,  new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(VELOCITY_MAXIMUM, 		new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(FEEDRATE_MAXIMUM, 		new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(TRAVEL_MAXIMUM, 		new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(JERK_MAXIMUM, 			new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(JERK_HOMING, 			new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(JUNCTION_DEVIATION, 	new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(RADIUS_SETTING, 		new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(MINIMUM_SWITCH_MODE, 	new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(MAXIMUM_SWITCH_MODE, 	new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(SEARCH_VELOCITY, 		new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(LATCH_VELOCITY, 		new BigDecimal("0")));
-		addSetting(new TinyGSetting<BigDecimal>(ZERO_BACKOFF, 			new BigDecimal("0")));
 	}
 }

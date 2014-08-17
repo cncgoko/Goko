@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.buffer.ByteCommandBuffer;
@@ -22,12 +23,12 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
-import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeProvider;
@@ -40,9 +41,10 @@ import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.tinyg.controller.configuration.TinyGSetting;
 import org.goko.tinyg.controller.events.ConfigurationUpdateEvent;
-import org.goko.tinyg.controller.values.MachineValueStore;
 import org.goko.tinyg.json.TinyGJsonUtils;
+import org.goko.tinyg.service.ITinyGControllerFirmwareService;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -52,11 +54,15 @@ import com.eclipsesource.json.JsonValue;
  * @author PsyKo
  *
  */
-public class TinyGControllerService extends EventDispatcher implements IControllerService, IConnectionDataListener, IConnectionListener {
+public class TinyGControllerService extends EventDispatcher implements ITinyGControllerFirmwareService, IConnectionDataListener, IConnectionListener {
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
 	public static final String SERVICE_ID = "TinyG Controller";
 	private static final String JOG_SIMULATION_DISTANCE = "1000.0";
+	private static final Object UNITS_MM = "mm";
+	private static final Object UNITS_INCHES = "inches";
+	private static final Object DISTANCE_MODE_ABSOLUTE = "Absolute";
+	private static final Object DISTANCE_MODE_INCREMENTAL = "Relative";
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
 	/** Connection service */
@@ -121,7 +127,12 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 								new MachineValue<BigDecimal>(DefaultControllerValues.VELOCITY, new BigDecimal("0.000")));
 		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.SPINDLE_STATE, "Spindle", "The current state of the spindle", Boolean.class),
 				new MachineValue<Boolean>(DefaultControllerValues.SPINDLE_STATE, new Boolean(false)));
-
+		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.UNITS, "Units", "The units in use", String.class),
+				new MachineValue<String>(DefaultControllerValues.UNITS, StringUtils.EMPTY));
+		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.COORDINATES, "Coordinates", "The coordinate system", String.class),
+				new MachineValue<String>(DefaultControllerValues.COORDINATES, StringUtils.EMPTY));
+		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.DISTANCE_MODE, "Distance mode", "The distance motion setting", String.class),
+				new MachineValue<String>(DefaultControllerValues.DISTANCE_MODE, StringUtils.EMPTY));
 		valueStore.addListener(this);
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -180,6 +191,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 *
 	 * @throws GkException GkException
 	 */
+	@Override
 	public void refreshConfiguration() throws GkException{
 		for(TinyGGroupSettings group : configuration.getGroups()){
 			JsonObject groupEmpty = new JsonObject();
@@ -205,6 +217,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 * @return a copy of {@link TinyGConfiguration}
 	 * @throws GkException GkException
 	 */
+	@Override
 	public TinyGConfiguration getConfiguration() throws GkException{
 		return TinyGControllerUtility.getConfigurationCopy(configuration);
 	}
@@ -254,7 +267,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 		while(incomingBuffer.hasNext()){
 			List<Byte> command = incomingBuffer.unstackNextCommand();
 			String stringCommand = GkUtils.toString(command).trim();
-			LOG.info("Handling command " + GkUtils.toStringReplaceCRLF(command));
+		//	LOG.info("Handling command " + GkUtils.toStringReplaceCRLF(command));
 			if(TinyGJsonUtils.isJsonFormat(stringCommand)){
 				JsonObject response = null;
 				try{
@@ -284,7 +297,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 				}
 			}
 		}
-		System.err.println("End of handleIncomingCommands");
+
 	}
 	/**
 	 * Verify the response using the header
@@ -292,6 +305,20 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 * @throws GkException GkException
 	 */
 	private void handleResponseFooter(JsonValue jsonValue) throws GkException {
+	//	LOG.info("handleResponseFooter "+String.valueOf(jsonValue));
+
+		JsonArray footerArray = jsonValue.asArray();
+		int statusCodeIntValue = footerArray.get(TinyGJsonUtils.FOOTER_STATUS_CODE_INDEX).asInt();
+		TinyGStatusCode status = TinyGStatusCode.findEnum(statusCodeIntValue);
+		if(status != null){
+			if(status == TinyGStatusCode.TG_OK){
+
+			}else{
+				LOG.error(" Error status returned : "+status.getValue() +" - "+status.getLabel());
+			}
+		}else{
+			LOG.error(" Unknown error status "+statusCodeIntValue);
+		}
 		//TODO
 		if(currentSendingRunnable != null){
 			currentSendingRunnable.ack();
@@ -303,7 +330,9 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 * @param jsonValue
 	 */
 	private void handleResponseEnvelope(JsonObject responseEnvelope) throws GkException {
+	//	LOG.info("handleResponseEnvelope "+String.valueOf(responseEnvelope));
 		for(String name : responseEnvelope.names()){
+		//	System.err.println("Name = "+name);
 			if(StringUtils.equals(name, TinyGJsonUtils.GCODE_COMMAND)){
 				handleGCodeResponse(responseEnvelope.get(TinyGJsonUtils.GCODE_COMMAND));
 			}else if(StringUtils.equals(name, TinyGJsonUtils.STATUS_REPORT)){
@@ -312,6 +341,8 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 				handleResponseFooter(responseEnvelope.get(TinyGJsonUtils.FOOTER));
 			}else if(StringUtils.equals(name, TinyGJsonUtils.QUEUE_REPORT)){
 				handleQueueReport(responseEnvelope.get(TinyGJsonUtils.QUEUE_REPORT));
+			}else if(StringUtils.equals(name, TinyGJsonUtils.LINE_REPORT)){
+		//		LOG.info("Skipping line report "+String.valueOf(responseEnvelope.get(name)));
 			}else{
 				handleConfigurationModification(responseEnvelope);
 			}
@@ -328,6 +359,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	}
 
 	private void handleQueueReport(JsonValue queueReport) throws GkException {
+	//	LOG.info("handleQueueReport "+String.valueOf(queueReport));
 		this.availableBuffer = queueReport.asInt();
 		if(currentSendingRunnable != null){
 			currentSendingRunnable.ackBuffer();
@@ -338,6 +370,7 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 * @param jsonValue
 	 */
 	private void handleStatusReport(JsonValue statusReport) throws GkException {
+	//	LOG.info("handleStatusReport "+String.valueOf(statusReport));
 		if(statusReport.isObject()){
 			JsonObject statusReportObject = (JsonObject) statusReport;
 			this.position = TinyGControllerUtility.updatePosition(position, statusReportObject);
@@ -362,6 +395,56 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 			if(statReport != null){
 				setState(TinyGControllerUtility.getState(statReport.asInt()));
 			}
+			/*
+			 * Update units
+			 */
+			JsonValue unitReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_UNITS);
+			if(unitReport != null){
+				int units = unitReport.asInt();
+				if(units == 1){
+					valueStore.updateValue(DefaultControllerValues.UNITS, UNITS_MM);
+				}else{
+					valueStore.updateValue(DefaultControllerValues.UNITS, UNITS_INCHES);
+				}
+			}
+			/*
+			 * Update coordinates
+			 * 0=g53, 1=g54, 2=g55, 3=g56, 4=g57, 5=g58, 6=g59
+			 */
+			JsonValue coordReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_COORDINATES);
+			if(coordReport != null){
+				int units = coordReport.asInt();
+				String coordinateSystem = StringUtils.EMPTY;
+				switch(units){
+				case 0: coordinateSystem = CoordinatesSystem.G53;
+				break;
+				case 1: coordinateSystem = CoordinatesSystem.G54;
+				break;
+				case 2: coordinateSystem = CoordinatesSystem.G55;
+				break;
+				case 3: coordinateSystem = CoordinatesSystem.G56;
+				break;
+				case 4: coordinateSystem = CoordinatesSystem.G57;
+				break;
+				case 5: coordinateSystem = CoordinatesSystem.G58;
+				break;
+				case 6: coordinateSystem = CoordinatesSystem.G59;
+				break;
+				}
+				valueStore.updateValue(DefaultControllerValues.COORDINATES , coordinateSystem);
+			}
+			/*
+			 * Update distance mode
+			 */
+			JsonValue distReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_DISTANCE_MODE);
+			if(distReport != null){
+				int dist = distReport.asInt();
+				if(dist == 0){
+					valueStore.updateValue(DefaultControllerValues.DISTANCE_MODE, DISTANCE_MODE_ABSOLUTE);
+				}else{
+					valueStore.updateValue(DefaultControllerValues.DISTANCE_MODE, DISTANCE_MODE_INCREMENTAL);
+				}
+			}
 		}
 	}
 
@@ -371,10 +454,12 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	 * @throws GkTechnicalException
 	 */
 	private void handleGCodeResponse(JsonValue jsonValue) throws GkException {
+		LOG.info("handleGCodeResponse "+String.valueOf(jsonValue));
 		if(executionQueue != null){
 			String 			receivedCommand = jsonValue.asString();
 			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand);
 			executionQueue.confirmCommand(parsedCommand);
+			this.currentSendingRunnable.ack();
 		}
 		/*if(executionQueue != null && executionQueue.hasPendingCommand()){
 			GCodeCommand pendingCommand = executionQueue.getNextPendingCommand();
@@ -406,6 +491,9 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 			LOG.info("Registering "+getClass()+" as input data listener...");
 			refreshStatus();
 			refreshConfiguration();
+		}else if(event == EnumConnectionEvent.DISCONNECTED){
+			getConnectionService().removeInputDataListener(this);
+			setState(MachineState.UNDEFINED);
 		}
 	}
 
@@ -414,10 +502,14 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 		notifyListeners(evt);
 	}
 
-	public void updateConfiguration(TinyGConfiguration cfg) throws GkException{
-		for(TinyGGroupSettings group: cfg.getGroups()){
+	@Override
+	public void setConfiguration(TinyGConfiguration cfg) throws GkException{
+		// Let's only change the new values
+		TinyGConfiguration diffConfig = getDifferentialConfiguration(cfg);
+
+		for(TinyGGroupSettings group: diffConfig.getGroups()){
 			if(StringUtils.equals(group.getGroupIdentifier(), TinyGConfiguration.SYSTEM_SETTINGS)){
-				for(TinyGSetting setting : group.getSettings()){
+				for(TinyGSetting<?> setting : group.getSettings()){
 					JsonObject jsonSetting = TinyGJsonUtils.toJson(setting);
 					if(jsonSetting != null){
 						getConnectionService().send( GkUtils.toBytesList(jsonSetting.toString() + "\r\n") );
@@ -425,11 +517,31 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 				}
 			}else{
 				JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
-				getConnectionService().send( GkUtils.toBytesList(jsonGroup.toString() + "\r\n") );
+				if(jsonGroup != null){
+					getConnectionService().send( GkUtils.toBytesList(jsonGroup.toString() + "\r\n") );
+				}
 			}
-
 		}
 
+	}
+
+	private TinyGConfiguration getDifferentialConfiguration(TinyGConfiguration newConfig) throws GkException{
+		TinyGConfiguration baseConfig = getConfiguration();
+		TinyGConfiguration diffConfig = new TinyGConfiguration();
+
+		for(TinyGGroupSettings group : baseConfig.getGroups()){
+			List<TinyGSetting> settings = group.getSettings();
+			for (TinyGSetting tinyGSetting : settings) {
+				Object baseValue = tinyGSetting.getValue();
+				Object newValue = newConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
+				if(!ObjectUtils.equals(baseValue, newValue)){
+					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
+				}else{
+					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), null);
+				}
+			}
+		}
+		return diffConfig;
 	}
 
 	/**
@@ -547,6 +659,11 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 	public MachineValueDefinition getMachineValueDefinition(String id) throws GkException {
 		return valueStore.getMachineValueDefinition(id);
 	}
+	@Override
+	public MachineValueDefinition findMachineValueDefinition(String id) throws GkException {
+		return valueStore.findMachineValueDefinition(id);
+	}
+
 
 	/* ************************************************
 	 *  CONTROLLER ACTIONS
@@ -572,11 +689,16 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 		stopCommand.add(TinyGConstants.FEED_HOLD);
 		stopCommand.add(TinyGConstants.QUEUE_FLUSH);
 		stopCommand.add(getLineBroker());
+		getConnectionService().clearOutputBuffer();
 		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
+
+		if(executionQueue != null){
+			executionQueue.stop();
+		}
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
-		List<Byte> lstBytes = GkUtils.toBytesList("G92");
+		List<Byte> lstBytes = GkUtils.toBytesList("G28.3");
 		if(CollectionUtils.isNotEmpty(axes)){
 			for (String axe : axes) {
 				lstBytes.addAll(GkUtils.toBytesList(axe+"0"));
@@ -629,6 +751,16 @@ public class TinyGControllerService extends EventDispatcher implements IControll
 
 	public boolean requireAcknowledgement(GCodeCommand currentCommand) {
 		return false;
+	}
+
+	@Override
+	public String getMinimalSupportedFirmwareVersion() throws GkException {
+		return "380.05";
+	}
+
+	@Override
+	public String getMaximalSupportedFirmwareVersion() throws GkException {
+		return "380.05";
 	}
 
 }

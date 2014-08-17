@@ -49,15 +49,15 @@ public class GCodeSendingRunnable implements Runnable {
 	public void ack(){
 		synchronized (ackMutex) {
 			ackMutex.notify();
-			Math.max(0,pendingCommands--);
-			System.err.println("acknowledged "+pendingCommands);
+			pendingCommands = Math.max(0,pendingCommands - 1);
+			//System.err.println("acknowledged "+pendingCommands);
 		}
 	}
 
 	public void ackBuffer() {
 		synchronized (qrMutex) {
 			qrMutex.notify();
-			System.err.println("acknowledged buffer planner with "+tinyGControllerService.getAvailableBuffer());
+			//System.err.println("acknowledged buffer planner with "+tinyGControllerService.getAvailableBuffer());
 
 		}
 	}
@@ -75,6 +75,7 @@ public class GCodeSendingRunnable implements Runnable {
 					lstCommand.add(currentCommand);
 					GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(currentCommand));
 					nbCommandToSend--;
+					currentCommand.setState(new GCodeCommandState(GCodeCommandState.SENT));
 					executionQueue.setCommandState(currentCommand, GCodeCommandState.SENT);
 					pendingCommands++;
 				}
@@ -82,6 +83,7 @@ public class GCodeSendingRunnable implements Runnable {
 					LOG.info("    Sending a group of "+lstCommand.size()+" command");
 					tinyGControllerService.sendTogether(lstCommand);
 				}
+				// FIXME reactiver si besoin
 				waitLastCommandAcknowledgement();
 				waitPlannerBufferSpaceAvailable();
 			}catch(GkException e){
@@ -92,29 +94,12 @@ public class GCodeSendingRunnable implements Runnable {
 
 	protected int computeNumberCommandToSend(){
 		int nb = 1;
-		if(tinyGControllerService.getAvailableBuffer() > 10){
-			nb = Math.max(0, tinyGControllerService.getAvailableBuffer() - 4);
+		if(tinyGControllerService.getAvailableBuffer() > 4){
+			nb = 3;//Math.max(0, 1);// tinyGControllerService.getAvailableBuffer() - 4);
 		}
 		return nb;
 	}
 
-	/*public void clearStreamingStatus() {
-		status.getGCodeCommandToSend().clear();
-	}*/
-
-/*protected void sendCommand(GCodeCommand command){
-		if(command != null && CollectionUtils.isNotEmpty(command.getGCodeWords())){
-			try {
-				tinyGControllerService.sendCommand(command);
-				status.setCommandState(command, GCodeCommandState.SENT);
-				command.setState(new GCodeCommandState(GCodeCommandState.SENT));
-				tinyGControllerService.notifyListeners(new StreamStatusUpdate(status));
-				pendingCommands++;
-			} catch (GkException e) {
-				LOG.error(e);
-			}
-		}
-	}*/
 
 	protected void waitLastCommandAcknowledgement(){
 		while(pendingCommands > 0){
@@ -129,7 +114,7 @@ public class GCodeSendingRunnable implements Runnable {
 	}
 
 	protected void waitPlannerBufferSpaceAvailable(){
-		while(tinyGControllerService.getAvailableBuffer() < BUFFER_AVAILABLE_REQUIRED_COUNT){
+		do{
 			synchronized ( qrMutex ) {
 				try {
 					qrMutex.wait(50);
@@ -137,7 +122,7 @@ public class GCodeSendingRunnable implements Runnable {
 					e.printStackTrace();
 				}
 			}
-		}
+		}while(tinyGControllerService.getAvailableBuffer() < BUFFER_AVAILABLE_REQUIRED_COUNT);
 	}
 
 }
