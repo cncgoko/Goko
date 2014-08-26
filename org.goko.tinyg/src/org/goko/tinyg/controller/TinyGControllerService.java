@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.buffer.ByteCommandBuffer;
@@ -321,7 +320,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 		//TODO
 		if(currentSendingRunnable != null){
-			currentSendingRunnable.ack();
+			currentSendingRunnable.confirmCommand();
 		}
 	}
 
@@ -362,7 +361,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	//	LOG.info("handleQueueReport "+String.valueOf(queueReport));
 		this.availableBuffer = queueReport.asInt();
 		if(currentSendingRunnable != null){
-			currentSendingRunnable.ackBuffer();
+			currentSendingRunnable.notifyBufferSpace();
 		}
 	}
 	/**
@@ -459,7 +458,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			String 			receivedCommand = jsonValue.asString();
 			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand);
 			executionQueue.confirmCommand(parsedCommand);
-			this.currentSendingRunnable.ack();
+			this.currentSendingRunnable.confirmCommand();
 		}
 		/*if(executionQueue != null && executionQueue.hasPendingCommand()){
 			GCodeCommand pendingCommand = executionQueue.getNextPendingCommand();
@@ -502,10 +501,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		notifyListeners(evt);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#setConfiguration(org.goko.tinyg.controller.configuration.TinyGConfiguration)
+	 */
 	@Override
 	public void setConfiguration(TinyGConfiguration cfg) throws GkException{
 		// Let's only change the new values
-		TinyGConfiguration diffConfig = getDifferentialConfiguration(cfg);
+		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
 
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
 			if(StringUtils.equals(group.getGroupIdentifier(), TinyGConfiguration.SYSTEM_SETTINGS)){
@@ -523,25 +525,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			}
 		}
 
-	}
-
-	private TinyGConfiguration getDifferentialConfiguration(TinyGConfiguration newConfig) throws GkException{
-		TinyGConfiguration baseConfig = getConfiguration();
-		TinyGConfiguration diffConfig = new TinyGConfiguration();
-
-		for(TinyGGroupSettings group : baseConfig.getGroups()){
-			List<TinyGSetting> settings = group.getSettings();
-			for (TinyGSetting tinyGSetting : settings) {
-				Object baseValue = tinyGSetting.getValue();
-				Object newValue = newConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
-				if(!ObjectUtils.equals(baseValue, newValue)){
-					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
-				}else{
-					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), null);
-				}
-			}
-		}
-		return diffConfig;
 	}
 
 	/**
@@ -694,6 +677,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 		if(executionQueue != null){
 			executionQueue.stop();
+		}
+		if(currentSendingRunnable != null){
+			currentSendingRunnable.stop();
 		}
 	}
 

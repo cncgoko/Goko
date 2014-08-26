@@ -67,16 +67,7 @@ public class GCodeFileTextRenderer {
 	 */
 	public static String render(GCodeCommand gLine) {
 		StringBuffer txtLine = new StringBuffer();
-		if(StringUtils.isNotBlank(gLine.getLineNumber())){
-			txtLine.append(gLine.getLineNumber());
-			txtLine.append(" ");
-		}
-		txtLine.append(render(gLine.getGCodeWords()));
-
-		if(StringUtils.isNotBlank(gLine.getComment())){
-			txtLine.append(gLine.getComment());
-			txtLine.append(" ");
-		}
+		txtLine.append(gLine.getStringCommand());
 
 		return txtLine.toString();
 	}

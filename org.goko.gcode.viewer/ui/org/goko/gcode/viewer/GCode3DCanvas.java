@@ -59,6 +59,8 @@ import org.goko.gcode.viewer.camera.AbstractCamera;
 import org.goko.gcode.viewer.camera.OrthographicCamera;
 import org.goko.gcode.viewer.camera.PerspectiveCamera;
 import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
+import org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld;
+import org.goko.gcode.viewer.generator.GlGCodeRendererFactory;
 import org.goko.gcode.viewer.generator.buffered.GlGCodeBufferedRendererFactory;
 
 public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintListener {
@@ -68,7 +70,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	private GLContext glcontext;
 	private AbstractCamera camera;
 	private IGCodeProvider commandProvider;
-	private GlGCodeBufferedRendererFactory rendererFactory;
+	private GlGCodeRendererFactory rendererFactory;
 	private boolean renderEnabled;
 	private Font overlayFont;
 	private Font disabledFont;
@@ -83,7 +85,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 		super(parent, style, data);
 
 		renderEnabled = true;
-		rendererFactory = new GlGCodeBufferedRendererFactory();
+		rendererFactory = new GlGCodeRendererFactory();
 		camera 			= new PerspectiveCamera(this);
 		overlayFont = new Font(getDisplay(), "Tahoma", 10, SWT.BOLD);
 		setCurrent();
@@ -111,7 +113,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 
 	public void setGCodeFile(GCodeFile gCodeFile){
 		this.commandProvider = gCodeFile;
-		rendererFactory.clear();
+		//rendererFactory.clear();
 		forceRedraw = true;
 		redraw();
 	}
@@ -277,37 +279,38 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 			forceGCodeRedraw(gl);
 		}else{
 			if(commandProvider != null){
-				GCodeContext context =  new GCodeContext();
-				GCodeContext postContext = null;
-
+				
 				List<GCodeCommand> lstGcode = new ArrayList<GCodeCommand>(commandProvider.getGCodeCommands());
 				for (GCodeCommand gCodeCommand : lstGcode) {
-					AbstractGCodeGlRenderer renderer = rendererFactory.getRenderer(postContext, gCodeCommand);
-					if(renderer != null){
-						renderer.render(context, postContext, gCodeCommand, gl);
-					}
+					rendererFactory.render(gCodeCommand, gl);
+					//AbstractGCodeGlRenderer<? extends GCodeCommand> renderer = rendererFactory.getRenderer(gCodeCommand);
+//					if(renderer != null){
+//						renderer.render(gCodeCommand, gl);
+//					}
 				}
 			}
 		}
 
 	}
 
+	protected void drawGCodeBounds(GL2 gl) throws GkException{
+
+	}
 	protected void forceGCodeRedraw(GL2 gl) throws GkException{
-		if(commandProvider != null){
-			rendererFactory.clear();
+		if(commandProvider != null){			
 			GCodeContext context =  new GCodeContext();
 			GCodeContext postContext = null;
 
 			List<GCodeCommand> lstGcode = new ArrayList<GCodeCommand>(commandProvider.getGCodeCommands());
 			for (GCodeCommand gCodeCommand : lstGcode) {
-
-				postContext =  new GCodeContext(context);
+				rendererFactory.render(gCodeCommand, gl);
+				/*postContext =  new GCodeContext(context);
 				gcodeService.update(postContext, gCodeCommand);
-				AbstractGCodeGlRenderer renderer = rendererFactory.getRenderer(postContext, gCodeCommand);
+				AbstractGCodeGlRendererOld renderer = rendererFactory.getRenderer(postContext, gCodeCommand);
 				if(renderer != null){
 					renderer.render(context, postContext, gCodeCommand, gl);
 				}
-				gcodeService.update(context, gCodeCommand);
+				gcodeService.update(context, gCodeCommand);*/
 			}
 		}
 		forceRedraw = false;

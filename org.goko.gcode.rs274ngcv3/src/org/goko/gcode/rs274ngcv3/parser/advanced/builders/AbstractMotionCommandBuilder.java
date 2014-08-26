@@ -1,0 +1,112 @@
+/*
+ *
+ *   Goko
+ *   Copyright (C) 2013  PsyKo
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.commands.MotionCommand;
+import org.goko.gcode.rs274ngcv3.RS274;
+import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
+
+public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> extends AbstractSettingCommandBuilder<T> {
+
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractSettingCommandBuilder#buildCommand(org.goko.core.gcode.bean.GCodeCommand, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.commands.SettingCommand)
+	 */
+	@Override
+	public void buildCommand(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException {
+		super.buildCommand(lstTokens, context, targetCommand);
+		setAbstractMotionParameters(lstTokens, context, targetCommand);
+	}
+
+
+	/**
+	 * Get all the motion related command from the raw command
+	 * @param rawCommand the raw command
+	 * @param context the context
+	 * @param targetCommand the target command
+	 * @throws GkException GkException
+	 */
+	private void setAbstractMotionParameters(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
+		targetCommand.setAbsoluteStartCoordinate(new Tuple6b(context.getPosition()));
+
+		setCoordinates(lstTokens, context, targetCommand);
+		//setEndPointCoordinates(rawCommand, targetCommand);
+		// TODO : add plane selection
+	}
+
+	/**
+	 * Extracts the X, Y, Z, A, B, C coordinates from the command and context
+	 * @param rawCommand the raw command
+	 * @param context the context
+	 * @param targetCommand the target command
+	 * @throws GkException GkException
+	 */
+	private void setCoordinates(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
+		Tuple6b coordinates = new Tuple6b(null,null,null,null,null,null);
+		GCodeToken token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		if(token != null){
+			coordinates.setX( new BigDecimal( RS274.getTokenValue(token)));
+		}
+		token = RS274.findUniqueTokenByLetter("y", lstTokens);
+		if(token != null){
+			coordinates.setY( new BigDecimal( RS274.getTokenValue(token)));
+		}
+		token= RS274.findUniqueTokenByLetter("z", lstTokens);
+		if(token != null){
+			coordinates.setZ( new BigDecimal( RS274.getTokenValue(token)));
+		}
+		token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		if(token != null){
+			coordinates.setA( new BigDecimal( RS274.getTokenValue(token)));
+		}
+		token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		if(token != null){
+			coordinates.setB( new BigDecimal( RS274.getTokenValue(token)));
+		}
+		token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		if(token != null){
+			coordinates.setC( new BigDecimal( RS274.getTokenValue(token)));
+		}
+		targetCommand.setCoordinates(coordinates);
+	}
+
+
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.AbstractRS274CommandBuilder#match(org.goko.core.gcode.bean.GCodeCommand, org.goko.core.gcode.bean.GCodeContext)
+	 */
+	@Override
+	public boolean match(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
+		// No call to super on purpose
+		return RS274.findUniqueTokenByLetter("x", lstTokens) != null
+				|| RS274.findUniqueTokenByLetter("y", lstTokens) != null
+				|| RS274.findUniqueTokenByLetter("z", lstTokens) != null
+				|| RS274.findUniqueTokenByLetter("a", lstTokens) != null
+				|| RS274.findUniqueTokenByLetter("b", lstTokens) != null
+				|| RS274.findUniqueTokenByLetter("c", lstTokens) != null;
+	}
+
+
+
+}

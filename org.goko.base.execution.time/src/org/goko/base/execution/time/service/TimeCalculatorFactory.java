@@ -19,23 +19,20 @@
  */
 package org.goko.base.execution.time.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.goko.base.execution.time.service.calculators.ArcMotionCalculator;
 import org.goko.base.execution.time.service.calculators.LinearMotionCalculator;
 import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.gcode.rs274ngcv3.RS274;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
 
 public class TimeCalculatorFactory {
 
 	public IGCodeCommandExecutionTimeCalculator  getCalculator(GCodeContext context, GCodeCommand command){
 
-		if(StringUtils.equals( context.getMotionMode(), RS274.MOTION_MODE_CONTROLLED)
-				|| StringUtils.equals( context.getMotionMode(), RS274.MOTION_MODE_RAPID)){
+		if(context.getMotionType() == EnumGCodeCommandMotionType.LINEAR){
 			return new LinearMotionCalculator();
-		}else if(StringUtils.equals( context.getMotionMode(), RS274.MOTION_MODE_ARC_CW)
-				|| StringUtils.equals( context.getMotionMode(), RS274.MOTION_MODE_ARC_CCW)){
+		}else if(context.getMotionType() == EnumGCodeCommandMotionType.ARC){
 			return new ArcMotionCalculator();
 
 		}

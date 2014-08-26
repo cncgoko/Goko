@@ -29,6 +29,12 @@ import javax.vecmath.Point3d;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeWord;
+import org.goko.core.gcode.bean.commands.ArcMotionCommand;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
+import org.goko.core.gcode.bean.commands.LinearMotionCommand;
+import org.goko.core.gcode.bean.commands.MotionCommand;
 
 public class GLGCodeBuilder {
 	private static final String FAST_MOTION_MODE = "G0";
@@ -61,6 +67,12 @@ public class GLGCodeBuilder {
 	}
 
 	public void parseGCodeCommand(GCodeCommand gCodeCommand){
+		if(gCodeCommand.getType() == EnumGCodeCommandType.MOTION){
+			parseGCodeMotionCommand((MotionCommand) gCodeCommand);
+		}
+		/*if(true){
+			return;
+		}
 		if(containsWord(gCodeCommand, FAST_MOTION_MODE)){
 			setMotionMode(FAST_MOTION_MODE);
 		}else if(containsWord(gCodeCommand, COORDINATED_MOTION_MODE)){
@@ -77,10 +89,24 @@ public class GLGCodeBuilder {
 			interpreteCoordinatedMotion(gCodeCommand);
 		}else if(StringUtils.equalsIgnoreCase(motionMode, ARC_CCW_MODE) || StringUtils.equalsIgnoreCase(motionMode, ARC_CW_MODE) ){
 			interpreteArcMotion(gCodeCommand);
-		}
+		}*/
 
 	}
 
+	public void parseGCodeMotionCommand(MotionCommand gCodeCommand){
+		if(gCodeCommand.getMotionMode() == EnumGCodeCommandMotionMode.RAPID){
+			setMotionMode(FAST_MOTION_MODE);
+		}else{
+			setMotionMode(COORDINATED_MOTION_MODE);
+		}
+		
+		if(gCodeCommand.getMotionType() == EnumGCodeCommandMotionType.ARC){
+			interpreteArcMotion((ArcMotionCommand) gCodeCommand);
+		}else{
+			interpreteLinearInterpolation((LinearMotionCommand) gCodeCommand);
+		}
+	}
+	
 	protected void setMotionMode(String mode){
 		motionMode = mode;
 		// If there is a last position, create the last vertex for the previous mode and let's reopen one
@@ -93,92 +119,29 @@ public class GLGCodeBuilder {
 		}
 	}
 
-	protected boolean containsWord(GCodeCommand command, String word){
-		for(GCodeWord gCodeWord : command.getGCodeWords()){
-			if(StringUtils.equalsIgnoreCase(word, gCodeWord.getStringValue())){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected GCodeWord findWordByLetter(GCodeCommand command, String wordLetter){
-		for(GCodeWord gCodeWord : command.getGCodeWords()){
-			if(StringUtils.equalsIgnoreCase(gCodeWord.getLetter(), wordLetter)){
-				return gCodeWord;
-			}
-		}
-		return null;
-	}
-	protected void interpreteArcMotion(GCodeCommand command){
-		Point3d endPoint = getLastPosition();
-
-		GCodeWord xWord = findWordByLetter(command, "X");
-		GCodeWord yWord = findWordByLetter(command, "Y");
-		GCodeWord zWord = findWordByLetter(command, "Z");
-
-		if(xWord != null){
-			endPoint.x = xWord.getValue().doubleValue();
-		}
-		if(yWord != null){
-			endPoint.y = yWord.getValue().doubleValue();
-		}
-		if(zWord != null){
-			endPoint.z = zWord.getValue().doubleValue();
-		}
+	protected void interpreteArcMotion(ArcMotionCommand command){
+		Point3d endPoint = command.getAbsoluteEndCoordinate().toPoint3d();
+		
 		vertices.add(endPoint);
 		colors.add(G02_COLOR);
 		lastPosition = endPoint;
 	}
-	protected void interpreteLinearInterpolation(GCodeCommand command){
-		Point3d endPoint = getLastPosition();
-
-		GCodeWord xWord = findWordByLetter(command, "X");
-		GCodeWord yWord = findWordByLetter(command, "Y");
-		GCodeWord zWord = findWordByLetter(command, "Z");
-
-		if(xWord != null){
-			endPoint.x = xWord.getValue().doubleValue();
-		}
-		if(yWord != null){
-			endPoint.y = yWord.getValue().doubleValue();
-		}
-		if(zWord != null){
-			endPoint.z = zWord.getValue().doubleValue();
-		}
+	protected void interpreteLinearInterpolation(LinearMotionCommand command){
+		Point3d endPoint = command.getAbsoluteEndCoordinate().toPoint3d();
+		
 		vertices.add(endPoint);
 		colors.add(G00_COLOR);
 		lastPosition = endPoint;
 	}
 
-	protected void interpreteCoordinatedMotion(GCodeCommand command){
-		Point3d endPoint = getLastPosition();
-
-		GCodeWord xWord = findWordByLetter(command, "X");
-		GCodeWord yWord = findWordByLetter(command, "Y");
-		GCodeWord zWord = findWordByLetter(command, "Z");
-
-		if(xWord != null){
-			endPoint.x = xWord.getValue().doubleValue();
-		}
-		if(yWord != null){
-			endPoint.y = yWord.getValue().doubleValue();
-		}
-		if(zWord != null){
-			endPoint.z = zWord.getValue().doubleValue();
-		}
+	protected void interpreteCoordinatedMotion(LinearMotionCommand command){
+		Point3d endPoint = command.getAbsoluteEndCoordinate().toPoint3d();
+		
 		vertices.add(endPoint);
 		colors.add(G01_COLOR);
 		lastPosition = endPoint;
 	}
 
-	protected Point3d getLastPosition(){
-		if(lastPosition != null){
-			return new Point3d(lastPosition);
-		}else{
-			return new Point3d();
-		}
-	}
 	/**
 	 * @return the vertices
 	 */

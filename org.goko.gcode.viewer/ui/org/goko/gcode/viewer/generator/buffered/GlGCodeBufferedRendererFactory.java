@@ -25,14 +25,14 @@ import java.util.Map;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
+import org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld;
 
 public class GlGCodeBufferedRendererFactory {
-	private Map<String, AbstractGCodeGlRenderer> mapRenderer;
+	private Map<String, AbstractGCodeGlRendererOld> mapRenderer;
 	private Map<Integer, BufferedRenderingData> buffer;
 
 	public GlGCodeBufferedRendererFactory() {
-		this.mapRenderer = new HashMap<String, AbstractGCodeGlRenderer>();
+		this.mapRenderer = new HashMap<String, AbstractGCodeGlRendererOld>();
 		this.buffer = new HashMap<Integer, BufferedRenderingData>();
 		registerRenderer(new FeedrateLinearGCodeBufferedRenderer(buffer));
 		registerRenderer(new RapidGCodeBufferedRenderer(buffer));
@@ -41,12 +41,12 @@ public class GlGCodeBufferedRendererFactory {
 	}
 
 
-	public void registerRenderer(AbstractGCodeGlRenderer renderer){
+	public void registerRenderer(AbstractGCodeGlRendererOld renderer){
 		mapRenderer.put(renderer.getSupportedMotionType(), renderer);
 	}
 
 	@SuppressWarnings("unchecked")
-	public AbstractGCodeGlRenderer getRenderer(GCodeContext context, GCodeCommand command) throws GkException{
+	public AbstractGCodeGlRendererOld getRenderer(GCodeContext context, GCodeCommand command) throws GkException{
 		if(buffer.containsKey(command.getId())){
 			return buffer.get(command.getId()).getRenderer();
 		}else{

@@ -9,8 +9,5 @@
             uri="fragment/CommandPanelFragment.e4xmi">
       </fragment>
    </extension>
-   <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
-   </extension>
 
 </plugin>

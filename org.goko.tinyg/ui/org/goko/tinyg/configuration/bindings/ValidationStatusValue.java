@@ -40,18 +40,16 @@ public class ValidationStatusValue extends ComputedValue{
 
 	@Override
 	protected Object calculate() {
-		IStatus status = getStatusMaxSeverity(validationStatusProviders);		
+		IStatus status = getStatusMaxSeverity(validationStatusProviders);
 		return status;
 	}
 
-	public static IStatus getStatusMaxSeverity( Collection validationStatusProviders) {
+	public static IStatus getStatusMaxSeverity( Collection<ValidationStatusProvider> validationStatusProviders) {
 		int maxSeverity = IStatus.OK;
 		IStatus maxStatus = Status.OK_STATUS;
-		for (Iterator it = validationStatusProviders.iterator(); it.hasNext();) {
-			ValidationStatusProvider validationStatusProvider = (ValidationStatusProvider) it
-					.next();
-			IStatus status = (IStatus) validationStatusProvider
-					.getValidationStatus().getValue();
+		for (Iterator<ValidationStatusProvider> it = validationStatusProviders.iterator(); it.hasNext();) {
+			ValidationStatusProvider validationStatusProvider = it.next();
+			IStatus status = (IStatus) validationStatusProvider.getValidationStatus().getValue();
 			if (status.getSeverity() > maxSeverity) {
 				maxSeverity = status.getSeverity();
 				maxStatus = status;

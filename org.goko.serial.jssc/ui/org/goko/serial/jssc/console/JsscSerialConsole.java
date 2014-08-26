@@ -60,7 +60,7 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 	private Text commandTxt;
 	private Button btnEnableConsole;
 	private Button btnScrolllock;
-	private GkCombo<LabeledValue> endLineCombo;
+	private GkCombo<LabeledValue<String>> endLineCombo;
 
 	/**
 	 * Constructor
@@ -125,7 +125,7 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblNewLabel.setText("Line end ");
 
-		endLineCombo = new GkCombo<LabeledValue>(composite_1, SWT.NONE | SWT.READ_ONLY);
+		endLineCombo = new GkCombo<LabeledValue<String>>(composite_1, SWT.NONE | SWT.READ_ONLY);
 		Combo combo = endLineCombo.getCombo();
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		combo.select(2);

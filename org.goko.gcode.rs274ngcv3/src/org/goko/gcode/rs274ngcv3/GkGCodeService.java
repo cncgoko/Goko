@@ -29,7 +29,8 @@ import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.gcode.rs274ngcv3.parser.GCodeLexer;
-import org.goko.gcode.rs274ngcv3.parser.GCodeParser;
+import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
+import org.goko.gcode.rs274ngcv3.parser.advanced.AdvancedGCodeAnalyser;
 
 public class GkGCodeService implements IGCodeService {
 
@@ -65,11 +66,10 @@ public class GkGCodeService implements IGCodeService {
 		}
 
 		GCodeLexer gcodeLexer = new GCodeLexer();
-		GCodeParser gcodeParser = new GCodeParser();
-		GCodeFile gcodeFile = new GCodeFile();
-		gcodeFile.setFile(file);
-		List<GCodeCommand> lstGCodeCommands = gcodeParser.createGCodeCommand( gcodeLexer.createTokensFromFile(filepath) );
-		gcodeFile.addAllGCodeCommand(lstGCodeCommands);
+		GCodeFile rawGCodeFile = new GCodeFile();
+		rawGCodeFile.setFile(file);
+		List<GCodeToken> lstTokens = gcodeLexer.createTokensFromFile(filepath);
+		GCodeFile gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, new GCodeContext());
 		return gcodeFile;
 	}
 
@@ -79,10 +79,9 @@ public class GkGCodeService implements IGCodeService {
 	@Override
 	public GCodeCommand parseCommand(String command) throws GkException {
 		GCodeLexer gcodeLexer = new GCodeLexer();
-		GCodeParser gcodeParser = new GCodeParser();
-		List<GCodeCommand> lstGCodeCommands = gcodeParser.createGCodeCommand( gcodeLexer.createTokens(command) );
+		GCodeCommand gcodeCommand = new AdvancedGCodeAnalyser().createCommand(gcodeLexer.createTokens(command), new GCodeContext());
 
-		return lstGCodeCommands.get(0);
+		return gcodeCommand;
 
 	}
 
@@ -109,7 +108,7 @@ public class GkGCodeService implements IGCodeService {
 	 */
 	@Override
 	public void update(GCodeContext context, GCodeCommand command) throws GkException {
-		GCodeContextUpdater.updateContext(context, command);
+		command.updateContext(context);
 	}
 
 

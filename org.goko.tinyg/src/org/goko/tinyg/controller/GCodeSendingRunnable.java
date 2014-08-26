@@ -46,15 +46,15 @@ public class GCodeSendingRunnable implements Runnable {
 
 	}
 
-	public void ack(){
+	public void confirmCommand(){
 		synchronized (ackMutex) {
-			ackMutex.notify();
 			pendingCommands = Math.max(0,pendingCommands - 1);
+			ackMutex.notify();
 			//System.err.println("acknowledged "+pendingCommands);
 		}
 	}
 
-	public void ackBuffer() {
+	public void notifyBufferSpace() {
 		synchronized (qrMutex) {
 			qrMutex.notify();
 			//System.err.println("acknowledged buffer planner with "+tinyGControllerService.getAvailableBuffer());
@@ -83,7 +83,7 @@ public class GCodeSendingRunnable implements Runnable {
 					LOG.info("    Sending a group of "+lstCommand.size()+" command");
 					tinyGControllerService.sendTogether(lstCommand);
 				}
-				// FIXME reactiver si besoin
+
 				waitLastCommandAcknowledgement();
 				waitPlannerBufferSpaceAvailable();
 			}catch(GkException e){
@@ -95,7 +95,7 @@ public class GCodeSendingRunnable implements Runnable {
 	protected int computeNumberCommandToSend(){
 		int nb = 1;
 		if(tinyGControllerService.getAvailableBuffer() > 4){
-			nb = 3;//Math.max(0, 1);// tinyGControllerService.getAvailableBuffer() - 4);
+			nb = Math.max(1, tinyGControllerService.getAvailableBuffer() - 4);
 		}
 		return nb;
 	}
@@ -125,4 +125,7 @@ public class GCodeSendingRunnable implements Runnable {
 		}while(tinyGControllerService.getAvailableBuffer() < BUFFER_AVAILABLE_REQUIRED_COUNT);
 	}
 
+	public void stop(){
+		pendingCommands = 0;
+	}
 }

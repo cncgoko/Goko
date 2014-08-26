@@ -19,6 +19,9 @@
  */
 package org.goko.tinyg.controller;
 
+import java.util.List;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.bean.MachineState;
@@ -111,6 +114,30 @@ public class TinyGControllerUtility {
 		case 9: return MachineState.HOMING;
 		default: return MachineState.INITIALIZING;
 		}
+	}
 
+	/**
+	 * Returns a configuration containing only the values that differ from the base configuration. Other values are null
+	 * @param baseConfig the base configuration
+	 * @param newConfig the new configuration
+	 * @return a differential configuration
+	 * @throws GkException GkException
+	 */
+	protected static TinyGConfiguration getDifferentialConfiguration(TinyGConfiguration baseConfig, TinyGConfiguration newConfig) throws GkException{
+		TinyGConfiguration diffConfig = new TinyGConfiguration();
+
+		for(TinyGGroupSettings group : baseConfig.getGroups()){
+			List<TinyGSetting> settings = group.getSettings();
+			for (TinyGSetting tinyGSetting : settings) {
+				Object baseValue = tinyGSetting.getValue();
+				Object newValue = newConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
+				if(!ObjectUtils.equals(baseValue, newValue)){
+					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
+				}else{
+					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), null);
+				}
+			}
+		}
+		return diffConfig;
 	}
 }

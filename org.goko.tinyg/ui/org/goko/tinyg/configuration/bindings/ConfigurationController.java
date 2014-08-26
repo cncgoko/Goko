@@ -329,8 +329,9 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		TinyGGroupSettings grp = cfg.getGroup(targetGroup);
 		TinyGGroupSettings wrapperGrp = wrapper.getConfiguration().getGroup(targetGroup);
 
-		for (TinyGSetting setting : grp.getSettings()) {
+		for (TinyGSetting<?> setting : grp.getSettings()) {
 			// On passe la valeur du wrapper dans la config
+			@SuppressWarnings("unchecked")
 			Object wrapperValue = wrapper.getConfiguration().getSetting(wrapperGrp.getGroupIdentifier(), setting.getIdentifier(), setting.getType());
 			cfg.setSetting(grp.getGroupIdentifier(), setting.getIdentifier(),wrapperValue);
 		}

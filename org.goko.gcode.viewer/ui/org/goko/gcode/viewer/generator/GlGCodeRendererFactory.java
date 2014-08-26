@@ -22,33 +22,50 @@ package org.goko.gcode.viewer.generator;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.media.opengl.GL2;
+
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.gcode.viewer.generator.renderer.CCWArcGCodeRenderer;
-import org.goko.gcode.viewer.generator.renderer.CWArcGCodeRenderer;
-import org.goko.gcode.viewer.generator.renderer.FeedrateLinearGCodeRenderer;
-import org.goko.gcode.viewer.generator.renderer.RapidGCodeRenderer;
+import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.gcode.viewer.generator.renderer.v2.ArcGCodeRenderer;
+import org.goko.gcode.viewer.generator.renderer.v2.LinearGCodeRenderer;
+import org.goko.gcode.viewer.generator.styler.GlGCodeStylerFactory;
+import org.goko.gcode.viewer.generator.styler.impl.ArcGCodeStyler;
+import org.goko.gcode.viewer.generator.styler.impl.LinearGCodeStyler;
 
 public class GlGCodeRendererFactory {
-	private Map<String, AbstractGCodeGlRenderer> mapRenderer;
-
+	private Map<Class<?>, AbstractGCodeGlRenderer<? extends GCodeCommand>> mapRenderer;
+	private GlGCodeStylerFactory stylerFactory;
+	
 	public GlGCodeRendererFactory() {
-		this.mapRenderer = new HashMap<String, AbstractGCodeGlRenderer>();
-		registerRenderer(new FeedrateLinearGCodeRenderer());
-		registerRenderer(new RapidGCodeRenderer());
-		registerRenderer(new CWArcGCodeRenderer());
-		registerRenderer(new CCWArcGCodeRenderer());
+		this.mapRenderer = new HashMap<Class<?>, AbstractGCodeGlRenderer<?>>();
+		
+		this.stylerFactory = new GlGCodeStylerFactory();
+		this.stylerFactory.registerRenderer(new LinearGCodeStyler());
+		this.stylerFactory.registerRenderer(new ArcGCodeStyler());
+		
+		registerRenderer(new ArcGCodeRenderer());
+		registerRenderer(new LinearGCodeRenderer());	
+		
+		
 	}
 
-	public void registerRenderer(AbstractGCodeGlRenderer renderer){
-		mapRenderer.put(renderer.getSupportedMotionType(), renderer);
+	public void registerRenderer(AbstractGCodeGlRenderer<?> renderer){
+		mapRenderer.put(renderer.getSupportedCommandClass(), renderer);
+		renderer.setStylerFactory(stylerFactory);
 	}
 
-	public AbstractGCodeGlRenderer getRenderer(GCodeContext context) throws GkException{
-		if(mapRenderer.containsKey(context.getMotionMode())){
-			return mapRenderer.get(context.getMotionMode());
+	public AbstractGCodeGlRenderer<GCodeCommand> getRenderer(GCodeCommand command) throws GkException{
+		if(mapRenderer.containsKey(command.getClass())){
+			return (AbstractGCodeGlRenderer<GCodeCommand>) mapRenderer.get(command.getClass());
 		}
 		return null;
+	}
+
+	public void render(GCodeCommand gCodeCommand, GL2 gl) throws GkException {
+		AbstractGCodeGlRenderer<GCodeCommand> renderer = getRenderer(gCodeCommand);
+		if(renderer != null){
+			renderer.render(gCodeCommand, gl);
+		}
 	}
 
 }

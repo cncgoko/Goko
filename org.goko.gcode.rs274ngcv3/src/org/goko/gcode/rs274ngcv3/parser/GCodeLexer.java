@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.gcode.bean.GCodeCommand;
 
 /**
  * GCode file tokenizer
@@ -141,38 +140,5 @@ public class GCodeLexer {
 	protected String extractToken(Matcher matcher, List<GCodeToken> tokens, GCodeTokenType type){
 		tokens.add( new GCodeToken(type, matcher.group()) );
 		return matcher.replaceFirst(StringUtils.EMPTY);
-	}
-
-
-	public static void main(String[] args) {
-		GCodeLexer tokenizer = new GCodeLexer();
-		List<GCodeToken> lst = new ArrayList<GCodeToken>();
-		try {
-			lst = tokenizer.createTokensFromFile("C:\\Users\\PsyKo\\Documents\\GCode\\Heavy.nc");
-		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for (GCodeToken token : lst) {
-			System.out.println(token.getType());
-		}
-		try {
-			GCodeParser parser = new GCodeParser();
-			List<GCodeCommand> lstCommand = parser.createGCodeCommand(lst);
-			int i = 1;
-			for (GCodeCommand gCodeCommand : lstCommand) {
-				System.out.println((i++) +" " +gCodeCommand.toString());
-			}
-		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*tokenizer.createTokens("(this is \r\n a comment)");
-		tokenizer.createTokens(";this is a comment");
-		tokenizer.createTokens("N0003");
-		tokenizer.createTokens("G1");
-		tokenizer.createTokens("X1.368");
-		tokenizer.createTokens("Y-1.368");
-		tokenizer.createTokens("Y+1.368");*/
 	}
 }

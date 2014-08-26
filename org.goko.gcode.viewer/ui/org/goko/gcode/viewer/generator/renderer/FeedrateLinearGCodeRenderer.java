@@ -64,7 +64,7 @@ public class FeedrateLinearGCodeRenderer extends LinearGCodeRenderer {
 	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getSupportedMotionType()
 	 */
 	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#getSupportedMotionType()
+	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld#getSupportedMotionType()
 	 */
 	@Override
 	public String getSupportedMotionType() {

@@ -21,30 +21,40 @@ package org.goko.core.gcode.bean;
 
 import java.math.BigDecimal;
 
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
+
 public class GCodeContext {
-	private String motionMode;
+	private EnumGCodeCommandMotionMode motionMode;
+	private EnumGCodeCommandMotionType motionType;
 	private Tuple6b offset;
 	private Tuple6b position;
 	private BigDecimal feedrate;
-	private boolean isMetric;
-	private boolean isAbsolute = true;
+	private EnumGCodeCommandUnit unit;
+	private EnumGCodeCommandDistanceMode distanceMode;
 	private int currentPlane;
-
+	private Tuple6b minimalBound;
+	private Tuple6b maximalBound;
 
 	public GCodeContext() {
-		position = new Tuple6b();
-		offset = new Tuple6b();
-		this.motionMode = "G0";
+		position 	 = new Tuple6b();
+		offset 		 = new Tuple6b();
+		minimalBound = new Tuple6b();
+		maximalBound = new Tuple6b();
+		motionMode = EnumGCodeCommandMotionMode.RAPID;
+		motionType = EnumGCodeCommandMotionType.LINEAR;
 	}
 
 	public GCodeContext(GCodeContext context) {
-		this.position = new Tuple6b(context.position);
-		this.offset = new Tuple6b(context.offset);
-		this.feedrate = context.feedrate;
-		this.isAbsolute = context.isAbsolute;
-		this.isMetric = context.isMetric;
-		this.currentPlane = context.currentPlane;
-		this.motionMode = context.motionMode;
+		this.position 		= new Tuple6b(context.position);
+		this.offset 		= new Tuple6b(context.offset);
+		this.feedrate 		= context.feedrate;
+		this.unit 			= context.unit;
+		this.distanceMode	= context.distanceMode;
+		this.currentPlane 	= context.currentPlane;
+		this.motionMode 	= context.motionMode;
 	}
 	/**
 	 * @return the feedrate
@@ -58,71 +68,34 @@ public class GCodeContext {
 	public void setFeedrate(BigDecimal feedrate) {
 		this.feedrate = feedrate;
 	}
-	/**
-	 * @return the isMetric
-	 */
-	public boolean isMetric() {
-		return isMetric;
-	}
-	/**
-	 * @param isMetric the isMetric to set
-	 */
-	public void setMetric(boolean isMetric) {
-		this.isMetric = isMetric;
-	}
-	/**
-	 * @return the isAbsolute
-	 */
-	public boolean isAbsolute() {
-		return isAbsolute;
-	}
-	/**
-	 * @param isAbsolute the isAbsolute to set
-	 */
-	public void setAbsolute(boolean isAbsolute) {
-		this.isAbsolute = isAbsolute;
-	}
+	
 
 	/**
 	 * @return the position
 	 */
 	public Tuple6b getPosition() {
-		return position;
+		return new Tuple6b(position);
 	}
 
 	/**
 	 * @param position the position to set
 	 */
 	public void setPosition(Tuple6b position) {
-		this.position = position;
-	}
-
-	/**
-	 * @return the motionMode
-	 */
-	public String getMotionMode() {
-		return motionMode;
-	}
-
-	/**
-	 * @param motionMode the motionMode to set
-	 */
-	public void setMotionMode(String motionMode) {
-		this.motionMode = motionMode;
+		this.position = new Tuple6b(position);
 	}
 
 	/**
 	 * @return the offset
 	 */
 	public Tuple6b getOffset() {
-		return offset;
+		return new Tuple6b(offset);
 	}
 
 	/**
 	 * @param offset the offset to set
 	 */
 	public void setOffset(Tuple6b offset) {
-		this.offset = offset;
+		this.offset = new Tuple6b(offset);
 	}
 
 	/**
@@ -137,6 +110,90 @@ public class GCodeContext {
 	 */
 	public void setCurrentPlane(int currentPlane) {
 		this.currentPlane = currentPlane;
+	}
+
+	/**
+	 * @return the minimalBound
+	 */
+	public Tuple6b getMinimalBound() {
+		return new Tuple6b(minimalBound);
+	}
+
+	/**
+	 * @param minimalBound the minimalBound to set
+	 */
+	public void setMinimalBound(Tuple6b minimalBound) {
+		this.minimalBound = new Tuple6b(minimalBound);
+	}
+
+	/**
+	 * @return the maximalBound
+	 */
+	public Tuple6b getMaximalBound() {
+		return new Tuple6b(maximalBound);
+	}
+
+	/**
+	 * @param maximalBound the maximalBound to set
+	 */
+	public void setMaximalBound(Tuple6b maximalBound) {
+		this.maximalBound = new Tuple6b(maximalBound);
+	}
+
+	/**
+	 * @return the motionMode
+	 */
+	public EnumGCodeCommandMotionMode getMotionMode() {
+		return motionMode;
+	}
+
+	/**
+	 * @param motionMode the motionMode to set
+	 */
+	public void setMotionMode(EnumGCodeCommandMotionMode motionMode) {
+		this.motionMode = motionMode;
+	}
+
+	/**
+	 * @return the unit
+	 */
+	public EnumGCodeCommandUnit getUnit() {
+		return unit;
+	}
+
+	/**
+	 * @param unit the unit to set
+	 */
+	public void setUnit(EnumGCodeCommandUnit unit) {
+		this.unit = unit;
+	}
+
+	/**
+	 * @return the distanceMode
+	 */
+	public EnumGCodeCommandDistanceMode getDistanceMode() {
+		return distanceMode;
+	}
+
+	/**
+	 * @param distanceMode the distanceMode to set
+	 */
+	public void setDistanceMode(EnumGCodeCommandDistanceMode distanceMode) {
+		this.distanceMode = distanceMode;
+	}
+
+	/**
+	 * @return the motionType
+	 */
+	public EnumGCodeCommandMotionType getMotionType() {
+		return motionType;
+	}
+
+	/**
+	 * @param motionType the motionType to set
+	 */
+	public void setMotionType(EnumGCodeCommandMotionType motionType) {
+		this.motionType = motionType;
 	}
 
 

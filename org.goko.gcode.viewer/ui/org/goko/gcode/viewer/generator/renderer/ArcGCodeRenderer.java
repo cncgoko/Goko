@@ -28,9 +28,9 @@ import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
+import org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld;
 
-public abstract class ArcGCodeRenderer extends AbstractGCodeGlRenderer {
+public abstract class ArcGCodeRenderer extends AbstractGCodeGlRendererOld {
 	private static Point3d G03_COLOR = new Point3d(0,0.86,0);
 	private boolean clockwise;
 
@@ -38,7 +38,7 @@ public abstract class ArcGCodeRenderer extends AbstractGCodeGlRenderer {
 		this.clockwise = clockwise;
 	}
 	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
+	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
 	 */
 	@Override
 	public void render(GCodeContext preContext,GCodeContext postContext, GCodeCommand command, GL2 gl) {

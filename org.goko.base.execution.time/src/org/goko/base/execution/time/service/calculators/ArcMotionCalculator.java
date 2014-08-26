@@ -19,16 +19,10 @@
  */
 package org.goko.base.execution.time.service.calculators;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-
-import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.gcode.rs274ngcv3.RS274;
 
 /**
  * Computes the time required for a linear motion
@@ -43,7 +37,8 @@ public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator
 	 */
 	@Override
 	public double evaluateExecutionTime(final GCodeContext preContext, final GCodeContext postContext, GCodeCommand command) throws GkException {
-		Tuple6b positionAfter 	= postContext.getPosition();
+		return 0;
+		/*Tuple6b positionAfter 	= postContext.getPosition();
 		Tuple6b tuple 			= new Tuple6b(preContext.getPosition());
 
 		Double x = tuple.getX().doubleValue();
@@ -58,7 +53,7 @@ public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator
 
 		Vector3d radius = new Vector3d(x - center.x, y - center.y, z - center.z);
 
-		/* ** */
+		/ * ** * /
 		x = positionAfter.getX().doubleValue();
 		y = positionAfter.getY().doubleValue();
 		z = positionAfter.getZ().doubleValue();
@@ -91,6 +86,6 @@ public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator
 			feedrate = 1000; // Arbitrary value TODO fix this
 		}
 		double d = ((Math.abs(angle) * radius.length()) / feedrate);
-		return ((Math.abs(angle) * radius.length()) / feedrate) * 60;
+		return ((Math.abs(angle) * radius.length()) / feedrate) * 60;*/
 	}
 }

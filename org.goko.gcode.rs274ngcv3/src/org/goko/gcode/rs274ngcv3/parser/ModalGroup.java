@@ -42,36 +42,37 @@ public class ModalGroup {
 	/**
 	 * The list of GCode word inside this group
 	 */
-	List<GCodeWord> groupWords;
+	List<String> groupWords;
 
 	public ModalGroup(String... words){
-		this.groupWords = new ArrayList<GCodeWord>();
+		this.groupWords = new ArrayList<String>();
 		for (String strWord : words) {
-			this.groupWords.add(new GCodeWord(strWord));
-		}
-	}
-	public ModalGroup(GCodeWord... words){
-		this.groupWords = new ArrayList<GCodeWord>();
-		for (GCodeWord gCodeWord : words) {
-			this.groupWords.add(gCodeWord);
+			this.groupWords.add(strWord);
 		}
 	}
 
-	public final void verifyModality(GCodeCommand command) throws GkException {
-		List<GCodeWord> commandWords = command.getGCodeWords();
-		GCodeWord firstWordFromGroup = null;
-		for (GCodeWord gCodeWord : commandWords) {
-			if(contains(gCodeWord)){
+	public final void verifyTokenModality(List<GCodeToken> tokens) throws GkException {		
+		List<String> words = new ArrayList<String>();
+		for (GCodeToken gCodeToken : tokens) {
+			words.add(gCodeToken.getValue());
+		}
+		verifyStringModality(words);
+	}
+	
+	public final void verifyStringModality(List<String> words) throws GkException {		
+		String firstWordFromGroup = null;
+		for (String word : words) {
+			if(contains(word)){
 				if(firstWordFromGroup == null){
-					firstWordFromGroup = gCodeWord;
+					firstWordFromGroup = word;
 				}else{
-					throw new GkFunctionalException("GCode modality exception : the word '"+firstWordFromGroup+"' and '"+gCodeWord+"' can't be in the same command ["+command.toString()+"].");
+					throw new GkFunctionalException("GCode modality exception : the word '"+firstWordFromGroup+"' and '"+word+"' can't be in the same command ["+words.toString()+"].");
 				}
 			}
 		}
 	}
 
-	public boolean contains(GCodeWord word){
+	public boolean contains(String word){
 		return groupWords.contains(word);
 	}
 }

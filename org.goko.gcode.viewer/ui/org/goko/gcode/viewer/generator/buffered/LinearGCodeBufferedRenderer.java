@@ -30,9 +30,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
+import org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld;
 
-public abstract class LinearGCodeBufferedRenderer extends AbstractGCodeGlRenderer {
+public abstract class LinearGCodeBufferedRenderer extends AbstractGCodeGlRendererOld {
 
 
 	private Map<Integer, BufferedRenderingData> buffer;
@@ -42,7 +42,7 @@ public abstract class LinearGCodeBufferedRenderer extends AbstractGCodeGlRendere
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
+	 * @see org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld#render(org.goko.core.gcode.bean.GCodeCommand, javax.media.opengl.GL2)
 	 */
 	@Override
 	public final void render(GCodeContext preContext,GCodeContext postContext, GCodeCommand command, GL2 gl) {

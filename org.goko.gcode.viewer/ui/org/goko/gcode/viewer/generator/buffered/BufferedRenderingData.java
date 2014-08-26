@@ -23,17 +23,17 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.goko.gcode.viewer.generator.AbstractGCodeGlRenderer;
+import org.goko.gcode.viewer.generator.AbstractGCodeGlRendererOld;
 
 public class BufferedRenderingData {
-	private AbstractGCodeGlRenderer renderer;
+	private AbstractGCodeGlRendererOld renderer;
 	private List<Point3d> points;
 
 	/**
 	 * @param renderer
 	 * @param points
 	 */
-	BufferedRenderingData(AbstractGCodeGlRenderer renderer, List<Point3d> points) {
+	BufferedRenderingData(AbstractGCodeGlRendererOld renderer, List<Point3d> points) {
 		super();
 		this.renderer = renderer;
 		this.points = points;
@@ -41,13 +41,13 @@ public class BufferedRenderingData {
 	/**
 	 * @return the renderer
 	 */
-	public AbstractGCodeGlRenderer getRenderer() {
+	public AbstractGCodeGlRendererOld getRenderer() {
 		return renderer;
 	}
 	/**
 	 * @param renderer the renderer to set
 	 */
-	public void setRenderer(AbstractGCodeGlRenderer renderer) {
+	public void setRenderer(AbstractGCodeGlRendererOld renderer) {
 		this.renderer = renderer;
 	}
 	/**

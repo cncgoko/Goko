@@ -29,8 +29,8 @@ import java.util.List;
 public interface IGCodeProvider {
 
 	/**
-	 * Return the list of GCode commands provided by this provider
-	 * @return a {@link List} of {@link GCodeCommand}
+	 * Return the list of GCodeLine provided by this provider
+	 * @return a {@link List} of {@link GCodeLine}
 	 */
 	List<GCodeCommand> getGCodeCommands();
 
