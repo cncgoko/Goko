@@ -21,9 +21,9 @@ package org.goko.base.execution.time.service.calculators;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
-import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 
 /**
  * Computes the time required for a linear motion
@@ -31,15 +31,15 @@ import org.goko.core.gcode.bean.Tuple6b;
  * @author PsyKo
  *
  */
-public class LinearMotionCalculator implements IGCodeCommandExecutionTimeCalculator{
+public class LinearMotionCalculator implements IGCodeCommandExecutionTimeCalculator<LinearMotionCommand>{
 
 	/** (inheritDoc)
 	 * @see org.goko.core.execution.IGCodeCommandExecutionTimeCalculator#evaluateExecutionTime(org.goko.core.gcode.bean.GCodeCommand)
 	 */
 	@Override
-	public double evaluateExecutionTime(final GCodeContext preContext, final GCodeContext postContext, GCodeCommand command) throws GkException {
-		Tuple6b 		positionBefore 	= preContext.getPosition();
-		Tuple6b 		positionAfter 	= postContext.getPosition();
+	public double evaluateExecutionTime(LinearMotionCommand command, final GCodeContext context) throws GkException {
+		Tuple6b 		positionBefore 	= command.getAbsoluteStartCoordinate();
+		Tuple6b 		positionAfter 	= command.getAbsoluteEndCoordinate();
 
 		double dx = Math.abs(positionBefore.getX().doubleValue() - positionAfter.getX().doubleValue());
 		double dy = Math.abs(positionBefore.getY().doubleValue() - positionAfter.getY().doubleValue());
@@ -51,13 +51,11 @@ public class LinearMotionCalculator implements IGCodeCommandExecutionTimeCalcula
 		double max = Math.max(dx, Math.max(dy, Math.max(dz, Math.max(da, Math.max(db, dc)))));
 
 		double feedrate = 0;
-		if(postContext.getFeedrate() != null){
-			feedrate = postContext.getFeedrate().doubleValue();
-		}else if(preContext.getFeedrate() != null){
-			feedrate = preContext.getFeedrate().doubleValue();
+		if(command.getFeedrate() != null){
+			feedrate = command.getFeedrate().doubleValue();
 		}else{
 			return 0;
 		}
-		return  (max / feedrate) * 60 ;
+		return (max / feedrate) * 60 ;
 	}
 }

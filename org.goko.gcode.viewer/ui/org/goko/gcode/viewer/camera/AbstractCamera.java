@@ -19,9 +19,12 @@
  */
 package org.goko.gcode.viewer.camera;
 
+import javax.vecmath.Point3d;
+
 
 public abstract class AbstractCamera {
 	public abstract String getLabel();
 	public abstract void setup();
 	public abstract void updatePosition();
+	public abstract void lookAt(Point3d position);
 }

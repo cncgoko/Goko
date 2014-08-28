@@ -21,6 +21,7 @@ package org.goko.gcode.viewer.camera;
 
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point2i;
+import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -111,13 +112,13 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 
 		if((e.stateMask & SWT.BUTTON1) != 0 ){
 			if((e.stateMask & SWT.ALT) != 0 ){
-				mode = CameraMotionMode.ORBIT;
+				mode = CameraMotionMode.ZOOM;
 
 			}else{
 				mode = CameraMotionMode.PAN;
 			}
 		}else if((e.stateMask & SWT.BUTTON3) != 0 ){
-			mode = CameraMotionMode.ZOOM;
+			mode = CameraMotionMode.ORBIT;
 		}
 
 		if(mode != null){
@@ -184,5 +185,12 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	@Override
 	public String getLabel() {
 		return "Perspective";
+	}
+
+	@Override
+	public void lookAt(Point3d lookat) {
+		target.x = (float) lookat.x;
+		target.y = (float) lookat.y;
+		target.z = (float) lookat.z;
 	}
 }

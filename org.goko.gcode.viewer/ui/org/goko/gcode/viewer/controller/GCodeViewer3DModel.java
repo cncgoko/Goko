@@ -38,6 +38,8 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	private IGCodeProvider commandProvider;
 
 	private boolean enabled;
+
+	private boolean followTool;
 	/**
 	 * @return the showGrid
 	 */
@@ -90,5 +92,20 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	 */
 	public void setCommandProvider(IGCodeProvider commandProvider) {
 		firePropertyChange("commandProvider",this.commandProvider, this.commandProvider = commandProvider);
+	}
+	/**
+	 * @return the followTool
+	 */
+	public boolean isFollowTool() {
+		return followTool;
+	}
+	public boolean getFollowTool() {
+		return isFollowTool();
+	}
+	/**
+	 * @param followTool the followTool to set
+	 */
+	public void setFollowTool(boolean followTool) {
+		firePropertyChange("followTool",this.followTool, this.followTool = followTool);
 	}
 }

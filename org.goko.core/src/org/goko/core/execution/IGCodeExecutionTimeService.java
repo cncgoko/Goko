@@ -42,11 +42,10 @@ public interface IGCodeExecutionTimeService extends IGokoService{
 
 	/**
 	 * Evaluate the execution time of the given command
-	 * @param preContext the context before the execution of the command
-	 * @param postContext the context after the execution of the command
 	 * @param command the command
+	 * @param context the GCode context
 	 * @return a long giving the seconds required to execute the command
 	 * @throws GkException GkException
 	 */
-	double evaluateExecutionTime(GCodeContext preContext,GCodeContext postContext, GCodeCommand command) throws GkException;
+	double evaluateExecutionTime(GCodeCommand command, GCodeContext postContext) throws GkException;
 }

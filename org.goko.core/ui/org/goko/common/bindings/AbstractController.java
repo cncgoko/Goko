@@ -348,6 +348,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		verifyGetter(dataModel,property);
 		verifySetter(dataModel,property);
 
+
 		IObservableValue target = WidgetProperties.enabled().observe(source);
 		IObservableValue model = BeansObservables.observeValue(dataModel, property);
 

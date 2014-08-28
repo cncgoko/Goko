@@ -19,10 +19,13 @@
  */
 package org.goko.base.execution.time.service.calculators;
 
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
-import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 
 /**
  * Computes the time required for a linear motion
@@ -30,62 +33,78 @@ import org.goko.core.gcode.bean.GCodeContext;
  * @author PsyKo
  *
  */
-public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator{
+public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator<ArcMotionCommand>{
 
 	/** (inheritDoc)
 	 * @see org.goko.core.execution.IGCodeCommandExecutionTimeCalculator#evaluateExecutionTime(org.goko.core.gcode.bean.GCodeCommand)
 	 */
 	@Override
-	public double evaluateExecutionTime(final GCodeContext preContext, final GCodeContext postContext, GCodeCommand command) throws GkException {
-		return 0;
-		/*Tuple6b positionAfter 	= postContext.getPosition();
-		Tuple6b tuple 			= new Tuple6b(preContext.getPosition());
+	public double evaluateExecutionTime(ArcMotionCommand command, final GCodeContext context) throws GkException {
 
-		Double x = tuple.getX().doubleValue();
-		Double y = tuple.getY().doubleValue();
-		Double z = tuple.getZ().doubleValue();
+		Point3d start 	= command.getAbsoluteStartCoordinate().toPoint3d();
+		Point3d center 	= command.getAbsoluteCenterCoordinate().toPoint3d();
+		Point3d end 	= command.getAbsoluteEndCoordinate().toPoint3d();
 
-		Double i = postContext.getOffset().getX().doubleValue();
-		Double j = postContext.getOffset().getY().doubleValue();
-		Double k = postContext.getOffset().getZ().doubleValue();
+		Vector3d v1 = new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z);
+		Vector3d v2 = new Vector3d(end.x - center.x, end.y - center.y, end.z - center.z);
 
-		Point3d center = new Point3d(x + i, y + j, z + k);
-
-		Vector3d radius = new Vector3d(x - center.x, y - center.y, z - center.z);
-
-		/ * ** * /
-		x = positionAfter.getX().doubleValue();
-		y = positionAfter.getY().doubleValue();
-		z = positionAfter.getZ().doubleValue();
-		Vector3d v2 = new Vector3d(x - center.x, y - center.y, z - center.z);
-
-		double smallestAngle = StrictMath.atan2(radius.y,radius.x) - StrictMath.atan2(v2.y,v2.x);
+		double smallestAngle = StrictMath.atan2(v1.y,v1.x) - StrictMath.atan2(v2.y,v2.x);
 		double angle = smallestAngle ;
-		boolean isClockwise = StringUtils.equals(postContext.getMotionMode(), RS274.MOTION_MODE_ARC_CW);
 		// If smallestAngle < 0 then it is a counterclockwise angle.
 		if(smallestAngle < 0){
-			if(isClockwise){ // The angle is CCW but the command is CCW
-				angle = - ( 2*Math.PI - Math.abs(smallestAngle) );  // When rotating, CW rotation = negative angle
+			if(command.isClockwise()){ // The angle is CCW but the command is CCW
+				angle = - ( 2*Math.PI - Math.abs(smallestAngle) );  // In OpenGl when rotating, CW rotation = negative angle
 			}else{
-				angle = Math.abs(smallestAngle); // When rotating, CCW rotation = positive angle
+				angle = Math.abs(smallestAngle); // In OpenGl when rotating, CCW rotation = positive angle
 			}
 		}else{
-			if(isClockwise){ // The angle is CW and we have a CW command
-				angle = - Math.abs(smallestAngle); // When rotating, CW rotation = negative angle
+			if(command.isClockwise()){ // The angle is CW and we have a CW command
+				angle = - Math.abs(smallestAngle); // In OpenGl when rotating, CW rotation = negative angle
 			}else{ // The angle is CW but we want the CCW command
 				angle =  2*Math.PI - smallestAngle;
 			}
 		}
-
+		
 		double feedrate = 0;
-		if(postContext.getFeedrate() != null){
-			feedrate = postContext.getFeedrate().doubleValue();
-		}else if(preContext.getFeedrate() != null){
-			feedrate = preContext.getFeedrate().doubleValue();
+		if(command.getFeedrate() != null){
+			feedrate = command.getFeedrate().doubleValue();
 		}else{
-			feedrate = 1000; // Arbitrary value TODO fix this
+			return 0;
 		}
-		double d = ((Math.abs(angle) * radius.length()) / feedrate);
-		return ((Math.abs(angle) * radius.length()) / feedrate) * 60;*/
+		return ((Math.abs(angle) * v1.length()) / feedrate) * 60;
+
+//		
+//		Point3d endPos 	= command.getAbsoluteEndCoordinate().toPoint3d();
+//		Point3d startPos= command.getAbsoluteStartCoordinate().toPoint3d();
+//		Point3d center 	= command.getAbsoluteCenterCoordinate().toPoint3d();
+//
+//		Vector3d centerToStartVector = new Vector3d(startPos.x - center.x, startPos.y - center.y, startPos.z - center.z);
+//		Vector3d centerToEndVector = new Vector3d(endPos.x - center.x, endPos.y - center.y, endPos.z - center.z);
+//
+//		double smallestAngle = StrictMath.atan2(centerToStartVector.y,centerToStartVector.x) - StrictMath.atan2(centerToEndVector.y,centerToEndVector.x);
+//		double angle = smallestAngle ;
+//		boolean isClockwise = command.isClockwise();
+//		// If smallestAngle < 0 then it is a counterclockwise angle.
+//		if(smallestAngle < 0){
+//			if(isClockwise){ // The angle is CCW but the command is CCW
+//				angle = - ( 2*Math.PI - Math.abs(smallestAngle) );  // When rotating, CW rotation = negative angle
+//			}else{
+//				angle = Math.abs(smallestAngle); // When rotating, CCW rotation = positive angle
+//			}
+//		}else{
+//			if(isClockwise){ // The angle is CW and we have a CW command
+//				angle = - Math.abs(smallestAngle); // When rotating, CW rotation = negative angle
+//			}else{ // The angle is CW but we want the CCW command
+//				angle =  2*Math.PI - smallestAngle;
+//			}
+//		}
+//
+//		double feedrate = 0;
+//		if(command.getFeedrate() != null){
+//			feedrate = command.getFeedrate().doubleValue();
+//		}else{
+//			return 0;
+//		}
+//		return ((Math.abs(angle) * centerToStartVector.length()) / feedrate) * 60;
 	}
 }

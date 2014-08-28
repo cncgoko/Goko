@@ -25,16 +25,19 @@ import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
+import org.goko.core.gcode.bean.commands.MotionCommand;
 
 public class TimeCalculatorFactory {
 
 	public IGCodeCommandExecutionTimeCalculator  getCalculator(GCodeContext context, GCodeCommand command){
 
-		if(context.getMotionType() == EnumGCodeCommandMotionType.LINEAR){
-			return new LinearMotionCalculator();
-		}else if(context.getMotionType() == EnumGCodeCommandMotionType.ARC){
-			return new ArcMotionCalculator();
-
+		if(command.getType() == EnumGCodeCommandType.MOTION){
+			if( ((MotionCommand)command).getMotionType() == EnumGCodeCommandMotionType.ARC){
+				return new ArcMotionCalculator();
+			}else{
+				return new LinearMotionCalculator();
+			}
 		}
 		return null;
 	}

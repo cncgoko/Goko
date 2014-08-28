@@ -83,16 +83,16 @@ public abstract class AbstractSettingCommandBuilder<T extends SettingCommand> ex
 			targetCommand.setExplicitMotionMode(false);
 		}
 
-		// Extract the feedrate if the motion is controlled
+		// Extract the feedrate if the motion is anything but rapid
 		GCodeToken fToken = RS274.findUniqueTokenByLetter("F", lstTokens);
-		if(targetCommand.getMotionMode() == EnumGCodeCommandMotionMode.FEEDRATE){
+		if(targetCommand.getMotionMode() != EnumGCodeCommandMotionMode.RAPID){
 			if(fToken != null){
 				targetCommand.setFeedrate( new BigDecimal(RS274.getTokenValue(fToken)) );
 			}else{
 				targetCommand.setFeedrate( context.getFeedrate());
 			}
 		}else{
-			targetCommand.setFeedrate(null);
+			targetCommand.setFeedrate(context.getFeedrate());
 		}
 	}
 

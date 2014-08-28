@@ -21,6 +21,7 @@ package org.goko.gcode.viewer.camera;
 
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point2i;
+import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -153,5 +154,12 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 	@Override
 	public String getLabel() {
 		return "Orthographic";
+	}
+
+	@Override
+	public void lookAt(Point3d position) {
+		eye.x = (float) position.x;
+		eye.y = (float) position.y;
+		eye.z = (float) position.z;
 	}
 }

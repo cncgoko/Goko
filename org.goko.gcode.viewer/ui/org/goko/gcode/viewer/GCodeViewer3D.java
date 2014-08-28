@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
@@ -85,10 +86,19 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         compositeParent.setLayout(gl_compositeParent);
 
         Composite composite = new Composite(compositeParent, SWT.NONE);
-        GridLayout gl_composite = new GridLayout(3, false);
+        GridLayout gl_composite = new GridLayout(6, false);
         gl_composite.verticalSpacing = 3;
         gl_composite.marginHeight = 3;
         composite.setLayout(gl_composite);
+
+        Button viewEnableBtn = formToolkit.createButton(composite, "", SWT.TOGGLE);
+        viewEnableBtn.setImage(ResourceManager.getPluginImage("org.goko.gcode.viewer", "icons/activated.png"));
+
+        Button toolFollowBtn = formToolkit.createButton(composite, "", SWT.TOGGLE);
+        toolFollowBtn.setImage(ResourceManager.getPluginImage("org.goko.gcode.viewer", "icons/follow-tool.png"));
+        toolFollowBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1));
+
+
 
         Button btnShowGrid = new Button(composite, SWT.TOGGLE);
         btnShowGrid.setImage(ResourceManager.getPluginImage("org.goko.gcode.viewer", "icons/grid.png"));
@@ -115,20 +125,20 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         glcanvas = new GCode3DCanvas(compositeParent, SWT.NO_BACKGROUND, gldata);
         glcanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         ContextInjectionFactory.inject(glcanvas, context);
-      //  glcanvas.setCurrent();
+        new Label(composite, SWT.NONE);
 
-
-        Button btnEnabledView = new Button(composite, SWT.CHECK);
-        formToolkit.adapt(btnEnabledView, true, true);
-
-        btnEnabledView.setText("Enable 3D view");
 
         getController().addSelectionBinding(btnShowGrid, "showGrid");
+        getController().addSelectionBinding(viewEnableBtn, "showGrid");
 		getController().addPropertyBinding(glcanvas, "showGrid", "showGrid");
-		getController().addSelectionBinding(btnEnabledView, "enabled");
 		getController().addPropertyBinding(glcanvas, "renderEnabled", "enabled");
 		getController().addPropertyBinding(glcanvas, "currentPosition", "currentPosition");
 		getController().addPropertyBinding(glcanvas, "commandProvider", "commandProvider");
+
+		getController().addSelectionBinding(toolFollowBtn, "followTool");
+		getController().addPropertyBinding(glcanvas, "followTool", "followTool");
+		new Label(composite, SWT.NONE);
+
 
 		Map<String, String> state = part.getPersistedState();
 		String viewerEnabledStr = state.get(VIEWER_ENABLED);
@@ -158,5 +168,4 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	public void setFocus() {
 		// TODO	Set the focus to control
 	}
-
 }

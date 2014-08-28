@@ -82,7 +82,7 @@ public class GCodeExecutionTimeCalculator implements IGCodeExecutionTimeService 
 				GCodeContext postContext = new GCodeContext(context);
 				gcodeService.update(postContext, command);
 
-				result += evaluateExecutionTime(context, postContext, command);
+				result += evaluateExecutionTime(command, context);
 				context = postContext;
 			}
 		}
@@ -93,14 +93,14 @@ public class GCodeExecutionTimeCalculator implements IGCodeExecutionTimeService 
 	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.bean.GCodeCommand)
 	 */
 	@Override
-	public double evaluateExecutionTime(GCodeContext preContext, GCodeContext postContext, GCodeCommand command) throws GkException {
+	public double evaluateExecutionTime(GCodeCommand command, GCodeContext context) throws GkException {
 
 
-		IGCodeCommandExecutionTimeCalculator calculator = factory.getCalculator(postContext, command);
+		IGCodeCommandExecutionTimeCalculator<GCodeCommand> calculator = factory.getCalculator(context, command);
 
 
 		if(calculator != null){
-			return calculator.evaluateExecutionTime(preContext,postContext, command);
+			return calculator.evaluateExecutionTime(command, context);
 		}
 		return 0;
 	}

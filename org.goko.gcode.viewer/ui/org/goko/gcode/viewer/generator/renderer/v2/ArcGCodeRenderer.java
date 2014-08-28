@@ -80,6 +80,7 @@ public class ArcGCodeRenderer extends AbstractGCodeGlRenderer<ArcMotionCommand>{
 
 		for(int i = 0; i < nbPoints; i++){
 			rot.transform(v1);
+			setVertexStyle(command, gl);
 			gl.glVertex3d(center.x + v1.x, center.y + v1.y, start.z);
 		}
 

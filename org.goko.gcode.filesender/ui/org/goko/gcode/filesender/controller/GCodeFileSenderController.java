@@ -29,6 +29,7 @@ import java.util.Date;
 import javax.inject.Inject;
 import javax.swing.Timer;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -161,6 +162,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		IGCodeProvider gcodeFile = gCodeService.parse(getDataModel().getFilePath());
 		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
 
+		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getGCodeCommands()));
 		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));
 		getDataModel().setgCodeDocument(new GCodeDocumentProvider(gcodeFile));
 		eventBroker.post("gcodefile", gcodeFile);

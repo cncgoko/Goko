@@ -34,6 +34,12 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -95,6 +101,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		} catch (GkException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -103,6 +110,15 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 */
 	@PostConstruct
 	public void createControls(final Composite parent) throws GkException {
+		DropTarget dt = new DropTarget(parent, DND.DROP_MOVE);
+		   dt.setTransfer(new Transfer[] {FileTransfer.getInstance()});
+		   dt.addDropListener(new DropTargetAdapter() {
+		      @Override
+			public void drop(DropTargetEvent event) {
+		         // Set the text field's text to the text being dropped
+		         getController().setGCodeFilepath(((String[]) event.data)[0]);
+		      }
+		   });
 		parent.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 
