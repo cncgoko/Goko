@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.base.commandpanel.controller.CommandPanelController;
 import org.goko.base.commandpanel.controller.CommandPanelModel;
@@ -311,6 +312,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnPause.setText("Pause");
 
 		btnStop = new Button(grpControls, SWT.NONE);
+		btnStop.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/stop.png"));
+		btnStop.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		GridData gd_btnStop = new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1);
 		gd_btnStop.heightHint = 35;

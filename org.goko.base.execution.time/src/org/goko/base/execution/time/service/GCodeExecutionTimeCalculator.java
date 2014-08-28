@@ -79,11 +79,11 @@ public class GCodeExecutionTimeCalculator implements IGCodeExecutionTimeService 
 		if(CollectionUtils.isNotEmpty(provider.getGCodeCommands())){
 			GCodeContext context = new GCodeContext();
 			for (GCodeCommand command : provider.getGCodeCommands()) {
-				GCodeContext postContext = new GCodeContext(context);
-				gcodeService.update(postContext, command);
+				//GCodeContext postContext = new GCodeContext(context);
+				//gcodeService.update(postContext, command);
 
 				result += evaluateExecutionTime(command, context);
-				context = postContext;
+				//context = postContext;
 			}
 		}
 		return result;

@@ -88,6 +88,7 @@ public abstract class AbstractSettingCommandBuilder<T extends SettingCommand> ex
 		if(targetCommand.getMotionMode() != EnumGCodeCommandMotionMode.RAPID){
 			if(fToken != null){
 				targetCommand.setFeedrate( new BigDecimal(RS274.getTokenValue(fToken)) );
+				targetCommand.setExplicitFeedrate(true);
 			}else{
 				targetCommand.setFeedrate( context.getFeedrate());
 			}
@@ -133,7 +134,10 @@ public abstract class AbstractSettingCommandBuilder<T extends SettingCommand> ex
 	@Override
 	public boolean match(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
 		for (GCodeToken gCodeToken : lstTokens) {
-			if(!StringUtils.equalsIgnoreCase(RS274.getTokenLetter(gCodeToken),"g") && !StringUtils.equalsIgnoreCase(RS274.getTokenLetter(gCodeToken),"n")){
+			String letter = RS274.getTokenLetter(gCodeToken);
+			if( !StringUtils.equalsIgnoreCase( letter ,"g") &&
+				!StringUtils.equalsIgnoreCase( letter ,"n") &&
+				!StringUtils.equalsIgnoreCase( letter ,"f")){
 				return false;
 			}
 		}

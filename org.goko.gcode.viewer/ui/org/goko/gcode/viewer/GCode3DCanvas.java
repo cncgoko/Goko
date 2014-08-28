@@ -435,7 +435,7 @@ public class GCode3DCanvas extends GLCanvas implements GLEventListener, PaintLis
 	        e.gc.setFont(overlayFont);
 	        e.gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 	        e.gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
-			String disabled = "-- Disabled --";
+			String disabled = "-- 3D View Disabled --";
 			int width = e.gc.getFontMetrics().getAverageCharWidth() * StringUtils.length(disabled);
 			int height = e.gc.getFontMetrics().getHeight();
 	        e.gc.drawString(disabled, e.x + e.width / 2 - width /2, e.y + e.height / 2 - height);

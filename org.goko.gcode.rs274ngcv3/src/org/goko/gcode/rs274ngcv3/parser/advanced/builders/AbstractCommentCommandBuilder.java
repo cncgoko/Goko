@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.commands.CommentCommand;
 import org.goko.core.log.GkLog;
@@ -56,14 +55,16 @@ public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> ex
 
 	@Override
 	public boolean match(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
-		boolean match = false;
-		if(CollectionUtils.size(lstTokens) == 1){
-			GCodeToken token = lstTokens.get(0);
-			if(token.getType() == GCodeTokenType.MULTILINE_COMMENT || token.getType() == GCodeTokenType.SIMPLE_COMMENT){
-				match = true;
+
+		if(CollectionUtils.isNotEmpty(lstTokens)){
+			for (GCodeToken token : lstTokens) {
+				if(token.getType() == GCodeTokenType.MULTILINE_COMMENT || token.getType() == GCodeTokenType.SIMPLE_COMMENT){
+					return true;
+				}
 			}
+
 		}
-		return match;
+		return false;
 	}
 
 }

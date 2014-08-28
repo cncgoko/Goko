@@ -59,6 +59,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
     private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
     private static final String VIEWER_ENABLED = "org.goko.gcode.viewer.enabled";
     private static final String VIEWER_GRID_ENABLED = "org.goko.gcode.viewer.gridEnabled";
+    private static final String VIEWER_LOCK_CAMERA_ON_TOOL = "org.goko.gcode.viewer.lockCameraOnTool";
 
     /**
      * Part constructor
@@ -129,7 +130,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 
         getController().addSelectionBinding(btnShowGrid, "showGrid");
-        getController().addSelectionBinding(viewEnableBtn, "showGrid");
+        getController().addSelectionBinding(viewEnableBtn, "enabled");
 		getController().addPropertyBinding(glcanvas, "showGrid", "showGrid");
 		getController().addPropertyBinding(glcanvas, "renderEnabled", "enabled");
 		getController().addPropertyBinding(glcanvas, "currentPosition", "currentPosition");
@@ -149,6 +150,10 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		if(StringUtils.isNotEmpty(gridEnabledStr)){
 			getDataModel().setShowGrid(BooleanUtils.toBoolean(gridEnabledStr));
 		}
+		String lockCameraToolStr = state.get(VIEWER_LOCK_CAMERA_ON_TOOL);
+		if(StringUtils.isNotEmpty(lockCameraToolStr)){
+			getDataModel().setFollowTool(BooleanUtils.toBoolean(lockCameraToolStr));
+		}
     }
 
 	@PreDestroy
@@ -161,6 +166,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		if(getDataModel() != null){
 			part.getPersistedState().put(VIEWER_ENABLED, String.valueOf(getDataModel().isEnabled()));
 			part.getPersistedState().put(VIEWER_GRID_ENABLED, String.valueOf(getDataModel().isShowGrid()));
+			part.getPersistedState().put(VIEWER_LOCK_CAMERA_ON_TOOL, String.valueOf(getDataModel().isFollowTool()));
 		}
 	}
 

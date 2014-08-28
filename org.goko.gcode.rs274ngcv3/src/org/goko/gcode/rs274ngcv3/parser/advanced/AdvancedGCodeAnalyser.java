@@ -22,6 +22,7 @@ package org.goko.gcode.rs274ngcv3.parser.advanced;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
@@ -39,11 +40,11 @@ import org.goko.gcode.rs274ngcv3.parser.advanced.builders.SettingCommandBuilder;
 public class AdvancedGCodeAnalyser {
 	private List<IRS274CommandBuilder<?>> lstBuilders;
 	private List<ModalGroup> modalGroups;
-	
+
 	public AdvancedGCodeAnalyser() {
 		lstBuilders = new ArrayList<IRS274CommandBuilder<?>>();
 		lstBuilders.add( new ArcCommandBuilder() );
-		lstBuilders.add( new LinearCommandBuilder() );		
+		lstBuilders.add( new LinearCommandBuilder() );
 		lstBuilders.add( new SettingCommandBuilder() );
 		lstBuilders.add( new CommentCommandBuilder() );
 		lstBuilders.add( new RawCommandBuilder() );
@@ -53,7 +54,7 @@ public class AdvancedGCodeAnalyser {
 	protected void initializeModalGroups(){
 		this.modalGroups = new ArrayList<ModalGroup>();
 		this.modalGroups.add( new ModalGroup("G0", "G1", "G2", "G3", "G38.2", "G80", "G81", "G82", "G83", "G84", "G85", "G86", "G87", "G88", "G89" ));
-		
+
 		this.modalGroups.add( new ModalGroup("G17", "G18", "G19"  ));
 		this.modalGroups.add( new ModalGroup("G90", "G91"));
 		this.modalGroups.add( new ModalGroup("G93", "G94"));
@@ -71,7 +72,7 @@ public class AdvancedGCodeAnalyser {
 		this.modalGroups.add( new ModalGroup("M8","M9"));
 		this.modalGroups.add( new ModalGroup("M48", "M49"));
 	}
-	
+
 	/**
 	 * Create a GCodeFile by parsing the given list of {@link GCodeToken}
 	 * @param tokens the list of token
@@ -86,16 +87,21 @@ public class AdvancedGCodeAnalyser {
 		// Let's detect the end token. We search the first NEW_LINE token, or the end of the list
 		for (GCodeToken gCodeToken : tokens) {
 			if(gCodeToken.getType() == GCodeTokenType.NEW_LINE){
-				GCodeCommand command = createCommand(lineTokens, context);
-				file.addGCodeCommand( command );
-				lineTokens.clear();
+				if(CollectionUtils.isNotEmpty(lineTokens)){
+					GCodeCommand command = createCommand(lineTokens, context);
+					file.addGCodeCommand( command );
+					lineTokens.clear();
+				}
 			}else{
 				lineTokens.add(gCodeToken);
 			}
 		}
 		// Let's compute the final GCodeCommand
-		GCodeCommand command = createCommand(lineTokens, context);
-		file.addGCodeCommand( command );
+		if(CollectionUtils.isNotEmpty(lineTokens)){
+			GCodeCommand command = createCommand(lineTokens, context);
+			file.addGCodeCommand( command );
+			lineTokens.clear();
+		}
 		return file;
 	}
 
@@ -107,7 +113,7 @@ public class AdvancedGCodeAnalyser {
 	 * @throws GkException GkException
 	 */
 	public GCodeCommand createCommand(List<GCodeToken> tokens, GCodeContext intialContext) throws GkException{
-		verifyModality(tokens);		
+		verifyModality(tokens);
 		GCodeCommand typedCommand = null;
 		typedCommand = analyseGCodeCommand(tokens, intialContext);
 		typedCommand.updateContext(intialContext);
@@ -124,7 +130,7 @@ public class AdvancedGCodeAnalyser {
 	private GCodeCommand analyseGCodeCommand(List<GCodeToken> tokens, GCodeContext context) throws GkException{
 		for (IRS274CommandBuilder<?> builder : lstBuilders) {
 			if(builder.match(tokens, context)){
-				return builder.createCommand(tokens, context);				
+				return builder.createCommand(tokens, context);
 			}
 		}
 		String tokensString = "";
@@ -133,7 +139,7 @@ public class AdvancedGCodeAnalyser {
 		}
 		throw new GkTechnicalException("No builder found for command token list "+tokensString);
 	}
-	
+
 	/**
 	 * Verify the modality of the token in a single line. If the modality constraint is violated, an exception is thrown.
 	 * @param tokens the list of token
