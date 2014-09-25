@@ -22,6 +22,7 @@ package org.goko.tinyg.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.vecmath.Point3d;
 
@@ -29,10 +30,12 @@ import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.action.IGkControllerAction;
+import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
+import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 
@@ -57,6 +60,9 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		mapServiceByFirmware = new HashMap<VersionRange, ITinyGControllerFirmwareService>();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerServiceSelector#registerFirmwareService(org.goko.tinyg.service.ITinyGControllerFirmwareService)
+	 */
 	@Override
 	public void registerFirmwareService(ITinyGControllerFirmwareService service) throws GkException{
 		VersionRange range = new VersionRange(service.getMinimalSupportedFirmwareVersion(), service.getMaximalSupportedFirmwareVersion());
@@ -76,92 +82,146 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		return currentService;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#getServiceId()
+	 */
 	@Override
 	public String getServiceId() throws GkException {
 		return getCurrentService().getServiceId();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#start()
+	 */
 	@Override
 	public void start() throws GkException {
 		getCurrentService().start();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#stop()
+	 */
 	@Override
 	public void stop() throws GkException {
 		getCurrentService().stop();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IEventDispatcher#addListener(java.lang.Object)
+	 */
 	@Override
 	public void addListener(Object listener) {
 		getCurrentService().addListener(listener);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IEventDispatcher#removeListener(java.lang.Object)
+	 */
 	@Override
 	public void removeListener(Object listener) {
 		getCurrentService().removeListener(listener);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IEventDispatcher#notifyListeners(org.goko.core.common.event.Event)
+	 */
 	@Override
 	public <T extends Event> void notifyListeners(T event) {
 		getCurrentService().notifyListeners(event);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getPosition()
+	 */
 	@Override
 	public Point3d getPosition() throws GkException {
 		return getCurrentService().getPosition();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
+	 */
 	@Override
-	public GCodeExecutionQueue executeGCode(IGCodeProvider gcodeProvider) throws GkException {
+	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
 		return getCurrentService().executeGCode(gcodeProvider);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#isReadyForFileStreaming()
+	 */
 	@Override
 	public boolean isReadyForFileStreaming() throws GkException {
 		return getCurrentService().isReadyForFileStreaming();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getControllerAction(java.lang.String)
+	 */
 	@Override
 	public IGkControllerAction getControllerAction(String actionId) throws GkException {
 		return getCurrentService().getControllerAction(actionId);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#isControllerAction(java.lang.String)
+	 */
 	@Override
 	public boolean isControllerAction(String actionId) throws GkException {
 		return getCurrentService().isControllerAction(actionId);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getMachineValue(java.lang.String, java.lang.Class)
+	 */
 	@Override
 	public <T> MachineValue<T> getMachineValue(String name, Class<T> clazz) throws GkException {
 		return getCurrentService().getMachineValue(name, clazz);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getMachineValueType(java.lang.String)
+	 */
 	@Override
 	public Class<?> getMachineValueType(String name) throws GkException {
 		return getCurrentService().getMachineValueType(name);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getMachineValueDefinition()
+	 */
 	@Override
 	public List<MachineValueDefinition> getMachineValueDefinition() throws GkException {
 		return getCurrentService().getMachineValueDefinition();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getMachineValueDefinition(java.lang.String)
+	 */
 	@Override
 	public MachineValueDefinition getMachineValueDefinition(String id) throws GkException {
 		return getCurrentService().getMachineValueDefinition(id);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#findMachineValueDefinition(java.lang.String)
+	 */
 	@Override
 	public MachineValueDefinition findMachineValueDefinition(String id) throws GkException {
 		return getCurrentService().findMachineValueDefinition(id);
 	}
 
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#cancelFileSending()
+	 */
 	@Override
 	public void cancelFileSending() throws GkException {
 		getCurrentService().cancelFileSending();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerServiceSelector#setFirmware(java.lang.String)
+	 */
 	@Override
 	public void setFirmware(String firmware) throws GkException {
 		this.firmwareVersion = firmware;
@@ -172,34 +232,65 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		currentService.start();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerServiceSelector#getFirmware()
+	 */
 	@Override
 	public String getFirmware() throws GkException {
 		return firmwareVersion;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#getMinimalSupportedFirmwareVersion()
+	 */
 	@Override
 	public String getMinimalSupportedFirmwareVersion() throws GkException {
 		return getCurrentService().getMinimalSupportedFirmwareVersion();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#getMaximalSupportedFirmwareVersion()
+	 */
 	@Override
 	public String getMaximalSupportedFirmwareVersion() throws GkException {
 		return getCurrentService().getMaximalSupportedFirmwareVersion();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#getConfiguration()
+	 */
 	@Override
 	public TinyGConfiguration getConfiguration() throws GkException {
 		return getCurrentService().getConfiguration();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#setConfiguration(org.goko.tinyg.controller.configuration.TinyGConfiguration)
+	 */
 	@Override
 	public void setConfiguration(TinyGConfiguration configuration) throws GkException {
 		getCurrentService().setConfiguration(configuration);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#refreshConfiguration()
+	 */
 	@Override
 	public void refreshConfiguration() throws GkException {
 		getCurrentService().refreshConfiguration();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
+	 */
+	@Override
+	public Future<Tuple6b> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
+		return getCurrentService().probe(axis, feedrate, maximumPosition);
+	}
+
+	@Override
+	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
+		getCurrentService().moveToAbsolutePosition(position);
 	}
 
 

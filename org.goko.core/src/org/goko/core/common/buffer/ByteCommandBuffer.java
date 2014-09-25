@@ -39,21 +39,17 @@ public class ByteCommandBuffer {
 	}
 
 	public void add(Byte b){
-		synchronized(currentCommand){
-			this.currentCommand.add(b);
-			if(ObjectUtils.equals(b, commandDelimiter)){
-				this.stackCurrentCommand();
-			}
+		this.currentCommand.add(b);
+		if(ObjectUtils.equals(b, commandDelimiter)){
+			this.stackCurrentCommand();
 		}
 	}
 
-	public  void addAll(List<Byte> byteList){
-		synchronized(currentCommand){
-			for (Byte b : byteList) {
-				this.currentCommand.add(b);
-				if(ObjectUtils.equals(b, commandDelimiter)){
-					this.stackCurrentCommand();
-				}
+	public void addAll(List<Byte> byteList){
+		for (Byte b : byteList) {
+			this.currentCommand.add(b);
+			if(ObjectUtils.equals(b, commandDelimiter)){
+				this.stackCurrentCommand();
 			}
 		}
 	}

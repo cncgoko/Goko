@@ -145,8 +145,12 @@ public class MachineValueStore extends EventDispatcher{
 			throw new GkTechnicalException("ControllerValueStore : '"+id+"' not initialized.");
 		}else if(machineValue.getValue().getClass() == value.getClass()){
 			MachineValue<T> typedValue = (MachineValue<T>) valueStore.get(id);
+			T oldValue = typedValue.getValue();
 			typedValue.setValue(value);
-			super.notifyListeners(new MachineValueUpdateEvent(new MachineValue<T>(typedValue)));
+			// Notify only if the value changed
+			if(!value.equals(oldValue)){
+				super.notifyListeners(new MachineValueUpdateEvent(new MachineValue<T>(typedValue)));
+			}
 		}else{
 			throw new GkTechnicalException("ControllerValueStore : unable to store '"+id+"''. Type mismatch. Got "+value.getClass()+"', expecting '"+machineValue.getClass()+"'");
 		}

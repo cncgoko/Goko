@@ -25,7 +25,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.commands.CommentCommand;
-import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
 
@@ -36,7 +35,7 @@ import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
  * @param <T>
  */
 public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> extends AbstractRawCommandBuilder<T> {
-	private static final GkLog LOG = GkLog.getLogger(AbstractCommentCommandBuilder.class);
+	//private static final GkLog LOG = GkLog.getLogger(AbstractCommentCommandBuilder.class);
 
 	/** {@inheritDoc}
 	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractRawCommandBuilder#buildCommand(java.util.List, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.GCodeCommand)
@@ -49,7 +48,7 @@ public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> ex
 			comment += gCodeToken.getValue();
 		}
 		targetCommand.setComment(comment);
-		LOG.info("Building comment command from "+lstTokens.toString());
+	//	LOG.info("Building comment command from "+lstTokens.toString());
 	}
 
 

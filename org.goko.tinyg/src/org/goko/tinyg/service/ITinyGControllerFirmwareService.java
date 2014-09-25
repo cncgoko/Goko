@@ -21,9 +21,10 @@ package org.goko.tinyg.service;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
+import org.goko.core.controller.IProbingService;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 
-public interface ITinyGControllerFirmwareService extends IControllerService {
+public interface ITinyGControllerFirmwareService extends IControllerService, IProbingService {
 
 	/**
 	 * Return the lowest supported firmware version

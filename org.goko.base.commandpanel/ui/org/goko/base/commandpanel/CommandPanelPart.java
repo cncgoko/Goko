@@ -52,6 +52,8 @@ import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 
 public class CommandPanelPart extends GkUiComponent<CommandPanelController, CommandPanelModel> {
 	private final FormToolkit formToolkit = new FormToolkit(
@@ -101,6 +103,12 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		parent.setLayout(new FormLayout());
 
 		Composite composite = formToolkit.createComposite(parent, SWT.NONE);
+		composite.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				handleKeyboard(e);
+			}
+		});
 		FormData fd_composite = new FormData();
 		fd_composite.top = new FormAttachment(0);
 		fd_composite.left = new FormAttachment(0);
@@ -122,7 +130,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(composite_5);
 		formToolkit.paintBordersFor(composite_5);
-		composite_5.setLayout(new GridLayout(2, false));
+		composite_5.setLayout(new GridLayout(3, false));
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
 		lblJogSpeed.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
@@ -137,6 +145,9 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gd_txtJogFeed.widthHint = 60;
 		txtJogFeed.setLayoutData(gd_txtJogFeed);
 		formToolkit.adapt(txtJogFeed, true, true);
+
+		Button keyboardBtn = formToolkit.createButton(composite_5, "", SWT.TOGGLE | SWT.FLAT);
+		keyboardBtn.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/keyboard-command.png"));
 		Composite composite_4 = new Composite(grpManualJog, SWT.NONE);
 		formToolkit.adapt(composite_4);
 		formToolkit.paintBordersFor(composite_4);
@@ -347,6 +358,11 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().initilizeValues();
 		initCustomBindings(part);
 
+	}
+
+	protected void handleKeyboard(KeyEvent e) {
+		System.err.println(e);
+		
 	}
 
 	protected void initCustomBindings(MPart part) throws GkException {

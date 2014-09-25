@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -32,6 +31,7 @@ import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.connection.DataPriority;
@@ -61,7 +61,9 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	private List<WeakReference<IConnectionListener>> connectionListeners;
 	/** Jssc Sender runnable*/
 	private JsscSender jsscSender;
-
+	private JsscSerialListenerDeamon deamon;
+	private Thread deamonThread;
+	private Thread senderThread;
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -78,6 +80,8 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 		this.inputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
 		this.outputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
 		this.connectionListeners = new ArrayList<WeakReference<IConnectionListener>>();
+
+
 	}
 
 	/** (inheritDoc)
@@ -107,10 +111,16 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			this.serialPort.setParams(baudrate, databits, stopbits, parity);
 			this.serialPort.addEventListener(this, getEventMask());
 			this.serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT);
+			this.deamon = new JsscSerialListenerDeamon(this);
 			LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ databits +", parity: "+ parity +",stop bits: "+stopbits);
 			// Start the sender thread
 			jsscSender = new JsscSender(this);
-			Executors.newSingleThreadExecutor().execute(jsscSender);
+			//Executors.newSingleThreadExecutor().execute(jsscSender);
+			//Executors.newSingleThreadExecutor().execute(jsscSender);
+			deamonThread = new Thread(deamon);
+			senderThread = new Thread(jsscSender);
+			deamonThread.start();
+			senderThread.start();
 			notifyConnectionListeners(EnumConnectionEvent.CONNECTED);
 		} catch (SerialPortException e) {
 			throw new GkTechnicalException(e);
@@ -127,6 +137,8 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			if(serialPort != null && serialPort.isOpened()){
 				serialPort.closePort();
 			}
+			deamon.stop();
+			senderThread.stop();
 			notifyConnectionListeners(EnumConnectionEvent.DISCONNECTED);
 		} catch (SerialPortException e) {
 			throw new GkTechnicalException(e);
@@ -242,7 +254,7 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	}
 
 	protected int getEventMask(){
-        return SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR + SerialPort.MASK_CTS + SerialPort.MASK_ERR;
+        return SerialPort.MASK_RXCHAR + SerialPort.MASK_DSR + SerialPort.MASK_CTS + SerialPort.MASK_ERR;
     }
 
 	@Override
@@ -251,9 +263,21 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			int dataAvailableCount = serialPortEvent.getEventValue();
 			try {
 				byte buffer[] = getSerialPort().readBytes(dataAvailableCount);
-				// Process the call
-				JsscSerialEventListener task = new JsscSerialEventListener(this, buffer);
-				Executors.newSingleThreadExecutor().submit(task);
+				if(buffer != null && buffer.length > 0){
+					// Process the call
+					//JsscSerialEventListener task = new JsscSerialEventListener(this, buffer);
+					//Executors.newSingleThreadExecutor().submit(task);
+
+					//deamon.addAll(GkUtils.toString(buffer));
+					// Process the call
+
+					try {
+						notifyInputListeners(GkUtils.toBytesList(GkUtils.toString(buffer)));
+					} catch (GkException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			} catch (SerialPortException e) {
 				LOG.error(e);
 			}

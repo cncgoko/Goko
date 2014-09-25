@@ -20,7 +20,9 @@
 package org.goko.gcode.rs274ngcv3.parser;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -76,28 +78,27 @@ public class GCodeLexer {
 	 */
 	public List<GCodeToken> createTokensFromFile(String filepath) throws GkException{
 		File file = new File(filepath);
-		Scanner scanner = null;
 		try {
-			scanner = new Scanner(file);
-
-			List<GCodeToken> lstFileTokens = new ArrayList<GCodeToken>();
-			while(scanner.hasNextLine()){
-				String line = scanner.nextLine();
-				lstFileTokens.addAll(createTokens(line));
-				lstFileTokens.add(new GCodeToken(GCodeTokenType.NEW_LINE, StringUtils.EMPTY));
-			}
-			scanner.close();
-			return lstFileTokens;
+			return createTokensFromInputStream(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
 			throw new GkTechnicalException(e);
-		}finally{
-			if(scanner != null){
-				scanner.close();
-			}
 		}
-
 	}
 
+	public List<GCodeToken> createTokensFromInputStream(InputStream inStream) throws GkException{
+		Scanner scanner = new Scanner(inStream);
+
+		List<GCodeToken> lstFileTokens = new ArrayList<GCodeToken>();
+		String line = null;
+		GCodeToken newLineToken = new GCodeToken(GCodeTokenType.NEW_LINE, StringUtils.EMPTY);
+		while(scanner.hasNextLine()){
+			line = scanner.nextLine();
+			lstFileTokens.addAll(createTokens(line));
+			lstFileTokens.add(newLineToken);//new GCodeToken(GCodeTokenType.NEW_LINE, StringUtils.EMPTY));
+		}
+		scanner.close();
+		return lstFileTokens;
+	}
 	/**
 	 * Recursive method used to split the stringCommand into a list of tokens
 	 * @param stringCommand the string command

@@ -28,7 +28,6 @@ import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
-import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.RS274;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 
@@ -39,7 +38,7 @@ import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
  *
  */
 public class ArcCommandBuilder extends AbstractMotionCommandBuilder<ArcMotionCommand> {
-	private static final GkLog LOG = GkLog.getLogger(ArcCommandBuilder.class);
+	//private static final GkLog LOG = GkLog.getLogger(ArcCommandBuilder.class);
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractMotionCommandBuilder#buildCommand(org.goko.core.gcode.bean.GCodeCommand, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.commands.MotionCommand)
 	 */
@@ -48,7 +47,7 @@ public class ArcCommandBuilder extends AbstractMotionCommandBuilder<ArcMotionCom
 		super.buildCommand(lstTokens, context, target);
 		extractArcCenter(lstTokens, context, target);
 		extractDirection(lstTokens, context, target);
-		LOG.info("Building Arc command from "+lstTokens.toString());
+		//LOG.info("Building Arc command from "+lstTokens.toString());
 	}
 
 	protected void extractDirection(List<GCodeToken> lstTokens, GCodeContext context, ArcMotionCommand target) throws GkException {

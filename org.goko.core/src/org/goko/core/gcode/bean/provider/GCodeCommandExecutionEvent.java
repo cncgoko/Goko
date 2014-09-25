@@ -32,7 +32,7 @@ public class GCodeCommandExecutionEvent implements Event{
 	/**
 	 * The execution queue
 	 */
-	private GCodeExecutionQueue executionQueue;
+	private GCodeExecutionToken executionToken;
 	/**
 	 * The command that changed
 	 */
@@ -47,9 +47,9 @@ public class GCodeCommandExecutionEvent implements Event{
 	 * @param command the target command
 	 * @param state the state
 	 */
-	public GCodeCommandExecutionEvent(GCodeExecutionQueue queue, GCodeCommand command, int state) {
+	public GCodeCommandExecutionEvent(GCodeExecutionToken queue, GCodeCommand command, int state) {
 		super();
-		this.executionQueue = queue;
+		this.executionToken = queue;
 		this.command = command;
 		this.state = state;
 	}
@@ -80,8 +80,8 @@ public class GCodeCommandExecutionEvent implements Event{
 	/**
 	 * @return the executionQueue
 	 */
-	public GCodeExecutionQueue getExecutionQueue() {
-		return executionQueue;
+	public GCodeExecutionToken getExecutionToken() {
+		return executionToken;
 	}
 
 }

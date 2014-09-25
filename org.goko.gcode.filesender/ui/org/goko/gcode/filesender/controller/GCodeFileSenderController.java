@@ -19,15 +19,12 @@
  */
 package org.goko.gcode.filesender.controller;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.inject.Inject;
-import javax.swing.Timer;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +33,7 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.EventListener;
@@ -50,7 +48,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.provider.GCodeCommandExecutionEvent;
-import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
+import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.filesender.editor.GCodeEditor;
@@ -74,9 +72,9 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	private IEventBroker eventBroker;
 	@Inject
 	private IControllerService controllerService;
-	private Timer timer;
 	@Inject
 	private IGCodeExecutionTimeService timeService;
+	private Runnable elapsedTimeRunnable;
 
 	/**
 	 * Constructor
@@ -86,6 +84,25 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		super(bindings);
 		getDataModel().setStreamingInProgress(false);
 		GokoEventBus.getInstance().register(this);
+		createElapsedTimeRunnable();
+		Display.getCurrent().timerExec(400, elapsedTimeRunnable);
+	}
+
+	/**
+	 * Create the runnable used to display elapsed time
+	 */
+	private void createElapsedTimeRunnable(){
+		elapsedTimeRunnable = new Runnable() {
+			@Override
+			public void run() {
+				if(getDataModel().getStartDate() != null){
+					updateDisplayedTime();
+				}else{
+					resetElapsedTime();
+				}
+				Display.getCurrent().timerExec(400, elapsedTimeRunnable);
+			}
+		};
 	}
 
 	/** (inheritDoc)
@@ -150,7 +167,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		double sizeTmp = size;
 		int i = 0;
 		while(sizeTmp >= 1024 && i < 4){
-			sizeTmp /= 1024;
+			sizeTmp /= 1024.0;
 			i++;
 		}
 		DecimalFormat format = new DecimalFormat("0.000");
@@ -159,7 +176,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	}
 
 	protected void parseFile() throws GkException{
-		IGCodeProvider gcodeFile = gCodeService.parse(getDataModel().getFilePath());
+		IGCodeProvider gcodeFile = gCodeService.parseFile(getDataModel().getFilePath());
+		getDataModel().setGcodeProvider(gcodeFile);
 		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
 
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getGCodeCommands()));
@@ -192,30 +210,18 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 	public void startFileStreaming(){
 		try{
-			IGCodeProvider 		gcodeFile = gCodeService.parse(getDataModel().getFilePath());
-			eventBroker.post("gcodefile", gcodeFile);
-			GCodeExecutionQueue queue = controllerService.executeGCode(gcodeFile);
+			/*IGCodeProvider 		gcodeFile = gCodeService.parseFile(getDataModel().getFilePath());
+			eventBroker.post("gcodefile", gcodeFile);*/
+			GCodeExecutionToken queue = controllerService.executeGCode(getDataModel().getGcodeProvider());
 
 
 			getDataModel().setSentCommandCount( 0 );
 			getDataModel().setTotalCommandCount( queue.getCommandCount() );
-			getDataModel().setStartDate(new Date());
 
 			queue.addListener(this);
 
-			updateDisplayedTime();
-			if(timer != null){
-				timer.stop();
-			}else{
-				timer = new Timer(200, new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						updateDisplayedTime();
-					}
-				});
-			}
-			timer.start();
 			getDataModel().setStreamingInProgress(true);
+			startElapsedTimer();
 		}catch(GkException e){
 			e.printStackTrace();
 		}
@@ -225,14 +231,26 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		try {
 			controllerService.cancelFileSending();
 			getDataModel().setStreamingInProgress(false);
+			stopElapsedTimer();
+			resetElapsedTime();
 		} catch (GkException e) {
 			e.printStackTrace();
 		}
 	}
-	public void updateDisplayedTime(){
-		long elapsedTime = new Date().getTime() - getDataModel().getStartDate().getTime();
-		getDataModel().setElapsedTime(getDurationAsString(elapsedTime));
 
+	private void resetElapsedTime(){
+		getDataModel().setElapsedTime("--");
+	}
+
+	public void updateDisplayedTime(){
+		long elapsedTime = 0;
+		if(getDataModel().getEndDate() != null){
+			elapsedTime = getDataModel().getEndDate().getTime() - getDataModel().getStartDate().getTime();
+		}else{
+			elapsedTime = new Date().getTime() - getDataModel().getStartDate().getTime();
+		}
+
+		getDataModel().setElapsedTime(getDurationAsString(elapsedTime));
 	}
 
 	protected String getDurationAsString(long milliseconds){
@@ -260,19 +278,21 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 					|| MachineState.READY.equals( newState)){
 				getDataModel().setStreamingInProgress(false);
 				updateStreamingAllowed();
-				if(timer != null){
-					timer.stop();
-				}
+				stopElapsedTimer();
 			}
 		}
 	}
 
+	/**
+	 * Listener for stream status update
+	 * @param event the GCodeCommandExecutionEvent
+	 */
 	@EventListener(GCodeCommandExecutionEvent.class)
 	public void onStreamStatusUpdate(GCodeCommandExecutionEvent event){
-		GCodeExecutionQueue queue = event.getExecutionQueue();
+		GCodeExecutionToken queue = event.getExecutionToken();
 		getDataModel().setSentCommandCount( queue.getExecutedCommandCount() );
 		getDataModel().setTotalCommandCount( queue.getCommandCount() );
-
+//		updateDisplayedTime();
 	}
 
 	/**
@@ -292,5 +312,14 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Subscribe
 	public void onGCodeCommandSelection(GCodeCommandSelectionEvent evt){
 		getDataModel().setSelectedCommand(evt.getGCodeCommand().getId());
+	}
+
+	private void startElapsedTimer(){
+		getDataModel().setStartDate(new Date());
+		getDataModel().setEndDate(null);
+	}
+
+	private void stopElapsedTimer(){
+		getDataModel().setEndDate(new Date());
 	}
 }

@@ -36,7 +36,7 @@ import org.goko.core.controller.bean.MachineValueDefinition;
 import org.osgi.service.prefs.BackingStoreException;
 
 public class DROServiceImpl implements IDROService{
-	private static final String SERVICE_ID = "org.goko.base.droservice";
+	public static final String SERVICE_ID = "org.goko.base.droservice";
 
 	private IEclipsePreferences preferences;
 
@@ -88,21 +88,19 @@ public class DROServiceImpl implements IDROService{
 
 		preferences.put(IDROPreferencesConstants.KEY_VALUES_ID_LIST, serializedList);
 
-			try {
-				preferences.flush();
-			} catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			preferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
+
 
 	private List<MachineValueDefinition> getDisplayedValuesFromPreferences() throws GkException {
 		List<MachineValueDefinition> lstMachineValues = new ArrayList<MachineValueDefinition>();
 		String serializedList = preferences.get(IDROPreferencesConstants.KEY_VALUES_ID_LIST, StringUtils.EMPTY);
-		if(true){
-			String t = "0";
-		}
 		if(StringUtils.isNotEmpty(serializedList)){
 			List<String> lstId = deserialize(serializedList);
 			for (String id : lstId) {

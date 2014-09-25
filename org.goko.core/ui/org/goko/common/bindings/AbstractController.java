@@ -416,16 +416,20 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	private Method verifyGetter(Object source, String property) throws GkException{
 		String firstLetter = StringUtils.substring(property, 0,1);
 		String otherLetters = StringUtils.substring(property, 1);
-		String getterName = "get"+ StringUtils.upperCase(firstLetter)+otherLetters;
+
+		String getGetterName = "^get"+ StringUtils.upperCase(firstLetter)+otherLetters+"$";
+		String isGetterName = "^is"+ StringUtils.upperCase(firstLetter)+otherLetters+"$";
 
 		Method[] methodArray = source.getClass().getMethods();
 		for (Method method : methodArray) {
-			if(StringUtils.equals(getterName, method.getName())){
+			//if(StringUtils.equals(getterName, method.getName())){
+			if(method.getName().matches(getGetterName) || method.getName().matches(isGetterName)){
 				return method;
 			}
 		}
 
-		throw new GkTechnicalException("Cannot find getter (looking for '"+getterName+"') for property '"+property+"' on object "+source.getClass()+". Make sure it's public and correctly spelled");
+		String getterNameDisplay = "get"+ StringUtils.upperCase(firstLetter)+otherLetters+"/is"+ StringUtils.upperCase(firstLetter)+otherLetters;
+		throw new GkTechnicalException("Cannot find getter (looking for '"+getterNameDisplay+"') for property '"+property+"' on object "+source.getClass()+". Make sure it's public and correctly spelled");
 
 	}
 	/**

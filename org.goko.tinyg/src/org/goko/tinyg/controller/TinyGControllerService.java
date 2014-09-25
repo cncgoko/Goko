@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.vecmath.Point3d;
 
@@ -24,6 +25,7 @@ import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.DefaultControllerValues;
+import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
@@ -32,14 +34,15 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
-import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionQueue;
+import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
+import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.tinyg.controller.configuration.TinyGSetting;
 import org.goko.tinyg.controller.events.ConfigurationUpdateEvent;
+import org.goko.tinyg.controller.probe.ProbeCallable;
 import org.goko.tinyg.json.TinyGJsonUtils;
 import org.goko.tinyg.service.ITinyGControllerFirmwareService;
 
@@ -80,14 +83,16 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private GCodeSendingRunnable currentSendingRunnable;
 	/** The tread used to handle incoming data */
 	private ExecutorService incomingDataThread;
-	/** The current StreamStatus */
-	private GCodeStreamedExecutionQueue executionQueue;
+	/** The current execution queue */
+	private ExecutionQueue executionQueue;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
 	private MachineValueStore valueStore;
 	/** The count of available buffer in the TinyG board*/
 	private int availableBuffer;
+	/** Waiting probe result */
+	private ProbeCallable futureProbeResult;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -133,6 +138,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.DISTANCE_MODE, "Distance mode", "The distance motion setting", String.class),
 				new MachineValue<String>(DefaultControllerValues.DISTANCE_MODE, StringUtils.EMPTY));
 		valueStore.addListener(this);
+
+
+		// Initiate execution queue
+		executionQueue = new ExecutionQueue();
+		ExecutorService executor 	= Executors.newSingleThreadExecutor();
+		currentSendingRunnable 	= new GCodeSendingRunnable(executionQueue, this);
+		executor.execute(currentSendingRunnable);
+
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -157,16 +170,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
 	 */
 	@Override
-	public GCodeExecutionQueue executeGCode(IGCodeProvider gcodeProvider) throws GkException{
+	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
 		if(!getConnectionService().isConnected()){
 			throw new GkFunctionalException("Cannot send command. Connection service is not connected");
 		}
-		executionQueue = new GCodeStreamedExecutionQueue(gcodeProvider);
-		ExecutorService executor 	= Executors.newSingleThreadExecutor();
-		currentSendingRunnable 	= new GCodeSendingRunnable(executionQueue, this);
-		executionQueue.start();
-		executor.execute(currentSendingRunnable);
-		return executionQueue;
+
+		GCodeStreamedExecutionToken token = new GCodeStreamedExecutionToken(gcodeProvider);
+		executionQueue.add(token);
+		return token;
 	}
 
 	public void sendTogether(List<GCodeCommand> commands) throws GkException{
@@ -266,7 +277,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		while(incomingBuffer.hasNext()){
 			List<Byte> command = incomingBuffer.unstackNextCommand();
 			String stringCommand = GkUtils.toString(command).trim();
-		//	LOG.info("Handling command " + GkUtils.toStringReplaceCRLF(command));
+
 			if(TinyGJsonUtils.isJsonFormat(stringCommand)){
 				JsonObject response = null;
 				try{
@@ -342,6 +353,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				handleQueueReport(responseEnvelope.get(TinyGJsonUtils.QUEUE_REPORT));
 			}else if(StringUtils.equals(name, TinyGJsonUtils.LINE_REPORT)){
 		//		LOG.info("Skipping line report "+String.valueOf(responseEnvelope.get(name)));
+			}else if(StringUtils.equals(name, TinyGJsonUtils.PROBE_REPORT)){
+				handleProbeReport(responseEnvelope.get(TinyGJsonUtils.PROBE_REPORT));
 			}else{
 				handleConfigurationModification(responseEnvelope);
 			}
@@ -357,8 +370,39 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		notifyListeners(new ConfigurationUpdateEvent());
 	}
 
+	private void handleProbeReport(JsonValue probeReport) throws GkException {
+		if(probeReport.isObject()){
+			Tuple6b result = new Tuple6b();
+			JsonObject probeReportObject = (JsonObject) probeReport;
+			JsonValue xProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_X);
+			JsonValue yProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_Y);
+			JsonValue zProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_Z);
+			JsonValue aProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_A);
+			JsonValue bProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_B);
+			JsonValue cProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_C);
+			if(xProbeResult != null){
+				result.setX( xProbeResult.asBigDecimal() );
+			}
+			if(yProbeResult != null){
+				result.setY( yProbeResult.asBigDecimal() );
+			}
+			if(zProbeResult != null){
+				result.setZ( zProbeResult.asBigDecimal() );
+			}
+			if(aProbeResult != null){
+				result.setA( aProbeResult.asBigDecimal() );
+			}
+			if(bProbeResult != null){
+				result.setB( bProbeResult.asBigDecimal() );
+			}
+			if(cProbeResult != null){
+				result.setC( cProbeResult.asBigDecimal() );
+			}
+			this.futureProbeResult.setProbeResult(result);
+		}
+	}
+
 	private void handleQueueReport(JsonValue queueReport) throws GkException {
-	//	LOG.info("handleQueueReport "+String.valueOf(queueReport));
 		this.availableBuffer = queueReport.asInt();
 		if(currentSendingRunnable != null){
 			currentSendingRunnable.notifyBufferSpace();
@@ -454,10 +498,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	private void handleGCodeResponse(JsonValue jsonValue) throws GkException {
 		LOG.info("handleGCodeResponse "+String.valueOf(jsonValue));
-		if(executionQueue != null){
+		if(executionQueue.getCurrentToken() != null){
 			String 			receivedCommand = jsonValue.asString();
 			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand);
-			executionQueue.confirmCommand(parsedCommand);
+			executionQueue.getCurrentToken().confirmCommand(parsedCommand);
 			this.currentSendingRunnable.confirmCommand();
 		}
 		/*if(executionQueue != null && executionQueue.hasPendingCommand()){
@@ -676,7 +720,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
 
 		if(executionQueue != null){
-			executionQueue.stop();
+			executionQueue.clear();
 		}
 		if(currentSendingRunnable != null){
 			currentSendingRunnable.stop();
@@ -710,6 +754,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	public void turnSpindleOn() throws GkException{
+		probe(EnumControllerAxis.Z_POSITIVE, 20, -10);
+		if(true) {
+			return;
+		}
 		List<Byte> lstBytes = GkUtils.toBytesList("M3");
 		lstBytes.add(getLineBroker());
 		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
@@ -730,7 +778,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void cancelFileSending() throws GkException {
 		if(executionQueue != null){
-			executionQueue.stop();
+			executionQueue.clear();
 		}
 		stopMotion();
 	}
@@ -747,6 +795,37 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public String getMaximalSupportedFirmwareVersion() throws GkException {
 		return "380.05";
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
+	 */
+	@Override
+	public Future<Tuple6b> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
+		futureProbeResult = new ProbeCallable();
+		String strCommand = "G38.2 "+axis.getAxisCode()+String.valueOf(maximumPosition)+" F"+feedrate;
+		IGCodeProvider command = gcodeService.parse(strCommand);
+		executeGCode(command);
+		return Executors.newSingleThreadExecutor().submit(futureProbeResult);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.gcode.bean.Tuple6b)
+	 */
+	@Override
+	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
+		String cmd = "G1F800";
+		if(position.getX() != null){
+			cmd += "X"+position.getX();
+		}
+		if(position.getY() != null){
+			cmd += "Y"+position.getY();
+		}
+		if(position.getZ() != null){
+			cmd += "Z"+position.getZ();
+		}
+		IGCodeProvider command = gcodeService.parse(cmd);
+		executeGCode(command);
 	}
 
 }

@@ -11,7 +11,8 @@ import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
+import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 
 /**
  * Interface definition for the controller.
@@ -32,7 +33,7 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	 * @param gcodeProvider the {@link IGCodeProvider}
 	 * @throws GkException GkException
 	 */
-	GCodeExecutionQueue executeGCode(IGCodeProvider gcodeProvider) throws GkException;
+	GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException;
 
 	/**
 	 * Determine if the controller is ready to stream a file
@@ -84,5 +85,7 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	MachineValueDefinition findMachineValueDefinition(String id) throws GkException;
 
 	void cancelFileSending() throws GkException;
+
+	void moveToAbsolutePosition(Tuple6b position) throws GkException;
 
 }

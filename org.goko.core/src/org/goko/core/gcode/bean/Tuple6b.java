@@ -32,12 +32,18 @@ public class Tuple6b {
 	private BigDecimal c;
 
 	public Tuple6b(Tuple6b tuple){
-		this.x = new BigDecimal(String.valueOf(tuple.x));
-		this.y = new BigDecimal(String.valueOf(tuple.y));
-		this.z = new BigDecimal(String.valueOf(tuple.z));
-		this.a = new BigDecimal(String.valueOf(tuple.a));
-		this.b = new BigDecimal(String.valueOf(tuple.b));
-		this.c = new BigDecimal(String.valueOf(tuple.c));
+//		this.x = new BigDecimal(String.valueOf(tuple.x));
+//		this.y = new BigDecimal(String.valueOf(tuple.y));
+//		this.z = new BigDecimal(String.valueOf(tuple.z));
+//		this.a = new BigDecimal(String.valueOf(tuple.a));
+//		this.b = new BigDecimal(String.valueOf(tuple.b));
+//		this.c = new BigDecimal(String.valueOf(tuple.c));
+		this.x = tuple.x;
+		this.y = tuple.y;
+		this.z = tuple.z;
+		this.a = tuple.a;
+		this.b = tuple.b;
+		this.c = tuple.c;
 	}
 
 	public Tuple6b() {
@@ -124,6 +130,17 @@ public class Tuple6b {
 		return null;
 	}
 
+	public Tuple6b subtract(Tuple6b sub){
+		Tuple6b result = new Tuple6b(this);
+		this.x = atomSubtract(x, sub.x);
+		this.y = atomSubtract(y, sub.y);
+		this.z = atomSubtract(z, sub.z);
+		this.a = atomSubtract(a, sub.a);
+		this.b = atomSubtract(b, sub.b);
+		this.c = atomSubtract(c, sub.c);
+		return result;
+	}
+
 	public void updateAbsolute(Tuple6b position){
 		this.x = atomUpdateAbsolute(x, position.x);
 		this.y = atomUpdateAbsolute(y, position.y);
@@ -131,6 +148,17 @@ public class Tuple6b {
 		this.a = atomUpdateAbsolute(a, position.a);
 		this.b = atomUpdateAbsolute(b, position.b);
 		this.c = atomUpdateAbsolute(c, position.c);
+	}
+
+	protected BigDecimal atomSubtract(BigDecimal a, BigDecimal b) {
+		if( a != null && b!=null){
+			return a.subtract(b);
+		}else if( a != null){
+			return a;
+		}else if(b != null){
+			return b.negate();
+		}
+		return null;
 	}
 
 	protected BigDecimal atomUpdateAbsolute(BigDecimal a, BigDecimal b) {
@@ -219,5 +247,6 @@ public class Tuple6b {
 	public Point3d toPoint3d(){
 		return new Point3d(getX().doubleValue(), getY().doubleValue(), getZ().doubleValue());
 	}
+
 
 }

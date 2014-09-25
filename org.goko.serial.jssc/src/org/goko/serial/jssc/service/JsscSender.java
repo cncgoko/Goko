@@ -34,6 +34,7 @@ public class JsscSender implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(JsscSender.class);
 	/** Outgoing queue */
 	private ConcurrentLinkedDeque<Byte> queue;
+	//private BlockingQueue<Byte> queue;
 	/** Clear to send flag */
 	private boolean clearToSend;
 	/** The service holding the serial port */
@@ -64,17 +65,26 @@ public class JsscSender implements Runnable {
 	public  void run() {
 		List<Byte> lst = new ArrayList<Byte>();
 		while(true){
+			//System.err.println("55");
 			waitDataInBuffer();
+			//System.err.println("66");
 			waitClearToSend();
 			if(isClearToSend() || importantBytes > 0){
 				if(CollectionUtils.isNotEmpty(queue)){
 					if(jsscService.getSerialPort().isOpened()){
 						try {
+							//System.err.println("queue.poll()");
 							Byte b = queue.poll();
+							//System.err.println("queue.poll() ends");
 							jsscService.getSerialPort().writeByte( b );
+							//System.err.println("jsscService.getSerialPort().writeByte( b ); ends");
 							if(importantBytes > 0){
+							//	System.err.println("Sending important "+b.toString());
 								importantBytes--;
+							}else{
+							//	System.err.println("Sending regular   "+b.toString());
 							}
+						//	System.err.println("Remaining in buffer "+CollectionUtils.size(queue));
 							lst.add(b);
 							jsscService.notifyOutputListeners(lst);
 							lst.clear();
@@ -85,7 +95,9 @@ public class JsscSender implements Runnable {
 						}
 					}
 				}
+			//	System.err.println("6.5");
 			}
+			//System.err.println("77");
 		}
 	}
 
@@ -101,6 +113,7 @@ public class JsscSender implements Runnable {
 	 * @param clearToSend the clearToSend to set
 	 */
 	protected void setClearToSend(boolean clearToSend) {
+	//	System.err.println("ClearToSend "+clearToSend);
 		this.clearToSend = clearToSend;
 		synchronized(clearToSendLock){
 			clearToSendLock.notify();
@@ -113,6 +126,7 @@ public class JsscSender implements Runnable {
 	private void waitDataInBuffer(){
 		while(CollectionUtils.isEmpty(queue)){
 			synchronized(emptyBufferLock){
+			//	System.err.println("waitDataInBuffer");
 				try {
 					emptyBufferLock.wait();
 				} catch (InterruptedException e) {
@@ -120,6 +134,7 @@ public class JsscSender implements Runnable {
 				}
 			}
 		}
+		//System.err.println("waitDataInBuffer passed "+CollectionUtils.size(queue));
 	}
 
 	/**
@@ -127,8 +142,9 @@ public class JsscSender implements Runnable {
 	 * Important data go through the Xon/Xoff control
 	 */
 	private void waitClearToSend(){
-		while(!isClearToSend() && importantBytes == 0){
+		while(!isClearToSend() && importantBytes <= 0){
 			synchronized(clearToSendLock){
+			//	System.err.println("waitClearToSend");
 				try {
 					clearToSendLock.wait();
 				} catch (InterruptedException e) {
@@ -136,6 +152,7 @@ public class JsscSender implements Runnable {
 				}
 			}
 		}
+		//System.err.println("waitClearToSend passed "+isClearToSend());
 	}
 
 	/**
@@ -143,7 +160,9 @@ public class JsscSender implements Runnable {
 	 * @param bytes the list of {@link Byte} to add
 	 */
 	protected void sendBytes(List<Byte> bytes){
-		queue.addAll(bytes);
+		synchronized(queue){
+			queue.addAll(bytes);
+		}
 		synchronized (emptyBufferLock) {
 			emptyBufferLock.notify();
 		}
@@ -155,14 +174,22 @@ public class JsscSender implements Runnable {
 	 */
 	protected void sendBytesImmediately(List<Byte> bytes){
 		if(CollectionUtils.isNotEmpty(bytes)){
-			for(int i = CollectionUtils.size(bytes) - 1 ; i >=0 ; i--){
-				queue.addFirst(bytes.get(i));
+			synchronized(queue){
+				//System.err.println("sendBytesImmediately queue size before "+CollectionUtils.size(queue));
+				for(int i = CollectionUtils.size(bytes) - 1 ; i >=0 ; i--){
+					queue.addFirst(bytes.get(i));
+				}
+
+			//System.err.println("sendBytesImmediately queue size after "+CollectionUtils.size(queue));
+			//System.err.println("Preparing to send "+CollectionUtils.size(bytes)+" important bytes");
 			}
 			importantBytes += CollectionUtils.size(bytes);
 			synchronized (emptyBufferLock) {
+			//	System.err.println("emptyBufferLock.notify();");
 				emptyBufferLock.notify();
 			}
 			synchronized (clearToSendLock) {
+			//	System.err.println("clearToSendLock.notify();");
 				clearToSendLock.notify();
 			}
 		}

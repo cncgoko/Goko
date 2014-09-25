@@ -22,6 +22,8 @@ package org.goko.serial.jssc.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
@@ -70,6 +72,9 @@ public class JsscSerialEventListener implements Runnable{
 		}
 
 		try {
+			String str = StringUtils.replace(GkUtils.toString(lstData),""+'\r',"\\13");
+			str = StringUtils.replace(str, ""+'\n', "\\10");
+			System.out.println("Received in jssc "+ str);
 			jsscService.notifyInputListeners(lstData);
 		} catch (GkException e) {
 			LOG.error(e);

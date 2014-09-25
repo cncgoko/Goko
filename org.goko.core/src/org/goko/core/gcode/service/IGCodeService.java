@@ -23,18 +23,24 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.GCodeFile;
 import org.goko.core.gcode.bean.IGCodeProvider;
 
 public interface IGCodeService extends IGokoService{
 	/**
 	 * Parse a file as a GCodeFile
 	 * @param filepath the path to file
-	 * @return {@link GCodeFile}
+	 * @return {@link IGCodeProvider}
 	 * @throws GkException GkException
 	 */
+	IGCodeProvider parseFile(String filepath) throws GkException;
 
-	IGCodeProvider parse(String filepath) throws GkException;
+	/**
+	 * Parse a string ile as a GCodeFile
+	 * @param gcode the gcode to aprse
+	 * @return {@link IGCodeProvider}
+	 * @throws GkException GkException
+	 */
+	IGCodeProvider parse(String gcode) throws GkException;
 
 	/**
 	 * Parse a command

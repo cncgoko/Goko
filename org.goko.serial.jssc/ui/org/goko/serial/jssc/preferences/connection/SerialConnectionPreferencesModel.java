@@ -35,10 +35,12 @@ import org.goko.common.elements.combo.LabeledValue;
  */
 public class SerialConnectionPreferencesModel extends AbstractModelObject {
 	/** The list of available data bits */
+	private List<LabeledValue<Integer>> choiceBaudrate;
 	private List<LabeledValue<Integer>> choiceDataBits;
 	private List<LabeledValue<Integer>> choiceStopBits;
 	private List<LabeledValue<Integer>> choiceParity;
 	/** The selected data bits*/
+	private LabeledValue<Integer> baudrate;
 	private LabeledValue<Integer> dataBits;
 	private LabeledValue<Integer> stopBits;
 	private LabeledValue<Integer> parity;
@@ -46,9 +48,28 @@ public class SerialConnectionPreferencesModel extends AbstractModelObject {
 	private boolean xonXoff;
 
 	public SerialConnectionPreferencesModel() {
+		initBaudrateChoices();
 		initDataBitsChoices();
 		initParityChoices();
 		initStopBitsChoices();
+	}
+
+	private void initBaudrateChoices(){
+		choiceBaudrate = new ArrayList<LabeledValue<Integer>>();
+		choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_110	,"5"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_110 	,"110"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_300 	,"300"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_600 	,"600"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_1200 	,"1200"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_4800 	,"4800"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_9600 	,"9600"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_14400 	,"14400"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_19200 	,"19200"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_38400 	,"38400"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_57600 	,"57600"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_115200 ,"115200"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_128000 ,"128000"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_256000 ,"256000"));
 	}
 
 	private void initDataBitsChoices(){
@@ -192,5 +213,33 @@ public class SerialConnectionPreferencesModel extends AbstractModelObject {
 	 */
 	public void setXonXoff(boolean xonXoff) {
 		firePropertyChange("xonXoff", this.xonXoff, this.xonXoff = xonXoff);
+	}
+
+	/**
+	 * @return the choiceBaudrate
+	 */
+	public List<LabeledValue<Integer>> getChoiceBaudrate() {
+		return choiceBaudrate;
+	}
+
+	/**
+	 * @param choiceBaudrate the choiceBaudrate to set
+	 */
+	public void setChoiceBaudrate(List<LabeledValue<Integer>> choiceBaudrate) {
+		firePropertyChange("choiceBaudrate", this.choiceBaudrate, this.choiceBaudrate = choiceBaudrate);
+	}
+
+	/**
+	 * @return the baudrate
+	 */
+	public LabeledValue<Integer> getBaudrate() {
+		return baudrate;
+	}
+
+	/**
+	 * @param baudrate the baudrate to set
+	 */
+	public void setBaudrate(LabeledValue<Integer> baudrate) {
+		firePropertyChange("baudrate", this.baudrate, this.baudrate = baudrate);
 	}
 }

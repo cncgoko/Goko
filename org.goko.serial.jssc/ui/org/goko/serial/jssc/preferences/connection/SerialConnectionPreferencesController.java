@@ -19,6 +19,8 @@
  */
 package org.goko.serial.jssc.preferences.connection;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.goko.common.GkUiUtils;
 import org.goko.common.bindings.AbstractController;
@@ -46,11 +48,15 @@ public class SerialConnectionPreferencesController extends AbstractController<Se
 	 */
 	@Override
 	public void initialize() throws GkException {
+		String baudrate = JsscSerialActivator.getPreferenceStore().getString(JsscParameter.BAUDRATE.toString());
 		String dataBits = JsscSerialActivator.getPreferenceStore().getString(JsscParameter.DATABITS.toString());
 		String stopBits = JsscSerialActivator.getPreferenceStore().getString(JsscParameter.STOPBITS.toString());
 		String parity   = JsscSerialActivator.getPreferenceStore().getString(JsscParameter.PARITY.toString());
 		String rcscts	= JsscSerialActivator.getPreferenceStore().getString(JsscParameter.RCSCTS.toString());
 		String xonxoff	= JsscSerialActivator.getPreferenceStore().getString(JsscParameter.XONXOFF.toString());
+
+		LabeledValue<Integer> selectedbaudrate = GkUiUtils.getLabelledValueByKey(Integer.valueOf(baudrate), getDataModel().getChoiceBaudrate());
+		getDataModel().setBaudrate(selectedbaudrate);
 
 		LabeledValue<Integer> selectedDataBits = GkUiUtils.getLabelledValueByKey(Integer.valueOf(dataBits), getDataModel().getChoiceDataBits());
 		getDataModel().setDataBits(selectedDataBits);
@@ -67,12 +73,18 @@ public class SerialConnectionPreferencesController extends AbstractController<Se
 	}
 
 	public void savePreferences() {
+		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.BAUDRATE.toString(), 	String.valueOf(getDataModel().getBaudrate().getValue()));
 		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.DATABITS.toString(), 	String.valueOf(getDataModel().getDataBits().getValue()));
 		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.STOPBITS.toString(), 	String.valueOf(getDataModel().getStopBits().getValue()));
 		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.PARITY.toString(), 		String.valueOf(getDataModel().getParity().getValue()));
 		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.RCSCTS.toString(), 		String.valueOf(getDataModel().isRcsCts()));
-		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.XONXOFF.toString(), 		String.valueOf(getDataModel().isXonXoff()));
-
+		JsscSerialActivator.getPreferenceStore().putValue(JsscParameter.XONXOFF.toString(), 	String.valueOf(getDataModel().isXonXoff()));
+		try {
+			JsscSerialActivator.getPreferenceStore().save();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

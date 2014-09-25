@@ -4,6 +4,7 @@
    <service>
       <provide interface="org.goko.core.controller.IControllerService"/>
       <provide interface="org.goko.tinyg.service.ITinyGControllerServiceSelector"/>
+      <provide interface="org.goko.core.controller.IProbingService"/>
    </service>
    <reference bind="registerFirmwareService" cardinality="1..n" interface="org.goko.tinyg.service.ITinyGControllerFirmwareService" name="ITinyGControllerFirmwareService" policy="static"/>
 </scr:component>

@@ -2,6 +2,7 @@ package org.goko.serial.jssc.internal;
 
 import jssc.SerialPort;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -18,7 +19,7 @@ import org.osgi.framework.BundleContext;
  */
 public class JsscSerialActivator implements BundleActivator {
 	/** JSSC Prefernce Store */
-	private static IPreferenceStore preferenceStore;
+	private static ScopedPreferenceStore preferenceStore;
 	/** Preference scope */
 	public static final IScopeContext SCOPE_CONTEXT = ConfigurationScope.INSTANCE;
 	/** Node name */
@@ -38,7 +39,7 @@ public class JsscSerialActivator implements BundleActivator {
 	 * Returns the Preference Store
 	 * @return {@link IPreferenceStore}
 	 */
-    public static IPreferenceStore getPreferenceStore() {
+    public static ScopedPreferenceStore getPreferenceStore() {
         if(preferenceStore == null) {
             preferenceStore = new ScopedPreferenceStore(SCOPE_CONTEXT, PREFERENCE_NODE);
             initSerialDefaultPreferences();
@@ -57,13 +58,14 @@ public class JsscSerialActivator implements BundleActivator {
 		JsscSerialActivator.getPreferenceStore().setDefault(JsscParameter.RCSCTS.toString(), 	String.valueOf(true));
 		JsscSerialActivator.getPreferenceStore().setDefault(JsscParameter.XONXOFF.toString(), 	String.valueOf(true));
 
-		if(JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.BAUDRATE.toString()) == 0){
+		
+		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.BAUDRATE.toString()))){
 			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.BAUDRATE.toString());
 		}
-		if(JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.DATABITS.toString()) == 0){
+		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.DATABITS.toString()))){
 			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.DATABITS.toString());
 		}
-		if(JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.STOPBITS.toString()) == 0){
+		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.STOPBITS.toString()))){
 			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.STOPBITS.toString());
 		}
 

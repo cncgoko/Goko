@@ -13,16 +13,18 @@ public class GCodeFile implements IGCodeProvider {
 	private File file;
 	/** The list of gcode commands */
 	private List<GCodeCommand> gCodeCommands;
-
+	private int id;
 
 	/**
 	 * Constructor
 	 */
 	public GCodeFile(){
 		gCodeCommands = new ArrayList<GCodeCommand>();
+		id = 0;
 	}
 
 	public void addGCodeCommand(GCodeCommand command){
+		command.setId(++id);
 		if(StringUtils.isBlank(command.getLineNumber())){
 			generateLineNumber(command);
 		}

@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -31,7 +32,7 @@ import org.goko.core.controller.bean.MachineValueDefinition;
  */
 public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, DisplayReadOutModel>{
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
-
+	private Composite parentComposite;
 
 	@Inject
 	public DisplayReadOut(IEclipseContext context) {
@@ -50,10 +51,13 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 	 */
 	@PostConstruct
 	public void createControls(Composite parent) {
-
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		Composite composite = new Composite(parent, SWT.NONE);
+		this.parentComposite = new Composite(parent, SWT.NONE);
+		createFields(parentComposite);
+	}
+
+	private void createFields(Composite composite){
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		composite.setLayout(new GridLayout(2, false));
 
@@ -72,6 +76,25 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			valueTxt.setLayoutData(gridData );
 			getController().enableTextBindingOnValue(valueTxt, definition.getId());
 			formToolkit.adapt(valueTxt, true, true);
+		}
+	}
+	/**
+	 * Recreate fields for data when settings changes
+	 * @param list the changed setting (not used, only for notification)
+	 * @throws GkException GkException
+	 */
+	@Inject
+	private void update(@Preference(nodePath = DROServiceImpl.SERVICE_ID, value=IDROPreferencesConstants.KEY_VALUES_ID_LIST) String list ) throws GkException{
+		if(parentComposite != null){
+			getController().updateDisplayedValues();
+			Composite parent = parentComposite.getParent();
+			parentComposite.dispose();
+			parentComposite = new Composite(parent, SWT.NONE);
+			createFields(parentComposite);
+			parent.setSize(parent.getSize());
+//			parent.redraw();
+//			parent.update();
+			parent.layout();
 		}
 	}
 

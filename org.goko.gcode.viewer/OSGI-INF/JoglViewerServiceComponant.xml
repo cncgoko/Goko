@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.viewer.jogl.service">
+   <implementation class="org.goko.viewer.jogl.service.JoglViewerServiceImpl"/>
+   <service>
+      <provide interface="org.goko.core.viewer.service.IViewer3DService"/>
+      <provide interface="org.goko.viewer.jogl.service.IJoglViewerService"/>
+   </service>
+   <reference bind="setControllerService" cardinality="1..1" interface="org.goko.core.controller.IControllerService" name="IControllerService" policy="static"/>
+</scr:component>

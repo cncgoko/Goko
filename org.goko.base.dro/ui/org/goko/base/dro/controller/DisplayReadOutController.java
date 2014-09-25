@@ -62,12 +62,17 @@ public class DisplayReadOutController extends AbstractController<DisplayReadOutM
 	@Override
 	public void initialize() throws GkException {
 
+		updateDisplayedValues();
+		controllerService.addListener(this);
+
+	}
+
+	public void updateDisplayedValues() throws GkException{
+		getDataModel().getWritableObservedValuesDefinition().clear();
 		for(MachineValueDefinition definition : droService.getDisplayedMachineValueDefinition()){
 			getDataModel().addObservedValueDefinition(definition);
 			getDataModel().addObservedValue(definition.getId(), controllerService.getMachineValue(definition.getId(),definition.getType()));
 		}
-		controllerService.addListener(this);
-
 	}
 
 	@EventListener(MachineValueUpdateEvent.class)

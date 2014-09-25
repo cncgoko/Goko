@@ -58,6 +58,7 @@ public class SerialConnectionPreferences extends GkUiPreferencePageComponent<Ser
 	private GkCombo<LabeledValue<Integer>> gkComboParity;
 	private Button btnRtscts;
 	private Button btnXonxoff;
+	private GkCombo<LabeledValue<Integer>> gkComboBaudrate;
 
 	/**
 	 * Constructor
@@ -87,6 +88,18 @@ public class SerialConnectionPreferences extends GkUiPreferencePageComponent<Ser
 		grpSerialPortOptions.setLayout(new GridLayout(2, false));
 		grpSerialPortOptions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpSerialPortOptions.setText("Serial port options");
+
+		Label lblBaudrate = new Label(grpSerialPortOptions, SWT.NONE);
+		lblBaudrate.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblBaudrate.setText("Baudrate");
+		formToolkit.adapt(lblBaudrate, true, true);
+
+		gkComboBaudrate = new GkCombo<LabeledValue<Integer>>(grpSerialPortOptions, SWT.NONE);
+		Combo comboBaudrate = gkComboBaudrate.getCombo();
+		GridData gd_comboBaudrate = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_comboBaudrate.widthHint = 100;
+		comboBaudrate.setLayoutData(gd_comboBaudrate);
+		formToolkit.paintBordersFor(comboBaudrate);
 
 		Label lblNewLabel = new Label(grpSerialPortOptions, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -146,10 +159,12 @@ public class SerialConnectionPreferences extends GkUiPreferencePageComponent<Ser
 	}
 
 	private void initCustomBindings() throws GkException{
+		getController().addItemsBinding(gkComboBaudrate, "choiceBaudrate");
 		getController().addItemsBinding(gkComboDataBits, "choiceDataBits");
 		getController().addItemsBinding(gkComboStopBits, "choiceStopBits");
 		getController().addItemsBinding(gkComboParity, 	 "choiceParity");
 
+		getController().addItemSelectionBinding(gkComboBaudrate, "baudrate");
 		getController().addItemSelectionBinding(gkComboDataBits, "dataBits");
 		getController().addItemSelectionBinding(gkComboStopBits, "stopBits");
 		getController().addItemSelectionBinding(gkComboParity, 	 "parity");

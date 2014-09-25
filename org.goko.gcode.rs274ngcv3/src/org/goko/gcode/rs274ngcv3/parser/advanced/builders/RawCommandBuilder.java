@@ -21,7 +21,6 @@ package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.log.GkLog;
 
 /**
  * Raw (unparsed) command builder
@@ -31,8 +30,8 @@ import org.goko.core.log.GkLog;
  */
 public class RawCommandBuilder extends AbstractRawCommandBuilder<GCodeCommand>{
 	/** Log */
-	private static final GkLog LOG = GkLog.getLogger(RawCommandBuilder.class);
- 
+	//private static final GkLog LOG = GkLog.getLogger(RawCommandBuilder.class);
+
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.AbstractRS274CommandBuilder#newInstance()
 	 */

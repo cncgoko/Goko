@@ -15,7 +15,7 @@ public class GCodeCommand {
 	// TODO : remove state from command
 	private GCodeCommandState state;
 
-	
+
 	/**
 	 * Constructor
 	 */
@@ -109,4 +109,8 @@ public class GCodeCommand {
 		this.state = state;
 	}
 
+	@Override
+	public String toString() {
+		return getStringCommand();
+	}
 }

@@ -24,8 +24,6 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeWord;
 
 /**
  * A class defining a modal group for GCode command.
@@ -51,15 +49,15 @@ public class ModalGroup {
 		}
 	}
 
-	public final void verifyTokenModality(List<GCodeToken> tokens) throws GkException {		
+	public final void verifyTokenModality(List<GCodeToken> tokens) throws GkException {
 		List<String> words = new ArrayList<String>();
 		for (GCodeToken gCodeToken : tokens) {
 			words.add(gCodeToken.getValue());
 		}
 		verifyStringModality(words);
 	}
-	
-	public final void verifyStringModality(List<String> words) throws GkException {		
+
+	public final void verifyStringModality(List<String> words) throws GkException {
 		String firstWordFromGroup = null;
 		for (String word : words) {
 			if(contains(word)){

@@ -43,6 +43,7 @@ public class TinyGJsonUtils {
 	public static final String QUEUE_REPORT = "qr";
 	public static final String GCODE_COMMAND = "gc";
 	public static final String LINE_REPORT = "n";
+	public static final String PROBE_REPORT = "prb";
 
 	public static final String STATUS_REPORT_POSITION_X = "posx";
 	public static final String STATUS_REPORT_POSITION_Y = "posy";
@@ -53,6 +54,13 @@ public class TinyGJsonUtils {
 	public static final String STATUS_REPORT_DISTANCE_MODE = "dist";
 	public static final String STATUS_REPORT_VELOCITY = "vel";
 	public static final String STATUS_REPORT_STATE = "stat";
+
+	public static final String PROBE_REPORT_POSITION_X = "x";
+	public static final String PROBE_REPORT_POSITION_Y = "y";
+	public static final String PROBE_REPORT_POSITION_Z = "z";
+	public static final String PROBE_REPORT_POSITION_A = "a";
+	public static final String PROBE_REPORT_POSITION_B = "b";
+	public static final String PROBE_REPORT_POSITION_C = "c";
 
 	public static final int FOOTER_STATUS_CODE_INDEX = 1;
 	public static final int FOOTER_BYTES_COUNT_INDEX = 2;

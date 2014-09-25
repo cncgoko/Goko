@@ -43,6 +43,7 @@ public class GCodeEditorScanner extends RuleBasedScanner {
 		IToken comment = new Token(new TextAttribute(new Color(Display.getCurrent(), COMMENT), null, SWT.ITALIC));
 		IToken number = new Token(new TextAttribute(new Color(Display.getCurrent(), NUMBER), null, SWT.ITALIC));
 		IToken defaut = new Token(new TextAttribute(new Color(Display.getCurrent(), DEFAULT)));
+		IToken errors = new Token(new TextAttribute(new Color(Display.getCurrent(), DEFAULT), null, SWT.UNDERLINE_ERROR));
 
 		WordRule rule = new WordRule(new IWordDetector() {
 			@Override
@@ -81,7 +82,6 @@ public class GCodeEditorScanner extends RuleBasedScanner {
 		rules.add(rule);
 		rules.add(numberRule);
 		rules.add(new MultiLineRule("(", ")", comment));
-
 
 		return rules.toArray(new IRule[]{});
 	}

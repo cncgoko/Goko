@@ -27,20 +27,20 @@ import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
-import org.goko.core.gcode.bean.provider.GCodeExecutionQueue;
+import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
 import org.goko.core.log.GkLog;
 
 public class GCodeSendingRunnable implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(GCodeSendingRunnable.class);
 	private static final int BUFFER_AVAILABLE_REQUIRED_COUNT = 5;
-	private GCodeExecutionQueue executionQueue;
+	private ExecutionQueue executionQueue;
 	private TinyGControllerService tinyGControllerService;
 	private Object ackMutex = new Object();
 	private Object qrMutex = new Object();
 	private int pendingCommands;
 
-	public GCodeSendingRunnable(GCodeExecutionQueue status, TinyGControllerService controllerService) {
-		this.executionQueue = status;
+	public GCodeSendingRunnable(ExecutionQueue queue, TinyGControllerService controllerService) {
+		this.executionQueue = queue;
 		this.tinyGControllerService = controllerService;
 		pendingCommands = 0;
 
@@ -50,45 +50,55 @@ public class GCodeSendingRunnable implements Runnable {
 		synchronized (ackMutex) {
 			pendingCommands = Math.max(0,pendingCommands - 1);
 			ackMutex.notify();
-			//System.err.println("acknowledged "+pendingCommands);
 		}
 	}
 
 	public void notifyBufferSpace() {
 		synchronized (qrMutex) {
 			qrMutex.notify();
-			//System.err.println("acknowledged buffer planner with "+tinyGControllerService.getAvailableBuffer());
-
 		}
 	}
 
 	@Override
 	public void run() {
-		while(executionQueue.hasNext()){
+		while(true){
 			try{
-				int nbCommandToSend = computeNumberCommandToSend();
-
-				ArrayList<GCodeCommand> lstCommand = new ArrayList<GCodeCommand>();
-				while(executionQueue.hasNext() && nbCommandToSend > 0){
-					GCodeCommand currentCommand = executionQueue.unstackNextCommand();
-					LOG.info("     "+nbCommandToSend+" - "+ pendingCommands+", QR="+tinyGControllerService.getAvailableBuffer()+" - Sending a command : '"+currentCommand.toString()+"'");
-					lstCommand.add(currentCommand);
-					GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(currentCommand));
-					nbCommandToSend--;
-					currentCommand.setState(new GCodeCommandState(GCodeCommandState.SENT));
-					executionQueue.setCommandState(currentCommand, GCodeCommandState.SENT);
-					pendingCommands++;
-				}
-				if(CollectionUtils.isNotEmpty(lstCommand)){
-					LOG.info("    Sending a group of "+lstCommand.size()+" command");
-					tinyGControllerService.sendTogether(lstCommand);
-				}
-
-				waitLastCommandAcknowledgement();
-				waitPlannerBufferSpaceAvailable();
+				executionQueue.beginNextTokenExecution();
+				runExecutionToken(executionQueue.getCurrentToken());
+				executionQueue.endCurrentTokenExecution();
 			}catch(GkException e){
 				LOG.error(e);
 			}
+		}
+	}
+
+	/**
+	 * Execute the given execution token
+	 * @param token the token to execute
+	 * @throws GkException GkException
+	 */
+	protected void runExecutionToken(GCodeStreamedExecutionToken token) throws GkException{
+		while(token.hasNext()){
+			int nbCommandToSend = computeNumberCommandToSend();
+
+			ArrayList<GCodeCommand> lstCommand = new ArrayList<GCodeCommand>();
+
+			while(token.hasNext() && nbCommandToSend > 0){
+				GCodeCommand currentCommand = token.unstackNextCommand();
+				lstCommand.add(currentCommand);
+				nbCommandToSend--;
+				currentCommand.setState(new GCodeCommandState(GCodeCommandState.SENT));
+				token.setCommandState(currentCommand, GCodeCommandState.SENT);
+				GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(currentCommand));
+				pendingCommands++;
+			}
+
+			if(CollectionUtils.isNotEmpty(lstCommand)){
+				tinyGControllerService.sendTogether(lstCommand);
+			}
+
+			waitLastCommandAcknowledgement();
+			waitPlannerBufferSpaceAvailable();
 		}
 	}
 

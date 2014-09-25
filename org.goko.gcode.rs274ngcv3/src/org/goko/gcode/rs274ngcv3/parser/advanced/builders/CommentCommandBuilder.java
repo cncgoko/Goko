@@ -19,16 +19,8 @@
  */
 package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
 
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.commands.CommentCommand;
-import org.goko.core.log.GkLog;
-import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
-import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
-import org.goko.gcode.rs274ngcv3.parser.advanced.IRS274CommandBuilder;
 
 /**
  * Comment command builder
@@ -37,10 +29,10 @@ import org.goko.gcode.rs274ngcv3.parser.advanced.IRS274CommandBuilder;
  *
  */
 public class CommentCommandBuilder extends  AbstractCommentCommandBuilder<CommentCommand>{
-	
+
 	@Override
 	public CommentCommand newInstance() throws GkException {
 		return new CommentCommand();
 	}
-	
+
 }

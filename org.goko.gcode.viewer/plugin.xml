@@ -9,5 +9,13 @@
             uri="fragments/gcodeViewer.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePages">
+      <page
+            class="org.goko.viewer.jogl.JoglViewerPreferences"
+            id="org.goko.jogl.viewer.preferences.rotaryaxis"
+            name="Viewer">
+      </page>
+   </extension>
 
 </plugin>

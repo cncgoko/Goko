@@ -23,6 +23,7 @@ import java.util.Date;
 
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.controller.bean.MachineState;
+import org.goko.core.gcode.bean.IGCodeProvider;
 
 public class GCodeFileSenderBindings extends AbstractModelObject {
 	/** The absolute file to the GCode file */
@@ -40,8 +41,9 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	private String elapsedTime;
 	private String remainingTime;
 	private Date startDate;
+	private Date endDate;
 	private int selectedCommand;
-
+	private IGCodeProvider gcodeProvider;
 	/**
 	 * @return the filepath
 	 */
@@ -223,6 +225,20 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 		firePropertyChange("elapsedTime", this.elapsedTime, this.elapsedTime = elapsedTime);
 	}
 	/**
+	 * @return the endDate
+	 */
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	/**
 	 * @return the startDate
 	 */
 	public Date getStartDate() {
@@ -262,6 +278,20 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	 */
 	public void setSelectedCommand(int selectedCommand) {
 		firePropertyChange("selectedCommand", this.selectedCommand, this.selectedCommand = selectedCommand);
+	}
+
+	/**
+	 * @return the gcodeProvider
+	 */
+	public IGCodeProvider getGcodeProvider() {
+		return gcodeProvider;
+	}
+
+	/**
+	 * @param gcodeProvider the gcodeProvider to set
+	 */
+	public void setGcodeProvider(IGCodeProvider gcodeProvider) {
+		this.gcodeProvider = gcodeProvider;
 	}
 
 

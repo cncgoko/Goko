@@ -25,6 +25,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.gcode.rs274ngcv3.RS274;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
@@ -66,26 +67,30 @@ public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> exte
 	private void setCoordinates(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
 		Tuple6b coordinates = new Tuple6b(null,null,null,null,null,null);
 		GCodeToken token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		BigDecimal scale = new BigDecimal("1");
+		if(targetCommand.getUnit() == EnumGCodeCommandUnit.INCHES){
+			scale = new BigDecimal("25.4");
+		}
 		if(token != null){
-			coordinates.setX( new BigDecimal( RS274.getTokenValue(token)));
+			coordinates.setX( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
 		}
 		token = RS274.findUniqueTokenByLetter("y", lstTokens);
 		if(token != null){
-			coordinates.setY( new BigDecimal( RS274.getTokenValue(token)));
+			coordinates.setY( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
 		}
 		token= RS274.findUniqueTokenByLetter("z", lstTokens);
 		if(token != null){
-			coordinates.setZ( new BigDecimal( RS274.getTokenValue(token)));
+			coordinates.setZ( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
 		}
-		token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		token = RS274.findUniqueTokenByLetter("a", lstTokens);
 		if(token != null){
 			coordinates.setA( new BigDecimal( RS274.getTokenValue(token)));
 		}
-		token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		token = RS274.findUniqueTokenByLetter("b", lstTokens);
 		if(token != null){
 			coordinates.setB( new BigDecimal( RS274.getTokenValue(token)));
 		}
-		token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		token = RS274.findUniqueTokenByLetter("c", lstTokens);
 		if(token != null){
 			coordinates.setC( new BigDecimal( RS274.getTokenValue(token)));
 		}

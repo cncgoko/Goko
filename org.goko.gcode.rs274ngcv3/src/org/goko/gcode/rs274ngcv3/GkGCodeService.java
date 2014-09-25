@@ -19,7 +19,9 @@
  */
 package org.goko.gcode.rs274ngcv3;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -27,6 +29,10 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
+import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.commands.CommentCommand;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
+import org.goko.core.gcode.bean.commands.SettingCommand;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
@@ -56,10 +62,11 @@ public class GkGCodeService implements IGCodeService {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeService#parse(java.lang.String)
+	 * @see org.goko.core.gcode.service.IGCodeService#parseFile(java.lang.String)
 	 */
 	@Override
-	public GCodeFile parse(String filepath) throws GkException {
+	public GCodeFile parseFile(String filepath) throws GkException {
+		System.err.println("startTimeDebug org.goko.core.gcode.service.IGCodeService#parse(java.lang.String)");
 		File 				file = new File(filepath);
 		if(!file.exists()){
 			throw new GkFunctionalException("File '"+filepath+"' does not exist...");
@@ -73,6 +80,17 @@ public class GkGCodeService implements IGCodeService {
 		return gcodeFile;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#parse(java.lang.String)
+	 */
+	@Override
+	public IGCodeProvider parse(String gcode) throws GkException {
+		InputStream 		inputStream = new ByteArrayInputStream(gcode.getBytes());
+		GCodeLexer 			gcodeLexer = new GCodeLexer();
+		List<GCodeToken> 	lstTokens = gcodeLexer.createTokensFromInputStream(inputStream);
+		GCodeFile 			gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, new GCodeContext());
+		return gcodeFile;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#parseCommand(java.lang.String)
 	 */
@@ -94,6 +112,22 @@ public class GkGCodeService implements IGCodeService {
 		return null;
 	}
 
+	private String convert(String base, CommentCommand command) throws GkException {
+		return base + command.getComment();
+	}
+
+	private String convert(String base, SettingCommand command) throws GkException {
+		String str = base;
+		if(command.isExplicitDistanceMode()){
+			if(command.getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
+				str += "G90";
+			}else{
+				str += "G91";
+			}
+		}
+
+		return str;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */

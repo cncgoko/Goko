@@ -52,10 +52,10 @@ public abstract class MotionCommand extends SettingCommand {
 	 */
 	@Override
 	public void updateContext(GCodeContext context) {
-		super.updateContext(context);		
+		super.updateContext(context);
 		context.setPosition(absoluteEndCoordinate);
 	}
-	
+
 
 	/**
 	 * @return the absoluteStartCoordinate
@@ -117,4 +117,25 @@ public abstract class MotionCommand extends SettingCommand {
 		}
 	}
 
+	@Override
+	public void setStringCommand(String stringCommand) {
+		String str = stringCommand.replaceAll("(X|x)[^A-Z]+", "X{x}");
+		str = str.replaceAll("(Y|y)[^A-Z]+", "Y{y}");
+		str = str.replaceAll("(Z|z)[^A-Z]+", "Z{z}");
+		str = str.replaceAll("(A|a)[^A-Z]+", "A{a}");
+		str = str.replaceAll("(B|b)[^A-Z]+", "B{b}");
+		str = str.replaceAll("(C|c)[^A-Z]+", "C{c}");
+		super.setStringCommand(str);
+	}
+
+	@Override
+	public String getStringCommand() {
+		String str = super.getStringCommand().replaceAll("\\{x\\}", String.valueOf(getCoordinates().getX()));
+		str = str.replaceAll("\\{y\\}", String.valueOf(getAbsoluteEndCoordinate().getY()));
+		str = str.replaceAll("\\{z\\}", String.valueOf(getAbsoluteEndCoordinate().getZ()));
+		str = str.replaceAll("\\{a\\}", String.valueOf(getAbsoluteEndCoordinate().getA()));
+		str = str.replaceAll("\\{b\\}", String.valueOf(getAbsoluteEndCoordinate().getB()));
+		str = str.replaceAll("\\{c\\}", String.valueOf(getAbsoluteEndCoordinate().getC()));
+		return str;
+	}
 }

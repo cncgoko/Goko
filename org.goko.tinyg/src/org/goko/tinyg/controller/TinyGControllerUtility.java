@@ -70,7 +70,7 @@ public class TinyGControllerUtility {
 	 */
 	protected static JsonValue toJson(GCodeCommand command){
 		JsonObject value = new JsonObject();
-		value.add(TinyGJsonUtils.GCODE_COMMAND, StringUtils.lowerCase(command.toString()));
+		value.add(TinyGJsonUtils.GCODE_COMMAND, StringUtils.lowerCase(command.getStringCommand()));
 		return value;
 	}
 

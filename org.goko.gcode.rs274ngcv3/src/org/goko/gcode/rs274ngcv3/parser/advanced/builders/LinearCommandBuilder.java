@@ -25,7 +25,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
-import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.RS274;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 
@@ -35,7 +34,8 @@ import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
  *
  */
 public class LinearCommandBuilder extends AbstractMotionCommandBuilder<LinearMotionCommand> {
-	private static final GkLog LOG = GkLog.getLogger(LinearCommandBuilder.class);
+	/** LOG */
+	//private static final GkLog LOG = GkLog.getLogger(LinearCommandBuilder.class);
 
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.AbstractRS274CommandBuilder#newInstance()
@@ -51,7 +51,7 @@ public class LinearCommandBuilder extends AbstractMotionCommandBuilder<LinearMot
 	@Override
 	public void buildCommand(List<GCodeToken> lstTokens, GCodeContext context, LinearMotionCommand targetCommand) throws GkException {
 		super.buildCommand(lstTokens, context, targetCommand);
-		LOG.info("Building linear command from "+lstTokens.toString());
+		//LOG.info("Building linear command from "+lstTokens.toString());
 	}
 
 	/** (inheritDoc)

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_sp-ZcEoGEeOQkqEuzzX4mQ">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_utMOYEoGEeOQkqEuzzX4mQ" featurename="children" parentElementId="goko.application.partstack">
-    <elements xsi:type="basic:Part" xmi:id="_wDer4EoGEeOQkqEuzzX4mQ" elementId="goko.application.parts.base.gcode.viewer3d" contributionURI="bundleclass://org.goko.gcode.viewer/org.goko.gcode.viewer.GCodeViewer3D" label="GCode viewer" iconURI="platform:/plugin/org.goko.gcode.viewer/icons/layer-shape-polygon.png">
+    <elements xsi:type="basic:Part" xmi:id="_wDer4EoGEeOQkqEuzzX4mQ" elementId="goko.application.parts.base.gcode.viewer3d" contributionURI="bundleclass://org.goko.gcode.viewer/org.goko.viewer.jogl.GCodeViewer3D" label="GCode viewer" iconURI="platform:/plugin/org.goko.gcode.viewer/icons/layer-shape-polygon.png">
       <persistedState key="org.goko.gcode.viewer.enabled" value="true"/>
       <persistedState key="org.goko.gcode.viewer.gridEnabled" value="true"/>
+      <persistedState key="org.goko.gcode.viewer.lockCameraOnTool" value="false"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>
