@@ -103,10 +103,10 @@ public class SerialConsoleController extends AbstractController<SerialConsoleBin
 	 */
 	@Override
 	public void onDataReceived(List<Byte> data) throws GkException {
-		if(getDataModel().isEnabled()){
-			appendTextToConsoleWidget(GkUtils.toString(data),SWT.COLOR_BLACK);
-			updateCarretPosition();
-		}
+//		if(getDataModel().isEnabled()){
+//			appendTextToConsoleWidget(GkUtils.toString(data),SWT.COLOR_BLACK);
+//			updateCarretPosition();
+//		}
 	}
 
 	protected void appendTextToConsoleWidget(final String text, final int color){
