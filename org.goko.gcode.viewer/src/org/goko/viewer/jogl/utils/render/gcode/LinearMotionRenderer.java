@@ -13,6 +13,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.utils.styler.IJoglGCodeCommandStyler;
 
 /**
  * Linear motion renderer
@@ -21,26 +22,15 @@ import org.goko.viewer.jogl.service.JoglViewerSettings;
  *
  */
 public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMotionCommand>{
-	protected static final String ID = "org.goko.viewer.jogl.utils.render.gcode.LinearMotionRenderer";
 
 	/** (inheritDoc)
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
+	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
 	 */
 	@Override
-	public String getId() {
-		return ID;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.AbstractJoglRenderer#renderJogl(org.goko.viewer.jogl.service.JoglRendererProxy)
-	 */
-	@Override
-	public void renderJogl(JoglRendererProxy proxy) throws GkException {
+	public void render(LinearMotionCommand command, JoglRendererProxy proxy, IJoglGCodeCommandStyler<LinearMotionCommand> styler ) throws GkException{
 		JoglViewerSettings settings = JoglViewerSettings.getInstance();
-		LinearMotionCommand command = getGCodeCommand();
 		if(command != null){
 			GL2 gl = proxy.getGl();
-			gl.glPushMatrix();
 			if(settings.isRotaryAxisEnabled()){
 				// The complete angle around the 4th axis
 				double deltaAngle = 0;
@@ -50,25 +40,24 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 				}
 
 				if(Math.abs(deltaAngle) == 0.0){
-					renderLinearLine(proxy);
+					renderLinearLine(command, proxy, styler);
 				}else{
-					renderRotaryLine(proxy);
+					renderRotaryLine(command, proxy, styler);
 				}
 			}else{
-				renderLinearLine(proxy);
+				renderLinearLine(command, proxy, styler);
 			}
 		}
 	}
 
-	private void renderLinearLine(JoglRendererProxy proxy) throws GkException {
+	private void renderLinearLine(LinearMotionCommand command, JoglRendererProxy proxy, IJoglGCodeCommandStyler<LinearMotionCommand> styler ) throws GkException {
 		JoglViewerSettings settings = JoglViewerSettings.getInstance();
 
-		LinearMotionCommand command = getGCodeCommand();
 		GL2 gl = proxy.getGl();
 		gl.glPushMatrix();
 
-		getStyler().enableRenderingStyle(command, proxy);
-		Point3f color = getStyler().getVertexColor(command, proxy);
+		styler.enableRenderingStyle(command, proxy);
+		Point3f color = styler.getVertexColor(command, proxy);
 
 		Point3d startPoint 	= command.getAbsoluteStartCoordinate().toPoint3d();
 		Point3d endPoint 	= command.getAbsoluteEndCoordinate().toPoint3d();
@@ -103,7 +92,7 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 		gl.glEnd();
 
 		gl.glPopMatrix();
-		getStyler().disableRenderingStyle(command, proxy);
+		styler.disableRenderingStyle(command, proxy);
 	}
 
 	private void rotateMatrix(Matrix4d matrix, double angleRadians){
@@ -118,15 +107,14 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 			default:matrix.rotY( angleRadians );
 		}
 	}
-	private void renderRotaryLine(JoglRendererProxy proxy) throws GkException {
+	private void renderRotaryLine(LinearMotionCommand command, JoglRendererProxy proxy, IJoglGCodeCommandStyler<LinearMotionCommand> styler ) throws GkException {
 		JoglViewerSettings settings = JoglViewerSettings.getInstance();
-		LinearMotionCommand command = getGCodeCommand();
 		GL2 gl = proxy.getGl();
 		gl.glPushMatrix();
 		//probleme ici ?
 
-		getStyler().enableRenderingStyle(command, proxy);
-		Point3f color = getStyler().getVertexColor(command, proxy);
+		styler.enableRenderingStyle(command, proxy);
+		Point3f color = styler.getVertexColor(command, proxy);
 
 		Point3d startPoint 	= command.getAbsoluteStartCoordinate().toPoint3d();
 
@@ -174,6 +162,6 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 		gl.glEnd();
 
 		gl.glPopMatrix();
-		getStyler().disableRenderingStyle(command, proxy);
+		styler.disableRenderingStyle(command, proxy);
 	}
 }

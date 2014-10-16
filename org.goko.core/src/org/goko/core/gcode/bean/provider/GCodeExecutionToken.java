@@ -20,15 +20,18 @@
 package org.goko.core.gcode.bean.provider;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.GCodeCommandState;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
 
 /**
  * Implementation of a {@link IGCodeProvider} for execution planner
@@ -36,121 +39,186 @@ import org.goko.core.gcode.bean.IGCodeProvider;
  * @author PsyKo
  *
  */
-public class GCodeExecutionToken  extends EventDispatcher implements IGCodeProvider {
-	/** The commands */
-	private List<GCodeCommand> lstCommands;
-	/**
-	 * The current command index
-	 */
-	private int currentIndex;
-	/**
-	 * The count of command to send
-	 */
-	private int commandCount;
-
-	/**
-	 * Constructor.
-	 * Creates an execution queue from the given provider
-	 * @param provider the provider to get command from
-	 */
-	public GCodeExecutionToken(IGCodeProvider provider) {
-		super();
-		init(provider.getGCodeCommands());
-	}
+public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecutionToken {
+	/** Id of the GCodeProvider */
+	private Integer id;
+	/** The name of this provider */
+	private String name;
+	/** The bounds of this provider */
+	private BoundingTuple6b bounds;
+	/** The map of commands by Id */
+	protected Map<Integer, GCodeCommand> mapCommandById;
+	/** The map of executed commands */
+	protected List<Integer> mapExecutedCommandById;
+	/** The map of errors commands */
+	protected List<Integer> mapErrorsCommandById;
+	/** The list of commands */
+	protected List<Integer> commands;
+	/** The current command index */
+	protected int currentIndex;
 
 	/**
 	 * Constructor
-	 * @param lstCommands
+	 * @param provider the provider to build this execution token from
 	 */
-	public GCodeExecutionToken(List<GCodeCommand> lstCommands) {
-		super();
-		init(lstCommands);
+	public GCodeExecutionToken(IGCodeProvider provider) {
+		this.name = provider.getName();
+		this.mapCommandById 		= new HashMap<Integer, GCodeCommand>();
+		this.mapExecutedCommandById = new ArrayList<Integer>();
+		this.mapErrorsCommandById 	= new ArrayList<Integer>();
+		this.bounds = provider.getBounds();
+		this.currentIndex = -1;
+		this.commands = new ArrayList<Integer>();
+
+		if(CollectionUtils.isNotEmpty(provider.getGCodeCommands())){
+			for (GCodeCommand gCodeCommand : provider.getGCodeCommands()) {
+				this.commands.add(gCodeCommand.getId());
+				this.mapCommandById.put(gCodeCommand.getId(), gCodeCommand);
+			}
+		}
 	}
 
 	/**
-	 * Initialize this bean with the given list
-	 * @param lstCommands the list of commands
+	 * @return the id
 	 */
-	private void init(List<GCodeCommand> lstCommands){
-		this.lstCommands = Collections.synchronizedList(new ArrayList<GCodeCommand>(lstCommands));
-		this.currentIndex = -1;
-		this.commandCount = CollectionUtils.size(this.lstCommands);
+	@Override
+	public Integer getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeProvider#getName()
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.bean.IGCodeProvider#getGCodeCommands()
 	 */
 	@Override
 	public List<GCodeCommand> getGCodeCommands() {
-		return lstCommands;
+		return new ArrayList<GCodeCommand>(mapCommandById.values());
 	}
 
-	/**
-	 * Determine if this execution queue has more command to execute
-	 * @return <code>true</code> if there is one or more commands remaining, <code>false</code> otherwise
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeProvider#getBounds()
 	 */
-	public synchronized boolean hasNext(){
-		return this.currentIndex < commandCount - 1;
+	@Override
+	public BoundingTuple6b getBounds() {
+		return bounds;
 	}
 
-	/**
-	 * Remove the next command from this execution queue
-	 * @return the next {@link GCodeCommand} to execute
-	 * @throws GkException GkException
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#getCommandCount()
 	 */
-	public synchronized GCodeCommand unstackNextCommand() throws GkException{
-		if(hasNext()){
-			currentIndex = currentIndex+1;
-			return lstCommands.get(currentIndex);
-		}
-		throw new GkTechnicalException("No more command available...");
+	@Override
+	public int getCommandCount() throws GkException {
+		return commands.size();
 	}
-	/**
-	 * Return the next command from this execution queue without removing it
-	 * @return the next {@link GCodeCommand} to execute
-	 * @throws GkException GkException
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#markAsExecuted(java.lang.Integer)
 	 */
-	public synchronized GCodeCommand getNextCommand() throws GkException{
-		if(hasNext()){
-			return lstCommands.get(currentIndex + 1);
-		}
-		throw new GkTechnicalException("No more command available...");
+	@Override
+	public void markAsExecuted(Integer idCommand) throws GkException {
+		GCodeCommand command = mapCommandById.get(idCommand);
+		mapExecutedCommandById.add(command.getId());
+		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.EXECUTED));
 	}
 
-	/**
-	 * Notify a state change for the given command
-	 * @param command the {@link GCodeCommand}
-	 * @param state the new state
-	 * @throws GkException GkException
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#getExecutedCommandCount()
 	 */
-	public void setCommandState(GCodeCommand command, int state) throws GkException{
-		notifyListeners(new GCodeCommandExecutionEvent(this, command, state));
+	@Override
+	public int getExecutedCommandCount() throws GkException {
+		return mapExecutedCommandById.size();
 	}
 
-	public long getEstimatedExecutionTime(){
-		return 0;
-	}
-
-	public long getRunningExecutionTime(){
-		return 0;
-	}
-
-	/**
-	 * @return the commandCount
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#markAsError(java.lang.Integer)
 	 */
-	public int getCommandCount() {
-		return commandCount;
+	@Override
+	public void markAsError(Integer idCommand) throws GkException {
+		GCodeCommand command = mapCommandById.get(idCommand);
+		mapErrorsCommandById.add(command.getId());
+		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.ERROR));
 	}
 
-	public int getExecutedCommandCount(){
-		return currentIndex + 1;
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#getErrorCommandCount()
+	 */
+	@Override
+	public int getErrorCommandCount() throws GkException {
+		return mapErrorsCommandById.size();
 	}
 
-	public void beginExecution(){
-		
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#getCommandState(java.lang.Integer)
+	 */
+	@Override
+	public GCodeCommandState getCommandState(Integer idCommand) throws GkException {
+		return new GCodeCommandState(GCodeCommandState.NONE);
 	}
-	public void endExecution(){
-		
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#getNextCommand()
+	 */
+	@Override
+	public GCodeCommand getNextCommand() throws GkException {
+		return mapCommandById.get(commands.get(currentIndex + 1));
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#takeNextCommand()
+	 */
+	@Override
+	public GCodeCommand takeNextCommand() throws GkException {
+		currentIndex = currentIndex + 1;
+		Integer nextId = commands.get(currentIndex);
+		return mapCommandById.get(nextId);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#hasMoreCommand()
+	 */
+	@Override
+	public boolean hasMoreCommand() throws GkException {
+		return getCommandCount() > currentIndex + 1;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#beginExecution()
+	 */
+	@Override
+	public void beginExecution() throws GkException {
+
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.execution.IGCodeExecutionToken#endExecution()
+	 */
+	@Override
+	public void endExecution() throws GkException {
+
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeProvider#getCommandById(java.lang.Integer)
+	 */
+	@Override
+	public GCodeCommand getCommandById(Integer id) throws GkException {
+		return mapCommandById.get(id);
+	}
+
+
+
 }

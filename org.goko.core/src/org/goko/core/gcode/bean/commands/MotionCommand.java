@@ -19,7 +19,10 @@
  */
 package org.goko.core.gcode.bean.commands;
 
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 import org.goko.core.gcode.bean.Tuple6b;
 
 /**
@@ -47,6 +50,14 @@ public abstract class MotionCommand extends SettingCommand {
 		super.setMotionType(motionType);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#accept(org.goko.core.gcode.bean.IGCodeCommandVisitor)
+	 */
+	@Override
+	public void accept(IGCodeCommandVisitor visitor) throws GkException {
+		visitor.visit(this);
+	}
+
 	/** {@inheritDoc}
 	 * @see org.goko.core.gcode.bean.commands.SettingCommand#updateContext(org.goko.core.gcode.bean.GCodeContext)
 	 */
@@ -61,7 +72,10 @@ public abstract class MotionCommand extends SettingCommand {
 	 * @return the absoluteStartCoordinate
 	 */
 	public Tuple6b getAbsoluteStartCoordinate() {
-		return absoluteStartCoordinate;
+		if(absoluteStartCoordinate == null){
+			return null;
+		}
+		return new Tuple6b(absoluteStartCoordinate);
 	}
 
 	/**
@@ -76,6 +90,9 @@ public abstract class MotionCommand extends SettingCommand {
 	 * @return the absoluteEndCoordinate
 	 */
 	public Tuple6b getAbsoluteEndCoordinate() {
+		if(absoluteEndCoordinate == null){
+			return null;
+		}
 		return new Tuple6b(absoluteEndCoordinate);
 	}
 
@@ -84,12 +101,16 @@ public abstract class MotionCommand extends SettingCommand {
 	 */
 	public void setAbsoluteEndCoordinate(Tuple6b absoluteEndCoordinate) {
 		this.absoluteEndCoordinate = new Tuple6b(absoluteEndCoordinate);
+		updateBounds();
 	}
 
 	/**
 	 * @return the coordinates
 	 */
 	public Tuple6b getCoordinates() {
+		if(coordinates == null){
+			return null;
+		}
 		return new Tuple6b(coordinates);
 	}
 
@@ -106,14 +127,18 @@ public abstract class MotionCommand extends SettingCommand {
 	 */
 	private void updateAbsoluteEndCoordinate(){
 		if(absoluteStartCoordinate != null && coordinates != null){
+			Tuple6b tmpTuple = null;
 			if(absoluteEndCoordinate == null){
-				absoluteEndCoordinate = new Tuple6b(absoluteStartCoordinate);
+				tmpTuple = new Tuple6b(absoluteStartCoordinate);
+			}else{
+				tmpTuple = new Tuple6b(absoluteEndCoordinate);
 			}
 			if(getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
-				absoluteEndCoordinate.updateAbsolute(coordinates);
+				tmpTuple.updateAbsolute(coordinates);
 			}else{
-				absoluteEndCoordinate.updateRelative(coordinates);
+				tmpTuple.updateRelative(coordinates);
 			}
+			setAbsoluteEndCoordinate(tmpTuple);
 		}
 	}
 
@@ -137,5 +162,14 @@ public abstract class MotionCommand extends SettingCommand {
 		str = str.replaceAll("\\{b\\}", String.valueOf(getAbsoluteEndCoordinate().getB()));
 		str = str.replaceAll("\\{c\\}", String.valueOf(getAbsoluteEndCoordinate().getC()));
 		return str;
+	}
+
+
+	private void updateBounds(){
+		if(getAbsoluteEndCoordinate() != null && getAbsoluteStartCoordinate() != null){
+			Tuple6b min = getAbsoluteStartCoordinate().min(getAbsoluteEndCoordinate());
+			Tuple6b max = getAbsoluteStartCoordinate().max(getAbsoluteEndCoordinate());
+			setBounds(new BoundingTuple6b(min,max));
+		}
 	}
 }

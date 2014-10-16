@@ -39,7 +39,6 @@ import org.goko.tinyg.controller.TinyGControllerService;
  *
  */
 public class TinyGConfigurationOpenHandler {
-
 	@CanExecute
 	public boolean canExecute(IControllerService controllerService, IConnectionService connectionService){
 		try {

@@ -25,7 +25,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
@@ -68,9 +67,9 @@ public class TinyGControllerUtility {
 	 * @param command the command to transform
 	 * @return {@link JsonValue}
 	 */
-	protected static JsonValue toJson(GCodeCommand command){
+	protected static JsonValue toJson(String command){
 		JsonObject value = new JsonObject();
-		value.add(TinyGJsonUtils.GCODE_COMMAND, StringUtils.lowerCase(command.getStringCommand()));
+		value.add(TinyGJsonUtils.GCODE_COMMAND, StringUtils.lowerCase(command));
 		return value;
 	}
 

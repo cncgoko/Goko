@@ -30,7 +30,7 @@ import org.goko.viewer.jogl.service.JoglRendererProxy;
  * @author PsyKo
  *
  */
-public class GridRenderer extends AbstractJoglRenderer {
+public class GridRenderer implements IJoglRenderer {
 	public static final String ID = "org.goko.viewer.jogl.utils.render.GridRenderer";
 	/**
 	 * Constructor
@@ -46,13 +46,12 @@ public class GridRenderer extends AbstractJoglRenderer {
 	public String getId() {
 		return ID;
 	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#render(org.goko.core.viewer.renderer.IRendererProxy)
+
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
 	 */
 	@Override
-	public void renderJogl(JoglRendererProxy proxy) throws GkException {
+	public void render(JoglRendererProxy proxy) throws GkException {
 		GL2 gl = proxy.getGl();
 		gl.glLineWidth(0.1f);
 

@@ -1,63 +1,21 @@
 package org.goko.core.gcode.bean;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.core.gcode.bean.provider.AbstractGCodeProvider;
 
-public class GCodeFile implements IGCodeProvider {
+public class GCodeFile extends AbstractGCodeProvider implements IGCodeProvider {
 	/** The original file */
 	private File file;
-	/** The list of gcode commands */
-	private List<GCodeCommand> gCodeCommands;
-	private int id;
 
 	/**
 	 * Constructor
+	 * @param commands the content of the file
 	 */
-	public GCodeFile(){
-		gCodeCommands = new ArrayList<GCodeCommand>();
-		id = 0;
-	}
-
-	public void addGCodeCommand(GCodeCommand command){
-		command.setId(++id);
-		if(StringUtils.isBlank(command.getLineNumber())){
-			generateLineNumber(command);
-		}
-		this.gCodeCommands.add(command);
-	}
-
-	/**
-	 * Add the given collection of GCodeCommand to this file
-	 * @param commands the collection of lines
-	 */
-	public void addGCodeCommand(Collection<GCodeCommand> commands){
-		if(CollectionUtils.isNotEmpty(commands)){
-			for (GCodeCommand gCodeCommand : commands) {
-				addGCodeCommand(gCodeCommand);
-			}
-		}
-	}
-
-	/**
-	 * Generate a line number for the given command
-	 * @param command the GCodeLine
-	 */
-	private void generateLineNumber(GCodeCommand command) {
-		int lineNumber = CollectionUtils.size(gCodeCommands) + 1;
-		command.setLineNumber("N"+String.valueOf(lineNumber));
-	}
-
-	/**
-	 * Return the number of line in this file
-	 * @return the number of line
-	 */
-	public int getLineCount(){
-		return CollectionUtils.size(gCodeCommands);
+	public GCodeFile(List<GCodeCommand> commands){
+		super(commands);
 	}
 
 	/**
@@ -73,12 +31,15 @@ public class GCodeFile implements IGCodeProvider {
 		this.file = file;
 	}
 
-	/**
-	 * @return the gCodeCommands
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeProvider#getName()
 	 */
 	@Override
-	public List<GCodeCommand> getGCodeCommands() {
-		return gCodeCommands;
+	public String getName() {
+		if(file != null){
+			return file.getName();
+		}
+		return StringUtils.EMPTY;
 	}
 
 

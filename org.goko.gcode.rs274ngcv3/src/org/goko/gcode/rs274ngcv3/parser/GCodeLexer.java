@@ -48,6 +48,8 @@ public class GCodeLexer {
 	private Pattern lineNumberPattern;
 	/** Word pattern*/
 	private Pattern wordPattern;
+	/** White space detection pattern*/
+	private Pattern spacePattern;
 
 	/**
 	 * Constructor
@@ -57,6 +59,7 @@ public class GCodeLexer {
 		simpleCommentPattern    = Pattern.compile(GCodeTokenType.SIMPLE_COMMENT.getPattern());
 		lineNumberPattern = Pattern.compile(GCodeTokenType.LINE_NUMBER.getPattern());
 		wordPattern    = Pattern.compile(GCodeTokenType.WORD.getPattern());
+		spacePattern    = Pattern.compile("^[ ]+");
 	}
 	/**
 	 * Create a list of token from a String
@@ -66,9 +69,8 @@ public class GCodeLexer {
 	 */
 	public List<GCodeToken> createTokens(String stringCommand) throws GkException{
 		List<GCodeToken> lstTokens = new ArrayList<GCodeToken>();
-		String localString = StringUtils.deleteWhitespace(stringCommand);
 
-		return createTokens(localString, lstTokens);
+		return createTokens(stringCommand, lstTokens);
 	}
 	/**
 	 * Create a list of token from a File
@@ -108,6 +110,11 @@ public class GCodeLexer {
 	protected List<GCodeToken> createTokens(String stringCommand, List<GCodeToken> tokens) throws GkException{
 		if(StringUtils.isBlank(stringCommand)){
 			return tokens;
+		}
+		Matcher spaceMatcher    = spacePattern.matcher(stringCommand);
+		if(spaceMatcher.find()){
+			String remainingString = spaceMatcher.replaceFirst(StringUtils.EMPTY);
+			return createTokens(remainingString,tokens);
 		}
 		Matcher wordMatcher    = wordPattern.matcher(stringCommand);
 		if(wordMatcher.find()){

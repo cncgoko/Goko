@@ -19,6 +19,10 @@
  */
 package org.goko.core.gcode.bean.commands;
 
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.bean.BoundingTuple6b;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
+
 
 /**
  * Defines a linear motion command
@@ -35,4 +39,16 @@ public class LinearMotionCommand extends MotionCommand {
 		super(EnumGCodeCommandMotionType.LINEAR);
 	}
 
+	@Override
+	public BoundingTuple6b getBounds() {
+		return super.getBounds();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#accept(org.goko.core.gcode.bean.IGCodeCommandVisitor)
+	 */
+	@Override
+	public void accept(IGCodeCommandVisitor visitor) throws GkException {
+		visitor.visit(this);
+	}
 }

@@ -54,18 +54,18 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 
 	@Override
 	public void onDataReceived(List<Byte> data) throws GkException {
-		if(getDataModel().isConsoleEnabled()){
-			final String text = GkUtils.toString(data);
-			Display.getDefault().asyncExec(new Runnable() {
-			    @Override
-				public void run() {
-			    	textDisplay.append(text);
-			    	if(!getDataModel().isScrollLock()){
-			    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
-			    	}
-			    }
-			});
-		}
+//		if(getDataModel().isConsoleEnabled()){
+//			final String text = GkUtils.toString(data);
+//			Display.getDefault().asyncExec(new Runnable() {
+//			    @Override
+//				public void run() {
+//			    	textDisplay.append(text);
+//			    	if(!getDataModel().isScrollLock()){
+//			    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+//			    	}
+//			    }
+//			});
+//		}
 	}
 
 	@Override

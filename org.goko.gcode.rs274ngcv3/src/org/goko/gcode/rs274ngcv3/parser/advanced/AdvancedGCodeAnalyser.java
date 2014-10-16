@@ -28,6 +28,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
+import org.goko.gcode.rs274ngcv3.GkGCodeService;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
 import org.goko.gcode.rs274ngcv3.parser.ModalGroup;
@@ -81,15 +82,15 @@ public class AdvancedGCodeAnalyser {
 	 * @throws GkException GkException
 	 */
 	public GCodeFile createFile(List<GCodeToken> tokens, GCodeContext intialContext) throws GkException{
-		GCodeFile 			file = new GCodeFile();
 		GCodeContext 		context = new GCodeContext(intialContext);
 		List<GCodeToken> 	lineTokens = new ArrayList<GCodeToken>();
+		List<GCodeCommand> 	lstCommmands = new ArrayList<GCodeCommand>();
 		// Let's detect the end token. We search the first NEW_LINE token, or the end of the list
 		for (GCodeToken gCodeToken : tokens) {
 			if(gCodeToken.getType() == GCodeTokenType.NEW_LINE){
 				if(CollectionUtils.isNotEmpty(lineTokens)){
 					GCodeCommand command = createCommand(lineTokens, context);
-					file.addGCodeCommand( command );
+					lstCommmands.add( command );
 					lineTokens.clear();
 				}
 			}else{
@@ -99,9 +100,11 @@ public class AdvancedGCodeAnalyser {
 		// Let's compute the final GCodeCommand
 		if(CollectionUtils.isNotEmpty(lineTokens)){
 			GCodeCommand command = createCommand(lineTokens, context);
-			file.addGCodeCommand( command );
+			lstCommmands.add( command );
 			lineTokens.clear();
 		}
+
+		GCodeFile file = new GCodeFile(lstCommmands);
 		return file;
 	}
 
@@ -148,6 +151,16 @@ public class AdvancedGCodeAnalyser {
 	public void verifyModality(List<GCodeToken> lstToken) throws GkException{
 		for (ModalGroup group : modalGroups) {
 			group.verifyTokenModality(lstToken);
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			GCodeCommand l = new GkGCodeService().parseCommand("G21G90(test de la truc)");
+			System.err.println(l);
+		} catch (GkException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

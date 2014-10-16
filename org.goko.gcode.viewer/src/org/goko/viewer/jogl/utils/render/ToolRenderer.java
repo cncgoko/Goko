@@ -10,7 +10,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 
-public class ToolRenderer extends AbstractJoglRenderer {
+public class ToolRenderer implements IJoglRenderer {
 	protected static final String ID = "org.goko.viewer.jogl.utils.render.ToolRenderer";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ToolRenderer.class);
@@ -38,12 +38,12 @@ public class ToolRenderer extends AbstractJoglRenderer {
 		return ID;
 	}
 
-	/** {@inheritDoc}
-	 * @see org.goko.viewer.jogl.utils.render.AbstractJoglRenderer#renderJogl(org.goko.viewer.jogl.service.JoglRendererProxy)
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
 	 */
 	@Override
-	public void renderJogl(JoglRendererProxy joglProxy) throws GkException {
-		GL2 gl = joglProxy.getGl();
+	public void render(JoglRendererProxy proxy) throws GkException {
+		GL2 gl = proxy.getGl();
 		if (toolPosition == null) {
 			toolPosition = new Point3d(0,0,0);
 		}

@@ -1,42 +1,12 @@
 package org.goko.viewer.jogl.utils.render.gcode;
 
-import java.lang.ref.WeakReference;
-
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.viewer.jogl.utils.render.AbstractJoglRenderer;
-import org.goko.viewer.jogl.utils.styler.AbstractGCodeCommandStyler;
-import org.goko.viewer.jogl.utils.styler.DefaultGCodeCommandStyler;
+import org.goko.viewer.jogl.service.JoglRendererProxy;
+import org.goko.viewer.jogl.utils.styler.IJoglGCodeCommandStyler;
 
-public abstract class AbstractGCodeCommandRenderer<T extends GCodeCommand> extends AbstractJoglRenderer {
-	private WeakReference<T> commandRef;
-	private AbstractGCodeCommandStyler styler;
+public abstract class AbstractGCodeCommandRenderer<T extends GCodeCommand> {
 
-	public AbstractGCodeCommandRenderer() {
-		styler = new DefaultGCodeCommandStyler();
-	}
+	public abstract void render(T command, JoglRendererProxy proxy, IJoglGCodeCommandStyler<T> styler ) throws GkException;
 
-	protected T getGCodeCommand(){
-		if(commandRef != null ){
-			return commandRef.get();
-		}
-		return null;
-	}
-
-	public void setGCodeCommand(T command){
-		this.commandRef = new WeakReference<T>(command);
-	}
-
-	/**
-	 * @return the styler
-	 */
-	public AbstractGCodeCommandStyler getStyler() {
-		return styler;
-	}
-
-	/**
-	 * @param styler the styler to set
-	 */
-	public void setStyler(AbstractGCodeCommandStyler styler) {
-		this.styler = styler;
-	}
 }

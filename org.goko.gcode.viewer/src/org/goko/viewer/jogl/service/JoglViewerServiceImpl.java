@@ -26,7 +26,9 @@ import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -42,13 +44,19 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
+import org.goko.core.workspace.service.GCodeProviderEvent;
+import org.goko.core.workspace.service.IWorkspaceListener;
+import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.viewer.jogl.GokoJoglCanvas;
 import org.goko.viewer.jogl.camera.AbstractCamera;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.utils.render.AxisRenderer;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
+import org.goko.viewer.jogl.utils.render.IJoglRenderer;
+import org.goko.viewer.jogl.utils.render.JoglRendererWrapper;
 import org.goko.viewer.jogl.utils.render.ToolRenderer;
+import org.goko.viewer.jogl.utils.render.gcode.BoundsRenderer;
 import org.goko.viewer.jogl.utils.render.gcode.GCodeProviderRenderer;
 
 import com.jogamp.opengl.util.awt.Overlay;
@@ -59,13 +67,15 @@ import com.jogamp.opengl.util.awt.Overlay;
  * @author PsyKo
  *
  */
-public class JoglViewerServiceImpl implements IJoglViewerService{
+public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JoglViewerServiceImpl.class);
 	/** SERVICE_ID */
 	private static final String SERVICE_ID = "org.goko.viewer.jogl";
 	/** The list of renderer */
-	private List<IViewer3DRenderer> renderers;
+	private List<IJoglRenderer> renderers;
+	/** The map of disabled renderers by Id */
+	private Map<String, Boolean> mapDisabledRenderers;
 	/** Current camera */
 	private AbstractCamera camera;
 	/** The list of supported camera */
@@ -76,11 +86,14 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	private JoglRendererProxy proxy;
 	/** The current controller service*/
 	private IControllerService controllerService;
+	/** The workspace service */
+	private IWorkspaceService workspaceService;
 	/** Bind camera on tool position ? */
 	private boolean lockCameraOnTool;
 	/** Flag to enable/disable the render*/
 	private boolean enabled = true;
 	private GCodeProviderRenderer gcodeRenderer;
+	private BoundsRenderer boundsRenderer;
 	private Overlay overlay;
 	private Font overlayFont;
 	private int x;
@@ -100,7 +113,8 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	 */
 	@Override
 	public void start() throws GkException {
-		System.err.println("start");
+		LOG.info("Starting "+this.getServiceId());
+		this.mapDisabledRenderers = new HashMap<String, Boolean>();
 	}
 
 	/** (inheritDoc)
@@ -108,7 +122,6 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	 */
 	@Override
 	public void stop() throws GkException {
-		System.err.println("stop");
 
 	}
 
@@ -145,7 +158,16 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	 */
 	@Override
 	public void addRenderer(IViewer3DRenderer renderer) throws GkException {
+		addRenderer(new JoglRendererWrapper(renderer));
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.IJoglViewerService#addRenderer(org.goko.viewer.jogl.utils.render.IJoglRenderer)
+	 */
+	@Override
+	public void addRenderer(IJoglRenderer renderer) throws GkException {
 		getRenderers().add(renderer);
+		setRendererEnabled(renderer.getId(), true);
 	}
 
 	/** (inheritDoc)
@@ -159,9 +181,9 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	/**
 	 * @return the renderers
 	 */
-	private List<IViewer3DRenderer> getRenderers() {
+	private List<IJoglRenderer> getRenderers() {
 		if(renderers == null){
-			renderers = new ArrayList<IViewer3DRenderer>();
+			renderers = new ArrayList<IJoglRenderer>();
 		}
 		return renderers;
 	}
@@ -172,6 +194,8 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 			//removeRenderer(gcodeRenderer);
 		}
 		gcodeRenderer = new GCodeProviderRenderer(provider);
+		boundsRenderer = new BoundsRenderer();
+		boundsRenderer.setBounds(provider.getBounds());
 		//addRenderer(gcodeRenderer);
 	}
 
@@ -231,9 +255,9 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 		}*/
 
 		proxy.setGl(gl);
-		for (IViewer3DRenderer renderer : getRenderers()) {
+		for (IJoglRenderer renderer : getRenderers()) {
 			gl.glPushMatrix();
-			if (renderer.isEnabled()) {
+			if (isRendererEnabled(renderer.getId())) {
 				try {
 					renderer.render(proxy);
 				} catch (GkException e) {
@@ -247,6 +271,17 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 		//	gl.glRotated(aPos.doubleValue(), 0, 1, 0);
 			try {
 				gcodeRenderer.render(proxy);
+			} catch (GkException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			gl.glPopMatrix();
+		}
+		if(boundsRenderer!=null){
+			gl.glPushMatrix();
+		//	gl.glRotated(aPos.doubleValue(), 0, 1, 0);
+			try {
+				boundsRenderer.render(proxy);
 			} catch (GkException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -280,8 +315,6 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 			    }else{
 			    	g2d.drawString("Disabled",x,y);
 			    }
-			//	overlay.
-			//	overlay.markDirty(x, y, x+bounds.width, y+bounds.height);
 				overlay.markDirty(0, 0, width, height);
 				overlay.drawAll();
 
@@ -399,16 +432,20 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	 */
 	@Override
 	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException {
-		getRenderer(idRenderer).setEnabled(enabled);
+		mapDisabledRenderers.put(idRenderer, enabled);
+	}
+
+	private boolean isRendererEnabled(String idRenderer){
+		return mapDisabledRenderers.containsKey(idRenderer) && mapDisabledRenderers.get(idRenderer) == true ;
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.viewer.service.IViewer3DService#getRenderer(java.lang.String)
+	 * @see org.goko.viewer.jogl.service.IJoglViewerService#getJoglRenderer(java.lang.String)
 	 */
 	@Override
-	public IViewer3DRenderer getRenderer(String idRenderer) throws GkException {
+	public IJoglRenderer getJoglRenderer(String idRenderer) throws GkException {
 		if(CollectionUtils.isNotEmpty(renderers)){
-			for (IViewer3DRenderer renderer : renderers) {
+			for (IJoglRenderer renderer : renderers) {
 				if(StringUtils.equals(renderer.getId(), idRenderer)){
 					return renderer;
 				}
@@ -431,6 +468,32 @@ public class JoglViewerServiceImpl implements IJoglViewerService{
 	@Override
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 * @throws GkException
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) throws GkException {
+		this.workspaceService = workspaceService;
+		this.workspaceService.addWorkspaceListener(this);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceListener#onGCodeProviderEvent(org.goko.core.workspace.service.GCodeProviderEvent)
+	 */
+	@Override
+	public void onGCodeProviderEvent(GCodeProviderEvent event) throws GkException {
+		if(getWorkspaceService().getCurrentGCodeProvider() != null){
+			this.renderGCode(getWorkspaceService().getCurrentGCodeProvider());
+		}
 	}
 
 }

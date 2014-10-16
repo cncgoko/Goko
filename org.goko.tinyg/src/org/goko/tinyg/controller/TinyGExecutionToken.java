@@ -17,28 +17,31 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
+package org.goko.tinyg.controller;
 
+import org.apache.commons.collections.MapUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.commands.RawCommand;
+import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
 
-/**
- * Raw (unparsed) command builder
- *
- * @author PsyKo
- *
- */
-public class RawCommandBuilder extends AbstractRawCommandBuilder<RawCommand>{
-	/** Log */
-	//private static final GkLog LOG = GkLog.getLogger(RawCommandBuilder.class);
 
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.AbstractRS274CommandBuilder#newInstance()
+public class TinyGExecutionToken extends GCodeStreamedExecutionToken{
+
+	/**
+	 * Constructor
+	 * @param provider the provider to execute
 	 */
-	@Override
-	public RawCommand newInstance() throws GkException {
-		return new RawCommand();
+	public TinyGExecutionToken(IGCodeProvider provider) {
+		super(provider);
 	}
 
-
+	public void markAsConfirmed(GCodeCommand command) throws GkException{
+		if(MapUtils.isNotEmpty(mapSentCommandById)){
+			GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
+			//if(ObjectUtils.equals(command, nextCommand)){
+				super.markAsExecuted(nextCommand.getId());
+			//}
+		}
+	}
 }

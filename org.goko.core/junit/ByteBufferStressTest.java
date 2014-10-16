@@ -30,7 +30,7 @@ public class ByteBufferStressTest implements Runnable{
 	private String name;
 
 	public static void main(String[] args) {
-		final ByteCommandBuffer tmpBuffer = new ByteCommandBuffer(new byte[]{';'});
+		final ByteCommandBuffer tmpBuffer = new ByteCommandBuffer((byte)';');
 		List<ByteBufferStressTest> threads = new ArrayList<ByteBufferStressTest>();
 
 

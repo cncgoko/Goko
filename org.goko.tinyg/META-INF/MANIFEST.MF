@@ -31,3 +31,4 @@ Bundle-ClassPath: .,
  swing2swt.jar
 Bundle-ActivationPolicy: lazy
 Import-Package: org.slf4j
+Export-Package: org.goko.tinyg.controller

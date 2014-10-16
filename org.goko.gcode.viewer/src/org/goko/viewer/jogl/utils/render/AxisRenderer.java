@@ -25,14 +25,17 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 
+import com.jogamp.opengl.util.gl2.GLUT;
+
 /**
  * Draw the XYZ axis
  *
  * @author PsyKo
  *
  */
-public class AxisRenderer extends AbstractJoglRenderer {
+public class AxisRenderer implements IJoglRenderer {
 	protected static final String ID = "org.goko.viewer.jogl.utils.render.AxisRenderer";
+	private static final double CHAR_WIDTH = 2.0;
 	private Tuple6b zero;
 	private Tuple6b xaxis;
 	private Tuple6b yaxis;
@@ -40,8 +43,11 @@ public class AxisRenderer extends AbstractJoglRenderer {
 	private Point3f xcolor;
 	private Point3f ycolor;
 	private Point3f zcolor;
+	private double textScale;
 
 	public AxisRenderer() {
+		GLUT glut = new GLUT();
+		textScale  = CHAR_WIDTH / glut.glutStrokeWidth(GLUT.STROKE_MONO_ROMAN, ' ');
 		zero   = new Tuple6b(0,0,0);
 		xaxis  = new Tuple6b(10,0,0);
 		yaxis  = new Tuple6b(0,10,0);
@@ -59,15 +65,53 @@ public class AxisRenderer extends AbstractJoglRenderer {
 		return ID;
 	}
 
+
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.AbstractJoglRenderer#renderJogl(org.goko.viewer.jogl.service.JoglRendererProxy)
+	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
 	 */
 	@Override
-	public void renderJogl(JoglRendererProxy proxy) throws GkException {
+	public void render(JoglRendererProxy proxy) throws GkException {
 		proxy.getGl().glLineWidth(1.5f);
-		proxy.drawSegment(zero, xaxis, xcolor);
+		GLUT glut = new GLUT();
+
+		proxy.getGl().glPushMatrix();
+			proxy.drawSegment(zero, xaxis, xcolor);
+			proxy.getGl().glTranslated(xaxis.getX().doubleValue(), xaxis.getY().doubleValue(), xaxis.getZ().doubleValue());
+				proxy.getGl().glPushMatrix();
+				proxy.getGl().glTranslated( CHAR_WIDTH,-1,0);
+				proxy.getGl().glScaled(textScale,textScale,textScale);
+				glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, "X");
+				proxy.getGl().glPopMatrix();
+
+			proxy.getGl().glRotated(90, 0, 1, 0);
+			glut.glutSolidCone(0.5, 1, 8, 1);
+		proxy.getGl().glPopMatrix();
+
+
+		proxy.getGl().glPushMatrix();
 		proxy.drawSegment(zero, yaxis, ycolor);
+		proxy.getGl().glTranslated(yaxis.getX().doubleValue(), yaxis.getY().doubleValue(), yaxis.getZ().doubleValue());
+			proxy.getGl().glPushMatrix();
+			proxy.getGl().glTranslated( -1,CHAR_WIDTH,0);
+			proxy.getGl().glScaled(textScale,textScale,textScale);
+			glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, "Y");
+			proxy.getGl().glPopMatrix();
+		proxy.getGl().glRotated(-90, 1, 0, 0);
+		glut.glutSolidCone(0.5, 1, 8, 1);
+		proxy.getGl().glPopMatrix();
+
+		proxy.getGl().glPushMatrix();
 		proxy.drawSegment(zero, zaxis, zcolor);
+		proxy.getGl().glTranslated(zaxis.getX().doubleValue(), zaxis.getY().doubleValue(), zaxis.getZ().doubleValue());
+			proxy.getGl().glPushMatrix();
+			proxy.getGl().glTranslated( -1,0,CHAR_WIDTH);
+			proxy.getGl().glScaled(textScale,textScale,textScale);
+			proxy.getGl().glRotated(90, 1, 0, 0);
+			glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, "Z");
+			proxy.getGl().glPopMatrix();
+		glut.glutSolidCone(0.5, 1, 8, 1);
+		proxy.getGl().glPopMatrix();
+
 	}
 
 }

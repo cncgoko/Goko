@@ -24,19 +24,18 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.commands.CommentCommand;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
-import org.goko.core.gcode.bean.commands.SettingCommand;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.gcode.rs274ngcv3.parser.advanced.AdvancedGCodeAnalyser;
+import org.goko.gcode.rs274ngcv3.parser.advanced.RS274CommandWriter;
 
 public class GkGCodeService implements IGCodeService {
 
@@ -72,11 +71,9 @@ public class GkGCodeService implements IGCodeService {
 			throw new GkFunctionalException("File '"+filepath+"' does not exist...");
 		}
 
-		GCodeLexer gcodeLexer = new GCodeLexer();
-		GCodeFile rawGCodeFile = new GCodeFile();
-		rawGCodeFile.setFile(file);
-		List<GCodeToken> lstTokens = gcodeLexer.createTokensFromFile(filepath);
-		GCodeFile gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, new GCodeContext());
+		GCodeLexer 			gcodeLexer = new GCodeLexer();
+		List<GCodeToken> 	lstTokens = gcodeLexer.createTokensFromFile(filepath);
+		GCodeFile		 	gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, new GCodeContext());
 		return gcodeFile;
 	}
 
@@ -108,26 +105,10 @@ public class GkGCodeService implements IGCodeService {
 	 */
 	@Override
 	public byte[] convert(GCodeCommand command) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
+		RS274CommandWriter writer = new RS274CommandWriter();
+		return StringUtils.defaultString(writer.write(command)).getBytes();
 	}
 
-	private String convert(String base, CommentCommand command) throws GkException {
-		return base + command.getComment();
-	}
-
-	private String convert(String base, SettingCommand command) throws GkException {
-		String str = base;
-		if(command.isExplicitDistanceMode()){
-			if(command.getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
-				str += "G90";
-			}else{
-				str += "G91";
-			}
-		}
-
-		return str;
-	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */

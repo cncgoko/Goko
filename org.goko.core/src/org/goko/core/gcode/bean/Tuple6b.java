@@ -32,12 +32,6 @@ public class Tuple6b {
 	private BigDecimal c;
 
 	public Tuple6b(Tuple6b tuple){
-//		this.x = new BigDecimal(String.valueOf(tuple.x));
-//		this.y = new BigDecimal(String.valueOf(tuple.y));
-//		this.z = new BigDecimal(String.valueOf(tuple.z));
-//		this.a = new BigDecimal(String.valueOf(tuple.a));
-//		this.b = new BigDecimal(String.valueOf(tuple.b));
-//		this.c = new BigDecimal(String.valueOf(tuple.c));
 		this.x = tuple.x;
 		this.y = tuple.y;
 		this.z = tuple.z;
@@ -130,14 +124,51 @@ public class Tuple6b {
 		return null;
 	}
 
+	public Tuple6b min(Tuple6b t){
+		Tuple6b result = new Tuple6b(this);
+		result.x = atomMin(x, t.x);
+		result.y = atomMin(y, t.y);
+		result.z = atomMin(z, t.z);
+		result.a = atomMin(a, t.a);
+		result.b = atomMin(b, t.b);
+		result.c = atomMin(c, t.c);
+		return result;
+	}
+	public Tuple6b max(Tuple6b t){
+		Tuple6b result = new Tuple6b(this);
+		result.x = atomMax(x, t.x);
+		result.y = atomMax(y, t.y);
+		result.z = atomMax(z, t.z);
+		result.a = atomMax(a, t.a);
+		result.b = atomMax(b, t.b);
+		result.c = atomMax(c, t.c);
+		return result;
+	}
+	private BigDecimal atomMin(BigDecimal a, BigDecimal b) {
+		if(a == null){
+			return b;
+		}else if(b == null){
+			return a;
+		}
+		return a.min(b);
+	}
+	private BigDecimal atomMax(BigDecimal a, BigDecimal b) {
+		if(a == null){
+			return b;
+		}else if(b == null){
+			return a;
+		}
+		return a.max(b);
+	}
+
 	public Tuple6b subtract(Tuple6b sub){
 		Tuple6b result = new Tuple6b(this);
-		this.x = atomSubtract(x, sub.x);
-		this.y = atomSubtract(y, sub.y);
-		this.z = atomSubtract(z, sub.z);
-		this.a = atomSubtract(a, sub.a);
-		this.b = atomSubtract(b, sub.b);
-		this.c = atomSubtract(c, sub.c);
+		result.x = atomSubtract(x, sub.x);
+		result.y = atomSubtract(y, sub.y);
+		result.z = atomSubtract(z, sub.z);
+		result.a = atomSubtract(a, sub.a);
+		result.b = atomSubtract(b, sub.b);
+		result.c = atomSubtract(c, sub.c);
 		return result;
 	}
 
@@ -246,6 +277,102 @@ public class Tuple6b {
 
 	public Point3d toPoint3d(){
 		return new Point3d(getX().doubleValue(), getY().doubleValue(), getZ().doubleValue());
+	}
+
+	public Tuple6b setNull() {
+		this.x = null;
+		this.y = null;
+		this.z = null;
+		this.a = null;
+		this.b = null;
+		this.c = null;
+		return this;
+	}
+
+	public Tuple6b setZero() {
+		this.x = new BigDecimal("0");
+		this.y = new BigDecimal("0");
+		this.z = new BigDecimal("0");
+		this.a = new BigDecimal("0");
+		this.b = new BigDecimal("0");
+		this.c = new BigDecimal("0");
+		return this;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((a == null) ? 0 : a.hashCode());
+		result = prime * result + ((b == null) ? 0 : b.hashCode());
+		result = prime * result + ((c == null) ? 0 : c.hashCode());
+		result = prime * result + ((x == null) ? 0 : x.hashCode());
+		result = prime * result + ((y == null) ? 0 : y.hashCode());
+		result = prime * result + ((z == null) ? 0 : z.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Tuple6b other = (Tuple6b) obj;
+		if (a == null) {
+			if (other.a != null) {
+				return false;
+			}
+		} else if (!a.equals(other.a)) {
+			return false;
+		}
+		if (b == null) {
+			if (other.b != null) {
+				return false;
+			}
+		} else if (!b.equals(other.b)) {
+			return false;
+		}
+		if (c == null) {
+			if (other.c != null) {
+				return false;
+			}
+		} else if (!c.equals(other.c)) {
+			return false;
+		}
+		if (x == null) {
+			if (other.x != null) {
+				return false;
+			}
+		} else if (!x.equals(other.x)) {
+			return false;
+		}
+		if (y == null) {
+			if (other.y != null) {
+				return false;
+			}
+		} else if (!y.equals(other.y)) {
+			return false;
+		}
+		if (z == null) {
+			if (other.z != null) {
+				return false;
+			}
+		} else if (!z.equals(other.z)) {
+			return false;
+		}
+		return true;
 	}
 
 

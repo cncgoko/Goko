@@ -1,8 +1,9 @@
 package org.goko.core.gcode.bean;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
 
-public class GCodeCommand {
+public abstract class GCodeCommand {
 	/** Identifier */
 	private Integer id;
 	/** Line number if any */
@@ -14,7 +15,7 @@ public class GCodeCommand {
 	/** The state of the command */
 	// TODO : remove state from command
 	private GCodeCommandState state;
-
+	private BoundingTuple6b bounds;
 
 	/**
 	 * Constructor
@@ -31,6 +32,7 @@ public class GCodeCommand {
 		this.type = type;
 	}
 
+	public abstract void accept(IGCodeCommandVisitor visitor) throws GkException;
 	/**
 	 * Update the given {@link GCodeContext}
 	 * @param context the context to update
@@ -113,4 +115,19 @@ public class GCodeCommand {
 	public String toString() {
 		return getStringCommand();
 	}
+
+	/**
+	 * @return the bounds
+	 */
+	public BoundingTuple6b getBounds() {
+		return bounds;
+	}
+
+	/**
+	 * @param bounds the bounds to set
+	 */
+	protected void setBounds(BoundingTuple6b bounds) {
+		this.bounds = bounds;
+	}
+
 }

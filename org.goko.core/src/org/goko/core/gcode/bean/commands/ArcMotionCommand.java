@@ -21,6 +21,8 @@ package org.goko.core.gcode.bean.commands;
 
 import java.math.BigDecimal;
 
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 import org.goko.core.gcode.bean.Tuple6b;
 
 /**
@@ -49,6 +51,14 @@ public class ArcMotionCommand extends MotionCommand {
 	public ArcMotionCommand() {
 		super(EnumGCodeCommandMotionType.ARC);
 		this.ijkValues = new Tuple6b();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#accept(org.goko.core.gcode.bean.IGCodeCommandVisitor)
+	 */
+	@Override
+	public void accept(IGCodeCommandVisitor visitor) throws GkException {
+		visitor.visit(this);
 	}
 
 	/**

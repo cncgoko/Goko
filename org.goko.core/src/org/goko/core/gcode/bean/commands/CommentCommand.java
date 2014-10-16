@@ -19,7 +19,9 @@
  */
 package org.goko.core.gcode.bean.commands;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 
 /**
  * Defines a comment command (no GCode word)
@@ -51,4 +53,13 @@ public class CommentCommand extends GCodeCommand{
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#accept(org.goko.core.gcode.bean.IGCodeCommandVisitor)
+	 */
+	@Override
+	public void accept(IGCodeCommandVisitor visitor) throws GkException {
+		visitor.visit(this);
+	}
+
 }

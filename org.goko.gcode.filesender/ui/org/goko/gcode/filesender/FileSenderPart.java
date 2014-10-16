@@ -34,7 +34,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
@@ -73,11 +72,9 @@ import org.goko.gcode.filesender.editor.GCodeEditor;
  * @author PsyKo
  *
  */
-public class FileSenderPart extends
-		GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> {
+public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> {
 	// s
-	private final FormToolkit formToolkit = new FormToolkit(
-			Display.getDefault());
+	private final FormToolkit formToolkit = new FormToolkit( Display.getDefault());
 	private Text txtFilepath;
 	private Label lblFilesize;
 	private Label lblName;
@@ -97,8 +94,6 @@ public class FileSenderPart extends
 	private Label remainingTimeLbl;
 
 	private Label elapsedTimeLbl;
-	@Inject
-	UISynchronize sync;
 
 	@Inject
 	public FileSenderPart(IEclipseContext context) {
@@ -129,16 +124,6 @@ public class FileSenderPart extends
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		/*
-		 * Job job = new Job("My Job") {
-		 *
-		 * @Override protected IStatus run(IProgressMonitor monitor) {
-		 * monitor.beginTask("Opening "+filePath, 100);
-		 * getController().setGCodeFilepath(filePath); monitor.worked(30);
-		 * return Status.OK_STATUS; } };
-		 *
-		 * // Start the Job job.schedule();
-		 */
 	}
 
 	/**
@@ -416,49 +401,35 @@ public class FileSenderPart extends
 
 	private void initCustomBindings() throws GkException {
 		this.getController().addListener(this);
-		this.getController().addTextModifyBinding(txtFilepath, "filePath",
-				new FilepathValidator());
+		this.getController().addTextModifyBinding(txtFilepath, "filePath", new FilepathValidator());
 
-		this.getController().addTextDisplayBinding(elapsedTimeLbl,
-				"elapsedTime");
-		this.getController().addTextDisplayBinding(remainingTimeLbl,
-				"remainingTime");
+		this.getController().addTextDisplayBinding(elapsedTimeLbl, "elapsedTime");
+		this.getController().addTextDisplayBinding(remainingTimeLbl, "remainingTime");
 
 		this.getController().addTextDisplayBinding(lblFilesize, "fileSize");
-		this.getController().addTextDisplayBinding(lblLastupdate,
-				"fileLastUpdate");
+		this.getController().addTextDisplayBinding(lblLastupdate, "fileLastUpdate");
 		this.getController().addTextDisplayBinding(lblName, "fileName");
 
 		this.getController().addGCodeViewerBinding(gCodeTextDisplay);
-		this.getController().addTextDisplayBinding(sentCommandsCountTxt,
-				"sentCommandCount");
-		this.getController().addTextDisplayBinding(totalCommandCountTxt,
-				"totalCommandCount");
+		this.getController().addTextDisplayBinding(sentCommandsCountTxt, "sentCommandCount");
+		this.getController().addTextDisplayBinding(totalCommandCountTxt, "totalCommandCount");
 
 		this.getController().addEnableBinding(btnSendFile, "streamingAllowed");
 		// this.getController().addEnableBinding(btnCancel,
 		// "streamingInProgress");
 		// Progress bar bindings
 		{
-			IObservableValue widgetObserver = PojoObservables.observeValue(
-					progressSentCommand, "maximum");
-			IObservableValue modelObserver = BeanProperties.value(
-					"totalCommandCount").observe(getDataModel());
+			IObservableValue widgetObserver = PojoObservables.observeValue( progressSentCommand, "maximum");
+			IObservableValue modelObserver = BeanProperties.value( "totalCommandCount").observe(getDataModel());
 
-			Binding binding = getController().getBindingContext().bindValue(
-					widgetObserver, modelObserver, null,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+			Binding binding = getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
 
 		{
-			IObservableValue widgetObserver = PojoObservables.observeValue(
-					progressSentCommand, "selection");
-			IObservableValue modelObserver = BeanProperties.value(
-					"sentCommandCount").observe(getDataModel());
+			IObservableValue widgetObserver = PojoObservables.observeValue( progressSentCommand, "selection");
+			IObservableValue modelObserver = BeanProperties.value( "sentCommandCount").observe(getDataModel());
 
-			Binding binding = getController().getBindingContext().bindValue(
-					widgetObserver, modelObserver, null,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+			Binding binding = getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
 
 	}

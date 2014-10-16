@@ -21,7 +21,9 @@ package org.goko.core.gcode.bean.commands;
 
 import java.math.BigDecimal;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeContext;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 
 /**
  * A Setting command (G17,G18,G19,G20,G21,G90, G91...)
@@ -51,7 +53,7 @@ public class SettingCommand extends CommentCommand{
 	/** Explicit mode. This command redefines a value for the distance mode
 	 *  If false, then the value is inherited from previous command*/
 	private boolean explicitDistanceMode;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -60,19 +62,27 @@ public class SettingCommand extends CommentCommand{
 		setType(EnumGCodeCommandType.SETTING);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#accept(org.goko.core.gcode.bean.IGCodeCommandVisitor)
+	 */
+	@Override
+	public void accept(IGCodeCommandVisitor visitor) throws GkException {
+		visitor.visit(this);
+	}
+
 	/** {@inheritDoc}
 	 * @see org.goko.core.gcode.bean.GCodeCommand#updateContext(org.goko.core.gcode.bean.GCodeContext)
 	 */
 	@Override
 	public void updateContext(GCodeContext context) {
-		super.updateContext(context);		
+		super.updateContext(context);
 		context.setDistanceMode(distanceMode);
-		context.setFeedrate(feedrate);		
-		context.setMotionMode(motionMode);	
+		context.setFeedrate(feedrate);
+		context.setMotionMode(motionMode);
 		context.setMotionType(motionType);
-		context.setUnit(unit);				
+		context.setUnit(unit);
 	}
-	
+
 	/**
 	 * @return the feedrate
 	 */
@@ -217,7 +227,7 @@ public class SettingCommand extends CommentCommand{
 	public void setMotionMode(EnumGCodeCommandMotionMode motionMode) {
 		this.motionMode = motionMode;
 	}
-	
+
 	/**
 	 * @return the motionType
 	 */
@@ -231,4 +241,5 @@ public class SettingCommand extends CommentCommand{
 	public void setMotionType(EnumGCodeCommandMotionType motionType) {
 		this.motionType = motionType;
 	}
+
 }

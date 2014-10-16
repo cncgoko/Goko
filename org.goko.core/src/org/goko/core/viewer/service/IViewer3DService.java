@@ -40,5 +40,4 @@ public interface IViewer3DService extends IGokoService{
 
 	void setRendererEnabled(String idRenderer, boolean enabled) throws GkException;
 
-	IViewer3DRenderer getRenderer(String idRenderer) throws GkException;
 }

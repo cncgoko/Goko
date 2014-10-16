@@ -31,6 +31,7 @@ import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 import org.goko.core.gcode.bean.commands.SettingCommand;
 import org.goko.gcode.rs274ngcv3.RS274;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
+import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
 
 public abstract class AbstractSettingCommandBuilder<T extends SettingCommand> extends AbstractCommentCommandBuilder<T> {
 
@@ -106,10 +107,15 @@ public abstract class AbstractSettingCommandBuilder<T extends SettingCommand> ex
 	 */
 	protected void setDistanceModeMode(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
 		targetCommand.setDistanceMode(context.getDistanceMode());
+		targetCommand.setExplicitDistanceMode(false);
+
 		if(RS274.isToken("g90", lstTokens)){
 			targetCommand.setDistanceMode(EnumGCodeCommandDistanceMode.ABSOLUTE);
+			targetCommand.setExplicitDistanceMode(true);
+
 		}else if (RS274.isToken("g91", lstTokens)){
 			targetCommand.setDistanceMode(EnumGCodeCommandDistanceMode.RELATIVE);
+			targetCommand.setExplicitDistanceMode(true);
 		}
 
 	}
@@ -124,21 +130,28 @@ public abstract class AbstractSettingCommandBuilder<T extends SettingCommand> ex
 	protected void setUnit(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
 		if(RS274.findToken("G20", lstTokens) != null){
 			targetCommand.setUnit(EnumGCodeCommandUnit.INCHES);
+			targetCommand.setExplicitUnit(true);
+
 		}else if (RS274.findToken("G21", lstTokens) != null){
 			targetCommand.setUnit(EnumGCodeCommandUnit.MILLIMETERS);
+			targetCommand.setExplicitUnit(true);
+
 		}else{
 			targetCommand.setUnit(context.getUnit());
+			targetCommand.setExplicitUnit(false);
 		}
 	}
 
 	@Override
 	public boolean match(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
 		for (GCodeToken gCodeToken : lstTokens) {
-			String letter = RS274.getTokenLetter(gCodeToken);
-			if( !StringUtils.equalsIgnoreCase( letter ,"g") &&
-				!StringUtils.equalsIgnoreCase( letter ,"n") &&
-				!StringUtils.equalsIgnoreCase( letter ,"f")){
-				return false;
+			if(gCodeToken.getType() != GCodeTokenType.MULTILINE_COMMENT && gCodeToken.getType() != GCodeTokenType.SIMPLE_COMMENT){
+				String letter = RS274.getTokenLetter(gCodeToken);
+				if( !StringUtils.equalsIgnoreCase( letter ,"g") &&
+					!StringUtils.equalsIgnoreCase( letter ,"n") &&
+					!StringUtils.equalsIgnoreCase( letter ,"f")){
+					return false;
+				}
 			}
 		}
 		return true;

@@ -25,7 +25,6 @@ import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.bean.StreamStatusUpdate;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
@@ -56,11 +55,6 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onMachineValueUpdate(MachineValueUpdateEvent updateEvent) throws GkException{
 		getDataModel().setCurrentPosition(controllerService.getPosition());
-	}
-
-	@EventListener(StreamStatusUpdate.class)
-	public void onStreamStatusUpdate(StreamStatusUpdate updateEvent) throws GkException{
-		getDataModel().setCommandProvider(updateEvent.getStatus());
 	}
 
 	public void setPerspectiveCamera(){

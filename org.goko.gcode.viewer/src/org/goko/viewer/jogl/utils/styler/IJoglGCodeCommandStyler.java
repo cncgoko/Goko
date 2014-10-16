@@ -25,13 +25,13 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 
-public abstract class AbstractGCodeCommandStyler {
+public interface IJoglGCodeCommandStyler<T extends GCodeCommand>{
 
-	public abstract void enableRenderingStyle(GCodeCommand command, JoglRendererProxy proxy) throws GkException;
+	void enableRenderingStyle(T command, JoglRendererProxy proxy) throws GkException;
 
-	public abstract void disableRenderingStyle(GCodeCommand command, JoglRendererProxy proxy) throws GkException;
+	void disableRenderingStyle(T command, JoglRendererProxy proxy) throws GkException;
 
-	public abstract void setVertexColor(GCodeCommand command,JoglRendererProxy proxy) throws GkException;
+	void setVertexColor(T command,JoglRendererProxy proxy) throws GkException;
 
-	public abstract Point3f getVertexColor(GCodeCommand command,JoglRendererProxy proxy) throws GkException;
+	Point3f getVertexColor(T command,JoglRendererProxy proxy) throws GkException;
 }

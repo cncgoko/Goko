@@ -24,9 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.text.Document;
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.gcode.filesender.editor.GCodeFileTextRenderer;
+import org.goko.core.gcode.service.IGCodeService;
 
 public class GCodeDocumentProvider extends Document {
 	/** EOL String token */
@@ -35,18 +36,25 @@ public class GCodeDocumentProvider extends Document {
 	private IGCodeProvider gcodeProvider;
 	private Map<Integer, Integer> gCodeCommandLine;
 
-	public GCodeDocumentProvider(IGCodeProvider gcodeProvider){
+	private IGCodeService gcodeService;
+
+	public GCodeDocumentProvider(IGCodeProvider gcodeProvider, IGCodeService gcodeService){
 		this.gcodeProvider = gcodeProvider;
+		this.gcodeService = gcodeService;
 		this.gCodeCommandLine = new HashMap<Integer, Integer>();
-		init();
+		try {
+			init();
+		} catch (GkException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private void init() {
+	private void init() throws GkException {
 		List<GCodeCommand> lstCommands = gcodeProvider.getGCodeCommands();
 		int line = 0;
 		StringBuffer buffer = new StringBuffer();
 		for (GCodeCommand gCodeCommand : lstCommands) {
-			buffer.append(GCodeFileTextRenderer.render(gCodeCommand) );
+			buffer.append(new String(gcodeService.convert(gCodeCommand)));//GCodeFileTextRenderer.render(gCodeCommand) );
 			buffer.append(EOL);
 			gCodeCommandLine.put(gCodeCommand.getId(), line++);
 		}

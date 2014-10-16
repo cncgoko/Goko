@@ -45,7 +45,9 @@ public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> ex
 		super.buildCommand(lstTokens, context, targetCommand);
 		String comment = "";
 		for (GCodeToken gCodeToken : lstTokens) {
-			comment += gCodeToken.getValue();
+			if(gCodeToken.getType() == GCodeTokenType.MULTILINE_COMMENT || gCodeToken.getType() == GCodeTokenType.MULTILINE_COMMENT){
+				comment += gCodeToken.getValue();
+			}
 		}
 		targetCommand.setComment(comment);
 	//	LOG.info("Building comment command from "+lstTokens.toString());
@@ -59,6 +61,8 @@ public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> ex
 			for (GCodeToken token : lstTokens) {
 				if(token.getType() == GCodeTokenType.MULTILINE_COMMENT || token.getType() == GCodeTokenType.SIMPLE_COMMENT){
 					return true;
+				}else{
+					return false;
 				}
 			}
 

@@ -21,12 +21,29 @@ package org.goko.core.gcode.bean;
 
 import java.util.List;
 
+import org.goko.core.common.exception.GkException;
+
 /**
  * Generic interface for a GCodeCommand provider
  * @author PsyKo
  *
  */
 public interface IGCodeProvider {
+	/**
+	 * Return the id of the provider
+	 * @return the id pf the provider
+	 */
+	Integer getId();
+	/**
+	 * Setter for the id
+	 * @param id the id to set
+	 */
+	void setId(Integer  id);
+	/**
+	 * Returns the name of this provider
+	 * @return the name of this provider
+	 */
+	String getName();
 
 	/**
 	 * Return the list of GCodeLine provided by this provider
@@ -34,4 +51,7 @@ public interface IGCodeProvider {
 	 */
 	List<GCodeCommand> getGCodeCommands();
 
+	GCodeCommand getCommandById(Integer id) throws GkException;
+
+	BoundingTuple6b getBounds();
 }

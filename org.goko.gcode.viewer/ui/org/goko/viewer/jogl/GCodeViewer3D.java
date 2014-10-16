@@ -29,10 +29,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -52,7 +50,6 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.viewer.jogl.model.GCodeViewer3DController;
 import org.goko.viewer.jogl.model.GCodeViewer3DModel;
@@ -86,11 +83,11 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
     	getController().initialize();
 	}
 
-	@Inject
+	/*@Inject
 	@Optional
 	private void getNotified(@UIEventTopic("gcodefile") IGCodeProvider file) throws GkException{
 		getController().setGCodeFile(file);
-	}
+	}*/
 
 	@PostConstruct
     public void createPartControl( Composite superCompositeParent, IEclipseContext context,MPart part ) throws GkException {

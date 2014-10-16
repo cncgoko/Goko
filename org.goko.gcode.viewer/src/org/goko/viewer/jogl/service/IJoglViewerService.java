@@ -28,6 +28,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.viewer.service.IViewer3DService;
 import org.goko.viewer.jogl.GokoJoglCanvas;
 import org.goko.viewer.jogl.camera.AbstractCamera;
+import org.goko.viewer.jogl.utils.render.IJoglRenderer;
 
 /**
  * Interface of the Goko Jogl viewer service
@@ -54,5 +55,9 @@ public interface IJoglViewerService extends IViewer3DService, GLEventListener{
 	public void setEnabled(boolean enabled);
 
 	public boolean isEnabled();
+
+	public IJoglRenderer getJoglRenderer(String name) throws GkException;
+
+	void addRenderer(IJoglRenderer renderer) throws GkException;
 
 }

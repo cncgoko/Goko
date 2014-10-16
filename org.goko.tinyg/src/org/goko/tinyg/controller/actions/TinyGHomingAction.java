@@ -42,7 +42,7 @@ public class TinyGHomingAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return true || ObjectUtils.equals(MachineState.READY, getControllerService().getState())
+		return ObjectUtils.equals(MachineState.READY, getControllerService().getState())
 			|| ObjectUtils.equals(MachineState.PROGRAM_END, getControllerService().getState())
 			|| ObjectUtils.equals(MachineState.PROGRAM_STOP, getControllerService().getState());
 	}
@@ -52,7 +52,7 @@ public class TinyGHomingAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public void execute(Object... parameters) throws GkException {
-		getControllerService().turnSpindleOn(); //startHomingSequence();
+		getControllerService().startHomingSequence();
 	}
 
 	/** (inheritDoc)

@@ -19,7 +19,10 @@
  */
 package org.goko.core.gcode.bean.commands;
 
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 
 /**
  * Defines a Function command (M word)
@@ -52,6 +55,14 @@ public class FunctionCommand extends GCodeCommand {
 	public void setFunctionType(EnumGCodeCommandFunctionType functionType) {
 		this.functionType = functionType;
 	}
+
+	@Override
+	public void accept(IGCodeCommandVisitor visitor) throws GkException {
+		throw new GkTechnicalException("Not implemented");
+		//visitor.visit(this);
+
+	}
+
 
 
 }

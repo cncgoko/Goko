@@ -34,8 +34,8 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.execution.ExecutionQueue;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
-import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
@@ -84,7 +84,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** The tread used to handle incoming data */
 	private ExecutorService incomingDataThread;
 	/** The current execution queue */
-	private ExecutionQueue executionQueue;
+	private ExecutionQueue<TinyGExecutionToken> executionQueue;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -141,7 +141,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 
 		// Initiate execution queue
-		executionQueue = new ExecutionQueue();
+		executionQueue = new ExecutionQueue<TinyGExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
 		currentSendingRunnable 	= new GCodeSendingRunnable(executionQueue, this);
 		executor.execute(currentSendingRunnable);
@@ -175,15 +175,16 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			throw new GkFunctionalException("Cannot send command. Connection service is not connected");
 		}
 
-		GCodeStreamedExecutionToken token = new GCodeStreamedExecutionToken(gcodeProvider);
+		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
 		executionQueue.add(token);
+
 		return token;
 	}
 
 	public void sendTogether(List<GCodeCommand> commands) throws GkException{
 		StringBuffer commandBuffer = new StringBuffer();
 		for (GCodeCommand gCodeCommand : commands) {
-			JsonValue jsonCommand = TinyGControllerUtility.toJson(gCodeCommand);
+			JsonValue jsonCommand = TinyGControllerUtility.toJson(new String(gcodeService.convert(gCodeCommand)));
 			commandBuffer.append(jsonCommand.toString() + (char)getLineBroker() );
 		}
 		getConnectionService().send( GkUtils.toBytesList( commandBuffer.toString() ));
@@ -501,7 +502,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(executionQueue.getCurrentToken() != null){
 			String 			receivedCommand = jsonValue.asString();
 			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand);
-			executionQueue.getCurrentToken().confirmCommand(parsedCommand);
+			executionQueue.getCurrentToken().markAsConfirmed(parsedCommand);
 			this.currentSendingRunnable.confirmCommand();
 		}
 		/*if(executionQueue != null && executionQueue.hasPendingCommand()){
@@ -718,7 +719,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		stopCommand.add(getLineBroker());
 		getConnectionService().clearOutputBuffer();
 		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
-
 		if(executionQueue != null){
 			executionQueue.clear();
 		}
@@ -777,9 +777,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	@Override
 	public void cancelFileSending() throws GkException {
-		if(executionQueue != null){
-			executionQueue.clear();
-		}
 		stopMotion();
 	}
 

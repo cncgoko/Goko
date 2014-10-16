@@ -23,7 +23,7 @@ public enum GCodeTokenType {
 	LINE_NUMBER("LINE_NUMBER","N[0-9]{1,5}"),
 	MULTILINE_COMMENT("MULTILINE_COMMENT","\\((.*?)\\)"),
 	SIMPLE_COMMENT("SIMPLE_COMMENT",";(.*)"),
-	WORD("WORD","^[a-zA-Z]((-|\\+)?([0-9]+(\\.[0-9]+)?)|(\\.[0-9]+))"),
+	WORD("WORD","^[a-zA-Z]((-|\\+)?([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))"),
 	NEW_LINE("NEW_LINE","(\\r)?\\n");
 
 	private String code;
