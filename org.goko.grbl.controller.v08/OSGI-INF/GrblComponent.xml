@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" immediate="true" name="org.goko.grbl.controller">
+   <implementation class="org.goko.grbl.controller.GrblControllerService"/>
+   <reference bind="setConnectionService" cardinality="1..1" interface="org.goko.core.connection.IConnectionService" name="IConnectionService" policy="static"/>
+   <service>
+      <provide interface="org.goko.core.controller.IControllerService"/>
+      <provide interface="org.goko.grbl.controller.IGrblControllerService"/>
+      <provide interface="org.goko.core.controller.IThreeAxisControllerAdapter"/>
+   </service>
+   <reference bind="setGCodeService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
+   <reference bind="setApplicativeLogService" cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
+</scr:component>

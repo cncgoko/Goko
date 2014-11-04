@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_5BW8oPPKEeOJp_-s_mlAUA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6oU6cPPKEeOJp_-s_mlAUA" featurename="children" parentElementId="goko.menu" positionInList="after:goko.menu.window">
+    <elements xsi:type="menu:Menu" xmi:id="_9Dac0PPKEeOJp_-s_mlAUA" elementId="org.goko.grbl.controller.v08.menu.0" label="Grbl">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_-R7eYPPKEeOJp_-s_mlAUA" elementId="org.goko.grbl.controller.v08.handledmenuitem.0" label="Grbl Configuration" command="_CCEIIPPLEeOJp_-s_mlAUA"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_AuQ98PPLEeOJp_-s_mlAUA" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_CCEIIPPLEeOJp_-s_mlAUA" elementId="org.goko.grbl.controller.v08.command.configuration" commandName="Grbl Settings" description="Grbl Settings Display"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_F160QPPLEeOJp_-s_mlAUA" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_HaDggPPLEeOJp_-s_mlAUA" elementId="" contributionURI="bundleclass://org.goko.grbl.controller.v08/org.goko.grbl.controller.internal.handlers.GrblConfigurationOpenHandler" command="_CCEIIPPLEeOJp_-s_mlAUA"/>
+  </fragments>
+</fragment:ModelFragments>
