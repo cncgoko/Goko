@@ -33,9 +33,11 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.log.GkLog;
 import org.osgi.service.prefs.BackingStoreException;
 
 public class DROServiceImpl implements IDROService{
+	private static final GkLog LOG = GkLog.getLogger(DROServiceImpl.class);
 	public static final String SERVICE_ID = "org.goko.base.droservice";
 
 	private IEclipsePreferences preferences;
@@ -91,8 +93,7 @@ public class DROServiceImpl implements IDROService{
 		try {
 			preferences.flush();
 		} catch (BackingStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e);
 		}
 
 	}
@@ -125,7 +126,7 @@ public class DROServiceImpl implements IDROService{
 			oos.close();
 			result =  baos.toString();
 		}catch(IOException e){
-			e.printStackTrace();
+			LOG.error(e);
 		}
 		return result;
 	}
@@ -141,9 +142,9 @@ public class DROServiceImpl implements IDROService{
 				result.add(string);
 			}
 		}catch(IOException e){
-			e.printStackTrace();
+			LOG.error(e);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			LOG.error(e);
 		}
 		return result;
 	}

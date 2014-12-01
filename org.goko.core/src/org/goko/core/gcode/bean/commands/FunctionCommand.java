@@ -19,9 +19,10 @@
  */
 package org.goko.core.gcode.bean.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 
 /**
@@ -30,37 +31,30 @@ import org.goko.core.gcode.bean.IGCodeCommandVisitor;
  * @author PsyKo
  *
  */
-public class FunctionCommand extends GCodeCommand {
+public class FunctionCommand extends SettingCommand{
 	/** Function type */
-	private EnumGCodeCommandFunctionType functionType;
+	private List<EnumGCodeCommandFunctionType> lstFunctionType;
 
-	/**
-	 * @param functionType
-	 */
-	FunctionCommand(EnumGCodeCommandFunctionType functionType) {
-		super();
-		this.functionType = functionType;
-	}
-
-	/**
-	 * @return the functionType
-	 */
-	public EnumGCodeCommandFunctionType getFunctionType() {
-		return functionType;
+	public FunctionCommand() {
+		setType(EnumGCodeCommandType.FUNCTION);
+		lstFunctionType = new ArrayList<EnumGCodeCommandFunctionType>();
 	}
 
 	/**
 	 * @param functionType the functionType to set
 	 */
-	public void setFunctionType(EnumGCodeCommandFunctionType functionType) {
-		this.functionType = functionType;
+	public void addFunctionType(EnumGCodeCommandFunctionType functionType) {
+		this.lstFunctionType.add(functionType);
 	}
-
+	public boolean isFunctionType(EnumGCodeCommandFunctionType functionType){
+		return lstFunctionType.contains(functionType);
+	}
+	public List<EnumGCodeCommandFunctionType> getFunctionType(){
+		return new ArrayList<EnumGCodeCommandFunctionType>(lstFunctionType);
+	}
 	@Override
 	public void accept(IGCodeCommandVisitor visitor) throws GkException {
-		throw new GkTechnicalException("Not implemented");
-		//visitor.visit(this);
-
+		visitor.visit(this);
 	}
 
 

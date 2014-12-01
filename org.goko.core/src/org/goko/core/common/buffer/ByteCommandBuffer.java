@@ -38,18 +38,14 @@ public class ByteCommandBuffer {
 		this.commandDelimiter = commandDelimiter;
 	}
 
-	public void add(Byte b){
-		this.currentCommand.add(b);
-		if(ObjectUtils.equals(b, commandDelimiter)){
-			this.stackCurrentCommand();
-		}
-	}
 
 	public void addAll(List<Byte> byteList){
-		for (Byte b : byteList) {
-			this.currentCommand.add(b);
-			if(ObjectUtils.equals(b, commandDelimiter)){
-				this.stackCurrentCommand();
+		synchronized (currentCommand) {
+			for (Byte b : byteList) {
+				this.currentCommand.add(b);
+				if(ObjectUtils.equals(b, commandDelimiter)){
+					this.stackCurrentCommand();
+				}
 			}
 		}
 	}
@@ -76,12 +72,8 @@ public class ByteCommandBuffer {
 
 	public List<Byte> unstackNextCommand(){
 		synchronized (stackedCommands) {
-			return stackedCommands.remove(0);
+			return new ArrayList<Byte>(stackedCommands.remove(0));
 		}
 	}
-	public List<Byte> getNextCommand(){
-		synchronized (stackedCommands) {
-			return stackedCommands.get(0);
-		}
-	}
+
 }

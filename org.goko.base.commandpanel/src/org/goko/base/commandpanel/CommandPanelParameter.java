@@ -21,4 +21,6 @@ package org.goko.base.commandpanel;
 
 public class CommandPanelParameter {
 	public static final String JOG_FEEDRATE = "org.goko.base.commandpanel.jog.feedrate";
+	public static final String JOG_INCREMENTAL = "org.goko.base.commandpanel.jog.incremental";
+	public static final String JOG_STEP_SIZE = "org.goko.base.commandpanel.jog.stepsize";
 }

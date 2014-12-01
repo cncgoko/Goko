@@ -64,16 +64,18 @@ public class GkGCodeService implements IGCodeService {
 	 * @see org.goko.core.gcode.service.IGCodeService#parseFile(java.lang.String)
 	 */
 	@Override
-	public GCodeFile parseFile(String filepath) throws GkException {
-		System.err.println("startTimeDebug org.goko.core.gcode.service.IGCodeService#parse(java.lang.String)");
+	public GCodeFile parseFile(String filepath, GCodeContext context) throws GkException {
 		File 				file = new File(filepath);
 		if(!file.exists()){
 			throw new GkFunctionalException("File '"+filepath+"' does not exist...");
 		}
-
+		GCodeContext parserContext = context;
+		if(parserContext == null){
+			parserContext = new GCodeContext();
+		}
 		GCodeLexer 			gcodeLexer = new GCodeLexer();
 		List<GCodeToken> 	lstTokens = gcodeLexer.createTokensFromFile(filepath);
-		GCodeFile		 	gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, new GCodeContext());
+		GCodeFile		 	gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, parserContext);
 		return gcodeFile;
 	}
 
@@ -81,21 +83,28 @@ public class GkGCodeService implements IGCodeService {
 	 * @see org.goko.core.gcode.service.IGCodeService#parse(java.lang.String)
 	 */
 	@Override
-	public IGCodeProvider parse(String gcode) throws GkException {
+	public IGCodeProvider parse(String gcode, GCodeContext context) throws GkException {
 		InputStream 		inputStream = new ByteArrayInputStream(gcode.getBytes());
 		GCodeLexer 			gcodeLexer = new GCodeLexer();
 		List<GCodeToken> 	lstTokens = gcodeLexer.createTokensFromInputStream(inputStream);
-		GCodeFile 			gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, new GCodeContext());
+		GCodeContext parserContext = context;
+		if(parserContext == null){
+			parserContext = new GCodeContext();
+		}
+		GCodeFile 			gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, parserContext);
 		return gcodeFile;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#parseCommand(java.lang.String)
 	 */
 	@Override
-	public GCodeCommand parseCommand(String command) throws GkException {
+	public GCodeCommand parseCommand(String command, GCodeContext context) throws GkException {
 		GCodeLexer gcodeLexer = new GCodeLexer();
-		GCodeCommand gcodeCommand = new AdvancedGCodeAnalyser().createCommand(gcodeLexer.createTokens(command), new GCodeContext());
-
+		GCodeContext parserContext = context;
+		if(parserContext == null){
+			parserContext = new GCodeContext();
+		}
+		GCodeCommand gcodeCommand = new AdvancedGCodeAnalyser().createCommand(gcodeLexer.createTokens(command), parserContext);
 		return gcodeCommand;
 
 	}

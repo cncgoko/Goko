@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Dro
 Bundle-SymbolicName: org.goko.base.dro;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
 Require-Bundle: org.goko.core;bundle-version="1.0.0",
  org.eclipse.e4.core.di;bundle-version="1.1.0",
  org.eclipse.e4.ui.workbench.renderers.swt;bundle-version="0.10.2",
@@ -23,15 +24,14 @@ Require-Bundle: org.goko.core;bundle-version="1.0.0",
  org.eclipse.ui,
  Goko;bundle-version="1.0.0",
  org.eclipse.e4.core.di.extensions;bundle-version="0.11.100",
- javax.annotation;bundle-version="1.2.0"
+ javax.annotation;bundle-version="1.2.0",
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.1.0.v20140512-1820"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: javax.annotation,
- org.eclipse.core.runtime,
+Service-Component: OSGI-INF/DROComponent.xml
+Import-Package: org.eclipse.core.runtime,
  org.eclipse.core.runtime.preferences;version="3.3.0",
  org.eclipse.e4.core.contexts,
  org.eclipse.ui,
  org.osgi.framework;version="1.3.0",
  org.osgi.service.prefs;version="1.1.1"
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Service-Component: OSGI-INF/DROComponent.xml

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_wyBcoNwYEeKC274TynxXSA" elementId="goko.application" bindingContexts="_wyBcodwYEeKC274TynxXSA">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" iconURI="platform:/plugin/Goko/icons/launch/Makerbot24.png" width="500" height="400">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_wyCDw9wYEeKC274TynxXSA" elementId="goko.perspectivestack.main">
+      <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main">
+        <children xsi:type="basic:PartSashContainer" xmi:id="_wyCDxdwYEeKC274TynxXSA" elementId="goko.partsashcontainer.main">
+          <children xsi:type="basic:PartStack" xmi:id="_wyCDxtwYEeKC274TynxXSA" elementId="goko.application.partstack"/>
+        </children>
+      </children>
+    </children>
+    <mainMenu xmi:id="_wyCDvNwYEeKC274TynxXSA" elementId="goko.menu">
+      <children xsi:type="menu:Menu" xmi:id="_wyCDvdwYEeKC274TynxXSA" label="File">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwNwYEeKC274TynxXSA" label="Quit" command="_wyBcqtwYEeKC274TynxXSA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_tvXhAAxJEeOHAtsV431cHw" elementId="goko.menu.window" label="Window">
+        <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View"/>
+        <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.tools" label="Tools"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_4jfc8NViEeOx56hryHQKyQ" elementId="goko.menuseparator.1"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_WRhasDXDEeODiJsoHSNCjQ" elementId="goko.handledmenuitem.0" label="Preferences" command="_i52IoBAdEeOTXNaDwRiLUA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_wyCDwdwYEeKC274TynxXSA" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwtwYEeKC274TynxXSA" label="About" command="_wyCDuNwYEeKC274TynxXSA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_Yr_DYNVjEeOx56hryHQKyQ" elementId="goko.menu.controller" label="Controller"/>
+    </mainMenu>
+    <trimBars xmi:id="_wyCDx9wYEeKC274TynxXSA" elementId="goko.trim.top">
+      <children xsi:type="menu:ToolBar" xmi:id="_wyCDyNwYEeKC274TynxXSA" elementId="toolbar:goko.toolbar">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_Sj3nwHWXEeS8PPI0XIKCbQ" elementId="goko.directtoolitem.0" toBeRendered="false" visible="false" iconURI="platform:/plugin/Goko/icons/folder-open.png">
+          <menu xmi:id="_TE54QHWXEeS8PPI0XIKCbQ" elementId="goko.application.menu.open"/>
+        </children>
+      </children>
+    </trimBars>
+    <trimBars xmi:id="_nzUx0HNXEeS68rr8iXoRPQ" elementId="goko.trim.bottom" side="Bottom">
+      <children xsi:type="menu:ToolBar" xmi:id="_qyXV0HNXEeS68rr8iXoRPQ" elementId="goko.toolbar.0"/>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_wyBcq9wYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.QuitHandler" command="_wyBcqtwYEeKC274TynxXSA"/>
+  <handlers xmi:id="_wyCDs9wYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.OpenHandler" command="_wyCDstwYEeKC274TynxXSA"/>
+  <handlers xmi:id="_wyCDttwYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.SaveHandler" command="_wyCDtdwYEeKC274TynxXSA"/>
+  <handlers xmi:id="_wyCDudwYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.AboutHandler" command="_wyCDuNwYEeKC274TynxXSA"/>
+  <handlers xmi:id="_BvSLwBAeEeOTXNaDwRiLUA" elementId="goko.handler.preferences" contributionURI="bundleclass://Goko/goko.handlers.PreferencesHandler" command="_i52IoBAdEeOTXNaDwRiLUA"/>
+  <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" bindingContext="_wyBcodwYEeKC274TynxXSA">
+    <bindings xmi:id="_wyCDsdwYEeKC274TynxXSA" keySequence="M1+Q" command="_wyBcqtwYEeKC274TynxXSA"/>
+    <bindings xmi:id="_wyCDtNwYEeKC274TynxXSA" keySequence="M1+O" command="_wyCDstwYEeKC274TynxXSA"/>
+    <bindings xmi:id="_wyCDt9wYEeKC274TynxXSA" keySequence="M1+S" command="_wyCDtdwYEeKC274TynxXSA"/>
+    <bindings xmi:id="_wyCDutwYEeKC274TynxXSA" keySequence="M1+A" command="_wyCDuNwYEeKC274TynxXSA"/>
+  </bindingTables>
+  <rootContext xmi:id="_wyBcodwYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_wyBcotwYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
+    <children xmi:id="_wyBco9wYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <commands xmi:id="_wyBcqtwYEeKC274TynxXSA" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
+  <commands xmi:id="_wyCDstwYEeKC274TynxXSA" elementId="Goko.open" commandName="openCommand"/>
+  <commands xmi:id="_wyCDtdwYEeKC274TynxXSA" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
+  <commands xmi:id="_wyCDuNwYEeKC274TynxXSA" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
+  <commands xmi:id="_i52IoBAdEeOTXNaDwRiLUA" elementId="goko.command.preferences" commandName="Preferences"/>
+  <addons xmi:id="_wyBcpNwYEeKC274TynxXSA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_wyBcpdwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_wyBcptwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_wyBcp9wYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_wyBcqNwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_wyBcqdwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+  <addons xmi:id="_rnaFUC12EeKJg_Pk9LqbBQ" elementId="org.eclipse.e4.tools.emf.editor.addon.0" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+</application:Application>

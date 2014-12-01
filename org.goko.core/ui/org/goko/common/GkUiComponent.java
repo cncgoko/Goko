@@ -21,6 +21,7 @@ package org.goko.common;
 
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.common.bindings.ErrorEvent;
@@ -28,8 +29,10 @@ import org.goko.common.bindings.WarningEvent;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.log.GkLog;
 
 public abstract class GkUiComponent<C extends AbstractController<D>, D extends AbstractModelObject> {
+	private static final GkLog LOG = GkLog.getLogger(GkUiComponent.class);
 	private C controller;
 	private D dataModel;
 
@@ -46,13 +49,25 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 	}
 
 	@EventListener(ErrorEvent.class)
-	public void displayError(ErrorEvent e){
-		ErrorDialog.openError(null, "Goko", e.getMessage(), e.getStatus());
+	public void displayError(final ErrorEvent e){
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				ErrorDialog.openError(Display.getDefault().getActiveShell(), "Goko", e.getMessage(), e.getStatus());
+			}
+		});
 	}
 
 	@EventListener(WarningEvent.class)
-	public void displayWarning(WarningEvent e){
-		MessageDialog.openWarning(null, "Goko", e.getMessage());
+	public void displayWarning(final WarningEvent e){
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Goko", e.getMessage());
+			}
+		});
 	}
 
 	/**
@@ -84,6 +99,7 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 	}
 
 	protected void displayMessage(GkException e){
+		LOG.error(e);
 		if(e instanceof GkFunctionalException){
 			displayWarning(new WarningEvent(e.getMessage()));
 		}else{

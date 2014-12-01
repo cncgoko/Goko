@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_Nk-cQFlFEeSVmbiiB8ZO7A">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SczG0FlFEeSVmbiiB8ZO7A" featurename="children" parentElementId="goko.application.partstack">
+    <elements xsi:type="basic:Part" xmi:id="_UISYQFlFEeSVmbiiB8ZO7A" elementId="org.goko.log.ui.part.problems" contributionURI="bundleclass://org.goko.log.ui/org.goko.log.part.ProblemsLogPart" label="Problems" iconURI="platform:/plugin/org.goko.log.ui/icons/problems_view.gif" closeable="true">
+      <toolbar xmi:id="_fVBHkFrTEeSeFYUQtBIr9A" elementId="org.goko.log.ui.toolbar.0">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_rljkwFrWEeSeFYUQtBIr9A" elementId="org.goko.log.ui.handledtoolitem.0" iconURI="platform:/plugin/org.goko.log.ui/icons/clear_co.gif" command="_xOimgFrWEeSeFYUQtBIr9A"/>
+      </toolbar>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_tCAUoFrWEeSeFYUQtBIr9A" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_xOimgFrWEeSeFYUQtBIr9A" elementId="org.goko.log.ui.command.clearLog" commandName="Clear Log" description="Clear log view"/>
+    <elements xsi:type="commands:Command" xmi:id="_f65NEFrZEeSeFYUQtBIr9A" elementId="org.goko.log.ui.command.toggleproblemsviewcommand" commandName="toggleProblemsViewCommand">
+      <parameters xmi:id="_imssAFrZEeSeFYUQtBIr9A" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zSWRUFrWEeSeFYUQtBIr9A" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_1BCnwFrWEeSeFYUQtBIr9A" elementId="org.goko.log.ui.handler.0" contributionURI="bundleclass://org.goko.log.ui/org.goko.log.part.handlers.ClearLogHandler" command="_xOimgFrWEeSeFYUQtBIr9A"/>
+    <elements xsi:type="commands:Handler" xmi:id="_nQ_Q4FrZEeSeFYUQtBIr9A" elementId="org.goko.log.ui.handler.1" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_f65NEFrZEeSeFYUQtBIr9A"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_tdeBQFrZEeSeFYUQtBIr9A" featurename="children" parentElementId="goko.menu.window.view">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_nRubQFraEeSeFYUQtBIr9A" elementId="org.goko.log.ui.handledtoolitem.problemsView" label="Problems view" iconURI="platform:/plugin/org.goko.log.ui/icons/problems_view.gif" type="Check" command="_f65NEFrZEeSeFYUQtBIr9A">
+      <parameters xmi:id="_q4UugFraEeSeFYUQtBIr9A" elementId="org.goko.log.ui.parameter.0" name="org.goko.commands.toggleView.viewName" value="org.goko.log.ui.part.problems"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

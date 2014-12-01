@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Jssc
 Bundle-SymbolicName: org.goko.serial.jssc;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.goko.serial.jssc.internal.JsscSerialActivator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
  org.eclipse.ui,
@@ -33,3 +32,4 @@ Require-Bundle: org.goko.core,
  org.eclipse.swt,
  org.eclipse.ui.console;bundle-version="3.5.300"
 Service-Component: OSGI-INF/JsscSerialConnectionService.xml
+Bundle-Activator: org.goko.serial.jssc.internal.JsscSerialActivator

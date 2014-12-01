@@ -39,6 +39,7 @@ public class ExecutionQueue<T extends GCodeExecutionToken> {
 	}
 
 	public void add(T token){
+		System.err.println(System.identityHashCode(executionTokens));
 		executionTokens.offer(token);
 	}
 

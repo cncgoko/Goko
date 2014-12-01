@@ -19,10 +19,13 @@
  */
 package org.goko.gcode.rs274ngcv3.parser.advanced.writer;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 
 public class ArcCommandWriter extends AbstractMotionCommandWriter<ArcMotionCommand>{
 
@@ -32,8 +35,7 @@ public class ArcCommandWriter extends AbstractMotionCommandWriter<ArcMotionComma
 	@Override
 	public String write(ArcMotionCommand command) throws GkException {
 		String str = super.write(StringUtils.EMPTY, command);
-		str = writeOffsets(str, command);
-		return str;
+		return addComment(writeOffsets(str, command), command);
 	}
 
 	/**
@@ -43,14 +45,20 @@ public class ArcCommandWriter extends AbstractMotionCommandWriter<ArcMotionComma
 	 */
 	private String writeOffsets(String str, ArcMotionCommand command) {
 		Tuple6b offsets = command.getAbsoluteCenterCoordinate().subtract(command.getAbsoluteStartCoordinate());
-		if(offsets.getX() != null){
-			str += " I"+offsets.getX();
+		BigDecimal scale = new BigDecimal("1");
+		BigDecimal zero = new BigDecimal("0");
+		if(command.getUnit() == EnumGCodeCommandUnit.INCHES){
+	//		scale = new BigDecimal("2.54");
+		}
+		if(offsets.getX() != null ){
+			str += " I"+offsets.getX().divide(scale);
 		}
 		if(offsets.getY() != null){
-			str += " J"+offsets.getY();
+			str += " J"+offsets.getY().divide(scale);
 		}
-		if(offsets.getZ() != null){
-			str += " K"+offsets.getZ();
+
+		if(offsets.getZ() != null &&  Math.abs(offsets.getZ().doubleValue()) > 0.00001){
+			str += " K"+offsets.getZ().divide(scale);
 		}
 		return str;
 	}

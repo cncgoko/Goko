@@ -22,6 +22,7 @@ package org.goko.serial.jssc.console;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -97,8 +98,16 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		commandTxt.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(e.keyCode == SWT.CR || e.keyCode == SWT.LF){
-					getController().sendCurrentCommand();
+				if(e.keyCode == SWT.CR || e.keyCode == SWT.LF || e.keyCode == SWT.KEYPAD_CR){
+					try {
+						getController().sendCurrentCommand();
+					} catch (GkException e1) {
+						displayMessage(e1);
+					}
+				}else if(e.keyCode == SWT.ARROW_UP){
+					getController().climbHistoryUp();
+				}else if(e.keyCode == SWT.ARROW_DOWN){
+					getController().climbHistoryDown();
 				}
 
 			}
@@ -109,7 +118,11 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		btnSend.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				getController().sendCurrentCommand();
+				try {
+					getController().sendCurrentCommand();
+				} catch (GkException e1) {
+					displayMessage(e1);
+				}
 			}
 		});
 		GridData gd_btnSend = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -192,5 +205,10 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 			part.getPersistedState().put(CONSOLE_SCROLL_LOCKED, String.valueOf(getDataModel().isScrollLock()));
 			part.getPersistedState().put(CONSOLE_END_LINE_TOKEN, String.valueOf(getDataModel().getEndLineToken()));
 		}
+	}
+
+	@PreDestroy
+	public void dispose(){
+		getController().destroy();
 	}
 }

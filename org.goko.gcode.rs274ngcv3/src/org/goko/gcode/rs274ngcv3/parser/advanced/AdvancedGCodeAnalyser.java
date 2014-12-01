@@ -28,12 +28,12 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.GCodeFile;
-import org.goko.gcode.rs274ngcv3.GkGCodeService;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
 import org.goko.gcode.rs274ngcv3.parser.ModalGroup;
 import org.goko.gcode.rs274ngcv3.parser.advanced.builders.ArcCommandBuilder;
 import org.goko.gcode.rs274ngcv3.parser.advanced.builders.CommentCommandBuilder;
+import org.goko.gcode.rs274ngcv3.parser.advanced.builders.FunctionCommandBuilder;
 import org.goko.gcode.rs274ngcv3.parser.advanced.builders.LinearCommandBuilder;
 import org.goko.gcode.rs274ngcv3.parser.advanced.builders.RawCommandBuilder;
 import org.goko.gcode.rs274ngcv3.parser.advanced.builders.SettingCommandBuilder;
@@ -46,6 +46,8 @@ public class AdvancedGCodeAnalyser {
 		lstBuilders = new ArrayList<IRS274CommandBuilder<?>>();
 		lstBuilders.add( new ArcCommandBuilder() );
 		lstBuilders.add( new LinearCommandBuilder() );
+		//lstBuilders.add( new ToolChangeCommandBuilder() );
+		lstBuilders.add( new FunctionCommandBuilder() );
 		lstBuilders.add( new SettingCommandBuilder() );
 		lstBuilders.add( new CommentCommandBuilder() );
 		lstBuilders.add( new RawCommandBuilder() );
@@ -151,16 +153,6 @@ public class AdvancedGCodeAnalyser {
 	public void verifyModality(List<GCodeToken> lstToken) throws GkException{
 		for (ModalGroup group : modalGroups) {
 			group.verifyTokenModality(lstToken);
-		}
-	}
-
-	public static void main(String[] args) {
-		try {
-			GCodeCommand l = new GkGCodeService().parseCommand("G21G90(test de la truc)");
-			System.err.println(l);
-		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }

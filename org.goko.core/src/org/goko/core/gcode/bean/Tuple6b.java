@@ -172,6 +172,17 @@ public class Tuple6b {
 		return result;
 	}
 
+	public Tuple6b add(Tuple6b sub){
+		Tuple6b result = new Tuple6b(this);
+		result.x = atomAdd(x, sub.x);
+		result.y = atomAdd(y, sub.y);
+		result.z = atomAdd(z, sub.z);
+		result.a = atomAdd(a, sub.a);
+		result.b = atomAdd(b, sub.b);
+		result.c = atomAdd(c, sub.c);
+		return result;
+	}
+
 	public void updateAbsolute(Tuple6b position){
 		this.x = atomUpdateAbsolute(x, position.x);
 		this.y = atomUpdateAbsolute(y, position.y);
@@ -188,6 +199,17 @@ public class Tuple6b {
 			return a;
 		}else if(b != null){
 			return b.negate();
+		}
+		return null;
+	}
+
+	protected BigDecimal atomAdd(BigDecimal a, BigDecimal b) {
+		if( a != null && b!=null){
+			return a.add(b);
+		}else if( a != null){
+			return a;
+		}else if(b != null){
+			return b;
 		}
 		return null;
 	}

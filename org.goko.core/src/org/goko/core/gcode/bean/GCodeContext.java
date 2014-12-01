@@ -21,9 +21,11 @@ package org.goko.core.gcode.bean;
 
 import java.math.BigDecimal;
 
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandPlane;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 
 public class GCodeContext {
@@ -34,17 +36,23 @@ public class GCodeContext {
 	private BigDecimal feedrate;
 	private EnumGCodeCommandUnit unit;
 	private EnumGCodeCommandDistanceMode distanceMode;
-	private int currentPlane;
-	private Tuple6b minimalBound;
-	private Tuple6b maximalBound;
+	private EnumGCodeCommandPlane plane;
+	private Integer toolNumber;
+	private EnumCoordinateSystem coordinateSystem;
 
 	public GCodeContext() {
 		position 	 = new Tuple6b();
 		offset 		 = new Tuple6b();
-		minimalBound = new Tuple6b();
-		maximalBound = new Tuple6b();
 		motionMode = EnumGCodeCommandMotionMode.RAPID;
 		motionType = EnumGCodeCommandMotionType.LINEAR;
+		offset = new Tuple6b();
+		position = new Tuple6b();
+		feedrate = new BigDecimal("0");
+		unit = EnumGCodeCommandUnit.MILLIMETERS;
+		distanceMode = EnumGCodeCommandDistanceMode.ABSOLUTE;
+		plane = EnumGCodeCommandPlane.XY_PLANE;
+		toolNumber = 0;
+		coordinateSystem = EnumCoordinateSystem.G53;
 	}
 
 	public GCodeContext(GCodeContext context) {
@@ -53,7 +61,7 @@ public class GCodeContext {
 		this.feedrate 		= context.feedrate;
 		this.unit 			= context.unit;
 		this.distanceMode	= context.distanceMode;
-		this.currentPlane 	= context.currentPlane;
+		this.plane 			= context.plane;
 		this.motionMode 	= context.motionMode;
 	}
 	/**
@@ -68,7 +76,7 @@ public class GCodeContext {
 	public void setFeedrate(BigDecimal feedrate) {
 		this.feedrate = feedrate;
 	}
-	
+
 
 	/**
 	 * @return the position
@@ -101,43 +109,15 @@ public class GCodeContext {
 	/**
 	 * @return the currentPlane
 	 */
-	public int getCurrentPlane() {
-		return currentPlane;
+	public EnumGCodeCommandPlane getPlane() {
+		return plane;
 	}
 
 	/**
 	 * @param currentPlane the currentPlane to set
 	 */
-	public void setCurrentPlane(int currentPlane) {
-		this.currentPlane = currentPlane;
-	}
-
-	/**
-	 * @return the minimalBound
-	 */
-	public Tuple6b getMinimalBound() {
-		return new Tuple6b(minimalBound);
-	}
-
-	/**
-	 * @param minimalBound the minimalBound to set
-	 */
-	public void setMinimalBound(Tuple6b minimalBound) {
-		this.minimalBound = new Tuple6b(minimalBound);
-	}
-
-	/**
-	 * @return the maximalBound
-	 */
-	public Tuple6b getMaximalBound() {
-		return new Tuple6b(maximalBound);
-	}
-
-	/**
-	 * @param maximalBound the maximalBound to set
-	 */
-	public void setMaximalBound(Tuple6b maximalBound) {
-		this.maximalBound = new Tuple6b(maximalBound);
+	public void setPlane(EnumGCodeCommandPlane currentPlane) {
+		this.plane = currentPlane;
 	}
 
 	/**
@@ -194,6 +174,34 @@ public class GCodeContext {
 	 */
 	public void setMotionType(EnumGCodeCommandMotionType motionType) {
 		this.motionType = motionType;
+	}
+
+	/**
+	 * @return the toolNumber
+	 */
+	public Integer getToolNumber() {
+		return toolNumber;
+	}
+
+	/**
+	 * @param toolNumber the toolNumber to set
+	 */
+	public void setToolNumber(Integer toolNumber) {
+		this.toolNumber = toolNumber;
+	}
+
+	/**
+	 * @return the coordinateSystem
+	 */
+	public EnumCoordinateSystem getCoordinateSystem() {
+		return coordinateSystem;
+	}
+
+	/**
+	 * @param coordinateSystem the coordinateSystem to set
+	 */
+	public void setCoordinateSystem(EnumCoordinateSystem coordinateSystem) {
+		this.coordinateSystem = coordinateSystem;
 	}
 
 

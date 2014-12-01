@@ -21,6 +21,7 @@ package org.goko.core.gcode.bean.commands;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 
 public class RawCommand extends GCodeCommand {
@@ -31,6 +32,22 @@ public class RawCommand extends GCodeCommand {
 	@Override
 	public void accept(IGCodeCommandVisitor visitor) throws GkException {
 		visitor.visit(this);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#updateContext(org.goko.core.gcode.bean.GCodeContext)
+	 */
+	@Override
+	public void updateContext(GCodeContext context) {
+		// Nothing to do in raw method
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.GCodeCommand#initFromContext(org.goko.core.gcode.bean.GCodeContext)
+	 */
+	@Override
+	public void initFromContext(GCodeContext context) {
+		// Nothing to do in raw method
 	}
 
 }

@@ -32,20 +32,33 @@ public abstract class AbstractSettingCommandWriter<T extends SettingCommand> ext
 	 */
 	@Override
 	protected String write(String base, T command) throws GkException {
-		String strCommand = super.write(base, command);
+		String strCommand = base;
 		strCommand = writeDistanceMode(strCommand, command);
 		strCommand = writeUnit(strCommand, command);
 		strCommand = writeMotionMode(strCommand, command);
 		strCommand = writeFeedrate(strCommand, command);
-		return strCommand;
+		strCommand = writeToolNumber(strCommand, command);
+		strCommand = writePlane(strCommand, command);
+		strCommand = writeSpindleSpeed(strCommand, command);
+		return super.write(strCommand, command);
 	}
 
+	private String writePlane(String strCommand, T command) throws GkException{
+		if(command.isExplicitPlane()){
+			switch(command.getPlane()){
+			case XY_PLANE: return strCommand + " G17";
+			case XZ_PLANE: return strCommand + " G18";
+			case YZ_PLANE: return strCommand + " G19";
+			}
+		}
+		return strCommand;
+	}
 	private String writeDistanceMode(String strCommand, T command) throws GkException{
 		if(command.isExplicitDistanceMode()){
 			if(command.getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
-				strCommand += " G90";
+				strCommand = "G90 "+strCommand;
 			}else{
-				strCommand += " G91";
+				strCommand = "G91 "+strCommand;
 			}
 		}
 		return strCommand;
@@ -54,9 +67,9 @@ public abstract class AbstractSettingCommandWriter<T extends SettingCommand> ext
 	protected String writeUnit(String strCommand, T command) throws GkException{
 		if(command.isExplicitUnit()){
 			if(command.getUnit() == EnumGCodeCommandUnit.INCHES){
-				strCommand += " G20";
+				strCommand = "G20 "+strCommand;
 			}else{
-				strCommand += " G21";
+				strCommand = "G21 "+strCommand;
 			}
 		}
 		return strCommand;
@@ -65,13 +78,13 @@ public abstract class AbstractSettingCommandWriter<T extends SettingCommand> ext
 	protected String writeMotionMode(String strCommand, T command) throws GkException{
 		if(command.isExplicitMotionMode()){
 			if(command.getMotionMode() == EnumGCodeCommandMotionMode.ARC_CLOCKWISE){
-				strCommand += " G2";
+				strCommand = "G2 "+strCommand;
 			}else if(command.getMotionMode() == EnumGCodeCommandMotionMode.ARC_COUNTERCLOCKWISE){
-				strCommand += " G3";
+				strCommand = "G3 "+strCommand;
 			}else if(command.getMotionMode() == EnumGCodeCommandMotionMode.FEEDRATE){
-				strCommand += " G1";
+				strCommand = "G1 "+strCommand;
 			}else{
-				strCommand += " G0";
+				strCommand = "G0 "+strCommand;
 			}
 		}
 		return strCommand;
@@ -83,4 +96,20 @@ public abstract class AbstractSettingCommandWriter<T extends SettingCommand> ext
 		}
 		return strCommand;
 	}
+
+	protected String writeToolNumber(String strCommand, T command) throws GkException{
+		if(command.isExplicitToolNumber()){
+			strCommand += " T"+command.getToolNumber();
+		}
+		return strCommand;
+	}
+
+	protected String writeSpindleSpeed(String strCommand, T command) throws GkException{
+		if(command.isExplicitSplindleSpeed()){
+			strCommand += " S"+command.getSpindleSpeed();
+		}
+		return strCommand;
+	}
+
+
 }

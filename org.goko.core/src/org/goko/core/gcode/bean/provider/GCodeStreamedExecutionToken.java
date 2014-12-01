@@ -60,6 +60,7 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 	public void markAsSent(Integer idCommand) throws GkException {
 		GCodeCommand command = getCommandById(idCommand);
 		this.mapSentCommandById.put(command.getId(), command);
+		mapStateByIdCommand.put(command.getId(), GCodeCommandState.SENT);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.SENT));
 	}
 
@@ -79,6 +80,7 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 		GCodeCommand command = getCommandById(idCommand);
 		this.mapSentCommandById.remove(command.getId());
 		this.mapConfirmedCommandById.put(command.getId(), command);
+		mapStateByIdCommand.put(command.getId(), GCodeCommandState.CONFIRMED);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.CONFIRMED));
 	}
 

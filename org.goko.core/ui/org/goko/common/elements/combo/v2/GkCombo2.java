@@ -29,8 +29,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.goko.common.GkUiUtils;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 
 public class GkCombo2<T>  extends ComboViewer {
+	private static final GkLog LOG = GkLog.getLogger(GkCombo2.class);
 
 	public GkCombo2(Composite parent, int style) {
 		super(parent, style);
@@ -54,7 +56,7 @@ public class GkCombo2<T>  extends ComboViewer {
 				LabeledValue<T> lVal = GkUiUtils.getLabelledValueByKey(val, getChoices());
 				super.setSelection(new StructuredSelection(lVal));
 			} catch (GkException e) {
-				e.printStackTrace();
+				LOG.error(e);
 			}
 
 		}
@@ -71,7 +73,7 @@ public class GkCombo2<T>  extends ComboViewer {
 				LabeledValue<T> lVal = GkUiUtils.getLabelledValueByKey(val, getChoices());
 				super.setSelection(new StructuredSelection(lVal), reveal);
 			} catch (GkException e) {
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 		super.setSelection(selection, reveal);

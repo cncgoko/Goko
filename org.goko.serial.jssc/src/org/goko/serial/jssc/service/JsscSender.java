@@ -44,6 +44,7 @@ public class JsscSender implements Runnable {
 	/** ock waiting for send permission */
 	private Object clearToSendLock;
 	private int importantBytes;
+	private boolean stopped;
 
 	/**
 	 * Constructor
@@ -64,27 +65,18 @@ public class JsscSender implements Runnable {
 	@Override
 	public  void run() {
 		List<Byte> lst = new ArrayList<Byte>();
-		while(true){
-			//System.err.println("55");
+		while(!stopped){
 			waitDataInBuffer();
-			//System.err.println("66");
 			waitClearToSend();
 			if(isClearToSend() || importantBytes > 0){
 				if(CollectionUtils.isNotEmpty(queue)){
 					if(jsscService.getSerialPort().isOpened()){
 						try {
-							//System.err.println("queue.poll()");
 							Byte b = queue.poll();
-							//System.err.println("queue.poll() ends");
 							jsscService.getSerialPort().writeByte( b );
-							//System.err.println("jsscService.getSerialPort().writeByte( b ); ends");
 							if(importantBytes > 0){
-							//	System.err.println("Sending important "+b.toString());
 								importantBytes--;
-							}else{
-							//	System.err.println("Sending regular   "+b.toString());
 							}
-						//	System.err.println("Remaining in buffer "+CollectionUtils.size(queue));
 							lst.add(b);
 							jsscService.notifyOutputListeners(lst);
 							lst.clear();
@@ -95,9 +87,7 @@ public class JsscSender implements Runnable {
 						}
 					}
 				}
-			//	System.err.println("6.5");
 			}
-			//System.err.println("77");
 		}
 	}
 
@@ -113,7 +103,6 @@ public class JsscSender implements Runnable {
 	 * @param clearToSend the clearToSend to set
 	 */
 	protected void setClearToSend(boolean clearToSend) {
-	//	System.err.println("ClearToSend "+clearToSend);
 		this.clearToSend = clearToSend;
 		synchronized(clearToSendLock){
 			clearToSendLock.notify();
@@ -126,7 +115,6 @@ public class JsscSender implements Runnable {
 	private void waitDataInBuffer(){
 		while(CollectionUtils.isEmpty(queue)){
 			synchronized(emptyBufferLock){
-			//	System.err.println("waitDataInBuffer");
 				try {
 					emptyBufferLock.wait();
 				} catch (InterruptedException e) {
@@ -134,7 +122,6 @@ public class JsscSender implements Runnable {
 				}
 			}
 		}
-		//System.err.println("waitDataInBuffer passed "+CollectionUtils.size(queue));
 	}
 
 	/**
@@ -144,7 +131,6 @@ public class JsscSender implements Runnable {
 	private void waitClearToSend(){
 		while(!isClearToSend() && importantBytes <= 0){
 			synchronized(clearToSendLock){
-			//	System.err.println("waitClearToSend");
 				try {
 					clearToSendLock.wait();
 				} catch (InterruptedException e) {
@@ -152,9 +138,15 @@ public class JsscSender implements Runnable {
 				}
 			}
 		}
-		//System.err.println("waitClearToSend passed "+isClearToSend());
 	}
 
+	public void stop() {
+		this.stopped = true;
+	}
+
+	public void start() {
+		this.stopped = false;
+	}
 	/**
 	 * Add Bytes to the output queue
 	 * @param bytes the list of {@link Byte} to add

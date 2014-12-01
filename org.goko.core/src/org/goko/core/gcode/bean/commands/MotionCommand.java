@@ -38,7 +38,6 @@ public abstract class MotionCommand extends SettingCommand {
 	private Tuple6b absoluteEndCoordinate;
 	/** The raw coordinates as extracted from the raw expression */
 	private Tuple6b coordinates;
-	/** TODO : Working plane */
 
 	/**
 	 * Constructor
@@ -46,6 +45,9 @@ public abstract class MotionCommand extends SettingCommand {
 	 */
 	public MotionCommand(EnumGCodeCommandMotionType motionType) {
 		super();
+		coordinates = new Tuple6b().setNull();
+		absoluteStartCoordinate = new Tuple6b().setZero();
+		absoluteEndCoordinate = new Tuple6b().setZero();
 		setType(EnumGCodeCommandType.MOTION);
 		super.setMotionType(motionType);
 	}
@@ -67,7 +69,11 @@ public abstract class MotionCommand extends SettingCommand {
 		context.setPosition(absoluteEndCoordinate);
 	}
 
-
+	@Override
+	public void initFromContext(GCodeContext context) {
+		super.initFromContext(context);
+		setAbsoluteStartCoordinate(context.getPosition());
+	}
 	/**
 	 * @return the absoluteStartCoordinate
 	 */
@@ -86,6 +92,11 @@ public abstract class MotionCommand extends SettingCommand {
 		updateAbsoluteEndCoordinate();
 	}
 
+	@Override
+	public void setDistanceMode(EnumGCodeCommandDistanceMode distanceMode) {
+		super.setDistanceMode(distanceMode);
+		updateAbsoluteEndCoordinate();
+	}
 	/**
 	 * @return the absoluteEndCoordinate
 	 */
@@ -128,11 +139,7 @@ public abstract class MotionCommand extends SettingCommand {
 	private void updateAbsoluteEndCoordinate(){
 		if(absoluteStartCoordinate != null && coordinates != null){
 			Tuple6b tmpTuple = null;
-			if(absoluteEndCoordinate == null){
-				tmpTuple = new Tuple6b(absoluteStartCoordinate);
-			}else{
-				tmpTuple = new Tuple6b(absoluteEndCoordinate);
-			}
+			tmpTuple = new Tuple6b(absoluteStartCoordinate);
 			if(getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
 				tmpTuple.updateAbsolute(coordinates);
 			}else{
@@ -172,4 +179,5 @@ public abstract class MotionCommand extends SettingCommand {
 			setBounds(new BoundingTuple6b(min,max));
 		}
 	}
+
 }

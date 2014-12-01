@@ -20,8 +20,6 @@
 package org.goko.grbl.controller;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.connection.IConnectionDataListener;
-import org.goko.core.connection.IConnectionListener;
 import org.goko.core.controller.IControllerService;
 import org.goko.grbl.controller.configuration.GrblConfiguration;
 
@@ -31,7 +29,7 @@ import org.goko.grbl.controller.configuration.GrblConfiguration;
  * @author PsyKo
  *
  */
-public interface IGrblControllerService extends IControllerService, IConnectionListener, IConnectionDataListener{
+public interface IGrblControllerService extends IControllerService{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 

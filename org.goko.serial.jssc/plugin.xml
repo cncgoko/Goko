@@ -2,10 +2,10 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="id1"
+         id="org.goko.serial.jssc.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="always"
+            apply="initial"
             uri="fragments/JsscControlsFragment.e4xmi">
       </fragment>
    </extension>

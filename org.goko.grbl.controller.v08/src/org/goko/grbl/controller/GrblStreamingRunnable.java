@@ -61,6 +61,10 @@ public class GrblStreamingRunnable  implements Runnable {
 				executionQueue.beginNextTokenExecution();
 				LOG.info("Begin execution token");
 				runExecutionToken();
+				// Let's wait until the execution token is complete
+				System.err.println("Let's wait until the execution token is complete");
+				waitTokenComplete();
+				System.err.println("Token complete");
 				executionQueue.endCurrentTokenExecution();
 			}catch(GkException e){
 				LOG.error(e);
@@ -74,19 +78,17 @@ public class GrblStreamingRunnable  implements Runnable {
 			while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreCommand()){
 				GrblGCodeExecutionToken token = executionQueue.getCurrentToken();
 				if(token.hasMoreCommand()){
-					waitBufferSpace();
 					GCodeCommand command = token.getNextCommand();
-					if(grblService.getUsedGrblBuffer() + StringUtils.length(command.getStringCommand()) < GrblControllerService.GRBL_BUFFER_SIZE){
-						command = token.takeNextCommand();
-						if(command.getType() == EnumGCodeCommandType.COMMENT){
-							// Skip comments
-							token.markAsExecuted(command.getId());
-						}else{
-							grblService.sendCommand(command);
-							token.markAsSent( command.getId() );
-						}
-						GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(command));
+					waitBufferSpace(StringUtils.length(command.getStringCommand()));
+					command = token.takeNextCommand();
+					if(command.getType() == EnumGCodeCommandType.COMMENT){
+						// Skip comments
+						token.markAsExecuted(command.getId());
+					}else{
+						grblService.sendCommand(command);
+						token.markAsSent( command.getId() );
 					}
+					GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(command));
 				}
 			}
 			LOG.info("runExecutionToken ends");
@@ -94,8 +96,21 @@ public class GrblStreamingRunnable  implements Runnable {
 			LOG.error(e);
 		}
 	}
-	private void waitBufferSpace() throws GkException {
-		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().getSentCommandCount() > 0){
+
+	private void waitTokenComplete() throws GkException {
+		while(executionQueue.getCurrentToken() != null && !executionQueue.getCurrentToken().isComplete()){
+			synchronized ( executionQueue.getCurrentToken() ) {
+				try {
+					// Timeout of 500ms in case the token get cancelled or remove from queue
+					executionQueue.getCurrentToken().wait(500);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
+			}
+		}
+	}
+	private void waitBufferSpace(int size) throws GkException {
+		while(executionQueue.getCurrentToken() != null && (grblService.getUsedGrblBuffer() + size) > Grbl.GRBL_BUFFER_SIZE){
 			synchronized ( bufferSpaceMutex ) {
 				try {
 					bufferSpaceMutex.wait();

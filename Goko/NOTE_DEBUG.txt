@@ -1,0 +1,3 @@
+Pourquoi un service ne démarre pas :
+- une de ses dépendances obligatoire de démarre pas (Service OSGI qui a un Refered service à 1..n par exemple)
+- vérifier que tous les repertoirs sources sont listés à l'export dans le build (src/, ui/, etc...)

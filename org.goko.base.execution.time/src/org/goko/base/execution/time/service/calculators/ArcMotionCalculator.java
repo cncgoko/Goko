@@ -64,16 +64,19 @@ public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator
 				angle =  2*Math.PI - smallestAngle;
 			}
 		}
-		
+
 		double feedrate = 0;
 		if(command.getFeedrate() != null){
 			feedrate = command.getFeedrate().doubleValue();
 		}else{
 			return 0;
 		}
+		if(feedrate == 0){
+			return 0;
+		}
 		return ((Math.abs(angle) * v1.length()) / feedrate) * 60;
 
-//		
+//
 //		Point3d endPos 	= command.getAbsoluteEndCoordinate().toPoint3d();
 //		Point3d startPos= command.getAbsoluteStartCoordinate().toPoint3d();
 //		Point3d center 	= command.getAbsoluteCenterCoordinate().toPoint3d();

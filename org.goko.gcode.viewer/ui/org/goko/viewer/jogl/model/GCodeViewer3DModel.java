@@ -40,6 +40,8 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	private boolean enabled;
 
 	private boolean followTool;
+
+	private boolean showCoordinateSystem;
 	/**
 	 * @return the showGrid
 	 */
@@ -107,5 +109,17 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	 */
 	public void setFollowTool(boolean followTool) {
 		firePropertyChange("followTool",this.followTool, this.followTool = followTool);
+	}
+	/**
+	 * @return the showCoordinateSystem
+	 */
+	public boolean isShowCoordinateSystem() {
+		return showCoordinateSystem;
+	}
+	/**
+	 * @param showCoordinateSystem the showCoordinateSystem to set
+	 */
+	public void setShowCoordinateSystem(boolean showCoordinateSystem) {
+		firePropertyChange("showCoordinateSystem",this.showCoordinateSystem, this.showCoordinateSystem = showCoordinateSystem);
 	}
 }

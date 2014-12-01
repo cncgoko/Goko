@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.goko.core.log.GkLog;
 
 /**
  * An event dispatcher using annotation
@@ -34,6 +35,9 @@ import org.apache.commons.collections.CollectionUtils;
  *
  */
 public class EventDispatcher {
+	private static final GkLog LOG = GkLog.getLogger(EventDispatcher.class);
+
+
 	/**
 	 * The list of listener
 	 */
@@ -91,7 +95,7 @@ public class EventDispatcher {
 				try {
 					method.invoke(obj, event);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					e.printStackTrace();
+					LOG.error(e);
 				}
 			}
 		}

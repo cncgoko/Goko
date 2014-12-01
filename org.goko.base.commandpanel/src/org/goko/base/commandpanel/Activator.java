@@ -1,5 +1,6 @@
 package org.goko.base.commandpanel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -26,8 +27,14 @@ public class Activator implements BundleActivator {
     }
 
     private static void initDefaultPreferences() {
-    	if(preferences.get(CommandPanelParameter.JOG_FEEDRATE, null) == null){
+    	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_FEEDRATE, null))){
     		preferences.put(CommandPanelParameter.JOG_FEEDRATE, "1000");
+    	}
+    	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_INCREMENTAL, null))){
+    		preferences.put(CommandPanelParameter.JOG_INCREMENTAL, "false");
+    	}
+    	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_STEP_SIZE, null))){
+    		preferences.put(CommandPanelParameter.JOG_STEP_SIZE, "0.1");
     	}
 	}
 	/*

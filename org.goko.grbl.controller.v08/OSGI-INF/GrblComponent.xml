@@ -6,7 +6,8 @@
       <provide interface="org.goko.core.controller.IControllerService"/>
       <provide interface="org.goko.grbl.controller.IGrblControllerService"/>
       <provide interface="org.goko.core.controller.IThreeAxisControllerAdapter"/>
+      <provide interface="org.goko.core.controller.ICoordinateSystemAdapter"/>
    </service>
    <reference bind="setGCodeService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
-   <reference bind="setApplicativeLogService" cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
+   <reference bind="setApplicativeLogService" cardinality="0..n" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
 </scr:component>

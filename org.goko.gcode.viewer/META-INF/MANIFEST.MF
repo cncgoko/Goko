@@ -41,4 +41,6 @@ Bundle-ClassPath: .,
  libs/j3dutils.jar,
  libs/vecmath.jar
 Service-Component: OSGI-INF/JoglViewerServiceComponant.xml
+Export-Package: org.goko.viewer.jogl.service,
+ org.goko.viewer.jogl.utils.render
 

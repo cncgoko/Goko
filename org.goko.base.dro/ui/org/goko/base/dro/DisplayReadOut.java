@@ -41,7 +41,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 		try {
 			getController().initialize();
 		} catch (GkException e) {
-			e.printStackTrace();
+			displayMessage(e);
 		}
 	}
 
@@ -64,12 +64,12 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 		for(MachineValueDefinition definition : getDataModel().getObservedValuesDefinition()){
 			Label label = new Label(composite, SWT.NONE);
 			label.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
-			label.setFont(SWTResourceManager.getFont("Segoe UI", 15, SWT.BOLD));
+			label.setFont(SWTResourceManager.getFont("Segoe UI", 13, SWT.BOLD));
 			label.setText(definition.getName());
 
 			Text valueTxt = new Text(composite, SWT.BORDER | SWT.RIGHT | SWT.READ_ONLY);
 			valueTxt.setText("--");
-			valueTxt.setFont(SWTResourceManager.getFont("Consolas", 16, SWT.BOLD));
+			valueTxt.setFont(SWTResourceManager.getFont("Consolas", 14, SWT.BOLD));
 
 			GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 			gridData.widthHint = 120;

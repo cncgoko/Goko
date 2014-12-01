@@ -30,7 +30,7 @@ public class LinearCommandWriter extends AbstractMotionCommandWriter<LinearMotio
 	 */
 	@Override
 	public String write(LinearMotionCommand command) throws GkException {
-		return super.write(StringUtils.EMPTY, command);
+		return addComment(super.write(StringUtils.EMPTY, command), command);
 	}
 
 }

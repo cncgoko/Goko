@@ -27,7 +27,10 @@ public interface DefaultControllerAction {
 	static final String STOP		= "GkDefaultControllerAction.Stop";
 	static final String JOG_START	= "GkDefaultControllerAction.JogStart";
 	static final String JOG_STOP	= "GkDefaultControllerAction.JogStop";
+	static final String INCREMENTAL_JOG_START	= "GkDefaultControllerAction.IncrementalJogStart";
+	static final String INCREMENTAL_JOG_STOP	= "GkDefaultControllerAction.IncrementalJogStop";
 	static final String RESET_ZERO	= "GkDefaultControllerAction.ResetZero";
 	static final String SPINDLE_ON	= "GkDefaultControllerAction.SpindleOn";
 	static final String SPINDLE_OFF	= "GkDefaultControllerAction.SpindleOff";
+	static final String KILL_ALARM	= "GkDefaultControllerAction.KillAlarm";
 }

@@ -27,5 +27,5 @@ public class SettingCommandBuilder extends AbstractSettingCommandBuilder<Setting
 	@Override
 	public SettingCommand newInstance() throws GkException {
 		return new SettingCommand();
-	}	
+	}
 }

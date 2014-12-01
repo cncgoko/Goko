@@ -5,10 +5,14 @@ import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
+
+import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
  * Utility class for Jogl rendering
@@ -20,10 +24,23 @@ public class JoglUtils {
 
 
 	private static final Point3f DEFAULT_COLOR = new Point3f(0.8f,0.8f,0.8f);
-
+	private static final Tuple6b zero = new Tuple6b(0, 0, 0);
 
 	public static void drawPoint(GL2 gl,Tuple6b point) throws GkException {
+		drawPoint(gl, point, DEFAULT_COLOR);
+	}
+
+
+	public static void drawPoint(GL2 gl,Tuple6b point, Point3f color) throws GkException {
+		drawPoint(gl, point, color, 0);
+	}
+
+
+	public static void drawPoint(GL2 gl,Tuple6b point, Point3f color, int style) throws GkException {
+		gl.glPushAttrib(GL2.GL_LINE_BIT);
+		gl.glColor3d(color.x, color.y, color.z);
 		Point3d startPoint 	= point.toPoint3d();
+		gl.glLineWidth(1f);
 		gl.glBegin(GL2.GL_LINES);
 		gl.glVertex3d(startPoint.x-0.5, startPoint.y, startPoint.z);
 		gl.glVertex3d(startPoint.x+0.5, startPoint.y, startPoint.z);
@@ -32,59 +49,65 @@ public class JoglUtils {
 		gl.glVertex3d(startPoint.x, startPoint.y, startPoint.z-0.5);
 		gl.glVertex3d(startPoint.x, startPoint.y, startPoint.z+0.5);
 		gl.glEnd();
-	}
 
-
-	public static void drawPoint(GL2 gl,Tuple6b point, Point3f color) throws GkException {
-		gl.glColor3d(color.x, color.y, color.z);
-		drawPoint(gl, point);
-	}
-
-
-	public static void drawPoint(GL2 gl,Tuple6b point, Point3f color, int style) throws GkException {
-		// TODO Auto-generated method stub
+		gl.glPopAttrib();
 	}
 
 	public static void drawSegment(GL2 gl, Tuple6b start, Tuple6b end) throws GkException {
-		Point3d startPoint 	= start.toPoint3d();
-		Point3d endPoint 	= end.toPoint3d();
-		gl.glBegin(GL2.GL_LINES);
-		gl.glVertex3d(startPoint.x, startPoint.y, startPoint.z);
-		gl.glVertex3d(endPoint.x, endPoint.y, endPoint.z);
-		gl.glEnd();
+		drawSegment(gl, start, end, DEFAULT_COLOR);
 	}
 
 	public static void drawSegment(GL2 gl, Tuple6b start, Tuple6b end, Point3f color) throws GkException {
-		Point3d startPoint 	= start.toPoint3d();
-		Point3d endPoint 	= end.toPoint3d();
-		gl.glBegin(GL2.GL_LINES);
-		gl.glColor3d(color.x, color.y, color.z);
-		gl.glVertex3d(startPoint.x, startPoint.y, startPoint.z);
-		gl.glVertex3d(endPoint.x, endPoint.y, endPoint.z);
-		gl.glEnd();
+		drawSegment(gl, start, end, color, 0);
 	}
 
 
 	public static void drawSegment(GL2 gl, Tuple6b start, Tuple6b end, Point3f color, int style) throws GkException {
-		// TODO Auto-generated method stub
+		gl.glPushAttrib(GL2.GL_LINE_BIT);
+		Point3d startPoint 	= start.toPoint3d();
+		Point3d endPoint 	= end.toPoint3d();
+		gl.glLineWidth(1f);
+		gl.glBegin(GL2.GL_LINES);
+		gl.glColor3d(color.x, color.y, color.z);
+		gl.glVertex3d(startPoint.x, startPoint.y, startPoint.z);
+		gl.glVertex3d(endPoint.x, endPoint.y, endPoint.z);
+		gl.glEnd();
+		gl.glPopAttrib();
 	}
 
+	public static void drawCircle(GL2 gl, Tuple6b center, double radius, Vector3f plane, Point3f color) throws GkException {
+		Point3d c 	= center.toPoint3d();
+		gl.glLineWidth(1f);
+		gl.glPushAttrib(GL2.GL_LINE_BIT);
+		gl.glColor3f(color.x, color.y, color.z);
+		gl.glBegin(GL2.GL_LINE_STRIP);
 
-	public static void drawArc(GL2 gl, Tuple6b start, Tuple6b end, Tuple6b center, Point3f plane, int direction) throws GkException {
+		// Adaptive points count
+		int nbPoints = (int) Math.max(12, radius * 4);
+		double deltaAngle = (Math.PI*2) / nbPoints;
+		for(int i = 0; i <= nbPoints; i++){
+			gl.glVertex3d(c.x + radius * Math.cos(i*deltaAngle), c.y + radius * Math.sin(i*deltaAngle), c.z);
+		}
+
+		gl.glEnd();
+		gl.glPopAttrib();
+	}
+	public static void drawArc(GL2 gl, Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction) throws GkException {
 		drawArc(gl, start, end, center, plane, direction,DEFAULT_COLOR,0);
 	}
 
 
-	public static void drawArc(GL2 gl, Tuple6b start, Tuple6b end, Tuple6b center, Point3f plane, int direction, Point3f color) throws GkException {
+	public static void drawArc(GL2 gl, Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction, Point3f color) throws GkException {
 		drawArc(gl, start, end, center, plane, direction,color,0);
 	}
 
-	public static void drawArc(GL2 gl, Tuple6b startPoint, Tuple6b endPoint, Tuple6b centerPoint, Point3f plane, int direction, Point3f color, int style) throws GkException {
+	public static void drawArc(GL2 gl, Tuple6b startPoint, Tuple6b endPoint, Tuple6b centerPoint, Vector3f plane, int direction, Point3f color, int style) throws GkException {
 		boolean clockwise = direction == IRendererProxy.ARC_CLOCKWISE;
+		plane.normalize();
 		gl.glBegin(GL2.GL_LINE_STRIP);
-		Point3d start = startPoint.toPoint3d();
-		Point3d center = centerPoint.toPoint3d();
-		Point3d end = endPoint.toPoint3d();
+		Point3d start 	= startPoint.toPoint3d();
+		Point3d center 	= centerPoint.toPoint3d();
+		Point3d end 	= endPoint.toPoint3d();
 
 		Vector3d v1 = new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z);
 		Vector3d v2 = new Vector3d(end.x - center.x, end.y - center.y, end.z - center.z);
@@ -113,12 +136,12 @@ public class JoglUtils {
 		nbPoints = (int) (arcLength * 8 );
 		Matrix3d rot = new Matrix3d();
 		rot.rotZ(angle / (nbPoints + 1));
-
+		double dz = (end.z - start.z) / (nbPoints + 1);
 		gl.glVertex3d(start.x, start.y , start.z);
 
 		for(int i = 0; i < nbPoints; i++){
 			rot.transform(v1);
-			gl.glVertex3d(center.x + v1.x, center.y + v1.y, start.z);
+			gl.glVertex3d(center.x + v1.x, center.y + v1.y, start.z + i * dz);
 		}
 		gl.glColor3f(color.x, color.y, color.z);
 		gl.glVertex3d(end.x, end.y, end.z);
@@ -140,4 +163,51 @@ public class JoglUtils {
 	public static void drawLineStrip(GL2 gl, Point3f color, int style, Tuple6b... points) throws GkException {
 		// TODO Auto-generated method stub
 	}
+
+	public static void drawXYZAxis(GL2 gl, Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale, String label, double charWidth) throws GkException {
+		gl.glLineWidth(1.5f);
+		GLUT glut = new GLUT();
+
+		Tuple6b zero =  new Tuple6b(0, 0, 0);
+		Tuple6b xaxis = new Tuple6b(1 * scale, 0, 0);
+		Tuple6b yaxis = new Tuple6b(0, 1 * scale, 0);
+		Tuple6b zaxis = new Tuple6b(0, 0, 1 * scale);
+		gl.glPushMatrix();
+		gl.glTranslated(position.getX().doubleValue(), position.getY().doubleValue(), position.getZ().doubleValue());
+
+		gl.glPushMatrix();
+		drawSegment(gl, zero, xaxis, xColor);
+		gl.glTranslated(xaxis.getX().doubleValue() - 1, xaxis.getY().doubleValue(), xaxis.getZ().doubleValue());
+		gl.glRotated(90, 0, 1, 0);
+		glut.glutSolidCone(0.5, 1, 8, 1);
+		gl.glPopMatrix();
+
+		gl.glPushMatrix();
+		drawSegment(gl, zero, yaxis, yColor);
+		gl.glTranslated(yaxis.getX().doubleValue(), yaxis.getY().doubleValue() - 1, yaxis.getZ().doubleValue());
+		gl.glRotated(-90, 1, 0, 0);
+		glut.glutSolidCone(0.5, 1, 8, 1);
+		gl.glPopMatrix();
+
+		gl.glPushMatrix();
+		drawSegment(gl, zero, zaxis, zColor);
+		gl.glTranslated(zaxis.getX().doubleValue(), zaxis.getY().doubleValue(), zaxis.getZ().doubleValue() - 1);
+		glut.glutSolidCone(0.5, 1, 8, 1);
+		gl.glPopMatrix();
+		if(StringUtils.isNotBlank(label)){
+			gl.glPushMatrix();
+			double textScale = charWidth / glut.glutStrokeWidth(GLUT.STROKE_MONO_ROMAN, ' ');
+			gl.glTranslated(1, 1, 0);
+			gl.glScaled(textScale, textScale, textScale);
+			glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, label);
+			gl.glPopMatrix();
+		}
+		gl.glPopMatrix();
+	}
+
+	public static void drawXYZAxis(GL2 gl, Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale) throws GkException {
+		drawXYZAxis(gl, position, xColor, yColor, zColor, scale, null, 1);
+
+	}
+
 }

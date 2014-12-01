@@ -29,17 +29,32 @@ import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.gcode.rs274ngcv3.RS274;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.AModifier;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.BModifier;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.CModifier;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.XModifier;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.YModifier;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.ZModifier;
 
 public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> extends AbstractSettingCommandBuilder<T> {
 
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractSettingCommandBuilder#buildCommand(org.goko.core.gcode.bean.GCodeCommand, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.commands.SettingCommand)
-	 */
-	@Override
-	public void buildCommand(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException {
-		super.buildCommand(lstTokens, context, targetCommand);
-		setAbstractMotionParameters(lstTokens, context, targetCommand);
+	public AbstractMotionCommandBuilder() {
+		super();
+		addModifier(new XModifier());
+		addModifier(new YModifier());
+		addModifier(new ZModifier());
+		addModifier(new AModifier());
+		addModifier(new BModifier());
+		addModifier(new CModifier());
 	}
+//	/** (inheritDoc)
+//	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractSettingCommandBuilder#buildCommand(org.goko.core.gcode.bean.GCodeCommand, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.commands.SettingCommand)
+//	 */
+//	@Override
+//	public void buildCommand(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException {
+//		super.buildCommand(lstTokens, context, targetCommand);
+//		setAbstractMotionParameters(lstTokens, context, targetCommand);
+//	}
 
 
 	/**
@@ -51,11 +66,11 @@ public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> exte
 	 */
 	private void setAbstractMotionParameters(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
 		targetCommand.setAbsoluteStartCoordinate(new Tuple6b(context.getPosition()));
-
 		setCoordinates(lstTokens, context, targetCommand);
 		//setEndPointCoordinates(rawCommand, targetCommand);
 		// TODO : add plane selection
 	}
+
 
 	/**
 	 * Extracts the X, Y, Z, A, B, C coordinates from the command and context
@@ -65,8 +80,8 @@ public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> exte
 	 * @throws GkException GkException
 	 */
 	private void setCoordinates(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
-		Tuple6b coordinates = new Tuple6b(null,null,null,null,null,null);
-		GCodeToken token = RS274.findUniqueTokenByLetter("x", lstTokens);
+		Tuple6b coordinates = new Tuple6b().setNull();
+		GCodeToken token = RS274.removeUniqueTokenByLetter("x", lstTokens);
 		BigDecimal scale = new BigDecimal("1");
 		if(targetCommand.getUnit() == EnumGCodeCommandUnit.INCHES){
 			scale = new BigDecimal("25.4");
@@ -74,23 +89,23 @@ public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> exte
 		if(token != null){
 			coordinates.setX( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
 		}
-		token = RS274.findUniqueTokenByLetter("y", lstTokens);
+		token = RS274.removeUniqueTokenByLetter("y", lstTokens);
 		if(token != null){
 			coordinates.setY( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
 		}
-		token= RS274.findUniqueTokenByLetter("z", lstTokens);
+		token= RS274.removeUniqueTokenByLetter("z", lstTokens);
 		if(token != null){
 			coordinates.setZ( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
 		}
-		token = RS274.findUniqueTokenByLetter("a", lstTokens);
+		token = RS274.removeUniqueTokenByLetter("a", lstTokens);
 		if(token != null){
 			coordinates.setA( new BigDecimal( RS274.getTokenValue(token)));
 		}
-		token = RS274.findUniqueTokenByLetter("b", lstTokens);
+		token = RS274.removeUniqueTokenByLetter("b", lstTokens);
 		if(token != null){
 			coordinates.setB( new BigDecimal( RS274.getTokenValue(token)));
 		}
-		token = RS274.findUniqueTokenByLetter("c", lstTokens);
+		token = RS274.removeUniqueTokenByLetter("c", lstTokens);
 		if(token != null){
 			coordinates.setC( new BigDecimal( RS274.getTokenValue(token)));
 		}

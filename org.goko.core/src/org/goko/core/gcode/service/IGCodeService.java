@@ -29,26 +29,29 @@ public interface IGCodeService extends IGokoService{
 	/**
 	 * Parse a file as a GCodeFile
 	 * @param filepath the path to file
+	 * @param context the base parsing context
 	 * @return {@link IGCodeProvider}
 	 * @throws GkException GkException
 	 */
-	IGCodeProvider parseFile(String filepath) throws GkException;
+	IGCodeProvider parseFile(String filepath, GCodeContext context) throws GkException;
 
 	/**
 	 * Parse a string ile as a GCodeFile
-	 * @param gcode the gcode to aprse
+	 * @param gcode the gcode to parse
+	 * @param context the base parsing context
 	 * @return {@link IGCodeProvider}
 	 * @throws GkException GkException
 	 */
-	IGCodeProvider parse(String gcode) throws GkException;
+	IGCodeProvider parse(String gcode, GCodeContext context) throws GkException;
 
 	/**
 	 * Parse a command
 	 * @param command the string command
+	 * @param context the base parsing context
 	 * @return a List of {@link GCodeCommand}
 	 * @throws GkException
 	 */
-	GCodeCommand parseCommand(String command) throws GkException;
+	GCodeCommand parseCommand(String command, GCodeContext context) throws GkException;
 
 	/**
 	 * Convert a GCode command into an array of byte

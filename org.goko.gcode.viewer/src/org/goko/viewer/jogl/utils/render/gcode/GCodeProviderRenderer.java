@@ -7,10 +7,12 @@ import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 import org.goko.core.gcode.bean.commands.CommentCommand;
+import org.goko.core.gcode.bean.commands.FunctionCommand;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.core.gcode.bean.commands.RawCommand;
 import org.goko.core.gcode.bean.commands.SettingCommand;
+import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 import org.goko.viewer.jogl.utils.render.IJoglRenderer;
 import org.goko.viewer.jogl.utils.styler.ArcCommandStyler;
@@ -39,11 +41,17 @@ public class GCodeProviderRenderer implements IJoglRenderer,IGCodeCommandVisitor
 	public GCodeProviderRenderer(IGCodeProvider provider) {
 		this.provider = provider;
 		this.linearRenderer = new LinearMotionRenderer();
-		this.linearStyler = new StateStylerWrapper<LinearMotionCommand>(new LinearCommandStyler());
+		this.linearStyler = getStyler(provider, new LinearCommandStyler());
 		this.arcRenderer = new ArcMotionRenderer();
-		this.arcStyler = new StateStylerWrapper<ArcMotionCommand>(new ArcCommandStyler());
+		this.arcStyler = getStyler(provider, new ArcCommandStyler());
 	}
 
+	protected <T extends GCodeCommand> IJoglGCodeCommandStyler<T> getStyler(IGCodeProvider provider, IJoglGCodeCommandStyler<T> baseStyler){
+		if(provider instanceof GCodeExecutionToken){
+			return new StateStylerWrapper<T>((GCodeExecutionToken)provider, baseStyler);
+		}
+		return baseStyler;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
 	 */
@@ -113,5 +121,13 @@ public class GCodeProviderRenderer implements IJoglRenderer,IGCodeCommandVisitor
 		arcRenderer.render(command, proxy, arcStyler);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.FunctionCommand)
+	 */
+	@Override
+	public void visit(FunctionCommand command) throws GkException {
+		// TODO Auto-generated method stub
+
+	}
 
 }

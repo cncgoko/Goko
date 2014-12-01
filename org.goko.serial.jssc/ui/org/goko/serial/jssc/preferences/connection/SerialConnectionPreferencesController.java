@@ -82,8 +82,7 @@ public class SerialConnectionPreferencesController extends AbstractController<Se
 		try {
 			JsscSerialActivator.getPreferenceStore().save();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			notifyException(e);
 		}
 	}
 

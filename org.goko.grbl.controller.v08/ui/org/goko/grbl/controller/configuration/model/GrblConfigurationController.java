@@ -117,7 +117,7 @@ public class GrblConfigurationController extends AbstractController<GrblConfigur
 		try {
 			grblService.setConfiguration(cfg);
 		} catch (GkException e) {
-			e.printStackTrace();
+			notifyException(e);
 		}
 
 	}

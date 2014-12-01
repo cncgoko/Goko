@@ -32,8 +32,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.goko.core.log.GkLog;
 
 public class GkList<T> extends ListViewer {
+	public static final GkLog LOG = GkLog.getLogger(GkList.class);
 
 	public GkList(Composite parent, IObservableList list, Class<T> clazz, String labelField) {
 		super(parent);
@@ -85,16 +87,14 @@ public class GkList<T> extends ListViewer {
 				try {
 					findGetMethod();
 				} catch (NoSuchFieldException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 					return null;
 				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 					return null;
 				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
+					return null;
 				}
 			}
 			String label = StringUtils.EMPTY;
@@ -102,16 +102,13 @@ public class GkList<T> extends ListViewer {
 				Object obj = getMethod.invoke(element);
 				label = String.valueOf(obj);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 				return null;
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 				return null;
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 				return null;
 			}
 			return label;

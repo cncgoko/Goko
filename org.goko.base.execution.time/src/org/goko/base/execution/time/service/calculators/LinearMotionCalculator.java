@@ -41,12 +41,14 @@ public class LinearMotionCalculator implements IGCodeCommandExecutionTimeCalcula
 		Tuple6b 		positionBefore 	= command.getAbsoluteStartCoordinate();
 		Tuple6b 		positionAfter 	= command.getAbsoluteEndCoordinate();
 
-		double dx = Math.abs(positionBefore.getX().doubleValue() - positionAfter.getX().doubleValue());
-		double dy = Math.abs(positionBefore.getY().doubleValue() - positionAfter.getY().doubleValue());
-		double dz = Math.abs(positionBefore.getZ().doubleValue() - positionAfter.getZ().doubleValue());
-		double da = Math.abs(positionBefore.getA().doubleValue() - positionAfter.getA().doubleValue());
-		double db = Math.abs(positionBefore.getB().doubleValue() - positionAfter.getB().doubleValue());
-		double dc = Math.abs(positionBefore.getC().doubleValue() - positionAfter.getC().doubleValue());
+		Tuple6b delta = positionBefore.subtract(positionAfter);
+
+		double dx = (delta.getX() == null) ? 0 : Math.abs(positionBefore.getX().doubleValue() - positionAfter.getX().doubleValue());
+		double dy = (delta.getY() == null) ? 0 : Math.abs(positionBefore.getY().doubleValue() - positionAfter.getY().doubleValue());
+		double dz = (delta.getZ() == null) ? 0 : Math.abs(positionBefore.getZ().doubleValue() - positionAfter.getZ().doubleValue());
+		double da = (delta.getA() == null) ? 0 : Math.abs(positionBefore.getA().doubleValue() - positionAfter.getA().doubleValue());
+		double db = (delta.getB() == null) ? 0 : Math.abs(positionBefore.getB().doubleValue() - positionAfter.getB().doubleValue());
+		double dc = (delta.getC() == null) ? 0 : Math.abs(positionBefore.getC().doubleValue() - positionAfter.getC().doubleValue());
 
 		double max = Math.max(dx, Math.max(dy, Math.max(dz, Math.max(da, Math.max(db, dc)))));
 
@@ -54,6 +56,9 @@ public class LinearMotionCalculator implements IGCodeCommandExecutionTimeCalcula
 		if(command.getFeedrate() != null){
 			feedrate = command.getFeedrate().doubleValue();
 		}else{
+			return 0;
+		}
+		if(feedrate == 0){
 			return 0;
 		}
 		return (max / feedrate) * 60 ;

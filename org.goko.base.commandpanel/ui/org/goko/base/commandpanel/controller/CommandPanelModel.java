@@ -33,6 +33,10 @@ import org.goko.common.bindings.AbstractModelObject;
 public class CommandPanelModel extends AbstractModelObject{
 	private WritableMap actionState;
 	private BigDecimal jogSpeed;
+	private BigDecimal jogIncrement;
+	private boolean incrementalJog;
+//	private boolean incrementalJogSupported;
+//	private boolean continuousJogSupported;
 
 	public CommandPanelModel(){
 		actionState = new WritableMap(String.class, Boolean.class);
@@ -59,6 +63,54 @@ public class CommandPanelModel extends AbstractModelObject{
 	public void setJogSpeed(BigDecimal jogSpeed) {
 		firePropertyChange("jogSpeed", this.jogSpeed, this.jogSpeed = jogSpeed);
 	}
+	/**
+	 * @return the jogIncrement
+	 */
+	public BigDecimal getJogIncrement() {
+		return jogIncrement;
+	}
+	/**
+	 * @param jogIncrement the jogIncrement to set
+	 */
+	public void setJogIncrement(BigDecimal jogIncrement) {
+		firePropertyChange("jogIncrement", this.jogIncrement, this.jogIncrement = jogIncrement);
+	}
+	/**
+	 * @return the incrementalJog
+	 */
+	public boolean isIncrementalJog() {
+		return incrementalJog;
+	}
+	/**
+	 * @param incrementalJog the incrementalJog to set
+	 */
+	public void setIncrementalJog(boolean incrementalJog) {
+		firePropertyChange("incrementalJog", this.incrementalJog, this.incrementalJog = incrementalJog);
+	}
+	/**
+//	 * @return the incrementalJogSupported
+//	 */
+//	public boolean isIncrementalJogSupported() {
+//		return incrementalJogSupported;
+//	}
+//	/**
+//	 * @param incrementalJogSupported the incrementalJogSupported to set
+//	 */
+//	public void setIncrementalJogSupported(boolean incrementalJogSupported) {
+//		firePropertyChange("incrementalJogSupported", this.incrementalJogSupported, this.incrementalJogSupported = incrementalJogSupported);
+//	}
+//	/**
+//	 * @return the continuousJogSupported
+//	 */
+//	public boolean isContinuousJogSupported() {
+//		return continuousJogSupported;
+//	}
+//	/**
+//	 * @param continuousJogSupported the continuousJogSupported to set
+//	 */
+//	public void setContinuousJogSupported(boolean continuousJogSupported) {
+//		firePropertyChange("continuousJogSupported", this.continuousJogSupported, this.continuousJogSupported = continuousJogSupported);
+//	}
 
 
 

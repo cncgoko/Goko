@@ -21,6 +21,7 @@ package org.goko.grbl.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -34,28 +35,27 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
-import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.connection.DataPriority;
-import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionService;
+import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.action.IGkControllerAction;
-import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
-import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.goko.grbl.controller.bean.StatusReport;
 import org.goko.grbl.controller.configuration.GrblConfiguration;
 import org.goko.grbl.controller.configuration.GrblSetting;
 import org.goko.grbl.controller.executionqueue.ExecutionQueue;
@@ -67,25 +67,13 @@ import org.goko.grbl.controller.executionqueue.GrblGCodeExecutionToken;
  * @author PsyKo
  *
  */
-public class GrblControllerService extends EventDispatcher implements IGrblControllerService, IThreeAxisControllerAdapter {
+public class GrblControllerService extends EventDispatcher implements IGrblControllerService, IThreeAxisControllerAdapter, ICoordinateSystemAdapter {
 	/**  Service ID */
 	public static final String SERVICE_ID = "Grbl Controller";
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(GrblControllerService.class);
-	/** Current position of the machine	 */
-	private Tuple6b position;
-	/** Current work position of the machine	 */
-	private Tuple6b workPosition;
-	/** Storage object for machine values (speed, position, etc...) */
-	private MachineValueStore valueStore;
-	/** Connection service*/
-	private IConnectionService connectionService;
 	/** GCode service*/
 	private IGCodeService gcodeService;
-	/** Grbl end line delimiter */
-	private char endLineCharDelimiter;
-	/** Buffer for incoming data	 */
-	private ByteCommandBuffer incomingBuffer;
 	/** The execution queue */
 	private ExecutionQueue<GrblGCodeExecutionToken> executionQueue;
 	/** Sending runnable */
@@ -94,8 +82,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private Timer statusPollingTimer;
 	/** Controller action factory*/
 	private GrblActionFactory grblActionFactory;
-	/** The count of unconfirmed status request */
-	private int unconfirmedStatusRequest;
 	/** Grbl used buffer spaces */
 	private int usedGrblBuffer;
 	/** Grbl configuration */
@@ -103,32 +89,12 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/** applicative log service */
 	private IApplicativeLogService applicativeLogService;
 	private GrblState grblState;
-	/* CONSTANTS  */
-	/** Current status command */
-	private static final String CURRENT_STATUS = "?";
-	/** View parameters request */
-	private static final String VIEW_PARAMETERS = "$#";
-
-	/** Response ok from Grbl */
-	private static final CharSequence OK_RESPONSE = "ok";
-	/** Pause command */
-    public static final byte PAUSE_COMMAND = '!';
-    /** Resume command */
-    public static final byte RESUME_COMMAND = '~';
-    /** Status command */
-    public static final byte STATUS_COMMAND = '?';
-    /** Reset command */
-    public static final byte RESET_COMMAND = 0x18;
-    /** Kill alarm command*/
-    public static final String KILL_ALARM_COMMAND = "$X";
-    /** Home sequence command*/
-    public static final String HOME_COMMAND = "$H";
-	/** Constant for Grbl used buffer value in value store */
-	private static final String GRBL_USED_BUFFER = "GrblControllerUsedRxBuffer";
-	/** Grbl buffer size */
-	public static final int GRBL_BUFFER_SIZE = 120;
+	private GrblCommunicator communicator;
 
 
+	public GrblControllerService() {
+		communicator		 = new GrblCommunicator(this);
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -142,15 +108,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void start() throws GkException {
-		endLineCharDelimiter = '\n';
-		valueStore 			 = new MachineValueStore();
-		position 			 = new Tuple6b();
-		workPosition		 = new Tuple6b();
-		incomingBuffer 		 = new ByteCommandBuffer((byte) endLineCharDelimiter);
-		initValueStore();
+	//	initValueStore();
 		grblActionFactory 	 = new GrblActionFactory(this);
 		configuration 		 = new GrblConfiguration();
 		grblState 			 = new GrblState();
+		grblState.addListener(this);
 		// Initiate execution queue
 		executionQueue 				= new ExecutionQueue<GrblGCodeExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
@@ -160,57 +122,26 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	}
 
-	private void startStatusPollingTimer(){
+	protected void stopStatusPolling(){
+		statusPollingTimer.cancel();
+	}
+
+	public void startStatusPolling() {
 		statusPollingTimer = new Timer();
 		TimerTask task = new TimerTask(){
-
 			@Override
 			public void run() {
-
 				try {
-					if(connectionService != null && connectionService.isConnected()){
-						if(unconfirmedStatusRequest <= 0){
-							refreshStatus();
-						}
-					}
+					refreshStatus();
 				} catch (GkException e) {
 					LOG.error(e);
 				}
-
 			}
 
 		};
 		statusPollingTimer.scheduleAtFixedRate(task, new Date(), 100);
 	}
-	private void stopStatusPollingTimer(){
-		statusPollingTimer.cancel();
-	}
-	/**
-	 * Initialization of the controller value store
-	 * @throws GkException GkException
-	 */
-	protected void initValueStore() throws GkException{
-		valueStore = new MachineValueStore();
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.STATE, "State", "The state of Grbl controller board", MachineState.class),
-								new MachineValue<MachineState>(DefaultControllerValues.STATE, MachineState.UNDEFINED));
-		valueStore.storeValue(new MachineValueDefinition(GrblControllerValues.MACHINE_POSITION_X, "X", "The X position of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(GrblControllerValues.MACHINE_POSITION_X, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(GrblControllerValues.MACHINE_POSITION_Y, "Y", "The Y position of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(GrblControllerValues.MACHINE_POSITION_Y, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(GrblControllerValues.MACHINE_POSITION_Z, "Z", "The Z position of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(GrblControllerValues.MACHINE_POSITION_Z, new BigDecimal("0.000")));
 
-		valueStore.storeValue(new MachineValueDefinition(GrblControllerValues.WORK_POSITION_X, "Wor. X", "The X work position", BigDecimal.class),
-				new MachineValue<BigDecimal>(GrblControllerValues.WORK_POSITION_X, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(GrblControllerValues.WORK_POSITION_Y, "Wor. Y", "The Y work position", BigDecimal.class),
-						new MachineValue<BigDecimal>(GrblControllerValues.WORK_POSITION_Y, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(GrblControllerValues.WORK_POSITION_Z, "Wor. Z", "The Z work position", BigDecimal.class),
-				new MachineValue<BigDecimal>(GrblControllerValues.WORK_POSITION_Z, new BigDecimal("0.000")));
-
-		valueStore.storeValue(new MachineValueDefinition(GRBL_USED_BUFFER, "Grbl Buffer", "The space used in Grbl buffer", Integer.class), new MachineValue<Integer>(GRBL_USED_BUFFER, 0));
-
-		valueStore.addListener(this);
-	}
 
 	/**
 	 * @param evt
@@ -219,6 +150,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public void onMachineValueUpdate(MachineValueUpdateEvent evt){
 		notifyListeners(evt);
 	}
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
@@ -231,8 +163,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public void sendCommand(GCodeCommand command) throws GkException{
 		List<Byte> byteCommand = GkUtils.toBytesList(getGCodeService().convert(command));
 		int usedBufferCount = CollectionUtils.size(byteCommand);
-		byteCommand.add(new Byte((byte)endLineCharDelimiter));
-		connectionService.send( byteCommand );
+		communicator.send( byteCommand );
 		setUsedGrblBuffer(usedGrblBuffer + usedBufferCount);
 	}
 
@@ -241,19 +172,19 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public Point3d getPosition() throws GkException {
-		return workPosition.toPoint3d();
+		return grblState.getWorkPosition().toPoint3d();
 	}
 
 	public Point3d getMachinePosition() throws GkException {
-		return position.toPoint3d();
+		return grblState.getMachinePosition().toPoint3d();
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public Double getX() {
-		BigDecimal xPos = workPosition.getX();
+	public Double getX() throws GkException {
+		BigDecimal xPos = grblState.getWorkPosition().getX();
 		if(xPos != null){
 			return xPos.doubleValue();
 		}
@@ -264,8 +195,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public Double getY() {
-		BigDecimal yPos = workPosition.getY();
+	public Double getY() throws GkException {
+		BigDecimal yPos = grblState.getWorkPosition().getY();
 		if(yPos != null){
 			return yPos.doubleValue();
 		}
@@ -273,18 +204,17 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	/** (inheritDoc)
+	 * @throws GkException
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public Double getZ() {
-		BigDecimal zPos = workPosition.getZ();
+	public Double getZ() throws GkException {
+		BigDecimal zPos = grblState.getWorkPosition().getZ();
 		if(zPos != null){
 			return zPos.doubleValue();
 		}
 		return null;
 	}
-
-
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
@@ -292,6 +222,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	@Override
 	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
 		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider);
+	//	quand on stoppe et relance un fichier, ca fait n'imp
 		executionQueue.add(token);
 		return token;
 	}
@@ -329,7 +260,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public <T> MachineValue<T> getMachineValue(String name, Class<T> clazz) throws GkException {
-		return valueStore.getValue(name, clazz);
+		return getGrblState().getValue(name, clazz);
 	}
 
 	/** (inheritDoc)
@@ -337,7 +268,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public Class<?> getMachineValueType(String name) throws GkException {
-		return valueStore.getControllerValueType(name);
+		return getGrblState().getControllerValueType(name);
 	}
 
 	/** (inheritDoc)
@@ -345,7 +276,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public List<MachineValueDefinition> getMachineValueDefinition() throws GkException {
-		return valueStore.getMachineValueDefinition();
+		return getGrblState().getMachineValueDefinition();
 	}
 
 	/** (inheritDoc)
@@ -353,7 +284,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public MachineValueDefinition findMachineValueDefinition(String id) throws GkException {
-		return valueStore.findMachineValueDefinition(id);
+		return getGrblState().findMachineValueDefinition(id);
 	}
 
 	/** (inheritDoc)
@@ -361,7 +292,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public MachineValueDefinition getMachineValueDefinition(String id) throws GkException {
-		return valueStore.getMachineValueDefinition(id);
+		return getGrblState().getMachineValueDefinition(id);
 	}
 
 	/** (inheritDoc)
@@ -377,88 +308,27 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @throws GkException GkException
 	 */
 	public void setConnectionService(IConnectionService connectionService) throws GkException {
-		this.connectionService = connectionService;
-		getConnectionService().addConnectionListener(this);
+		this.communicator.setConnectionService(connectionService);
 	}
 
-	/**
-	 * @return the connectionService
-	 */
-	public IConnectionService getConnectionService() {
-		return connectionService;
-	}
-
-	@Override
-	public void onConnectionEvent(EnumConnectionEvent event) throws GkException {
-		if(event == EnumConnectionEvent.CONNECTED){
-			incomingBuffer.clear();
-			getConnectionService().addInputDataListener(this);
-			upddateSpaceCoordinates();
-			startStatusPollingTimer();
-		}else if(event == EnumConnectionEvent.DISCONNECTED){
-			getConnectionService().removeInputDataListener(this);
-			statusPollingTimer.cancel();
-			stopStatusPollingTimer();
-			incomingBuffer.clear();
-		}
-	}
 	/**
 	 * Refresh the status of the remote Grbl controller
 	 * @throws GkException GkException
 	 */
 	public void refreshStatus() throws GkException{
-		getConnectionService().send( GkUtils.toBytesList(CURRENT_STATUS) );
+		communicator.sendWithoutEndLineCharacter( GkUtils.toBytesList(Grbl.CURRENT_STATUS) );
 	}
 
-	public void upddateSpaceCoordinates() throws GkException{
-		getConnectionService().send( GkUtils.toBytesList(VIEW_PARAMETERS) );
-	}
-	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionDataListener#onDataReceived(java.util.List)
-	 */
-	@Override
-	public synchronized void onDataReceived(List<Byte> data) throws GkException {
-		incomingBuffer.addAll(data);
-		while(incomingBuffer.hasNext()){
-			handleIncomingData(GkUtils.toString(incomingBuffer.unstackNextCommand()));
-		}
-
+	public void refreshSpaceCoordinates() throws GkException{
+		communicator.send( GkUtils.toBytesList(Grbl.VIEW_PARAMETERS) );
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionDataListener#onDataSent(java.util.List)
-	 */
-	@Override
-	public void onDataSent(List<Byte> data) throws GkException {
-
+	public void refreshParserState() throws GkException{
+		communicator.send( GkUtils.toBytesList(Grbl.PARSER_STATE) );
 	}
 
-	/**
-	 * Process the data received from the remote Grbl controller
-	 * @param data the data to process
-	 * @throws GkException GkException
-	 */
-	protected void handleIncomingData(String data) throws GkException{
-		String trimmedData = StringUtils.trim(data);
-		if(StringUtils.isNotEmpty(trimmedData)){
-			if(StringUtils.equals(trimmedData, OK_RESPONSE)){
-				handleOkResponse();
-			}else if(StringUtils.startsWith(trimmedData, "error:")){
-				handleError(trimmedData);
-			}else if(StringUtils.startsWith(trimmedData, "<") && StringUtils.endsWith(trimmedData, ">")){
-				handleStatusReport(trimmedData);
-			}else if(StringUtils.startsWith(trimmedData, "Grbl")){
-				handleGrblHeader(trimmedData);
-				refreshStatus();
-			}else if(StringUtils.defaultString(trimmedData).matches("\\$[0-9]*=.*")){
-				handleConfigurationReading(trimmedData);
-			}else if(StringUtils.defaultString(trimmedData).matches("\\[G.*\\]")){
-				handleViewCoordinates(trimmedData);
-			}else{
-				System.out.println("Ignoring received data "+ trimmedData);
-				getApplicativeLogService().warning("Ignoring received data "+ trimmedData, SERVICE_ID);
-			}
-		}
+	public void refreshConfiguration() throws GkException{
+		communicator.send( GkUtils.toBytesList(Grbl.CONFIGURATION) );
 	}
 
 	protected void handleConfigurationReading(String cofigurationMessage) throws GkException{
@@ -466,6 +336,19 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		String value 	  = StringUtils.substringBetween(cofigurationMessage, "=","(").trim();
 		configuration.setValue(identifier, value);
 		LOG.info("Updating setting '"+identifier+"' with value '"+value+"'");
+	}
+
+	protected void receiveParserState(String parserState) throws GkException {
+		String[] commands = StringUtils.split(parserState," ");
+		GCodeContext context = new GCodeContext();
+		if(commands != null){
+			for (String strCommand : commands) {
+				GCodeCommand command = gcodeService.parseCommand(strCommand, context);
+				gcodeService.update(context, command);
+			}
+		}
+		grblState.setCurrentContext(context);
+
 	}
 
 	protected void handleError(String errorMessage) throws GkException{
@@ -481,83 +364,39 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 				getApplicativeLogService().error(StringUtils.substringAfter(errorMessage, "error: "), SERVICE_ID);
 			}
 			handleOkResponse();
+		}else{
+			LOG.error("Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: "));
+			getApplicativeLogService().error(StringUtils.substringAfter(errorMessage, "error: "), SERVICE_ID);
 		}
 	}
 
 	protected void handleOkResponse() throws GkException{
-		if(unconfirmedStatusRequest > 0){
-			unconfirmedStatusRequest = 0;
-		}else{
-			GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
-			if(currentToken != null){
-				GCodeCommand command = currentToken.markNextCommandAsConfirmed();
-				if(command != null ){
-					String strCommand = new String(getGCodeService().convert(command));
-					setUsedGrblBuffer(usedGrblBuffer - StringUtils.length(strCommand));
-				}
-				grblStreamingRunnable.releaseBufferSpaceMutex();
+		GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
+		if(currentToken != null){
+			GCodeCommand command = currentToken.markNextCommandAsConfirmed();
+			if(command != null ){
+				String strCommand = new String(getGCodeService().convert(command));
+				setUsedGrblBuffer(usedGrblBuffer - StringUtils.length(strCommand));
 			}
+			grblStreamingRunnable.releaseBufferSpaceMutex();
 		}
 	}
 
-	protected void handleGrblHeader(String grblHeader) throws GkException{
-		String[] tokens = StringUtils.split(grblHeader, " ");
+	protected void initialiseConnectedState() throws GkException{
 		setUsedGrblBuffer(0);
-		if(tokens != null && tokens.length >= 2){
-			LOG.info("Grbl version is "+tokens[1]);
-		}
+		refreshConfiguration();
+		refreshSpaceCoordinates();
+		refreshParserState();
 	}
-	protected void handleViewCoordinates(String message){
-		String identifier = StringUtils.substringBetween(message, "[", ":");
-		String valuesGroup = StringUtils.substringBetween(message, ":", "]");
-		String[] values = StringUtils.split(valuesGroup, ",");
 
-		if(values != null){
-			BigDecimal x = new BigDecimal(values[0]);
-			BigDecimal y = new BigDecimal(values[1]);
-			BigDecimal z = new BigDecimal(values[2]);
-
-			if(StringUtils.equals("G54", identifier)){
-				grblState.setG54Offset(new Tuple6b(x,y,z));
-			}
-		}
-	}
-	protected void handleStatusReport(String statusReport) throws GkException{
-		int comma = StringUtils.indexOf(statusReport, ",");
-		String state = StringUtils.substring(statusReport, 1, comma);
-		MachineState grblState = getGrblStateFromString (state);
-		valueStore.updateValue(DefaultControllerValues.STATE, grblState);
-
-		// Looking for MPosition
-		String mpos = StringUtils.substringBetween(statusReport, "MPos:", ",WPos");
-		String wpos = StringUtils.substringBetween(statusReport, "WPos:",">");
-		String[] machineCoordinates = StringUtils.split(mpos,",");
-		if(machineCoordinates != null){
-			position.setX(new BigDecimal(machineCoordinates[0]));
-			position.setY(new BigDecimal(machineCoordinates[1]));
-			position.setZ(new BigDecimal(machineCoordinates[2]));
-			valueStore.updateValue(GrblControllerValues.MACHINE_POSITION_X, position.getX());
-			valueStore.updateValue(GrblControllerValues.MACHINE_POSITION_Y, position.getY());
-			valueStore.updateValue(GrblControllerValues.MACHINE_POSITION_Z, position.getZ());
-		}
-		String[] workCoordinates = StringUtils.split(wpos,",");
-		if(workCoordinates != null){
-			workPosition.setX(new BigDecimal(workCoordinates[0]));
-			workPosition.setY(new BigDecimal(workCoordinates[1]));
-			workPosition.setZ(new BigDecimal(workCoordinates[2]));
-			valueStore.updateValue(GrblControllerValues.WORK_POSITION_X, workPosition.getX());
-			valueStore.updateValue(GrblControllerValues.WORK_POSITION_Y, workPosition.getY());
-			valueStore.updateValue(GrblControllerValues.WORK_POSITION_Z, workPosition.getZ());
-		}
+	protected void handleStatusReport(StatusReport statusReport) throws GkException{
+		grblState.setState(statusReport.getState());
+		grblState.setMachinePosition(statusReport.getMachinePosition());
+		grblState.setWorkPosition(statusReport.getWorkPosition());
 	}
 
 	public MachineState getState() throws GkException{
-		MachineState state = MachineState.UNDEFINED;
-		MachineValue<MachineState> storedState = valueStore.getValue(DefaultControllerValues.STATE, MachineState.class);
-		if(storedState != null && storedState.getValue() != null){
-			state = storedState.getValue();
-		}
-		return state;
+		return grblState.getState();
 	}
 
 	protected MachineState getGrblStateFromString(String code){
@@ -570,33 +409,26 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			default: return MachineState.UNDEFINED;
 		}
 	}
-	private void addEndLineCharacter(List<Byte> command){
-		//command.add(new Byte((byte) endLineCharDelimiter));
-		command.add(new Byte((byte) endLineCharDelimiter));
-	}
+
 	// Action related methods
 	public void startHomingSequence() throws GkException{
 		List<Byte> homeCommand = new ArrayList<Byte>();
-		homeCommand.addAll(GkUtils.toBytesList(HOME_COMMAND));
-		addEndLineCharacter(homeCommand);
-		getConnectionService().send( homeCommand );
+		homeCommand.addAll(GkUtils.toBytesList(Grbl.HOME_COMMAND));
+		communicator.send( homeCommand );
 	}
 
 	public void pauseMotion() throws GkException{
 		List<Byte> pauseCommand = new ArrayList<Byte>();
-		pauseCommand.add(PAUSE_COMMAND);
-		getConnectionService().send( pauseCommand );
+		pauseCommand.add(Grbl.PAUSE_COMMAND);
+		communicator.sendImmediately( pauseCommand );
 	}
 
 	public void stopMotion() throws GkException{
 		List<Byte> stopCommand = new ArrayList<Byte>();
-		stopCommand.add(PAUSE_COMMAND);
-		addEndLineCharacter(stopCommand);
-		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
-		stopCommand.clear();
-		stopCommand.add(RESET_COMMAND); // TODO : it seems that resetting while in motion causes the GRBL to go back to alarm state. Wait motion to be complete before resetting
-		addEndLineCharacter(stopCommand);
-		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
+		stopCommand.add(Grbl.PAUSE_COMMAND);
+		stopCommand.add(Grbl.RESET_COMMAND); // TODO : it seems that resetting while in motion causes the GRBL to go back to alarm state. Wait motion to be complete before resetting
+		communicator.sendImmediately(stopCommand);
+
 		if(executionQueue != null){
 			executionQueue.clear();
 			grblStreamingRunnable.releaseBufferSpaceMutex();
@@ -606,8 +438,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	public void startMotion() throws GkException{
 		List<Byte> startResumeCommand = new ArrayList<Byte>();
-		startResumeCommand.add(RESUME_COMMAND);
-		getConnectionService().send( startResumeCommand );
+		startResumeCommand.add(Grbl.RESUME_COMMAND);
+		communicator.send( startResumeCommand );
 	}
 
 	public void startJog(EnumGrblAxis axis, String feed, String step) throws GkException{
@@ -618,15 +450,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		command += step;
 		command += "F"+feed;
 		List<Byte> lstBytes = GkUtils.toBytesList(command);
-		addEndLineCharacter(lstBytes);
-		lstBytes.addAll(GkUtils.toBytesList("G90"));
-		addEndLineCharacter(lstBytes);
-
-		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+		communicator.send(lstBytes);
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
-		List<Byte> lstBytes = GkUtils.toBytesList("G92"); // TODO : fix this because g28.3 is not supported in Grbl
+		List<Byte> lstBytes = GkUtils.toBytesList("G92");
 		if(CollectionUtils.isNotEmpty(axes)){
 			for (String axe : axes) {
 				lstBytes.addAll(GkUtils.toBytesList(axe+"0"));
@@ -634,15 +462,20 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		}else{
 			lstBytes.addAll( GkUtils.toBytesList("X0Y0Z0"));
 		}
-		addEndLineCharacter(lstBytes);
-		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+		communicator.send(lstBytes);
+	}
+
+	public void killAlarm() throws GkException{
+		List<Byte> lstBytes = GkUtils.toBytesList("$X");
+		communicator.send(lstBytes);
 	}
 
 	/**
 	 * @return the usedGrblBuffer
+	 * @throws GkException  GkException
 	 */
-	public int getUsedGrblBuffer() {
-		return usedGrblBuffer;
+	public int getUsedGrblBuffer() throws GkException {
+		return grblState.getUsedGrblBuffer();
 	}
 
 	/**
@@ -651,7 +484,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	public void setUsedGrblBuffer(int usedGrblBuffer) throws GkException {
 		this.usedGrblBuffer = usedGrblBuffer;
-		this.valueStore.updateValue(GRBL_USED_BUFFER, usedGrblBuffer);
+		grblState.setUsedGrblBuffer(usedGrblBuffer);
 	}
 
 	/**
@@ -674,8 +507,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			List<Byte> cfgCommand = new ArrayList<Byte>();
 			for (GrblSetting<?> grblSetting : lstSetting) {
 				cfgCommand.addAll(GkUtils.toBytesList(grblSetting.getIdentifier()+"="+grblSetting.getValueAsString() ));
-				addEndLineCharacter(cfgCommand);
-				getConnectionService().send( cfgCommand );
+				communicator.send( cfgCommand );
 				cfgCommand.clear();
 			}
 		}
@@ -714,8 +546,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/**
 	 * @param applicativeLogService the applicativeLogService to set
 	 */
-	public void setApplicativeLogService(
-			IApplicativeLogService applicativeLogService) {
+	public void setApplicativeLogService(IApplicativeLogService applicativeLogService) {
 		this.applicativeLogService = applicativeLogService;
 	}
 
@@ -726,6 +557,40 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	@Override
 	public GrblState getGrblState() {
 		return grblState;
+	}
+
+	protected void setOffsetCoordinate(String offsetIdentifier, Tuple6b value) throws GkException{
+		getGrblState().setOffset(EnumCoordinateSystem.valueOf(offsetIdentifier), value);
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getCurrentGCodeContext()
+	 */
+	@Override
+	public GCodeContext getCurrentGCodeContext() throws GkException {
+		return grblState.getCurrentContext();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystemOffset(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 */
+	@Override
+	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+		return grblState.getOffset(cs);
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystem()
+	 */
+	@Override
+	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
+		return new ArrayList<EnumCoordinateSystem>(Arrays.asList(EnumCoordinateSystem.values()));
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCurrentCoordinateSystem()
+	 */
+	@Override
+	public EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException {
+		return grblState.getCurrentContext().getCoordinateSystem();
 	}
 
 }

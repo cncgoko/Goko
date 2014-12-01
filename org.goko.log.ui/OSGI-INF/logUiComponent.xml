@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="false" name="org.goko.log.ui">
+   <implementation class="org.goko.log.ui.ApplicativeLogListenerService"/>
+   <service>
+      <provide interface="org.goko.core.common.applicative.logging.IApplicativeLogService"/>
+   </service>
+</scr:component>

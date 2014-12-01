@@ -19,12 +19,14 @@
  */
 package org.goko.tools.centerfinder.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 
 /**
  * Center finder model
@@ -38,7 +40,9 @@ public class CenterFinderModel extends AbstractModelObject{
 	private String centerXPosition;
 	private String centerYPosition;
 	private String centerZPosition;
+	private String radius;
 	private Tuple6b selectedPoint;
+	private CircleCenterFinderResult circleCenterResult;
 
 	public CenterFinderModel(){
 		samplePoints = new WritableList();
@@ -104,6 +108,41 @@ public class CenterFinderModel extends AbstractModelObject{
 	 */
 	public void setSelectedPoint(Tuple6b selectedPoint) {
 		firePropertyChange("selectedPoint", this.selectedPoint, this.selectedPoint = selectedPoint);
+	}
+	/**
+	 * @return the circleCenterResult
+	 */
+	public CircleCenterFinderResult getCircleCenterResult() {
+		return circleCenterResult;
+	}
+	/**
+	 * @param circleCenterResult the circleCenterResult to set
+	 */
+	public void setCircleCenterResult(CircleCenterFinderResult circleCenterResult) {
+		this.circleCenterResult = circleCenterResult;
+		if(circleCenterResult != null && circleCenterResult.getCenter() != null){
+			setCenterXPosition(new BigDecimal(circleCenterResult.getCenter().x).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+			setCenterYPosition(new BigDecimal(circleCenterResult.getCenter().y).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+			setCenterZPosition(new BigDecimal(circleCenterResult.getCenter().z).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+			setRadius(new BigDecimal(circleCenterResult.getRadius()).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+		}else{
+			setCenterXPosition("--");
+			setCenterYPosition("--");
+			setCenterZPosition("--");
+			setRadius("--");
+		}
+	}
+	/**
+	 * @return the radius
+	 */
+	public String getRadius() {
+		return radius;
+	}
+	/**
+	 * @param radius the radius to set
+	 */
+	public void setRadius(String radius) {
+		firePropertyChange("radius", this.radius, this.radius = radius);
 	}
 
 

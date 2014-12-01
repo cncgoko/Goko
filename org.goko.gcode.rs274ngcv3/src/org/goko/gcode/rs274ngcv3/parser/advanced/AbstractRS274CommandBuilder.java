@@ -62,6 +62,4 @@ public abstract class AbstractRS274CommandBuilder<T extends GCodeCommand> implem
 		buildCommand(lstTokens, context, command);
 		return command;
 	}
-
-
 }

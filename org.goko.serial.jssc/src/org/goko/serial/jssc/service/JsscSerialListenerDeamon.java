@@ -45,9 +45,11 @@ public class JsscSerialListenerDeamon implements Runnable{
 	}
 
 	public void addAll(String buffer){
-		queue.addAll(GkUtils.toBytesList(buffer));
-		synchronized (emptyBufferLock) {
-			emptyBufferLock.notify();
+		synchronized (queue) {
+			queue.addAll(GkUtils.toBytesList(buffer));
+			synchronized (emptyBufferLock) {
+				emptyBufferLock.notify();
+			}
 		}
 	}
 	/** (inheritDoc)
@@ -58,12 +60,14 @@ public class JsscSerialListenerDeamon implements Runnable{
 		while(!stopped){
 			waitDataInBuffer();
 			List<Byte> notifiedBuffer = new ArrayList<Byte>();
-			queue.drainTo(notifiedBuffer);
-
+			synchronized (queue) {
+				queue.drainTo(notifiedBuffer);
+				queue.clear();
+			}
 			try {
 				jsscService.notifyInputListeners(notifiedBuffer);
 			} catch (GkException e) {
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 	}

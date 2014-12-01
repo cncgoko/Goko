@@ -35,6 +35,17 @@ public class GkUtils {
 		return lst;
 	}
 
+
+	public static List<Byte> toBytesList(byte[] arr){
+		List<Byte> lst = new ArrayList<Byte>();
+		if(arr != null){
+			for(int i = 0; i < arr.length; i++) {
+				lst.add(new Byte(arr[i]));
+			}
+		}
+		return lst;
+	}
+
 	public static List<Byte> addBytesArray(List<Byte> lst, byte[] arr){
 		if(arr != null){
 			for(int i = 0; i < arr.length; i++) {

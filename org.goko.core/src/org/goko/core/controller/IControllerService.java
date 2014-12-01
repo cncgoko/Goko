@@ -10,6 +10,7 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
@@ -73,6 +74,12 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	 * @throws GkException GkException
 	 */
 	Class<?> getMachineValueType(String name) throws GkException;
+	/**
+	 * Returns the current GCode context of the controller
+	 * @return GCodeContext
+	 * @throws GkException exception
+	 */
+	GCodeContext getCurrentGCodeContext() throws GkException;
 
 	/**
 	 * Returns the list of available values
@@ -87,5 +94,6 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	void cancelFileSending() throws GkException;
 
 	void moveToAbsolutePosition(Tuple6b position) throws GkException;
+
 
 }

@@ -59,5 +59,4 @@ public interface IJoglViewerService extends IViewer3DService, GLEventListener{
 	public IJoglRenderer getJoglRenderer(String name) throws GkException;
 
 	void addRenderer(IJoglRenderer renderer) throws GkException;
-
 }

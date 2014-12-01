@@ -20,6 +20,7 @@
 package org.goko.core.gcode.bean.commands;
 
 public enum EnumGCodeCommandFunctionType {
+	UNKNOWN,
 	PROGRAM_STOP, //M0 program stop
 	OPTIONAL_PROGRAM_STOP,	//	M1 optional program stop
 	PROGRAM_END,	//	M2 program end

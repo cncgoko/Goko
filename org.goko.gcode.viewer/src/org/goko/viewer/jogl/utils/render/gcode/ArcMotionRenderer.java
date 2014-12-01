@@ -1,6 +1,7 @@
 package org.goko.viewer.jogl.utils.render.gcode;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
@@ -26,7 +27,7 @@ public class ArcMotionRenderer extends AbstractGCodeCommandRenderer<ArcMotionCom
 		if(command != null){
 			styler.enableRenderingStyle(command, proxy);
 			// TODO change plane selection
-			Point3f plane = new Point3f(1, 1, 0);
+			Vector3f plane = new Vector3f(0, 0, 1);
 			int direction = IRendererProxy.ARC_COUNTERCLOCKWISE;
 			if(command.isClockwise()){
 				direction = IRendererProxy.ARC_CLOCKWISE;

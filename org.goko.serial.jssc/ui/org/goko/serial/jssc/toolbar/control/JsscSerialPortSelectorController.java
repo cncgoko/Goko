@@ -77,7 +77,7 @@ public class JsscSerialPortSelectorController extends AbstractController<JsscSer
 			}
 			onSerialPortChange();
 		} catch (GkException e) {
-			e.printStackTrace();
+			notifyException(e);
 		}
 	}
 

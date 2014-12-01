@@ -20,7 +20,6 @@
 package org.goko.grbl.controller;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.viewer.renderer.AbstractViewer3DRenderer;
 import org.goko.core.viewer.renderer.IRendererProxy;
 
@@ -43,10 +42,31 @@ public class GrblRendererService extends AbstractViewer3DRenderer {
 	 */
 	@Override
 	public void render(IRendererProxy proxy) throws GkException {
-		if(grblService != null){
-			Tuple6b g54offset = grblService.getGrblState().getG54Offset();
-			proxy.drawPoint(g54offset);
-		}
+//		if(grblService != null){
+//			EnumCoordinateSystem coordinateSystem = grblService.getCurrentGCodeContext().getCoordinateSystem();
+//			Tuple6b offsets = grblService.getGrblState().getOffset(coordinateSystem);
+//			Tuple6b machineOrigin = new Tuple6b().setZero().subtract(new Tuple6b(offsets));
+//
+//			for (EnumCoordinateSystem cs : EnumCoordinateSystem.values()) {
+//				Tuple6b csOffset = grblService.getGrblState().getOffset(cs);
+//				if(csOffset != null){
+//					csOffset = csOffset.add(machineOrigin);
+//					Point3f color = new Point3f(0.4f,0.4f,0.4f);
+//					if(cs == coordinateSystem){
+//						color = new Point3f(1f,1f,0f);
+//					}
+//					proxy.drawXYZAxis(csOffset, color, color, color, 3, cs.toString(), 1.5);
+//				}
+//			}
+//			Tuple6b g54offset = grblService.getGrblState().getG54Offset();
+//			proxy.drawXYZAxis(g54offset, new Point3f(0.8f,0.8f,0.8f), new Point3f(0.8f,0.8f,0.8f), new Point3f(0.8f,0.8f,0.8f), 3);
+//			Tuple6b g55offset = grblService.getGrblState().getG54Offset();
+//			proxy.drawPoint(g55offset);
+//			Tuple6b g56offset = grblService.getGrblState().getG54Offset();
+//			proxy.drawPoint(g56offset);
+//			Tuple6b g57offset = grblService.getGrblState().getG54Offset();
+//			proxy.drawPoint(g57offset);
+		//}
 	}
 
 	public void setGrblRendererService(IGrblControllerService grblService) {

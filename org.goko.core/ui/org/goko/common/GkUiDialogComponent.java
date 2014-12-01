@@ -20,8 +20,6 @@
 package org.goko.common;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.bindings.AbstractModelObject;
@@ -40,15 +38,18 @@ public abstract class GkUiDialogComponent<C extends AbstractController<D>, D ext
 
 	@EventListener(ErrorEvent.class)
 	public void displayError(ErrorEvent e){
-		ErrorDialog.openError(null, "Goko", e.getMessage(), e.getStatus());
+		uiComponent.displayError(e);
 	}
 
 
 	@EventListener(WarningEvent.class)
 	public void displayWarning(WarningEvent e){
-		MessageDialog.openWarning(null, "Goko", e.getMessage());
+		uiComponent.displayWarning(e);
 	}
 
+	public void displayMessage(GkException e){
+		uiComponent.displayMessage(e);
+	}
 	/**
 	 * @return the controller
 	 */
@@ -76,10 +77,5 @@ public abstract class GkUiDialogComponent<C extends AbstractController<D>, D ext
 	public void setDataModel(D dataModel) {
 		uiComponent.setDataModel(dataModel);
 	}
-
-	public void displayMessage(GkException e){
-		uiComponent.displayMessage(e);
-	}
-
 
 }

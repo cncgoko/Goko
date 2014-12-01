@@ -46,16 +46,22 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	private String name;
 	/** The bounds of this provider */
 	private BoundingTuple6b bounds;
+	/** the list of commands */
+	protected List<GCodeCommand> lstCommands;
 	/** The map of commands by Id */
 	protected Map<Integer, GCodeCommand> mapCommandById;
 	/** The map of executed commands */
 	protected List<Integer> mapExecutedCommandById;
 	/** The map of errors commands */
 	protected List<Integer> mapErrorsCommandById;
+	/** The map of state by command id*/
+	protected Map<Integer, Integer> mapStateByIdCommand;
 	/** The list of commands */
 	protected List<Integer> commands;
 	/** The current command index */
 	protected int currentIndex;
+	/** Completed state  */
+	protected boolean complete;
 
 	/**
 	 * Constructor
@@ -64,10 +70,12 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	public GCodeExecutionToken(IGCodeProvider provider) {
 		this.name = provider.getName();
 		this.mapCommandById 		= new HashMap<Integer, GCodeCommand>();
+		this.mapStateByIdCommand 	= new HashMap<Integer, Integer>();
 		this.mapExecutedCommandById = new ArrayList<Integer>();
 		this.mapErrorsCommandById 	= new ArrayList<Integer>();
 		this.bounds = provider.getBounds();
 		this.currentIndex = -1;
+		this.lstCommands = new ArrayList<GCodeCommand>(provider.getGCodeCommands());
 		this.commands = new ArrayList<Integer>();
 
 		if(CollectionUtils.isNotEmpty(provider.getGCodeCommands())){
@@ -106,7 +114,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	@Override
 	public List<GCodeCommand> getGCodeCommands() {
-		return new ArrayList<GCodeCommand>(mapCommandById.values());
+		return lstCommands;
 	}
 
 	/** (inheritDoc)
@@ -132,6 +140,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	public void markAsExecuted(Integer idCommand) throws GkException {
 		GCodeCommand command = mapCommandById.get(idCommand);
 		mapExecutedCommandById.add(command.getId());
+		mapStateByIdCommand.put(command.getId(), GCodeCommandState.EXECUTED);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.EXECUTED));
 	}
 
@@ -150,6 +159,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	public void markAsError(Integer idCommand) throws GkException {
 		GCodeCommand command = mapCommandById.get(idCommand);
 		mapErrorsCommandById.add(command.getId());
+		mapStateByIdCommand.put(command.getId(), GCodeCommandState.ERROR);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.ERROR));
 	}
 
@@ -166,6 +176,9 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	@Override
 	public GCodeCommandState getCommandState(Integer idCommand) throws GkException {
+		if(mapStateByIdCommand.containsKey(idCommand)){
+			return new GCodeCommandState(mapStateByIdCommand.get(idCommand));
+		}
 		return new GCodeCommandState(GCodeCommandState.NONE);
 	}
 
@@ -217,6 +230,23 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	@Override
 	public GCodeCommand getCommandById(Integer id) throws GkException {
 		return mapCommandById.get(id);
+	}
+
+	/**
+	 * @return the complete
+	 */
+	public boolean isComplete() {
+		return complete;
+	}
+
+	/**
+	 * @param complete the complete to set
+	 */
+	public void setComplete(boolean complete) {
+		this.complete = complete;
+		synchronized (this) {
+			notify();
+		}
 	}
 
 

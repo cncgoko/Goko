@@ -47,7 +47,7 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return !ObjectUtils.equals(MachineState.UNDEFINED, getControllerService().getState());
+		return !ObjectUtils.equals(MachineState.UNDEFINED, getControllerService().getState()) && !ObjectUtils.equals(MachineState.ALARM, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

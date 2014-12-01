@@ -59,7 +59,7 @@ public class DROPreferencesPage extends GkUiPreferencePageComponent<DROPreferenc
 		super(new DROPreferencesPageController(new DROPreferencesPageModel()));
 		ContextInjectionFactory.inject(getController(), context);
 		setDescription("Configure digital read out view.");
-		setImageDescriptor(ResourceManager.getPluginImageDescriptor("org.goko.base.dro", "icons/eye.png"));
+		setImageDescriptor(ResourceManager.getPluginImageDescriptor("org.goko.base.dro", "icons/compass.png"));
 		setTitle("Digital read out");
 		this.context = context;
 	}
@@ -148,7 +148,7 @@ public class DROPreferencesPage extends GkUiPreferencePageComponent<DROPreferenc
 		try {
 			initBindings();
 		} catch (GkException e) {
-			e.printStackTrace();
+			displayMessage(e);
 		}
 		return container;
 	}

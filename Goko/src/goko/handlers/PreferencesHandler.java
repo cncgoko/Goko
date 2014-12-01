@@ -29,7 +29,9 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.contributions.IContributionFactory;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.preference.IPreferenceNode;
@@ -51,6 +53,7 @@ public class PreferencesHandler {
 	private static final GkLog LOG = GkLog.getLogger(PreferencesHandler.class);
 
 	public static final String PREFS_PAGE = "Goko.org.goko.ui.gkPreferencePages";
+	public static final String PAGE_ID = "goko.org.ui.page.id";
 	protected static final String ELMT_PAGE = "page";
 	protected static final String ATTR_CLASS = "class";
 	private static final String ATTR_ID = "id";
@@ -60,22 +63,30 @@ public class PreferencesHandler {
 	@Inject protected IExtensionRegistry registry;
 	@Inject protected IEclipseContext context;
 
+	@CanExecute
+	public boolean canExecute(){
+		return true;
+	}
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell){
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, @Named(PAGE_ID) @Optional String pageId){
 		PreferenceManager pm;
 		try {
 			pm = configure();
 		} catch (InvalidRegistryObjectException e) {
-			e.printStackTrace();
+			LOG.error(e);
 			return;
 		}
 		PreferenceDialog dialog = new PreferenceDialog(shell, pm);
 		ScopedPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, "Goko");
 		dialog.setPreferenceStore(store);
+	       if(StringUtils.isNotBlank(pageId)){
+	        	dialog.setSelectedNode(pageId);
+	        }
 		dialog.create();
 		dialog.getTreeViewer().setComparator(new ViewerComparator());
         dialog.getTreeViewer().expandAll();
-		dialog.open();
+
+        dialog.open();
 	}
 
 	public PreferenceManager configure() throws InvalidRegistryObjectException{

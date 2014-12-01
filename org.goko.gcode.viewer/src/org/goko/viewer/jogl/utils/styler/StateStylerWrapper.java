@@ -24,19 +24,22 @@ import javax.vecmath.Point3f;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
+import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 
 public class StateStylerWrapper<T extends GCodeCommand> implements IJoglGCodeCommandStyler<T> {
-	private static Point3f COLOR_SENT 		= new Point3f(0.3f,0.3f,0.3f);
-
+	private static Point3f COLOR_SENT 		= new Point3f(0.6f,0.3f,0.3f);
+	private static Point3f COLOR_EXECUTED	= new Point3f(0.3f,0.3f,0.3f);
+	private GCodeExecutionToken executionToken;
 	private IJoglGCodeCommandStyler<T> baseStyler;
 
 	/**
 	 * Constructor
 	 * @param styler the styler to wrap
 	 */
-	public StateStylerWrapper(IJoglGCodeCommandStyler<T> styler) {
+	public StateStylerWrapper(GCodeExecutionToken executionToken, IJoglGCodeCommandStyler<T> styler) {
 		this.baseStyler = styler;
+		this.executionToken = executionToken;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.styler.IJoglGCodeCommandStyler#enableRenderingStyle(org.goko.core.gcode.bean.GCodeCommand, org.goko.viewer.jogl.service.JoglRendererProxy)
@@ -68,7 +71,10 @@ public class StateStylerWrapper<T extends GCodeCommand> implements IJoglGCodeCom
 	 */
 	@Override
 	public Point3f getVertexColor(T command, JoglRendererProxy proxy) throws GkException {
-		if(command.getState() != null && command.getState().isState(GCodeCommandState.SENT)){
+		GCodeCommandState commandState = executionToken.getCommandState(command.getId());
+		if(commandState != null && commandState.isState(GCodeCommandState.EXECUTED)){
+			return COLOR_EXECUTED;
+		}else if(commandState != null && commandState.isState(GCodeCommandState.SENT)){
 			return COLOR_SENT;
 		}else{
 			return baseStyler.getVertexColor(command, proxy);

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.gcode.bean.BoundingTuple6b;
@@ -93,7 +92,7 @@ public abstract class AbstractGCodeProvider implements IGCodeProvider{
 			id = id +1;
 			command.setId(id);
 		}
-		if(StringUtils.isBlank(command.getLineNumber())){
+		if(command.getLineNumber() == null){
 			generateLineNumber(command);
 		}
 		this.mapCommandById.put(command.getId(), command);
@@ -107,7 +106,7 @@ public abstract class AbstractGCodeProvider implements IGCodeProvider{
 	 */
 	private void generateLineNumber(GCodeCommand command) {
 		int lineNumber = CollectionUtils.size(mapCommandById) + 1;
-		command.setLineNumber("N"+String.valueOf(lineNumber));
+		command.setLineNumber(lineNumber);
 	}
 	/**
 	 * @return the id

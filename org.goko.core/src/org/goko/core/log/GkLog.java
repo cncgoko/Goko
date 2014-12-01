@@ -14,41 +14,14 @@ public class GkLog {
 	}
 
 	public void info(String msg) {
-		/*try{
-			if(ServiceManager.getLogService() != null){
-				ServiceManager.getLogService().log(LogService.LOG_INFO, msg);
-			}else{
-				System.out.println(msg);
-			}
-		}catch(GkException e){
-			e.printStackTrace();
-		}*/
 		logger.info(msg);
 	}
 
 	public void debug(String msg) {
-		/*try{
-			if(ServiceManager.getLogService() != null){
-				ServiceManager.getLogService().log(LogService.LOG_DEBUG, msg);
-			}else{
-				System.out.println(msg);
-			}
-		}catch(GkException e){
-			e.printStackTrace();
-		}*/
 		logger.debug(msg);
 	}
 
 	public void error(String msg) {
-		/*try{
-			if(ServiceManager.getLogService() != null){
-				ServiceManager.getLogService().log(LogService.LOG_ERROR, msg);
-			}else{
-				System.err.println(msg);
-			}
-		}catch(GkException e){
-			e.printStackTrace();
-		}*/
 		logger.error(msg);
 	}
 	/**

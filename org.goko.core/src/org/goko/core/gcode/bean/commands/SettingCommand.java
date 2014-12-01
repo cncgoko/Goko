@@ -33,14 +33,14 @@ import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 public class SettingCommand extends CommentCommand{
 	/** Type of motion command */
 	private EnumGCodeCommandMotionType motionType;
-	/** Motion mode (false = rapid, true = feedrate)*/
+	/** Motion mode */
 	private EnumGCodeCommandMotionMode motionMode;
 	/** Explicit mode. This command redefines a value for the motion mode.
 	 *  If false, then the value is inherited from previous command*/
 	private boolean explicitMotionMode;
-	/** The feedrate of the motion */
+	/** The feed rate of the motion */
 	private BigDecimal feedrate;
-	/** Explicit mode. This command redefines a value for the feedrate
+	/** Explicit mode. This command redefines a value for the feed rate
 	*  If false, then the value is inherited from previous command*/
 	private boolean explicitFeedrate;
 	/** The unit */
@@ -53,7 +53,23 @@ public class SettingCommand extends CommentCommand{
 	/** Explicit mode. This command redefines a value for the distance mode
 	 *  If false, then the value is inherited from previous command*/
 	private boolean explicitDistanceMode;
-
+	/** Specify the tool number */
+	private Integer toolNumber;
+	/** Explicit mode. This command redefines a value for the tool number
+	 *  If false, then the value is inherited from previous command*/
+	private boolean explicitToolNumber;
+	/** The current plane */
+	private EnumGCodeCommandPlane plane;
+	/** Explicit plane selection */
+	private boolean explicitPlane;
+	/** The current coordinate system */
+	private EnumCoordinateSystem coordinateSystem;
+	/** Explicit coordinate system selection */
+	private boolean explicitcoordinateSystem;
+	/** The spindle speed */
+	private BigDecimal spindleSpeed;
+	/** Explicit mode for spindle speed*/
+	private boolean explicitSplindleSpeed;
 	/**
 	 * Constructor
 	 */
@@ -81,8 +97,21 @@ public class SettingCommand extends CommentCommand{
 		context.setMotionMode(motionMode);
 		context.setMotionType(motionType);
 		context.setUnit(unit);
+		context.setPlane(plane);
+		context.setCoordinateSystem(coordinateSystem);
 	}
 
+	@Override
+	public void initFromContext(GCodeContext context) {
+		super.initFromContext(context);
+		setDistanceMode(context.getDistanceMode());
+		setFeedrate(context.getFeedrate());
+		setMotionMode(context.getMotionMode());
+		setMotionType(context.getMotionType());
+		setUnit(context.getUnit());
+		setPlane(context.getPlane());
+		setCoordinateSystem(context.getCoordinateSystem());
+	}
 	/**
 	 * @return the feedrate
 	 */
@@ -240,6 +269,118 @@ public class SettingCommand extends CommentCommand{
 	 */
 	public void setMotionType(EnumGCodeCommandMotionType motionType) {
 		this.motionType = motionType;
+	}
+
+	/**
+	 * @return the toolNumber
+	 */
+	public Integer getToolNumber() {
+		return toolNumber;
+	}
+
+	/**
+	 * @param toolNumber the toolNumber to set
+	 */
+	public void setToolNumber(Integer toolNumber) {
+		this.toolNumber = toolNumber;
+	}
+
+	/**
+	 * @return the explicitToolNumber
+	 */
+	public boolean isExplicitToolNumber() {
+		return explicitToolNumber;
+	}
+
+	/**
+	 * @param explicitToolNumber the explicitToolNumber to set
+	 */
+	public void setExplicitToolNumber(boolean explicitToolNumber) {
+		this.explicitToolNumber = explicitToolNumber;
+	}
+
+	/**
+	 * @return the plane
+	 */
+	public EnumGCodeCommandPlane getPlane() {
+		return plane;
+	}
+
+	/**
+	 * @param plane the plane to set
+	 */
+	public void setPlane(EnumGCodeCommandPlane plane) {
+		this.plane = plane;
+	}
+
+	/**
+	 * @return the explicitPlane
+	 */
+	public boolean isExplicitPlane() {
+		return explicitPlane;
+	}
+
+	/**
+	 * @param explicitPlane the explicitPlane to set
+	 */
+	public void setExplicitPlane(boolean explicitPlane) {
+		this.explicitPlane = explicitPlane;
+	}
+
+	/**
+	 * @return the coordinateSystem
+	 */
+	public EnumCoordinateSystem getCoordinateSystem() {
+		return coordinateSystem;
+	}
+
+	/**
+	 * @param coordinateSystem the coordinateSystem to set
+	 */
+	public void setCoordinateSystem(EnumCoordinateSystem coordinateSystem) {
+		this.coordinateSystem = coordinateSystem;
+	}
+
+	/**
+	 * @return the explicitcoordinateSystem
+	 */
+	public boolean isExplicitcoordinateSystem() {
+		return explicitcoordinateSystem;
+	}
+
+	/**
+	 * @param explicitcoordinateSystem the explicitcoordinateSystem to set
+	 */
+	public void setExplicitcoordinateSystem(boolean explicitcoordinateSystem) {
+		this.explicitcoordinateSystem = explicitcoordinateSystem;
+	}
+
+	/**
+	 * @return the spindleSpeed
+	 */
+	public BigDecimal getSpindleSpeed() {
+		return spindleSpeed;
+	}
+
+	/**
+	 * @param spindleSpeed the spindleSpeed to set
+	 */
+	public void setSpindleSpeed(BigDecimal spindleSpeed) {
+		this.spindleSpeed = spindleSpeed;
+	}
+
+	/**
+	 * @return the explicitSplindleSpeed
+	 */
+	public boolean isExplicitSplindleSpeed() {
+		return explicitSplindleSpeed;
+	}
+
+	/**
+	 * @param explicitSplindleSpeed the explicitSplindleSpeed to set
+	 */
+	public void setExplicitSplindleSpeed(boolean explicitSplindleSpeed) {
+		this.explicitSplindleSpeed = explicitSplindleSpeed;
 	}
 
 }

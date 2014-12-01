@@ -28,6 +28,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.GkUtils;
+import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionService;
@@ -38,9 +39,13 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 	@Inject
 	IConnectionService connectionService;
 	private StyledText textDisplay;
+	private ByteCommandBuffer inputBuffer;
+	private ByteCommandBuffer outputBuffer;
 
 	public JsscSerialConsoleController() {
 		super(new JsscSerialConsoleModel());
+		inputBuffer  = new ByteCommandBuffer((byte)('\r'));
+		outputBuffer = new ByteCommandBuffer((byte)('\n'));
 
 	}
 
@@ -54,33 +59,44 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 
 	@Override
 	public void onDataReceived(List<Byte> data) throws GkException {
-//		if(getDataModel().isConsoleEnabled()){
-//			final String text = GkUtils.toString(data);
-//			Display.getDefault().asyncExec(new Runnable() {
-//			    @Override
-//				public void run() {
-//			    	textDisplay.append(text);
-//			    	if(!getDataModel().isScrollLock()){
-//			    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
-//			    	}
-//			    }
-//			});
-//		}
+		if(getDataModel().isConsoleEnabled()){
+			inputBuffer.addAll(data);
+			if(inputBuffer.hasNext()){
+				final String text = GkUtils.toString(inputBuffer.unstackNextCommand());
+
+				Display.getDefault().asyncExec(new Runnable() {
+				    @Override
+					public void run() {
+				    	if(!textDisplay.isDisposed()){
+					    	textDisplay.append(text);
+					    	if(!getDataModel().isScrollLock()){
+					    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+					    	}
+				    	}
+				    }
+				});
+			}
+		}
 	}
 
 	@Override
 	public void onDataSent(List<Byte> data) throws GkException {
 		if(getDataModel().isConsoleEnabled()){
-			final String text = GkUtils.toString(data);
-			Display.getDefault().asyncExec(new Runnable() {
-			    @Override
-				public void run() {
-			    	textDisplay.append(text);
-			    	if(!getDataModel().isScrollLock()){
-			    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
-			    	}
-			    }
-			});
+			outputBuffer.addAll(data);
+			if(outputBuffer.hasNext()){
+				final String text = GkUtils.toString(outputBuffer.unstackNextCommand());
+				Display.getDefault().asyncExec(new Runnable() {
+				    @Override
+					public void run() {
+				    	if(!textDisplay.isDisposed()){
+					    	textDisplay.append(text);
+					    	if(!getDataModel().isScrollLock()){
+					    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+					    	}
+				    	}
+				    }
+				});
+			}
 		}
 
 	}
@@ -94,17 +110,52 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 		baseList.addAll(GkUtils.toBytesList( getDataModel().getEndLineToken().getValue()));
 		return baseList;
 	}
-	public void sendCurrentCommand() {
-		try {
+
+	public void sendCurrentCommand() throws GkException {
+		if(StringUtils.isNotBlank(getDataModel().getCommand())){
 			connectionService.send(getCompleteCommand());
+			historizeCommand(getDataModel().getCommand());
+			resetHistoryIndex();
 			getDataModel().setCommand(StringUtils.EMPTY);
-		} catch (GkException e) {
-			LOG.error(e);
 		}
 	}
 
+	public void climbHistoryUp(){
+		incrementHistoryIndex(1);
+	}
+	public void climbHistoryDown(){
+		incrementHistoryIndex(-1);
+	}
+	protected void incrementHistoryIndex(int value){
+		int maxValue = getDataModel().getCommandHistory().size() - 1;
+		int newValue = getDataModel().getCurrentHistoryIndex() + value;
+		getDataModel().setCurrentHistoryIndex(Math.min( Math.max(0, newValue ), maxValue));
+		setCurrentCommand();
+	}
+	protected void setCurrentCommand(){
+		getDataModel().setCommand(getDataModel().getCommandHistory().get(getDataModel().getCurrentHistoryIndex()));
+	}
+
+	protected void historizeCommand(String command){
+		getDataModel().getCommandHistory().addFirst(command);
+	}
+	protected void resetHistoryIndex(){
+		getDataModel().setCurrentHistoryIndex(-1);
+	}
 	public void clearConsole() {
 		textDisplay.setText(StringUtils.EMPTY);
+	}
+
+
+	public void destroy() {
+		if(connectionService != null){
+			try {
+				connectionService.removeInputDataListener(this);
+				connectionService.removeOutputDataListener(this);
+			} catch (GkException e) {
+				LOG.error(e);
+			}
+		}
 	}
 
 

@@ -20,6 +20,7 @@
 package org.goko.serial.jssc.console.internal;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.goko.common.bindings.AbstractModelObject;
@@ -31,14 +32,17 @@ public class JsscSerialConsoleModel extends AbstractModelObject {
 	private List<LabeledValue<String>> endLineChars;
 	private LabeledValue<String> endLineToken;
 	private String command;
+	private LinkedList <String> commandHistory;
+	private int currentHistoryIndex;
 
 	public JsscSerialConsoleModel(){
-		setConsoleEnabled(true);
-		endLineChars = new ArrayList<LabeledValue<String>>();
-		endLineChars.add( new LabeledValue<String>("\r", "CR"));
-		endLineChars.add( new LabeledValue<String>("\n", "LF"));
-		endLineChars.add( new LabeledValue<String>("\r\n", "CR & LF"));
-		endLineToken =  new LabeledValue<String>("\r\n", "CR & LF");
+		this.commandHistory = new LinkedList<String>();
+		this.currentHistoryIndex = -1;
+		this.endLineChars = new ArrayList<LabeledValue<String>>();
+		this.endLineChars.add( new LabeledValue<String>("\r", "CR"));
+		this.endLineChars.add( new LabeledValue<String>("\n", "LF"));
+		this.endLineChars.add( new LabeledValue<String>("\r\n", "CR & LF"));
+		this.endLineToken =  new LabeledValue<String>("\r\n", "CR & LF");
 	}
 	/**
 	 * @return the isConsoleEnabled
@@ -106,6 +110,30 @@ public class JsscSerialConsoleModel extends AbstractModelObject {
 	 */
 	public void setCommand(String command) {
 		firePropertyChange("command", this.command, this.command = command);
+	}
+	/**
+	 * @return the commandHistory
+	 */
+	public LinkedList<String> getCommandHistory() {
+		return commandHistory;
+	}
+	/**
+	 * @param commandHistory the commandHistory to set
+	 */
+	public void setCommandHistory(LinkedList<String> commandHistory) {
+		this.commandHistory = commandHistory;
+	}
+	/**
+	 * @return the currentHistoryIndex
+	 */
+	public int getCurrentHistoryIndex() {
+		return currentHistoryIndex;
+	}
+	/**
+	 * @param currentHistoryIndex the currentHistoryIndex to set
+	 */
+	public void setCurrentHistoryIndex(int currentHistoryIndex) {
+		this.currentHistoryIndex = currentHistoryIndex;
 	}
 
 

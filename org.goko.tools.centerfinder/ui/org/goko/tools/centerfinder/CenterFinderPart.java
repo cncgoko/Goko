@@ -19,8 +19,6 @@
  */
 package org.goko.tools.centerfinder;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -60,13 +58,13 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 	private static final GkLog LOG = GkLog.getLogger(CenterFinderPart.class);
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Table table;
-	private List<Tuple6b> lst;
 	private TableViewer tableViewer;
 	private Button grabPoint;
 	private Label centerXLabel;
 	private Label centerYLabel;
 	private Label centerZLabel;
 	private Button goToCenterBtn;
+	private Label radiusLabel;
 
 	@Inject
 	public CenterFinderPart(IEclipseContext context) {
@@ -153,7 +151,11 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		btnNewButton_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent evt) {
-				getController().clearSelectedSamplePoints();
+				try {
+					getController().clearSelectedSamplePoints();
+				} catch (GkException e) {
+					displayMessage(e);
+				}
 			}
 		});
 
@@ -161,7 +163,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(composite_2);
 		formToolkit.paintBordersFor(composite_2);
-		composite_2.setLayout(new GridLayout(3, false));
+		composite_2.setLayout(new GridLayout(5, false));
 
 		Label lblCenter = new Label(composite_2, SWT.NONE);
 		formToolkit.adapt(lblCenter, true, true);
@@ -177,6 +179,17 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		centerXLabel.setLayoutData(gd_centerXLabel);
 		formToolkit.adapt(centerXLabel, true, true);
 		centerXLabel.setText("New Label");
+
+		Label lblRadius = new Label(composite_2, SWT.NONE);
+		lblRadius.setText("Radius :");
+		formToolkit.adapt(lblRadius, true, true);
+
+		radiusLabel = new Label(composite_2, SWT.NONE);
+		GridData gd_radiusLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_radiusLabel.widthHint = 80;
+		radiusLabel.setLayoutData(gd_radiusLabel);
+		radiusLabel.setText("New Label");
+		formToolkit.adapt(radiusLabel, true, true);
 		new Label(composite_2, SWT.NONE);
 
 		Label lblY = new Label(composite_2, SWT.NONE);
@@ -188,6 +201,8 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		formToolkit.adapt(centerYLabel, true, true);
 		centerYLabel.setText("New Label");
 		new Label(composite_2, SWT.NONE);
+		new Label(composite_2, SWT.NONE);
+		new Label(composite_2, SWT.NONE);
 
 		Label lblZ = new Label(composite_2, SWT.NONE);
 		formToolkit.adapt(lblZ, true, true);
@@ -197,6 +212,8 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		centerZLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(centerZLabel, true, true);
 		centerZLabel.setText("New Label");
+		new Label(composite_2, SWT.NONE);
+		new Label(composite_2, SWT.NONE);
 		initCustomDataBindings();
 	}
 
@@ -214,6 +231,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 			getController().addTextDisplayBinding(centerXLabel, "centerXPosition");
 			getController().addTextDisplayBinding(centerYLabel, "centerYPosition");
 			getController().addTextDisplayBinding(centerZLabel, "centerZPosition");
+			getController().addTextDisplayBinding(radiusLabel, "radius");
 			getController().addTableSelectionBinding(tableViewer, "selectedPoint");
 		} catch (GkException e) {
 			LOG.error(e);

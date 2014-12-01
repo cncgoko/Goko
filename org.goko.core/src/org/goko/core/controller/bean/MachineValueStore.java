@@ -38,8 +38,9 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
  *
  */
 public class MachineValueStore extends EventDispatcher{
-
+	/** The actual values */
 	private Map<String, MachineValue<?>> valueStore;
+	/** The list of supported values */
 	private List<MachineValueDefinition> lstMachineValueDefinition;
 
 	public MachineValueStore() {
@@ -56,6 +57,10 @@ public class MachineValueStore extends EventDispatcher{
 			// Update
 			updateValue(value.getIdDescriptor(), value);
 		}
+	}
+
+	public <T> void storeValue(String id, String name, String description, T value) throws GkException{
+		storeValue(new MachineValueDefinition(id, name, description, value.getClass()), new MachineValue<T>(id, value));
 	}
 	/**
 	 * Returns the desired value as an Integer

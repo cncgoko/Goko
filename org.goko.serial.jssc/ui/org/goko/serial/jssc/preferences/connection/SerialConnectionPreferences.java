@@ -43,7 +43,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
 
-
 /**
  * Preferences page for the serial connection
  *

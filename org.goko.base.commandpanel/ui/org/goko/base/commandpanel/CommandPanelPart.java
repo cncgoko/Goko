@@ -31,6 +31,8 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -52,12 +54,9 @@ import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 
 public class CommandPanelPart extends GkUiComponent<CommandPanelController, CommandPanelModel> {
-	private final FormToolkit formToolkit = new FormToolkit(
-			Display.getDefault());
+	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Button btnHome;
 	private Button btnStop;
 	private Button btnPause;
@@ -82,6 +81,9 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	@Inject @Preference
 	IEclipsePreferences prefs;
+	private Text txtJogStep;
+	private Button btnIncrementalJog;
+	private Button btnKillAlarm;
 
 
 
@@ -126,11 +128,27 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		formToolkit.paintBordersFor(grpManualJog);
 		grpManualJog.setLayout(new GridLayout(1, false));
 
+		///if(getDataModel().isIncrementalJogSupported()){
+			btnIncrementalJog = new Button(grpManualJog, SWT.CHECK);
+			formToolkit.adapt(btnIncrementalJog, true, true);
+			btnIncrementalJog.setText("Incremental jog");
+		//}
 		Composite composite_5 = new Composite(grpManualJog, SWT.NONE);
 		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(composite_5);
 		formToolkit.paintBordersFor(composite_5);
-		composite_5.setLayout(new GridLayout(3, false));
+		composite_5.setLayout(new GridLayout(2, false));
+
+		//if(getDataModel().isIncrementalJogSupported()){
+			Label lblJogStep = new Label(composite_5, SWT.NONE);
+			lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+			lblJogStep.setText("Jog step :");
+			formToolkit.adapt(lblJogStep, true, true);
+
+			txtJogStep = new Text(composite_5, SWT.BORDER);
+			txtJogStep.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+			formToolkit.adapt(txtJogStep, true, true);
+		//}
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
 		lblJogSpeed.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
@@ -145,9 +163,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gd_txtJogFeed.widthHint = 60;
 		txtJogFeed.setLayoutData(gd_txtJogFeed);
 		formToolkit.adapt(txtJogFeed, true, true);
-
-		Button keyboardBtn = formToolkit.createButton(composite_5, "", SWT.TOGGLE | SWT.FLAT);
-		keyboardBtn.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/keyboard-command.png"));
 		Composite composite_4 = new Composite(grpManualJog, SWT.NONE);
 		formToolkit.adapt(composite_4);
 		formToolkit.paintBordersFor(composite_4);
@@ -306,21 +321,28 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		formToolkit.adapt(grpControls);
 		formToolkit.paintBordersFor(grpControls);
 
-		btnStart = new Button(grpControls, SWT.NONE);
-		GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1);
-		gd_btnStart.heightHint = 35;
-		btnStart.setLayoutData(gd_btnStart);
-		formToolkit.adapt(btnStart, true, true);
-		btnStart.setText("Start/Resume");
+		Composite composite_8 = new Composite(grpControls, SWT.NONE);
+		composite_8.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		formToolkit.adapt(composite_8);
+		formToolkit.paintBordersFor(composite_8);
+		GridLayout gl_composite_8 = new GridLayout(2, true);
+		gl_composite_8.marginWidth = 0;
+		gl_composite_8.marginHeight = 0;
+		composite_8.setLayout(gl_composite_8);
 
-		btnPause = new Button(grpControls, SWT.NONE);
-		GridData gd_btnPause = new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1);
-		gd_btnPause.heightHint = 35;
-		btnPause.setLayoutData(gd_btnPause);
-		formToolkit.adapt(btnPause, true, true);
-		btnPause.setText("Pause");
+						btnStart = new Button(composite_8, SWT.NONE);
+						GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+						gd_btnStart.heightHint = 35;
+						btnStart.setLayoutData(gd_btnStart);
+						formToolkit.adapt(btnStart, true, true);
+						btnStart.setText("Start/Resume");
+
+				btnPause = new Button(composite_8, SWT.NONE);
+				GridData gd_btnPause = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+				gd_btnPause.heightHint = 35;
+				btnPause.setLayoutData(gd_btnPause);
+				formToolkit.adapt(btnPause, true, true);
+				btnPause.setText("Pause");
 
 		btnStop = new Button(grpControls, SWT.NONE);
 		btnStop.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/stop.png"));
@@ -331,6 +353,14 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnStop.setLayoutData(gd_btnStop);
 		formToolkit.adapt(btnStop, true, true);
 		btnStop.setText("Stop");
+
+		btnKillAlarm = new Button(grpControls, SWT.NONE);
+		btnKillAlarm.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/bell--minus.png"));
+		GridData gd_btnKillAlarm = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_btnKillAlarm.heightHint = 35;
+		btnKillAlarm.setLayoutData(gd_btnKillAlarm);
+		formToolkit.adapt(btnKillAlarm, true, true);
+		btnKillAlarm.setText("Kill alarm");
 
 		Group grpSpindle = new Group(composite, SWT.NONE);
 		grpSpindle.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -354,7 +384,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gd_btnSpindleOff.heightHint = 35;
 		btnSpindleOff.setLayoutData(gd_btnSpindleOff);
 
-
 		getController().initilizeValues();
 		initCustomBindings(part);
 
@@ -362,7 +391,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	protected void handleKeyboard(KeyEvent e) {
 		System.err.println(e);
-		
+
 	}
 
 	protected void initCustomBindings(MPart part) throws GkException {
@@ -388,8 +417,17 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindButtonToExecuteAction(btnSpindleOn, DefaultControllerAction.SPINDLE_ON);
 		getController().bindEnableControlWithAction(btnSpindleOff, DefaultControllerAction.SPINDLE_OFF);
 		getController().bindButtonToExecuteAction(btnSpindleOff, DefaultControllerAction.SPINDLE_OFF);
+		getController().bindEnableControlWithAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
+		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
 
 		getController().addBigDecimalModifyBinding(txtJogFeed, "jogSpeed");
+		//if(getDataModel().isIncrementalJogSupported()){
+			getController().addBigDecimalModifyBinding(txtJogStep, "jogIncrement");
+			getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
+			getController().addEnableBinding(txtJogStep, "incrementalJog");
+			getController().bindEnableControlWithAction(txtJogStep, DefaultControllerAction.JOG_START);
+			getController().bindEnableControlWithAction(btnIncrementalJog, DefaultControllerAction.JOG_START);
+		//}
 
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogYNeg, DefaultControllerAction.JOG_START);
@@ -399,8 +437,9 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnJogZNeg, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogAPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogANeg, DefaultControllerAction.JOG_START);
-
 		getController().bindEnableControlWithAction(txtJogFeed, DefaultControllerAction.JOG_START);
+
+
 
 		getController().bindJogButton(btnJogYPos, IGkConstants.Y_AXIS);
 		getController().bindJogButton(btnJogYNeg, IGkConstants.Y_AXIS_NEGATIVE);
@@ -427,4 +466,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().saveValues();
 
 	}
+
 }
+

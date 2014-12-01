@@ -26,7 +26,6 @@ import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeCommandState;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
 import org.goko.core.log.GkLog;
 
@@ -87,7 +86,6 @@ public class GCodeSendingRunnable implements Runnable {
 				GCodeCommand currentCommand = token.takeNextCommand();
 				lstCommand.add(currentCommand);
 				nbCommandToSend--;
-				currentCommand.setState(new GCodeCommandState(GCodeCommandState.SENT));
 				//token.setCommandState(currentCommand, GCodeCommandState.SENT);
 				token.markAsSent(currentCommand.getId());
 				GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(currentCommand));
@@ -126,6 +124,7 @@ public class GCodeSendingRunnable implements Runnable {
 
 	protected void waitPlannerBufferSpaceAvailable(){
 		do{
+			System.out.println(tinyGControllerService.getAvailableBuffer());
 			synchronized ( qrMutex ) {
 				try {
 					qrMutex.wait(50);
@@ -136,8 +135,14 @@ public class GCodeSendingRunnable implements Runnable {
 		}while(tinyGControllerService.getAvailableBuffer() < BUFFER_AVAILABLE_REQUIRED_COUNT);
 	}
 
+	private void clearAllPendingCommands(){
+		synchronized (ackMutex) {
+			pendingCommands = 0;
+			ackMutex.notify();
+		}
+	}
 	public void stop() throws GkException{
-		pendingCommands = 0;
+		clearAllPendingCommands();
 		executionQueue.clear();
 	}
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" immediate="true" name="org.goko.tools.centerfinder">
+   <implementation class="org.goko.tools.centerfinder.CenterFinderServiceImpl"/>
+   <service>
+      <provide interface="org.goko.tools.centerfinder.ICenterFinderService"/>
+      <provide interface="org.goko.core.viewer.renderer.IViewer3DRenderer"/>
+   </service>
+</scr:component>

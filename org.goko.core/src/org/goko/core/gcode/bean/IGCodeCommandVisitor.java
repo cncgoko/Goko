@@ -22,6 +22,7 @@ package org.goko.core.gcode.bean;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 import org.goko.core.gcode.bean.commands.CommentCommand;
+import org.goko.core.gcode.bean.commands.FunctionCommand;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.core.gcode.bean.commands.RawCommand;
@@ -35,4 +36,5 @@ public interface IGCodeCommandVisitor {
 	void visit(MotionCommand command) throws GkException;
 	void visit(LinearMotionCommand command) throws GkException;
 	void visit(ArcMotionCommand command) throws GkException;
+	void visit(FunctionCommand command) throws GkException;
 }

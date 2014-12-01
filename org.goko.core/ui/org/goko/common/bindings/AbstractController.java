@@ -278,26 +278,6 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 
 		IObservableValue target = ViewersObservables.observeSingleSelection(source);
 		IObservableValue model = BeansObservables.observeValue(modelObject, property);
-		/*Converter comboToModelConverter = new Converter(LabeledValue.class, Object.class ){
-			@Override
-			public Object convert(Object fromObject) {
-				return ((LabeledValue)fromObject).getValue();
-			}
-		};
-		Converter modelToComboConverter = new Converter(Object.class, LabeledValue.class ){
-			@Override
-			public Object convert(Object fromObject) {
-				T obj = null;
-				try {
-					return GkUiUtils.getLabelledValueByKey(obj, source.getChoices());
-				} catch (GkException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-		};
-		UpdateValueStrategy comboToModelConverterStrategy = new UpdateValueStrategy().setConverter(comboToModelConverter);
-		UpdateValueStrategy modelToComboConverterStrategy = new UpdateValueStrategy().setConverter(modelToComboConverter);*/
 		Binding binding = bindingContext.bindValue(target, model,null,null);
 		bindings.add(binding);
 	}
@@ -482,7 +462,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		getDataModel().setValidationMessages(lstStatus);
 		return CollectionUtils.isEmpty(lstStatus);
 	}
-
+	@Deprecated
 	public void notifyException(Exception e){
 		if(e instanceof GkFunctionalException){
 			notifyWarning(((GkFunctionalException)e).getLocalizedMessage());
@@ -494,6 +474,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	 * display an error dialog
 	 * @param message the exception to display
 	 */
+	@Deprecated
 	private void notifyError(Exception e){
 		notifyListeners(new ErrorEvent(e,"DEFAULT"));
 	}

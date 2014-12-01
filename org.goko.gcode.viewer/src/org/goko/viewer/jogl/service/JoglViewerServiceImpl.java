@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.controller.IControllerService;
+import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.controller.IFourAxisControllerAdapter;
+import org.goko.core.controller.IThreeAxisControllerAdapter;
+import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
@@ -52,6 +56,7 @@ import org.goko.viewer.jogl.camera.AbstractCamera;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.utils.render.AxisRenderer;
+import org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
 import org.goko.viewer.jogl.utils.render.IJoglRenderer;
 import org.goko.viewer.jogl.utils.render.JoglRendererWrapper;
@@ -85,7 +90,9 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	/** Rendering proxy */
 	private JoglRendererProxy proxy;
 	/** The current controller service*/
-	private IControllerService controllerService;
+	private IFourAxisControllerAdapter controllerAdapter;
+	/** The coordinate system adapter */
+	private ICoordinateSystemAdapter coordinateSystemAdapter;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
 	/** Bind camera on tool position ? */
@@ -94,6 +101,7 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	private boolean enabled = true;
 	private GCodeProviderRenderer gcodeRenderer;
 	private BoundsRenderer boundsRenderer;
+	private CoordinateSystemRenderer coordinateSystemRenderer;
 	private Overlay overlay;
 	private Font overlayFont;
 	private int x;
@@ -114,7 +122,6 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting "+this.getServiceId());
-		this.mapDisabledRenderers = new HashMap<String, Boolean>();
 	}
 
 	/** (inheritDoc)
@@ -145,7 +152,7 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 
 		addRenderer(new AxisRenderer());
 		addRenderer(new GridRenderer());
-		ToolRenderer toolRenderer = new ToolRenderer(controllerService);
+		ToolRenderer toolRenderer = new ToolRenderer(controllerAdapter);
 		addRenderer(toolRenderer);
 		overlayFont = new Font("SansSerif", Font.PLAIN, 12);
 		return canvas;
@@ -161,6 +168,9 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		addRenderer(new JoglRendererWrapper(renderer));
 	}
 
+	public void addTestRenderer(IViewer3DRenderer renderer) throws GkException {
+		addRenderer(new JoglRendererWrapper(renderer));
+	}
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.service.IJoglViewerService#addRenderer(org.goko.viewer.jogl.utils.render.IJoglRenderer)
 	 */
@@ -175,6 +185,14 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	 */
 	@Override
 	public void removeRenderer(IViewer3DRenderer renderer) throws GkException {
+		getRenderers().remove(renderer);
+	}
+	/**
+	 * Removes the given JOGL Renderer
+	 * @param renderer the renderer to remove
+	 * @throws GkException GkException
+	 */
+	protected void removeRenderer(IJoglRenderer renderer) throws GkException {
 		getRenderers().remove(renderer);
 	}
 
@@ -199,18 +217,22 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		//addRenderer(gcodeRenderer);
 	}
 
-	/**
+	/**<
 	 * @return the controllerService
 	 */
-	public IControllerService getControllerService() {
-		return controllerService;
+	public IFourAxisControllerAdapter getControllerAdapter() {
+		return controllerAdapter;
 	}
 
 	/**
 	 * @param controllerService the controllerService to set
 	 */
-	public void setControllerService(IControllerService controllerService) {
-		this.controllerService = controllerService;
+	public void setControllerAdapter(IThreeAxisControllerAdapter controllerService) {
+		setControllerAdapter(new ThreeToFourAxisAdapterWrapper(controllerService));
+	}
+
+	public void setControllerAdapter(IFourAxisControllerAdapter controllerService) {
+		this.controllerAdapter = controllerService;
 	}
 
 	/** (inheritDoc)
@@ -219,31 +241,14 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	@Override
 	public void display(GLAutoDrawable gLAutoDrawable) {
 		GL2 gl = gLAutoDrawable.getGL().getGL2();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		if(!isEnabled()){
-			gl.glClearColor(0f, 0f, 0f, 1.0f);
-			drawOverlay();
-			return;
-		}
-
-        gl.glClearColor(.19f, .19f, .23f, 1.0f);
-		gl.glLoadIdentity();
+        clear(gl);
+        if(!isEnabled()){
+        	return;
+        }
 		if(camera == null){
 			return;
 		}
-		if(!camera.isInitialized()){
-			camera.reshape(gLAutoDrawable, x, y, width, height);
-			camera.setInitialized(true);
-		}
-		if(isLockCameraOnTool() && controllerService != null){
-			try {
-				camera.lookAt( controllerService.getPosition());
-			} catch (GkException e) {
-				e.printStackTrace();
-			}
-		}
-		camera.updateViewport(x, y, width, height);
-		camera.updatePosition();
+		updateCamera(gLAutoDrawable, gl);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 	/*	BigDecimal aPos = new BigDecimal("0");
 		try {
@@ -255,44 +260,87 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		}*/
 
 		proxy.setGl(gl);
+		try {
+			displayRenderers(gl);
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		drawOverlay();
+	}
+	/**
+	 * Display the registered renderers
+	 * @param gl the GL2 to draw on
+	 * @throws GkException GkException
+	 */
+	private void displayRenderers(GL2 gl) throws GkException{
 		for (IJoglRenderer renderer : getRenderers()) {
 			gl.glPushMatrix();
 			if (isRendererEnabled(renderer.getId())) {
-				try {
-					renderer.render(proxy);
-				} catch (GkException e) {
-					e.printStackTrace();
-				}
+				renderer.render(proxy);
 			}
 			gl.glPopMatrix();
 		}
+
 		if(gcodeRenderer!=null){
 			gl.glPushMatrix();
 		//	gl.glRotated(aPos.doubleValue(), 0, 1, 0);
-			try {
-				gcodeRenderer.render(proxy);
-			} catch (GkException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			gcodeRenderer.render(proxy);
+
 			gl.glPopMatrix();
 		}
 		if(boundsRenderer!=null){
 			gl.glPushMatrix();
 		//	gl.glRotated(aPos.doubleValue(), 0, 1, 0);
-			try {
-				boundsRenderer.render(proxy);
-			} catch (GkException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			boundsRenderer.render(proxy);
+
 			gl.glPopMatrix();
 		}
-		drawOverlay();
+	}
+	/**
+	 * Clear the current canvas
+	 * @param gl the GL2
+	 */
+	private void clear(GL2 gl){
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		gl.glEnable (GL2.GL_BLEND);
+		gl.glBlendFunc (GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+		if(!isEnabled()){
+			gl.glClearColor(0f, 0f, 0f, 1.0f);
+			drawOverlay();
+			return;
+		}
 
+        gl.glClearColor(.19f, .19f, .23f, 1.0f);
+		gl.glLoadIdentity();
+	}
+	/**
+	 * Update the camera informations
+	 * @param gLAutoDrawable the drawable
+	 * @param gl the GL2
+	 */
+	private void updateCamera(GLAutoDrawable gLAutoDrawable, GL2 gl){
+		if(!camera.isInitialized()){
+			camera.reshape(gLAutoDrawable, x, y, width, height);
+			camera.setInitialized(true);
+		}
+		if(isLockCameraOnTool() && getControllerAdapter() != null){
+			camera.lookAt( getToolPosition() );
+		}
+		camera.updateViewport(x, y, width, height);
+		camera.updatePosition();
 	}
 
-
+	private Point3d getToolPosition(){
+		Point3d p = new Point3d();
+		try{
+			p.x = getControllerAdapter().getX();
+			p.y = getControllerAdapter().getY();
+			p.z = getControllerAdapter().getZ();
+		}catch(GkException e){
+			LOG.error(e);
+		}
+		return p;
+	}
 	private void drawOverlay() {
 		overlay.beginRendering();
 		Graphics2D g2d = overlay.createGraphics();
@@ -432,10 +480,16 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	 */
 	@Override
 	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException {
+		if(mapDisabledRenderers == null){
+			this.mapDisabledRenderers = new HashMap<String, Boolean>();
+		}
 		mapDisabledRenderers.put(idRenderer, enabled);
 	}
 
 	private boolean isRendererEnabled(String idRenderer){
+		if(mapDisabledRenderers == null){
+			this.mapDisabledRenderers = new HashMap<String, Boolean>();
+		}
 		return mapDisabledRenderers.containsKey(idRenderer) && mapDisabledRenderers.get(idRenderer) == true ;
 	}
 
@@ -494,6 +548,26 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		if(getWorkspaceService().getCurrentGCodeProvider() != null){
 			this.renderGCode(getWorkspaceService().getCurrentGCodeProvider());
 		}
+	}
+
+	/**
+	 * @return the coordinateSystemAdapter
+	 */
+	public ICoordinateSystemAdapter getCoordinateSystemAdapter() {
+		return coordinateSystemAdapter;
+	}
+
+	/**
+	 * @param coordinateSystemAdapter the coordinateSystemAdapter to set
+	 * @throws GkException
+	 */
+	public void setCoordinateSystemAdapter(ICoordinateSystemAdapter coordinateSystemAdapter) throws GkException {
+		this.coordinateSystemAdapter = coordinateSystemAdapter;
+		if(this.coordinateSystemRenderer == null){
+			this.coordinateSystemRenderer = new CoordinateSystemRenderer();
+			addRenderer(coordinateSystemRenderer);
+		}
+		this.coordinateSystemRenderer.setAdapter(coordinateSystemAdapter);
 	}
 
 }

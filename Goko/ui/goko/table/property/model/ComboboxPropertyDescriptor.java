@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.goko.common.GkUiUtils;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 
 /**
  *
@@ -39,6 +40,7 @@ import org.goko.core.common.exception.GkException;
  * @param <T>
  */
 public class ComboboxPropertyDescriptor<T> extends AbstractPropertyDescriptor<T>{
+	private static final GkLog LOG = GkLog.getLogger(ComboboxPropertyDescriptor.class);
 	private List<LabeledValue<T>> choices;
 
 	public ComboboxPropertyDescriptor(String id, String label) {
@@ -76,8 +78,7 @@ public class ComboboxPropertyDescriptor<T> extends AbstractPropertyDescriptor<T>
 				try {
 					super.doSetValue(GkUiUtils.getLabelledValueByKey((T)value, choices));
 				} catch (GkException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 				}
 
 			}
@@ -97,7 +98,7 @@ public class ComboboxPropertyDescriptor<T> extends AbstractPropertyDescriptor<T>
 							return value.getLabel();
 						}
 					} catch (GkException e) {
-						e.printStackTrace();
+						LOG.error(e);
 					}
 				}
 				return super.getText(element);
@@ -118,7 +119,7 @@ public class ComboboxPropertyDescriptor<T> extends AbstractPropertyDescriptor<T>
 					return LabeledValue.getLabel();
 				}
 			} catch (GkException e) {
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 		return null;

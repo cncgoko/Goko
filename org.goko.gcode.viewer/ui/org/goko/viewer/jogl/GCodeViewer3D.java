@@ -70,6 +70,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
     private static final String VIEWER_ENABLED = "org.goko.gcode.viewer.enabled";
     private static final String VIEWER_GRID_ENABLED = "org.goko.gcode.viewer.gridEnabled";
     private static final String VIEWER_LOCK_CAMERA_ON_TOOL = "org.goko.gcode.viewer.lockCameraOnTool";
+    private static final String VIEWER_COORDINATE_SYSTEM_ENABLED = "org.goko.gcode.viewer.coordinateSystemEnabled";
 
     /**
      * Part constructor
@@ -138,7 +139,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         		getController().setShowGrid(btnShowGrid.getSelection());
         	}
         });
-        final Combo combo = new Combo(composite, SWT.NONE);
+        final Combo combo = new Combo(composite, SWT.READ_ONLY);
         combo.setItems(new String[] {"Perspective", "Orthographic"});
         combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         formToolkit.adapt(combo);
@@ -166,14 +167,29 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         animator.start();
 
         ContextInjectionFactory.inject(glcanvas, context);
-        new Label(composite, SWT.NONE);
+
+        final Button btnShowCoordinatesSystems = new Button(composite, SWT.TOGGLE);
+        btnShowCoordinatesSystems.setToolTipText("Show coordinates systems");
+        btnShowCoordinatesSystems.setImage(ResourceManager.getPluginImage("org.goko.gcode.viewer", "icons/show-cs.png"));
+        formToolkit.adapt(btnShowCoordinatesSystems, true, true);
+
+        btnShowCoordinatesSystems.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseUp(MouseEvent e) {
+        		getController().setShowCoordinateSystem(btnShowCoordinatesSystems.getSelection());
+        	}
+        });
 
         // Binding for state saving
         getController().addSelectionBinding(viewEnableBtn, "enabled");
         getController().addSelectionBinding(btnShowGrid, "showGrid");
 		getController().addSelectionBinding(toolFollowBtn, "followTool");
+		getController().addSelectionBinding(btnShowCoordinatesSystems, "showCoordinateSystem");
 
 		new Label(composite, SWT.NONE);
+
+		//glcanvas.setMenu(initContextualMenu(composite));
+
 
 
 		Map<String, String> state = part.getPersistedState();
@@ -192,7 +208,38 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			getDataModel().setFollowTool(BooleanUtils.toBoolean(lockCameraToolStr));
 			getController().setLockCameraOnTool(BooleanUtils.toBoolean(lockCameraToolStr));
 		}
+		String csEnabledStr = state.get(VIEWER_COORDINATE_SYSTEM_ENABLED);
+		if(StringUtils.isNotEmpty(csEnabledStr)){
+			getDataModel().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
+			getController().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
+		}
     }
+
+//	protected Menu initContextualMenu(Control composite) throws GkException{
+//		final Menu menu = new Menu(composite);
+//
+//		MenuItem mntmNewSubmenu = new MenuItem(menu, SWT.CASCADE);
+//		mntmNewSubmenu.setText("Camera");
+//
+//		Menu cameraSubmenu = new Menu(mntmNewSubmenu);
+//		mntmNewSubmenu.setMenu(cameraSubmenu);
+//		List<AbstractCamera> cameras = viewerService.getSupportedCamera();
+//		for (final AbstractCamera abstractCamera : cameras) {
+//			MenuItem cameraItem = new MenuItem(cameraSubmenu, SWT.NONE);
+//			cameraItem.setText(abstractCamera.getLabel());
+//			cameraItem.addSelectionListener(new SelectionAdapter() {
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					try {
+//						viewerService.setActiveCamera(abstractCamera.getId());
+//					} catch (GkException exception) {
+//						displayMessage(exception);
+//					}
+//				}
+//			});
+//		}
+//		return menu;
+//	}
 
 	@PreDestroy
 	public void dispose(MPart part) {
@@ -207,6 +254,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			part.getPersistedState().put(VIEWER_ENABLED, String.valueOf(getDataModel().isEnabled()));
 			part.getPersistedState().put(VIEWER_GRID_ENABLED, String.valueOf(getDataModel().isShowGrid()));
 			part.getPersistedState().put(VIEWER_LOCK_CAMERA_ON_TOOL, String.valueOf(getDataModel().isFollowTool()));
+			part.getPersistedState().put(VIEWER_COORDINATE_SYSTEM_ENABLED, String.valueOf(getDataModel().isShowCoordinateSystem()));
 		}
 	}
 

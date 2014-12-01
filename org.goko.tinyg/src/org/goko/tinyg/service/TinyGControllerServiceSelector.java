@@ -33,6 +33,7 @@ import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
@@ -291,6 +292,14 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
 		getCurrentService().moveToAbsolutePosition(position);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getCurrentGCodeContext()
+	 */
+	@Override
+	public GCodeContext getCurrentGCodeContext() throws GkException {
+		return getCurrentService().getCurrentGCodeContext();
 	}
 
 

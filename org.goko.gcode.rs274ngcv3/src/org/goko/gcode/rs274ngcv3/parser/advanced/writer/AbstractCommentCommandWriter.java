@@ -30,10 +30,14 @@ public abstract class AbstractCommentCommandWriter<T extends CommentCommand> ext
 	 */
 	@Override
 	protected String write(String base, T command) throws GkException {
-		return base + command.getLineNumber()+" ";
+		String str = "N"+String.valueOf(command.getLineNumber())+" "+base;
+		return str;//+" "+command.getComment();
 	}
 
 	protected String addComment(String base, T command){
-		return StringUtils.defaultString(base) + command.getComment();
+		if(StringUtils.isNotBlank(command.getComment())){
+			return base + command.getComment();
+		}
+		return base;
 	}
 }

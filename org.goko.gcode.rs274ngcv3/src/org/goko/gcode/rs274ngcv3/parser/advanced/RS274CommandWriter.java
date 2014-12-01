@@ -22,48 +22,98 @@ package org.goko.gcode.rs274ngcv3.parser.advanced;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 import org.goko.core.gcode.bean.commands.CommentCommand;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
+import org.goko.core.gcode.bean.commands.FunctionCommand;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.core.gcode.bean.commands.MotionCommand;
+import org.goko.core.gcode.bean.commands.RawCommand;
 import org.goko.core.gcode.bean.commands.SettingCommand;
-import org.goko.gcode.rs274ngcv3.GkGCodeService;
 import org.goko.gcode.rs274ngcv3.parser.advanced.writer.ArcCommandWriter;
 import org.goko.gcode.rs274ngcv3.parser.advanced.writer.CommentCommandWriter;
+import org.goko.gcode.rs274ngcv3.parser.advanced.writer.FunctionCommandWriter;
 import org.goko.gcode.rs274ngcv3.parser.advanced.writer.LinearCommandWriter;
 import org.goko.gcode.rs274ngcv3.parser.advanced.writer.SettingCommandWriter;
 
-public class RS274CommandWriter {
+public class RS274CommandWriter implements IGCodeCommandVisitor {
+	private String writtenCommand;
+	private CommentCommandWriter commentCommandWriter;
+	private SettingCommandWriter settingCommandWriter;
+	private LinearCommandWriter linearCommandWriter;
+	private ArcCommandWriter arcCommandWriter;
+	private FunctionCommandWriter functionCommandWriter;
+
+	public RS274CommandWriter() {
+		writtenCommand 			= StringUtils.EMPTY;
+		commentCommandWriter 	= new CommentCommandWriter();
+		settingCommandWriter 	= new SettingCommandWriter();
+		linearCommandWriter 	= new LinearCommandWriter();
+		arcCommandWriter 		= new ArcCommandWriter();
+		functionCommandWriter 	= new FunctionCommandWriter();
+	}
 
 	public <T extends GCodeCommand> String write(T command) throws GkException{
-		String result = StringUtils.EMPTY;
-		if(command.getType() == EnumGCodeCommandType.COMMENT){
-			result = new CommentCommandWriter().write((CommentCommand) command);
-		}else if(command.getType() == EnumGCodeCommandType.SETTING){
-			result = new SettingCommandWriter().write((SettingCommand) command);
-		}else if(command.getType() == EnumGCodeCommandType.MOTION){
-			MotionCommand motionCommand = (MotionCommand) command;
-			if(motionCommand.getMotionType() == EnumGCodeCommandMotionType.LINEAR){
-				result = new LinearCommandWriter().write((LinearMotionCommand) command);
-			}else{
-				result = new ArcCommandWriter().write((ArcMotionCommand) command);
-			}
-		}else{
-			result = command.getStringCommand();
-		}
-		return StringUtils.trim(result);
+		writtenCommand = StringUtils.EMPTY;
+		// Accept will make the command call itself on this object, matching types
+		command.accept(this);
+		return StringUtils.trim(writtenCommand);
 	}
 
-	public static void main(String[] args) {
-		GkGCodeService gcodeService = new GkGCodeService();
-		RS274CommandWriter writer = new RS274CommandWriter();
-		try {
-			System.out.println(writer.write( gcodeService.parseCommand("G0X15Y20Z56")));
-		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.RawCommand)
+	 */
+	@Override
+	public void visit(RawCommand command) throws GkException {
+		writtenCommand = command.getStringCommand();
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.CommentCommand)
+	 */
+	@Override
+	public void visit(CommentCommand command) throws GkException {
+		writtenCommand = commentCommandWriter.write(command);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.SettingCommand)
+	 */
+	@Override
+	public void visit(SettingCommand command) throws GkException {
+		writtenCommand = settingCommandWriter.write(command);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.MotionCommand)
+	 */
+	@Override
+	public void visit(MotionCommand command) throws GkException {
+		// Motion command without type should not exist
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.LinearMotionCommand)
+	 */
+	@Override
+	public void visit(LinearMotionCommand command) throws GkException {
+		writtenCommand = linearCommandWriter.write(command);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.ArcMotionCommand)
+	 */
+	@Override
+	public void visit(ArcMotionCommand command) throws GkException {
+		writtenCommand = arcCommandWriter.write(command);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.IGCodeCommandVisitor#visit(org.goko.core.gcode.bean.commands.FunctionCommand)
+	 */
+	@Override
+	public void visit(FunctionCommand command) throws GkException {
+		writtenCommand = functionCommandWriter.write(command);
+	}
+
 }

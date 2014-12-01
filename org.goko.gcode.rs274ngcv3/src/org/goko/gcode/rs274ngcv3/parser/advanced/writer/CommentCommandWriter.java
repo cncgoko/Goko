@@ -30,7 +30,7 @@ public class CommentCommandWriter extends AbstractCommentCommandWriter<CommentCo
 	 */
 	@Override
 	public String write(CommentCommand command) throws GkException {
-		return addComment(StringUtils.EMPTY, command);
+		return addComment(super.write(StringUtils.EMPTY, command), command);
 	}
 
 }

@@ -65,6 +65,15 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Override
 	public void initialize() throws GkException {
 		controllerService.addListener(this);
+//		getDataModel().setIncrementalJogSupported(controllerService.isControllerAction(DefaultControllerAction.INCREMENTAL_JOG_START));
+//		getDataModel().setContinuousJogSupported(controllerService.isControllerAction(DefaultControllerAction.JOG_START));
+//		// Only incremental jog is supported
+//		if(getDataModel().isIncrementalJogSupported() && !getDataModel().isContinuousJogSupported()){
+//			getDataModel().setIncrementalJog(true);
+//		}
+//		if(!getDataModel().isIncrementalJogSupported()){
+//			getDataModel().setIncrementalJog(false);
+//		}
 	}
 
 	public void bindEnableControlWithAction(Control widget, String actionId) throws GkException{
@@ -125,6 +134,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	public void settingChanged(@Preference(nodePath=Activator.PREFERENCE_NODE, value=CommandPanelParameter.JOG_FEEDRATE) String val){
 		System.err.println(val);
 	}
+
 	public void bindJogButton(Button widget, final String axis) throws GkException {
 		if(controllerService.isControllerAction(DefaultControllerAction.JOG_START)
 				&& controllerService.isControllerAction(DefaultControllerAction.JOG_STOP)){
@@ -135,7 +145,11 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				@Override
 				public void mouseDown(MouseEvent e) {
 					try {
-						actionStart.execute(axis, String.valueOf(getDataModel().getJogSpeed()));
+						if(getDataModel().isIncrementalJog()){
+							actionStart.execute(axis, String.valueOf(getDataModel().getJogSpeed()), String.valueOf(getDataModel().getJogIncrement()));
+						}else{
+							actionStart.execute(axis, String.valueOf(getDataModel().getJogSpeed()));
+						}
 					} catch (GkException e1) {
 						LOG.error(e1);
 					}
@@ -143,7 +157,9 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				@Override
 				public void mouseUp(MouseEvent e) {
 					try {
-						actionStop.execute(axis);
+						if(!getDataModel().isIncrementalJog()){
+							actionStop.execute(axis);
+						}
 					} catch (GkException e1) {
 						LOG.error(e1);
 					}
@@ -154,18 +170,21 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 
 	public void initilizeValues() {
 		getDataModel().setJogSpeed( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_FEEDRATE, StringUtils.EMPTY)) );
+		getDataModel().setJogIncrement( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_STEP_SIZE, StringUtils.EMPTY)) );
+		getDataModel().setIncrementalJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_INCREMENTAL, "false")) );
 	}
 
 	public void saveValues() {
 		//Cette facon d'utiliser les preferences est la bonne
 		if(getDataModel() != null){
 			getPreferences().put(CommandPanelParameter.JOG_FEEDRATE, getDataModel().getJogSpeed().toPlainString());
+			getPreferences().put(CommandPanelParameter.JOG_INCREMENTAL, Boolean.toString(getDataModel().isIncrementalJog()));
+			getPreferences().put(CommandPanelParameter.JOG_STEP_SIZE, getDataModel().getJogIncrement().toPlainString());
 
-			try {  // Non necessaire tests seuelemtn
+			try {
 				getPreferences().flush();
 			} catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 	}

@@ -58,8 +58,7 @@ public class DROControllerValueProposalDialog extends GkUiDialogComponent<DROVal
 		try {
 			getController().initialize();
 		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			displayMessage(e);
 		}
 	}
 
@@ -89,7 +88,7 @@ public class DROControllerValueProposalDialog extends GkUiDialogComponent<DROVal
 		try {
 			createControls(composite);
 		} catch (GkException e) {
-			e.printStackTrace();
+			displayMessage(e);
 		}
 		return composite;
 	}

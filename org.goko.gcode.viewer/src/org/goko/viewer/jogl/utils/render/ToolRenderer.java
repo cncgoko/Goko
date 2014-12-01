@@ -3,10 +3,8 @@ package org.goko.viewer.jogl.utils.render;
 import javax.media.opengl.GL2;
 import javax.vecmath.Point3d;
 
-import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.event.MachineValueUpdateEvent;
+import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.service.JoglRendererProxy;
 
@@ -14,20 +12,15 @@ public class ToolRenderer implements IJoglRenderer {
 	protected static final String ID = "org.goko.viewer.jogl.utils.render.ToolRenderer";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ToolRenderer.class);
-	/** The position of the tool*/
-	private Point3d toolPosition;
 	/** the controller service used to retrieve the tool position */
-	private IControllerService controllerService;
+	private IThreeAxisControllerAdapter controllerAdapter;
 
 	/**
 	 * Constructor
 	 * @param controllerService the controller service used to retrieve the tool position
 	 */
-	public ToolRenderer(IControllerService controllerService) {
-		this.controllerService = controllerService;
-		if(controllerService != null){
-			this.controllerService.addListener(this);
-		}
+	public ToolRenderer(IThreeAxisControllerAdapter controllerService) {
+		this.controllerAdapter = controllerService;
 	}
 
 	/** (inheritDoc)
@@ -38,12 +31,29 @@ public class ToolRenderer implements IJoglRenderer {
 		return ID;
 	}
 
+
+	private Point3d getToolPosition(){
+		Point3d p = new Point3d();
+		try{
+			if(getControllerAdapter() != null){
+				p.x = getControllerAdapter().getX();
+				p.y = getControllerAdapter().getY();
+				p.z = getControllerAdapter().getZ();
+			}
+		}catch(GkException e){
+			LOG.error(e);
+		}
+		return p;
+	}
+
+
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
 	 */
 	@Override
 	public void render(JoglRendererProxy proxy) throws GkException {
 		GL2 gl = proxy.getGl();
+		Point3d toolPosition = getToolPosition();
 		if (toolPosition == null) {
 			toolPosition = new Point3d(0,0,0);
 		}
@@ -95,29 +105,9 @@ public class ToolRenderer implements IJoglRenderer {
 	}
 
 	/**
-	 * Event listener on the Controller service
-	 * @param event the update event
+	 * @return the controllerService
 	 */
-	@EventListener(MachineValueUpdateEvent.class)
-	public void onMachineValueUpdateEvent(MachineValueUpdateEvent event){
-		try {
-			setToolPosition( controllerService.getPosition() );
-		} catch (GkException e) {
-			LOG.error(e);
-		}
+	public IThreeAxisControllerAdapter getControllerAdapter() {
+		return controllerAdapter;
 	}
-	/**
-	 * @return the toolPosition
-	 */
-	public Point3d getToolPosition() {
-		return toolPosition;
-	}
-
-	/**
-	 * @param toolPosition the toolPosition to set
-	 */
-	public void setToolPosition(Point3d toolPosition) {
-		this.toolPosition = toolPosition;
-	}
-
 }

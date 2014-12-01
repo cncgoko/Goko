@@ -46,6 +46,7 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.execution.IGCodeExecutionTimeService;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.provider.GCodeCommandExecutionEvent;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
@@ -183,7 +184,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		if(getDataModel().getGcodeProvider() != null){
 			workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 		}
-		IGCodeProvider gcodeFile = gCodeService.parseFile(getDataModel().getFilePath());
+		GCodeContext currentContext = controllerService.getCurrentGCodeContext();
+		IGCodeProvider gcodeFile = gCodeService.parseFile(getDataModel().getFilePath(), currentContext);
 		getDataModel().setGcodeProvider(gcodeFile);
 		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
 
@@ -217,20 +219,21 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 	public void startFileStreaming(){
 		try{
-			/*IGCodeProvider 		gcodeFile = gCodeService.parseFile(getDataModel().getFilePath());
-			eventBroker.post("gcodefile", gcodeFile);*/
-			GCodeExecutionToken queue = controllerService.executeGCode(getDataModel().getGcodeProvider());
-
+			GCodeExecutionToken token = controllerService.executeGCode(getDataModel().getGcodeProvider());
+			if(getDataModel().getGcodeProvider() != null){
+				workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
+			}
+			workspaceService.addGCodeProvider(token);
 
 			getDataModel().setSentCommandCount( 0 );
-			getDataModel().setTotalCommandCount( queue.getCommandCount() );
+			getDataModel().setTotalCommandCount( token.getCommandCount() );
 
-			queue.addListener(this);
-
+			token.addListener(this);
+			getDataModel().setGcodeProvider(token);
 			getDataModel().setStreamingInProgress(true);
 			startElapsedTimer();
 		}catch(GkException e){
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 
@@ -241,7 +244,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			stopElapsedTimer();
 			resetElapsedTime();
 		} catch (GkException e) {
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 
@@ -298,7 +301,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void onStreamStatusUpdate(GCodeCommandExecutionEvent event){
 		GCodeExecutionToken token = event.getExecutionToken();
 		try {
-			getDataModel().setSentCommandCount( token.getExecutedCommandCount() );
+			getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
 			getDataModel().setTotalCommandCount( token.getCommandCount() );
 		} catch (GkException e) {
 			LOG.error(e);

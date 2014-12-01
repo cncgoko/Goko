@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.log.GkLog;
 
 /**
  * Jogl Viewer settings
@@ -34,6 +35,7 @@ import org.goko.core.gcode.bean.Tuple6b;
  *
  */
 public class JoglViewerSettings {
+	private static final GkLog LOG = GkLog.getLogger(JoglViewerSettings.class);
 	private static final String NODE = "org.goko.viewer.jogl";
 	private static final String ROTARY_AXIS_ENABLED 	= "rotaryAxisEnabled";
 	private static final String ROTARY_AXIS_DIRECTION 	= "rotaryAxisDirection";
@@ -170,7 +172,7 @@ public class JoglViewerSettings {
 		try {
 			preferenceStore.save();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 

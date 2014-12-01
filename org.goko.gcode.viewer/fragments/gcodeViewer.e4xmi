@@ -5,6 +5,7 @@
       <persistedState key="org.goko.gcode.viewer.enabled" value="true"/>
       <persistedState key="org.goko.gcode.viewer.gridEnabled" value="true"/>
       <persistedState key="org.goko.gcode.viewer.lockCameraOnTool" value="false"/>
+      <persistedState key="org.goko.gcode.viewer.coordinateSystemEnabled" value="true"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>

@@ -19,6 +19,7 @@
  */
 package org.goko.grbl.controller.executionqueue;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
@@ -76,11 +77,20 @@ public class GrblGCodeExecutionToken  extends GCodeStreamedExecutionToken{
 	public void markAsExecuted(Integer idCommand) throws GkException {
 		super.markAsExecuted(idCommand);
 		mapSentCommandById.remove(idCommand);
+		updateCompleteState();
 	}
 
 	@Override
 	public void markAsError(Integer idCommand) throws GkException {
 		super.markAsError(idCommand);
 		mapSentCommandById.remove(idCommand);
+	}
+
+	private void updateCompleteState(){
+		if(CollectionUtils.isNotEmpty(mapExecutedCommandById)){
+			if(mapExecutedCommandById.size() == mapCommandById.size()){
+				setComplete(true);
+			}
+		}
 	}
 }

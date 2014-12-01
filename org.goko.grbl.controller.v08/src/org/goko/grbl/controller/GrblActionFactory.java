@@ -27,6 +27,7 @@ import org.goko.grbl.controller.action.GrblFeedHoldAction;
 import org.goko.grbl.controller.action.GrblHomeAction;
 import org.goko.grbl.controller.action.GrblJogStartAction;
 import org.goko.grbl.controller.action.GrblJogStopAction;
+import org.goko.grbl.controller.action.GrblKillAlarmAction;
 import org.goko.grbl.controller.action.GrblResetZeroAction;
 import org.goko.grbl.controller.action.GrblStartAction;
 import org.goko.grbl.controller.action.GrblStopAction;
@@ -57,6 +58,7 @@ public class GrblActionFactory {
 		createJogStopAction();
 		createJogStartAction();
 		createResetZeroAction();
+		createKillAlarmAction();
 	}
 	/**
 	 * Find the action with the designated Id
@@ -105,4 +107,9 @@ public class GrblActionFactory {
 		GrblResetZeroAction action = new GrblResetZeroAction(grblService);
 		mapAction.put(action.getId(), action);
 	}
+	private void createKillAlarmAction() {
+		GrblKillAlarmAction action = new GrblKillAlarmAction(grblService);
+		mapAction.put(action.getId(), action);
+	}
+
 }

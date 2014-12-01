@@ -33,4 +33,11 @@ public interface DefaultControllerValues {
 	static final String COORDINATES 	= "GkDefaultControllerValue.Coordinates";
 	static final String DISTANCE_MODE	= "GkDefaultControllerValue.DistanceMode";
 
+	static final String CONTEXT_FEEDRATE		= "GCodeContext.Feedrate";
+	static final String CONTEXT_PLANE			= "GCodeContext.Plane";
+	static final String CONTEXT_MOTION_MODE		= "GCodeContext.MotionMode";
+	static final String CONTEXT_UNIT			= "GCodeContext.Unit";
+	static final String CONTEXT_DISTANCE_MODE	= "GCodeContext.DistanceMode";
+	static final String CONTEXT_COORD_SYSTEM	= "GCodeContext.CoordinateSystem";
+
 }

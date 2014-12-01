@@ -14,7 +14,7 @@
          </property>
          <property
                name="applicationXMI"
-               value="Goko/Application.e4xmi">
+               value="Goko/fragment/Application.e4xmi">
          </property>
          <property
                name="applicationCSS"

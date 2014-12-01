@@ -3,18 +3,20 @@ package org.goko.core.gcode.bean;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
 
+/**
+ * @author PsyKo
+ *
+ */
 public abstract class GCodeCommand {
 	/** Identifier */
 	private Integer id;
 	/** Line number if any */
-	private String lineNumber;
+	private Integer lineNumber;
 	/** The type of the command */
 	private EnumGCodeCommandType type;
 	/** The raw command as a string */
 	private String stringCommand;
-	/** The state of the command */
-	// TODO : remove state from command
-	private GCodeCommandState state;
+	/** Bounds of the command */
 	private BoundingTuple6b bounds;
 
 	/**
@@ -37,9 +39,9 @@ public abstract class GCodeCommand {
 	 * Update the given {@link GCodeContext}
 	 * @param context the context to update
 	 */
-	public void updateContext(GCodeContext context){
-		// Nothing to do in raw command
-	}
+	public abstract void updateContext(GCodeContext context);
+
+	public abstract void initFromContext(GCodeContext context);
 
 	/**
 	 * @return the id
@@ -58,14 +60,14 @@ public abstract class GCodeCommand {
 	/**
 	 * @return the lineNumber
 	 */
-	public String getLineNumber() {
+	public Integer getLineNumber() {
 		return lineNumber;
 	}
 
 	/**
 	 * @param lineNumber the lineNumber to set
 	 */
-	public void setLineNumber(String lineNumber) {
+	public void setLineNumber(Integer lineNumber) {
 		this.lineNumber = lineNumber;
 	}
 
@@ -97,20 +99,9 @@ public abstract class GCodeCommand {
 		this.stringCommand = stringCommand;
 	}
 
-	/**
-	 * @return the state
+	/** (inheritDoc)
+	 * @see java.lang.Object#toString()
 	 */
-	public GCodeCommandState getState() {
-		return state;
-	}
-
-	/**
-	 * @param state the state to set
-	 */
-	public void setState(GCodeCommandState state) {
-		this.state = state;
-	}
-
 	@Override
 	public String toString() {
 		return getStringCommand();

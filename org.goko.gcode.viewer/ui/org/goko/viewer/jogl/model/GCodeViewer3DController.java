@@ -22,14 +22,13 @@ package org.goko.viewer.jogl.model;
 import javax.inject.Inject;
 
 import org.goko.common.bindings.AbstractController;
-import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.service.IJoglViewerService;
+import org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
 
 /**
@@ -38,8 +37,7 @@ import org.goko.viewer.jogl.utils.render.GridRenderer;
  *
  */
 public class GCodeViewer3DController extends AbstractController<GCodeViewer3DModel> {
-	@Inject
-	private IControllerService controllerService;
+	private static final GkLog LOG = GkLog.getLogger(GCodeViewer3DController.class);
 	@Inject
 	private IJoglViewerService viewerService;
 
@@ -49,28 +47,26 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 
 	@Override
 	public void initialize() throws GkException {
-		controllerService.addListener(this);
+		//controllerService.addListener(this);
 	}
 
-	@EventListener(MachineValueUpdateEvent.class)
-	public void onMachineValueUpdate(MachineValueUpdateEvent updateEvent) throws GkException{
-		getDataModel().setCurrentPosition(controllerService.getPosition());
-	}
+//	@EventListener(MachineValueUpdateEvent.class)
+//	public void onMachineValueUpdate(MachineValueUpdateEvent updateEvent) throws GkException{
+//		getDataModel().setCurrentPosition(controllerService.getPosition());
+//	}
 
 	public void setPerspectiveCamera(){
 		try {
 			viewerService.setActiveCamera(PerspectiveCamera.ID);
 		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			notifyException(e);
 		}
 	}
 	public void setOrthographicCamera(){
 		try {
 			viewerService.setActiveCamera(OrthographicCamera.ID);
 		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			notifyException(e);
 		}
 	}
 
@@ -96,5 +92,14 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 
 	public void setRenderEnabled(boolean enabled){
 		viewerService.setEnabled(enabled);
+	}
+
+	public void setShowCoordinateSystem(boolean selection) {
+		try {
+			viewerService.setRendererEnabled(CoordinateSystemRenderer.ID, selection);
+		} catch (GkException e) {
+			notifyException(e);
+		}
+
 	}
 }

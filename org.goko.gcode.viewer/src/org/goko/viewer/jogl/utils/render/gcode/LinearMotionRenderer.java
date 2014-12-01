@@ -111,7 +111,6 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 		JoglViewerSettings settings = JoglViewerSettings.getInstance();
 		GL2 gl = proxy.getGl();
 		gl.glPushMatrix();
-		//probleme ici ?
 
 		styler.enableRenderingStyle(command, proxy);
 		Point3f color = styler.getVertexColor(command, proxy);
@@ -142,7 +141,6 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 
 		for(int i = 0; i <= nbPoints; i++){
 			rotationMatrix.setIdentity();
-			//rotationMatrix.rotY(startAngleRad + i*stepAngle);
 			rotateMatrix(rotationMatrix, startAngleRad + i*stepAngleRad);
 			rotationMatrix.transform(generatorVector,tmpVector);
 			tmpVector.add(settings.getRotaryAxisPosition().toPoint3d());

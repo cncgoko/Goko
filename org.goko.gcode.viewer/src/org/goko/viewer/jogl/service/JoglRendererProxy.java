@@ -2,6 +2,7 @@ package org.goko.viewer.jogl.service;
 
 import javax.media.opengl.GL2;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.IGCodeProvider;
@@ -68,7 +69,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 * @see org.goko.core.viewer.service.IViewer3DService#drawArc(org.goko.core.gcode.bean.Tuple6b, org.goko.core.gcode.bean.Tuple6b, org.goko.core.gcode.bean.Tuple6b, javax.vecmath.Point3f)
 	 */
 	@Override
-	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Point3f plane, int direction) throws GkException {
+	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction) throws GkException {
 		JoglUtils.drawArc(gl, start, end, center, plane, direction);
 	}
 
@@ -76,7 +77,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 * @see org.goko.core.viewer.service.IViewer3DService#drawArc(org.goko.core.gcode.bean.Tuple6b, org.goko.core.gcode.bean.Tuple6b, org.goko.core.gcode.bean.Tuple6b, javax.vecmath.Point3f, int, javax.vecmath.Point3f)
 	 */
 	@Override
-	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Point3f plane, int direction, Point3f color) throws GkException {
+	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction, Point3f color) throws GkException {
 		JoglUtils.drawArc(gl, start, end, center, plane, direction, color);
 	}
 
@@ -84,7 +85,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 * @see org.goko.core.viewer.service.IViewer3DService#drawArc(org.goko.core.gcode.bean.Tuple6b, org.goko.core.gcode.bean.Tuple6b, org.goko.core.gcode.bean.Tuple6b, javax.vecmath.Point3f, int, javax.vecmath.Point3f, int)
 	 */
 	@Override
-	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Point3f plane, int direction, Point3f color, int style) throws GkException {
+	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction, Point3f color, int style) throws GkException {
 		JoglUtils.drawArc(gl, start, end, center, plane, direction, color, style);
 	}
 
@@ -113,6 +114,21 @@ public class JoglRendererProxy implements IRendererProxy {
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.viewer.renderer.IRendererProxy#drawXYZAxis(org.goko.core.gcode.bean.Tuple6b, javax.vecmath.Point3f, javax.vecmath.Point3f, javax.vecmath.Point3f, double)
+	 */
+	@Override
+	public void drawXYZAxis( Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale) throws GkException{
+
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.viewer.renderer.IRendererProxy#drawXYZAxis(org.goko.core.gcode.bean.Tuple6b, javax.vecmath.Point3f, javax.vecmath.Point3f, javax.vecmath.Point3f, double, java.lang.String, double)
+	 */
+	@Override
+	public void drawXYZAxis(Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale, String label, double charwidth) throws GkException {
+		JoglUtils.drawXYZAxis(gl, position, xColor, yColor, zColor, scale, label, charwidth);
+	}
+	/** (inheritDoc)
 	 * @see org.goko.core.viewer.service.IViewer3DService#erase(java.lang.Integer)
 	 */
 	@Override
@@ -139,6 +155,14 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	public void setGl(GL2 gl) {
 		this.gl = gl;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.viewer.renderer.IRendererProxy#drawCircle(org.goko.core.gcode.bean.Tuple6b, double, javax.vecmath.Vector3f, javax.vecmath.Point3f)
+	 */
+	@Override
+	public void drawCircle(Tuple6b center, double radius, Vector3f plane, Point3f color) throws GkException {
+		JoglUtils.drawCircle(gl, center, radius, plane, color);
 	}
 
 }

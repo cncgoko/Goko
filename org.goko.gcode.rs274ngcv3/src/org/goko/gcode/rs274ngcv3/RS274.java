@@ -60,6 +60,21 @@ public class RS274 {
 		return uniqueToken;
 	}
 
+	public static GCodeToken removeUniqueTokenByLetter(String letter, Collection<GCodeToken> lstTokens) throws GkException{
+		GCodeToken uniqueToken = null;
+		for (GCodeToken token : lstTokens) {
+			if(StringUtils.equalsIgnoreCase(letter, getTokenLetter(token))){
+				if(uniqueToken != null){
+					throw new GkTechnicalException("Multiple GCode word with letter "+letter+" found in token list.");
+				}
+				uniqueToken = token;
+			}
+		}
+		if(uniqueToken != null){
+			lstTokens.remove(uniqueToken);
+		}
+		return uniqueToken;
+	}
 	public static GCodeToken getUniqueTokenByLetter(String letter, Collection<GCodeToken> lstTokens) throws GkException{
 		GCodeToken uniqueToken = findUniqueTokenByLetter(letter, lstTokens);
 		if(uniqueToken == null){
@@ -80,6 +95,14 @@ public class RS274 {
 
 	public static boolean isToken(String strToken, Collection<GCodeToken> lstTokens)throws GkException{
 		return findToken(strToken, lstTokens) != null;
+	}
+
+	public static GCodeToken removeToken(String strToken, Collection<GCodeToken> lstTokens)throws GkException{
+		GCodeToken token = findToken(strToken, lstTokens);
+		if(token != null){
+			lstTokens.remove(token);
+		}
+		return token;
 	}
 	public static GCodeToken findToken(String strToken, Collection<GCodeToken> lstTokens)throws GkException{
 		GCodeToken uniqueToken = null;

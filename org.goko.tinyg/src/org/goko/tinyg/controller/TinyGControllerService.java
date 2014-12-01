@@ -12,6 +12,8 @@ import javax.vecmath.Point3d;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
+import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
@@ -32,6 +34,7 @@ import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
@@ -41,7 +44,6 @@ import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.tinyg.controller.configuration.TinyGSetting;
-import org.goko.tinyg.controller.events.ConfigurationUpdateEvent;
 import org.goko.tinyg.controller.probe.ProbeCallable;
 import org.goko.tinyg.json.TinyGJsonUtils;
 import org.goko.tinyg.service.ITinyGControllerFirmwareService;
@@ -61,16 +63,19 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**  Service ID */
 	public static final String SERVICE_ID = "TinyG Controller";
 	private static final String JOG_SIMULATION_DISTANCE = "1000.0";
-	private static final Object UNITS_MM = "mm";
-	private static final Object UNITS_INCHES = "inches";
-	private static final Object DISTANCE_MODE_ABSOLUTE = "Absolute";
-	private static final Object DISTANCE_MODE_INCREMENTAL = "Relative";
+	private static final String UNITS_MM = "mm";
+	private static final String UNITS_INCHES = "inches";
+	private static final String DISTANCE_MODE_ABSOLUTE = "Absolute";
+	private static final String DISTANCE_MODE_INCREMENTAL = "Relative";
+	private static final String TINYG_BUFFER_COUNT = "tinyg.buffer.count";
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
 	/** Connection service */
 	private IConnectionService connectionService;
 	/** GCode service */
 	private IGCodeService gcodeService;
+	/** applicative log service */
+	private IApplicativeLogService applicativeLogService;
 	/** Buffer for incoming data	 */
 	private ByteCommandBuffer incomingBuffer;
 	/** Current position of the machine	 */
@@ -137,6 +142,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				new MachineValue<String>(DefaultControllerValues.COORDINATES, StringUtils.EMPTY));
 		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.DISTANCE_MODE, "Distance mode", "The distance motion setting", String.class),
 				new MachineValue<String>(DefaultControllerValues.DISTANCE_MODE, StringUtils.EMPTY));
+		valueStore.storeValue(new MachineValueDefinition(TINYG_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", Integer.class),
+				new MachineValue<Integer>(TINYG_BUFFER_COUNT, 0));
 		valueStore.addListener(this);
 
 
@@ -285,7 +292,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 					response = JsonObject.readFrom(stringCommand);
 				}catch(Exception e){
 					LOG.error("Error while parsing JSon for string '"+stringCommand+"'"+System.lineSeparator()+e.getMessage());
-
+					applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, "Error while parsing JSon for string '"+stringCommand+"'"+System.lineSeparator()+e.getMessage(), SERVICE_ID);
 					return;
 				}
 
@@ -326,9 +333,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 			}else{
 				LOG.error(" Error status returned : "+status.getValue() +" - "+status.getLabel());
+				applicativeLogService.log(ApplicativeLogEvent.LOG_WARNING, " Error status returned : "+status.getValue() +" - "+status.getLabel(), SERVICE_ID);
 			}
 		}else{
 			LOG.error(" Unknown error status "+statusCodeIntValue);
+			applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, " Unknown error status returned : "+statusCodeIntValue, SERVICE_ID);
 		}
 		//TODO
 		if(currentSendingRunnable != null){
@@ -368,7 +377,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	private void handleConfigurationModification(JsonObject responseEnvelope) throws GkException {
 		TinyGControllerUtility.handleConfigurationModification(configuration, responseEnvelope);
-		notifyListeners(new ConfigurationUpdateEvent());
 	}
 
 	private void handleProbeReport(JsonValue probeReport) throws GkException {
@@ -404,10 +412,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	private void handleQueueReport(JsonValue queueReport) throws GkException {
-		this.availableBuffer = queueReport.asInt();
-		if(currentSendingRunnable != null){
-			currentSendingRunnable.notifyBufferSpace();
-		}
+		setAvailableBuffer(queueReport.asInt());
+
 	}
 	/**
 	 * Handling status report from TinyG
@@ -475,7 +481,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				case 6: coordinateSystem = CoordinatesSystem.G59;
 				break;
 				}
-				valueStore.updateValue(DefaultControllerValues.COORDINATES , coordinateSystem);
+				valueStore.updateValue(DefaultControllerValues.COORDINATES , StringUtils.upperCase(coordinateSystem));
 			}
 			/*
 			 * Update distance mode
@@ -497,26 +503,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param jsonValue
 	 * @throws GkTechnicalException
 	 */
-	private void handleGCodeResponse(JsonValue jsonValue) throws GkException {
-		LOG.info("handleGCodeResponse "+String.valueOf(jsonValue));
+	protected void handleGCodeResponse(String receivedCommand) throws GkException {
 		if(executionQueue.getCurrentToken() != null){
-			String 			receivedCommand = jsonValue.asString();
-			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand);
+			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand, getCurrentGCodeContext());
 			executionQueue.getCurrentToken().markAsConfirmed(parsedCommand);
 			this.currentSendingRunnable.confirmCommand();
 		}
-		/*if(executionQueue != null && executionQueue.hasPendingCommand()){
-			GCodeCommand pendingCommand = executionQueue.getNextPendingCommand();
-			GCodeCommand parsedCommand = getGcodeService().parseCommand(receivedCommand);
-			if( ObjectUtils.equals(pendingCommand, parsedCommand)){
-				GCodeCommand command = executionQueue.unstackNextPendingCommand();
-				executionQueue.addAcknowledgedCommand(command);
-				command.setState(new GCodeCommandState(GCodeCommandState.EXECUTED));
-				notifyListeners(new StreamStatusUpdate(executionQueue));
-			}else{
-				LOG.debug("  /!\\  Cannot confirm GCode command "+receivedCommand);
-			}
-		}*/
 	}
 
 	/** (inheritDoc)
@@ -525,7 +517,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void onDataSent(List<Byte> data) throws GkException {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -700,22 +691,22 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	public void pauseMotion() throws GkException{
 		List<Byte> pauseCommand = new ArrayList<Byte>();
-		pauseCommand.add(TinyGConstants.FEED_HOLD);
+		pauseCommand.add(TinyG.FEED_HOLD);
 		pauseCommand.add(getLineBroker());
 		getConnectionService().send(pauseCommand, DataPriority.IMPORTANT);
 	}
 
 	public void resumeMotion() throws GkException{
 		List<Byte> resumeCommand = new ArrayList<Byte>();
-		resumeCommand.add(TinyGConstants.CYCLE_START);
+		resumeCommand.add(TinyG.CYCLE_START);
 		resumeCommand.add(getLineBroker());
 		getConnectionService().send(resumeCommand, DataPriority.IMPORTANT);
 	}
 
 	public void stopMotion() throws GkException{
 		List<Byte> stopCommand = new ArrayList<Byte>();
-		stopCommand.add(TinyGConstants.FEED_HOLD);
-		stopCommand.add(TinyGConstants.QUEUE_FLUSH);
+		stopCommand.add(TinyG.FEED_HOLD);
+		stopCommand.add(TinyG.QUEUE_FLUSH);
 		stopCommand.add(getLineBroker());
 		getConnectionService().clearOutputBuffer();
 		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
@@ -725,6 +716,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(currentSendingRunnable != null){
 			currentSendingRunnable.stop();
 		}
+		// Force a queue report update
+		updateQueueReport();
+		this.resetAvailableBuffer();
+
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
@@ -774,6 +769,21 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public int getAvailableBuffer() {
 		return availableBuffer;
 	}
+	/**
+	 * @param availableBuffer the availableBuffer to set
+	 * @throws GkException exception
+	 */
+	public void setAvailableBuffer(int availableBuffer) throws GkException {
+		this.availableBuffer = availableBuffer;
+		valueStore.updateValue(TINYG_BUFFER_COUNT, availableBuffer);
+		if(currentSendingRunnable != null){
+			currentSendingRunnable.notifyBufferSpace();
+		}
+	}
+
+	public void resetAvailableBuffer() throws GkException {
+		setAvailableBuffer(28);
+	}
 
 	@Override
 	public void cancelFileSending() throws GkException {
@@ -801,7 +811,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public Future<Tuple6b> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
 		futureProbeResult = new ProbeCallable();
 		String strCommand = "G38.2 "+axis.getAxisCode()+String.valueOf(maximumPosition)+" F"+feedrate;
-		IGCodeProvider command = gcodeService.parse(strCommand);
+		IGCodeProvider command = gcodeService.parse(strCommand, getCurrentGCodeContext());
 		executeGCode(command);
 		return Executors.newSingleThreadExecutor().submit(futureProbeResult);
 	}
@@ -821,8 +831,24 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(position.getZ() != null){
 			cmd += "Z"+position.getZ();
 		}
-		IGCodeProvider command = gcodeService.parse(cmd);
+		IGCodeProvider command = gcodeService.parse(cmd, getCurrentGCodeContext());
 		executeGCode(command);
 	}
+
+	/**
+	 * @param logListenerService the logListenerService to set
+	 */
+	public void setApplicativeLogService(IApplicativeLogService logListenerService) {
+		this.applicativeLogService = logListenerService;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getCurrentGCodeContext()
+	 */
+	@Override
+	public GCodeContext getCurrentGCodeContext() throws GkException {
+		return new GCodeContext();
+	}
+
 
 }

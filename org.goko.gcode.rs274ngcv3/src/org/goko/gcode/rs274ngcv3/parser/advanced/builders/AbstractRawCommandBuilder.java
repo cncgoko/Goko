@@ -1,6 +1,5 @@
 package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -21,16 +20,6 @@ public abstract class AbstractRawCommandBuilder<T extends GCodeCommand> extends 
 	}
 
 
-	/** {@inheritDoc}
-	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.IRS274CommandBuilder#createCommand(java.util.List, org.goko.core.gcode.bean.GCodeContext)
-	 */
-	@Override
-	public final T createCommand(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
-		T command = newInstance();
-		List<GCodeToken> tmpLstTokens = new ArrayList<GCodeToken>(lstTokens);
-		buildCommand(tmpLstTokens, context, command);
-		return command;
-	}
 
 	/** {@inheritDoc}
 	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.IRS274CommandBuilder#buildCommand(java.util.List, org.goko.core.gcode.bean.GCodeContext, java.lang.Object)
@@ -41,7 +30,8 @@ public abstract class AbstractRawCommandBuilder<T extends GCodeCommand> extends 
 
 		GCodeToken lineToken = RS274.findUniqueTokenByLetter("n", lstTokens);
 		if(lineToken != null){
-			targetCommand.setLineNumber( RS274.getTokenValue(lineToken));
+			String strNumber =  RS274.getTokenValue(lineToken);
+			targetCommand.setLineNumber( Integer.valueOf(strNumber) );
 			lstTokens.remove(lineToken);
 		}
 	}

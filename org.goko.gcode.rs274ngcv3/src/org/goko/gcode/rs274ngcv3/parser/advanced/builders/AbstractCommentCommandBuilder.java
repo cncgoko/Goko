@@ -21,12 +21,11 @@ package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
 
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.commands.CommentCommand;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
-import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.CommentModifier;
 
 /**
  * Abstract {@link CommentCommand} builder
@@ -34,40 +33,61 @@ import org.goko.gcode.rs274ngcv3.parser.GCodeTokenType;
  *
  * @param <T>
  */
-public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> extends AbstractRawCommandBuilder<T> {
+public abstract class AbstractCommentCommandBuilder<T extends CommentCommand> extends AbstractModifierCommandBuilder<T> {
 	//private static final GkLog LOG = GkLog.getLogger(AbstractCommentCommandBuilder.class);
+	private CommentModifier commentModifier;
 
-	/** {@inheritDoc}
-	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractRawCommandBuilder#buildCommand(java.util.List, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.GCodeCommand)
+	public AbstractCommentCommandBuilder() {
+		super();
+		commentModifier = new CommentModifier();
+		addModifier(commentModifier);
+	}
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractRawCommandBuilder#match(java.util.List, org.goko.core.gcode.bean.GCodeContext)
 	 */
 	@Override
-	public void buildCommand(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException {
-		super.buildCommand(lstTokens, context, targetCommand);
-		String comment = "";
-		for (GCodeToken gCodeToken : lstTokens) {
-			if(gCodeToken.getType() == GCodeTokenType.MULTILINE_COMMENT || gCodeToken.getType() == GCodeTokenType.MULTILINE_COMMENT){
-				comment += gCodeToken.getValue();
-			}
-		}
-		targetCommand.setComment(comment);
-	//	LOG.info("Building comment command from "+lstTokens.toString());
-	}
-
-
-	@Override
 	public boolean match(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
-
-		if(CollectionUtils.isNotEmpty(lstTokens)){
-			for (GCodeToken token : lstTokens) {
-				if(token.getType() == GCodeTokenType.MULTILINE_COMMENT || token.getType() == GCodeTokenType.SIMPLE_COMMENT){
-					return true;
-				}else{
-					return false;
-				}
+		boolean match = false;
+		for (GCodeToken gCodeToken : lstTokens) {
+			if(commentModifier.match(gCodeToken)){
+				match = true;
+				break;
 			}
-
 		}
-		return false;
+		return match;
 	}
+//	/** {@inheritDoc}
+//	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractRawCommandBuilder#buildCommand(java.util.List, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.GCodeCommand)
+//	 */
+//	@Override
+//	public void buildCommand(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException {
+//		String comment = "";
+//		List<GCodeToken> tmpTokens = new ArrayList<GCodeToken>(lstTokens);
+//		for (GCodeToken gCodeToken : tmpTokens) {
+//			if(gCodeToken.getType() == GCodeTokenType.MULTILINE_COMMENT || gCodeToken.getType() == GCodeTokenType.SIMPLE_COMMENT){
+//				comment += gCodeToken.getValue();
+//				lstTokens.remove(gCodeToken);
+//			}
+//		}
+//		targetCommand.setComment(comment);
+//		super.buildCommand(lstTokens, context, targetCommand);
+//	}
+//
+//
+//	@Override
+//	public boolean match(List<GCodeToken> lstTokens, GCodeContext context) throws GkException {
+//
+//		if(CollectionUtils.isNotEmpty(lstTokens)){
+//			for (GCodeToken token : lstTokens) {
+//				if(token.getType() == GCodeTokenType.MULTILINE_COMMENT || token.getType() == GCodeTokenType.SIMPLE_COMMENT){
+//					return true;
+//				}else{
+//					return false;
+//				}
+//			}
+//
+//		}
+//		return false;
+//	}
 
 }

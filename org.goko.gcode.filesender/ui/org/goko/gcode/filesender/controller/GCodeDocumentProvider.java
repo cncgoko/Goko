@@ -28,8 +28,11 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.log.GkLog;
 
 public class GCodeDocumentProvider extends Document {
+	private static final GkLog LOG = GkLog.getLogger(GCodeDocumentProvider.class);
+
 	/** EOL String token */
 	private static String EOL = System.getProperty("line.separator");
 
@@ -45,7 +48,7 @@ public class GCodeDocumentProvider extends Document {
 		try {
 			init();
 		} catch (GkException e) {
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 

@@ -3,6 +3,7 @@ import java.util.List;
 
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.buffer.ByteCommandBuffer;
+import org.goko.core.log.GkLog;
 
 /*
  *
@@ -25,6 +26,7 @@ import org.goko.core.common.buffer.ByteCommandBuffer;
  */
 
 public class ByteBufferStressTest implements Runnable{
+	private static final GkLog LOG = GkLog.getLogger(ByteBufferStressTest.class);
 	private ByteCommandBuffer buffer;
 	private int iteration = 100;
 	private String name;
@@ -47,15 +49,14 @@ public class ByteBufferStressTest implements Runnable{
 		});
 		t.start();
 		for(int i = 0; i < 1000; i++){
-			ByteBufferStressTest thread = new ByteBufferStressTest("Painter "+i+";", tmpBuffer);
+			ByteBufferStressTest thread = new ByteBufferStressTest("Painter +++++++++++++++++++++++++++++++"+i+";", tmpBuffer);
 			threads.add(thread);
 			new Thread(thread).start();
 		}
 		try {
 			t.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 
@@ -72,8 +73,7 @@ public class ByteBufferStressTest implements Runnable{
 			try {
 				Thread.sleep((long) (Math.random()));
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 	}

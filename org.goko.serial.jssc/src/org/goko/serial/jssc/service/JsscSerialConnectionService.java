@@ -33,6 +33,7 @@ import jssc.SerialPortList;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
@@ -119,6 +120,7 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			//Executors.newSingleThreadExecutor().execute(jsscSender);
 			deamonThread = new Thread(deamon);
 			senderThread = new Thread(jsscSender);
+			jsscSender.start();
 			deamonThread.start();
 			senderThread.start();
 			notifyConnectionListeners(EnumConnectionEvent.CONNECTED);
@@ -134,11 +136,11 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	@Override
 	public void disconnect(Map<String, Object> parameters) throws GkException {
 		try {
-			if(serialPort != null && serialPort.isOpened()){
+			if(serialPort != null){// && serialPort.isOpened()){
 				serialPort.closePort();
 			}
 			deamon.stop();
-			senderThread.stop();
+			jsscSender.stop();
 			notifyConnectionListeners(EnumConnectionEvent.DISCONNECTED);
 		} catch (SerialPortException e) {
 			throw new GkTechnicalException(e);
@@ -179,6 +181,9 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void send(List<Byte> data) throws GkException {
+		if(!isConnected()){
+			throw new GkFunctionalException("Not connected to any serial device.");
+		}
 		jsscSender.sendBytes(data);
 	}
 
@@ -195,10 +200,23 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void removeInputDataListener(IConnectionDataListener listener) throws GkException {
-		// TODO Auto-generated method stub
+		WeakReference<IConnectionDataListener> reference = findListener(inputListeners, listener);
+		if(reference != null){
+			inputListeners.remove(reference);
+		}
 
 	}
-
+	protected <T> WeakReference<T> findListener(List<WeakReference<T>> listenerList, T listener) throws GkException{
+		WeakReference<T> reference = null;
+		if(CollectionUtils.isNotEmpty(inputListeners)){
+			for (WeakReference<T> weakReference : listenerList) {
+				if(weakReference.get() == listener){
+					reference = weakReference;
+				}
+			}
+		}
+		return reference;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.connection.IConnectionService#addOutputDataListener(org.goko.core.connection.IConnectionDataListener)
 	 */
@@ -207,6 +225,16 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 		outputListeners.add(new WeakReference<IConnectionDataListener>(listener));
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.IConnectionService#removeOutputDataListener(org.goko.core.connection.IConnectionDataListener)
+	 */
+	@Override
+	public void removeOutputDataListener(IConnectionDataListener listener) throws GkException {
+		WeakReference<IConnectionDataListener> reference = findListener(outputListeners, listener);
+		if(reference != null){
+			outputListeners.remove(reference);
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.connection.IConnectionService#addConnectionListener(org.goko.core.connection.IConnectionListener)
 	 */
@@ -259,7 +287,7 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 
 	@Override
 	public void serialEvent(SerialPortEvent serialPortEvent) {
-		if(serialPortEvent.isRXCHAR()){ // Data available
+		if(serialPortEvent.isRXCHAR() && serialPortEvent.getEventValue() > 0){ // Data available
 			int dataAvailableCount = serialPortEvent.getEventValue();
 			try {
 				byte buffer[] = getSerialPort().readBytes(dataAvailableCount);
@@ -273,9 +301,9 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 
 					try {
 						notifyInputListeners(GkUtils.toBytesList(GkUtils.toString(buffer)));
+						//System.err.print(GkUtils.toString(buffer));
 					} catch (GkException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOG.error(e);
 					}
 				}
 			} catch (SerialPortException e) {
@@ -283,6 +311,11 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			}
 		}else if(serialPortEvent.isERR() || serialPortEvent.isCTS()){
 			LOG.error(serialPortEvent.toString() + " err " +serialPortEvent.getEventValue());
+			try {
+				disconnect(null);
+			} catch (GkException e) {
+				LOG.error(e);
+			}
 		}
 
 	}

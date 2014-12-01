@@ -93,11 +93,13 @@ public class GCodeLexer {
 		List<GCodeToken> lstFileTokens = new ArrayList<GCodeToken>();
 		String line = null;
 		GCodeToken newLineToken = new GCodeToken(GCodeTokenType.NEW_LINE, StringUtils.EMPTY);
+
 		while(scanner.hasNextLine()){
 			line = scanner.nextLine();
 			lstFileTokens.addAll(createTokens(line));
 			lstFileTokens.add(newLineToken);//new GCodeToken(GCodeTokenType.NEW_LINE, StringUtils.EMPTY));
 		}
+
 		scanner.close();
 		return lstFileTokens;
 	}

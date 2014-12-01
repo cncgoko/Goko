@@ -5,6 +5,9 @@
       <provide interface="org.goko.core.viewer.service.IViewer3DService"/>
       <provide interface="org.goko.viewer.jogl.service.IJoglViewerService"/>
    </service>
-   <reference bind="setControllerService" cardinality="1..1" interface="org.goko.core.controller.IControllerService" name="IControllerService" policy="static"/>
    <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
+   <reference bind="addTestRenderer" cardinality="0..n" interface="org.goko.core.viewer.renderer.IViewer3DRenderer" name="IViewer3DRenderer" policy="dynamic"/>
+   <reference bind="setControllerAdapter" cardinality="0..n" interface="org.goko.core.controller.IThreeAxisControllerAdapter" name="IThreeAxisControllerAdapter" policy="static"/>
+   <reference bind="setControllerAdapter" cardinality="0..n" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
+   <reference bind="setCoordinateSystemAdapter" cardinality="1..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="static"/>
 </scr:component>

@@ -61,6 +61,10 @@ public class ArcMotionCommand extends MotionCommand {
 		visitor.visit(this);
 	}
 
+	protected void updateCenterCoordinate(){
+		absoluteCenterCoordinate = new Tuple6b(getAbsoluteStartCoordinate());
+		absoluteCenterCoordinate.updateRelative(ijkValues);
+	}
 	/**
 	 * @return the absoluteCenterCoordinate
 	 */
@@ -127,6 +131,7 @@ public class ArcMotionCommand extends MotionCommand {
 		return ijkValues.getZ();
 	}
 
+
 	/**
 	 * @return the clockwise
 	 */
@@ -139,6 +144,21 @@ public class ArcMotionCommand extends MotionCommand {
 	 */
 	public void setClockwise(boolean clockwise) {
 		this.clockwise = clockwise;
+	}
+
+	/**
+	 * @return the ijkValues
+	 */
+	public Tuple6b getIJKValues() {
+		return ijkValues;
+	}
+
+	/**
+	 * @param ijkValues the ijkValues to set
+	 */
+	public void setIJKValues(Tuple6b ijkValues) {
+		this.ijkValues = ijkValues;
+		updateCenterCoordinate();
 	}
 
 }
