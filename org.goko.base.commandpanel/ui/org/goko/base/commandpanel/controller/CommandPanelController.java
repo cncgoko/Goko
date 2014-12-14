@@ -65,15 +65,6 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Override
 	public void initialize() throws GkException {
 		controllerService.addListener(this);
-//		getDataModel().setIncrementalJogSupported(controllerService.isControllerAction(DefaultControllerAction.INCREMENTAL_JOG_START));
-//		getDataModel().setContinuousJogSupported(controllerService.isControllerAction(DefaultControllerAction.JOG_START));
-//		// Only incremental jog is supported
-//		if(getDataModel().isIncrementalJogSupported() && !getDataModel().isContinuousJogSupported()){
-//			getDataModel().setIncrementalJog(true);
-//		}
-//		if(!getDataModel().isIncrementalJogSupported()){
-//			getDataModel().setIncrementalJog(false);
-//		}
 	}
 
 	public void bindEnableControlWithAction(Control widget, String actionId) throws GkException{
@@ -103,7 +94,6 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				}
 			}
 		});
-
 	}
 
 	public void refreshExecutableAction() throws GkException{
@@ -114,6 +104,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			}
 		}
 	}
+
 	public void bindButtonToExecuteAction(Control widget, String actionId, final Object... parameters) throws GkException{
 		if(controllerService.isControllerAction(actionId)){
 			final IGkControllerAction action = controllerService.getControllerAction(actionId);
@@ -139,7 +130,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		if(controllerService.isControllerAction(DefaultControllerAction.JOG_START)
 				&& controllerService.isControllerAction(DefaultControllerAction.JOG_STOP)){
 			final IGkControllerAction actionStart = controllerService.getControllerAction(DefaultControllerAction.JOG_START);
-			final IGkControllerAction actionStop = controllerService.getControllerAction(DefaultControllerAction.JOG_STOP);
+			final IGkControllerAction actionStop  = controllerService.getControllerAction(DefaultControllerAction.JOG_STOP);
 
 			widget.addMouseListener(new MouseAdapter() {
 				@Override

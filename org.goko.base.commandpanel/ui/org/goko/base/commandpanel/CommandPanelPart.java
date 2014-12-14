@@ -19,6 +19,8 @@
  */
 package org.goko.base.commandpanel;
 
+import java.math.BigDecimal;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -33,6 +35,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -44,7 +48,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -70,7 +74,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	private Button btnJogYNeg;
 	private Button btnJogYPos;
 	private Button btnJogZNeg;
-	private Text txtJogFeed;
 	private Button btnResetX;
 	private Button btnResetY;
 	private Button btnResetZ;
@@ -81,9 +84,10 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	@Inject @Preference
 	IEclipsePreferences prefs;
-	private Text txtJogStep;
 	private Button btnIncrementalJog;
 	private Button btnKillAlarm;
+	private Spinner jogStepSpinner;
+	private Spinner jogSpeedSpinner;
 
 
 
@@ -130,6 +134,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 		///if(getDataModel().isIncrementalJogSupported()){
 			btnIncrementalJog = new Button(grpManualJog, SWT.CHECK);
+			btnIncrementalJog.setEnabled(false);
 			formToolkit.adapt(btnIncrementalJog, true, true);
 			btnIncrementalJog.setText("Incremental jog");
 		//}
@@ -145,9 +150,14 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			lblJogStep.setText("Jog step :");
 			formToolkit.adapt(lblJogStep, true, true);
 
-			txtJogStep = new Text(composite_5, SWT.BORDER);
-			txtJogStep.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-			formToolkit.adapt(txtJogStep, true, true);
+						jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
+						jogStepSpinner.setMaximum(100000);
+						jogStepSpinner.setDigits(3);
+						GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+						gd_jogSpinner.widthHint = 60;
+						jogStepSpinner.setLayoutData(gd_jogSpinner);
+						formToolkit.adapt(jogStepSpinner);
+						formToolkit.paintBordersFor(jogStepSpinner);
 		//}
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
@@ -157,12 +167,13 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		formToolkit.adapt(lblJogSpeed, true, true);
 		lblJogSpeed.setText("Jog speed :");
 
-		txtJogFeed = new Text(composite_5, SWT.BORDER);
-		GridData gd_txtJogFeed = new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1);
-		gd_txtJogFeed.widthHint = 60;
-		txtJogFeed.setLayoutData(gd_txtJogFeed);
-		formToolkit.adapt(txtJogFeed, true, true);
+				jogSpeedSpinner = new Spinner(composite_5, SWT.BORDER);
+				jogSpeedSpinner.setMaximum(10000);
+				GridData gd_jogSpeedSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+				gd_jogSpeedSpinner.widthHint = 60;
+				jogSpeedSpinner.setLayoutData(gd_jogSpeedSpinner);
+				formToolkit.adapt(jogSpeedSpinner);
+				formToolkit.paintBordersFor(jogSpeedSpinner);
 		Composite composite_4 = new Composite(grpManualJog, SWT.NONE);
 		formToolkit.adapt(composite_4);
 		formToolkit.paintBordersFor(composite_4);
@@ -386,7 +397,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 		getController().initilizeValues();
 		initCustomBindings(part);
-
+		enableAdaptiveSpinner();
 	}
 
 	protected void handleKeyboard(KeyEvent e) {
@@ -394,6 +405,42 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	}
 
+	protected void enableAdaptiveSpinner() {
+		jogStepSpinner.setSelection(getDataModel().getJogIncrement().intValue());
+		jogSpeedSpinner.setSelection(getDataModel().getJogSpeed().intValue());
+		jogStepSpinner.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int selection = jogStepSpinner.getSelection();
+				if(selection < 10){
+					jogStepSpinner.setIncrement(1);
+				}else if(selection < 100){
+					jogStepSpinner.setIncrement(10);
+				}else if(selection < 1000){
+					jogStepSpinner.setIncrement(100);
+				}else if(selection < 10000){
+					jogStepSpinner.setIncrement(1000);
+				}
+				getDataModel().setJogIncrement(BigDecimal.valueOf(selection/Math.pow(10, jogStepSpinner.getDigits())));
+			}
+		});
+		jogSpeedSpinner.setIncrement(10);
+		jogSpeedSpinner.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int selection = jogSpeedSpinner.getSelection();
+				if(selection < 100){
+					jogSpeedSpinner.setIncrement(10);
+				}else if(selection >= 100 && selection < 1000){
+					jogSpeedSpinner.setIncrement(50);
+				}else if(selection >= 1000){
+					jogSpeedSpinner.setIncrement(100);
+				}
+				getDataModel().setJogSpeed(BigDecimal.valueOf(selection));
+			}
+		});
+
+	}
 	protected void initCustomBindings(MPart part) throws GkException {
 		getController().bindEnableControlWithAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindButtonToExecuteAction(btnHome, DefaultControllerAction.HOME);
@@ -419,14 +466,15 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindButtonToExecuteAction(btnSpindleOff, DefaultControllerAction.SPINDLE_OFF);
 		getController().bindEnableControlWithAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
 		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
-
-		getController().addBigDecimalModifyBinding(txtJogFeed, "jogSpeed");
 		//if(getDataModel().isIncrementalJogSupported()){
-			getController().addBigDecimalModifyBinding(txtJogStep, "jogIncrement");
+			//getController().addBigDecimalModifyBinding(txtJogStep, "jogIncrement");
+			//getController().addBigDecimalModifyBinding(jogSpinner, "jogIncrement");
 			getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
-			getController().addEnableBinding(txtJogStep, "incrementalJog");
-			getController().bindEnableControlWithAction(txtJogStep, DefaultControllerAction.JOG_START);
+			getController().addEnableBinding(jogStepSpinner, "incrementalJog");
+			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);
+			getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
 			getController().bindEnableControlWithAction(btnIncrementalJog, DefaultControllerAction.JOG_START);
+			getDataModel().setIncrementalJog(true);
 		//}
 
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);
@@ -437,7 +485,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnJogZNeg, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogAPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogANeg, DefaultControllerAction.JOG_START);
-		getController().bindEnableControlWithAction(txtJogFeed, DefaultControllerAction.JOG_START);
 
 
 
@@ -466,6 +513,5 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().saveValues();
 
 	}
-
 }
 
