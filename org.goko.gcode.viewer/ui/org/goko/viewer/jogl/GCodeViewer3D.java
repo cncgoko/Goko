@@ -1,22 +1,19 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.viewer.jogl;
 
 import java.util.Map;
@@ -44,7 +41,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
@@ -122,7 +118,11 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         toolFollowBtn.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseUp(MouseEvent e) {
-        		getController().setLockCameraOnTool(toolFollowBtn.getSelection());
+        		try {
+					getController().setLockCameraOnTool(toolFollowBtn.getSelection());
+				} catch (GkException e1) {
+					displayMessage(e1);
+				}
         	}
         });
 
@@ -136,7 +136,11 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         btnShowGrid.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseUp(MouseEvent e) {
-        		getController().setShowGrid(btnShowGrid.getSelection());
+        		try {
+					getController().setShowGrid(btnShowGrid.getSelection());
+				} catch (GkException e1) {
+					displayMessage(e1);
+				}
         	}
         });
         final Combo combo = new Combo(composite, SWT.READ_ONLY);
@@ -147,13 +151,17 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         combo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(glcanvas != null){
-					if(combo.getSelectionIndex() == 0){
-						getController().setPerspectiveCamera();
+				try{
+					if(glcanvas != null){
+						if(combo.getSelectionIndex() == 0){
+							getController().setPerspectiveCamera();
 
-					}else if(combo.getSelectionIndex() == 1){
-						getController().setOrthographicCamera();
-					}
+						}else if(combo.getSelectionIndex() == 1){
+							getController().setOrthographicCamera();
+						}
+				}
+				}catch (GkException e2) {
+					displayMessage(e2);
 				}
 			}
 		});
@@ -161,6 +169,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
         glcanvas = viewerService.createCanvas(compositeParent);
         glcanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
         animator = new Animator();
 
         animator.add(glcanvas);
@@ -176,7 +185,13 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
         btnShowCoordinatesSystems.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseUp(MouseEvent e) {
-        		getController().setShowCoordinateSystem(btnShowCoordinatesSystems.getSelection());
+        		if(glcanvas != null){
+        			try {
+						getController().setShowCoordinateSystem(btnShowCoordinatesSystems.getSelection());
+					} catch (GkException e1) {
+						displayMessage(e1);
+					}
+        		}
         	}
         });
 
@@ -186,7 +201,17 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		getController().addSelectionBinding(toolFollowBtn, "followTool");
 		getController().addSelectionBinding(btnShowCoordinatesSystems, "showCoordinateSystem");
 
-		new Label(composite, SWT.NONE);
+		final Button btnKeyboardJog = new Button(composite, SWT.FLAT | SWT.TOGGLE);
+		btnKeyboardJog.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				glcanvas.setKeyboardJogEnabled(btnKeyboardJog.getSelection());
+
+			}
+		});
+
+		btnKeyboardJog.setImage(ResourceManager.getPluginImage("org.goko.gcode.viewer", "icons/keyboard--arrow.png"));
+		formToolkit.adapt(btnKeyboardJog, true, true);
 
 		//glcanvas.setMenu(initContextualMenu(composite));
 

@@ -30,7 +30,6 @@ public class LinearMotionRenderer extends AbstractGCodeCommandRenderer<LinearMot
 	public void render(LinearMotionCommand command, JoglRendererProxy proxy, IJoglGCodeCommandStyler<LinearMotionCommand> styler ) throws GkException{
 		JoglViewerSettings settings = JoglViewerSettings.getInstance();
 		if(command != null){
-			GL2 gl = proxy.getGl();
 			if(settings.isRotaryAxisEnabled()){
 				// The complete angle around the 4th axis
 				double deltaAngle = 0;

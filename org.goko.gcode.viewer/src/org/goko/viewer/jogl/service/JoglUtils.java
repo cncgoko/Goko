@@ -24,7 +24,6 @@ public class JoglUtils {
 
 
 	private static final Point3f DEFAULT_COLOR = new Point3f(0.8f,0.8f,0.8f);
-	private static final Tuple6b zero = new Tuple6b(0, 0, 0);
 
 	public static void drawPoint(GL2 gl,Tuple6b point) throws GkException {
 		drawPoint(gl, point, DEFAULT_COLOR);

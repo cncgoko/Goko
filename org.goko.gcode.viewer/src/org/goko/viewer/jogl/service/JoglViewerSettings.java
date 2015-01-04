@@ -22,6 +22,8 @@ package org.goko.viewer.jogl.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import javax.vecmath.Vector3f;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -119,6 +121,18 @@ public class JoglViewerSettings {
 	 */
 	public EnumRotaryAxisDirection getRotaryAxisDirection() {
 		return rotaryAxisDirection;
+	}
+	/**
+	 * Return the vector defining the direction of the rotary axis
+	 * @return Vector3f
+	 */
+	public Vector3f getRotaryAxisDirectionVector() {
+		switch(rotaryAxisDirection){
+		case X: return new Vector3f(1,0,0);
+		case Y: return new Vector3f(0,1,0);
+		case Z: return new Vector3f(0,0,1);
+		}
+		return new Vector3f(1,0,0);
 	}
 	/**
 	 * @param rotaryAxisDirection the rotaryAxisDirection to set

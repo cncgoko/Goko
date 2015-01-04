@@ -34,6 +34,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
@@ -93,6 +95,8 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	private IFourAxisControllerAdapter controllerAdapter;
 	/** The coordinate system adapter */
 	private ICoordinateSystemAdapter coordinateSystemAdapter;
+	/** Jog service */
+	private IContinuousJogService continuousJogService;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
 	/** Bind camera on tool position ? */
@@ -108,6 +112,9 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	private int y;
 	private int width;
 	private int height;
+	private int frame;
+	private long lastFrameReset;
+	private int fps;
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -143,7 +150,7 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		}
 
 
-		canvas = new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, this);
+		canvas 		= new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, this);
 		proxy 		= new JoglRendererProxy(null);
 
 		addCamera(new PerspectiveCamera(canvas));
@@ -155,6 +162,8 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		ToolRenderer toolRenderer = new ToolRenderer(controllerAdapter);
 		addRenderer(toolRenderer);
 		overlayFont = new Font("SansSerif", Font.PLAIN, 12);
+
+		canvas.addKeyListener(new KeyboardJogAdatper(canvas, continuousJogService));
 		return canvas;
 	}
 
@@ -241,6 +250,7 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 	@Override
 	public void display(GLAutoDrawable gLAutoDrawable) {
 		GL2 gl = gLAutoDrawable.getGL().getGL2();
+	//	gl.glGenVertexArrays(0, null);
         clear(gl);
         if(!isEnabled()){
         	return;
@@ -250,14 +260,7 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		}
 		updateCamera(gLAutoDrawable, gl);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-	/*	BigDecimal aPos = new BigDecimal("0");
-		try {
-			MachineValue<BigDecimal> valueA = controllerService.getMachineValue(DefaultControllerValues.POSITION_A, BigDecimal.class);
-			aPos = valueA.getValue();
-		} catch (GkException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
+
 
 		proxy.setGl(gl);
 		try {
@@ -283,9 +286,13 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 
 		if(gcodeRenderer!=null){
 			gl.glPushMatrix();
-		//	gl.glRotated(aPos.doubleValue(), 0, 1, 0);
+			// Apply A transformation if available
+			Double aPos = controllerAdapter.getA();
+			Point3d positionVector = JoglViewerSettings.getInstance().getRotaryAxisPosition().toPoint3d();
+			gl.glTranslated(-positionVector.x, -positionVector.y, -positionVector.z);
+			Vector3f rotationVector = JoglViewerSettings.getInstance().getRotaryAxisDirectionVector();
+			gl.glRotated(aPos.doubleValue(), rotationVector.x, rotationVector.y, rotationVector.z);
 			gcodeRenderer.render(proxy);
-
 			gl.glPopMatrix();
 		}
 		if(boundsRenderer!=null){
@@ -342,6 +349,7 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		return p;
 	}
 	private void drawOverlay() {
+		this.frame += 1;
 		overlay.beginRendering();
 		Graphics2D g2d = overlay.createGraphics();
 		try{
@@ -363,6 +371,13 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 			    }else{
 			    	g2d.drawString("Disabled",x,y);
 			    }
+			    if(System.currentTimeMillis() - lastFrameReset >= 500){
+			    	this.lastFrameReset = System.currentTimeMillis();
+			    	this.fps = this.frame;
+			    	this.frame = 0;
+			    }
+			    g2d.setColor(new Color(0.55f,0.45f,0.28f));
+			    g2d.drawString(String.valueOf(this.fps*2)+"fps",x,y+bounds.height+4);
 				overlay.markDirty(0, 0, width, height);
 				overlay.drawAll();
 
@@ -396,6 +411,10 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
 		gl.glShadeModel(GL2.GL_SMOOTH); // blends colors nicely, and smo
+		//
+	    gl.glEnable(GL.GL_LINE_SMOOTH);
+	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
+	    //
 		overlay = new Overlay(gLAutoDrawable);
 		overlay.createGraphics();
 	}
@@ -568,6 +587,20 @@ public class JoglViewerServiceImpl implements IJoglViewerService, IWorkspaceList
 			addRenderer(coordinateSystemRenderer);
 		}
 		this.coordinateSystemRenderer.setAdapter(coordinateSystemAdapter);
+	}
+
+	/**
+	 * @return the continuousJogService
+	 */
+	public IContinuousJogService getContinuousJogService() {
+		return continuousJogService;
+	}
+
+	/**
+	 * @param continuousJogService the continuousJogService to set
+	 */
+	public void setContinuousJogService(IContinuousJogService continuousJogService) {
+		this.continuousJogService = continuousJogService;
 	}
 
 }
