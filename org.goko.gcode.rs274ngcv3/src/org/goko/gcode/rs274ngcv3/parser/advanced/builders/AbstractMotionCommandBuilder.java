@@ -1,22 +1,19 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.gcode.rs274ngcv3.parser.advanced.builders;
 
 import java.math.BigDecimal;
@@ -35,6 +32,7 @@ import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.CModifier;
 import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.XModifier;
 import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.YModifier;
 import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.ZModifier;
+import org.goko.gcode.rs274ngcv3.parser.advanced.tokens.gwords.G382Modifier;
 
 public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> extends AbstractSettingCommandBuilder<T> {
 
@@ -46,6 +44,8 @@ public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> exte
 		addModifier(new AModifier());
 		addModifier(new BModifier());
 		addModifier(new CModifier());
+		addModifier(new G382Modifier());
+
 	}
 //	/** (inheritDoc)
 //	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.builders.AbstractSettingCommandBuilder#buildCommand(org.goko.core.gcode.bean.GCodeCommand, org.goko.core.gcode.bean.GCodeContext, org.goko.core.gcode.bean.commands.SettingCommand)

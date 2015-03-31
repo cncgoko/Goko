@@ -19,113 +19,62 @@
  */
 package org.goko.viewer.jogl.utils.render.gcode;
 
-import java.math.BigDecimal;
+import javax.media.opengl.GL3;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
-import javax.media.opengl.GL2;
-import javax.vecmath.Point3f;
-
-import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.BoundingTuple6b;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.viewer.jogl.service.JoglRendererProxy;
-import org.goko.viewer.jogl.utils.render.IJoglRenderer;
+import org.goko.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
+import org.goko.viewer.jogl.utils.render.coordinate.measurement.DistanceRenderer;
+import org.goko.viewer.jogl.utils.render.text.TextRenderer;
 
-import com.jogamp.opengl.util.gl2.GLUT;
-
-public class BoundsRenderer implements IJoglRenderer{
-	private static Point3f COLOR = new Point3f(0.80f,0.80f,0.80f);
+public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
+	public static final String ID = "org.goko.viewer.jogl.boundsRenderer";
 	private BoundingTuple6b bounds;
 	private float offset = 5;
+	private DistanceRenderer xDistanceRenderer;
 
-	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#getId()
+	/**
+	 * Constructor
+	 * @param bounds the bound to display
 	 */
-	@Override
-	public String getId() {
-		return String.valueOf(bounds);
+	public BoundsRenderer(BoundingTuple6b bounds) {
+		this.setBounds(bounds);
 	}
 
+	@Override
+	public String getId() {
+		return ID;
+	}
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
+	 * @see org.goko.viewer.jogl.service.AbstractCoreJoglRenderer#performInitialize(javax.media.opengl.GL3)
 	 */
 	@Override
-	public void render(JoglRendererProxy proxy) throws GkException {
-		proxy.getGl().glPushAttrib(GL2.GL_LINE_BIT);
-		proxy.getGl().glLineWidth(1.5f);
-		// X Ruler
-		Tuple6b xStart = new Tuple6b(bounds.getMin().getX(), bounds.getMin().getY().add(new BigDecimal(-offset)), new BigDecimal("0.01"));
-		Tuple6b xEnd   = new Tuple6b(bounds.getMax().getX(), bounds.getMin().getY().add(new BigDecimal(-offset)), new BigDecimal("0.01"));
-		proxy.drawSegment(xStart, xEnd,COLOR);
-		xStart.setX(bounds.getMin().getX());
-		xStart.setY(bounds.getMin().getY().add( new BigDecimal( -offset / 2)));
-		xEnd.setX(bounds.getMin().getX());
-		xEnd.setY(bounds.getMin().getY().add( new BigDecimal( -offset - (offset / 2))));
-		proxy.drawSegment(xStart, xEnd,COLOR);
-		xStart.setX(bounds.getMax().getX());
-		xEnd.setX(bounds.getMax().getX());
-		proxy.drawSegment(xStart, xEnd,COLOR);
-		BigDecimal dx = bounds.getMax().subtract(bounds.getMin()).getX().setScale(3, BigDecimal.ROUND_HALF_UP);
+	protected void performInitialize(GL3 gl) throws GkException {
+		if(bounds != null){
+			Point3d ptMin = bounds.getMin().toPoint3d();
+			Point3d ptMax = bounds.getMax().toPoint3d();
 
-		// Y Ruler
-		Tuple6b yStart = new Tuple6b(bounds.getMin().getX().add(new BigDecimal(-offset)), bounds.getMin().getY(), new BigDecimal("0.01"));
-		Tuple6b yEnd   = new Tuple6b(bounds.getMin().getX().add(new BigDecimal(-offset)), bounds.getMax().getY(), new BigDecimal("0.01"));
-		proxy.drawSegment(yStart, yEnd,COLOR);
-
-		BigDecimal dy = bounds.getMax().subtract(bounds.getMin()).getY().setScale(3,BigDecimal.ROUND_HALF_UP);
-
-		xStart.setY(bounds.getMin().getY());
-		xStart.setX(bounds.getMin().getX().add( new BigDecimal( -offset / 2)));
-		xEnd.setY(bounds.getMin().getY());
-		xEnd.setX(bounds.getMin().getX().add( new BigDecimal( -offset - offset / 2)));
-		proxy.drawSegment(xStart, xEnd,COLOR);
-		xStart.setY(bounds.getMax().getY());
-		xEnd.setY(bounds.getMax().getY());
-		proxy.drawSegment(xStart, xEnd,COLOR);
-
-		proxy.getGl().glLineWidth(1.1f);
-
-		// Let's draw the measurements
-		GLUT glut = new GLUT();
-		double charWidth = 4.0;
-		double charHeight = 6.0;
-		double scale = charWidth / glut.glutStrokeWidth(GLUT.STROKE_MONO_ROMAN, ' ');
-		// X axis measurement
-		proxy.getGl().glPushMatrix();
-		proxy.getGl(). glScaled(scale,scale,scale);
-		int nbChar = StringUtils.length(dx.toString());
-		proxy.getGl(). glTranslated(((bounds.getMin().getX().add(bounds.getMax().getX()).doubleValue()/2)-(nbChar*charWidth/2))/scale,
-									(bounds.getMin().getY().doubleValue() - offset - charHeight)/scale,
-									0);
-		glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, dx.toString());
-        proxy.getGl().glPopMatrix();
-
-        // Y axis measurement
-		proxy.getGl().glPushMatrix();
-		proxy.getGl().glRotated(-90, 0, 0, 1);
-		proxy.getGl(). glScaled(scale,scale,scale);
-		nbChar = StringUtils.length(dy.toString());
-		proxy.getGl(). glTranslated(((-bounds.getMin().getY().add(bounds.getMax().getY()).doubleValue()/2)-(nbChar*charWidth/2))/scale,
-									(bounds.getMin().getX().doubleValue() - offset - charHeight)/scale,
-									0);
-		glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, dy.toString());
-        proxy.getGl().glPopMatrix();
-
-		proxy.getGl().glPopAttrib();
+			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMax.x,(float)ptMin.y-1,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
+			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMax.y,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
+			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y-1,(float)ptMax.z), new Vector3d(1,-1,0), TextRenderer.BOTTOM) );
+		}
 	}
 
 	/**
 	 * @return the bounds
 	 */
-	public BoundingTuple6b getBounds() {
+	protected BoundingTuple6b getBounds() {
 		return bounds;
 	}
 
 	/**
 	 * @param bounds the bounds to set
 	 */
-	public void setBounds(BoundingTuple6b bounds) {
+	protected void setBounds(BoundingTuple6b bounds) {
 		this.bounds = bounds;
 	}
+
 
 }

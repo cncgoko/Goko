@@ -16,8 +16,9 @@
  *******************************************************************************/
 package org.goko.viewer.jogl;
 
+import javax.media.opengl.GLCapabilities;
+
 import org.eclipse.swt.widgets.Composite;
-import org.goko.viewer.jogl.service.IJoglViewerService;
 
 import com.jogamp.opengl.swt.GLCanvas;
 
@@ -29,15 +30,15 @@ import com.jogamp.opengl.swt.GLCanvas;
  */
 public class GokoJoglCanvas extends GLCanvas{
 	protected boolean keyboardJogEnabled;
+
 	/**
 	 * Constructor
 	 * @param parent
 	 * @param style
 	 * @param data
 	 */
-	public GokoJoglCanvas(Composite parent, int style,IJoglViewerService joglService) {
-		super(parent, style, null,null);
-		addGLEventListener(joglService);
+	public GokoJoglCanvas(Composite parent, int style,GLCapabilities caps) {
+		super(parent, style, caps,null);
 	}
 	/**
 	 * @return the keyboardJogEnabled
@@ -51,5 +52,4 @@ public class GokoJoglCanvas extends GLCanvas{
 	public void setKeyboardJogEnabled(boolean keyboardJogEnabled) {
 		this.keyboardJogEnabled = keyboardJogEnabled;
 	}
-
 }

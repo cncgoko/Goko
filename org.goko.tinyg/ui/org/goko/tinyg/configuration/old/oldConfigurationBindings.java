@@ -138,7 +138,7 @@ public class oldConfigurationBindings extends AbstractModelObject{
 
 	public oldConfigurationBindings() {
 		this.choicesMotorMapping = new ArrayList<LabeledValue<BigDecimal>>();
-		choicesMotorMapping.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "X axis"));
+		choicesMotorMapping.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "X axis"));
 		choicesMotorMapping.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Y axis"));
 		choicesMotorMapping.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "Z axis"));
 		choicesMotorMapping.add(new LabeledValue<BigDecimal>(new BigDecimal("3"), "A axis"));
@@ -152,12 +152,12 @@ public class oldConfigurationBindings extends AbstractModelObject{
 		choicesMicrosteps.add(new LabeledValue<BigDecimal>(new BigDecimal("8"), "8"));
 
 		this.choicesPolarity = new ArrayList<LabeledValue<BigDecimal>>();
-		choicesPolarity.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Clockwise"));
+		choicesPolarity.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Clockwise"));
 		choicesPolarity.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Counterclockwise"));
 
 
 		this.choicesPowerManagement = new ArrayList<LabeledValue<BigDecimal>>();
-		choicesPowerManagement.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Powered when idle"));
+		choicesPowerManagement.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Powered when idle"));
 		choicesPowerManagement.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Unpowered when idle"));
 
 
@@ -171,7 +171,7 @@ public class oldConfigurationBindings extends AbstractModelObject{
 
 
 		this.choicesSwitchModes = new ArrayList<LabeledValue<BigDecimal>>();
-		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Disabled"));
+		choicesSwitchModes.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Disabled"));
 		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Homing only"));
 		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "Limit only"));
 		choicesSwitchModes.add(new LabeledValue<BigDecimal>(new BigDecimal("3"), "Homing and limit"));
@@ -179,12 +179,12 @@ public class oldConfigurationBindings extends AbstractModelObject{
 		selectedAxis = new LabeledValue<String>("x", "X axis");
 
 		choicesPlaneSelection 	= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesPlaneSelection.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "XY Plane - G17"));
+		choicesPlaneSelection.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "XY Plane - G17"));
 		choicesPlaneSelection.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "XZ Plane - G18"));
 		choicesPlaneSelection.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "YZ Plane - G19"));
 
 		choicesUnits			= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesUnits.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Inches - G20"));
+		choicesUnits.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Inches - G20"));
 		choicesUnits.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Millimeters - G21"));
 
 		choicesCoordinateSystem= new ArrayList<LabeledValue<BigDecimal>>();
@@ -196,17 +196,17 @@ public class oldConfigurationBindings extends AbstractModelObject{
 		choicesCoordinateSystem.add(new LabeledValue<BigDecimal>(new BigDecimal("6"), "Coordinate system 6 - G59"));
 
 		choicesPathControl		= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesPathControl.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Exact path - G61"));
+		choicesPathControl.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Exact path - G61"));
 		choicesPathControl.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Exact stop - G61.1"));
 		choicesPathControl.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "Continuous - G64"));
 
 		choicesDistanceMode	= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesDistanceMode.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Absolute - G60"));
+		choicesDistanceMode.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Absolute - G60"));
 		choicesDistanceMode.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Incremental - G91"));
 
 
 		choicesJSonVerbosity= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesJSonVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Silent"));
+		choicesJSonVerbosity.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Silent"));
 		choicesJSonVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Footer"));
 		choicesJSonVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "Messages"));
 		choicesJSonVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("3"), "Configs"));
@@ -215,12 +215,12 @@ public class oldConfigurationBindings extends AbstractModelObject{
 
 
 		choicesExtendedVerbosity= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesExtendedVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Silent"));
+		choicesExtendedVerbosity.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Silent"));
 		choicesExtendedVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Filtered"));
 		choicesExtendedVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("2"), "Verbose"));
 
 		choicesVerbosity= new ArrayList<LabeledValue<BigDecimal>>();
-		choicesVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Silent"));
+		choicesVerbosity.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Silent"));
 		choicesVerbosity.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Verbose"));
 
 		choicesBaudrate= new ArrayList<LabeledValue<BigDecimal>>();
@@ -232,7 +232,7 @@ public class oldConfigurationBindings extends AbstractModelObject{
 		choicesBaudrate.add(new LabeledValue<BigDecimal>(new BigDecimal("6"), "230400"));
 
 		choicesSwitchType = new ArrayList<LabeledValue<BigDecimal>>();
-		choicesSwitchType.add(new LabeledValue<BigDecimal>(new BigDecimal("0"), "Normally open"));
+		choicesSwitchType.add(new LabeledValue<BigDecimal>(BigDecimal.ZERO, "Normally open"));
 		choicesSwitchType.add(new LabeledValue<BigDecimal>(new BigDecimal("1"), "Normally closed"));
 
 	}

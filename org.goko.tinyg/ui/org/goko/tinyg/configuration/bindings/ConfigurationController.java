@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -49,6 +50,7 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 	public ConfigurationController(ConfigurationBindings binding) {
 		super(binding);
 		binding.addPropertyChangeListener(this);
+
 	}
 
 	/** (inheritDoc)
@@ -59,6 +61,10 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		controllerService.addListener(this);
 	}
 
+	@PostConstruct
+	public void postConstruct() throws GkException{
+		refreshConfiguration();
+	}
 	/**
 	 * Refresh the display of the settings
 	 * @throws GkException GkException
@@ -85,7 +91,7 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		cfg.setSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.IGNORE_CR_LF_ON_RX , 		new BigDecimal(String.valueOf(crlf)));
 		cfg.setSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_CR_ON_TX 	 , 		new BigDecimal(booleanAs0Or1(getDataModel().isEnableCrOnTx())));
 		cfg.setSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_CHARACTER_ECHO, 	new BigDecimal(booleanAs0Or1(getDataModel().isEnableEcho())));
-		cfg.setSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_XON_XOFF, 			new BigDecimal(booleanAs0Or1(getDataModel().isEnableXonXoff())));
+		cfg.setSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, 			new BigDecimal(booleanAs0Or1(getDataModel().isEnableXonXoff())));
 		cfg.setSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.BAUD_RATE, 				getDataModel().getBaudrate().getValue() );
 
 		// GCode defaults
@@ -103,7 +109,7 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		applyAxisConfiguration(cfg, "y", getDataModel().getyAxisWrapper());
 		applyAxisConfiguration(cfg, "z", getDataModel().getzAxisWrapper());
 		applyAxisConfiguration(cfg, "a", getDataModel().getaAxisWrapper());
-		getControllerService().setConfiguration(cfg);
+		getControllerService().updateConfiguration(cfg);
 	}
 
 	private void applyMotorSetting(TinyGConfiguration cfg) throws GkException{
@@ -141,15 +147,16 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 	public void requestConfigurationRefresh(){
 		try {
 			getControllerService().refreshConfiguration();
+			refreshConfiguration();
 		} catch (GkException e) {
 			LOG.error(e);
 		}
 	}
 	public void refreshConfiguration() throws GkException{
 		TinyGConfiguration cfg = getControllerService().getConfiguration();
-		getDataModel().setFirmwareBuild( cfg.getSetting(TinyGConfiguration.FIRMWARE_BUILD, BigDecimal.class) );
-		getDataModel().setFirmwareVersion( cfg.getSetting(TinyGConfiguration.FIRMWARE_VERSION, BigDecimal.class) );
-		getDataModel().setHardwareVersion( cfg.getSetting(TinyGConfiguration.HARDWARE_VERSION, BigDecimal.class) );
+		getDataModel().setFirmwareBuild( cfg.getSetting(TinyGConfiguration.FIRMWARE_BUILD, 		BigDecimal.class) );
+		getDataModel().setFirmwareVersion( cfg.getSetting(TinyGConfiguration.FIRMWARE_VERSION,  BigDecimal.class) );
+		getDataModel().setHardwareVersion( cfg.getSetting(TinyGConfiguration.HARDWARE_VERSION,  BigDecimal.class) );
 		getDataModel().setUniqueId( cfg.getSetting(TinyGConfiguration.UNIQUE_ID) );
 
 		refreshGlobalSettings();
@@ -217,7 +224,7 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 		BigDecimal enableCrTx = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_CR_ON_TX, BigDecimal.class);
 		getDataModel().setEnableCrOnTx( ObjectUtils.equals(enableCrTx, new BigDecimal("1")) );
 
-		BigDecimal enableXonXoff = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_XON_XOFF, BigDecimal.class);
+		BigDecimal enableXonXoff = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
 		getDataModel().setEnableXonXoff( ObjectUtils.equals(enableXonXoff, new BigDecimal("1")) );
 
 		BigDecimal baudrate = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.BAUD_RATE, BigDecimal.class );
@@ -248,13 +255,13 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 
 			BigDecimal polarityM1 = cfg.getSetting(TinyGConfiguration.MOTOR_1_SETTINGS, TinyGConfiguration.POLARITY, BigDecimal.class);
 			if(polarityM1 == null){
-				polarityM1 = new BigDecimal("0");
+				polarityM1 = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor1Polarity( GkUiUtils.getLabelledValueByKey(polarityM1, getDataModel().getChoicesPolarity()) );
 
 			BigDecimal powerMode = cfg.getSetting(TinyGConfiguration.MOTOR_1_SETTINGS, TinyGConfiguration.POWER_MANAGEMENT_MODE, BigDecimal.class);
 			if(powerMode == null){
-				powerMode = new BigDecimal("0");
+				powerMode = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor1PowerManagement( GkUiUtils.getLabelledValueByKey(powerMode, getDataModel().getChoicesPowerManagement()) );
 		}
@@ -266,13 +273,13 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 
 			BigDecimal polarityM2 = cfg.getSetting(TinyGConfiguration.MOTOR_2_SETTINGS, TinyGConfiguration.POLARITY, BigDecimal.class);
 			if(polarityM2 == null){
-				polarityM2 = new BigDecimal("0");
+				polarityM2 = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor2Polarity( GkUiUtils.getLabelledValueByKey(polarityM2, getDataModel().getChoicesPolarity()) );
 
 			BigDecimal powerMode = cfg.getSetting(TinyGConfiguration.MOTOR_2_SETTINGS, TinyGConfiguration.POWER_MANAGEMENT_MODE, BigDecimal.class);
 			if(powerMode == null){
-				powerMode = new BigDecimal("0");
+				powerMode = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor2PowerManagement( GkUiUtils.getLabelledValueByKey(powerMode, getDataModel().getChoicesPowerManagement()) );
 		}
@@ -285,13 +292,13 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 
 			BigDecimal polarityM3 = cfg.getSetting(TinyGConfiguration.MOTOR_3_SETTINGS, TinyGConfiguration.POLARITY, BigDecimal.class);
 			if(polarityM3 == null){
-				polarityM3 = new BigDecimal("0");
+				polarityM3 = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor3Polarity( GkUiUtils.getLabelledValueByKey(polarityM3, getDataModel().getChoicesPolarity()) );
 
 			BigDecimal powerMode = cfg.getSetting(TinyGConfiguration.MOTOR_3_SETTINGS, TinyGConfiguration.POWER_MANAGEMENT_MODE, BigDecimal.class);
 			if(powerMode == null){
-				powerMode = new BigDecimal("0");
+				powerMode = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor3PowerManagement( GkUiUtils.getLabelledValueByKey(powerMode, getDataModel().getChoicesPowerManagement()) );
 		}
@@ -304,13 +311,13 @@ public class ConfigurationController extends AbstractController<ConfigurationBin
 
 			BigDecimal polarityM4 = cfg.getSetting(TinyGConfiguration.MOTOR_4_SETTINGS, TinyGConfiguration.POLARITY, BigDecimal.class);
 			if(polarityM4 == null){
-				polarityM4 = new BigDecimal("0");
+				polarityM4 = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor4Polarity( GkUiUtils.getLabelledValueByKey(polarityM4, getDataModel().getChoicesPolarity()) );
 
 			BigDecimal powerMode = cfg.getSetting(TinyGConfiguration.MOTOR_4_SETTINGS, TinyGConfiguration.POWER_MANAGEMENT_MODE, BigDecimal.class);
 			if(powerMode == null){
-				powerMode = new BigDecimal("0");
+				powerMode = BigDecimal.ZERO;
 			}
 			getDataModel().setMotor4PowerManagement( GkUiUtils.getLabelledValueByKey(powerMode, getDataModel().getChoicesPowerManagement()) );
 		}

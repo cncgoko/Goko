@@ -1,6 +1,7 @@
 package org.goko.viewer.jogl.service;
 
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL3;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -10,10 +11,10 @@ import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
 
 public class JoglRendererProxy implements IRendererProxy {
+	private GL3 gl;
 
-	private GL2 gl;
 
-	public JoglRendererProxy(GL2 gl){
+	public JoglRendererProxy(GL3 gl){
 		this.gl = gl;
 	}
 
@@ -22,7 +23,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawPoint(Tuple6b point) throws GkException {
-		JoglUtils.drawPoint(gl, point);
+		JoglUtils.drawPoint(getGl2(), point);
 	}
 
 	/** (inheritDoc)
@@ -30,7 +31,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawPoint(Tuple6b point, Point3f color) throws GkException {
-		JoglUtils.drawPoint(gl, point, color);
+		JoglUtils.drawPoint(getGl2(), point, color);
 	}
 
 	/** (inheritDoc)
@@ -38,7 +39,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawPoint(Tuple6b point, Point3f color, int style) throws GkException {
-		JoglUtils.drawPoint(gl, point, color, style);
+		JoglUtils.drawPoint(getGl2(), point, color, style);
 	}
 
 	/** (inheritDoc)
@@ -46,7 +47,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawSegment(Tuple6b start, Tuple6b end) throws GkException {
-		JoglUtils.drawSegment(gl, start, end);
+		JoglUtils.drawSegment(getGl2(), start, end);
 	}
 
 	/** (inheritDoc)
@@ -54,7 +55,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawSegment(Tuple6b start, Tuple6b end, Point3f color) throws GkException {
-		JoglUtils.drawSegment(gl, start, end, color);
+		JoglUtils.drawSegment(getGl2(), start, end, color);
 	}
 
 	/** (inheritDoc)
@@ -62,7 +63,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawSegment(Tuple6b start, Tuple6b end, Point3f color, int style) throws GkException {
-		JoglUtils.drawSegment(gl, start, end, color, style);
+		JoglUtils.drawSegment(getGl2(), start, end, color, style);
 	}
 
 	/** (inheritDoc)
@@ -70,7 +71,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction) throws GkException {
-		JoglUtils.drawArc(gl, start, end, center, plane, direction);
+		JoglUtils.drawArc(getGl2(), start, end, center, plane, direction);
 	}
 
 	/** (inheritDoc)
@@ -78,7 +79,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction, Point3f color) throws GkException {
-		JoglUtils.drawArc(gl, start, end, center, plane, direction, color);
+		JoglUtils.drawArc(getGl2(), start, end, center, plane, direction, color);
 	}
 
 	/** (inheritDoc)
@@ -86,7 +87,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawArc(Tuple6b start, Tuple6b end, Tuple6b center, Vector3f plane, int direction, Point3f color, int style) throws GkException {
-		JoglUtils.drawArc(gl, start, end, center, plane, direction, color, style);
+		JoglUtils.drawArc(getGl2(), start, end, center, plane, direction, color, style);
 	}
 
 	/** (inheritDoc)
@@ -94,7 +95,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawLineStrip(Tuple6b... points) throws GkException {
-		JoglUtils.drawLineStrip(gl, points);
+		JoglUtils.drawLineStrip(getGl2(), points);
 	}
 
 	/** (inheritDoc)
@@ -102,7 +103,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawLineStrip(Point3f color, Tuple6b... points) throws GkException {
-		JoglUtils.drawLineStrip(gl, color, points);
+		JoglUtils.drawLineStrip(getGl2(), color, points);
 	}
 
 	/** (inheritDoc)
@@ -110,7 +111,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawLineStrip(Point3f color, int style, Tuple6b... points) throws GkException {
-		JoglUtils.drawLineStrip(gl, color, style, points);
+		JoglUtils.drawLineStrip(getGl2(), color, style, points);
 	}
 
 	/** (inheritDoc)
@@ -126,7 +127,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawXYZAxis(Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale, String label, double charwidth) throws GkException {
-		JoglUtils.drawXYZAxis(gl, position, xColor, yColor, zColor, scale, label, charwidth);
+		JoglUtils.drawXYZAxis(getGl2(), position, xColor, yColor, zColor, scale, label, charwidth);
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.viewer.service.IViewer3DService#erase(java.lang.Integer)
@@ -146,14 +147,18 @@ public class JoglRendererProxy implements IRendererProxy {
 	/**
 	 * @return the gl
 	 */
-	public GL2 getGl() {
+	public GL3 getGl() {
 		return gl;
+	}
+
+	public GL2 getGl2() {
+		return gl.getGL2();
 	}
 
 	/**
 	 * @param gl the gl to set
 	 */
-	public void setGl(GL2 gl) {
+	public void setGl(GL3 gl) {
 		this.gl = gl;
 	}
 
@@ -162,7 +167,7 @@ public class JoglRendererProxy implements IRendererProxy {
 	 */
 	@Override
 	public void drawCircle(Tuple6b center, double radius, Vector3f plane, Point3f color) throws GkException {
-		JoglUtils.drawCircle(gl, center, radius, plane, color);
+		JoglUtils.drawCircle(getGl2(), center, radius, plane, color);
 	}
 
 }

@@ -60,6 +60,8 @@ public class JsscConnectHandler {
 		params.put(JsscParameter.PARITY.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.PARITY.name()));//SerialPort.PARITY_NONE);
 		params.put(JsscParameter.STOPBITS.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.STOPBITS.name()));//SerialPort.STOPBITS_1);
 		params.put(JsscParameter.DATABITS.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.DATABITS.name()));//SerialPort.DATABITS_8);
+		params.put(JsscParameter.RCSCTS.name(), JsscSerialActivator.getPreferenceStore().getString(JsscParameter.RCSCTS.name()));//SerialPort.DATABITS_8);
+		params.put(JsscParameter.XONXOFF.name(), JsscSerialActivator.getPreferenceStore().getString(JsscParameter.XONXOFF.name()));//SerialPort.DATABITS_8);
 
 		connectionService.connect(params);
 

@@ -40,10 +40,15 @@ import org.goko.base.commandpanel.CommandPanelParameter;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.IControllerService;
+import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.controller.IStepJogService;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.action.IGkControllerAction;
+import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.log.GkLog;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -57,6 +62,15 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	private final static GkLog LOG = GkLog.getLogger(CommandPanelController.class);
 	@Inject
 	private IControllerService controllerService;
+	@Inject
+	@Optional
+	private ICoordinateSystemAdapter coordinateSystemAdapter;
+	@Inject
+	@Optional
+	private IContinuousJogService continuousJogService;
+	@Inject
+	@Optional
+	private IStepJogService stepJogService;
 
 	public CommandPanelController(CommandPanelModel binding) {
 		super(binding);
@@ -65,6 +79,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Override
 	public void initialize() throws GkException {
 		controllerService.addListener(this);
+		getDataModel().setStepModeChoiceEnabled( continuousJogService != null && stepJogService != null);
 	}
 
 	public void bindEnableControlWithAction(Control widget, String actionId) throws GkException{
@@ -126,7 +141,38 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		System.err.println(val);
 	}
 
-	public void bindJogButton(Button widget, final String axis) throws GkException {
+	public void bindJogButton(Button widget, final EnumControllerAxis axis) throws GkException {
+
+		widget.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				try {
+					if(getDataModel().isIncrementalJog()){
+						stepJogService.startJog(axis, getDataModel().getJogSpeed(), getDataModel().getJogIncrement());
+					}else{
+						continuousJogService.startJog(axis, getDataModel().getJogSpeed());
+					}
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					if(getDataModel().isIncrementalJog()){
+						stepJogService.stopJog();
+					}else{
+						continuousJogService.stopJog();
+					}
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+		});
+	}
+
+	public void oldbindJogButton(Button widget, final String axis) throws GkException {
 		if(controllerService.isControllerAction(DefaultControllerAction.JOG_START)
 				&& controllerService.isControllerAction(DefaultControllerAction.JOG_STOP)){
 			final IGkControllerAction actionStart = controllerService.getControllerAction(DefaultControllerAction.JOG_START);
@@ -162,7 +208,13 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	public void initilizeValues() {
 		getDataModel().setJogSpeed( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_FEEDRATE, StringUtils.EMPTY)) );
 		getDataModel().setJogIncrement( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_STEP_SIZE, StringUtils.EMPTY)) );
-		getDataModel().setIncrementalJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_INCREMENTAL, "false")) );
+		if(stepJogService != null && continuousJogService != null){
+			getDataModel().setIncrementalJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_INCREMENTAL, "false")) );
+		}else if( stepJogService != null ){
+			getDataModel().setIncrementalJog( true );
+		}else{
+			getDataModel().setIncrementalJog( false );
+		}
 	}
 
 	public void saveValues() {
@@ -182,6 +234,14 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 
 	private IEclipsePreferences getPreferences(){
 		return Activator.getPreferences();
+	}
+
+	public void setCoordinateSystem(EnumCoordinateSystem enumCoordinateSystem) throws GkException {
+		coordinateSystemAdapter.setCurrentCoordinateSystem(enumCoordinateSystem);
+	}
+
+	public void zeroCoordinateSystem() throws GkException {
+		coordinateSystemAdapter.resetCurrentCoordinateSystem();
 	}
 
 }

@@ -26,12 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import jssc.SerialPort;
-import jssc.SerialPortEvent;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
@@ -104,20 +102,19 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 		Integer databits = JsscUtils.getParameterDatabits(parameters);
 		Integer stopbits = JsscUtils.getParameterStopbits(parameters);
 		Integer parity 	 = JsscUtils.getParameterParity(parameters);
+		Integer flowControl	 = JsscUtils.getParameterFlowControl(parameters);
 
 		this.serialPort = new SerialPort(portName);
 
 		try {
 			this.serialPort.openPort();
 			this.serialPort.setParams(baudrate, databits, stopbits, parity);
-			this.serialPort.addEventListener(this, getEventMask());
-			this.serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT);
+			this.serialPort.setFlowControlMode(flowControl);
 			this.deamon = new JsscSerialListenerDeamon(this);
+			this.serialPort.addEventListener(deamon, getEventMask());
 			LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ databits +", parity: "+ parity +",stop bits: "+stopbits);
 			// Start the sender thread
 			jsscSender = new JsscSender(this);
-			//Executors.newSingleThreadExecutor().execute(jsscSender);
-			//Executors.newSingleThreadExecutor().execute(jsscSender);
 			deamonThread = new Thread(deamon);
 			senderThread = new Thread(jsscSender);
 			jsscSender.start();
@@ -169,10 +166,12 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void send(List<Byte> data, DataPriority priority) throws GkException {
-		if(priority == DataPriority.IMPORTANT){
-			jsscSender.sendBytesImmediately(data);
-		}else{
-			send(data);
+		if(isConnected()){
+			if(priority == DataPriority.IMPORTANT){
+				jsscSender.sendBytesImmediately(data);
+			}else{
+				send(data);
+			}
 		}
 	}
 
@@ -248,7 +247,9 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void clearOutputBuffer() throws GkException {
-		jsscSender.clearOutputBuffer();
+		if(isConnected()){
+			jsscSender.clearOutputBuffer();
+		}
 	}
 
 	protected void notifyConnectionListeners(EnumConnectionEvent event) throws GkException{
@@ -285,57 +286,13 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
         return SerialPort.MASK_RXCHAR + SerialPort.MASK_DSR + SerialPort.MASK_CTS + SerialPort.MASK_ERR;
     }
 
-	@Override
-	public void serialEvent(SerialPortEvent serialPortEvent) {
-		if(serialPortEvent.isRXCHAR() && serialPortEvent.getEventValue() > 0){ // Data available
-			int dataAvailableCount = serialPortEvent.getEventValue();
-			try {
-				byte buffer[] = getSerialPort().readBytes(dataAvailableCount);
-				if(buffer != null && buffer.length > 0){
-					// Process the call
-					//JsscSerialEventListener task = new JsscSerialEventListener(this, buffer);
-					//Executors.newSingleThreadExecutor().submit(task);
-
-					//deamon.addAll(GkUtils.toString(buffer));
-					// Process the call
-
-					try {
-						notifyInputListeners(GkUtils.toBytesList(GkUtils.toString(buffer)));
-						//System.err.print(GkUtils.toString(buffer));
-					} catch (GkException e) {
-						LOG.error(e);
-					}
-				}
-			} catch (SerialPortException e) {
-				LOG.error(e);
-			}
-		}else if(serialPortEvent.isERR() || serialPortEvent.isCTS()){
-			LOG.error(serialPortEvent.toString() + " err " +serialPortEvent.getEventValue());
-			try {
-				disconnect(null);
-			} catch (GkException e) {
-				LOG.error(e);
-			}
-		}
-
-	}
-
 	/**
 	 * @return the serialPort
 	 */
 	protected SerialPort getSerialPort() {
 		return serialPort;
 	}
-	protected void setXoff(){
-		if(jsscSender != null){
-			jsscSender.setClearToSend(false);
-		}
-	}
-	protected void setXon(){
-		if(jsscSender != null){
-			jsscSender.setClearToSend(true);
-		}
-	}
+
 
 	@Override
 	public List<String> getAvailableSerialPort() throws GkException {

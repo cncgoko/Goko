@@ -1,25 +1,23 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.gcode.filesender;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -37,8 +35,12 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -58,16 +60,19 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.common.bindings.validator.FilepathValidator;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.gcode.filesender.controller.GCodeFileSenderBindings;
 import org.goko.gcode.filesender.controller.GCodeFileSenderController;
-import org.goko.gcode.filesender.editor.GCodeEditor;
 
 /**
  * A part for GCode file streaming
@@ -78,11 +83,12 @@ import org.goko.gcode.filesender.editor.GCodeEditor;
 public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> {
 	// s
 	private final FormToolkit formToolkit = new FormToolkit( Display.getDefault());
+	@Inject
+	private IApplicativeLogService applicativeLogService;
 	private Text txtFilepath;
 	private Label lblFilesize;
 	private Label lblName;
 	private Label lblLastupdate;
-	private GCodeEditor gCodeTextDisplay;
 
 	private Label sentCommandsCountTxt;
 
@@ -98,6 +104,11 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 	private Label elapsedTimeLbl;
 	private Shell shell;
+	private Button btnBrowse;
+
+	//private NatTable natTable;
+	private Table table;
+	private TableViewer tableViewer;
 
 	@Inject
 	public FileSenderPart(IEclipseContext context) {
@@ -120,7 +131,11 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 				public void run(IProgressMonitor monitor) {
 					monitor.beginTask("Opening " + filePath, 100);
 					monitor.worked(30);
-					getController().setGCodeFilepath(filePath);
+					try {
+						getController().setGCodeFilepath(filePath);
+					} catch (GkException e) {
+						displayError(e);
+					}
 					monitor.done();
 				}
 			});
@@ -141,6 +156,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 */
 	@PostConstruct
 	public void createControls(final Composite parent) throws GkException {
+
 		DropTarget dt = new DropTarget(parent, DND.DROP_MOVE);
 		dt.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dt.addDropListener(new DropTargetAdapter() {
@@ -148,7 +164,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 			public void drop(DropTargetEvent event) {
 				// Set the text field's text to the text being dropped
 				startFileParsingJob(((String[]) event.data)[0]);
-				// getController().setGCodeFilepath(((String[]) event.data)[0]);
+				refreshCommandTable();
 			}
 		});
 		parent.setBackground(SWTResourceManager .getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -182,10 +198,11 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		lblPath.setText("Path :");
 
 		txtFilepath = new Text(composite_2, SWT.BORDER);
+		txtFilepath.setEditable(false);
 		txtFilepath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(txtFilepath, true, true);
 
-		Button btnBrowse = new Button(composite_2, SWT.NONE);
+		btnBrowse = new Button(composite_2, SWT.NONE);
 		btnBrowse.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -194,15 +211,13 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 				String filePath = dialog.open();
 				getDataModel().setFilePath(filePath);
-				try {
-					if (StringUtils.isNotBlank(filePath) && getController().validate()) {
-						startFileParsingJob(filePath);
-					}
-				} catch (GkException e1) {
-					displayMessage(e1);
+				if (StringUtils.isNotBlank(filePath)) {
+					startFileParsingJob(filePath);
+					refreshCommandTable();
 				}
-
 			}
+
+
 		});
 		formToolkit.adapt(btnBrowse, true, true);
 		btnBrowse.setText("Browse");
@@ -388,19 +403,63 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		formToolkit.adapt(grpGcodeEditor);
 		formToolkit.paintBordersFor(grpGcodeEditor);
 
-		gCodeTextDisplay = new GCodeEditor(grpGcodeEditor, null, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL);
-		final StyledText styledText = gCodeTextDisplay.getTextWidget();
-		styledText.setEditable(false);
-		styledText.setIndent(5);
-		styledText.setMarginColor(SWTResourceManager
-				.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-		styledText.setLeftMargin(20);
-		styledText.setFont(SWTResourceManager.getFont("Consolas", 10,
-				SWT.NORMAL));
-		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1));
+		Composite composite_8 = new Composite(grpGcodeEditor, SWT.NONE);
+		GridLayout gl_composite_8 = new GridLayout(1, false);
+		gl_composite_8.verticalSpacing = 0;
+		gl_composite_8.marginWidth = 0;
+		gl_composite_8.marginHeight = 0;
+		gl_composite_8.horizontalSpacing = 0;
+		composite_8.setLayout(gl_composite_8);
+		composite_8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		formToolkit.adapt(composite_8);
+		formToolkit.paintBordersFor(composite_8);
+
+		tableViewer = new TableViewer(composite_8, SWT.BORDER | SWT.FULL_SELECTION | SWT.HIDE_SELECTION | SWT.VIRTUAL);
+		table = tableViewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		formToolkit.paintBordersFor(table);
+
+		TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE |  SWT.RIGHT);
+		TableColumn tblclmnLine = tableViewerColumn.getColumn();
+		tblclmnLine.setWidth(50);
+		tblclmnLine.setText("Line");
+		tableViewerColumn.setLabelProvider(new StyledCellLabelProvider() {
+			@Override
+			public void update(ViewerCell cell) {
+				GCodeCommand p = (GCodeCommand) cell.getElement();
+				cell.setText(String.valueOf(p.getLineNumber()));
+				cell.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+				super.update(cell);
+			}
+		});
+
+
+		TableViewerColumn tableViewerColumn_1 = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableColumn tblclmnCommand = tableViewerColumn_1.getColumn();
+		tblclmnCommand.setWidth(300);
+		tblclmnCommand.setText("Command");
+		tableViewerColumn_1.setLabelProvider(new ColumnLabelProvider() {
+	        @Override
+	        public String getText(Object element) {
+	        	GCodeCommand p = (GCodeCommand) element;
+	          return String.valueOf(p.getStringCommand());
+	        }
+	      });
+		tableViewer.setContentProvider(new MyLazyContentProvider(tableViewer));
+
+		// special settings for the lazy content provider
+		tableViewer.setUseHashlookup(true);
+
+		// create the model and set it as input
+		tableViewer.setInput(new ArrayList<GCodeCommand>());
+		// you must explicitly set the items count
+		tableViewer.setItemCount(0);
+
+
+
 		initCustomBindings();
+		//testNatTAble(composite_7);
 	}
 
 	private void initCustomBindings() throws GkException {
@@ -413,12 +472,11 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		this.getController().addTextDisplayBinding(lblFilesize, "fileSize");
 		this.getController().addTextDisplayBinding(lblLastupdate, "fileLastUpdate");
 		this.getController().addTextDisplayBinding(lblName, "fileName");
-
-		this.getController().addGCodeViewerBinding(gCodeTextDisplay);
 		this.getController().addTextDisplayBinding(sentCommandsCountTxt, "sentCommandCount");
 		this.getController().addTextDisplayBinding(totalCommandCountTxt, "totalCommandCount");
 
 		this.getController().addEnableBinding(btnSendFile, "streamingAllowed");
+		this.getController().addEnableReverseBinding(btnBrowse, "streamingInProgress");
 		// this.getController().addEnableBinding(btnCancel,
 		// "streamingInProgress");
 		// Progress bar bindings
@@ -446,4 +504,13 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	public void setFocus() {
 		// TODO Set the focus to control
 	}
+	private void refreshCommandTable() {
+		if(getDataModel().getGcodeProvider() != null){
+			tableViewer.setInput(getDataModel().getGcodeProvider().getGCodeCommands());
+			tableViewer.setItemCount(getDataModel().getGcodeProvider().getGCodeCommands().size());
+		}
+	}
+
+
 }
+

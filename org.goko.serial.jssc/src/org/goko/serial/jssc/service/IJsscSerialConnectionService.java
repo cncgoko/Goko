@@ -21,12 +21,10 @@ package org.goko.serial.jssc.service;
 
 import java.util.List;
 
-import jssc.SerialPortEventListener;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
 
-public interface IJsscSerialConnectionService extends IConnectionService, SerialPortEventListener {
+public interface IJsscSerialConnectionService extends IConnectionService {
 
 	/**
 	 * Returns a list of available serial ports

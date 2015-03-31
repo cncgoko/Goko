@@ -39,6 +39,7 @@ public class ProblemsLogPart extends GkUiComponent<ProblemsLogController, Proble
 
 	}
 
+
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		GridLayout gl_parent = new GridLayout(1, false);
@@ -51,7 +52,7 @@ public class ProblemsLogPart extends GkUiComponent<ProblemsLogController, Proble
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		formToolkit.paintBordersFor(composite);
 
-		TreeViewer treeViewer = new TreeViewer(composite, SWT.BORDER);
+		TreeViewer treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.VIRTUAL);
 		Tree tree = treeViewer.getTree();
 		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);

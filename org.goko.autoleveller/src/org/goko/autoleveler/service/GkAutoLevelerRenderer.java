@@ -32,6 +32,9 @@ public class GkAutoLevelerRenderer extends AbstractViewer3DRenderer{
 	private String id;
 	private IAxisElevationPattern pattern;
 	private GridElevationMap elevationMap;
+	private double minZ;
+	private double maxZ;
+	private double dz;
 
 	public GkAutoLevelerRenderer(String id) {
 		this.id = id;
@@ -57,11 +60,27 @@ public class GkAutoLevelerRenderer extends AbstractViewer3DRenderer{
 		}
 		if(elevationMap != null){
 			for (Tuple6b position : elevationMap.getProbedPositions()) {
-				proxy.drawPoint(position, new Point3f(1,0,0));
+				double z = position.getZ().doubleValue();
+				if(z > maxZ){
+					maxZ = z;
+				}
+				if(z < minZ){
+					minZ = z;
+				}
+				dz = maxZ - minZ;
+			}
+		}
+		if(elevationMap != null){
+			for (Tuple6b position : elevationMap.getProbedPositions()) {
+				proxy.drawPoint(position, getInterpolatedZColor(position));
 			}
 		}
 	}
 
+	protected Point3f getInterpolatedZColor(Tuple6b position){
+		float dr = (float) ((position.getZ().doubleValue() - minZ) / dz);
+		return new Point3f(dr,1-dr,0);
+	}
 	/**
 	 * @return the pattern
 	 */

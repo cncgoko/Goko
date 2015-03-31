@@ -69,6 +69,7 @@ public class SerialConnectionPreferencesModel extends AbstractModelObject {
 	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_57600 	,"57600"));
 	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_115200 ,"115200"));
 	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_128000 ,"128000"));
+	    choiceBaudrate.add(new LabeledValue<Integer>(230400  ,"230400"));
 	    choiceBaudrate.add(new LabeledValue<Integer>(SerialPort.BAUDRATE_256000 ,"256000"));
 	}
 

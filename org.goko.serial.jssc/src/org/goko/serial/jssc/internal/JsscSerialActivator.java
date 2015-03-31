@@ -58,7 +58,7 @@ public class JsscSerialActivator implements BundleActivator {
 		JsscSerialActivator.getPreferenceStore().setDefault(JsscParameter.RCSCTS.toString(), 	String.valueOf(true));
 		JsscSerialActivator.getPreferenceStore().setDefault(JsscParameter.XONXOFF.toString(), 	String.valueOf(true));
 
-		
+
 		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.BAUDRATE.toString()))){
 			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.BAUDRATE.toString());
 		}
@@ -68,7 +68,12 @@ public class JsscSerialActivator implements BundleActivator {
 		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.STOPBITS.toString()))){
 			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.STOPBITS.toString());
 		}
-
+		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.RCSCTS.toString()))){
+			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.RCSCTS.toString());
+		}
+		if(StringUtils.isBlank(JsscSerialActivator.getPreferenceStore().getString(JsscParameter.XONXOFF.toString()))){
+			JsscSerialActivator.getPreferenceStore().setToDefault(JsscParameter.XONXOFF.toString());
+		}
 	}
 
 

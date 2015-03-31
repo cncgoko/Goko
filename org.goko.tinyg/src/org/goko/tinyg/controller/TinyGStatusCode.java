@@ -30,6 +30,7 @@ import org.goko.core.common.exception.GkFunctionalException;
  *
  */
 public enum TinyGStatusCode {
+	TG_UNKNOWN(-1,""),
 	TG_CONFIG_ASSERTION_FAILURE(90,""),
 	TG_XIO_ASSERTION_FAILURE(91,""),
 	TG_ENCODER_ASSERTION_FAILURE(92,""),

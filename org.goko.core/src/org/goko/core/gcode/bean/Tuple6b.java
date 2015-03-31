@@ -1,27 +1,26 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.core.gcode.bean;
 
 import java.math.BigDecimal;
 
 import javax.vecmath.Point3d;
+
+import org.goko.core.math.Tuple6f;
 
 public class Tuple6b {
 	private BigDecimal x;
@@ -42,12 +41,12 @@ public class Tuple6b {
 
 	public Tuple6b() {
 		super();
-		this.x = new BigDecimal("0");
-		this.y = new BigDecimal("0");
-		this.z = new BigDecimal("0");
-		this.a = new BigDecimal("0");
-		this.b = new BigDecimal("0");
-		this.c = new BigDecimal("0");
+		this.x = BigDecimal.ZERO;
+		this.y = BigDecimal.ZERO;
+		this.z = BigDecimal.ZERO;
+		this.a = BigDecimal.ZERO;
+		this.b = BigDecimal.ZERO;
+		this.c = BigDecimal.ZERO;
 	}
 	/**
 	 * @param x
@@ -312,12 +311,12 @@ public class Tuple6b {
 	}
 
 	public Tuple6b setZero() {
-		this.x = new BigDecimal("0");
-		this.y = new BigDecimal("0");
-		this.z = new BigDecimal("0");
-		this.a = new BigDecimal("0");
-		this.b = new BigDecimal("0");
-		this.c = new BigDecimal("0");
+		this.x = BigDecimal.ZERO;
+		this.y = BigDecimal.ZERO;
+		this.z = BigDecimal.ZERO;
+		this.a = BigDecimal.ZERO;
+		this.b = BigDecimal.ZERO;
+		this.c = BigDecimal.ZERO;
 		return this;
 	}
 
@@ -395,6 +394,16 @@ public class Tuple6b {
 			return false;
 		}
 		return true;
+	}
+
+	public Tuple6f toTuple6f() {
+		return new Tuple6f( x == null ? 0: 1/*getX().floatValue()*/,
+							y == null ? 0: 1/*getY().floatValue()*/,
+							z == null ? 0: 1/*getZ().floatValue()*/,
+							a == null ? 0: 1/*getA().floatValue()*/,
+							b == null ? 0: 1/*getB().floatValue()*/,
+							c == null ? 0: 1/*getC().floatValue()*/
+				);
 	}
 
 

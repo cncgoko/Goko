@@ -21,12 +21,12 @@ package org.goko.tinyg.controller;
 
 import java.util.ArrayList;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.log.GkLog;
 
 public class GCodeSendingRunnable implements Runnable {
@@ -34,6 +34,7 @@ public class GCodeSendingRunnable implements Runnable {
 	private static final int BUFFER_AVAILABLE_REQUIRED_COUNT = 5;
 	private ExecutionQueue<TinyGExecutionToken> executionQueue;
 	private TinyGControllerService tinyGControllerService;
+	private IGCodeExecutionMonitorService executionMonitorService;
 	private Object ackMutex = new Object();
 	private Object qrMutex = new Object();
 	private int pendingCommands;
@@ -64,9 +65,24 @@ public class GCodeSendingRunnable implements Runnable {
 			try{
 				executionQueue.beginNextTokenExecution();
 				runExecutionToken();
+				waitTokenComplete();
 				executionQueue.endCurrentTokenExecution();
 			}catch(GkException e){
 				LOG.error(e);
+			}
+		}
+	}
+
+	private void waitTokenComplete() throws GkException {
+		while (executionQueue.getCurrentToken() != null && !executionQueue.getCurrentToken().isComplete()) {
+			synchronized (executionQueue.getCurrentToken()) {
+				try {
+					// Timeout of 500ms in case the token get cancelled or
+					// remove from queue
+					executionQueue.getCurrentToken().wait(500);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
 			}
 		}
 	}
@@ -77,9 +93,10 @@ public class GCodeSendingRunnable implements Runnable {
 	 * @throws GkException GkException
 	 */
 	protected void runExecutionToken() throws GkException{
-		while(executionQueue.getCurrentToken() != null){
+		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreCommand()){
 			TinyGExecutionToken token = executionQueue.getCurrentToken();
 			int nbCommandToSend = computeNumberCommandToSend();
+
 			ArrayList<GCodeCommand> lstCommand = new ArrayList<GCodeCommand>();
 
 			while(token.hasMoreCommand() && nbCommandToSend > 0){
@@ -89,21 +106,17 @@ public class GCodeSendingRunnable implements Runnable {
 				//token.setCommandState(currentCommand, GCodeCommandState.SENT);
 				token.markAsSent(currentCommand.getId());
 				GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(currentCommand));
+				tinyGControllerService.send(currentCommand);
 				pendingCommands++;
 			}
-
-			if(CollectionUtils.isNotEmpty(lstCommand)){
-				tinyGControllerService.sendTogether(lstCommand);
-			}
-
 			waitLastCommandAcknowledgement();
 			waitPlannerBufferSpaceAvailable();
 		}
 	}
 
-	protected int computeNumberCommandToSend(){
-		int nb = 1;
-		if(tinyGControllerService.getAvailableBuffer() > 4){
+	protected int computeNumberCommandToSend() throws GkException{
+		int nb = 10;
+		if(tinyGControllerService.isPlannerBufferSpaceCheck() && tinyGControllerService.getAvailableBuffer() > 4){
 			nb = Math.max(1, tinyGControllerService.getAvailableBuffer() - 4);
 		}
 		return nb;
@@ -111,8 +124,11 @@ public class GCodeSendingRunnable implements Runnable {
 
 
 	protected void waitLastCommandAcknowledgement(){
-		while(pendingCommands > 0){
-			synchronized ( ackMutex ) {
+		if(!tinyGControllerService.isPlannerBufferSpaceCheck()){
+			return;
+		}
+		synchronized ( ackMutex ) {
+			while(pendingCommands > 0){
 				try {
 					ackMutex.wait();
 				} catch (InterruptedException e) {
@@ -122,9 +138,11 @@ public class GCodeSendingRunnable implements Runnable {
 		}
 	}
 
-	protected void waitPlannerBufferSpaceAvailable(){
+	protected void waitPlannerBufferSpaceAvailable() throws GkException{
+		if(!tinyGControllerService.isPlannerBufferSpaceCheck()){
+			return;
+		}
 		do{
-			System.out.println(tinyGControllerService.getAvailableBuffer());
 			synchronized ( qrMutex ) {
 				try {
 					qrMutex.wait(50);

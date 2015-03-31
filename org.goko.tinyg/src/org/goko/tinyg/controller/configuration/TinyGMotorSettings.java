@@ -35,12 +35,12 @@ public class TinyGMotorSettings extends TinyGGroupSettings {
 
 	public TinyGMotorSettings(String motor){
 		super(motor);
-		addSetting(new TinyGBigDecimalSetting(MOTOR_AXIS_MAPPING, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(STEP_ANGLE, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TRAVEL_PER_REVOLUTION,new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(MICROSTEPS, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(POLARITY, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(POWER_MODE, 			new BigDecimal("0")));
+		addSetting(new TinyGBigDecimalSetting(MOTOR_AXIS_MAPPING, 	BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(STEP_ANGLE, 			BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TRAVEL_PER_REVOLUTION,BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(MICROSTEPS, 			BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(POLARITY, 			BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(POWER_MODE, 			BigDecimal.ZERO));
 	}
 
 

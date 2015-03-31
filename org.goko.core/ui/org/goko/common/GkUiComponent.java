@@ -1,22 +1,19 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.common;
 
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -48,10 +45,14 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 		this.dataModel = this.controller.getDataModel();
 	}
 
+	public void displayError(GkException e){
+		getController().log(e);
+		displayError(new ErrorEvent(e, "Goko"));
+	}
+
 	@EventListener(ErrorEvent.class)
 	public void displayError(final ErrorEvent e){
 		Display.getDefault().asyncExec(new Runnable() {
-
 			@Override
 			public void run() {
 				ErrorDialog.openError(Display.getDefault().getActiveShell(), "Goko", e.getMessage(), e.getStatus());

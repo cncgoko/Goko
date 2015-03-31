@@ -51,9 +51,9 @@
       </page>
       <page
             category="Goko.preferencePages.general"
-            class="goko.dialog.GokoGeneralPreferences"
-            id="Goko.preferencePages.general.page1"
-            name="Test">
+            class="org.goko.preferences.units.GokoUnitsPreferences"
+            id="Goko.preferencePages.general.units"
+            name="Units">
       </page>
    </extension>
 

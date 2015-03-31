@@ -73,7 +73,6 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 	 * @return {@link IAxisElevationPattern} the generated pattern
 	 */
 	private GridElevationMap getPattern(){
-
 		Tuple6b start = new Tuple6b(getDataModel().getStartx(),getDataModel().getStarty(),getDataModel().getSafeZ());
 		Tuple6b end = new Tuple6b(getDataModel().getEndx(),getDataModel().getEndy(),getDataModel().getSafeZ());
 		int stepX = getDataModel().getStepX().intValue();
@@ -129,6 +128,11 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 
 	public boolean isAutolevelerService() {
 		return service != null;
+	}
+
+	public void saveValues() {
+		// TODO Auto-generated method stub
+
 	}
 
 

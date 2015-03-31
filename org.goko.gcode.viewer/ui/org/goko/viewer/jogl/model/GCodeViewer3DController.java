@@ -25,8 +25,9 @@ import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.service.IJoglViewerService;
-import org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
+import org.goko.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
+import org.goko.viewer.jogl.utils.render.gcode.BoundsRenderer;
 
 /**
  * GCode 3D Viewer controller
@@ -60,7 +61,7 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 	}
 
 	public void setGCodeFile(IGCodeProvider provider) throws GkException {
-		viewerService.renderGCode(provider);
+	//	viewerService.renderGCode(provider);
 	}
 
 	public void setLockCameraOnTool(boolean lockOnTool) throws GkException {
@@ -76,6 +77,15 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 	}
 
 	public void setShowCoordinateSystem(boolean selection) throws GkException {
-		viewerService.setRendererEnabled(CoordinateSystemRenderer.ID, selection);
+		viewerService.setRendererEnabled(CoordinateSystemSetRenderer.ID, selection);
+	}
+
+	public void setDisplayBounds(boolean selection) throws GkException {
+		viewerService.setRendererEnabled(BoundsRenderer.ID, selection);
+	}
+
+
+	public void zoomToFit() throws GkException {
+		viewerService.zoomToFit();
 	}
 }

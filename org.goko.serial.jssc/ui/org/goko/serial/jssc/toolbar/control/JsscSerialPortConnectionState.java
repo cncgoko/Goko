@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
@@ -68,13 +69,18 @@ public class JsscSerialPortConnectionState implements IConnectionListener {
 	 * @see org.goko.core.connection.IConnectionListener#onConnectionEvent(org.goko.core.connection.EnumConnectionEvent)
 	 */
 	@Override
-	public void onConnectionEvent(EnumConnectionEvent event) throws GkException {
-		if(event == EnumConnectionEvent.CONNECTED){
-			lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status.png"));
-			lblConnectionState.setText("Connected");
-		}else if(event == EnumConnectionEvent.DISCONNECTED){
-			lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status-offline.png"));
-			lblConnectionState.setText("Disconnected");
-		}
+	public void onConnectionEvent(final EnumConnectionEvent event) throws GkException {
+		Display.getDefault().asyncExec(new Runnable(){
+			@Override
+			public void run() {
+				if(event == EnumConnectionEvent.CONNECTED){
+					lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status.png"));
+					lblConnectionState.setText("Connected");
+				}else if(event == EnumConnectionEvent.DISCONNECTED){
+					lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status-offline.png"));
+					lblConnectionState.setText("Disconnected");
+				}
+			}
+		});
 	}
 }

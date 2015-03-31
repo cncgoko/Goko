@@ -52,7 +52,6 @@ public class JoglViewerPreferences extends GkUiPreferencePageComponent<JoglViewe
 	private Text txtPositionZ;
 	private Button btnEnable4axis;
 	private GkCombo<LabeledValue<EnumRotaryAxisDirection>> directionCombo;
-	private Text text;
 
 	@Inject
 	public JoglViewerPreferences(IEclipseContext context) {
@@ -61,7 +60,7 @@ public class JoglViewerPreferences extends GkUiPreferencePageComponent<JoglViewe
 		try {
 			getController().initialize();
 		} catch (GkException e) {
-			displayError( new ErrorEvent(e, "blah"));
+			displayError( new ErrorEvent(e, "Error while changing Jogl Viewer preferences."));
 			LOG.error(e);
 		}
 	}
@@ -161,21 +160,6 @@ public class JoglViewerPreferences extends GkUiPreferencePageComponent<JoglViewe
 		fd_txtPositionZ.left = new FormAttachment(lblPositionZ,0, SWT.RIGHT);
 		fd_txtPositionZ.top = new FormAttachment(lblPositionZ,-3, SWT.TOP);
 		txtPositionZ.setLayoutData(fd_txtPositionZ);
-
-		Label label = new Label(grpthAxisSettings, SWT.NONE);
-		label.setText("Rotary axis position");
-		FormData fd_label = new FormData();
-		fd_label.top = new FormAttachment(lblPositionZ, 3);
-		fd_label.bottom = new FormAttachment(100, -10);
-		fd_label.left = new FormAttachment(btnEnable4axis, 0, SWT.LEFT);
-		label.setLayoutData(fd_label);
-
-		text = new Text(grpthAxisSettings, SWT.BORDER);
-		FormData fd_text = new FormData();
-		fd_text.top = new FormAttachment(label, -3, SWT.TOP);
-		fd_text.width = 80;
-		fd_text.left = new FormAttachment(combo, 0, SWT.LEFT);
-		text.setLayoutData(fd_text);
 
 		try {
 			enableBindings();

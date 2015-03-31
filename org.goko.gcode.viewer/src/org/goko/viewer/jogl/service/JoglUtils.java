@@ -1,12 +1,20 @@
 package org.goko.viewer.jogl.service;
 
+import java.nio.FloatBuffer;
+import java.util.List;
+
 import javax.media.opengl.GL2;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3d;
+import javax.vecmath.Tuple3f;
+import javax.vecmath.Tuple4d;
+import javax.vecmath.Tuple4f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.Tuple6b;
@@ -209,4 +217,70 @@ public class JoglUtils {
 
 	}
 
+	/**
+	 * Generate a FloatBuffer with the given list of Tuple4d.
+	 * For each tuple4d, 4 float values will be added the the created buffer.
+	 * @param lstTuple4d the list of Tuple4d
+	 * @return a FloatBuffer
+	 */
+	public static FloatBuffer buildFloatBuffer4d(List<? extends Tuple4d> lstTuple4d){
+		FloatBuffer buffer = FloatBuffer.allocate( CollectionUtils.size(lstTuple4d) * 4);
+		for (Tuple4d tuple4d : lstTuple4d) {
+			buffer.put((float) tuple4d.x);
+			buffer.put((float) tuple4d.y);
+			buffer.put((float) tuple4d.z);
+			buffer.put((float) tuple4d.w);
+		}
+		return buffer;
+	}
+	/**
+	 * Generate a FloatBuffer with the given list of Tuple4f.
+	 * For each tuple4f, 4 float values will be added the the created buffer.
+	 * @param lstTuple4d the list of Tuple4d
+	 * @return a FloatBuffer
+	 */
+	public static FloatBuffer buildFloatBuffer4f(List<? extends Tuple4f> lstTuple4f){
+		FloatBuffer buffer = FloatBuffer.allocate( CollectionUtils.size(lstTuple4f) * 4);
+		for (Tuple4f tuple4d : lstTuple4f) {
+			buffer.put(tuple4d.x);
+			buffer.put(tuple4d.y);
+			buffer.put(tuple4d.z);
+			buffer.put(tuple4d.w);
+		}
+		return buffer;
+	}
+
+	/**
+	 * Generate a FloatBuffer with the given list of Tuple3d.
+	 * For each tuple3d, 3 float values will be added the the created buffer.
+	 * @param lstTuple4d the list of Tuple4d
+	 * @return a FloatBuffer
+	 */
+	public static FloatBuffer buildFloatBuffer3d(List<? extends Tuple3d> lstTuple){
+		FloatBuffer buffer = FloatBuffer.allocate( CollectionUtils.size(lstTuple) * 4);
+		for (Tuple3d tuple3d : lstTuple) {
+			buffer.put((float) tuple3d.x);
+			buffer.put((float) tuple3d.y);
+			buffer.put((float) tuple3d.z);
+			buffer.put(1);
+		}
+		return buffer;
+	}
+
+	/**
+	 * Generate a FloatBuffer with the given list of Tuple3f.
+	 * For each tuple3f, 3 float values will be added the the created buffer.
+	 * @param lstTuple4d the list of Tuple4d
+	 * @return a FloatBuffer
+	 */
+	public static FloatBuffer buildFloatBuffer3f(List<? extends Tuple3f> lstTuple){
+		FloatBuffer buffer = FloatBuffer.allocate( CollectionUtils.size(lstTuple) * 4);
+		for (Tuple3f tuple3f : lstTuple) {
+			buffer.put(tuple3f.x);
+			buffer.put(tuple3f.y);
+			buffer.put(tuple3f.z);
+			buffer.put(1);
+		}
+		return buffer;
+	}
 }

@@ -5,6 +5,10 @@
       <provide interface="org.goko.core.controller.IControllerService"/>
       <provide interface="org.goko.tinyg.service.ITinyGControllerServiceSelector"/>
       <provide interface="org.goko.core.controller.IProbingService"/>
+      <provide interface="org.goko.core.controller.IFourAxisControllerAdapter"/>
+      <provide interface="org.goko.core.controller.ICoordinateSystemAdapter"/>
+      <provide interface="org.goko.core.controller.IContinuousJogService"/>
+      <provide interface="org.goko.tinyg.controller.ITinygControllerService"/>
    </service>
    <reference bind="registerFirmwareService" cardinality="1..n" interface="org.goko.tinyg.service.ITinyGControllerFirmwareService" name="ITinyGControllerFirmwareService" policy="static"/>
 </scr:component>

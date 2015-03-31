@@ -21,14 +21,13 @@ package org.goko.viewer.jogl.service;
 
 import java.util.List;
 
-import javax.media.opengl.GLEventListener;
-
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.viewer.service.IViewer3DService;
 import org.goko.viewer.jogl.GokoJoglCanvas;
 import org.goko.viewer.jogl.camera.AbstractCamera;
-import org.goko.viewer.jogl.utils.render.IJoglRenderer;
 
 /**
  * Interface of the Goko Jogl viewer service
@@ -36,7 +35,7 @@ import org.goko.viewer.jogl.utils.render.IJoglRenderer;
  * @author PsyKo
  *
  */
-public interface IJoglViewerService extends IViewer3DService, GLEventListener{
+public interface IJoglViewerService extends IViewer3DService{
 
 	public GokoJoglCanvas createCanvas(Composite parent) throws GkException;
 
@@ -56,7 +55,15 @@ public interface IJoglViewerService extends IViewer3DService, GLEventListener{
 
 	public boolean isEnabled();
 
-	public IJoglRenderer getJoglRenderer(String name) throws GkException;
+	public ICoreJoglRenderer getJoglRenderer(String name) throws GkException;
 
-	void addRenderer(IJoglRenderer renderer) throws GkException;
+	void addRenderer(ICoreJoglRenderer renderer) throws GkException;
+
+	void setRendererEnabled(String idRenderer, boolean enabled) throws GkException;
+
+	public void zoomToFit() throws GkException;
+
+	public ICoordinateSystemAdapter getCoordinateSystemAdapter() throws GkException;
+
+	public void setCoordinateSystemEnabled(EnumCoordinateSystem cs, boolean enabled);
 }

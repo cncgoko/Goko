@@ -1,26 +1,22 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.gcode.filesender.controller;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -120,8 +116,9 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	/**
 	 * Action called when selecting file to send
 	 * @param filepath filepath
+	 * @throws GkException GkException
 	 */
-	public void setGCodeFilepath(String filepath) {
+	public void setGCodeFilepath(String filepath) throws GkException {
 		try{
 			File file = new File(filepath);
 			getDataModel().setFileName(file.getName());
@@ -132,12 +129,12 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			setFileSize(file.length());
 
 		}catch(GkException e){
-			LOG.error(e);
 			getDataModel().setFileName( StringUtils.EMPTY );
 			getDataModel().setFilePath( StringUtils.EMPTY);
 			getDataModel().setFileLastUpdate( StringUtils.EMPTY );
 			getDataModel().setFileSize( StringUtils.EMPTY );
-			notifyException(e);
+			getDataModel().setgCodeDocument(null);
+			throw e;
 		}
 		updateStreamingAllowed();
 	}
@@ -155,7 +152,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 						streamingAllowed = true;
 					}
 				} catch (GkException e) {
-					LOG.error(e);
+					log(e);
 					getDataModel().setStreamingAllowed(false);
 				}
 			}
@@ -168,16 +165,18 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @param size the actual size
 	 */
 	protected void setFileSize(long size){
-
-		double sizeTmp = size;
-		int i = 0;
-		while(sizeTmp >= 1024 && i < 4){
-			sizeTmp /= 1024.0;
-			i++;
-		}
-		DecimalFormat format = new DecimalFormat("0.000");
-		String fileSize = format.format( sizeTmp ) + " " + UNITS[i];
+		String fileSize = humanReadableByteCount(size, true);
 		getDataModel().setFileSize(fileSize);
+	}
+
+	public String humanReadableByteCount(long bytes, boolean si) {
+	    int unit = si ? 1000 : 1024;
+	    if (bytes < unit) {
+			return bytes + " B";
+		}
+	    int exp = (int) (Math.log(bytes) / Math.log(unit));
+	    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
 	protected void parseFile() throws GkException{
@@ -191,7 +190,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getGCodeCommands()));
 		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));
-		getDataModel().setgCodeDocument(new GCodeDocumentProvider(gcodeFile, gCodeService));
+	//	getDataModel().setgCodeDocument(new GCodeDocumentProvider(gcodeFile, gCodeService));
 		eventBroker.post("gcodefile", gcodeFile);
 		workspaceService.addGCodeProvider(gcodeFile);
 
@@ -223,7 +222,6 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			if(getDataModel().getGcodeProvider() != null){
 				workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 			}
-			workspaceService.addGCodeProvider(token);
 
 			getDataModel().setSentCommandCount( 0 );
 			getDataModel().setTotalCommandCount( token.getCommandCount() );
@@ -233,8 +231,9 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			getDataModel().setStreamingInProgress(true);
 			startElapsedTimer();
 		}catch(GkException e){
-			LOG.error(e);
+			log(e);
 		}
+
 	}
 
 	public void stopFileStreaming(){
@@ -244,7 +243,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			stopElapsedTimer();
 			resetElapsedTime();
 		} catch (GkException e) {
-			LOG.error(e);
+			log(e);
 		}
 	}
 
@@ -304,7 +303,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
 			getDataModel().setTotalCommandCount( token.getCommandCount() );
 		} catch (GkException e) {
-			LOG.error(e);
+			log(e);
 		}
 	}
 

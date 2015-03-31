@@ -53,8 +53,10 @@ public class TinyGJsonUtils {
 	public static final String STATUS_REPORT_COORDINATES = "coor";
 	public static final String STATUS_REPORT_DISTANCE_MODE = "dist";
 	public static final String STATUS_REPORT_VELOCITY = "vel";
+	public static final String STATUS_REPORT_FEEDRATE = "feed";
 	public static final String STATUS_REPORT_STATE = "stat";
 
+	public static final String PROBE_REPORT_SUCCESS    = "e";
 	public static final String PROBE_REPORT_POSITION_X = "x";
 	public static final String PROBE_REPORT_POSITION_Y = "y";
 	public static final String PROBE_REPORT_POSITION_Z = "z";
@@ -230,8 +232,8 @@ public class TinyGJsonUtils {
 			if(StringUtils.equals(group.getGroupIdentifier(),groupIdentifier)){
 				for(TinyGSetting setting : group.getSettings()){
 					if(StringUtils.equals(setting.getIdentifier(),settingIdentifier)){
-						setting.setValue(value);
 						LOG.debug("Setting parameter "+settingIdentifier+" of group '"+groupIdentifier+"' to value '"+ value.toString()+"'");
+						setting.setValue(value);
 					}
 				}
 			}

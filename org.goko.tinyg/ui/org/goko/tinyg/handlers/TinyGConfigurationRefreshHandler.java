@@ -19,13 +19,17 @@
  */
 package org.goko.tinyg.handlers;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.goko.tinyg.controller.ITinygControllerService;
 
 public class TinyGConfigurationRefreshHandler {
 
 	@Execute
-	public void execute() {
-
+	@Inject
+	public void execute(ITinygControllerService tinyg) {
+		System.err.println("test");
 	}
 
 }

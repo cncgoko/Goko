@@ -27,6 +27,6 @@ public class TinyGRotationalAxisSettings extends TinyGLinearAxisSettings{
 
 	public TinyGRotationalAxisSettings(String motor){
 		super(motor);
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.RADIUS_SETTING, 		new BigDecimal("0")));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.RADIUS_SETTING, BigDecimal.ZERO));
 	}
 }

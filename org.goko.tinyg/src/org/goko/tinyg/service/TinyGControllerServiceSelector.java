@@ -19,6 +19,8 @@
  */
 package org.goko.tinyg.service;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +30,19 @@ import javax.vecmath.Point3d;
 
 import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.IControllerService;
+import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
@@ -47,9 +54,9 @@ import org.goko.tinyg.controller.configuration.TinyGConfiguration;
  * @author PsyKo
  *
  */
-public class TinyGControllerServiceSelector implements ITinyGControllerServiceSelector, ITinyGControllerFirmwareService, IControllerService{
+public class TinyGControllerServiceSelector implements ITinyGControllerServiceSelector, ITinyGControllerFirmwareService{
 	private static final GkLog LOG = GkLog.getLogger(TinyGControllerServiceSelector.class);
-	private String firmwareVersion = "380.05";
+	private String firmwareVersion = "435.10";
 	private Map<VersionRange, ITinyGControllerFirmwareService> mapServiceByFirmware;
 	private ITinyGControllerFirmwareService currentService;
 
@@ -272,6 +279,13 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	public void setConfiguration(TinyGConfiguration configuration) throws GkException {
 		getCurrentService().setConfiguration(configuration);
 	}
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#updateConfiguration(org.goko.tinyg.controller.configuration.TinyGConfiguration)
+	 */
+	@Override
+	public void updateConfiguration(TinyGConfiguration configuration) throws GkException {
+		getCurrentService().updateConfiguration(configuration);
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#refreshConfiguration()
@@ -285,7 +299,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
 	 */
 	@Override
-	public Future<Tuple6b> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
+	public Future<ProbeResult> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
 		return getCurrentService().probe(axis, feedrate, maximumPosition);
 	}
 
@@ -302,5 +316,89 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		return getCurrentService().getCurrentGCodeContext();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
+	 */
+	@Override
+	public Quantity<Length> getX() throws GkException {
+		return getCurrentService().getX();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
+	 */
+	@Override
+	public Quantity<Length> getY() throws GkException {
+		return getCurrentService().getY();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
+	 */
+	@Override
+	public Quantity<Length> getZ() throws GkException {
+		return getCurrentService().getZ();
+	}
+
+	@Override
+	public Double getA() throws GkException {
+		return getCurrentService().getA();
+	}
+
+	@Override
+	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+		return getCurrentService().getCoordinateSystemOffset(cs);
+	}
+
+	@Override
+	public EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException {
+		return getCurrentService().getCurrentCoordinateSystem();
+	}
+
+	@Override
+	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
+		return Arrays.asList(EnumCoordinateSystem.values());
+	}
+
+	@Override
+	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {
+		getCurrentService().startJog(axis, feedrate);
+	}
+
+	@Override
+	public void stopJog() throws GkException {
+		getCurrentService().stopJog();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 */
+	@Override
+	public void setCurrentCoordinateSystem(EnumCoordinateSystem cs) throws GkException {
+		getCurrentService().setCurrentCoordinateSystem(cs);
+	}
+
+	@Override
+	public void resetCurrentCoordinateSystem() throws GkException {
+		getCurrentService().resetCurrentCoordinateSystem();
+	}
+
+	@Override
+	public void setPlannerBufferSpaceCheck(boolean plannerBufferSpaceCheck) throws GkTechnicalException {
+		getCurrentService().setPlannerBufferSpaceCheck(plannerBufferSpaceCheck);
+	}
+
+	@Override
+	public MachineState getState() throws GkException {
+		return getCurrentService().getState();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.controller.ITinygControllerService#isPlannerBufferSpaceCheck()
+	 */
+	@Override
+	public boolean isPlannerBufferSpaceCheck() {
+		return getCurrentService().isPlannerBufferSpaceCheck();
+	}
 
 }

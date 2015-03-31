@@ -28,10 +28,10 @@ import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.controller.bean.MachineValueDefinition;
 
 public class DROPreferencesPageModel extends AbstractModelObject{
-
+	/** The list of displayed values */
 	private IObservableList displayedValuesList;
-
-
+	/** Dirty marker */
+	private boolean dirty;
 	/**
 	 *
 	 */
@@ -58,6 +58,20 @@ public class DROPreferencesPageModel extends AbstractModelObject{
 	 */
 	public void setDisplayedValuesList(IObservableList displayedValuesList) {
 		this.displayedValuesList = displayedValuesList;
+	}
+
+	/**
+	 * @return the dirty
+	 */
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	/**
+	 * @param dirty the dirty to set
+	 */
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 
 }

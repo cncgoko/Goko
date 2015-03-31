@@ -19,6 +19,7 @@
  */
 package org.goko.tinyg.controller;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
@@ -27,6 +28,7 @@ import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
 
 
 public class TinyGExecutionToken extends GCodeStreamedExecutionToken{
+	private Object lock;
 
 	/**
 	 * Constructor
@@ -34,14 +36,46 @@ public class TinyGExecutionToken extends GCodeStreamedExecutionToken{
 	 */
 	public TinyGExecutionToken(IGCodeProvider provider) {
 		super(provider);
+		lock = new Object();
 	}
 
 	public void markAsConfirmed(GCodeCommand command) throws GkException{
-		if(MapUtils.isNotEmpty(mapSentCommandById)){
-			GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
-			//if(ObjectUtils.equals(command, nextCommand)){
-				super.markAsExecuted(nextCommand.getId());
-			//}
+		synchronized (lock) {
+			if(MapUtils.isNotEmpty(mapSentCommandById)){
+				GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
+				//if(ObjectUtils.equals(command, nextCommand)){
+					markAsExecuted(nextCommand.getId());
+					updateCompleteState();
+				//}
+			}
 		}
 	}
+
+	@Override
+	public void markAsSent(Integer idCommand) throws GkException {
+		synchronized (lock) {
+			super.markAsSent(idCommand);
+		}
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken#markAsExecuted(java.lang.Integer)
+	 */
+	@Override
+	public void markAsExecuted(Integer idCommand) throws GkException {
+		synchronized (lock) {
+			super.markAsExecuted(idCommand);
+			mapSentCommandById.remove(idCommand);
+			updateCompleteState();
+		}
+	}
+
+	private void updateCompleteState(){
+		if(CollectionUtils.isNotEmpty(mapExecutedCommandById)){
+			if(mapExecutedCommandById.size() == mapCommandById.size()){
+				setComplete(true);
+			}
+		}
+	}
+
+
 }

@@ -18,6 +18,8 @@ package org.goko.viewer.jogl.model;
 
 import javax.vecmath.Point3d;
 
+import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.gcode.bean.IGCodeProvider;
 
@@ -39,6 +41,14 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	private boolean followTool;
 
 	private boolean showCoordinateSystem;
+
+	private boolean showBounds;
+
+	private IObservableMap coordinateSystemEnabled;
+
+	public GCodeViewer3DModel() {
+		coordinateSystemEnabled =new WritableMap(String.class, Boolean.class);
+	}
 	/**
 	 * @return the showGrid
 	 */
@@ -119,4 +129,29 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	public void setShowCoordinateSystem(boolean showCoordinateSystem) {
 		firePropertyChange("showCoordinateSystem",this.showCoordinateSystem, this.showCoordinateSystem = showCoordinateSystem);
 	}
+	/**
+	 * @return the showBounds
+	 */
+	protected boolean isShowBounds() {
+		return showBounds;
+	}
+	/**
+	 * @param showBounds the showBounds to set
+	 */
+	protected void setShowBounds(boolean showBounds) {
+		firePropertyChange("showBounds",this.showBounds, this.showBounds = showBounds);
+	}
+	/**
+	 * @return the coordinateSystemEnabled
+	 */
+	public IObservableMap getCoordinateSystemEnabled() {
+		return coordinateSystemEnabled;
+	}
+	/**
+	 * @param coordinateSystemEnabled the coordinateSystemEnabled to set
+	 */
+	public void setCoordinateSystemEnabled(IObservableMap coordinateSystemEnabled) {
+		this.coordinateSystemEnabled = coordinateSystemEnabled;
+	}
+
 }

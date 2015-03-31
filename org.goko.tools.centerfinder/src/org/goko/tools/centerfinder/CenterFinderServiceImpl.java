@@ -22,33 +22,36 @@ package org.goko.tools.centerfinder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Vector3d;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.viewer.renderer.IRendererProxy;
-import org.goko.core.viewer.renderer.IViewer3DRenderer;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 import org.goko.tools.centerfinder.bean.Segment;
+import org.goko.viewer.jogl.service.ICoreJoglRenderer;
+import org.goko.viewer.jogl.service.IJoglViewerService;
+import org.goko.viewer.jogl.utils.render.basic.PointRenderer;
+import org.goko.viewer.jogl.utils.render.coordinate.measurement.DiameterRenderer;
 
 
-public class CenterFinderServiceImpl implements ICenterFinderService, IViewer3DRenderer{
+public class CenterFinderServiceImpl implements ICenterFinderService{
 	private static final String SERVICE_ID = "org.goko.tools.centerfinder";
-	private static final Point3f POINT_COLOR = new Point3f(1f,0.82f,0.16f);
+	private static final Color4f POINT_COLOR = new Color4f(1f,0.82f,0.16f,1f);
 	private List<Point3d> memorizedPoints;
-	/** The renderer state */
-	private boolean renderEnabled;
+	private List<PointRenderer> pointsRenderer;
 	private CircleCenterFinderResult centerResult;
-
+	private IJoglViewerService rendererService;
+	private ICoreJoglRenderer renderer;
 	/**
 	 * Constructor
 	 */
 	public CenterFinderServiceImpl() {
 		memorizedPoints = new ArrayList<Point3d>();
-		renderEnabled = true;
+		pointsRenderer = new ArrayList<PointRenderer>();
 	}
 
 	/** (inheritDoc)
@@ -91,7 +94,11 @@ public class CenterFinderServiceImpl implements ICenterFinderService, IViewer3DR
 	@Override
 	public void capturePoint(Point3d point) throws GkException {
 		memorizedPoints.add(point);
-
+		if(getRendererService() != null){
+			PointRenderer pRenderer = new PointRenderer(point, 2, POINT_COLOR);
+			pointsRenderer.add(pRenderer);
+			getRendererService().addRenderer(pRenderer);
+		}
 	}
 
 	/** (inheritDoc)
@@ -108,8 +115,15 @@ public class CenterFinderServiceImpl implements ICenterFinderService, IViewer3DR
 	 */
 	@Override
 	public void removeCapturedPoint(Point3d point) throws GkException {
+		if(getRendererService() != null){
+			int pos = memorizedPoints.indexOf(point);
+			PointRenderer pRenderer = pointsRenderer.get(pos);
+			pRenderer.destroy();
+			pointsRenderer.remove(pos);
+		}
 		memorizedPoints.remove(point);
 		centerResult = null;
+		updateRenderer();
 	}
 
 	@Override
@@ -205,46 +219,31 @@ public class CenterFinderServiceImpl implements ICenterFinderService, IViewer3DR
 		return centerResult;
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
-	 */
-	@Override
-	public String getId() {
-		return SERVICE_ID;
-	}
-
-	@Override
-	public void render(IRendererProxy proxy) throws GkException {
-		if(CollectionUtils.isNotEmpty(memorizedPoints)){
-			List<Point3d> localList = new ArrayList<Point3d>(memorizedPoints);
-			for (Point3d p : localList) {
-				proxy.drawPoint(new Tuple6b(p.x, p.y, p.z), POINT_COLOR);
+	protected void updateRenderer() throws GkException{
+		if(getRendererService() != null){
+			if(renderer != null){
+				renderer.destroy();
+				renderer = null;
 			}
-		}
-		if(centerResult != null){
-			if(centerResult.getCenter() != null){
-				Tuple6b center = new Tuple6b(centerResult.getCenter().x, centerResult.getCenter().y, centerResult.getCenter().z);
-				proxy.drawPoint(center, POINT_COLOR);
-				Tuple6b end = new Tuple6b( centerResult.getCenter().x + (centerResult.getRadius()+2)*Math.cos(Math.PI/4), centerResult.getCenter().y + (centerResult.getRadius()+2)*Math.sin(Math.PI/4), centerResult.getCenter().z );
-				Tuple6b endAnnotation = new Tuple6b( end.getX().doubleValue() + 2, end.getY().doubleValue(), end.getZ().doubleValue());
-				proxy.drawSegment(center, end, POINT_COLOR);
-				proxy.drawSegment(end, endAnnotation, POINT_COLOR);
-				proxy.drawCircle(center, centerResult.getRadius(), new Vector3f(0,0,1), POINT_COLOR);
+			if(centerResult != null){
+				renderer = new DiameterRenderer(centerResult.getCenter(), NumberQuantity.of(centerResult.getRadius()*2, SIPrefix.MILLI(SI.METRE)), POINT_COLOR, new Vector3d(0,0,1) );
+				getRendererService().addRenderer(renderer);
 			}
 		}
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#isEnabled()
+	/**
+	 * @return the rendererService
 	 */
-	@Override
-	public boolean isEnabled() {
-		return renderEnabled;
+	protected IJoglViewerService getRendererService() {
+		return rendererService;
 	}
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		renderEnabled = enabled;
+	/**
+	 * @param rendererService the rendererService to set
+	 */
+	protected void setRendererService(IJoglViewerService rendererService) {
+		this.rendererService = rendererService;
 	}
 
 }

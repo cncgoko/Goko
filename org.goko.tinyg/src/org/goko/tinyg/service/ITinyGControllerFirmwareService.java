@@ -20,11 +20,10 @@
 package org.goko.tinyg.service;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.IProbingService;
+import org.goko.tinyg.controller.ITinygControllerService;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 
-public interface ITinyGControllerFirmwareService extends IControllerService, IProbingService {
+public interface ITinyGControllerFirmwareService extends ITinygControllerService {
 
 	/**
 	 * Return the lowest supported firmware version
@@ -40,7 +39,25 @@ public interface ITinyGControllerFirmwareService extends IControllerService, IPr
 	String getMaximalSupportedFirmwareVersion() throws GkException;
 
 	TinyGConfiguration getConfiguration() throws GkException;
+
+	/**
+	 * Set this controller configuration. This method SHOULD NOT send back the configuration to the tinyG board
+	 * @param configuration the configuration to set
+	 * @throws GkException GkException
+	 */
 	void setConfiguration(TinyGConfiguration configuration) throws GkException;
+
+	/**
+	 * Set this controller configuration. This method SHOULD send back the configuration to the tinyG board
+	 * @param configuration the configuration to set
+	 * @throws GkException GkException
+	 */
+	void updateConfiguration(TinyGConfiguration configuration) throws GkException;
+
+	/**
+	 * Request a configuration refresh
+	 * @throws GkException GkException
+	 */
 	void refreshConfiguration() throws GkException;
 
 }

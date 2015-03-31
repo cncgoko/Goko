@@ -16,8 +16,12 @@
  *******************************************************************************/
 package org.goko.viewer.jogl.camera;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point2i;
 import javax.vecmath.Point3d;
@@ -30,8 +34,12 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.bean.BoundingTuple6b;
+import org.goko.core.gcode.bean.Tuple6b;
 
 import com.jogamp.opengl.swt.GLCanvas;
+import com.jogamp.opengl.util.PMVMatrix;
 
 public class PerspectiveCamera extends AbstractCamera implements MouseMoveListener,MouseListener,Listener {
 	public static final String ID = "org.goko.gcode.viewer.camera.PerspectiveCamera";
@@ -50,6 +58,9 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	private GLU glu;
 	private float fAspect;
 
+	public Point2i screenMin;
+	public Point2i screenMax;
+	public Point2i screenCenter;
 	/**
 	 * Constructor
 	 * @param canvas the canvas
@@ -61,7 +72,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		glCanvas.addMouseListener(this);
 		glCanvas.addMouseMoveListener(this);
 		glCanvas.addListener(SWT.MouseWheel, this);
-
+		pmvMatrix = new PMVMatrix();
 
 		glu 	= new GLU();
 		last 	= new Point2i();
@@ -90,7 +101,25 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		}
 		glCanvas.getGL().getGL2().glMatrixMode(GL2.GL_MODELVIEW);  // choose projection matrix
 		glCanvas.getGL().getGL2().glLoadIdentity();             // reset projection matrix
-		glu.gluPerspective(45.0f, fAspect, 0.5f, 10000.0f);
+		glu.gluPerspective(45.0f, fAspect, 0.5f, 1000.0f);
+
+		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+		pmvMatrix.glLoadIdentity();
+
+		float fov = 45.0f;
+		float aspect = fAspect;
+		float zNear = 0.5f;
+		float zFar = 1000.0f;
+
+		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+		pmvMatrix.glLoadIdentity();
+		pmvMatrix.gluPerspective(fov, aspect, zNear, zFar);
+		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+		pmvMatrix.glLoadIdentity();
+
+		pmvMatrix.update();
+
+	//	http://stackoverflow.com/questions/13462516/camera-rotation
 	}
 	/**
 	 *  Update camera position in spherical coordinate system
@@ -104,6 +133,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		eye.y = (float) (target.y + direction.y * distance);//Math.sin(angleHorizontal) * Math.sin(angleVertical) * distance);
 		eye.z = (float) (target.z + direction.z * distance);//Math.cos(angleVertical) * distance);
 
+
 	}
 
 	/** (inheritDoc)
@@ -114,6 +144,16 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
         glu.gluLookAt(eye.x, eye.y, eye.z,
       			target.x, target.y, target.z,
       			up.x, up.y, up.z);
+        updatePMVMatrix();
+	}
+
+	private void updatePMVMatrix(){
+        pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+        pmvMatrix.glLoadIdentity();
+        pmvMatrix.gluLookAt(eye.x, eye.y, eye.z,
+      			target.x, target.y, target.z,
+      			up.x, up.y, up.z);
+        pmvMatrix.update();
 	}
 	/** (inheritDoc)
 	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
@@ -202,6 +242,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	 */
 	@Override
 	public void handleEvent(Event event) {
+		// Zoom on scroll
 		if(glCanvas.isFocusControl() && isActivated()){
 			distance =  distance * (1 - event.count/20.0);
 			distance = Math.min(1000, Math.max(1, distance));
@@ -209,6 +250,142 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.camera.AbstractCamera#zoomToFit(org.goko.core.gcode.bean.BoundingTuple6b)
+	 */
+	@Override
+	public void zoomToFit(BoundingTuple6b bounds) throws GkException {
+		double boundCenterX = (bounds.getMax().getX().doubleValue() + bounds.getMin().getX().doubleValue() ) /2;
+		double boundCenterY = (bounds.getMax().getY().doubleValue() + bounds.getMin().getY().doubleValue() ) /2;
+
+		target.x = (float) boundCenterX;
+		target.y = (float) boundCenterY;
+		update();
+		updatePMVMatrix();
+
+		Point3d pa = bounds.getMin().toPoint3d();
+		BoundingTuple6b projectedBound = getProjectedBound(bounds);
+		for(int i =0; i < 2; i++){
+			float[] screenCenter = new float[]{ (projectedBound.getMax().getX().floatValue() + projectedBound.getMin().getX().floatValue()) / 2,
+												(projectedBound.getMax().getY().floatValue() + projectedBound.getMin().getY().floatValue()) / 2,
+												(projectedBound.getMax().getZ().floatValue() + projectedBound.getMin().getZ().floatValue()) / 2};
+			float[] worldCenter = new float[4];
+			getPmvMatrix().gluUnProject(screenCenter[0],
+										screenCenter[1],
+										screenCenter[2],
+										new int[]{x,y,width,height},
+										0,
+										worldCenter,
+										0);
+
+//			target.x = worldCenter[0];
+//			target.y = worldCenter[1];
+			update();
+			updatePMVMatrix();
+		}
+		//Let's zoom now
+		int i = 0;
+		while(!isBoundInScreen(bounds) && i < 100){
+			distance *= 1.1;
+			update();
+			updatePMVMatrix();
+			i++;
+		}
+		i = 0;
+		while(isBoundInScreen(bounds) && i < 1000){
+			distance *= 0.99;
+			update();
+			updatePMVMatrix();
+			i++;
+		}
+		distance *= 1.1;
+		update();
+		updatePMVMatrix();
+		projectedBound = getProjectedBound(bounds);
+		this.screenMin = new Point2i(projectedBound.getMin().getX().intValue(),projectedBound.getMin().getY().intValue());
+		this.screenMax = new Point2i(projectedBound.getMax().getX().intValue(),projectedBound.getMax().getY().intValue());
+		//this.screenCenter = new Point2i((int)screenCenter[0],(int)screenCenter[1]);
+		Point3f res = new Point3f();
+		getProjectedPoint(new Point3f(0,0,0), res);
+		System.err.println(res);
+	}
+
+	protected BoundingTuple6b getProjectedBound(BoundingTuple6b bounds){
+
+		float xMx = bounds.getMax().getX().floatValue();
+		float yMx = bounds.getMax().getY().floatValue();
+		float zMx = bounds.getMax().getZ().floatValue();
+		float xMn = bounds.getMin().getX().floatValue();
+		float yMn = bounds.getMin().getY().floatValue();
+		float zMn = bounds.getMin().getZ().floatValue();
+
+		float[] p1Low  = new float[]{xMn, yMn, zMn};
+		float[] p2Low  = new float[]{xMx, yMn, zMn};
+		float[] p3Low  = new float[]{xMx, yMx, zMn};
+		float[] p4Low  = new float[]{xMn, yMx, zMn};
+		float[] p1High = new float[]{xMn, yMn, zMx};
+		float[] p2High = new float[]{xMx, yMn, zMx};
+		float[] p3High = new float[]{xMx, yMx, zMx};
+		float[] p4High = new float[]{xMn, yMx, zMx};
+		float[][] pts = new float[][]{ p1Low, p2Low, p3Low, p4Low, p1High, p2High, p3High, p4High};
+		float[] screenMin = new float[]{Float.MAX_VALUE,Float.MAX_VALUE,Float.MAX_VALUE,Float.MAX_VALUE};
+		float[] screenMax = new float[]{-Float.MAX_VALUE,-Float.MAX_VALUE,-Float.MAX_VALUE,-Float.MAX_VALUE};
+		float[] screenP = new float[4];
+		for(int i = 0; i < pts.length; i++){
+			float[] pt = pts[i];
+			boolean result = getPmvMatrix().gluProject( pt[0],pt[1],pt[2], new int[]{0,0,width,height}, 0, screenP, 0);
+			if(!result){
+				System.out.println("Could not project "+pt[i]);
+			}
+			for(int j = 0; j < 4; j++){
+				if(screenP[j] < screenMin[j]){
+					screenMin[j] = screenP[j];
+				}
+				if(screenP[j] > screenMax[j]){
+					screenMax[j] = screenP[j];
+				}
+			}
+		}
+
+		return new BoundingTuple6b(new Tuple6b(screenMin[0], screenMin[1], screenMin[2]), new Tuple6b(screenMax[0], screenMax[1], screenMax[2]));
+	}
+	protected boolean isBoundInScreen(BoundingTuple6b bounds){
+		float xMx = bounds.getMax().getX().floatValue();
+		float yMx = bounds.getMax().getY().floatValue();
+		float zMx = bounds.getMax().getZ().floatValue();
+		float xMn = bounds.getMin().getX().floatValue();
+		float yMn = bounds.getMin().getY().floatValue();
+		float zMn = bounds.getMin().getZ().floatValue();
+
+		List<Point3f> lstAabbPoints = new ArrayList<Point3f>();
+		lstAabbPoints.add(new Point3f(xMn, yMn, zMn));
+		lstAabbPoints.add(new Point3f(xMx, yMn, zMn));
+		lstAabbPoints.add(new Point3f(xMx, yMx, zMn));
+		lstAabbPoints.add(new Point3f(xMn, yMx, zMn));
+//		lstAabbPoints.add(new Point3f(xMn, yMn, zMx));
+//		lstAabbPoints.add(new Point3f(xMx, yMn, zMx));
+//		lstAabbPoints.add(new Point3f(xMx, yMx, zMx));
+//		lstAabbPoints.add(new Point3f(xMn, yMx, zMx));
+
+		Point3f screen = new Point3f();
+
+		for (Point3f point3f : lstAabbPoints) {
+			getProjectedPoint(point3f, screen);
+			if(screen.x < 0 || screen.x >  width
+			|| screen.y < 0 || screen.y >  height){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected void getProjectedPoint(Point3f obj, Point3f screen){
+		float[] screenCoord = new float[4];
+		getPmvMatrix().gluProject( obj.x, obj.y, obj.z, new int[]{0,0,width,height}, 0, screenCoord, 0);
+		screen.x = screenCoord[0];
+		screen.y = screenCoord[1];
+		screen.z = screenCoord[2];
+	}
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.camera.AbstractCamera#getLabel()
 	 */
@@ -258,20 +435,35 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		if (height == 0) {
 			height = 1; // prevent divide by zero
 		}
-		float aspect = (float) width / height;
+
 
 		// Set the view port (display area) to cover the entire window
 		gl.glViewport(0, 0, width, height);
 
-		// Setup perspective projection, with aspect ratio matches viewport
-		gl.glMatrixMode(GL2.GL_PROJECTION); // choose projection matrix
-		gl.glLoadIdentity(); // reset projection matrix
-		glu.gluPerspective(45.0, aspect, 0.1, 1000.0); // fovy, aspect, zNear,
-														// zFar
+		float fov = 45.0f;
+		float aspect = (float) width / height;
+		float zNear = 0.5f;
+		float zFar = 1000.0f;
 
-		// Enable the model-view transform
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity(); // reset
+		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+		pmvMatrix.glLoadIdentity();
+		pmvMatrix.gluPerspective(fov, aspect, zNear, zFar);
+		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+		pmvMatrix.glLoadIdentity();
+//		pmvMatrix.gluLookAt(eye.x, eye.y, eye.z,
+//      			target.x, target.y, target.z,
+//      			up.x, up.y, up.z);
+		pmvMatrix.update();
+
+		// Setup perspective projection, with aspect ratio matches viewport
+//		gl.glMatrixMode(GL2.GL_PROJECTION); // choose projection matrix
+//		gl.glLoadIdentity(); // reset projection matrix
+//		glu.gluPerspective(45.0, aspect, 0.1, 1000.0); // fovy, aspect, zNear,
+//														// zFar
+//
+//		// Enable the model-view transform
+//		gl.glMatrixMode(GL2.GL_MODELVIEW);
+//		gl.glLoadIdentity(); // reset
 
 	}
 
@@ -281,5 +473,21 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	@Override
 	public String getId() {
 		return ID;
+	}
+
+	/**
+	 * @return the pmvMatrix
+	 */
+	@Override
+	public PMVMatrix getPmvMatrix() {
+		return pmvMatrix;
+	}
+
+	/**
+	 * @param pmvMatrix the pmvMatrix to set
+	 */
+	@Override
+	public void setPmvMatrix(PMVMatrix pmvMatrix) {
+		this.pmvMatrix = pmvMatrix;
 	}
 }

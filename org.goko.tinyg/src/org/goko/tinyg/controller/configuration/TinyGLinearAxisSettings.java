@@ -27,19 +27,19 @@ public class TinyGLinearAxisSettings extends TinyGAxisSettings{
 
 	public TinyGLinearAxisSettings(String motor){
 		super(motor);
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.AXIS_MODE,  			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.VELOCITY_MAXIMUM, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.FEEDRATE_MAXIMUM, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.TRAVEL_MINIMUM, 		new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.TRAVEL_MAXIMUM, 		new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.JERK_MAXIMUM, 		new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.JERK_HOMING, 			new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.JUNCTION_DEVIATION, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.MINIMUM_SWITCH_MODE, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.MAXIMUM_SWITCH_MODE, 	new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.SEARCH_VELOCITY, 		new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.LATCH_VELOCITY, 		new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.ZERO_BACKOFF, 		new BigDecimal("0")));
-		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.LATCH_BACKOFF, 		new BigDecimal("0")));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.AXIS_MODE,  			BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.VELOCITY_MAXIMUM, 	BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.FEEDRATE_MAXIMUM, 	BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.TRAVEL_MINIMUM, 		BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.TRAVEL_MAXIMUM, 		BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.JERK_MAXIMUM, 		BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.JERK_HOMING, 			BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.JUNCTION_DEVIATION, 	BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.MINIMUM_SWITCH_MODE, 	BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.MAXIMUM_SWITCH_MODE, 	BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.SEARCH_VELOCITY, 		BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.LATCH_VELOCITY, 		BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.ZERO_BACKOFF, 		BigDecimal.ZERO));
+		addSetting(new TinyGBigDecimalSetting(TinyGAxisSettings.LATCH_BACKOFF, 		BigDecimal.ZERO));
 	}
 }

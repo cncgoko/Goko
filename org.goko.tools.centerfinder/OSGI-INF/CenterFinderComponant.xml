@@ -3,6 +3,6 @@
    <implementation class="org.goko.tools.centerfinder.CenterFinderServiceImpl"/>
    <service>
       <provide interface="org.goko.tools.centerfinder.ICenterFinderService"/>
-      <provide interface="org.goko.core.viewer.renderer.IViewer3DRenderer"/>
    </service>
+   <reference bind="setRendererService" cardinality="0..1" interface="org.goko.viewer.jogl.service.IJoglViewerService" name="IJoglViewerService" policy="static"/>
 </scr:component>

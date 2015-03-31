@@ -1,27 +1,26 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.common.bindings;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,25 +55,32 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.goko.common.bindings.converters.NegateBooleanConverter;
+import org.goko.common.bindings.toolbar.ToolBarObservable;
 import org.goko.common.bindings.validator.StringBigDecimalValidator;
 import org.goko.common.bindings.validator.StringRealNumberValidator;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.common.elements.combo.v2.GkCombo2;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.log.GkLog;
 
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.DecimalFormatSymbols;
 
 public abstract class AbstractController<T extends AbstractModelObject> extends EventDispatcher{
+	private static final GkLog LOG = GkLog.getLogger(AbstractController.class);
 	private DataBindingContext bindingContext;
 	private T dataModel;
 	private List<Binding> bindings;
+	@Inject
+	private IApplicativeLogService applicativeLogService;
 
 	public AbstractController(T binding) {
 		bindingContext = new DataBindingContext();
@@ -89,15 +95,6 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	public abstract void initialize() throws GkException;
 
 	public void addBigDecimalModifyBinding(Object source, String property) throws GkException{
-	/*	DecimalFormat format = new DecimalFormat();
-		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-		symbols.setDecimalSeparator('.');
-		format.setDecimalFormatSymbols(symbols);
-
-		StringToNumberConverter stringConverter = StringToNumberConverter.toBigDecimal(format);
-		NumberToStringConverter numberConverter = NumberToStringConverter.fromBigDecimal(format);
-
-		addTextModifyBinding(source, property,new StringBigDecimalValidator(), stringConverter, numberConverter);*/
 		addBigDecimalModifyBinding(source, getDataModel(), property);
 	}
 
@@ -286,6 +283,16 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 
 	}
 
+	public void addSelectionBinding(ToolItem target, String property) throws GkException {
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+
+		IObservableValue observeSelectionBtnCheckButtonObserveWidget = ToolBarObservable.observeSelection(target);
+		IObservableValue enabledBindingsObserveValue = BeanProperties.value(property).observe(dataModel);
+		bindingContext.bindValue(observeSelectionBtnCheckButtonObserveWidget, enabledBindingsObserveValue, null, null);
+
+	}
+
 	public void addSelectionBinding(Object target, String property) throws GkException {
 		verifyGetter(dataModel,property);
 		verifySetter(dataModel,property);
@@ -462,6 +469,16 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		getDataModel().setValidationMessages(lstStatus);
 		return CollectionUtils.isEmpty(lstStatus);
 	}
+
+	public void log(GkException e){
+		LOG.error(e);
+		if(applicativeLogService != null){
+			if(e instanceof GkFunctionalException){
+				applicativeLogService.error(e.getMessage(), StringUtils.EMPTY);
+			}
+		}
+	}
+
 	@Deprecated
 	public void notifyException(Exception e){
 		if(e instanceof GkFunctionalException){

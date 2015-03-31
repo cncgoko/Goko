@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePages">
+      <page
+            class="org.goko.gcode.rs274ngcv3.RS274GCodePreferences"
+            id="org.goko.gcode.rs274ngcv3.preferences"
+            name="GCode">
+      </page>
+   </extension>
+
+</plugin>
