@@ -35,8 +35,7 @@ public class CommandPanelModel extends AbstractModelObject{
 	private BigDecimal jogSpeed;
 	private BigDecimal jogIncrement;
 	private boolean incrementalJog;
-//	private boolean incrementalJogSupported;
-//	private boolean continuousJogSupported;
+	private boolean stepModeChoiceEnabled;
 
 	public CommandPanelModel(){
 		actionState = new WritableMap(String.class, Boolean.class);
@@ -111,6 +110,18 @@ public class CommandPanelModel extends AbstractModelObject{
 //	public void setContinuousJogSupported(boolean continuousJogSupported) {
 //		firePropertyChange("continuousJogSupported", this.continuousJogSupported, this.continuousJogSupported = continuousJogSupported);
 //	}
+	/**
+	 * @return the stepModeChoiceEnabled
+	 */
+	public boolean isStepModeChoiceEnabled() {
+		return stepModeChoiceEnabled;
+	}
+	/**
+	 * @param stepModeChoiceEnabled the stepModeChoiceEnabled to set
+	 */
+	public void setStepModeChoiceEnabled(boolean stepModeChoiceEnabled) {
+		firePropertyChange("stepModeChoiceEnabled", this.stepModeChoiceEnabled, this.stepModeChoiceEnabled = stepModeChoiceEnabled);
+	}
 
 
 

@@ -5,7 +5,7 @@
          id="id1"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="initial"
+            apply="always"
             uri="fragments/TinyGFragment.e4xmi">
       </fragment>
    </extension>

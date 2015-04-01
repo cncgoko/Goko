@@ -72,7 +72,7 @@ public class TinyGConfiguration {
 	public static final String IGNORE_CR_LF_ON_RX 		= "ic";
 	public static final String ENABLE_CR_ON_TX 			= "ec";
 	public static final String ENABLE_CHARACTER_ECHO 	= "ee";
-	public static final String ENABLE_XON_XOFF 			= "ex";
+	public static final String ENABLE_FLOW_CONTROL 		= "ex";
 	public static final String BAUD_RATE 				= "baud";
 
 	public static final String DEFAULT_PLANE_SELECTION	= "gpl";
@@ -125,33 +125,33 @@ public class TinyGConfiguration {
 		//groups.add( new TinyGAxisSettings(C_AXIS_SETTINGS));
 
 		TinyGGroupSettings sysgroup = new TinyGGroupSettings(SYSTEM_SETTINGS);
-		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_BUILD 			,new BigDecimal("0"), true));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_VERSION 			,new BigDecimal("0"), true));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(HARDWARE_VERSION 			,new BigDecimal("0"), true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_BUILD 					,BigDecimal.ZERO, true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_VERSION 				,BigDecimal.ZERO, true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(HARDWARE_VERSION 			 	,BigDecimal.ZERO, true));
 		sysgroup.addSetting(new TinyGStringSetting(UNIQUE_ID						,"0", true));
 
-		sysgroup.addSetting(new TinyGBigDecimalSetting(JUNCTION_ACCELERATION 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(CHORDAL_TOLERANCE 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(SWITCH_TYPE 				,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(MOTOR_DISABLE_TIMEOUT		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JUNCTION_ACCELERATION 		,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(CHORDAL_TOLERANCE 			,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(SWITCH_TYPE 					,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(MOTOR_DISABLE_TIMEOUT		,BigDecimal.ZERO));
 
-		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_MODE 					,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_VERBOSITY 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(TEXT_MODE_VERBOSITY 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(QUEUE_REPORT_VERBOSITY		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_VERBOSITY 	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_INTERVAL 	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(IGNORE_CR_LF_ON_RX 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CR_ON_TX 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CHARACTER_ECHO 		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_XON_XOFF 			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(BAUD_RATE 					,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_MODE 					,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_VERBOSITY 				,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(TEXT_MODE_VERBOSITY 			,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(QUEUE_REPORT_VERBOSITY		,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_VERBOSITY 		,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_INTERVAL 		,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(IGNORE_CR_LF_ON_RX 			,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CR_ON_TX 				,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CHARACTER_ECHO 		,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_FLOW_CONTROL 			,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(BAUD_RATE 					,BigDecimal.ZERO));
 
-		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PLANE_SELECTION	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_UNITS_MODE			,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_COORDINATE_SYSTEM 	,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PATH_CONTROL		,new BigDecimal("0")));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_DISTANCE_MODE 		,new BigDecimal("0")));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PLANE_SELECTION	,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_UNITS_MODE			,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_COORDINATE_SYSTEM 	,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PATH_CONTROL		,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_DISTANCE_MODE 		,BigDecimal.ZERO));
 
 		groups.add(sysgroup);
 	}

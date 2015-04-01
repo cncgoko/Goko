@@ -7,4 +7,5 @@
       <provide interface="org.goko.tinyg.service.ITinyGControllerFirmwareService"/>
    </service>
    <reference bind="setApplicativeLogService" cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
+   <reference bind="setMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="static"/>
 </scr:component>

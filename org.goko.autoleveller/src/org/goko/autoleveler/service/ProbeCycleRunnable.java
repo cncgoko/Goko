@@ -31,6 +31,7 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 
@@ -55,10 +56,12 @@ public class ProbeCycleRunnable implements Runnable {
 					Tuple6b p = new Tuple6b(tuple);
 					p.setZ(pattern.getStartProbePosition());
 					controllerService.moveToAbsolutePosition(p);
-					Future<Tuple6b> result = probingService.probe(EnumControllerAxis.Z_POSITIVE, 10, pattern.getEndProbePosition().doubleValue());
-					Tuple6b probePosition = result.get();
-					LOG.info("    Result "+probePosition.getZ());
-					elevationMap.addProbedPosition(tuple, probePosition);
+					Future<ProbeResult> result = probingService.probe(EnumControllerAxis.Z_POSITIVE, 10, pattern.getEndProbePosition().doubleValue());
+					ProbeResult probeResult = result.get();
+					if(probeResult.isProbed()){
+						LOG.info("    Result "+probeResult.getProbedPosition().getZ());
+						elevationMap.addProbedPosition(tuple, probeResult.getProbedPosition());
+					}
 					controllerService.moveToAbsolutePosition(tuple);
 				}
 			}

@@ -101,7 +101,7 @@ public class WorkspaceService implements IWorkspaceService{
 		if(currentProviderId == null){
 			setCurrentGCodeProvider(newProviderId);
 		}
-		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.CURRENT_UPDATE, newProviderId));
+		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.INSERT, newProviderId));
 	}
 
 	/** (inheritDoc)

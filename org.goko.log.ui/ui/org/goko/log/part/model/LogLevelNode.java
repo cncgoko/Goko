@@ -22,11 +22,13 @@ package org.goko.log.part.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 
 public class LogLevelNode {
 	private int errorLevel;
 	private String label;
+	private int maxSize;
 	private List<ApplicativeLogEvent> messages;
 
 
@@ -35,9 +37,13 @@ public class LogLevelNode {
 		this.errorLevel = errorLevel;
 		this.label = label;
 		this.messages = new ArrayList<ApplicativeLogEvent>();
+		this.maxSize = 100;
 	}
 
 	public void addMessage(ApplicativeLogEvent message){
+		while(CollectionUtils.size(this.messages) > maxSize){
+			this.messages.remove(maxSize);
+		}
 		this.messages.add(message);
 	}
 

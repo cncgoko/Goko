@@ -54,7 +54,7 @@ public class TinyGStartJogAction extends AbstractTinyGControllerAction {
 		String 			axis 	 = getStringParameter(parameters[0]);
 		EnumTinyGAxis 	enumAxis = EnumTinyGAxis.getEnum(axis);
 		String 			feed 	 = getStringParameter(parameters[1]);
-		getControllerService().startJog(enumAxis, feed);
+	//	getControllerService().startJog(enumAxis, feed);
 	}
 
 	/** (inheritDoc)

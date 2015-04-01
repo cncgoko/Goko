@@ -35,7 +35,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.common.elements.combo.v2.GkCombo2;
-import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.configuration.bindings.ConfigurationBindings;
@@ -43,7 +42,6 @@ import org.goko.tinyg.configuration.bindings.ConfigurationController;
 import org.goko.tinyg.configuration.bindings.wrapper.TinyGAAxisSettingsWrapper;
 import org.goko.tinyg.configuration.bindings.wrapper.TinyGLinearAxisSettingsWrapper;
 import org.goko.tinyg.controller.configuration.TinyGLinearAxisSettings;
-import org.goko.tinyg.controller.events.ConfigurationUpdateEvent;
 
 public class TinyGConfigurationDialog extends Dialog{
 	/** LOG */
@@ -202,12 +200,7 @@ public class TinyGConfigurationDialog extends Dialog{
 		form.getToolBarManager().add(new Action("Refresh configuration", ImageDescriptor.createFromImage(ResourceManager.getPluginImage("org.goko.tinyg", "icons/arrow-circle-double.png") )) {
 			@Override
 			public void run() {
-				try {
-					controller.refreshConfiguration();
-
-				} catch (GkException e) {
-					e.printStackTrace();
-				}
+				controller.requestConfigurationRefresh();
 			}
 		});
 		form.getToolBarManager().update(true);
@@ -264,7 +257,7 @@ public class TinyGConfigurationDialog extends Dialog{
 		Label lblFirmwareVersion = formToolkit.createLabel(composite, "Firmware version :", SWT.NONE);
 		lblFirmwareVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
-		txtFirmwareversion = formToolkit.createText(composite, "", SWT.NONE);
+		txtFirmwareversion = formToolkit.createText(composite, "", SWT.READ_ONLY);
 		txtFirmwareversion.setEditable(false);
 		txtFirmwareversion.setText("firmwareVersion");
 		GridData gd_txtFirmwareversion = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -274,7 +267,7 @@ public class TinyGConfigurationDialog extends Dialog{
 		Label lblFirmwareBuild = formToolkit.createLabel(composite, "Firmware build :", SWT.NONE);
 		lblFirmwareBuild.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
-		txtFirmwarebuild = formToolkit.createText(composite, "", SWT.NONE);
+		txtFirmwarebuild = formToolkit.createText(composite, "", SWT.READ_ONLY);
 		txtFirmwarebuild.setEditable(false);
 		txtFirmwarebuild.setText("firmwareBuild");
 		GridData gd_txtFirmwarebuild = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -284,7 +277,7 @@ public class TinyGConfigurationDialog extends Dialog{
 		Label lblStatusInterval = formToolkit.createLabel(composite, "Device ID :", SWT.NONE);
 		lblStatusInterval.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
-		txtDeviceId = formToolkit.createText(composite, "New Text", SWT.NONE);
+		txtDeviceId = formToolkit.createText(composite, "New Text", SWT.READ_ONLY);
 		txtDeviceId.setText("Device ID");
 		GridData gd_txtDeviceId = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_txtDeviceId.widthHint = 80;
@@ -1216,24 +1209,14 @@ public class TinyGConfigurationDialog extends Dialog{
 	protected void createColumn(TableViewer tableViewer, String title, int columnIndex){
 	}
 
-	@EventListener(ConfigurationUpdateEvent.class)
-	public void onControllerConfigurationRefreshed(ConfigurationUpdateEvent event){
-		try {
-			this.controller.refreshConfiguration();
-		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	protected void initCustomDataBindings() throws GkException {
 		this.controller.addValidationMessagesBinding(labelValidationMessages);
 
 
 		this.controller.addBigDecimalModifyBinding(txtJunctionAcceleration, 	"junctionAcceleration");
 
-		this.controller.addTextModifyBinding(txtFirmwarebuild, 			"firmwareBuild");
-		this.controller.addTextModifyBinding(txtFirmwareversion, 		"firmwareVersion");
+		this.controller.addBigDecimalModifyBinding(txtFirmwarebuild, 		"firmwareBuild");
+		this.controller.addBigDecimalModifyBinding(txtFirmwareversion, 		"firmwareVersion");
 
 		this.controller.addBigDecimalModifyBinding(txtStatusinterval, 		"statusinterval");
 		this.controller.addBigDecimalModifyBinding(txtStepAngleM1, 			"stepAngleM1");
@@ -1283,7 +1266,7 @@ public class TinyGConfigurationDialog extends Dialog{
 
 		// Motor 1
 		this.controller.addBigDecimalModifyBinding(txtStepAngleM1, 		"motor1StepAngle");
-		this.controller.addBigDecimalModifyBinding(txtTravelPerRevM1, 	"motor1TravelPerRevolution");
+		//this.controller.addBigDecimalModifyBinding(txtTravelPerRevM1, 	"motor1TravelPerRevolution");
 		this.controller.addItemsBinding(comboPolarityM1, "choicesPolarity");
 		this.controller.addItemSelectionBinding(comboPolarityM1, "motor1Polarity");
 		this.controller.addItemsBinding(comboMicrostepsM1, "choicesMicrosteps");
@@ -1293,7 +1276,7 @@ public class TinyGConfigurationDialog extends Dialog{
 
 		// Motor 2
 		this.controller.addBigDecimalModifyBinding(txtStepAngleM2, 		"motor2StepAngle");
-		this.controller.addBigDecimalModifyBinding(txtTravelPerRevM2, 	"motor2TravelPerRevolution");
+		//this.controller.addBigDecimalModifyBinding(txtTravelPerRevM2, 	"motor2TravelPerRevolution");
 		this.controller.addItemsBinding(comboPolarityM2, "choicesPolarity");
 		this.controller.addItemSelectionBinding(comboPolarityM2, "motor2Polarity");
 		this.controller.addItemsBinding(comboMicrostepsM2, "choicesMicrosteps");
@@ -1303,7 +1286,7 @@ public class TinyGConfigurationDialog extends Dialog{
 
 		// Motor 3
 		this.controller.addBigDecimalModifyBinding(txtStepAngleM3, 		"motor3StepAngle");
-		this.controller.addBigDecimalModifyBinding(txtTravelPerRevM3, 	"motor3TravelPerRevolution");
+		//this.controller.addBigDecimalModifyBinding(txtTravelPerRevM3, 	"motor3TravelPerRevolution");
 		this.controller.addItemsBinding(comboPolarityM3, "choicesPolarity");
 		this.controller.addItemSelectionBinding(comboPolarityM3, "motor3Polarity");
 		this.controller.addItemsBinding(comboMicrostepsM3, "choicesMicrosteps");
@@ -1313,7 +1296,7 @@ public class TinyGConfigurationDialog extends Dialog{
 
 		// Motor 4
 		this.controller.addBigDecimalModifyBinding(txtStepAngleM4, 		"motor4StepAngle");
-		this.controller.addBigDecimalModifyBinding(txtTravelPerRevM4, 	"motor4TravelPerRevolution");
+		//this.controller.addBigDecimalModifyBinding(txtTravelPerRevM4, 	"motor4TravelPerRevolution");
 		this.controller.addItemsBinding(comboPolarityM4, "choicesPolarity");
 		this.controller.addItemSelectionBinding(comboPolarityM4, "motor4Polarity");
 		this.controller.addItemsBinding(comboMicrostepsM4, "choicesMicrosteps");

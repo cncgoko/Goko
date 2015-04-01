@@ -1,22 +1,19 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.core.gcode.bean.provider;
 
 import java.util.ArrayList;
@@ -32,6 +29,7 @@ import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 
 /**
  * Implementation of a {@link IGCodeProvider} for execution planner
@@ -62,6 +60,8 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	protected int currentIndex;
 	/** Completed state  */
 	protected boolean complete;
+	/** The monitor service */
+	protected IGCodeExecutionMonitorService monitorService;
 
 	/**
 	 * Constructor
@@ -142,6 +142,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 		mapExecutedCommandById.add(command.getId());
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.EXECUTED);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.EXECUTED));
+		monitorService.notifyCommandStateChanged(this, idCommand);
 	}
 
 	/** (inheritDoc)
@@ -161,6 +162,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 		mapErrorsCommandById.add(command.getId());
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.ERROR);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.ERROR));
+		monitorService.notifyCommandStateChanged(this, idCommand);
 	}
 
 	/** (inheritDoc)
@@ -213,7 +215,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	@Override
 	public void beginExecution() throws GkException {
-
+		getMonitorService().notifyExecutionStart(this);
 	}
 
 	/** (inheritDoc)
@@ -221,7 +223,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	@Override
 	public void endExecution() throws GkException {
-
+		getMonitorService().notifyExecutionComplete(this);
 	}
 
 	/** (inheritDoc)
@@ -247,6 +249,20 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 		synchronized (this) {
 			notify();
 		}
+	}
+
+	/**
+	 * @return the monitorService
+	 */
+	public IGCodeExecutionMonitorService getMonitorService() {
+		return monitorService;
+	}
+
+	/**
+	 * @param monitorService the monitorService to set
+	 */
+	public void setMonitorService(IGCodeExecutionMonitorService monitorService) {
+		this.monitorService = monitorService;
 	}
 
 

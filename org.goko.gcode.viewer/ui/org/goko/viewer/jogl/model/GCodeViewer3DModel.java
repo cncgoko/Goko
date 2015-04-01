@@ -1,26 +1,25 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.viewer.jogl.model;
 
 import javax.vecmath.Point3d;
 
+import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.gcode.bean.IGCodeProvider;
 
@@ -42,6 +41,14 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	private boolean followTool;
 
 	private boolean showCoordinateSystem;
+
+	private boolean showBounds;
+
+	private IObservableMap coordinateSystemEnabled;
+
+	public GCodeViewer3DModel() {
+		coordinateSystemEnabled =new WritableMap(String.class, Boolean.class);
+	}
 	/**
 	 * @return the showGrid
 	 */
@@ -122,4 +129,29 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	public void setShowCoordinateSystem(boolean showCoordinateSystem) {
 		firePropertyChange("showCoordinateSystem",this.showCoordinateSystem, this.showCoordinateSystem = showCoordinateSystem);
 	}
+	/**
+	 * @return the showBounds
+	 */
+	protected boolean isShowBounds() {
+		return showBounds;
+	}
+	/**
+	 * @param showBounds the showBounds to set
+	 */
+	protected void setShowBounds(boolean showBounds) {
+		firePropertyChange("showBounds",this.showBounds, this.showBounds = showBounds);
+	}
+	/**
+	 * @return the coordinateSystemEnabled
+	 */
+	public IObservableMap getCoordinateSystemEnabled() {
+		return coordinateSystemEnabled;
+	}
+	/**
+	 * @param coordinateSystemEnabled the coordinateSystemEnabled to set
+	 */
+	public void setCoordinateSystemEnabled(IObservableMap coordinateSystemEnabled) {
+		this.coordinateSystemEnabled = coordinateSystemEnabled;
+	}
+
 }

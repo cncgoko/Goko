@@ -1,22 +1,19 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2014  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.viewer.jogl;
 
 import javax.inject.Inject;
@@ -55,7 +52,6 @@ public class JoglViewerPreferences extends GkUiPreferencePageComponent<JoglViewe
 	private Text txtPositionZ;
 	private Button btnEnable4axis;
 	private GkCombo<LabeledValue<EnumRotaryAxisDirection>> directionCombo;
-	private Text text;
 
 	@Inject
 	public JoglViewerPreferences(IEclipseContext context) {
@@ -64,7 +60,7 @@ public class JoglViewerPreferences extends GkUiPreferencePageComponent<JoglViewe
 		try {
 			getController().initialize();
 		} catch (GkException e) {
-			displayError( new ErrorEvent(e, "blah"));
+			displayError( new ErrorEvent(e, "Error while changing Jogl Viewer preferences."));
 			LOG.error(e);
 		}
 	}
@@ -164,21 +160,6 @@ public class JoglViewerPreferences extends GkUiPreferencePageComponent<JoglViewe
 		fd_txtPositionZ.left = new FormAttachment(lblPositionZ,0, SWT.RIGHT);
 		fd_txtPositionZ.top = new FormAttachment(lblPositionZ,-3, SWT.TOP);
 		txtPositionZ.setLayoutData(fd_txtPositionZ);
-
-		Label label = new Label(grpthAxisSettings, SWT.NONE);
-		label.setText("Rotary axis position");
-		FormData fd_label = new FormData();
-		fd_label.top = new FormAttachment(lblPositionZ, 3);
-		fd_label.bottom = new FormAttachment(100, -10);
-		fd_label.left = new FormAttachment(btnEnable4axis, 0, SWT.LEFT);
-		label.setLayoutData(fd_label);
-
-		text = new Text(grpthAxisSettings, SWT.BORDER);
-		FormData fd_text = new FormData();
-		fd_text.top = new FormAttachment(label, -3, SWT.TOP);
-		fd_text.width = 80;
-		fd_text.left = new FormAttachment(combo, 0, SWT.LEFT);
-		text.setLayoutData(fd_text);
 
 		try {
 			enableBindings();

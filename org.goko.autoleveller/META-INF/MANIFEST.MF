@@ -19,5 +19,6 @@ Require-Bundle: org.goko.core,
  org.eclipse.e4.core.di;bundle-version="1.4.0",
  org.eclipse.e4.ui.di,
  javax.inject;bundle-version="1.0.0",
- javax.annotation;bundle-version="1.2.0"
+ javax.annotation;bundle-version="1.2.0",
+ org.eclipse.e4.ui.model.workbench
 Service-Component: OSGI-INF/GkAutoLevelerComponant.xml

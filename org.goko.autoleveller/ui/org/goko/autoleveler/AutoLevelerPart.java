@@ -20,6 +20,7 @@
 package org.goko.autoleveler;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -27,7 +28,9 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -48,6 +51,12 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.IGCodeProvider;
 
 public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLevelerModel> {
+	private static final String PERSITED_EXPECTED_Z = "org.goko.autoleveler.persisted.expectedz";
+	private static final String PERSITED_SAFE_Z 	= "org.goko.autoleveler.persisted.safez";
+	private static final String PERSITED_MAX_Z 		= "org.goko.autoleveler.persisted.maxz";
+	private static final String PERSITED_START_Z 	= "org.goko.autoleveler.persisted.startz";
+	private static final String PERSITED_STEP_X 	= "org.goko.autoleveler.persisted.stepx";
+	private static final String PERSITED_STEP_Y 	= "org.goko.autoleveler.persisted.stepy";
 	private Text txtStartX;
 	private Text txtStartY;
 	private Text txtEndX;
@@ -58,14 +67,16 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 	private Text txtStartProbe;
 	private Text txtStepX;
 	private Text txtStepY;
+
 	@Inject
 	@Optional
 	IAutoLevelerService levelerService;
 
 	@Inject
-	public AutoLevelerPart(IEclipseContext context) {
+	public AutoLevelerPart(IEclipseContext context) throws GkException {
 		super(new AutoLevelerController());
 		ContextInjectionFactory.inject(getController(), context);
+		getController().initialize();
 	}
 
 	@Inject
@@ -76,7 +87,7 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 	}
 
 	@PostConstruct
-	public void createControls(Composite parent) {
+	public void createControls(Composite parent, MPart part) {
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
@@ -320,18 +331,6 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 		Button btnEnablePreview = new Button(composite_2, SWT.CHECK);
 		btnEnablePreview.setText("Enable preview");
 
-		Button button = new Button(composite_2, SWT.NONE);
-		button.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				try {
-					getController().debugCurrentPosition();
-				} catch (GkException e1) {
-					displayMessage(e1);
-				}
-			}
-		});
-		button.setText("???");
 
 		Button btnPreviewProbePattern = new Button(composite_2, SWT.NONE);
 		btnPreviewProbePattern.addMouseListener(new MouseAdapter() {
@@ -369,6 +368,7 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 		} catch (GkException e1) {
 			displayMessage(e1);
 		}
+		retrievePersistedState(part);
 	}
 
 	protected void initCustomBindings() throws GkException {
@@ -383,15 +383,36 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 		getController().addBigDecimalModifyBinding(txtStepX, "stepX");
 		getController().addBigDecimalModifyBinding(txtStepY, "stepY");
 
-		getDataModel().setStartx(new BigDecimal("0"));
-		getDataModel().setStarty(new BigDecimal("0"));
-		getDataModel().setEndx(new BigDecimal("0"));
-		getDataModel().setEndy(new BigDecimal("0"));
-		getDataModel().setSafeZ(new BigDecimal("0"));
-		getDataModel().setMaxZProbe(new BigDecimal("0"));
-		getDataModel().setStartProbe(new BigDecimal("0"));
-		getDataModel().setExpectedZ(new BigDecimal("0"));
-		getDataModel().setStepX(new BigDecimal("0"));
-		getDataModel().setStepY(new BigDecimal("0"));
+		getDataModel().setStartx(BigDecimal.ZERO);
+		getDataModel().setStarty(BigDecimal.ZERO);
+		getDataModel().setEndx(BigDecimal.ZERO);
+		getDataModel().setEndy(BigDecimal.ZERO);
+		getDataModel().setSafeZ(BigDecimal.ZERO);
+		getDataModel().setMaxZProbe(BigDecimal.ZERO);
+		getDataModel().setStartProbe(BigDecimal.ZERO);
+		getDataModel().setExpectedZ(BigDecimal.ZERO);
+		getDataModel().setStepX(BigDecimal.ZERO);
+		getDataModel().setStepY(BigDecimal.ZERO);
+	}
+
+	public void retrievePersistedState(MPart part){
+		Map<String, String> states = part.getPersistedState();
+		getDataModel().setExpectedZ( new BigDecimal( states.get(PERSITED_EXPECTED_Z)));
+		getDataModel().setMaxZProbe(new BigDecimal( states.get(PERSITED_MAX_Z)));
+		getDataModel().setSafeZ(new BigDecimal( states.get(PERSITED_SAFE_Z)));
+		getDataModel().setStartProbe(new BigDecimal( states.get(PERSITED_START_Z)));
+		getDataModel().setStepX(new BigDecimal( states.get(PERSITED_STEP_X)));
+		getDataModel().setStepY(new BigDecimal( states.get(PERSITED_STEP_Y)));
+	}
+
+	@Persist
+	public void persist(MPart part) {
+		// A rajouted dans la definition de la part
+		part.getPersistedState().put(PERSITED_EXPECTED_Z, String.valueOf(getDataModel().getExpectedZ()));
+		part.getPersistedState().put(PERSITED_MAX_Z, String.valueOf(getDataModel().getMaxZProbe()));
+		part.getPersistedState().put(PERSITED_SAFE_Z, String.valueOf(getDataModel().getSafeZ()));
+		part.getPersistedState().put(PERSITED_START_Z, String.valueOf(getDataModel().getStartProbe()));
+		part.getPersistedState().put(PERSITED_STEP_X, String.valueOf(getDataModel().getStepX()));
+		part.getPersistedState().put(PERSITED_STEP_Y, String.valueOf(getDataModel().getStepY()));
 	}
 }

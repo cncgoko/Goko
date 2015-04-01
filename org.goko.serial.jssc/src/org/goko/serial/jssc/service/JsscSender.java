@@ -21,11 +21,13 @@ package org.goko.serial.jssc.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import jssc.SerialPortException;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
@@ -33,28 +35,29 @@ public class JsscSender implements Runnable {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JsscSender.class);
 	/** Outgoing queue */
-	private ConcurrentLinkedDeque<Byte> queue;
-	//private BlockingQueue<Byte> queue;
+	//private ConcurrentLinkedDeque<List<Byte>> queue;
+	private BlockingQueue<List<Byte>> queue;
+	/** Important datas */
+	private BlockingQueue<List<Byte>> importantQueue;
 	/** Clear to send flag */
-	private boolean clearToSend;
+	//private boolean clearToSend;
 	/** The service holding the serial port */
 	private JsscSerialConnectionService jsscService;
-	/** Empty buffer lock */
-	private Object emptyBufferLock;
 	/** ock waiting for send permission */
 	private Object clearToSendLock;
 	private int importantBytes;
 	private boolean stopped;
-
+	private Long nbBytes = 0L;
 	/**
 	 * Constructor
 	 * @param serialPort the serial port to use
 	 */
 	public JsscSender(JsscSerialConnectionService jsscService) {
-		this.queue = new ConcurrentLinkedDeque<Byte>();
+
+		this.queue = new LinkedBlockingQueue<List<Byte>>();
+		this.importantQueue = new LinkedBlockingQueue<List<Byte>>();
 		this.jsscService = jsscService;
-		this.clearToSend = true;
-		this.emptyBufferLock = new Object();
+
 		this.clearToSendLock = new Object();
 
 	}
@@ -64,77 +67,29 @@ public class JsscSender implements Runnable {
 	 */
 	@Override
 	public  void run() {
-		List<Byte> lst = new ArrayList<Byte>();
+
 		while(!stopped){
-			waitDataInBuffer();
-			waitClearToSend();
-			if(isClearToSend() || importantBytes > 0){
-				if(CollectionUtils.isNotEmpty(queue)){
-					if(jsscService.getSerialPort().isOpened()){
-						try {
-							Byte b = queue.poll();
-							jsscService.getSerialPort().writeByte( b );
-							if(importantBytes > 0){
-								importantBytes--;
-							}
-							lst.add(b);
-							jsscService.notifyOutputListeners(lst);
-							lst.clear();
-						} catch (SerialPortException e) {
-							LOG.error(e);
-						} catch (GkException e) {
-							LOG.error(e);
-						}
+			if(jsscService.getSerialPort().isOpened()){
+				List<Byte> lst = null;
+				try {
+					if(CollectionUtils.isNotEmpty(queue)){
+						lst = queue.take();
+					}else if(CollectionUtils.isNotEmpty(importantQueue)){
+						lst = importantQueue.take();
 					}
-				}
-			}
-		}
-	}
-
-
-	/**
-	 * @return the clearToSend
-	 */
-	protected boolean isClearToSend() {
-		return clearToSend;
-	}
-
-	/**
-	 * @param clearToSend the clearToSend to set
-	 */
-	protected void setClearToSend(boolean clearToSend) {
-		this.clearToSend = clearToSend;
-		synchronized(clearToSendLock){
-			clearToSendLock.notify();
-		}
-	}
-
-	/**
-	 * Wait until there is data in the output queue
-	 */
-	private void waitDataInBuffer(){
-		while(CollectionUtils.isEmpty(queue)){
-			synchronized(emptyBufferLock){
-				try {
-					emptyBufferLock.wait();
-				} catch (InterruptedException e) {
+				}catch (InterruptedException e) {
 					LOG.error(e);
 				}
-			}
-		}
-	}
 
-	/**
-	 * Wait until the serial is clear to receive data or if there is important data to send
-	 * Important data go through the Xon/Xoff control
-	 */
-	private void waitClearToSend(){
-		while(!isClearToSend() && importantBytes <= 0){
-			synchronized(clearToSendLock){
-				try {
-					clearToSendLock.wait();
-				} catch (InterruptedException e) {
-					LOG.error(e);
+				if(lst != null){
+					try {
+						jsscService.getSerialPort().writeString( GkUtils.toString(lst) );
+						jsscService.notifyOutputListeners(lst);
+					} catch (SerialPortException e) {
+						LOG.error(e);
+					} catch (GkException e) {
+						LOG.error(e);
+					}
 				}
 			}
 		}
@@ -152,12 +107,7 @@ public class JsscSender implements Runnable {
 	 * @param bytes the list of {@link Byte} to add
 	 */
 	protected void sendBytes(List<Byte> bytes){
-		synchronized(queue){
-			queue.addAll(bytes);
-		}
-		synchronized (emptyBufferLock) {
-			emptyBufferLock.notify();
-		}
+		queue.add(new ArrayList<Byte>(bytes));
 	}
 
 	/**
@@ -165,26 +115,13 @@ public class JsscSender implements Runnable {
 	 * @param bytes the list of {@link Byte} to add
 	 */
 	protected void sendBytesImmediately(List<Byte> bytes){
-		if(CollectionUtils.isNotEmpty(bytes)){
-			synchronized(queue){
-				//System.err.println("sendBytesImmediately queue size before "+CollectionUtils.size(queue));
-				for(int i = CollectionUtils.size(bytes) - 1 ; i >=0 ; i--){
-					queue.addFirst(bytes.get(i));
-				}
+		importantQueue.add( new ArrayList<Byte>(bytes));
 
-			//System.err.println("sendBytesImmediately queue size after "+CollectionUtils.size(queue));
-			//System.err.println("Preparing to send "+CollectionUtils.size(bytes)+" important bytes");
-			}
-			importantBytes += CollectionUtils.size(bytes);
-			synchronized (emptyBufferLock) {
-			//	System.err.println("emptyBufferLock.notify();");
-				emptyBufferLock.notify();
-			}
 			synchronized (clearToSendLock) {
 			//	System.err.println("clearToSendLock.notify();");
 				clearToSendLock.notify();
 			}
-		}
+	//	}
 	}
 
 	/**

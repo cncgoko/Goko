@@ -1,7 +1,7 @@
 package org.goko.tinyg.controller;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,47 +10,47 @@ import java.util.concurrent.Future;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
-import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
-import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.connection.DataPriority;
-import org.goko.core.connection.EnumConnectionEvent;
-import org.goko.core.connection.IConnectionDataListener;
-import org.goko.core.connection.IConnectionListener;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.action.IGkControllerAction;
-import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
-import org.goko.core.controller.bean.MachineValueStore;
+import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
+import org.goko.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.tinyg.controller.configuration.TinyGSetting;
 import org.goko.tinyg.controller.probe.ProbeCallable;
 import org.goko.tinyg.json.TinyGJsonUtils;
 import org.goko.tinyg.service.ITinyGControllerFirmwareService;
 
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 /**
  * Implementation of the TinyG controller
@@ -58,16 +58,13 @@ import com.eclipsesource.json.JsonValue;
  * @author PsyKo
  *
  */
-public class TinyGControllerService extends EventDispatcher implements ITinyGControllerFirmwareService, IConnectionDataListener, IConnectionListener {
+public class TinyGControllerService extends EventDispatcher implements ITinyGControllerFirmwareService, ITinygControllerService{
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
 	public static final String SERVICE_ID = "TinyG Controller";
 	private static final String JOG_SIMULATION_DISTANCE = "1000.0";
-	private static final String UNITS_MM = "mm";
-	private static final String UNITS_INCHES = "inches";
-	private static final String DISTANCE_MODE_ABSOLUTE = "Absolute";
-	private static final String DISTANCE_MODE_INCREMENTAL = "Relative";
-	private static final String TINYG_BUFFER_COUNT = "tinyg.buffer.count";
+	private static final double JOG_SIMULATION_DISTANCE_DOUBLE = 1000.0;
+
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
 	/** Connection service */
@@ -76,29 +73,28 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private IGCodeService gcodeService;
 	/** applicative log service */
 	private IApplicativeLogService applicativeLogService;
-	/** Buffer for incoming data	 */
-	private ByteCommandBuffer incomingBuffer;
-	/** Current position of the machine	 */
-	private Tuple6b position;
-	/** Current velocity	 */
-	private BigDecimal velocity;
-	/** Line broker for sent commands */
-	private byte lineBroker;
 	/** The sending thread	 */
 	private GCodeSendingRunnable currentSendingRunnable;
-	/** The tread used to handle incoming data */
-	private ExecutorService incomingDataThread;
 	/** The current execution queue */
 	private ExecutionQueue<TinyGExecutionToken> executionQueue;
+	/** The monitor service */
+	private IGCodeExecutionMonitorService monitorService;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
-	private MachineValueStore valueStore;
-	/** The count of available buffer in the TinyG board*/
-	private int availableBuffer;
+	private TinyGState tinygState;
 	/** Waiting probe result */
 	private ProbeCallable futureProbeResult;
+	/** Communicator */
+	private TinyGCommunicator communicator;
+	/** Preferences */
+	private TinyGPreferences preferences;
 
+
+	public TinyGControllerService() {
+		communicator = new TinyGCommunicator(this);
+		preferences = new TinyGPreferences();
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -113,44 +109,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void start() throws GkException {
 		configuration 			= new TinyGConfiguration();
-		incomingBuffer  		= new ByteCommandBuffer((byte) '\n');
-		position 				= new Tuple6b();
-		lineBroker				= (byte) '\n';
 		actionFactory 			= new TinyGActionFactory(this);
-		incomingDataThread 		= Executors.newSingleThreadExecutor();
-
-		valueStore = new MachineValueStore();
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.STATE, "State", "The state of TinyG controller board", MachineState.class),
-								new MachineValue<MachineState>(DefaultControllerValues.STATE, MachineState.UNDEFINED));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.POSITION, "Pos", "The position of the machine", Point3d.class),
-				new MachineValue<Point3d>(DefaultControllerValues.POSITION, new Point3d()));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.POSITION_X, "X", "The X position of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(DefaultControllerValues.POSITION_X, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.POSITION_Y, "Y", "The Y position of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(DefaultControllerValues.POSITION_Y, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.POSITION_Z, "Z", "The Z position of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(DefaultControllerValues.POSITION_Z, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.POSITION_A, "A", "The A position of the machine", BigDecimal.class),
-				new MachineValue<BigDecimal>(DefaultControllerValues.POSITION_A, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.VELOCITY, "Velocity", "The current velocity of the machine", BigDecimal.class),
-								new MachineValue<BigDecimal>(DefaultControllerValues.VELOCITY, new BigDecimal("0.000")));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.SPINDLE_STATE, "Spindle", "The current state of the spindle", Boolean.class),
-				new MachineValue<Boolean>(DefaultControllerValues.SPINDLE_STATE, new Boolean(false)));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.UNITS, "Units", "The units in use", String.class),
-				new MachineValue<String>(DefaultControllerValues.UNITS, StringUtils.EMPTY));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.COORDINATES, "Coordinates", "The coordinate system", String.class),
-				new MachineValue<String>(DefaultControllerValues.COORDINATES, StringUtils.EMPTY));
-		valueStore.storeValue(new MachineValueDefinition(DefaultControllerValues.DISTANCE_MODE, "Distance mode", "The distance motion setting", String.class),
-				new MachineValue<String>(DefaultControllerValues.DISTANCE_MODE, StringUtils.EMPTY));
-		valueStore.storeValue(new MachineValueDefinition(TINYG_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", Integer.class),
-				new MachineValue<Integer>(TINYG_BUFFER_COUNT, 0));
-		valueStore.addListener(this);
-
+		tinygState = new TinyGState();
+		tinygState.addListener(this);
 
 		// Initiate execution queue
-		executionQueue = new ExecutionQueue<TinyGExecutionToken>();
+		executionQueue 				= new ExecutionQueue<TinyGExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
-		currentSendingRunnable 	= new GCodeSendingRunnable(executionQueue, this);
+		currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);
 		executor.execute(currentSendingRunnable);
 
 		LOG.info("Successfully started "+getServiceId());
@@ -170,7 +136,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public Point3d getPosition() throws GkException {
-		return new Point3d( position.getX().doubleValue(),position.getY().doubleValue(),position.getZ().doubleValue());
+		return tinygState.getWorkPosition().toPoint3d();
 	}
 
 	/** (inheritDoc)
@@ -178,23 +144,41 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
+		checkExecutionControl();
 		if(!getConnectionService().isConnected()){
 			throw new GkFunctionalException("Cannot send command. Connection service is not connected");
 		}
-
+		updateQueueReport();
 		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
+		token.setMonitorService(getMonitorService());
 		executionQueue.add(token);
 
 		return token;
 	}
 
-	public void sendTogether(List<GCodeCommand> commands) throws GkException{
-		StringBuffer commandBuffer = new StringBuffer();
-		for (GCodeCommand gCodeCommand : commands) {
-			JsonValue jsonCommand = TinyGControllerUtility.toJson(new String(gcodeService.convert(gCodeCommand)));
-			commandBuffer.append(jsonCommand.toString() + (char)getLineBroker() );
+	private void checkExecutionControl() throws GkException{
+		BigDecimal qrVerbosity = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.QUEUE_REPORT_VERBOSITY, BigDecimal.class);
+		BigDecimal flowControl = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
+
+		if(isPlannerBufferSpaceCheck()){
+			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
+				throw new GkFunctionalException("File exectuion is based on TinyG planner buffer space, but Queue Report is disabled in the TinyG Setting. Please enable it before executing GCode.");
+			}
+		}else{
+			// We don't use TinyG Buffer sapce, let's make sure we use flow control
+			if(ObjectUtils.equals(flowControl, TinyGConfigurationValue.FLOW_CONTROL_OFF)){
+				throw new GkFunctionalException("No execution control enabled. Please use flow control ($ex) or queue report ($qr)");
+			}
 		}
-		getConnectionService().send( GkUtils.toBytesList( commandBuffer.toString() ));
+	}
+	public void send(GCodeCommand gCodeCommand) throws GkException{
+		communicator.send(gCodeCommand);
+	}
+
+	public void sendTogether(List<GCodeCommand> commands) throws GkException{
+		for (GCodeCommand gCodeCommand : commands) {
+			communicator.send(gCodeCommand);
+		}
 	}
 
 	@Override
@@ -214,20 +198,56 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		for(TinyGGroupSettings group : configuration.getGroups()){
 			JsonObject groupEmpty = new JsonObject();
 			groupEmpty.add(group.getGroupIdentifier(), StringUtils.EMPTY);
-			getConnectionService().send( buildByteList(groupEmpty.toString()));
+			communicator.send(GkUtils.toBytesList(groupEmpty.toString()));
 		}
 	}
 	public void refreshStatus() throws GkException{
 		JsonObject statusQuery = new JsonObject();
 		statusQuery.add("sr", StringUtils.EMPTY);
-		getConnectionService().send( buildByteList(statusQuery.toString()) );
+		communicator.send(GkUtils.toBytesList(statusQuery.toString()));
 		updateQueueReport();
 	}
 
 	protected void updateQueueReport()throws GkException{
 		JsonObject queueQuery = new JsonObject();
 		queueQuery.add("qr", StringUtils.EMPTY);
-		getConnectionService().send( buildByteList(queueQuery.toString()) );
+		communicator.send(GkUtils.toBytesList(queueQuery.toString()));
+	}
+
+	/**
+	 * Update the current GCodeContext with the given one
+	 * @param updatedGCodeContext the updated GCodeContext
+	 */
+	protected void updateCurrentGCodeContext(GCodeContext updatedGCodeContext){
+		GCodeContext current = tinygState.getGCodeContext();
+		if(updatedGCodeContext.getPosition() != null){
+			current.setPosition(updatedGCodeContext.getPosition());
+		}
+		if(updatedGCodeContext.getCoordinateSystem() != null){
+			current.setCoordinateSystem(updatedGCodeContext.getCoordinateSystem());
+		}
+		if(updatedGCodeContext.getMotionMode() != null){
+			current.setMotionMode(updatedGCodeContext.getMotionMode());
+		}
+		if(updatedGCodeContext.getMotionType() != null){
+			current.setMotionType(updatedGCodeContext.getMotionType());
+		}
+		if(updatedGCodeContext.getFeedrate() != null){
+			current.setFeedrate(updatedGCodeContext.getFeedrate());
+		}
+		if(updatedGCodeContext.getUnit() != null){
+			current.setUnit(updatedGCodeContext.getUnit());
+		}
+		if(updatedGCodeContext.getDistanceMode() != null){
+			current.setDistanceMode(updatedGCodeContext.getDistanceMode());
+		}
+		if(updatedGCodeContext.getPlane() != null){
+			current.setPlane(updatedGCodeContext.getPlane());
+		}
+		if(updatedGCodeContext.getToolNumber() != null){
+			current.setToolNumber(updatedGCodeContext.getToolNumber());
+		}
+		tinygState.setGCodeContext(current);
 	}
 
 	/**
@@ -254,248 +274,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setConnectionService(IConnectionService connectionService) throws GkException {
 		this.connectionService = connectionService;
-		getConnectionService().addConnectionListener(this);
-	}
-
-	/**
-	 * (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionDataListener#onDataReceived(java.util.List)
-	 */
-	@Override
-	public void onDataReceived(List<Byte> data) throws GkException {
-		incomingBuffer.addAll(data);
-		//LOG.info("Adding data to ByteBuffer "+GkUtils.toStringReplaceCRLF(data));
-
-		incomingDataThread.execute( new Runnable() {
-			@Override
-			public void run() {
-				try {
-					handleIncomingCommands();
-				} catch (GkException e) {
-					LOG.error(e);
-				}
-			}
-		});
-	}
-	/**
-	 * Handle the received commands
-	 * @throws GkException GkException
-	 */
-	protected void handleIncomingCommands() throws GkException{
-		while(incomingBuffer.hasNext()){
-			List<Byte> command = incomingBuffer.unstackNextCommand();
-			String stringCommand = GkUtils.toString(command).trim();
-
-			if(TinyGJsonUtils.isJsonFormat(stringCommand)){
-				JsonObject response = null;
-				try{
-					response = JsonObject.readFrom(stringCommand);
-				}catch(Exception e){
-					LOG.error("Error while parsing JSon for string '"+stringCommand+"'"+System.lineSeparator()+e.getMessage());
-					applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, "Error while parsing JSon for string '"+stringCommand+"'"+System.lineSeparator()+e.getMessage(), SERVICE_ID);
-					return;
-				}
-
-				JsonValue footerBody = response.get(TinyGJsonUtils.FOOTER);
-				if(footerBody != null){
-					handleResponseFooter(footerBody);
-				}
-
-				JsonValue responseBody = response.get(TinyGJsonUtils.RESPONSE_ENVELOPE);
-				if(responseBody != null){
-					handleResponseEnvelope((JsonObject) responseBody);
-				}
-				JsonValue statusReport = response.get(TinyGJsonUtils.STATUS_REPORT);
-				if(statusReport != null){
-					handleStatusReport(statusReport);
-				}
-				JsonValue queueReport = response.get(TinyGJsonUtils.QUEUE_REPORT);
-				if(queueReport != null){
-					handleQueueReport(queueReport);
-				}
-			}
-		}
-
-	}
-	/**
-	 * Verify the response using the header
-	 * @param jsonValue the parsed response
-	 * @throws GkException GkException
-	 */
-	private void handleResponseFooter(JsonValue jsonValue) throws GkException {
-	//	LOG.info("handleResponseFooter "+String.valueOf(jsonValue));
-
-		JsonArray footerArray = jsonValue.asArray();
-		int statusCodeIntValue = footerArray.get(TinyGJsonUtils.FOOTER_STATUS_CODE_INDEX).asInt();
-		TinyGStatusCode status = TinyGStatusCode.findEnum(statusCodeIntValue);
-		if(status != null){
-			if(status == TinyGStatusCode.TG_OK){
-
-			}else{
-				LOG.error(" Error status returned : "+status.getValue() +" - "+status.getLabel());
-				applicativeLogService.log(ApplicativeLogEvent.LOG_WARNING, " Error status returned : "+status.getValue() +" - "+status.getLabel(), SERVICE_ID);
-			}
-		}else{
-			LOG.error(" Unknown error status "+statusCodeIntValue);
-			applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, " Unknown error status returned : "+statusCodeIntValue, SERVICE_ID);
-		}
-		//TODO
-		if(currentSendingRunnable != null){
-			currentSendingRunnable.confirmCommand();
-		}
-	}
-
-	/**
-	 * Handle a JSon response envelope
-	 * @param jsonValue
-	 */
-	private void handleResponseEnvelope(JsonObject responseEnvelope) throws GkException {
-	//	LOG.info("handleResponseEnvelope "+String.valueOf(responseEnvelope));
-		for(String name : responseEnvelope.names()){
-		//	System.err.println("Name = "+name);
-			if(StringUtils.equals(name, TinyGJsonUtils.GCODE_COMMAND)){
-				handleGCodeResponse(responseEnvelope.get(TinyGJsonUtils.GCODE_COMMAND));
-			}else if(StringUtils.equals(name, TinyGJsonUtils.STATUS_REPORT)){
-				handleStatusReport(responseEnvelope.get(TinyGJsonUtils.STATUS_REPORT));
-			}else if(StringUtils.equals(name, TinyGJsonUtils.FOOTER)){
-				handleResponseFooter(responseEnvelope.get(TinyGJsonUtils.FOOTER));
-			}else if(StringUtils.equals(name, TinyGJsonUtils.QUEUE_REPORT)){
-				handleQueueReport(responseEnvelope.get(TinyGJsonUtils.QUEUE_REPORT));
-			}else if(StringUtils.equals(name, TinyGJsonUtils.LINE_REPORT)){
-		//		LOG.info("Skipping line report "+String.valueOf(responseEnvelope.get(name)));
-			}else if(StringUtils.equals(name, TinyGJsonUtils.PROBE_REPORT)){
-				handleProbeReport(responseEnvelope.get(TinyGJsonUtils.PROBE_REPORT));
-			}else{
-				handleConfigurationModification(responseEnvelope);
-			}
-		}
-	}
-
-	/**
-	 * Handling configuration response from TinyG
-	 * @param jsonValue
-	 */
-	private void handleConfigurationModification(JsonObject responseEnvelope) throws GkException {
-		TinyGControllerUtility.handleConfigurationModification(configuration, responseEnvelope);
-	}
-
-	private void handleProbeReport(JsonValue probeReport) throws GkException {
-		if(probeReport.isObject()){
-			Tuple6b result = new Tuple6b();
-			JsonObject probeReportObject = (JsonObject) probeReport;
-			JsonValue xProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_X);
-			JsonValue yProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_Y);
-			JsonValue zProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_Z);
-			JsonValue aProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_A);
-			JsonValue bProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_B);
-			JsonValue cProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_C);
-			if(xProbeResult != null){
-				result.setX( xProbeResult.asBigDecimal() );
-			}
-			if(yProbeResult != null){
-				result.setY( yProbeResult.asBigDecimal() );
-			}
-			if(zProbeResult != null){
-				result.setZ( zProbeResult.asBigDecimal() );
-			}
-			if(aProbeResult != null){
-				result.setA( aProbeResult.asBigDecimal() );
-			}
-			if(bProbeResult != null){
-				result.setB( bProbeResult.asBigDecimal() );
-			}
-			if(cProbeResult != null){
-				result.setC( cProbeResult.asBigDecimal() );
-			}
-			this.futureProbeResult.setProbeResult(result);
-		}
-	}
-
-	private void handleQueueReport(JsonValue queueReport) throws GkException {
-		setAvailableBuffer(queueReport.asInt());
-
-	}
-	/**
-	 * Handling status report from TinyG
-	 * @param jsonValue
-	 */
-	private void handleStatusReport(JsonValue statusReport) throws GkException {
-	//	LOG.info("handleStatusReport "+String.valueOf(statusReport));
-		if(statusReport.isObject()){
-			JsonObject statusReportObject = (JsonObject) statusReport;
-			this.position = TinyGControllerUtility.updatePosition(position, statusReportObject);
-
-			valueStore.updateValue(DefaultControllerValues.POSITION, getPosition());
-			valueStore.updateValue(DefaultControllerValues.POSITION_X, position.getX().setScale(3, BigDecimal.ROUND_HALF_EVEN));
-			valueStore.updateValue(DefaultControllerValues.POSITION_Y, position.getY().setScale(3, BigDecimal.ROUND_HALF_EVEN));
-			valueStore.updateValue(DefaultControllerValues.POSITION_Z, position.getZ().setScale(3, BigDecimal.ROUND_HALF_EVEN));
-			valueStore.updateValue(DefaultControllerValues.POSITION_A, position.getA().setScale(3, BigDecimal.ROUND_HALF_EVEN));
-			/*
-			 * Update velocity
-			 */
-			JsonValue velocityReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_VELOCITY);
-			if(velocityReport != null){
-				velocity = velocityReport.asBigDecimal().setScale(3, BigDecimal.ROUND_HALF_EVEN);
-				valueStore.updateValue(DefaultControllerValues.VELOCITY, velocity);
-			}
-			/*
-			 * Update state
-			 */
-			JsonValue statReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_STATE);
-			if(statReport != null){
-				setState(TinyGControllerUtility.getState(statReport.asInt()));
-			}
-			/*
-			 * Update units
-			 */
-			JsonValue unitReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_UNITS);
-			if(unitReport != null){
-				int units = unitReport.asInt();
-				if(units == 1){
-					valueStore.updateValue(DefaultControllerValues.UNITS, UNITS_MM);
-				}else{
-					valueStore.updateValue(DefaultControllerValues.UNITS, UNITS_INCHES);
-				}
-			}
-			/*
-			 * Update coordinates
-			 * 0=g53, 1=g54, 2=g55, 3=g56, 4=g57, 5=g58, 6=g59
-			 */
-			JsonValue coordReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_COORDINATES);
-			if(coordReport != null){
-				int units = coordReport.asInt();
-				String coordinateSystem = StringUtils.EMPTY;
-				switch(units){
-				case 0: coordinateSystem = CoordinatesSystem.G53;
-				break;
-				case 1: coordinateSystem = CoordinatesSystem.G54;
-				break;
-				case 2: coordinateSystem = CoordinatesSystem.G55;
-				break;
-				case 3: coordinateSystem = CoordinatesSystem.G56;
-				break;
-				case 4: coordinateSystem = CoordinatesSystem.G57;
-				break;
-				case 5: coordinateSystem = CoordinatesSystem.G58;
-				break;
-				case 6: coordinateSystem = CoordinatesSystem.G59;
-				break;
-				}
-				valueStore.updateValue(DefaultControllerValues.COORDINATES , StringUtils.upperCase(coordinateSystem));
-			}
-			/*
-			 * Update distance mode
-			 */
-			JsonValue distReport = statusReportObject.get(TinyGJsonUtils.STATUS_REPORT_DISTANCE_MODE);
-			if(distReport != null){
-				int dist = distReport.asInt();
-				if(dist == 0){
-					valueStore.updateValue(DefaultControllerValues.DISTANCE_MODE, DISTANCE_MODE_ABSOLUTE);
-				}else{
-					valueStore.updateValue(DefaultControllerValues.DISTANCE_MODE, DISTANCE_MODE_INCREMENTAL);
-				}
-			}
-		}
+		communicator.setConnectionService(connectionService);
 	}
 
 	/**
@@ -511,27 +290,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionDataListener#onDataSent(java.util.List)
-	 */
-	@Override
-	public void onDataSent(List<Byte> data) throws GkException {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onConnectionEvent(EnumConnectionEvent event) throws GkException {
-		if(event == EnumConnectionEvent.CONNECTED){
-			getConnectionService().addInputDataListener(this);
-			LOG.info("Registering "+getClass()+" as input data listener...");
-			refreshStatus();
-			refreshConfiguration();
-		}else if(event == EnumConnectionEvent.DISCONNECTED){
-			getConnectionService().removeInputDataListener(this);
-			setState(MachineState.UNDEFINED);
-		}
-	}
-
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onMachineValueUpdate(MachineValueUpdateEvent evt){
 		notifyListeners(evt);
@@ -542,9 +300,18 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void setConfiguration(TinyGConfiguration cfg) throws GkException{
-		// Let's only change the new values
-		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
+		this.configuration = TinyGControllerUtility.getConfigurationCopy(cfg);
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tinyg.service.ITinyGControllerFirmwareService#updateConfiguration(org.goko.tinyg.controller.configuration.TinyGConfiguration)
+	 */
+	@Override
+	public void updateConfiguration(TinyGConfiguration cfg) throws GkException {
+		// Let's only change the new values
+		// The new value will be applied directly to TinyG. The changes will be reported in the data model when TinyG sends them back for confirmation.
+		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
+		// TODO : perform sending in communicator
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
 			if(StringUtils.equals(group.getGroupIdentifier(), TinyGConfiguration.SYSTEM_SETTINGS)){
 				for(TinyGSetting<?> setting : group.getSettings()){
@@ -560,68 +327,39 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				}
 			}
 		}
-
 	}
 
-	/**
-	 * @return the lineBroker
-	 */
-	public byte getLineBroker() {
-		return lineBroker;
-	}
-
-	/**
-	 * @param lineBroker the lineBroker to set
-	 */
-	public void setLineBroker(byte lineBroker) {
-		this.lineBroker = lineBroker;
-	}
 
 	/**
 	 * @return the gcodeService
 	 */
-	public synchronized IGCodeService getGcodeService() {
+	public IGCodeService getGcodeService() {
 		return gcodeService;
 	}
 
 	/**
 	 * @param gCodeService the gcodeService to set
 	 */
-	public synchronized void setGCodeService(IGCodeService gCodeService) {
+	public void setGCodeService(IGCodeService gCodeService) {
 		this.gcodeService = gCodeService;
-	}
-	/**
-	 * Build the byte list for the requested command, and automatically add the line broker byte
-	 * @param command the command to send
-	 * @return
-	 * @throws GkException GkException
-	 */
-	protected List<Byte> buildByteList(String command) throws GkException{
-		List<Byte> byteList = GkUtils.toBytesList(command);
-		byteList.add(getLineBroker());
-		return byteList;
+		this.communicator.setGcodeService(gCodeService);
 	}
 
-
+	@Override
 	public MachineState getState() throws GkException {
-		MachineState state = MachineState.UNDEFINED;
-		MachineValue<MachineState> storedState = valueStore.getValue(DefaultControllerValues.STATE, MachineState.class);
-		if(storedState != null && storedState.getValue() != null){
-			state = storedState.getValue();
-		}
-		return state;
+		return tinygState.getState();
 	}
 
 	public void setState(MachineState state) throws GkException {
-		valueStore.updateValue(DefaultControllerValues.STATE, state);
+		tinygState.setState(state);
 	}
 
 	public boolean isSpindleOn() throws GkException{
-		return valueStore.getBooleanValue(DefaultControllerValues.SPINDLE_STATE).getValue() == true;
+		return tinygState.isSpindleOn();
 	}
 
 	public boolean isSpindleOff() throws GkException{
-		return valueStore.getBooleanValue(DefaultControllerValues.SPINDLE_STATE).getValue() == false;
+		return tinygState.isSpindleOff();
 	}
 
 	/**
@@ -630,9 +368,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void startHomingSequence() throws GkException{
 		String 		homingCommand 		= "G28.2 X0 Y0";// Z0";
-		List<Byte> 	homingCommandBytes 	= GkUtils.toBytesList(homingCommand);
-		homingCommandBytes.add(getLineBroker());
-		getConnectionService().send( homingCommandBytes );
+		communicator.send(GkUtils.toBytesList(homingCommand));
 	}
 
 	/** (inheritDoc)
@@ -659,7 +395,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public <T> MachineValue<T> getMachineValue(String name, Class<T> clazz) throws GkException {
-		return valueStore.getValue(name, clazz);
+		return tinygState.getValue(name, clazz);
 	}
 
 	/** (inheritDoc)
@@ -667,20 +403,20 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public Class<?> getMachineValueType(String name) throws GkException {
-		return valueStore.getControllerValueType(name);
+		return tinygState.getControllerValueType(name);
 	}
 
 	@Override
 	public List<MachineValueDefinition> getMachineValueDefinition() throws GkException {
-		return valueStore.getMachineValueDefinition();
+		return tinygState.getMachineValueDefinition();
 	}
 	@Override
 	public MachineValueDefinition getMachineValueDefinition(String id) throws GkException {
-		return valueStore.getMachineValueDefinition(id);
+		return tinygState.getMachineValueDefinition(id);
 	}
 	@Override
 	public MachineValueDefinition findMachineValueDefinition(String id) throws GkException {
-		return valueStore.findMachineValueDefinition(id);
+		return tinygState.findMachineValueDefinition(id);
 	}
 
 
@@ -690,26 +426,18 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 
 	public void pauseMotion() throws GkException{
-		List<Byte> pauseCommand = new ArrayList<Byte>();
-		pauseCommand.add(TinyG.FEED_HOLD);
-		pauseCommand.add(getLineBroker());
-		getConnectionService().send(pauseCommand, DataPriority.IMPORTANT);
+		communicator.send(GkUtils.toBytesList(TinyG.FEED_HOLD));
 	}
 
 	public void resumeMotion() throws GkException{
-		List<Byte> resumeCommand = new ArrayList<Byte>();
-		resumeCommand.add(TinyG.CYCLE_START);
-		resumeCommand.add(getLineBroker());
-		getConnectionService().send(resumeCommand, DataPriority.IMPORTANT);
+		communicator.send(GkUtils.toBytesList(TinyG.CYCLE_START));
 	}
 
 	public void stopMotion() throws GkException{
-		List<Byte> stopCommand = new ArrayList<Byte>();
-		stopCommand.add(TinyG.FEED_HOLD);
-		stopCommand.add(TinyG.QUEUE_FLUSH);
-		stopCommand.add(getLineBroker());
 		getConnectionService().clearOutputBuffer();
-		getConnectionService().send(stopCommand, DataPriority.IMPORTANT);
+		communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
+
+
 		if(executionQueue != null){
 			executionQueue.clear();
 		}
@@ -717,8 +445,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			currentSendingRunnable.stop();
 		}
 		// Force a queue report update
-		updateQueueReport();
-		this.resetAvailableBuffer();
+	//	updateQueueReport();
+	//	this.resetAvailableBuffer();
 
 	}
 
@@ -731,51 +459,73 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}else{
 			lstBytes.addAll( GkUtils.toBytesList("X0Y0Z0"));
 		}
-		lstBytes.add(getLineBroker());
-		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+		communicator.send(lstBytes);
 	}
 
-	public void startJog(EnumTinyGAxis axis, String feed) throws GkException{
+	public void startJog(EnumTinyGAxis axis, BigDecimal feed) throws GkException{
+		String command = StringUtils.EMPTY;
+		if(getCurrentGCodeContext().getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
+			command = startG90Jog(axis, feed);
+		}else{
+			command = startG91Jog(axis, feed);
+		}
+		if(feed != null){
+			command += "F"+feed;
+		}
+		communicator.send(GkUtils.toBytesList(command));
+	}
+
+	public String startG91Jog(EnumTinyGAxis axis, BigDecimal feed) throws GkException{
+		String command = "G1"+axis.getAxisCode();
+		double delta = JOG_SIMULATION_DISTANCE_DOUBLE;
+		double target = 0;
+		switch (axis) {
+		case X_NEGATIVE: target = getX().doubleValue() - delta;
+			break;
+		case X_POSITIVE: target = getX().doubleValue() + delta;
+			break;
+		case Y_NEGATIVE: target = getY().doubleValue() - delta;
+			break;
+		case Y_POSITIVE: target = getY().doubleValue() + delta;
+			break;
+		case Z_NEGATIVE: target = getZ().doubleValue() - delta;
+			break;
+		case Z_POSITIVE: target = getZ().doubleValue() + delta;
+			break;
+		default:
+			break;
+		}
+		command += String.valueOf(target);
+		return command;
+	}
+	public String startG90Jog(EnumTinyGAxis axis, BigDecimal feed){
 		String command = "G1"+axis.getAxisCode();
 		if(axis.isNegative()){
 			command+="-";
 		}
 		command += JOG_SIMULATION_DISTANCE;
-		command += "F"+feed;
-		List<Byte> lstBytes = GkUtils.toBytesList(command);
-		lstBytes.add(getLineBroker());
-
-		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+		return command;
 	}
-
 	public void turnSpindleOn() throws GkException{
-		probe(EnumControllerAxis.Z_POSITIVE, 20, -10);
-		if(true) {
-			return;
-		}
-		List<Byte> lstBytes = GkUtils.toBytesList("M3");
-		lstBytes.add(getLineBroker());
-		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+		communicator.send(GkUtils.toBytesList("M3"));
 	}
 	public void turnSpindleOff() throws GkException{
-		List<Byte> lstBytes = GkUtils.toBytesList("M5");
-		lstBytes.add(getLineBroker());
-		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+		communicator.send(GkUtils.toBytesList("M5"));
 	}
 
 	/**
 	 * @return the availableBuffer
+	 * @throws GkException
 	 */
-	public int getAvailableBuffer() {
-		return availableBuffer;
+	public int getAvailableBuffer() throws GkException {
+		return tinygState.getAvailableBuffer();
 	}
 	/**
 	 * @param availableBuffer the availableBuffer to set
 	 * @throws GkException exception
 	 */
 	public void setAvailableBuffer(int availableBuffer) throws GkException {
-		this.availableBuffer = availableBuffer;
-		valueStore.updateValue(TINYG_BUFFER_COUNT, availableBuffer);
+		tinygState.updateValue(TinyG.TINYG_BUFFER_COUNT, availableBuffer);
 		if(currentSendingRunnable != null){
 			currentSendingRunnable.notifyBufferSpace();
 		}
@@ -790,25 +540,22 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		stopMotion();
 	}
 
-	public boolean requireAcknowledgement(GCodeCommand currentCommand) {
-		return false;
-	}
 
 	@Override
 	public String getMinimalSupportedFirmwareVersion() throws GkException {
-		return "380.05";
+		return "435.10";
 	}
 
 	@Override
 	public String getMaximalSupportedFirmwareVersion() throws GkException {
-		return "380.05";
+		return "435.10";
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
 	 */
 	@Override
-	public Future<Tuple6b> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
+	public Future<ProbeResult> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
 		futureProbeResult = new ProbeCallable();
 		String strCommand = "G38.2 "+axis.getAxisCode()+String.valueOf(maximumPosition)+" F"+feedrate;
 		IGCodeProvider command = gcodeService.parse(strCommand, getCurrentGCodeContext());
@@ -816,6 +563,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return Executors.newSingleThreadExecutor().submit(futureProbeResult);
 	}
 
+	protected void handleProbeResult(boolean probed, Tuple6b position){
+		if(this.futureProbeResult != null){
+			ProbeResult probeResult = new ProbeResult();
+			probeResult.setProbed(probed);
+			probeResult.setProbedPosition(position);
+			this.futureProbeResult.setProbeResult(probeResult);
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.gcode.bean.Tuple6b)
 	 */
@@ -840,6 +595,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setApplicativeLogService(IApplicativeLogService logListenerService) {
 		this.applicativeLogService = logListenerService;
+		this.communicator.setApplicativeLogService(logListenerService);
 	}
 
 	/** (inheritDoc)
@@ -847,8 +603,137 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public GCodeContext getCurrentGCodeContext() throws GkException {
-		return new GCodeContext();
+		return tinygState.getGCodeContext();
 	}
 
+	public void setVelocity(BigDecimal velocity) throws GkException {
+		tinygState.setVelocity(velocity);
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
+	 */
+	@Override
+	public Quantity<Length> getX() throws GkException {
+		return NumberQuantity.of(tinygState.getX(), tinygState.getCurrentUnit());
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
+	 */
+	@Override
+	public Quantity<Length> getY() throws GkException {
+		return NumberQuantity.of(tinygState.getY(), tinygState.getCurrentUnit());
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
+	 */
+	@Override
+	public Quantity<Length> getZ() throws GkException {
+		return NumberQuantity.of(tinygState.getZ(), tinygState.getCurrentUnit());
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
+	 */
+	@Override
+	public Double getA() throws GkException {
+		return tinygState.getA().doubleValue();
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystemOffset(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 */
+	@Override
+	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+		return tinygState.getCoordinateSystemOffset(cs);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCurrentCoordinateSystem()
+	 */
+	@Override
+	public EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException {
+		return tinygState.getGCodeContext().getCoordinateSystem();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystem()
+	 */
+	@Override
+	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
+		return Arrays.asList(EnumCoordinateSystem.values());
+	}
+	public void setCoordinateSystemOffset(EnumCoordinateSystem cs, Tuple6b offset) throws GkException {
+		tinygState.setCoordinateSystemOffset(cs, offset);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IContinuousJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, double)
+	 */
+	@Override
+	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {
+		startJog( EnumTinyGAxis.getEnum(axis.getCode()), feedrate);
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IContinuousJogService#stopJog()
+	 */
+	@Override
+	public void stopJog() throws GkException {
+		stopMotion();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 */
+	@Override
+	public void setCurrentCoordinateSystem(EnumCoordinateSystem cs) throws GkException {
+		communicator.send( GkUtils.toBytesList( String.valueOf(cs)) );
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 */
+	@Override
+	public void resetCurrentCoordinateSystem() throws GkException {
+		EnumCoordinateSystem current = getCurrentCoordinateSystem();
+		Tuple6b offsets = getCoordinateSystemOffset(current);
+		Tuple6b mPos = new Tuple6b(tinygState.getWorkPosition());
+		mPos = mPos.add(offsets);
+		String cmd = "{\""+String.valueOf(current) +"\":{";
+		cmd += "\"x\":"+ String.valueOf( mPos.getX() )+", ";
+		cmd += "\"y\":"+ String.valueOf( mPos.getY() )+", ";
+		cmd += "\"z\":"+ String.valueOf( mPos.getZ() )+"}} ";
+		communicator.send( GkUtils.toBytesList( cmd ) );
+
+	}
+
+	/**
+	 * @return
+	 */
+	@Override
+	public boolean isPlannerBufferSpaceCheck() {
+		return preferences.isPlannerBufferSpaceCheck();
+	}
+	/**
+	 * @param plannerBufferSpaceCheck the plannerBufferSpaceCheck to set
+	 * @throws GkTechnicalException
+	 */
+	@Override
+	public void setPlannerBufferSpaceCheck(boolean value) throws GkTechnicalException {
+		preferences.setPlannerBufferSpaceCheck(value);
+	}
+	/**
+	 * @return the monitorService
+	 */
+	public IGCodeExecutionMonitorService getMonitorService() {
+		return monitorService;
+	}
+	/**
+	 * @param monitorService the monitorService to set
+	 */
+	public void setMonitorService(IGCodeExecutionMonitorService monitorService) {
+		this.monitorService = monitorService;
+	}
+
+	public Unit<Length> getCurrentUnit(){
+		return tinygState.getCurrentUnit();
+	}
 }

@@ -157,6 +157,9 @@ public class DROPreferencesPage extends GkUiPreferencePageComponent<DROPreferenc
 		getController().refreshDisplayedValuesList();
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
+	 */
 	@Override
 	public boolean performOk() {
 		getController().savedDisplayedValues();

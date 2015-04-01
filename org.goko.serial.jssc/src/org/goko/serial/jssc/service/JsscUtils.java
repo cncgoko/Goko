@@ -94,4 +94,17 @@ public class JsscUtils {
 		}
 		return result;
 	}
+
+	public static Integer getParameterFlowControl(Map<String, Object> parameters) throws GkException {
+		int flowControl = 0;
+		String xonXoffParam = getParameter(parameters, JsscParameter.XONXOFF.name(), String.class, false);
+		String rcsCtsParam = getParameter(parameters, JsscParameter.RCSCTS.name(), String.class, false);
+		if(xonXoffParam != null && Boolean.valueOf(xonXoffParam)){
+			flowControl |= SerialPort.FLOWCONTROL_XONXOFF_IN | SerialPort.FLOWCONTROL_XONXOFF_OUT;
+		}
+		if(rcsCtsParam != null && Boolean.valueOf(rcsCtsParam)){
+			flowControl |= SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT;
+		}
+		return flowControl;
+	}
 }

@@ -44,7 +44,7 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 
 	public JsscSerialConsoleController() {
 		super(new JsscSerialConsoleModel());
-		inputBuffer  = new ByteCommandBuffer((byte)('\r'));
+		inputBuffer  = new ByteCommandBuffer((byte)('\n'));
 		outputBuffer = new ByteCommandBuffer((byte)('\n'));
 
 	}
@@ -61,7 +61,7 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 	public void onDataReceived(List<Byte> data) throws GkException {
 		if(getDataModel().isConsoleEnabled()){
 			inputBuffer.addAll(data);
-			if(inputBuffer.hasNext()){
+			while(inputBuffer.hasNext()){
 				final String text = GkUtils.toString(inputBuffer.unstackNextCommand());
 
 				Display.getDefault().asyncExec(new Runnable() {

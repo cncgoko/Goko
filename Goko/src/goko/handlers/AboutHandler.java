@@ -21,7 +21,7 @@ public class AboutHandler {
 
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
-		MessageDialog.openInformation(shell, "About", "Goko.\n A CNC controller application. \n"+
+		MessageDialog.openInformation(shell, "About", "Goko\n User friendly CNC control software\n"+
 						"************** TEST VERSION **************");
 	}
 }

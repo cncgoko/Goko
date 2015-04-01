@@ -62,7 +62,9 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 
 	public void savedDisplayedValues(){
 		try {
-			droService.saveDisplayedMachineValueDefinition(getDataModel().getDisplayedValuesTypedList());
+			if(getDataModel().isDirty()){
+				droService.saveDisplayedMachineValueDefinition(getDataModel().getDisplayedValuesTypedList());
+			}
 		} catch (GkException e) {
 			notifyException(e);
 			return;
@@ -83,8 +85,7 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 				getDataModel().getDisplayedValuesTypedList().add(definition);
 			}
 		}
-
-
+		getDataModel().setDirty(false);
 	}
 
 	public void removeDisplayedValues(List listMachineValueDefinitionToRemove) {
@@ -92,6 +93,7 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 			MachineValueDefinition definition = (MachineValueDefinition)machineValueDefinition;
 			getDataModel().getDisplayedValuesTypedList().remove(definition);
 		}
+		getDataModel().setDirty(true);
 	}
 
 	public void moveDisplayedValuesUp(List listMachineValueDefinitionToMove) {
@@ -102,6 +104,7 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 			getDataModel().getDisplayedValuesTypedList().remove(definition);
 			getDataModel().getDisplayedValuesTypedList().add(newIndex, definition);
 		}
+		getDataModel().setDirty(true);
 	}
 
 	public void moveDisplayedValuesDown(List listMachineValueDefinitionToMove) {
@@ -114,6 +117,7 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 			getDataModel().getDisplayedValuesTypedList().remove(definition);
 			getDataModel().getDisplayedValuesTypedList().add(newIndex, definition);
 		}
+		getDataModel().setDirty(true);
 	}
 
 	public void addValuesToDisplay(List<MachineValueDefinition> lstToAdd) {
@@ -122,6 +126,7 @@ public class DROPreferencesPageController extends AbstractController<DROPreferen
 				getDataModel().getDisplayedValuesTypedList().add(machineValueDefinition);
 			}
 		}
+		getDataModel().setDirty(true);
 	}
 
 }

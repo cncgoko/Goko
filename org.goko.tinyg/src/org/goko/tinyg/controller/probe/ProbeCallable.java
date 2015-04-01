@@ -21,10 +21,10 @@ package org.goko.tinyg.controller.probe;
 
 import java.util.concurrent.Callable;
 
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.controller.bean.ProbeResult;
 
-public class ProbeCallable implements Callable<Tuple6b> {
-	private Tuple6b probeResult;
+public class ProbeCallable implements Callable<ProbeResult> {
+	private ProbeResult probeResult;
 	private Object probeResultLock;
 
 	public ProbeCallable() {
@@ -32,25 +32,24 @@ public class ProbeCallable implements Callable<Tuple6b> {
 	}
 
 	@Override
-	public Tuple6b call() throws Exception {
+	public ProbeResult call() throws Exception {
 		synchronized (probeResultLock) {
 			probeResultLock.wait();
-		}
-		System.err.println("Received probe result "+probeResult.getZ());
+		}		
 		return probeResult;
 	}
 
 	/**
 	 * @return the probeResult
 	 */
-	public Tuple6b getProbeResult() {
+	public ProbeResult getProbeResult() {
 		return probeResult;
 	}
 
 	/**
 	 * @param probeResult the probeResult to set
 	 */
-	public void setProbeResult(Tuple6b probeResult) {
+	public void setProbeResult(ProbeResult probeResult) {
 		this.probeResult = probeResult;
 		synchronized (probeResultLock) {
 			probeResultLock.notify();

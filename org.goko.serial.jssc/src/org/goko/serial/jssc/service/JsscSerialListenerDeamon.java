@@ -24,69 +24,74 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.commons.collections.CollectionUtils;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
+
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
-public class JsscSerialListenerDeamon implements Runnable{
+public class JsscSerialListenerDeamon implements Runnable, SerialPortEventListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JsscSerialListenerDeamon.class);
 	/** Outgoing queue */
-	private BlockingQueue<Byte> queue;
+	private BlockingQueue<List<Byte>> queue;
 	/** The service holding the serial port */
 	private JsscSerialConnectionService jsscService;
+	/** Stop indicator */
 	private boolean stopped;
-	private Object emptyBufferLock = new Object();
 
 	public JsscSerialListenerDeamon(JsscSerialConnectionService jsscService) {
-		this.queue = new LinkedBlockingQueue<Byte>();
+		this.queue = new LinkedBlockingQueue<List<Byte>>();
 		this.jsscService = jsscService;
 	}
 
 	public void addAll(String buffer){
-		synchronized (queue) {
-			queue.addAll(GkUtils.toBytesList(buffer));
-			synchronized (emptyBufferLock) {
-				emptyBufferLock.notify();
+		queue.add(GkUtils.toBytesList(buffer));
+	}
+
+	@Override
+	public void serialEvent(SerialPortEvent serialPortEvent) {
+		if(serialPortEvent.isRXCHAR() && serialPortEvent.getEventValue() > 0){ // Data available
+			int dataAvailableCount = serialPortEvent.getEventValue();
+			try {
+				byte buffer[] = jsscService.getSerialPort().readBytes(dataAvailableCount);
+				if(buffer != null && buffer.length > 0){
+					queue.add( GkUtils.toBytesList(buffer));
+				}
+			} catch (SerialPortException e) {
+				LOG.error(e);
+			}
+		}else if(serialPortEvent.isERR()){
+			LOG.error(serialPortEvent.toString() + " error : " +serialPortEvent.getEventValue());
+			try {
+				jsscService.disconnect(null);
+			} catch (GkException e) {
+				LOG.error(e);
 			}
 		}
+
 	}
+
 	/** (inheritDoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
+		List<Byte> notifiedBuffer = new ArrayList<Byte>();
 		while(!stopped){
-			waitDataInBuffer();
-			List<Byte> notifiedBuffer = new ArrayList<Byte>();
-			synchronized (queue) {
-				queue.drainTo(notifiedBuffer);
-				queue.clear();
-			}
 			try {
+				notifiedBuffer = queue.take();
 				jsscService.notifyInputListeners(notifiedBuffer);
 			} catch (GkException e) {
+				LOG.error(e);
+			} catch (InterruptedException e) {
 				LOG.error(e);
 			}
 		}
 	}
 	public void stop(){
 		stopped = true;
-	}
-
-	/**
-	 * Wait until there is data in the output queue
-	 */
-	private void waitDataInBuffer(){
-		while(CollectionUtils.isEmpty(queue)){
-			synchronized(emptyBufferLock){
-				try {
-					emptyBufferLock.wait();
-				} catch (InterruptedException e) {
-					LOG.error(e);
-				}
-			}
-		}
 	}
 }

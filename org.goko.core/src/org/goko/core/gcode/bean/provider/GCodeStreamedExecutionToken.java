@@ -1,25 +1,22 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.core.gcode.bean.provider;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
@@ -49,8 +46,8 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 	 */
 	public GCodeStreamedExecutionToken(IGCodeProvider provider) {
 		super(provider);
-		this.mapSentCommandById		 = new HashMap<Integer, GCodeCommand>();
-		this.mapConfirmedCommandById = new HashMap<Integer, GCodeCommand>();
+		this.mapSentCommandById		 = new LinkedHashMap<Integer, GCodeCommand>();
+		this.mapConfirmedCommandById = new LinkedHashMap<Integer, GCodeCommand>();
 	}
 
 	/** (inheritDoc)
@@ -62,6 +59,7 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 		this.mapSentCommandById.put(command.getId(), command);
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.SENT);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.SENT));
+		getMonitorService().notifyCommandStateChanged(this, idCommand);
 	}
 
 	/** (inheritDoc)
@@ -82,6 +80,7 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 		this.mapConfirmedCommandById.put(command.getId(), command);
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.CONFIRMED);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.CONFIRMED));
+		getMonitorService().notifyCommandStateChanged(this, idCommand);
 	}
 
 	/** (inheritDoc)

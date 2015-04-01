@@ -12,9 +12,15 @@
    <extension
          point="Goko.org.goko.ui.gkPreferencePages">
       <page
+            class="org.goko.viewer.jogl.preferences.performances.JoglPerformancesPreferences"
+            id="org.goko.jogl.viewer.preferences.viewer"
+            name="Viewer">
+      </page>
+      <page
+            category="org.goko.jogl.viewer.preferences.viewer"
             class="org.goko.viewer.jogl.JoglViewerPreferences"
             id="org.goko.jogl.viewer.preferences.rotaryaxis"
-            name="Viewer">
+            name="Rotary axis">
       </page>
    </extension>
 

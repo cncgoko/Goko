@@ -1,22 +1,19 @@
-/*
+/*******************************************************************************
+ * 	This file is part of Goko.
  *
- *   Goko
- *   Copyright (C) 2013  PsyKo
- *
- *   This program is free software: you can redistribute it and/or modify
+ *   Goko is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   This program is distributed in the hope that it will be useful,
+ *   Goko is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+ *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package org.goko.viewer.jogl.model;
 
 import javax.inject.Inject;
@@ -28,8 +25,9 @@ import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.service.IJoglViewerService;
-import org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
+import org.goko.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
+import org.goko.viewer.jogl.utils.render.gcode.BoundsRenderer;
 
 /**
  * GCode 3D Viewer controller
@@ -55,51 +53,39 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 //		getDataModel().setCurrentPosition(controllerService.getPosition());
 //	}
 
-	public void setPerspectiveCamera(){
-		try {
-			viewerService.setActiveCamera(PerspectiveCamera.ID);
-		} catch (GkException e) {
-			notifyException(e);
-		}
+	public void setPerspectiveCamera() throws GkException{
+		viewerService.setActiveCamera(PerspectiveCamera.ID);
 	}
-	public void setOrthographicCamera(){
-		try {
-			viewerService.setActiveCamera(OrthographicCamera.ID);
-		} catch (GkException e) {
-			notifyException(e);
-		}
+	public void setOrthographicCamera() throws GkException{
+		viewerService.setActiveCamera(OrthographicCamera.ID);
 	}
 
 	public void setGCodeFile(IGCodeProvider provider) throws GkException {
-		viewerService.renderGCode(provider);
+	//	viewerService.renderGCode(provider);
 	}
 
-	public void setLockCameraOnTool(boolean lockOnTool) {
-		try {
-			viewerService.setLockCameraOnTool(lockOnTool);
-		} catch (GkException e) {
-			notifyException(e);
-		}
+	public void setLockCameraOnTool(boolean lockOnTool) throws GkException {
+		viewerService.setLockCameraOnTool(lockOnTool);
 	}
 
-	public void setShowGrid(boolean showGrid) {
-		try {
-			viewerService.setRendererEnabled(GridRenderer.ID, showGrid);
-		} catch (GkException e) {
-			notifyException(e);
-		}
+	public void setShowGrid(boolean showGrid) throws GkException {
+		viewerService.setRendererEnabled(GridRenderer.ID, showGrid);
 	}
 
 	public void setRenderEnabled(boolean enabled){
 		viewerService.setEnabled(enabled);
 	}
 
-	public void setShowCoordinateSystem(boolean selection) {
-		try {
-			viewerService.setRendererEnabled(CoordinateSystemRenderer.ID, selection);
-		} catch (GkException e) {
-			notifyException(e);
-		}
+	public void setShowCoordinateSystem(boolean selection) throws GkException {
+		viewerService.setRendererEnabled(CoordinateSystemSetRenderer.ID, selection);
+	}
 
+	public void setDisplayBounds(boolean selection) throws GkException {
+		viewerService.setRendererEnabled(BoundsRenderer.ID, selection);
+	}
+
+
+	public void zoomToFit() throws GkException {
+		viewerService.zoomToFit();
 	}
 }
