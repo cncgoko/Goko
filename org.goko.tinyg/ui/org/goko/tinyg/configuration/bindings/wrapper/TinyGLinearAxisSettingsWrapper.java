@@ -159,7 +159,6 @@ public class TinyGLinearAxisSettingsWrapper extends AbstractModelObject{
 	protected void setSettingValue(String settingIdentifier, Object oldValue, Object newValue) throws GkException{
 		configuration.setSetting(groupIdentifier, settingIdentifier, newValue);
 		firePropertyChange(settingIdentifier, oldValue, newValue);
-		System.err.println("Setting "+settingIdentifier+" to value "+newValue);
 	}
 	/**
 	 * @return the configuration

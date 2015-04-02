@@ -446,7 +446,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	          return String.valueOf(p.getStringCommand());
 	        }
 	      });
-		tableViewer.setContentProvider(new MyLazyContentProvider(tableViewer));
+		tableViewer.setContentProvider(new GCodeTableLazyContentProvider(tableViewer));
 
 		// special settings for the lazy content provider
 		tableViewer.setUseHashlookup(true);

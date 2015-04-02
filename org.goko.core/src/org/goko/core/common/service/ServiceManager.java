@@ -70,12 +70,10 @@ public class ServiceManager {
 	}
 
 	void setLogService(LogService logService){
-		System.out.println("Setting log service");
 		this.logService = logService;
 	}
 
 	void removeLogService(LogService logService){
-		System.out.println("Removing log service");
 		this.logService = null;
 	}
 

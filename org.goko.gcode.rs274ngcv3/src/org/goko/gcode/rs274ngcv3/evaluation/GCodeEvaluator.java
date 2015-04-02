@@ -33,7 +33,6 @@ import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.core.gcode.bean.commands.RawCommand;
 import org.goko.core.gcode.bean.commands.SettingCommand;
-import org.goko.gcode.rs274ngcv3.RS274GCodeService;
 
 public class GCodeEvaluator implements IGCodeCommandVisitor{
 	private List<GCodeCommandEvaluation> lstEvaluation;
@@ -148,16 +147,5 @@ public class GCodeEvaluator implements IGCodeCommandVisitor{
 	public void visit(FunctionCommand command) throws GkException {
 		// TODO Auto-generated method stub
 
-	}
-
-	public static void main(String[] args) throws GkException {
-		RS274GCodeService service = new RS274GCodeService();
-		IGCodeProvider provider = service.parseFile("C:\\Users\\PsyKo\\Documents\\GCode\\Calendrier Aztec.Part1 [Engrave1].nc", new GCodeContext());
-//		IGCodeProvider provider = service.parseFile("C:\\Users\\PsyKo\\Documents\\GCode\\alesage_en_spirale+entrée spirale.Groupe1 [Contour1] - Copie.nc", new GCodeContext());
-		GCodeEvaluator evaluator = new GCodeEvaluator();
-		long start = System.currentTimeMillis();
-		//evaluator.evaluate(provider);
-		System.out.println( System.currentTimeMillis() - start);
-		System.err.println(evaluator.lstEvaluation.size());
 	}
 }

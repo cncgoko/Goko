@@ -1,6 +1,5 @@
 package org.goko.autoleveler;
 
-import org.goko.autoleveler.service.GkAutoLevelerService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -19,7 +18,6 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		GkAutoLevelerService service = new GkAutoLevelerService();
 	}
 
 	/*

@@ -53,7 +53,7 @@ public class EventDispatcher {
 	public void addListener(Object listener){
 		if(listener != null){
 			if(listener == this){
-				System.err.println("Cannot add myself as listener");
+				LOG.error("Cannot add myself as listener");
 			}else{
 				this.listenerList.add(listener);
 			}

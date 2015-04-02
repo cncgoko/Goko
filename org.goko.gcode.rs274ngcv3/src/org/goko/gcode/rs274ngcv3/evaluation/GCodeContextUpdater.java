@@ -17,6 +17,7 @@
 
 package org.goko.gcode.rs274ngcv3.evaluation;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.gcode.bean.GCodeContext;
 
 public class GCodeContextUpdater extends GCodeContext {
@@ -41,7 +42,7 @@ public class GCodeContextUpdater extends GCodeContext {
 		if(initial.getPlane() == updated.getPlane()){
 			setPlane(null);
 		}
-		if(initial.getToolNumber() == updated.getToolNumber()){
+		if(ObjectUtils.equals(initial.getToolNumber(), updated.getToolNumber())){
 			setToolNumber(null);
 		}
 		if(initial.getUnit() == updated.getUnit()){

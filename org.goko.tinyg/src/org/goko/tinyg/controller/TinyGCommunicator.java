@@ -338,10 +338,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 
 	private Tuple6b findWorkPosition(JsonObject statusReport) throws GkException{
 		Tuple6b 	workPosition = tinyg.getCurrentGCodeContext().getPosition();
-		//System.out.println(statusReport.toString());
-		//System.out.println("Before x:"+workPosition.getX()+" y:"+workPosition.getY()+" z:"+workPosition.getZ());
 		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport);
-		//System.out.println("After  x:"+workPosition.getX()+" y:"+workPosition.getY()+" z:"+workPosition.getZ());
 		return workPosition;
 	}
 	private EnumGCodeCommandDistanceMode findDistanceMode(JsonObject statusReport){

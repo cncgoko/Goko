@@ -304,10 +304,6 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		projectedBound = getProjectedBound(bounds);
 		this.screenMin = new Point2i(projectedBound.getMin().getX().intValue(),projectedBound.getMin().getY().intValue());
 		this.screenMax = new Point2i(projectedBound.getMax().getX().intValue(),projectedBound.getMax().getY().intValue());
-		//this.screenCenter = new Point2i((int)screenCenter[0],(int)screenCenter[1]);
-		Point3f res = new Point3f();
-		getProjectedPoint(new Point3f(0,0,0), res);
-		System.err.println(res);
 	}
 
 	protected BoundingTuple6b getProjectedBound(BoundingTuple6b bounds){
@@ -334,15 +330,14 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		for(int i = 0; i < pts.length; i++){
 			float[] pt = pts[i];
 			boolean result = getPmvMatrix().gluProject( pt[0],pt[1],pt[2], new int[]{0,0,width,height}, 0, screenP, 0);
-			if(!result){
-				System.out.println("Could not project "+pt[i]);
-			}
-			for(int j = 0; j < 4; j++){
-				if(screenP[j] < screenMin[j]){
-					screenMin[j] = screenP[j];
-				}
-				if(screenP[j] > screenMax[j]){
-					screenMax[j] = screenP[j];
+			if(result){
+				for(int j = 0; j < 4; j++){
+					if(screenP[j] < screenMin[j]){
+						screenMin[j] = screenP[j];
+					}
+					if(screenP[j] > screenMax[j]){
+						screenMax[j] = screenP[j];
+					}
 				}
 			}
 		}
@@ -431,7 +426,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		super.reshape(drawable, x, y, width, height);
 		GL2 gl = drawable.getGL().getGL2();
-		GLU glu = new GLU();
+
 		if (height == 0) {
 			height = 1; // prevent divide by zero
 		}

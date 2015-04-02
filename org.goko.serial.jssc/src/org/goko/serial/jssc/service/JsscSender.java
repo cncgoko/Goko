@@ -116,12 +116,9 @@ public class JsscSender implements Runnable {
 	 */
 	protected void sendBytesImmediately(List<Byte> bytes){
 		importantQueue.add( new ArrayList<Byte>(bytes));
-
-			synchronized (clearToSendLock) {
-			//	System.err.println("clearToSendLock.notify();");
-				clearToSendLock.notify();
-			}
-	//	}
+		synchronized (clearToSendLock) {
+			clearToSendLock.notify();
+		}
 	}
 
 	/**

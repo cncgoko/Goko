@@ -33,8 +33,6 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -117,22 +115,10 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	 */
 	@PostConstruct
 	public void createControls(Composite parent, MPart part) throws GkException {
-		parent.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				System.err.println(e);
-			}
-		});
-
 		parent.setLayout(new FormLayout());
 
 		Composite composite = formToolkit.createComposite(parent, SWT.NONE);
-		composite.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				handleKeyboard(e);
-			}
-		});
+
 		FormData fd_composite = new FormData();
 		fd_composite.top = new FormAttachment(0);
 		fd_composite.left = new FormAttachment(0);
@@ -548,11 +534,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().initilizeValues();
 		initCustomBindings(part);
 		enableAdaptiveSpinner();
-	}
-
-	protected void handleKeyboard(KeyEvent e) {
-		System.err.println(e);
-
 	}
 
 	protected void enableAdaptiveSpinner() {

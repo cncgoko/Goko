@@ -67,12 +67,12 @@ public class RS274GCodeService implements IGCodeService {
 	 * Empty constructor
 	 */
 	public RS274GCodeService() {
-		instance = this;
+
 	}
 
 	public static RS274GCodeService getInstance(){
 		if(instance == null){
-			new RS274GCodeService();
+			instance = new RS274GCodeService();
 		}
 		return instance;
 	}

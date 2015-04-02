@@ -7,11 +7,11 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.goko.core.gcode.bean.GCodeCommand;
 
-public class MyLazyContentProvider implements ILazyContentProvider {
+public class GCodeTableLazyContentProvider implements ILazyContentProvider {
   private TableViewer viewer;
   private List<GCodeCommand> elements;
 
-  public MyLazyContentProvider(TableViewer viewer) {
+  public GCodeTableLazyContentProvider(TableViewer viewer) {
     this.viewer = viewer;
   }
 

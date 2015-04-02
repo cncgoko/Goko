@@ -25,7 +25,7 @@ public abstract class AbstractUnitConverter implements UnitConverter {
      */
     @Override
 	public Number convert(Number value) {
-        return convert(Double.valueOf(value.doubleValue()));
+        return convert(value.doubleValue());
     }
 
     /** (inheritDoc)

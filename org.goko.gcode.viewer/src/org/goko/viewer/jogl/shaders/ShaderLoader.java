@@ -33,10 +33,13 @@ import javax.media.opengl.glu.GLU;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.goko.core.log.GkLog;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
 public class ShaderLoader {
+	private static final GkLog LOG = GkLog.getLogger(ShaderLoader.class);
 	private static ShaderLoader instance;
 	private Map<EnumGokoShaderProgram, Integer> mapShaderByType;
 
@@ -115,7 +118,7 @@ public class ShaderLoader {
 		int errorCheckValue = gl.glGetError();
 		if (errorCheckValue != GL.GL_NO_ERROR) {
 			GLU glu = new GLU();
-			System.err.println(str+glu.gluErrorString(errorCheckValue));
+			LOG.error(str+glu.gluErrorString(errorCheckValue));
 		}
 	}
 
@@ -123,13 +126,14 @@ public class ShaderLoader {
 		IntBuffer b = IntBuffer.allocate(10);
 		gl.glGetProgramiv(program, GL3.GL_LINK_STATUS, b);
 		ByteBuffer logBuffer = ByteBuffer.allocate(10000);
-
 		gl.glGetProgramInfoLog(program, 10000, null, logBuffer);
 		try {
-			System.err.println("checkProgramm :"+new String(logBuffer.array(), "UTF-8"));
+			String logBufferStr = new String(logBuffer.array(), "UTF-8");
+			if(StringUtils.isNotBlank(logBufferStr)){
+				LOG.error("CheckProgramm :"+logBufferStr);
+			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 
@@ -140,10 +144,12 @@ public class ShaderLoader {
 
 		gl.glGetProgramInfoLog(program, 10000, null, logBuffer);
 		try {
-			System.err.println("check validate programm :"+new String(logBuffer.array(), "UTF-8"));
+			String logBufferStr = new String(logBuffer.array(), "UTF-8");
+			if(StringUtils.isNotBlank(logBufferStr)){
+				LOG.error("Check validate programm :"+logBufferStr);
+			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 	private static void checkCompiling(GL3 gl, int shader){
@@ -153,10 +159,12 @@ public class ShaderLoader {
 
 		gl.glGetShaderInfoLog(shader, 10000, null, logBuffer);
 		try {
-			System.err.println("checkCompiling : "+new String(logBuffer.array(), "UTF-8"));
+			String logBufferStr = new String(logBuffer.array(), "UTF-8");
+			if(StringUtils.isNotBlank(logBufferStr)){
+				LOG.error("CheckCompiling :"+logBufferStr);
+			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 	private static String getStringFromInputStream(InputStream is) {
