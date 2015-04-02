@@ -44,13 +44,10 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 	public static final String ID = "org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer";
 	private ICoordinateSystemAdapter adapter;
 	private Map<EnumCoordinateSystem, AbstractCoreJoglRenderer> coordinateSystemRenderer;
-	private FourAxisRenderer zeroRenderer;
 
 	public CoordinateSystemSetRenderer() {
 		super();
 		coordinateSystemRenderer = new HashMap<EnumCoordinateSystem, AbstractCoreJoglRenderer>();
-		//zeroRenderer = new ThreeAxisRenderer(10, new Color3f(1,0,0), new Color3f(0,1,0), new Color3f(0,0,1));
-
 	}
 
 	/**
@@ -80,15 +77,13 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 				AbstractCoreJoglRenderer renderer = getCoordinateSystemRenderer(cs);
 				Tuple6b csOffset = adapter.getCoordinateSystemOffset(cs);
 				if(csOffset != null){
-					if(cs != activeCoordinateSystem){ // If it's not the current coordinate system
-						csOffset = csOffset.add(machineOrigin);
+					csOffset = csOffset.add(machineOrigin);
 
-						renderer.getModelMatrix().glLoadIdentity();
-						renderer.getModelMatrix().glTranslatef( (float)csOffset.getX().doubleValue(),
-																(float)csOffset.getY().doubleValue(),
-																(float)csOffset.getZ().doubleValue());
-						renderer.getModelMatrix().update();
-					}
+					renderer.getModelMatrix().glLoadIdentity();
+					renderer.getModelMatrix().glTranslatef( (float)csOffset.getX().doubleValue(),
+															(float)csOffset.getY().doubleValue(),
+															(float)csOffset.getZ().doubleValue());
+					renderer.getModelMatrix().update();
 				}
 			}
 			super.render(gl, modelViewMatrix);
