@@ -3,6 +3,7 @@
 
 <product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.0.1.qualifier" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -13,17 +14,18 @@
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/Goko/icons/launch/Makerbot16.png" i32="/Goko/icons/launch/Makerbot32.png" i48="/Goko/icons/launch/Makerbot48.png" i64="/Goko/icons/launch/Makerbot64.png" i128="/Goko/icons/launch/Makerbot128.png"/>
+   <windowImages i16="/Goko/icons/launch/goko16.png" i32="/Goko/icons/launch/goko32.png" i48="/Goko/icons/launch/goko48.png" i64="/Goko/icons/launch/goko64.png" i128="/Goko/icons/launch/goko128.png" i256="/Goko/icons/launch/goko256.png"/>
 
    <splash
       location="Goko" />
    <launcher name="Goko">
       <solaris/>
       <win useIco="true">
-         <ico path="/Goko/icons/launch/goko.ico"/>
+         <ico path="/Goko/icons/launch/test.ico"/>
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>

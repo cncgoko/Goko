@@ -19,11 +19,7 @@
          <property
                name="applicationCSS"
                value="platform:/plugin/Goko/css/default.css">
-         </property>
-         <property
-               name="windowImages"
-               value="icons/launch/Makerbot16.png,icons/launch/Makerbot32.png,icons/launch/Makerbot48.png,icons/launch/Makerbot64.png,icons/launch/Makerbot128.png">
-         </property>
+         </property>        
       </product>
    </extension>
    <extension
