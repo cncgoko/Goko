@@ -46,6 +46,7 @@ import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.tinyg.controller.configuration.TinyGSetting;
+import org.goko.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.tinyg.controller.probe.ProbeCallable;
 import org.goko.tinyg.json.TinyGJsonUtils;
 import org.goko.tinyg.service.ITinyGControllerFirmwareService;
@@ -87,13 +88,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private ProbeCallable futureProbeResult;
 	/** Communicator */
 	private TinyGCommunicator communicator;
-	/** Preferences */
-	private TinyGPreferences preferences;
-
 
 	public TinyGControllerService() {
-		communicator = new TinyGCommunicator(this);
-		preferences = new TinyGPreferences();
+		communicator = new TinyGCommunicator(this);		
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -367,7 +364,19 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @throws GkException GkException
 	 */
 	public void startHomingSequence() throws GkException{
-		String 		homingCommand 		= "G28.2 X0 Y0";// Z0";
+		String 		homingCommand 		= "G28.2";
+		if(TinyGPreferences.getInstance().isHomingEnabledAxisX()){
+			homingCommand += " X0";
+		}
+		if(TinyGPreferences.getInstance().isHomingEnabledAxisY()){
+			homingCommand += " Y0";
+		}
+		if(TinyGPreferences.getInstance().isHomingEnabledAxisZ()){
+			homingCommand += " Z0";
+		}
+		if(TinyGPreferences.getInstance().isHomingEnabledAxisA()){
+			homingCommand += " A0";
+		}		
 		communicator.send(GkUtils.toBytesList(homingCommand));
 	}
 
@@ -710,7 +719,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public boolean isPlannerBufferSpaceCheck() {
-		return preferences.isPlannerBufferSpaceCheck();
+		return TinyGPreferences.getInstance().isPlannerBufferSpaceCheck();
 	}
 	/**
 	 * @param plannerBufferSpaceCheck the plannerBufferSpaceCheck to set
@@ -718,7 +727,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void setPlannerBufferSpaceCheck(boolean value) throws GkTechnicalException {
-		preferences.setPlannerBufferSpaceCheck(value);
+		TinyGPreferences.getInstance().setPlannerBufferSpaceCheck(value);
 	}
 	/**
 	 * @return the monitorService

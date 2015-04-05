@@ -19,8 +19,10 @@
  */
 package org.goko.tinyg.controller.actions;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.action.DefaultControllerAction;
+import org.goko.core.controller.bean.MachineState;
 import org.goko.tinyg.controller.TinyGControllerService;
 
 /**
@@ -40,7 +42,7 @@ public class TinyGSpindleOffAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return getControllerService().isSpindleOn();
+		return !ObjectUtils.equals(MachineState.UNDEFINED, getControllerService().getState());//getControllerService().isSpindleOn();
 	}
 
 	/** (inheritDoc)

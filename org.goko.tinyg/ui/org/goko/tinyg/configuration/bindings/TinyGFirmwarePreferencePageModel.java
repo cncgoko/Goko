@@ -22,21 +22,48 @@ package org.goko.tinyg.configuration.bindings;
 import org.goko.common.bindings.AbstractModelObject;
 
 public class TinyGFirmwarePreferencePageModel extends AbstractModelObject{
-	/** Selected firmware version */
-	private String firmwareVersion;
-
-	/**
-	 * @return the firmwareVersion
-	 */
-	protected String getFirmwareVersion() {
-		return firmwareVersion;
+	private boolean homingEnabledAxisX;
+	private boolean homingEnabledAxisY;
+	private boolean homingEnabledAxisZ;
+	private boolean homingEnabledAxisA;
+	
+	public boolean isHomingEnabledAxisX() {
+		return homingEnabledAxisX;
 	}
 
-	/**
-	 * @param firmwareVersion the firmwareVersion to set
-	 */
-	protected void setFirmwareVersion(String firmwareVersion) {
-		firePropertyChange("this.firmwareVersion", this.firmwareVersion, this.firmwareVersion = firmwareVersion);
+	public void setHomingEnabledAxisX(boolean homingEnabledAxisX) {
+		firePropertyChange("homingEnabledAxisX", this.homingEnabledAxisX, this.homingEnabledAxisX = homingEnabledAxisX);
+	}
+
+	public boolean isHomingEnabledAxisY() {
+		return homingEnabledAxisY;
+	}
+	public boolean getHomingEnabledAxisY() {
+		return homingEnabledAxisY;
+	}
+	public void setHomingEnabledAxisY(boolean homingEnabledAxisY) {
+		firePropertyChange("homingEnabledAxisY", this.homingEnabledAxisY, this.homingEnabledAxisY = homingEnabledAxisY);
+	}
+
+	public boolean isHomingEnabledAxisZ() {
+		return homingEnabledAxisZ;
+	}
+	public boolean getHomingEnabledAxisZ() {
+		return homingEnabledAxisZ;
+	}
+
+	public void setHomingEnabledAxisZ(boolean homingEnabledAxisZ) {
+		firePropertyChange("homingEnabledAxisZ", this.homingEnabledAxisZ, this.homingEnabledAxisZ = homingEnabledAxisZ);
+	}
+
+	public boolean isHomingEnabledAxisA() {
+		return homingEnabledAxisA;
+	}
+	public boolean getHomingEnabledAxisA() {
+		return homingEnabledAxisA;
+	}
+	public void setHomingEnabledAxisA(boolean homingEnabledAxisA) {
+		firePropertyChange("homingEnabledAxisA", this.homingEnabledAxisA, this.homingEnabledAxisA = homingEnabledAxisA);
 	}
 
 }

@@ -19,6 +19,10 @@
          <property
                name="applicationCSS"
                value="platform:/plugin/Goko/css/default.css">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/launch/goko16.png,icons/launch/goko32.png,icons/launch/goko48.png,icons/launch/goko64.png,icons/launch/goko128.png,icons/launch/goko256.png">
          </property>        
       </product>
    </extension>

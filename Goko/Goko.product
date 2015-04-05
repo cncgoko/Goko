@@ -21,7 +21,7 @@
    <launcher name="Goko">
       <solaris/>
       <win useIco="true">
-         <ico path="/Goko/icons/launch/test.ico"/>
+         <ico path="/Goko/icons/launch/goko.ico"/>
          <bmp/>
       </win>
    </launcher>
@@ -864,6 +864,7 @@ Public License instead of this License.  But first, please read
       <plugin id="org.junit"/>
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
+      <plugin id="org.slf4j.api"/>
       <plugin id="org.w3c.css.sac"/>
       <plugin id="org.w3c.dom.events"/>
       <plugin id="org.w3c.dom.smil"/>

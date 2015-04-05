@@ -85,7 +85,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	@Override
 	public void onDataReceived(List<Byte> data) throws GkException {
 		incomingBuffer.addAll(data);
-		//DEpiler dans un thread ?
+		//Dépiler dans un thread ?
 //		if(incomingBuffer.hasNext()){
 //			executor.execute(new Runnable() {
 //				@Override
@@ -94,8 +94,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 						try {
 							handleIncomingData(GkUtils.toString(incomingBuffer.unstackNextCommand()));
 						} catch (GkException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							LOG.error(e);
 						}
 					}
 //				}
@@ -118,13 +117,12 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			getConnectionService().addInputDataListener(this);
 			tinyg.refreshStatus();
 			tinyg.refreshConfiguration();
-			updateCoordinateSystem();
+			updateCoordinateSystem();			
 		}else if(event == EnumConnectionEvent.DISCONNECTED){
 			getConnectionService().removeInputDataListener(this);
 			tinyg.setState(MachineState.UNDEFINED);
 			incomingBuffer.clear();
-		}
-
+		}		
 	}
 
 	private void handleIncomingData(String data) throws GkException {

@@ -19,16 +19,14 @@
  */
 package org.goko.tinyg.configuration.bindings;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import javax.inject.Inject;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
+import org.goko.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.tinyg.service.ITinyGControllerServiceSelector;
 
-public class TinyGFirmwarePreferencePageController extends AbstractController<TinyGFirmwarePreferencePageModel> implements PropertyChangeListener {
+public class TinyGFirmwarePreferencePageController extends AbstractController<TinyGFirmwarePreferencePageModel> {
 
 	@Inject
 	ITinyGControllerServiceSelector serviceSelector;
@@ -37,21 +35,21 @@ public class TinyGFirmwarePreferencePageController extends AbstractController<Ti
 		super(new TinyGFirmwarePreferencePageModel());
 	}
 
-	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void initialize() throws GkException {
-		getDataModel().setFirmwareVersion(serviceSelector.getFirmware());
+		getDataModel().setHomingEnabledAxisX(TinyGPreferences.getInstance().isHomingEnabledAxisX());
+		getDataModel().setHomingEnabledAxisY(TinyGPreferences.getInstance().isHomingEnabledAxisY());
+		getDataModel().setHomingEnabledAxisZ(TinyGPreferences.getInstance().isHomingEnabledAxisZ());
+		getDataModel().setHomingEnabledAxisA(TinyGPreferences.getInstance().isHomingEnabledAxisA());
 
 	}
 
-	public void performApply() throws GkException {
-		serviceSelector.setFirmware(getDataModel().getFirmwareVersion());
-
+	public void performApply() throws GkException{
+		TinyGPreferences.getInstance().setHomingEnabledAxisX(getDataModel().isHomingEnabledAxisX());
+		TinyGPreferences.getInstance().setHomingEnabledAxisY(getDataModel().isHomingEnabledAxisY());
+		TinyGPreferences.getInstance().setHomingEnabledAxisZ(getDataModel().isHomingEnabledAxisZ());
+		TinyGPreferences.getInstance().setHomingEnabledAxisA(getDataModel().isHomingEnabledAxisA());
+		TinyGPreferences.getInstance().save();
 	}
-
 }

@@ -27,6 +27,8 @@ import org.goko.tinyg.controller.actions.TinyGCycleStartAction;
 import org.goko.tinyg.controller.actions.TinyGFeedHoldAction;
 import org.goko.tinyg.controller.actions.TinyGHomingAction;
 import org.goko.tinyg.controller.actions.TinyGResetZeroAction;
+import org.goko.tinyg.controller.actions.TinyGSpindleOffAction;
+import org.goko.tinyg.controller.actions.TinyGSpindleOnAction;
 import org.goko.tinyg.controller.actions.TinyGStartJogAction;
 import org.goko.tinyg.controller.actions.TinyGStopAction;
 import org.goko.tinyg.controller.actions.TinyGStopJogAction;
@@ -49,6 +51,7 @@ public class TinyGActionFactory {
 		createResetZeroAction();
 		createJogStartAction();
 		createJogStopAction();
+		createSpindleAction();
 	}
 
 	private void createJogStopAction(){
@@ -85,6 +88,13 @@ public class TinyGActionFactory {
 		mapAction.put(action.getId(), action);
 	}
 
+	private void createSpindleAction(){
+		TinyGSpindleOffAction action = new TinyGSpindleOffAction(controllerService);
+		mapAction.put(action.getId(), action);
+		TinyGSpindleOnAction actionOn = new TinyGSpindleOnAction(controllerService);
+		mapAction.put(actionOn.getId(), actionOn);
+	}
+	
 	protected IGkControllerAction findAction(String id){
 		IGkControllerAction action = null;
 		if(mapAction.containsKey(id)){

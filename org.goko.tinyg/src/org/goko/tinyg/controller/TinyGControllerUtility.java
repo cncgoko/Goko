@@ -58,8 +58,7 @@ public class TinyGControllerUtility {
 	 * @return {@link JsonValue}
 	 */
 	protected static void handleConfigurationModification(TinyGConfiguration configuration, JsonObject responseEnvelope) throws GkException {
-		TinyGJsonUtils.setConfiguration(configuration, responseEnvelope, StringUtils.EMPTY);
-		LOG.debug("TinyG handleConfigModification "+responseEnvelope.toString());
+		TinyGJsonUtils.setConfiguration(configuration, responseEnvelope, StringUtils.EMPTY);		
 	}
 
 	/**

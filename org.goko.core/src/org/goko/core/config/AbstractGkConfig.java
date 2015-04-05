@@ -50,3 +50,29 @@ public abstract class AbstractGkConfig {
 		}
 	}
 }
+
+///** The stored preference */
+//private IPersistentPreferenceStore preferences;
+//
+///**
+// * Constructor
+// */
+//protected AbstractGkConfig(String id) {
+//	preferences = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, id);
+//}
+//
+//protected IPreferenceStore getPreferences(){
+//	return preferences;
+//}
+//
+///**
+// * Save the current values
+// * @throws GkException GkException
+// */
+//public void save() throws GkException{		
+//	try {
+//		preferences.save();
+//	} catch (IOException e) {
+//		throw new GkTechnicalException(e);
+//	}
+//}
