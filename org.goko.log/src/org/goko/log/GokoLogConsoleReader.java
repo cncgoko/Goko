@@ -49,7 +49,7 @@ public class GokoLogConsoleReader implements LogListener, LogFilter {
 			buffer.append("] ");
 			buffer.append(getLevelAsString(entry.getLevel()));
 			buffer.append( entry.getMessage());
-			LOG.info(buffer.toString());
+			LOG.info(buffer.toString());		
 		}
 	}
 

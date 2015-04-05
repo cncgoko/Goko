@@ -16,9 +16,6 @@
  *******************************************************************************/
 package org.goko.core.log;
 
-import org.goko.core.common.exception.GkException;
-import org.goko.core.common.service.ServiceManager;
-import org.osgi.service.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +42,7 @@ public class GkLog {
 	 * @param e the exception to log
 	 */
 	public void error(Exception e) {
-		try{
-			if(ServiceManager.getLogService() != null){
-				ServiceManager.getLogService().log(LogService.LOG_ERROR, "Error occured :", e);
-			}else{
-				e.printStackTrace();
-			}
-		}catch(GkException gke){
-			gke.printStackTrace();
-		}
+		logger.error("Error occured :", e);		
 	}
 
 	public static GkLog getLogger(Class<?> clazz) {

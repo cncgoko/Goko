@@ -3,7 +3,6 @@
 
 <product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.0.1.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -25,7 +24,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
@@ -845,7 +843,6 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.ui.win32" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
-      <plugin id="org.goko.autoleveller"/>
       <plugin id="org.goko.base.commandpanel"/>
       <plugin id="org.goko.base.dro"/>
       <plugin id="org.goko.base.execution.time"/>

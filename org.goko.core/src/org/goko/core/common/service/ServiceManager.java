@@ -35,7 +35,7 @@ public class ServiceManager {
 	private static Map<Class<?>, Object> mapServices = new HashMap<Class<?>, Object>();
 
 	/** Log service */
-	static LogService logService;
+	private static LogService logService;
 
 	void startup(){
 		LOG.info("Starting service manager");
