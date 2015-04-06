@@ -235,14 +235,14 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	/**
 	 * @return the rendererService
 	 */
-	protected IJoglViewerService getRendererService() {
+	public IJoglViewerService getRendererService() {
 		return rendererService;
 	}
 
 	/**
 	 * @param rendererService the rendererService to set
 	 */
-	protected void setRendererService(IJoglViewerService rendererService) {
+	public void setRendererService(IJoglViewerService rendererService) {
 		this.rendererService = rendererService;
 	}
 

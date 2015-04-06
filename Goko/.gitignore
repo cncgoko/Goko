@@ -5,3 +5,4 @@ bin/
 # ignore all target directories
 target/
 /.settings
+/NOTE_DEBUG.txt

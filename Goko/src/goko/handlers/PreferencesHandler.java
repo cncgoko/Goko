@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.goko.core.log.GkLog;
+import org.osgi.service.log.LogService;
 
 public class PreferencesHandler {
 	private static final GkLog LOG = GkLog.getLogger(PreferencesHandler.class);
@@ -60,6 +61,7 @@ public class PreferencesHandler {
 	private static final String ATTR_NAME = "name";
 	private static final String ATTR_CATEGORY = "category";
 
+	@Inject protected LogService logservice;
 	@Inject protected IExtensionRegistry registry;
 	@Inject protected IEclipseContext context;
 
