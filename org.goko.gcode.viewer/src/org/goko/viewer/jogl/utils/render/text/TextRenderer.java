@@ -247,7 +247,7 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 	}
 
 	private void generateBuffers(char letter, Point3d position){
-		LOG.info("Generate Buffers for letter'"+letter+"'");
+		
 		int glyph = letter - bff.getFirstCharOffset();
 		int col = glyph % bff.getColumnCount();
 		int row = (int) ((Math.floor(glyph / bff.getColumnCount())) + 1);
@@ -260,14 +260,6 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 		wVector.scale(ratio);
 		Vector3d hVector = new Vector3d(heightVector);
 		hVector.scale((float) size);
-//		LOG.info("TextRender - glyph="+glyph);
-//		LOG.info("TextRender - col="+col);
-//		LOG.info("TextRender - row="+row);
-//		LOG.info("TextRender - w="+w);
-//		LOG.info("TextRender - h="+h);
-//		LOG.info("TextRender - cw="+cw);
-//		LOG.info("TextRender - ch="+ch);
-//		LOG.info("TextRender - ratio="+ratio);
 		//   3----4
 		//   |    |
 		//   |    |
@@ -288,8 +280,7 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 		Point3d p2 = new Point3d(position.x+wVector.x,position.y+wVector.y,position.z+wVector.z);
 		Point3d p3 = new Point3d(position.x+hVector.x,position.y+hVector.y,position.z+hVector.z);
 		Point3d p4 = new Point3d(position.x+hVector.x+wVector.x,position.y+hVector.y+wVector.y,position.z+hVector.z+wVector.z);
-		LOG.info(p1.toString());
-		LOG.info(p4.toString());
+
 
 		vertices.put(new float[]{(float)p1.x, (float)p1.y, (float)p1.z, 1});
 		colors.put(new float[]{color.x,color.y,color.z,color.w});

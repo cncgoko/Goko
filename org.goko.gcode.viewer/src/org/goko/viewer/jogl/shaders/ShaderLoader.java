@@ -129,7 +129,7 @@ public class ShaderLoader {
 		gl.glGetProgramInfoLog(program, 10000, null, logBuffer);
 		try {
 			String logBufferStr = new String(logBuffer.array(), "UTF-8");
-			if(StringUtils.isNotBlank(logBufferStr)){
+			if(StringUtils.isNotBlank(StringUtils.defaultString(logBufferStr).trim())){
 				LOG.error("CheckProgramm :"+logBufferStr);
 			}
 		} catch (UnsupportedEncodingException e) {
@@ -145,7 +145,7 @@ public class ShaderLoader {
 		gl.glGetProgramInfoLog(program, 10000, null, logBuffer);
 		try {
 			String logBufferStr = new String(logBuffer.array(), "UTF-8");
-			if(StringUtils.isNotBlank(logBufferStr)){
+			if(StringUtils.isNotBlank(StringUtils.defaultString(logBufferStr).trim())){
 				LOG.error("Check validate programm :"+logBufferStr);
 			}
 		} catch (UnsupportedEncodingException e) {
@@ -160,7 +160,7 @@ public class ShaderLoader {
 		gl.glGetShaderInfoLog(shader, 10000, null, logBuffer);
 		try {
 			String logBufferStr = new String(logBuffer.array(), "UTF-8");
-			if(StringUtils.isNotBlank(logBufferStr)){
+			if(StringUtils.isNotBlank(StringUtils.defaultString(logBufferStr).trim())){
 				LOG.error("CheckCompiling :"+logBufferStr);
 			}
 		} catch (UnsupportedEncodingException e) {
