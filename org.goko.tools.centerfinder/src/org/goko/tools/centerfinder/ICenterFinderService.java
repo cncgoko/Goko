@@ -37,5 +37,5 @@ public interface ICenterFinderService extends IGokoService{
 
 	void removeCapturedPoint(Point3d point) throws GkException;
 
-	CircleCenterFinderResult getCenter(List<Point3d> lstPoints);
+	CircleCenterFinderResult getCenter(List<Point3d> lstPoints) throws GkException;
 }

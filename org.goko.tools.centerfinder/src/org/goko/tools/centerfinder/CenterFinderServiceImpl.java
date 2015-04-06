@@ -127,7 +127,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	}
 
 	@Override
-	public CircleCenterFinderResult getCenter(List<Point3d> lstPoints){
+	public CircleCenterFinderResult getCenter(List<Point3d> lstPoints) throws GkException{
 		centerResult = new CircleCenterFinderResult();
 		Point3d center = new Point3d();
 		List<Segment> lstSegment = new ArrayList<Segment>();
@@ -216,6 +216,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 //			getDataModel().setCenterYPosition("Invalid");
 //		}
 		centerResult.setRadius(p1.distance(center));
+		updateRenderer();
 		return centerResult;
 	}
 
