@@ -1,5 +1,4 @@
 # Goko
-CNC control software
 
 Goko is a Java based GCode sender and CNC control software. You can use it to control your board based CNC machine. Currently, only ```TinyG v0.97``` *([doc](https://github.com/synthetos/TinyG/wiki))* is supported
 
