@@ -53,6 +53,8 @@ public class RS274GCodeServiceTestCase extends TestCase{
 	}
 
 	public void testCommandParserOk() throws Exception{
+		AssertGCode.assertParseEquals(gcodeService, "( TEST )");
+		AssertGCode.assertParseEquals(gcodeService, "( T0 M6 )");
 		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100");
 		AssertGCode.assertParseEquals(gcodeService, "N12 G90 X12.5 Y36.8 Z45.3 F100");
 		AssertGCode.assertParseEquals(gcodeService, "G1 X12.5 Y36.8 Z45.3 F100");
@@ -62,6 +64,14 @@ public class RS274GCodeServiceTestCase extends TestCase{
 		AssertGCode.assertParseEquals(gcodeService, "G55");
 		AssertGCode.assertParseEquals(gcodeService, "G58 S1200");
 		AssertGCode.assertParseEquals(gcodeService, "G57 M3");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100;M3");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100(M3)");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100.00(M3)");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100.00;M3");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100.00;Test");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z-100.00;Test");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z0.05;Test");
+		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z-0.05;Test");
 	}
 
 	@Override
