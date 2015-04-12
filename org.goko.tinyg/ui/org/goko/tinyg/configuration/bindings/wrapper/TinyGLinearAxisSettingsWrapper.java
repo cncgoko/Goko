@@ -127,7 +127,7 @@ public class TinyGLinearAxisSettingsWrapper extends AbstractModelObject{
 	}
 
 	public BigDecimal getLv() throws GkException{
-		return configuration.getSetting(groupIdentifier, TinyGLinearAxisSettings.MAXIMUM_SWITCH_MODE, BigDecimal.class);
+		return configuration.getSetting(groupIdentifier, TinyGLinearAxisSettings.LATCH_VELOCITY, BigDecimal.class);
 	}
 
 	public void setLv(BigDecimal value) throws GkException{
@@ -135,7 +135,7 @@ public class TinyGLinearAxisSettingsWrapper extends AbstractModelObject{
 	}
 
 	public BigDecimal getSv() throws GkException{
-		return configuration.getSetting(groupIdentifier, TinyGLinearAxisSettings.LATCH_VELOCITY, BigDecimal.class);
+		return configuration.getSetting(groupIdentifier, TinyGLinearAxisSettings.SEARCH_VELOCITY, BigDecimal.class);
 	}
 
 	public void setLb(BigDecimal value) throws GkException{
