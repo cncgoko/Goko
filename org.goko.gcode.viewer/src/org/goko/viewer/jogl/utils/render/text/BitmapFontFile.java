@@ -70,7 +70,7 @@ public class BitmapFontFile {
 
 			// Read header
 			int bytesRead = uStream.read(head, 0, 20);
-			LOG.info("BFF Debug - Start");
+			
 			// Check header size is correct
 			if(bytesRead < 20)
 			{
@@ -89,17 +89,15 @@ public class BitmapFontFile {
 				uStream.close();
 				throw new IOException("BFF File : Bad header signature");
 			}
-			LOG.info("BFF Debug - header OK");
+			
 			// Get image width and height
 			textureWidth  = flipEndian(headBuf.getInt());
 			textureHeight = flipEndian(headBuf.getInt());
-			LOG.info("BFF Debug - textureWidth = "+textureWidth);
-			LOG.info("BFF Debug - textureHeight = "+textureHeight);
+			
 			// Get cell dimensions
 			cellWidth  = flipEndian(headBuf.getInt());
 			cellHeight = flipEndian(headBuf.getInt());
-			LOG.info("BFF Debug - cellWidth = "+cellWidth);
-			LOG.info("BFF Debug - cellHeight = "+cellHeight);
+			
 			// Sanity check (prevent divide by zero)
 			if(cellWidth <= 0 || cellHeight <= 0)
 			{
@@ -114,9 +112,7 @@ public class BitmapFontFile {
 
 			// Get base offset
 			firstCharOffset = getUnsignedByteVal(headBuf.get());
-			LOG.info("BFF Debug - columnCount = "+columnCount);
-			LOG.info("BFF Debug - bitsPerPixel = "+bitsPerPixel);
-			LOG.info("BFF Debug - firstCharOffset = "+firstCharOffset);
+			
 			// Read width information
 			for(int wLoop = 0; wLoop < 256; ++wLoop)
 			{
@@ -126,7 +122,7 @@ public class BitmapFontFile {
 			// Get bitmap
 			int bitLen = (textureHeight * textureWidth) * (bitsPerPixel / 8);
 			byte bits[] = new byte[bitLen];
-			LOG.info("BFF Debug - bitLen"+bitLen);
+			
 			int received = 0;
 			do{
 				// Loop to force complete reading, since read doesn't garantee to read all the buffer at once
@@ -139,7 +135,7 @@ public class BitmapFontFile {
 			pix = ByteBuffer.allocate(bits.length);
 			pix.rewind();
 			int lineLen = textureWidth * (bitsPerPixel / 8);
-			LOG.info("BFF Debug - lineLen"+lineLen);
+			
 			for(int lines = textureHeight-1; lines > 0 ; --lines){
 				pix.put(bits, lines * lineLen, lineLen);
 			}

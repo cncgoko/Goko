@@ -134,9 +134,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(zTextRenderer);
 		zeroRenderer = new FourAxisRenderer(10, JoglViewerSettings.getInstance().getRotaryAxisDirection(), new Color3f(1,0,0), new Color3f(0,1,0), new Color3f(0,0,1), new Color3f(1,1,0));
 		zeroRenderer.setDisplayRotaryAxis(JoglViewerSettings.getInstance().isRotaryAxisEnabled());
-		addRenderer(zeroRenderer);
-		toolRenderer = new ToolRenderer(getControllerAdapter());
-		addRenderer(toolRenderer);
+		addRenderer(zeroRenderer);		
 	}
 
 	/** (inheritDoc)
@@ -176,7 +174,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	/**
 	 * @param controllerService the controllerService to set
 	 */
-	public void setControllerAdapter(IThreeAxisControllerAdapter controllerService) {
+	public void setControllerAdapter(IThreeAxisControllerAdapter controllerService) throws GkException {
 		if(controllerService instanceof IFourAxisControllerAdapter){
 			setControllerAdapter((IFourAxisControllerAdapter)controllerService);
 		}else{
@@ -185,9 +183,14 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	}
 	/**
 	 * @param controllerService the controllerService to set
+	 * @throws GkException GkException 
 	 */
-	public void setControllerAdapter(IFourAxisControllerAdapter controllerService) {
+	public void setControllerAdapter(IFourAxisControllerAdapter controllerService) throws GkException {
 		this.controllerAdapter = controllerService;
+		if(toolRenderer == null){
+			toolRenderer = new ToolRenderer(getControllerAdapter());
+			addRenderer(toolRenderer);
+		}
 	}
 
 
