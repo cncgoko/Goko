@@ -42,7 +42,7 @@ public class GCodeContext {
 		offset 		 = new Tuple6b();
 		motionMode = EnumGCodeCommandMotionMode.RAPID;
 		motionType = EnumGCodeCommandMotionType.LINEAR;
-		offset = new Tuple6b();
+		offset 	 = new Tuple6b();
 		position = new Tuple6b();
 		feedrate = BigDecimal.ZERO;
 		unit = EnumGCodeCommandUnit.MILLIMETERS;

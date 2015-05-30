@@ -90,7 +90,7 @@ public class RS274GCodeService implements IGCodeService {
 	 */
 	@Override
 	public void start() throws GkException {
-		RS274Config.getConfig();
+		RS274Config.getInstance();
 	}
 
 	/** (inheritDoc)

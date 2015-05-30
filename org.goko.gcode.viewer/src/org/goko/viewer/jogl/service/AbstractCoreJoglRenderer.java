@@ -138,7 +138,7 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	 * @return the initialized
 	 */
 	protected boolean isInitialized() {
-		return initialized;
+		return initialized && !shouldDestroy;
 	}
 
 	/**

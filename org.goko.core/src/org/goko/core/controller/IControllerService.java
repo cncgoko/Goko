@@ -37,14 +37,16 @@ import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
  * @author PsyKo
  *
  */
-public interface IControllerService extends IGokoService, IEventDispatcher{
-
+public interface IControllerService extends IGokoService, IEventDispatcher{	
+	public static final String CONTROLLER_TOPIC				 = "ControllerEvent";
+	public static final String CONTROLLER_TOPIC_ALL			 = "ControllerEvent/*";
+	public static final String CONTROLLER_TOPIC_STATE_UPDATE = CONTROLLER_TOPIC+"/StateUpdate";
 	/**
 	 * Returns the current position of the machine
 	 * @return a {@link Point3d} describing the current position of the machine
 	 * @throws GkException an exception
 	 */
-	Point3d getPosition() throws GkException;
+	Tuple6b getPosition() throws GkException;
 	/**
 	 * Executes the GCode contained in the gcodeProvider
 	 * @param gcodeProvider the {@link IGCodeProvider}
@@ -110,6 +112,5 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	void cancelFileSending() throws GkException;
 
 	void moveToAbsolutePosition(Tuple6b position) throws GkException;
-
-
+	
 }

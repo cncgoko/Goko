@@ -32,7 +32,7 @@ import org.goko.viewer.jogl.utils.render.gcode.IGCodeColorizer;
 public class MotionModeGCodeColorizer extends GCodeCommandVisitorAdapter implements IGCodeColorizer {
 	private static final Color4f DEFAULT_COLOR = new Color4f(0.58f,0.58f,0.58f,0.9f);
 	private static final Color4f RAPID_COLOR = new Color4f(0.458f,0.0f,0.0f,0.9f);
-	private static final Color4f FEEDRATE_COLOR = new Color4f(0.14f,0.33f,0.80f,0.9f);
+	private static final Color4f FEEDRATE_COLOR = new Color4f(0.14f,0.33f,0.80f,0.6f);
 	private static final Color4f ARC_COLOR = new Color4f(0,0.86f,0,0.9f);
 	private Color4f color;
 

@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencesPages">
       <page
             class="org.goko.gcode.rs274ngcv3.RS274GCodePreferences"
             id="org.goko.gcode.rs274ngcv3.preferences"

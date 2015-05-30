@@ -22,8 +22,8 @@ package org.goko.grbl.controller.action;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.action.DefaultControllerAction;
-import org.goko.core.controller.bean.MachineState;
 import org.goko.grbl.controller.GrblControllerService;
+import org.goko.grbl.controller.GrblMachineState;
 
 /**
  * Feed hold action for TinyG
@@ -46,7 +46,7 @@ public class GrblJogStopAction extends AbstractGrblControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return !ObjectUtils.equals(MachineState.UNDEFINED, getControllerService().getState());
+		return !ObjectUtils.equals(GrblMachineState.UNDEFINED, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

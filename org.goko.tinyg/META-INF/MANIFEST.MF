@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tinyg
+Bundle-Name: TinyG
 Bundle-SymbolicName: org.goko.tinyg;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -30,6 +30,10 @@ Service-Component: OSGI-INF/TinyGControllerComponent.xml,
  OSGI-INF/TinyGControllerServiceSelector.xml
 Bundle-ClassPath: .,
  swing2swt.jar
-Bundle-ActivationPolicy: lazy
 Import-Package: org.slf4j
-Export-Package: org.goko.tinyg.controller
+Export-Package: org.goko.tinyg.controller,
+ org.goko.tinyg.controller.configuration,
+ org.goko.tinyg.controller.prefs
+Bundle-ActivationPolicy: lazy
+Goko-Feature: org.goko.controller
+Bundle-Activator: org.goko.internal.TinyGActivator

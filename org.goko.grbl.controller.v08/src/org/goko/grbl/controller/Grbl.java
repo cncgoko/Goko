@@ -45,6 +45,8 @@ public abstract class Grbl implements DefaultControllerValues {
     public static final byte RESET_COMMAND = 0x18;
     /** Kill alarm command*/
     public static final String KILL_ALARM_COMMAND = "$X";
+    /** Check mode enable/disable*/
+    public static final String CHECK_MODE = "$C";
     /** Home sequence command*/
     public static final String HOME_COMMAND = "$H";
     /** Read configuration command */
@@ -64,9 +66,18 @@ public abstract class Grbl implements DefaultControllerValues {
 
 	public static final String MACHINE_POSITION_X 		= "GrblControllerValue.MachinePositionX";
 	public static final String MACHINE_POSITION_Y		= "GrblControllerValue.MachinePositionY";
-	public static final String MACHINE_POSITION_Z		= "GrblControllerValue.MachinePositionZ";
-	public static final String WORK_POSITION_X 	= "GrblControllerValue.WorkPositionX";
-	public static final String WORK_POSITION_Y		= "GrblControllerValue.WorkPositionY";
-	public static final String WORK_POSITION_Z		= "GrblControllerValue.WorkPositionZ";
-
+	public static final String MACHINE_POSITION_Z		= "GrblControllerValue.MachinePositionZ";		
+		
+	public class Topic{
+		public class GrblExecutionError{
+			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
+			public static final String TOPIC		= "topic/grbl/execution/error";
+			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
+			public static final String TITLE		= "prop/grbl/execution/error/title";
+			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
+			public static final String MESSAGE		= "prop/grbl/execution/error/message";
+			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
+			public static final String ERROR		= "prop/grbl/execution/error/error";
+		}
+	}
 }

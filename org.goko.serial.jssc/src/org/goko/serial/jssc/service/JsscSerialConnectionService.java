@@ -88,8 +88,10 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
-
+		deamon.stop();
+		this.inputListeners.clear();
+		this.outputListeners.clear();
+		this.connectionListeners.clear();
 	}
 
 	/** (inheritDoc)

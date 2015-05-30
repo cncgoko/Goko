@@ -17,6 +17,7 @@
 
 package org.goko.core.common.measure.converter;
 
+
 /**
  * Unit converter interface
  *

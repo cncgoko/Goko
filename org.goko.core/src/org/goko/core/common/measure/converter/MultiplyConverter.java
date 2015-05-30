@@ -17,6 +17,7 @@
 
 package org.goko.core.common.measure.converter;
 
+
 public class MultiplyConverter extends AbstractUnitConverter {
 	private double factor;
 
@@ -44,5 +45,5 @@ public class MultiplyConverter extends AbstractUnitConverter {
 	public double convert(double value) {
 		return factor * value;
 	}
-
+	
 }

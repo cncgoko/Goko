@@ -58,40 +58,7 @@ public class ArcCommandBuilder extends AbstractMotionCommandBuilder<ArcMotionCom
 	protected void extractDirection(List<GCodeToken> lstTokens, GCodeContext context, ArcMotionCommand target) throws GkException {
 		target.setClockwise( target.getMotionMode() == EnumGCodeCommandMotionMode.ARC_CLOCKWISE);
 	}
-//	protected void extractArcCenter(List<GCodeToken> lstTokens, GCodeContext context, ArcMotionCommand target) throws GkException {
-//		Tuple6b absoluteCenterCoordinate = context.getPosition();
-//		BigDecimal scale = new BigDecimal("1");
-//		GCodeToken token = RS274.removeUniqueTokenByLetter("i", lstTokens);
-//		if(target.getUnit() == EnumGCodeCommandUnit.INCHES){
-//			scale = new BigDecimal("25.4");
-//		}
-//		Tuple6b centerRelativeOffsets = new Tuple6b().setNull();
-//		if(token != null){
-//			centerRelativeOffsets.setX( new BigDecimal( RS274.getTokenValue(token) ).multiply(scale));
-//		}
-//
-//		token = RS274.removeUniqueTokenByLetter("j", lstTokens);
-//		if(token != null){
-//			centerRelativeOffsets.setY( new BigDecimal( RS274.getTokenValue(token) ).multiply(scale));
-//		}
-//
-//		token = RS274.removeUniqueTokenByLetter("k", lstTokens);
-//		if(token != null){
-//			centerRelativeOffsets.setZ( new BigDecimal( RS274.getTokenValue(token) ).multiply(scale));
-//		}
-//
-//		token = RS274.removeUniqueTokenByLetter("p", lstTokens);
-//		if(token != null){
-//			target.setTurnCount(Integer.valueOf( RS274.getTokenValue(token) ));
-//		}
-//
-//		token = RS274.removeUniqueTokenByLetter("r", lstTokens);
-//		if(token != null){
-//			target.setRadius(new BigDecimal( RS274.getTokenValue(token) ).multiply(scale));
-//		}
-//		absoluteCenterCoordinate.updateRelative(centerRelativeOffsets);
-//		target.setAbsoluteCenterCoordinate(absoluteCenterCoordinate);
-//	}
+
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.parser.advanced.AbstractRS274CommandBuilder#newInstance()
 	 */

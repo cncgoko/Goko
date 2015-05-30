@@ -31,4 +31,6 @@ public interface IGCodeProviderRenderer extends ICoreJoglRenderer, IGCodeExecuti
 	void setColorizer(IGCodeColorizer colorizer) throws GkException;
 
 	IGCodeColorizer getColorizer() throws GkException;
+	
+	void update();
  }

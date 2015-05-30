@@ -17,7 +17,7 @@ public class RS274GCodeServiceTestCase extends TestCase{
 		super.setUp();
 		this.gcodeService = new RS274GCodeService();
 		this.gcodeService.start();
-		RS274Config.getConfig().setDecimalTruncateEnabled(false);
+		RS274Config.getInstance().setDecimalTruncateEnabled(false);
 	}
 
 	public void testCommands() throws Exception{
@@ -25,25 +25,25 @@ public class RS274GCodeServiceTestCase extends TestCase{
 	}
 
 	public void testTruncateHalfDownCommands() throws Exception{
-		RS274Config.getConfig().setDecimalTruncateEnabled(true);
-		RS274Config.getConfig().setDecimalCount(3);
+		RS274Config.getInstance().setDecimalTruncateEnabled(true);
+		RS274Config.getInstance().setDecimalCount(3);
 
 		GCodeCommand comm = gcodeService.parseCommand("G90 X12.53642", new GCodeContext());
 		String converted = new String(gcodeService.convert(comm));
 		AssertGCode.assertEquals("G90 X12.536", converted);
 
-		RS274Config.getConfig().setDecimalTruncateEnabled(false);
+		RS274Config.getInstance().setDecimalTruncateEnabled(false);
 	}
 
 	public void testTruncateHalfUpCommands() throws Exception{
-		RS274Config.getConfig().setDecimalTruncateEnabled(true);
-		RS274Config.getConfig().setDecimalCount(3);
+		RS274Config.getInstance().setDecimalTruncateEnabled(true);
+		RS274Config.getInstance().setDecimalCount(3);
 
 		GCodeCommand comm = gcodeService.parseCommand("G90 X12.53672", new GCodeContext());
 		String converted = new String(gcodeService.convert(comm));
 		AssertGCode.assertEquals("G90 X12.536", converted);
 
-		RS274Config.getConfig().setDecimalTruncateEnabled(false);
+		RS274Config.getInstance().setDecimalTruncateEnabled(false);
 	}
 
 	public void testCommandPartialNumber() throws Exception{
@@ -58,7 +58,7 @@ public class RS274GCodeServiceTestCase extends TestCase{
 		AssertGCode.assertParseEquals(gcodeService, "N12G90X12.5Y36.8Z45.3F100");
 		AssertGCode.assertParseEquals(gcodeService, "N12 G90 X12.5 Y36.8 Z45.3 F100");
 		AssertGCode.assertParseEquals(gcodeService, "G1 X12.5 Y36.8 Z45.3 F100");
-		AssertGCode.assertParseEquals(gcodeService, "G3 X0.5 Y36.8 Z45.3 F100");
+		AssertGCode.assertParseEquals(gcodeService, "G3 X0.5 Y36.8 Z45.3 F100 I14.56 J32.23 K12.5");
 		AssertGCode.assertParseEquals(gcodeService, "G21 G17 G55");
 		AssertGCode.assertParseEquals(gcodeService, "G54");
 		AssertGCode.assertParseEquals(gcodeService, "G55");

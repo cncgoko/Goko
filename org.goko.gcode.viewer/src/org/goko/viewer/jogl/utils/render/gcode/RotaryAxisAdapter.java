@@ -174,4 +174,12 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 		return backedRenderer.getColorizer();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer#update()
+	 */
+	@Override
+	public void update() {
+		backedRenderer.update();
+	}
+
 }

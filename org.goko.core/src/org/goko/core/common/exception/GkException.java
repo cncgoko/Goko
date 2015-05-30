@@ -27,14 +27,19 @@ public abstract class GkException extends Exception{
 	 * Generated serialVersionUID
 	 */
 	private static final long serialVersionUID = 5871683610064009629L;
-
+	
 	/**
 	 * Constructor
 	 */
-	public GkException(String message){
-		super(message);
+	public GkException(){
+		super();
 	}
 	
+		
+	public GkException(String message) {
+		super(message);		
+	}
+
 	/**
 	 * Constructor
 	 */

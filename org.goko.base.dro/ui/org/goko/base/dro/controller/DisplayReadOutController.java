@@ -46,11 +46,13 @@ import org.goko.core.log.GkLog;
  */
 public class DisplayReadOutController extends AbstractController<DisplayReadOutModel> {
 	private static final GkLog LOG = GkLog.getLogger(DisplayReadOutController.class);
+	
 	@Inject
 	private IControllerService controllerService;
 	@Inject
 	private IDROService droService;
 
+	
 	@Inject
 	public DisplayReadOutController() {
 		super(new DisplayReadOutModel());

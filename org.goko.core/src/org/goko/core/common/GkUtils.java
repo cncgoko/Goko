@@ -16,11 +16,17 @@
  *******************************************************************************/
 package org.goko.core.common;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 
 public class GkUtils {
 
@@ -56,6 +62,15 @@ public class GkUtils {
 		return lst;
 	}
 
+	public static BigDecimal toBigDecimal(String str) throws GkException{
+		DecimalFormat df = (DecimalFormat) NumberFormat.getInstance();
+		df.setParseBigDecimal(true);
+		try {
+			return (BigDecimal) df.parse(str);
+		} catch (ParseException e) {			
+			throw new GkTechnicalException(e);
+		}
+	}
 	public static String toString(byte[] data){
 		StringBuffer 	buffer = new StringBuffer(data.length);
 

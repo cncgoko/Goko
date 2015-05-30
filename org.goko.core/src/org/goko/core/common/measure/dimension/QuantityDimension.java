@@ -24,6 +24,7 @@ import org.goko.core.common.measure.units.Unit;
 public class QuantityDimension implements Dimension {
 	public static final Dimension NONE = new QuantityDimension(AbstractUnit.GENERIC);
 	public static final Dimension LENGTH = new QuantityDimension("m");
+	public static final Dimension ANGLE  = new QuantityDimension("°");
 
 	private Unit<?> internUnit;
 

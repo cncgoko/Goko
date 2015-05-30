@@ -561,9 +561,6 @@ public class GrblConfigurationDialog extends GkUiDialogComponent<GrblConfigurati
 		p22txt.setLayoutData(gd_p22txt);
 		formToolkit.adapt(p22txt, true, true);
 
-		CTabItem tbtmNewItem = new CTabItem(tabFolder, SWT.NONE);
-		tbtmNewItem.setText("Preferences");
-
 		labelValidationMessages = new CLabel(frmGrblConfiguration.getHead(), SWT.NONE);
 
 		labelValidationMessages.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/cross-circle.png"));

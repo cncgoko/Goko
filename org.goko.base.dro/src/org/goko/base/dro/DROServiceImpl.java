@@ -19,31 +19,27 @@
  */
 package org.goko.base.dro;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.log.GkLog;
-import org.osgi.service.prefs.BackingStoreException;
 
-public class DROServiceImpl implements IDROService{
+public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	private static final GkLog LOG = GkLog.getLogger(DROServiceImpl.class);
 	public static final String SERVICE_ID = "org.goko.base.droservice";
-
-	private IEclipsePreferences preferences;
-
 	private IControllerService controllerService;
-
+	private ScopedPreferenceStore prefs;
+	private List<MachineValueDefinition> lstDefinition;
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -56,9 +52,11 @@ public class DROServiceImpl implements IDROService{
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		// TODO Auto-generated method stub
-		preferences = InstanceScope.INSTANCE.getNode(SERVICE_ID);
+	public void start() throws GkException {	
+		lstDefinition = new ArrayList<MachineValueDefinition>();
+		prefs = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,"org.goko.base.droservice");
+		prefs.addPropertyChangeListener(this);
+		updateValues();
 	}
 
 	/** (inheritDoc)
@@ -67,7 +65,6 @@ public class DROServiceImpl implements IDROService{
 	@Override
 	public void stop() throws GkException {
 		// TODO Auto-generated method stub
-
 	}
 
 	/** (inheritDoc)
@@ -75,84 +72,37 @@ public class DROServiceImpl implements IDROService{
 	 */
 	@Override
 	public List<MachineValueDefinition> getDisplayedMachineValueDefinition() throws GkException{
-		return getDisplayedValuesFromPreferences();
+		return lstDefinition;
 	}
 
-
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
 	@Override
-	public void saveDisplayedMachineValueDefinition( List<MachineValueDefinition> lstMachineValueDefinition) throws GkException {
-		List<String> lstId = new ArrayList<String>();
-		for (MachineValueDefinition definition : lstMachineValueDefinition) {
-			lstId.add( definition.getId() );
-		}
-
-		String serializedList = serialize( lstId );
-
-		preferences.put(IDROPreferencesConstants.KEY_VALUES_ID_LIST, serializedList);
-
-		try {
-			preferences.flush();
-		} catch (BackingStoreException e) {
-			LOG.error(e);
-		}
-
+	public void propertyChange(PropertyChangeEvent event) {		
+		updateValues();
 	}
 
-
-	private List<MachineValueDefinition> getDisplayedValuesFromPreferences() throws GkException {
-		List<MachineValueDefinition> lstMachineValues = new ArrayList<MachineValueDefinition>();
-		String serializedList = preferences.get(IDROPreferencesConstants.KEY_VALUES_ID_LIST, StringUtils.EMPTY);
-		if(StringUtils.isNotEmpty(serializedList)){
-			List<String> lstId = deserialize(serializedList);
-			for (String id : lstId) {
-				MachineValueDefinition definition = controllerService.findMachineValueDefinition(id);
-				if(definition != null){
-					lstMachineValues.add( definition );
+	private void updateValues() {
+		String[] token = StringUtils.split(prefs.getString("dro.displayedValues.list"), ";");
+		lstDefinition.clear();
+		if(token != null && token.length > 0){
+			for (String string : token) {
+				try {
+					MachineValueDefinition val = controllerService.getMachineValueDefinition(string);
+					lstDefinition.add(val);
+				} catch (GkException e) {
+					LOG.error(e);					
 				}
 			}
 		}
-		return lstMachineValues;
 	}
 
-
-	private String serialize(List<String> lst){
-		String result = StringUtils.EMPTY;
-		try{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			String[] array = lst.toArray(new String[]{});
-			oos.writeObject(array);
-			oos.flush();
-			oos.close();
-			result =  baos.toString();
-		}catch(IOException e){
-			LOG.error(e);
-		}
-		return result;
-	}
-
-	private List<String> deserialize(String str){
-		List<String> result = new ArrayList<String>();
-		try{
-			ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
-			ObjectInputStream ois = new ObjectInputStream(bais);
-
-			String[] arrayResult = (String[]) ois.readObject();
-			for (String string : arrayResult) {
-				result.add(string);
-			}
-		}catch(IOException e){
-			LOG.error(e);
-		} catch (ClassNotFoundException e) {
-			LOG.error(e);
-		}
-		return result;
-	}
 	/**
-	 * @param preferences the preferences to set
+	 * @return the controllerService
 	 */
-	public void setPreferences(IEclipsePreferences preferences) {
-		this.preferences = preferences;
+	public IControllerService getControllerService() {
+		return controllerService;
 	}
 
 	/**
@@ -161,6 +111,7 @@ public class DROServiceImpl implements IDROService{
 	public void setControllerService(IControllerService controllerService) {
 		this.controllerService = controllerService;
 	}
-
+	
+	
 
 }

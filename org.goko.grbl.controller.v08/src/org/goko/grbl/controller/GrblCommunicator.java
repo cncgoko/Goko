@@ -28,12 +28,14 @@ import org.goko.core.common.GkUtils;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
-import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 import org.goko.grbl.controller.bean.StatusReport;
@@ -150,12 +152,13 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 	 * Create a status report from the given string
 	 * @param strStatusReport the String representing the status report
 	 * @return {@link StatusReport}
+	 * @throws GkException 
 	 */
-	private StatusReport parseStatusReport(String strStatusReport){
+	private StatusReport parseStatusReport(String strStatusReport) throws GkException{
 		StatusReport result = new StatusReport();
 		int comma = StringUtils.indexOf(strStatusReport, ",");
 		String state = StringUtils.substring(strStatusReport, 1, comma);
-		MachineState grblState = grbl.getGrblStateFromString (state);
+		GrblMachineState grblState = grbl.getGrblStateFromString (state);
 		result.setState(grblState);
 
 		// Looking for MPosition
@@ -175,16 +178,17 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		return result;
 	}
 
-	private void parseTuple(String[] values, Tuple6b target){
+	private void parseTuple(String[] values, Tuple6b target) throws GkException{
 		if(values != null && values.length >= 3){
+			Unit<Length> unit = grbl.getConfiguration().getReportUnit();
 			if(NumberUtils.isNumber(values[0])){
-				target.setX(new BigDecimal(values[0]));
+				target.setX(NumberQuantity.of(new BigDecimal(values[0]), unit));
 			}
 			if(NumberUtils.isNumber(values[1])){
-				target.setY(new BigDecimal(values[1]));
+				target.setY(NumberQuantity.of(new BigDecimal(values[1]), unit));
 			}
 			if(NumberUtils.isNumber(values[2])){
-				target.setZ(new BigDecimal(values[2]));
+				target.setZ(NumberQuantity.of(new BigDecimal(values[2]), unit));
 			}
 		}
 	}
@@ -192,7 +196,7 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		String identifier = StringUtils.substringBetween(strOrigin, "[", ":");
 		String valuesGroup = StringUtils.substringBetween(strOrigin, ":", "]");
 		String[] values = StringUtils.split(valuesGroup, ",");
-
+		Unit<Length> unit = grbl.getConfiguration().getReportUnit();
 		if(values == null || values.length < 3){
 			throw new GkFunctionalException("Received incomplete offset report "+strOrigin+". Ignoring...");
 		}
@@ -200,9 +204,9 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		BigDecimal x = new BigDecimal(values[0]);
 		BigDecimal y = new BigDecimal(values[1]);
 		BigDecimal z = new BigDecimal(values[2]);
-		targetPoint.setX(x);
-		targetPoint.setY(y);
-		targetPoint.setZ(z);
+		targetPoint.setX(NumberQuantity.of(x, unit));
+		targetPoint.setY(NumberQuantity.of(y, unit));
+		targetPoint.setZ(NumberQuantity.of(z, unit));
 
 		return identifier;
 	}

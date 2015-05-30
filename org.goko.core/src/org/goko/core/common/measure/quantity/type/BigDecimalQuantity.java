@@ -19,10 +19,13 @@ package org.goko.core.common.measure.quantity.type;
 
 import java.math.BigDecimal;
 
+import org.goko.core.common.measure.converter.UnitConverter;
 import org.goko.core.common.measure.quantity.AbstractQuantity;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.units.Unit;
 
+
+//public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q, BigDecimalQuantity<Q>> {	
 public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q> {
 	private BigDecimal value;
 
@@ -32,7 +35,11 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 		this.value = value;
 	}
 
-
+@Override
+public String toString() {
+	// TODO Auto-generated method stub
+	return super.toString();
+}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#doubleValue()
 	 */
@@ -41,12 +48,82 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 		return this.value.doubleValue();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#value()
+	 */
+	@Override
+	public BigDecimal value() {		
+		return value;
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#value(org.goko.core.common.measure.units.Unit)
+	 */
+	@Override
+	public BigDecimal value(Unit<Q> unit) {		
+		return this.to(unit).value();
+	}
+	
 	/**
 	 * @return the value
 	 */
 	public BigDecimal getValue() {
 		return value;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#to(org.goko.core.common.measure.units.Unit)
+	 */
+	@Override
+	public BigDecimalQuantity<Q> to(Unit<Q> unit) {
+		if(unit == getUnit()){
+			return this;
+		}
+		UnitConverter converter = getUnit().getConverterTo(unit);		
+		return NumberQuantity.of(new BigDecimal(converter.convert(doubleValue())), unit); 
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#add(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public BigDecimalQuantity<Q> add(Quantity<Q> q) {		
+		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() + q.to(getUnit()).doubleValue()));
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.AbstractQuantity#add(org.goko.core.common.measure.quantity.AbstractQuantity)
+	 */
+	
+	public BigDecimalQuantity<Q> add(BigDecimalQuantity<Q> q) {		
+		return new BigDecimalQuantity<Q>(getUnit(), value.add( q.value(getUnit()) ));
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#subtract(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public Quantity<Q> subtract(Quantity<Q> q) {
+		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() - q.to(getUnit()).doubleValue()));
+	}
+
+	public BigDecimalQuantity<Q> subtract(BigDecimalQuantity<Q> q) {		
+		return new BigDecimalQuantity<Q>(getUnit(), value.subtract( new BigDecimal(q.to(getUnit()).doubleValue()) ));
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#multiply(java.lang.Number)
+	 */
+	@Override
+	public Quantity<Q> multiply(Number n) {
+		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() * n.doubleValue()));
+	}
+
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#divide(java.lang.Number)
+	 */
+	@Override
+	public Quantity<Q> divide(Number n) {
+		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() / n.doubleValue()));
 	}
 
 }

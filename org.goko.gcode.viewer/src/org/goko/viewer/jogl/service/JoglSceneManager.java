@@ -178,10 +178,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		addRenderer(new JoglRendererWrapper(renderer));
 	}
 
-	public void addTestRenderer(IViewer3DRenderer renderer) throws GkException {
-		addRenderer(new JoglRendererWrapper(renderer));
-	}
-
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
 		synchronized (renderers) {
 			getRenderers().add(renderer);

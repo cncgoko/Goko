@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
@@ -255,8 +256,8 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	 */
 	@Override
 	public void zoomToFit(BoundingTuple6b bounds) throws GkException {
-		double boundCenterX = (bounds.getMax().getX().doubleValue() + bounds.getMin().getX().doubleValue() ) /2;
-		double boundCenterY = (bounds.getMax().getY().doubleValue() + bounds.getMin().getY().doubleValue() ) /2;
+		double boundCenterX = (bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) + bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT) ) /2;
+		double boundCenterY = (bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT) + bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT) ) /2;
 
 		target.x = (float) boundCenterX;
 		target.y = (float) boundCenterY;
@@ -266,13 +267,13 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		Point3d pa = bounds.getMin().toPoint3d();
 		BoundingTuple6b projectedBound = getProjectedBound(bounds);
 		for(int i =0; i < 2; i++){
-			float[] screenCenter = new float[]{ (projectedBound.getMax().getX().floatValue() + projectedBound.getMin().getX().floatValue()) / 2,
-												(projectedBound.getMax().getY().floatValue() + projectedBound.getMin().getY().floatValue()) / 2,
-												(projectedBound.getMax().getZ().floatValue() + projectedBound.getMin().getZ().floatValue()) / 2};
+			double[] screenCenter = new double[]{ (projectedBound.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) + projectedBound.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT)) / 2,
+												(projectedBound.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT) + projectedBound.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT)) / 2,
+												(projectedBound.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT) + projectedBound.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT)) / 2};
 			float[] worldCenter = new float[4];
-			getPmvMatrix().gluUnProject(screenCenter[0],
-										screenCenter[1],
-										screenCenter[2],
+			getPmvMatrix().gluUnProject((float)screenCenter[0],
+										(float)screenCenter[1],
+										(float)screenCenter[2],
 										new int[]{x,y,width,height},
 										0,
 										worldCenter,
@@ -302,18 +303,18 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		update();
 		updatePMVMatrix();
 		projectedBound = getProjectedBound(bounds);
-		this.screenMin = new Point2i(projectedBound.getMin().getX().intValue(),projectedBound.getMin().getY().intValue());
-		this.screenMax = new Point2i(projectedBound.getMax().getX().intValue(),projectedBound.getMax().getY().intValue());
+		this.screenMin = new Point2i(projectedBound.getMin().getX().value(JoglUtils.JOGL_UNIT).intValue(), projectedBound.getMin().getY().value(JoglUtils.JOGL_UNIT).intValue());
+		this.screenMax = new Point2i(projectedBound.getMax().getX().value(JoglUtils.JOGL_UNIT).intValue(), projectedBound.getMax().getY().value(JoglUtils.JOGL_UNIT).intValue());
 	}
 
 	protected BoundingTuple6b getProjectedBound(BoundingTuple6b bounds){
 
-		float xMx = bounds.getMax().getX().floatValue();
-		float yMx = bounds.getMax().getY().floatValue();
-		float zMx = bounds.getMax().getZ().floatValue();
-		float xMn = bounds.getMin().getX().floatValue();
-		float yMn = bounds.getMin().getY().floatValue();
-		float zMn = bounds.getMin().getZ().floatValue();
+		float xMx = (float) bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT);
+		float yMx = (float) bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT);
+		float zMx = (float) bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT);
+		float xMn = (float) bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
+		float yMn = (float) bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT);
+		float zMn = (float) bounds.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT);
 
 		float[] p1Low  = new float[]{xMn, yMn, zMn};
 		float[] p2Low  = new float[]{xMx, yMn, zMn};
@@ -342,15 +343,16 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 			}
 		}
 
-		return new BoundingTuple6b(new Tuple6b(screenMin[0], screenMin[1], screenMin[2]), new Tuple6b(screenMax[0], screenMax[1], screenMax[2]));
+		return new BoundingTuple6b(new Tuple6b(screenMin[0], screenMin[1], screenMin[2], JoglUtils.JOGL_UNIT),
+								   new Tuple6b(screenMax[0], screenMax[1], screenMax[2], JoglUtils.JOGL_UNIT));
 	}
 	protected boolean isBoundInScreen(BoundingTuple6b bounds){
-		float xMx = bounds.getMax().getX().floatValue();
-		float yMx = bounds.getMax().getY().floatValue();
-		float zMx = bounds.getMax().getZ().floatValue();
-		float xMn = bounds.getMin().getX().floatValue();
-		float yMn = bounds.getMin().getY().floatValue();
-		float zMn = bounds.getMin().getZ().floatValue();
+		float xMx = (float) bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT);
+		float yMx = (float) bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT);
+		float zMx = (float) bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT);
+		float xMn = (float) bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
+		float yMn = (float) bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT);
+		float zMn = (float) bounds.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT);
 
 		List<Point3f> lstAabbPoints = new ArrayList<Point3f>();
 		lstAabbPoints.add(new Point3f(xMn, yMn, zMn));

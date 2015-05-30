@@ -5,11 +5,10 @@
       <provide interface="org.goko.core.viewer.service.IViewer3DService"/>
       <provide interface="org.goko.viewer.jogl.service.IJoglViewerService"/>
    </service>
-   <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
-   <reference bind="addTestRenderer" cardinality="0..n" interface="org.goko.core.viewer.renderer.IViewer3DRenderer" name="IViewer3DRenderer" policy="dynamic"/>
+   <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="dynamic"/>
    <reference bind="setControllerAdapter" cardinality="0..n" interface="org.goko.core.controller.IThreeAxisControllerAdapter" name="IThreeAxisControllerAdapter" policy="dynamic"/>
    <reference bind="setControllerAdapter" cardinality="0..n" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
-   <reference bind="setCoordinateSystemAdapter" cardinality="0..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="static"/>
-   <reference bind="setContinuousJogService" cardinality="0..1" interface="org.goko.core.controller.IContinuousJogService" name="IContinuousJogService" policy="static"/>
-   <reference bind="setGCodeExecutionMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="static"/>
+   <reference bind="setCoordinateSystemAdapter" cardinality="0..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="dynamic"/>
+   <reference bind="setContinuousJogService" cardinality="0..1" interface="org.goko.core.controller.IContinuousJogService" name="IContinuousJogService" policy="dynamic"/>
+   <reference bind="setGCodeExecutionMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="dynamic"/>
 </scr:component>

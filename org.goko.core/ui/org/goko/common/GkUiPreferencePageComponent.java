@@ -24,8 +24,10 @@ import org.goko.common.bindings.ErrorEvent;
 import org.goko.common.bindings.WarningEvent;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 
 public abstract class GkUiPreferencePageComponent<C extends AbstractController<D>, D extends AbstractModelObject> extends PreferencePage implements IWorkbenchPreferencePage {
+	private static final GkLog LOG = GkLog.getLogger(GkUiPreferencePageComponent.class);
 	GkUiComponentProxy<C, D> uiComponent;
 
 	public GkUiPreferencePageComponent(C abstractController) {
@@ -77,5 +79,19 @@ public abstract class GkUiPreferencePageComponent<C extends AbstractController<D
 	public void setDataModel(D dataModel) {
 		uiComponent.setDataModel(dataModel);
 	}
+		
+	@Override
+	public final boolean performOk() {		
+		try {
+			if(getController().validate()){
+				return internPerformOk() && super.performOk();
+			}
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return false;
+	}
+	
+	protected abstract boolean internPerformOk() throws GkException;
 
 }

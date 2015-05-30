@@ -5,20 +5,19 @@ import java.io.IOException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.log.GkLog;
 
-public class TinyGPreferences{
-	private static final GkLog LOG = GkLog.getLogger(TinyGPreferences.class);
+public class TinyGPreferences{	
 	public static final String NODE = "org.goko.tinyg";
 
-	private static final String HOMING_ENABLED_AXIS_X 	= "homingEnabledAxisX";
-	private static final String HOMING_ENABLED_AXIS_Y 	= "homingEnabledAxisY";
-	private static final String HOMING_ENABLED_AXIS_Z 	= "homingEnabledAxisZ";
-	private static final String HOMING_ENABLED_AXIS_A 	= "homingEnabledAxisA";
-	private static final String PLANNER_BUFFER_SPACE_CHECK = "plannerBufferSpaceCheck";
+	public static final String HOMING_ENABLED_AXIS_X 	= "homingEnabledAxisX";
+	public static final String HOMING_ENABLED_AXIS_Y 	= "homingEnabledAxisY";
+	public static final String HOMING_ENABLED_AXIS_Z 	= "homingEnabledAxisZ";
+	public static final String HOMING_ENABLED_AXIS_A 	= "homingEnabledAxisA";
+	public static final String PLANNER_BUFFER_SPACE_CHECK = "plannerBufferSpaceCheck";
 
 	
 	private ScopedPreferenceStore preferenceStore;
@@ -55,6 +54,9 @@ public class TinyGPreferences{
 		}
 		if(StringUtils.isBlank(preferenceStore.getString(HOMING_ENABLED_AXIS_A))){
 			preferenceStore.setToDefault(HOMING_ENABLED_AXIS_A);
+		}
+		if(StringUtils.isBlank(preferenceStore.getString(PLANNER_BUFFER_SPACE_CHECK))){
+			preferenceStore.setToDefault(PLANNER_BUFFER_SPACE_CHECK);
 		}
 	}
 	
@@ -103,11 +105,16 @@ public class TinyGPreferences{
 	}
 	
 	public boolean isPlannerBufferSpaceCheck() {
-		return BooleanUtils.toBoolean(preferenceStore.getString(PLANNER_BUFFER_SPACE_CHECK));
+		String t = preferenceStore.getString(PLANNER_BUFFER_SPACE_CHECK);
+		return BooleanUtils.toBoolean(t);
 	}
 
 	public void setPlannerBufferSpaceCheck(boolean enabled) {
 		preferenceStore.setValue(PLANNER_BUFFER_SPACE_CHECK, Boolean.valueOf(enabled));
+	}
+
+	public IPreferenceStore getPreferenceStore() {
+		return preferenceStore;
 	}
 	
 }

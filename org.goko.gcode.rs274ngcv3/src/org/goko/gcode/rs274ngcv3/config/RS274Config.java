@@ -17,6 +17,7 @@
 
 package org.goko.gcode.rs274ngcv3.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.AbstractGkConfig;
 
@@ -27,8 +28,8 @@ public class RS274Config extends AbstractGkConfig{
 	/** Singleton instance */
 	private static RS274Config instance;
 
-	private static final String KEY_DECIMAL_COUNT = "numberDecimalCount";
-	private static final String KEY_TRUNCATE_ENABLED = "truncateEnabled";
+	public static final String KEY_DECIMAL_COUNT = "numberDecimalCount";
+	public static final String KEY_TRUNCATE_ENABLED = "truncateEnabled";
 	/**
 	 * Constructor
 	 */
@@ -42,34 +43,43 @@ public class RS274Config extends AbstractGkConfig{
 	 * @return the RS274Config instance
 	 * @throws GkException GkException
 	 */
-	public static final RS274Config getConfig() throws GkException{
+	public static final RS274Config getInstance(){
 		if(instance == null){
 			instance = new RS274Config();
+			instance.initialize();
 		}
 		return instance;
 	}
 
+	private void initialize() {
+		getPreferences().setDefault(KEY_TRUNCATE_ENABLED, false);
+		getPreferences().setDefault(KEY_DECIMAL_COUNT, "3");		
+		if(StringUtils.isBlank(KEY_DECIMAL_COUNT)){
+			getPreferences().setToDefault(KEY_DECIMAL_COUNT);	
+		}
+	}
+	
 	/**
 	 * @return the decimalCount
 	 */
 	public int getDecimalCount() {
-		return getPreferences().getInt(KEY_DECIMAL_COUNT, 3);
+		return Integer.valueOf(getPreferences().getString(KEY_DECIMAL_COUNT));
 	}
 
 	/**
 	 * @param decimalCount the decimalCount to set
 	 */
 	public void setDecimalCount(int decimalCount) {
-		getPreferences().putInt(KEY_DECIMAL_COUNT, decimalCount);
+		getPreferences().setValue(KEY_DECIMAL_COUNT, String.valueOf(decimalCount));
 	}
 
 
 	public void setDecimalTruncateEnabled(boolean enabled) {
-		getPreferences().putBoolean(KEY_TRUNCATE_ENABLED, enabled);
+		getPreferences().setValue(KEY_TRUNCATE_ENABLED, enabled);
 	}
 
 
 	public boolean isDecimalTruncateEnabled() {
-		return getPreferences().getBoolean(KEY_TRUNCATE_ENABLED, true);
+		return getPreferences().getBoolean(KEY_TRUNCATE_ENABLED);
 	}
 }

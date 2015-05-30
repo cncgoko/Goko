@@ -56,6 +56,7 @@ import org.goko.base.commandpanel.controller.CommandPanelController;
 import org.goko.base.commandpanel.controller.CommandPanelModel;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.config.GokoConfig;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
@@ -100,6 +101,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	private Button btnCSG58;
 	private Button btnCSG59;
 	private Button btnResetCsZero;
+	private Label lblUnit;
 
 	@Inject
 	public CommandPanelPart(IEclipseContext context) throws GkException {
@@ -125,16 +127,23 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		composite.setLayoutData(fd_composite);
 		formToolkit.paintBordersFor(composite);
 		GridLayout gl_composite = new GridLayout(3, false);
+		gl_composite.verticalSpacing = 0;
 		gl_composite.marginHeight = 3;
 		gl_composite.marginWidth = 3;
 		composite.setLayout(gl_composite);
 
 		Group grpManualJog = new Group(composite, SWT.NONE);
-		grpManualJog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		grpManualJog.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		grpManualJog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		grpManualJog.setText("Manual jog");
 		formToolkit.adapt(grpManualJog);
 		formToolkit.paintBordersFor(grpManualJog);
-		grpManualJog.setLayout(new GridLayout(1, false));
+		GridLayout gl_grpManualJog = new GridLayout(1, false);
+		gl_grpManualJog.verticalSpacing = 2;
+		gl_grpManualJog.marginWidth = 2;
+		gl_grpManualJog.marginHeight = 2;
+		gl_grpManualJog.horizontalSpacing = 2;
+		grpManualJog.setLayout(gl_grpManualJog);
 
 		// /if(getDataModel().isIncrementalJogSupported()){
 		btnIncrementalJog = new Button(grpManualJog, SWT.CHECK);
@@ -146,48 +155,61 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(composite_5);
 		formToolkit.paintBordersFor(composite_5);
-		composite_5.setLayout(new GridLayout(2, false));
+		composite_5.setLayout(new GridLayout(3, false));
 
 		// if(getDataModel().isIncrementalJogSupported()){
 		Label lblJogStep = new Label(composite_5, SWT.NONE);
 		lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblJogStep.setText("Jog step :");
+		lblJogStep.setText("Step :");
 		formToolkit.adapt(lblJogStep, true, true);
 
 		jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
 		jogStepSpinner.setMaximum(100000);
-		jogStepSpinner.setDigits(3);
+		jogStepSpinner.setMinimum(1);
+		jogStepSpinner.setDigits(GokoConfig.getInstance().getDigitCount());
 		GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpinner.widthHint = 60;
+		gd_jogSpinner.widthHint = 40;
 		jogStepSpinner.setLayoutData(gd_jogSpinner);
 		formToolkit.adapt(jogStepSpinner);
 		formToolkit.paintBordersFor(jogStepSpinner);
+		
+		lblUnit = new Label(composite_5, SWT.NONE);
+		formToolkit.adapt(lblUnit, true, true);
+		lblUnit.setText("mm");
 		// }
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
 		lblJogSpeed.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblJogSpeed.setBounds(0, 0, 55, 15);
 		formToolkit.adapt(lblJogSpeed, true, true);
-		lblJogSpeed.setText("Jog speed :");
+		lblJogSpeed.setText("Speed :");
 
 		jogSpeedSpinner = new Spinner(composite_5, SWT.BORDER);
 		jogSpeedSpinner.setMaximum(10000);
 		GridData gd_jogSpeedSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpeedSpinner.widthHint = 60;
+		gd_jogSpeedSpinner.widthHint = 40;
 		jogSpeedSpinner.setLayoutData(gd_jogSpeedSpinner);
 		formToolkit.adapt(jogSpeedSpinner);
 		formToolkit.paintBordersFor(jogSpeedSpinner);
+		new Label(composite_5, SWT.NONE);
 		Composite composite_4 = new Composite(grpManualJog, SWT.NONE);
 		formToolkit.adapt(composite_4);
 		formToolkit.paintBordersFor(composite_4);
 		GridLayout gl_composite_4 = new GridLayout(2, false);
+		gl_composite_4.marginWidth = 0;
+		gl_composite_4.marginHeight = 0;
 		gl_composite_4.horizontalSpacing = 0;
 		gl_composite_4.verticalSpacing = 0;
 		composite_4.setLayout(gl_composite_4);
 
 		Composite composite_2 = formToolkit.createComposite(composite_4, SWT.NONE);
 		composite_2.setSize(45, 125);
-		composite_2.setLayout(new GridLayout(1, false));
+		GridLayout gl_composite_2 = new GridLayout(1, false);
+		gl_composite_2.marginWidth = 2;
+		gl_composite_2.verticalSpacing = 2;
+		gl_composite_2.horizontalSpacing = 2;
+		gl_composite_2.marginHeight = 2;
+		composite_2.setLayout(gl_composite_2);
 		formToolkit.paintBordersFor(composite_2);
 
 		btnJogZPos = formToolkit.createButton(composite_2, "+Z", SWT.NONE);
@@ -206,6 +228,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		Composite composite_1 = formToolkit.createComposite(composite_4, SWT.NONE);
 		formToolkit.paintBordersFor(composite_1);
 		GridLayout gl_composite_1 = new GridLayout(3, false);
+		gl_composite_1.verticalSpacing = 2;
+		gl_composite_1.marginWidth = 2;
 		gl_composite_1.horizontalSpacing = 0;
 		gl_composite_1.marginHeight = 0;
 		composite_1.setLayout(gl_composite_1);
@@ -244,7 +268,12 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		composite_7.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(composite_7);
 		formToolkit.paintBordersFor(composite_7);
-		composite_7.setLayout(new GridLayout(2, true));
+		GridLayout gl_composite_7 = new GridLayout(2, true);
+		gl_composite_7.verticalSpacing = 2;
+		gl_composite_7.marginWidth = 2;
+		gl_composite_7.marginHeight = 2;
+		gl_composite_7.horizontalSpacing = 2;
+		composite_7.setLayout(gl_composite_7);
 
 		btnJogANeg = new Button(composite_7, SWT.NONE);
 		GridData gd_btnANeg = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -262,6 +291,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 		Composite composite_9 = new Composite(composite, SWT.NONE);
 		GridLayout gl_composite_9 = new GridLayout(1, false);
+		gl_composite_9.verticalSpacing = 0;
 		gl_composite_9.marginWidth = 0;
 		gl_composite_9.marginHeight = 0;
 		composite_9.setLayout(gl_composite_9);
@@ -270,15 +300,21 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		formToolkit.paintBordersFor(composite_9);
 
 		Group grpCommands = new Group(composite_9, SWT.NONE);
+		grpCommands.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		grpCommands.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		grpCommands.setLayout(new GridLayout(1, false));
+		GridLayout gl_grpCommands = new GridLayout(1, false);
+		gl_grpCommands.verticalSpacing = 2;
+		gl_grpCommands.marginWidth = 2;
+		gl_grpCommands.marginHeight = 2;
+		gl_grpCommands.horizontalSpacing = 2;
+		grpCommands.setLayout(gl_grpCommands);
 		grpCommands.setText("Homing");
 		formToolkit.adapt(grpCommands);
 		formToolkit.paintBordersFor(grpCommands);
 
 		btnHome = formToolkit.createButton(grpCommands, "Home", SWT.NONE);
 		GridData gd_btnNewButton_1 = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_btnNewButton_1.widthHint = 150;
+		gd_btnNewButton_1.widthHint = 120;
 		gd_btnNewButton_1.heightHint = 35;
 		btnHome.setLayoutData(gd_btnNewButton_1);
 
@@ -327,7 +363,13 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnResetA.setText("A");
 
 		grpCoordinatesSystem = new Group(composite_9, SWT.NONE);
-		grpCoordinatesSystem.setLayout(new GridLayout(1, false));
+		grpCoordinatesSystem.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		GridLayout gl_grpCoordinatesSystem = new GridLayout(1, false);
+		gl_grpCoordinatesSystem.verticalSpacing = 2;
+		gl_grpCoordinatesSystem.marginWidth = 2;
+		gl_grpCoordinatesSystem.marginHeight = 2;
+		gl_grpCoordinatesSystem.horizontalSpacing = 2;
+		grpCoordinatesSystem.setLayout(gl_grpCoordinatesSystem);
 		grpCoordinatesSystem.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		grpCoordinatesSystem.setText("Coordinates system");
 		formToolkit.adapt(grpCoordinatesSystem);
@@ -338,6 +380,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		formToolkit.adapt(composite_11);
 		formToolkit.paintBordersFor(composite_11);
 		GridLayout gl_composite_11 = new GridLayout(3, true);
+		gl_composite_11.verticalSpacing = 2;
+		gl_composite_11.horizontalSpacing = 2;
 		gl_composite_11.marginWidth = 0;
 		gl_composite_11.marginHeight = 0;
 		composite_11.setLayout(gl_composite_11);
@@ -436,6 +480,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		composite_12.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
 		formToolkit.paintBordersFor(composite_12);
 		GridLayout gl_composite_12 = new GridLayout(1, false);
+		gl_composite_12.verticalSpacing = 2;
+		gl_composite_12.marginHeight = 2;
 		gl_composite_12.marginWidth = 0;
 		gl_composite_12.horizontalSpacing = 0;
 		composite_12.setLayout(gl_composite_12);
@@ -458,22 +504,33 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnResetCsZero.setBounds(0, 0, 75, 25);
 
 		composite_10 = new Composite(composite, SWT.NONE);
-		composite_10.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		GridData gd_composite_10 = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
+		gd_composite_10.widthHint = 140;
+		composite_10.setLayoutData(gd_composite_10);
 		formToolkit.adapt(composite_10);
 		formToolkit.paintBordersFor(composite_10);
-		composite_10.setLayout(new GridLayout(1, false));
+		GridLayout gl_composite_10 = new GridLayout(1, false);
+		gl_composite_10.verticalSpacing = 2;
+		gl_composite_10.marginWidth = 2;
+		gl_composite_10.marginHeight = 2;
+		gl_composite_10.horizontalSpacing = 2;
+		composite_10.setLayout(gl_composite_10);
 
 		Group grpControls = new Group(composite_10, SWT.NONE);
+		grpControls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		grpControls.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		grpControls.setLayout(new GridLayout(1, false));
 		grpControls.setText("Controls");
 		formToolkit.adapt(grpControls);
 		formToolkit.paintBordersFor(grpControls);
 
 		Composite composite_8 = new Composite(grpControls, SWT.NONE);
-		composite_8.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		composite_8.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(composite_8);
 		formToolkit.paintBordersFor(composite_8);
 		GridLayout gl_composite_8 = new GridLayout(2, true);
+		gl_composite_8.verticalSpacing = 2;
+		gl_composite_8.horizontalSpacing = 2;
 		gl_composite_8.marginWidth = 0;
 		gl_composite_8.marginHeight = 0;
 		composite_8.setLayout(gl_composite_8);
@@ -483,7 +540,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gd_btnStart.heightHint = 35;
 		btnStart.setLayoutData(gd_btnStart);
 		formToolkit.adapt(btnStart, true, true);
-		btnStart.setText("Start/Resume");
+		btnStart.setText("Resume");
 
 		btnPause = new Button(composite_8, SWT.NONE);
 		GridData gd_btnPause = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -510,6 +567,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnKillAlarm.setText("Kill alarm");
 
 		Group grpSpindle = new Group(composite_10, SWT.NONE);
+		grpSpindle.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		grpSpindle.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpSpindle.setLayout(new FillLayout(SWT.HORIZONTAL));
 		grpSpindle.setText("Spindle");
@@ -519,7 +577,11 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		Composite composite_3 = new Composite(grpSpindle, SWT.NONE);
 		formToolkit.adapt(composite_3);
 		formToolkit.paintBordersFor(composite_3);
-		composite_3.setLayout(new GridLayout(2, true));
+		GridLayout gl_composite_3 = new GridLayout(2, true);
+		gl_composite_3.marginWidth = 2;
+		gl_composite_3.horizontalSpacing = 2;
+		gl_composite_3.marginHeight = 2;
+		composite_3.setLayout(gl_composite_3);
 
 		btnSpindleOn = formToolkit.createButton(composite_3, "On", SWT.NONE);
 		GridData gd_btnSpindleOn = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -537,15 +599,15 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	}
 
 	protected void enableAdaptiveSpinner() {
-		jogStepSpinner.setSelection(getDataModel().getJogIncrement().intValue());
-		jogSpeedSpinner.setSelection(getDataModel().getJogSpeed().intValue());
+		jogStepSpinner.setSelection((int) (getDataModel().getJogIncrement().doubleValue() * Math.pow(10, jogStepSpinner.getDigits())));
+		jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue()  * Math.pow(10, jogSpeedSpinner.getDigits())));
 		jogStepSpinner.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int selection = jogStepSpinner.getSelection();
-				if (selection < 10) {
+				int selection = jogStepSpinner.getSelection();								
+				/*if (selection < 10) {
 					jogStepSpinner.setIncrement(1);
-				} else if (selection < 100) {
+				} else */if (selection < 100) {
 					jogStepSpinner.setIncrement(10);
 				} else if (selection < 1000) {
 					jogStepSpinner.setIncrement(100);
@@ -555,6 +617,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 				getDataModel().setJogIncrement(BigDecimal.valueOf(selection / Math.pow(10, jogStepSpinner.getDigits())));
 			}
 		});
+		
 		jogSpeedSpinner.setIncrement(10);
 		jogSpeedSpinner.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -574,6 +637,9 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	}
 
 	protected void initCustomBindings(MPart part) throws GkException {
+		getController().addTextDisplayBinding(lblUnit, "lengthUnitSymbol");
+		
+		
 		getController().bindEnableControlWithAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindButtonToExecuteAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindEnableControlWithAction(btnStart, DefaultControllerAction.START);
@@ -604,6 +670,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
 		getController().addEnableBinding(jogStepSpinner, "incrementalJog");
 		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
+		getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);
 
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogYNeg, DefaultControllerAction.JOG_START);

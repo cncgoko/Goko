@@ -21,10 +21,11 @@ package org.goko.grbl.controller.bean;
 
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.grbl.controller.GrblMachineState;
 
 public class StatusReport {
 	/** The state of the machine */
-	private MachineState state;
+	private GrblMachineState state;
 	/** The machine position */
 	private Tuple6b machinePosition;
 	/** The work position of the machine */
@@ -32,13 +33,13 @@ public class StatusReport {
 	/**
 	 * @return the state
 	 */
-	public MachineState getState() {
+	public GrblMachineState getState() {
 		return state;
 	}
 	/**
 	 * @param state the state to set
 	 */
-	public void setState(MachineState state) {
+	public void setState(GrblMachineState state) {
 		this.state = state;
 	}
 	/**

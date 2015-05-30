@@ -21,6 +21,7 @@ package org.goko.base.dro;
 
 import java.util.List;
 
+import org.goko.core.common.event.IEventDispatcher;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.controller.bean.MachineValueDefinition;
@@ -34,10 +35,4 @@ public interface IDROService extends IGokoService {
 	 */
 	List<MachineValueDefinition> getDisplayedMachineValueDefinition() throws GkException;
 
-	/**
-	 * Save the list of displayed values
-	 * @param the list of {@link MachineValueDefinition} to save
-	 * @throws GkException GkException
-	 */
-	void saveDisplayedMachineValueDefinition(List<MachineValueDefinition> lstMachineValueDefinition) throws GkException;
 }

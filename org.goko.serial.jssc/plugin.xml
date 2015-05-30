@@ -10,11 +10,11 @@
       </fragment>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencesPages">
       <page
             class="org.goko.serial.jssc.preferences.connection.SerialConnectionPreferences"
             id="org.goko.serial.jssc.preferences.connection"
-            name="Serial">
+            name="Serial connection">
       </page>
    </extension>
 

@@ -22,14 +22,15 @@ package org.goko.tinyg.handlers;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.goko.core.common.exception.GkException;
 import org.goko.tinyg.controller.ITinygControllerService;
 
 public class TinyGConfigurationRefreshHandler {
 
 	@Execute
 	@Inject
-	public void execute(ITinygControllerService tinyg) {
-		System.err.println("test");
+	public void execute(ITinygControllerService tinyg) throws GkException {
+		tinyg.refreshConfiguration();
 	}
 
 }

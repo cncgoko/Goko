@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencesPages">
+      <page
+            class="org.goko.featuremanager.config.FeatureConfigurator"
+            id="org.goko.featuremanager.page1"
+            name="Features">
+      </page>
+   </extension>
+
+</plugin>

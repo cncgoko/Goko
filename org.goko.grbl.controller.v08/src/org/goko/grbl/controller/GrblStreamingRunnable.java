@@ -25,8 +25,8 @@ import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
+import org.goko.core.gcode.bean.execution.ExecutionQueue;
 import org.goko.core.log.GkLog;
-import org.goko.grbl.controller.executionqueue.ExecutionQueue;
 import org.goko.grbl.controller.executionqueue.GrblGCodeExecutionToken;
 
 /**
@@ -53,6 +53,9 @@ public class GrblStreamingRunnable  implements Runnable {
 		this.grblService = grblService;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		while(true){
@@ -77,6 +80,7 @@ public class GrblStreamingRunnable  implements Runnable {
 		try{
 			while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreCommand()){
 				GrblGCodeExecutionToken token = executionQueue.getCurrentToken();
+				waitTokenUnpaused();
 				if(token.hasMoreCommand()){
 					GCodeCommand command = token.getNextCommand();
 					waitBufferSpace(StringUtils.length(command.getStringCommand()));
@@ -96,7 +100,10 @@ public class GrblStreamingRunnable  implements Runnable {
 			LOG.error(e);
 		}
 	}
-
+	/**
+	 * Wait until the current token is complete
+	 * @throws GkException GkException
+	 */
 	private void waitTokenComplete() throws GkException {
 		while(executionQueue.getCurrentToken() != null && !executionQueue.getCurrentToken().isComplete()){
 			synchronized ( executionQueue.getCurrentToken() ) {
@@ -109,6 +116,26 @@ public class GrblStreamingRunnable  implements Runnable {
 			}
 		}
 	}
+	/**
+	 * Wait while the current token is paused.
+	 * @throws GkException GkException
+	 */
+	private void waitTokenUnpaused() throws GkException {
+		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().isPaused()){
+			synchronized ( executionQueue.getCurrentToken() ) {
+				try {
+					executionQueue.getCurrentToken().wait(500);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Wait until there is enough space in Grbl buffer
+	 * @throws GkException GkException
+	 */
 	private void waitBufferSpace(int size) throws GkException {
 		while(executionQueue.getCurrentToken() != null && (grblService.getUsedGrblBuffer() + size) > Grbl.GRBL_BUFFER_SIZE){
 			synchronized ( bufferSpaceMutex ) {

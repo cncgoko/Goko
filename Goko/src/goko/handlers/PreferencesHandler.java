@@ -53,7 +53,8 @@ import org.osgi.service.log.LogService;
 public class PreferencesHandler {
 	private static final GkLog LOG = GkLog.getLogger(PreferencesHandler.class);
 
-	public static final String PREFS_PAGE = "Goko.org.goko.ui.gkPreferencePages";
+	//public static final String PREFS_PAGE = "Goko.org.goko.ui.gkPreferencePages";
+	public static final String PREFS_PAGE = "Goko.org.goko.ui.gkPreferencesPages";
 	public static final String PAGE_ID = "goko.org.ui.page.id";
 	protected static final String ELMT_PAGE = "page";
 	protected static final String ATTR_CLASS = "class";

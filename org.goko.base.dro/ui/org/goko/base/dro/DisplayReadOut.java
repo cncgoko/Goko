@@ -9,12 +9,14 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -27,6 +29,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.base.dro.controller.DisplayReadOutController;
@@ -35,6 +38,7 @@ import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.log.GkLog;
 
 /**
  * DRO part
@@ -42,23 +46,27 @@ import org.goko.core.controller.bean.MachineValueDefinition;
  * @author PsyKo
  *
  */
-public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, DisplayReadOutModel>{
+public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, DisplayReadOutModel> implements IPropertyChangeListener{
+	/** LOG */
+	private static final GkLog LOG = GkLog.getLogger(DisplayReadOut.class);
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Composite parentComposite;
 	@Inject
 	private ECommandService commandService;
 	@Inject
 	private EHandlerService handlerService;
-
+	
 	@Inject
 	public DisplayReadOut(IEclipseContext context) {
 		super(new DisplayReadOutController());
 		ContextInjectionFactory.inject(getController(), context);
 		try {
-			getController().initialize();
+			getController().initialize();			
 		} catch (GkException e) {
 			displayMessage(e);
 		}
+		ScopedPreferenceStore prefs = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,"org.goko.base.droservice");
+		prefs.addPropertyChangeListener(this);		
 	}
 
 	/**
@@ -111,6 +119,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			}
 		});
 	}
+	
 	private void createFields(Composite composite){
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 		composite.setLayout(new GridLayout(2, false));
@@ -132,29 +141,36 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			formToolkit.adapt(valueTxt, true, true);
 		}
 	}
-	/**
-	 * Recreate fields for data when settings changes
-	 * @param list the changed setting (not used, only for notification)
-	 * @throws GkException GkException
-	 */
-	@Inject
-	private void update(@Preference(nodePath = DROServiceImpl.SERVICE_ID, value=IDROPreferencesConstants.KEY_VALUES_ID_LIST) String list ) throws GkException{
-		if(parentComposite != null){
-			getController().updateDisplayedValues();
-			Composite parent = parentComposite.getParent();
-			parentComposite.dispose();
-			parentComposite = new Composite(parent, SWT.NONE);
-			createControls(parentComposite);
-			parent.setSize(parent.getSize());
-//			parent.redraw();
-//			parent.update();
-			parent.layout();
-		}
-	}
+
 
 	@Focus
 	public void onFocus() {
 		//TODO Your code here
+	}
+
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		if(parentComposite != null){
+			/*
+			 * Recreate fields for data when settings changes
+			 */
+			try {
+				getController().updateDisplayedValues();				
+				Composite parent = parentComposite.getParent();
+				parentComposite.dispose();
+				parentComposite = new Composite(parent, SWT.NONE);
+				createControls(parentComposite);
+				parent.setSize(parent.getSize());
+	//			parent.redraw();
+	//			parent.update();
+				parent.layout();
+			} catch (GkException e) {
+				LOG.error(e);
+			}
+		}
 	}
 
 

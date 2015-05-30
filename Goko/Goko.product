@@ -773,6 +773,12 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt"/>
       <plugin id="org.eclipse.e4.ui.workbench3"/>
+      <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.filetransfer"/>
+      <plugin id="org.eclipse.ecf.identity"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.ssl" fragment="true"/>
+      <plugin id="org.eclipse.ecf.ssl" fragment="true"/>
       <plugin id="org.eclipse.emf.common"/>
       <plugin id="org.eclipse.emf.ecore"/>
       <plugin id="org.eclipse.emf.ecore.change"/>
@@ -794,11 +800,13 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
       <plugin id="org.eclipse.equinox.p2.metadata"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
+      <plugin id="org.eclipse.equinox.p2.operations"/>
       <plugin id="org.eclipse.equinox.p2.publisher"/>
       <plugin id="org.eclipse.equinox.p2.publisher.eclipse"/>
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins"/>
       <plugin id="org.eclipse.equinox.p2.repository"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
+      <plugin id="org.eclipse.equinox.p2.transport.ecf"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
@@ -848,11 +856,14 @@ Public License instead of this License.  But first, please read
       <plugin id="org.goko.base.execution.time"/>
       <plugin id="org.goko.base.gcodeexecutionmonitor"/>
       <plugin id="org.goko.core"/>
+      <plugin id="org.goko.featuremanager"/>
       <plugin id="org.goko.gcode.filesender"/>
       <plugin id="org.goko.gcode.rs274ngcv3"/>
       <plugin id="org.goko.gcode.viewer"/>
+      <plugin id="org.goko.grbl.controller.v08"/>
       <plugin id="org.goko.log"/>
       <plugin id="org.goko.log.ui"/>
+      <plugin id="org.goko.pluginmanager"/>
       <plugin id="org.goko.serial.jssc"/>
       <plugin id="org.goko.tinyg"/>
       <plugin id="org.goko.tools.centerfinder"/>
@@ -875,6 +886,7 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.goko.featuremanager" autoStart="true" startLevel="4" />
    </configurations>
 
 </product>

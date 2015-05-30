@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_aZFx0ALUEeWNAc6kezL54A">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_a-EuMALUEeWNAc6kezL54A" featurename="trimBars" parentElementId="goko.application.window">
+    <elements xsi:type="basic:TrimBar" xmi:id="_oUOP8ALUEeWNAc6kezL54A" elementId="org.goko.core.trimbar">
+      <children xsi:type="menu:ToolBar" xmi:id="_sRogsALUEeWNAc6kezL54A" elementId="org.goko.core.toolbar.0">
+        <children xsi:type="menu:ToolControl" xmi:id="_0GTE8ALWEeWNAc6kezL54A" elementId="org.goko.core.toolcontrol.0" contributionURI="bundleclass://Goko/goko.toolbar.SeparatorToolControl"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_DqlHoALWEeWNAc6kezL54A" elementId="org.goko.core.open.item" iconURI="platform:/plugin/org.goko.core/icons/folder-horizontal-open.png">
+          <menu xmi:id="_ELe1QALWEeWNAc6kezL54A" elementId="org.goko.core.open.menu"/>
+        </children>
+      </children>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8sy2IALVEeWNAc6kezL54A" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_92VREALVEeWNAc6kezL54A" elementId="org.goko.core.open.menu.command" commandName="Open command"/>
+  </fragments>
+</fragment:ModelFragments>

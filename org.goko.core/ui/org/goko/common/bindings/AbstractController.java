@@ -87,7 +87,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		this.dataModel = binding;
 		this.bindings = new ArrayList<Binding>();
 	}
-
+	
 	/**
 	 * Initialization method
 	 * @throws GkException GkException
@@ -455,7 +455,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	 * @return
 	 * @throws GkException
 	 */
-	public boolean validate() throws GkException{
+	public boolean validate() {
 		List<BindingStatus> lstStatus = new ArrayList<BindingStatus>();
 		for(Binding binding : bindings){
 			IObservableValue status = binding.getValidationStatus();

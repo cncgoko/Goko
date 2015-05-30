@@ -7,18 +7,13 @@ import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
-import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.common.measure.SI;
-import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.gcode.rs274ngcv3.RS274GCodeService;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
 import org.goko.junit.tools.connection.AssertSerialEmulator;
 import org.goko.junit.tools.connection.SerialConnectionEmulator;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.tinyg.controller.prefs.TinyGPreferences;
 
 /*
  

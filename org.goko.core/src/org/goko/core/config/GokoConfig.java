@@ -155,6 +155,10 @@ public class GokoConfig{
 	}
 
 	public <Q extends Quantity<Q>> String format(Quantity<Q> quantity, boolean keepTraillingZero) throws GkException{
+		return format(quantity, keepTraillingZero, true);
+	}
+	
+	public <Q extends Quantity<Q>> String format(Quantity<Q> quantity, boolean keepTraillingZero, boolean displayUnit) throws GkException{
 		String result = StringUtils.EMPTY;
 		Unit<Q> targetUnit = getConfiguredUnit(quantity);
 		Quantity<Q> convertedQuantity = quantity.to(targetUnit);
@@ -163,7 +167,10 @@ public class GokoConfig{
 			df.setMinimumFractionDigits(getDigitCount());
 		}
 		df.setMaximumFractionDigits(getDigitCount());
-		result = df.format(convertedQuantity.doubleValue())+convertedQuantity.getUnit().getSymbol();
+		result = df.format(convertedQuantity.doubleValue());
+		if(displayUnit){
+			result+=convertedQuantity.getUnit().getSymbol();
+		}
 		return result;
 	}
 

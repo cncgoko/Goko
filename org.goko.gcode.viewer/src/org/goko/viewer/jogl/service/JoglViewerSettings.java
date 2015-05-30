@@ -26,8 +26,13 @@ import javax.vecmath.Vector3f;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.goko.core.common.GkUtils;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.config.GokoConfig;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 
@@ -78,6 +83,9 @@ public class JoglViewerSettings {
 		}
 	}
 
+	public IPreferenceStore getPreferences(){
+		return preferenceStore;
+	}
 	private JoglViewerSettings(){
 		preferenceStore = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,NODE);
 	}
@@ -85,12 +93,16 @@ public class JoglViewerSettings {
 	public static JoglViewerSettings getInstance() {
 		if(instance == null){
 			instance = new JoglViewerSettings();
-			instance.initialiseValues();
+			try {
+				instance.initializeValues();
+			} catch (GkException e) {
+				LOG.error(e);
+			}
 		}
 		return instance;
 	}
 
-	private void initialiseValues() {
+	private void initializeValues() throws GkException {
 		preferenceStore.setDefault(ROTARY_AXIS_ENABLED, true);
 		preferenceStore.setDefault(ROTARY_AXIS_DIRECTION, "X");
 		preferenceStore.setDefault(ROTARY_AXIS_POSITION_X, "0");
@@ -126,9 +138,9 @@ public class JoglViewerSettings {
 		}
 
 		Tuple6b position = new Tuple6b();
-		position.setX( new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_X)));
-		position.setY( new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_Y)));
-		position.setZ( new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_Z)));
+		position.setX( NumberQuantity.of(new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_X)), GokoConfig.getInstance().getLengthUnit()));
+		position.setY( NumberQuantity.of(new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_Y)), GokoConfig.getInstance().getLengthUnit()));
+		position.setZ( NumberQuantity.of(new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_Z)), GokoConfig.getInstance().getLengthUnit()));
 		setRotaryAxisPosition(position);
 
 	}
@@ -146,15 +158,15 @@ public class JoglViewerSettings {
 	 */
 	public void setRotaryAxisPosition(Tuple6b rotaryAxisPosition) {
 		this.rotaryAxisPosition = rotaryAxisPosition;
-		preferenceStore.setValue(ROTARY_AXIS_POSITION_X, rotaryAxisPosition.getX().toPlainString());
-		preferenceStore.setValue(ROTARY_AXIS_POSITION_Y, rotaryAxisPosition.getY().toPlainString());
-		preferenceStore.setValue(ROTARY_AXIS_POSITION_Z, rotaryAxisPosition.getZ().toPlainString());
+		preferenceStore.setValue(ROTARY_AXIS_POSITION_X, rotaryAxisPosition.getX().getValue().toPlainString());
+		preferenceStore.setValue(ROTARY_AXIS_POSITION_Y, rotaryAxisPosition.getY().getValue().toPlainString());
+		preferenceStore.setValue(ROTARY_AXIS_POSITION_Z, rotaryAxisPosition.getZ().getValue().toPlainString());
 	}
 	/**
 	 * @return the rotaryAxisDirection
 	 */
 	public EnumRotaryAxisDirection getRotaryAxisDirection() {
-		return rotaryAxisDirection;
+		return EnumRotaryAxisDirection.valueOf(preferenceStore.getString(ROTARY_AXIS_DIRECTION));
 	}
 	/**
 	 * Return the vector defining the direction of the rotary axis
@@ -245,9 +257,10 @@ public class JoglViewerSettings {
 
 	/**
 	 * @return the majorGridSpacing
+	 * @throws GkException 
 	 */
-	public BigDecimal getMajorGridSpacing() {
-		return new BigDecimal(preferenceStore.getString(MAJOR_GRID_SPACING));
+	public BigDecimal getMajorGridSpacing() throws GkException {
+		return GkUtils.toBigDecimal(preferenceStore.getString(MAJOR_GRID_SPACING));			
 	}
 
 	/**
@@ -259,9 +272,10 @@ public class JoglViewerSettings {
 
 	/**
 	 * @return the minorGridSpacing
+	 * @throws GkException 
 	 */
-	public BigDecimal getMinorGridSpacing() {
-		return new BigDecimal(preferenceStore.getString(MINOR_GRID_SPACING));
+	public BigDecimal getMinorGridSpacing() throws GkException {		
+		return GkUtils.toBigDecimal(preferenceStore.getString(MINOR_GRID_SPACING));		
 	}
 
 	/**

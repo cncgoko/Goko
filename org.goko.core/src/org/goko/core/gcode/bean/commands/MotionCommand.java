@@ -16,7 +16,9 @@
  *******************************************************************************/
 package org.goko.core.gcode.bean.commands;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeCommandVisitor;
@@ -148,27 +150,32 @@ public abstract class MotionCommand extends SettingCommand {
 
 	@Override
 	public void setStringCommand(String stringCommand) {
-		String str = stringCommand.replaceAll("(X|x)[^A-Z]+", "X{x}");
-		str = str.replaceAll("(Y|y)[^A-Z]+", "Y{y}");
-		str = str.replaceAll("(Z|z)[^A-Z]+", "Z{z}");
-		str = str.replaceAll("(A|a)[^A-Z]+", "A{a}");
-		str = str.replaceAll("(B|b)[^A-Z]+", "B{b}");
-		str = str.replaceAll("(C|c)[^A-Z]+", "C{c}");
+		String str = stringCommand.replaceAll("(X|x)((\\+|\\-)?[0-9]?(\\.|0-9]+)?)+", "X{x}");		
+		str = str.replaceAll("(Y|y)((\\+|\\-)?[0-9]?(\\.|0-9]+)?)+", "Y{y}");
+		str = str.replaceAll("(Z|z)((\\+|\\-)?[0-9]?(\\.|0-9]+)?)+", "Z{z}");
+		str = str.replaceAll("(A|a)((\\+|\\-)?[0-9]?(\\.|0-9]+)?)+", "A{a}");
+		str = str.replaceAll("(B|b)((\\+|\\-)?[0-9]?(\\.|0-9]+)?)+", "B{b}");
+		str = str.replaceAll("(C|c)((\\+|\\-)?[0-9]?(\\.|0-9]+)?)+", "C{c}");
 		super.setStringCommand(str);
 	}
 
 	@Override
 	public String getStringCommand() {
-		String str = super.getStringCommand().replaceAll("\\{x\\}", String.valueOf(getCoordinates().getX()));
-		str = str.replaceAll("\\{y\\}", String.valueOf(getAbsoluteEndCoordinate().getY()));
-		str = str.replaceAll("\\{z\\}", String.valueOf(getAbsoluteEndCoordinate().getZ()));
-		str = str.replaceAll("\\{a\\}", String.valueOf(getAbsoluteEndCoordinate().getA()));
-		str = str.replaceAll("\\{b\\}", String.valueOf(getAbsoluteEndCoordinate().getB()));
-		str = str.replaceAll("\\{c\\}", String.valueOf(getAbsoluteEndCoordinate().getC()));
+		String str = replace(super.getStringCommand(),"{x}", getCoordinates().getX());
+		str        = replace(str,"{y}", getAbsoluteEndCoordinate().getY());
+		str        = replace(str,"{z}", getAbsoluteEndCoordinate().getZ());
+		str        = replace(str,"{a}", getAbsoluteEndCoordinate().getA());
+		str        = replace(str,"{b}", getAbsoluteEndCoordinate().getB());
+		str        = replace(str,"{c}", getAbsoluteEndCoordinate().getC());
 		return str;
 	}
 
-
+	private String replace(String target, String pattern, BigDecimalQuantity<?> coord){
+		if(StringUtils.defaultIfBlank(target, StringUtils.EMPTY).contains(pattern)){
+			return target.replace(pattern, String.valueOf(coord.value()));
+		}
+		return target;
+	}
 	private void updateBounds(){
 		if(getAbsoluteEndCoordinate() != null && getAbsoluteStartCoordinate() != null){
 			Tuple6b min = getAbsoluteStartCoordinate().min(getAbsoluteEndCoordinate());

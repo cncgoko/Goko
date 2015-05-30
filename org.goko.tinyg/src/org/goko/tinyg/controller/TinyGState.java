@@ -31,7 +31,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.US;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoConfig;
@@ -70,7 +72,7 @@ public class TinyGState extends MachineValueStore{
 		position = new Tuple6b().setZero();
 		currentUnit = SIPrefix.MILLI(SI.METRE);
 		storeValue(TinyG.STATE, "State", "The state of TinyG controller board", MachineState.UNDEFINED);
-		storeValue(TinyG.POSITION, "Pos", "The position of the machine", new Point3d());
+		//storeValue(TinyG.POSITION, "Pos", "The position of the machine", new Point3d());
 		storeValue(TinyG.POSITION_X, "X", "The X position of the machine",  StringUtils.EMPTY);
 		storeValue(TinyG.POSITION_Y, "Y", "The Y position of the machine",  StringUtils.EMPTY);
 		storeValue(TinyG.POSITION_Z, "Z", "The Z position of the machine",  StringUtils.EMPTY);
@@ -196,19 +198,19 @@ public class TinyGState extends MachineValueStore{
 //						   getValue(TinyG.POSITION_A, BigDecimal.class).getValue(),
 //						   null,null);
 	}
-	protected BigDecimal getX() throws GkException{
+	protected BigDecimalQuantity<Length> getX() throws GkException{
 		return position.getX();
 		//return getValue(TinyG.POSITION_X, BigDecimal.class).getValue();
 	}
-	protected BigDecimal getY() throws GkException{
+	protected BigDecimalQuantity<Length> getY() throws GkException{
 		return position.getY();
 		//return getValue(TinyG.POSITION_Y, BigDecimal.class).getValue();
 	}
-	protected BigDecimal getZ() throws GkException{
+	protected BigDecimalQuantity<Length> getZ() throws GkException{
 		return position.getZ();
 		//return getValue(TinyG.POSITION_Z, BigDecimal.class).getValue();
 	}
-	protected BigDecimal getA() throws GkException{
+	protected BigDecimalQuantity<Angle> getA() throws GkException{
 		return position.getA();
 		//return getValue(TinyG.POSITION_A, BigDecimal.class).getValue();
 	}

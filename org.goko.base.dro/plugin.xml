@@ -8,7 +8,7 @@
       </fragment>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencesPages">
       <page
             class="org.goko.base.dro.preferences.DROPreferencesPage"
             id="org.goko.dro.displayPreferences"

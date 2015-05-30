@@ -10,17 +10,17 @@
       </fragment>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencesPages">
       <page
-            class="org.goko.viewer.jogl.preferences.performances.JoglPerformancesPreferences"
+            class="org.goko.viewer.jogl.preferences.performances.JoglViewerPreferencePage"
             id="org.goko.jogl.viewer.preferences.viewer"
             name="Viewer">
       </page>
       <page
             category="org.goko.jogl.viewer.preferences.viewer"
-            class="org.goko.viewer.jogl.JoglViewerPreferences"
-            id="org.goko.jogl.viewer.preferences.rotaryaxis"
-            name="Rotary axis">
+            class="org.goko.viewer.jogl.preferences.rotaryaxis.JoglRotaryAxisPreferencePage"
+            id="org.goko.jogl.viewer.preferences.4thaxis"
+            name="4th axis">
       </page>
    </extension>
 

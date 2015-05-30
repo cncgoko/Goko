@@ -27,6 +27,7 @@ import javax.vecmath.Point3d;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.service.IGCodeService;
@@ -61,14 +62,13 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 	}
 
 	@SuppressWarnings("unchecked")
-	public void grabPoint() throws GkException{
-		Point3d p = controllerService.getPosition();
+	public void grabPoint() throws GkException{		
 		List<Tuple6b> lst = getDataModel().getSamplePoints();
-		Tuple6b tuple = new Tuple6b(p.x,p.y,p.z);
+		Tuple6b tuple = controllerService.getPosition();
 		lst.add(tuple );
 		getDataModel().setSamplePoints(lst);
 		getDataModel().setSelectedPoint(tuple);
-		centerFinderService.capturePoint(new Point3d(p.x,p.y,p.z));
+		centerFinderService.capturePoint(new Point3d( tuple.getX().doubleValue(SI.MILLIMETRE),tuple.getY().doubleValue(SI.MILLIMETRE), tuple.getZ().doubleValue(SI.MILLIMETRE)));
 		if(getDataModel().getSamplePoints().size() >= 3){
 			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint()));
 		}else{

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="org.goko.ui.gkPreferencePages" name="Goko Preferences page" schema="schema/org.goko.ui.gkPreferencePages.exsd"/>
+   <extension-point id="org.goko.ui.gkPreferencesPages" name="org.goko.ui.gkPreferencesPages" schema="schema/org.goko.ui.gkPreferencesPages.exsd"/>
 
    <extension
          id="product"
@@ -23,7 +23,7 @@
          <property
                name="windowImages"
                value="icons/launch/goko16.png,icons/launch/goko32.png,icons/launch/goko48.png,icons/launch/goko64.png,icons/launch/goko128.png,icons/launch/goko256.png">
-         </property>        
+         </property>
       </product>
    </extension>
    <extension
@@ -43,14 +43,8 @@
       </processor>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencesPages">
       <page
-            class="goko.dialog.GokoGeneralPreferences"
-            id="Goko.preferencePages.general"
-            name="General">
-      </page>
-      <page
-            category="Goko.preferencePages.general"
             class="org.goko.preferences.units.GokoUnitsPreferences"
             id="Goko.preferencePages.general.units"
             name="Units">

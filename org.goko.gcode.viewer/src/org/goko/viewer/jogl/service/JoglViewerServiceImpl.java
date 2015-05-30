@@ -338,6 +338,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 				this.gridRenderer = new GridRenderer();
 				addRenderer(this.gridRenderer);
 			}
+			gcodeRenderer.update();
 		} catch (GkException e) {
 			LOG.error(e);
 		}

@@ -17,16 +17,37 @@
 
 package org.goko.core.common.measure;
 
+import org.goko.core.common.measure.converter.MultiplyConverter;
 import org.goko.core.common.measure.dimension.QuantityDimension;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.BaseUnit;
+import org.goko.core.common.measure.units.TransformedUnit;
+import org.goko.core.common.measure.units.Unit;
 
 public class SI {
-    /**
+	 /**
      * The SI base unit for length quantities (standard name <code>m</code>).
      * One metre was redefined in 1983 as the distance traveled by light in
      * a vacuum in 1/299,792,458 of a second.
      */
 	public static final BaseUnit<Length> METRE = new BaseUnit<Length>("m", QuantityDimension.LENGTH);
+	
+	 /**
+     * Derived from Metre
+     * One millimetre equals one thousandth of a metre
+     */
+	public static final Unit<Length> MILLIMETRE = SIPrefix.MILLI(METRE);
+	
+	 /**
+     * The SI base unit for angle quantities (standard name <code>rad</code>).
+     * An angle's measurement in radians is numerically equal to the length of a corresponding arc of a unit circle,
+     */
+	public static final BaseUnit<Angle> RADIAN = new BaseUnit<Angle>("rad", QuantityDimension.ANGLE);
+	
+	/**
+	 * Degrees (angular degrees, symbol ° ) 
+	 */
+	public static final TransformedUnit<Angle> DEGREE_ANGLE = new TransformedUnit<Angle>("°", RADIAN, new MultiplyConverter(180.0/Math.PI));
 
 }

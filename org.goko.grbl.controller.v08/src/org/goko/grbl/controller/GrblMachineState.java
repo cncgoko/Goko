@@ -29,8 +29,19 @@ import org.goko.core.controller.bean.MachineState;
  */
 public class GrblMachineState extends MachineState{
 	public static final GrblMachineState UNDEFINED 		= new GrblMachineState(-1,"Undefined");
+	public static final GrblMachineState INITIALIZING 	= new GrblMachineState(0, "Initializing");
+	public static final GrblMachineState READY 			= new GrblMachineState(1,"Ready");
+	public static final GrblMachineState ALARM 			= new GrblMachineState(2,"Alarm");
+	public static final GrblMachineState PROGRAM_STOP	= new GrblMachineState(3,"Program stop");
+	public static final GrblMachineState PROGRAM_END 	= new GrblMachineState(4,"Program end");
+	public static final GrblMachineState MOTION_RUNNING = new GrblMachineState(5,"Motion running");
+	public static final GrblMachineState MOTION_HOLDING = new GrblMachineState(6,"Motion holding");
+	public static final GrblMachineState PROBE_CYCLE 	= new GrblMachineState(7,"Probe cycle");
+	public static final GrblMachineState RUNNING 		= new GrblMachineState(8,"Running");
+	public static final GrblMachineState HOMING 		= new GrblMachineState(9,"Homing");
 	public static final GrblMachineState IDLE 			= new GrblMachineState(100, "Idle");
-
+	public static final GrblMachineState CHECK 			= new GrblMachineState(10,"Check");
+	
 	public GrblMachineState(int code, String label){
 		super(code,label);
 	}

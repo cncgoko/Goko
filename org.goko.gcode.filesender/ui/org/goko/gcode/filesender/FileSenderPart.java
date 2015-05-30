@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -71,6 +72,9 @@ import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.gcode.filesender.controller.GCodeFileSenderBindings;
 import org.goko.gcode.filesender.controller.GCodeFileSenderController;
 
@@ -80,11 +84,13 @@ import org.goko.gcode.filesender.controller.GCodeFileSenderController;
  * @author PsyKo
  *
  */
-public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> {
+public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener {
 	// s
 	private final FormToolkit formToolkit = new FormToolkit( Display.getDefault());
 	@Inject
 	private IApplicativeLogService applicativeLogService;
+	@Inject
+	private IGCodeExecutionMonitorService monitorService;
 	private Text txtFilepath;
 	private Label lblFilesize;
 	private Label lblName;
@@ -116,13 +122,16 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		context.set(FileSenderPart.class, this);
 		ContextInjectionFactory.inject(getController(), context);
 		try {
-			getController().initialize();
+			getController().initialize();			
 		} catch (GkException e) {
 			displayMessage(e);
 		}
 
 	}
-
+	@PostConstruct
+	protected void postConstruct() throws GkException{
+		monitorService.addExecutionListener(this);		
+	}
 	private void startFileParsingJob(final String filePath) {
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
 		try {
@@ -459,7 +468,6 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 
 		initCustomBindings();
-		//testNatTAble(composite_7);
 	}
 
 	private void initCustomBindings() throws GkException {
@@ -477,9 +485,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 		this.getController().addEnableBinding(btnSendFile, "streamingAllowed");
 		this.getController().addEnableReverseBinding(btnBrowse, "streamingInProgress");
-		// this.getController().addEnableBinding(btnCancel,
-		// "streamingInProgress");
-		// Progress bar bindings
+
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue( progressSentCommand, "maximum");
 			IObservableValue modelObserver = BeanProperties.value( "totalCommandCount").observe(getDataModel());
@@ -511,6 +517,60 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(IGCodeExecutionToken token) throws GkException {
+		getController().onExecutionStart(token);
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+		getController().onExecutionCanceled(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(IGCodeExecutionToken token) throws GkException {		
+		getController().onExecutionComplete(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {	
+		System.err.println("FileSenderPart onExecutionComplete");
+		if(!shell.isDisposed()){
+			final int errorCount 	= token.getErrorCommandCount();
+			final int executedCount = token.getExecutedCommandCount();
+			final int totalCount 	= token.getCommandCount();
+			shell.getDisplay().asyncExec(new Runnable() {
+		      @Override
+		      public void run() {
+		    	  if(executedCount == totalCount){
+		    		  MessageDialog.openInformation(shell, "Execution complete", "GCode file successfully executed.");
+		    	  }else{
+		    		  MessageDialog.openInformation(shell, "Execution finished with errors", "GCode file was completely executed but some error were reported.Please refers to the Problems view.");
+		    	  }
+		      }
+		    });
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onCommandStateChanged(org.goko.core.gcode.bean.execution.IGCodeExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

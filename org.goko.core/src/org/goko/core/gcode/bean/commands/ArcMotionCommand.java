@@ -19,6 +19,8 @@ package org.goko.core.gcode.bean.commands;
 import java.math.BigDecimal;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.gcode.bean.IGCodeCommandVisitor;
 import org.goko.core.gcode.bean.Tuple6b;
 
@@ -50,6 +52,10 @@ public class ArcMotionCommand extends MotionCommand {
 		this.ijkValues = new Tuple6b();
 	}
 
+	@Override
+	public void setStringCommand(String stringCommand) {		
+		super.setStringCommand(stringCommand);
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.bean.GCodeCommand#accept(org.goko.core.gcode.bean.IGCodeCommandVisitor)
 	 */
@@ -118,13 +124,13 @@ public class ArcMotionCommand extends MotionCommand {
 		this.revolutionAxis = new Tuple6b(revolutionAxis);
 	}
 
-	public BigDecimal getI(){
+	public Quantity<Length> getI(){
 		return ijkValues.getX();
 	}
-	public BigDecimal getJ(){
+	public Quantity<Length> getJ(){
 		return ijkValues.getY();
 	}
-	public BigDecimal getK(){
+	public Quantity<Length> getK(){
 		return ijkValues.getZ();
 	}
 

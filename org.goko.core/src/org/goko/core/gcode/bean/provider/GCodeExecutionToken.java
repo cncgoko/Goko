@@ -62,7 +62,8 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	protected boolean complete;
 	/** The monitor service */
 	protected IGCodeExecutionMonitorService monitorService;
-
+	/** Paused state */
+	protected boolean paused;
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
@@ -162,7 +163,7 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 		mapErrorsCommandById.add(command.getId());
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.ERROR);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.ERROR));
-		monitorService.notifyCommandStateChanged(this, idCommand);
+		monitorService.notifyCommandStateChanged(this, idCommand);		
 	}
 
 	/** (inheritDoc)
@@ -215,7 +216,9 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	@Override
 	public void beginExecution() throws GkException {
-		getMonitorService().notifyExecutionStart(this);
+		if(isMonitorService()){
+			getMonitorService().notifyExecutionStart(this);
+		}
 	}
 
 	/** (inheritDoc)
@@ -223,7 +226,23 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	@Override
 	public void endExecution() throws GkException {
-		getMonitorService().notifyExecutionComplete(this);
+		if(isMonitorService()){
+			if(isComplete()){
+				getMonitorService().notifyExecutionComplete(this);				
+			}else{
+				getMonitorService().notifyExecutionCanceled(this);
+			}
+		}
+	}
+		
+	/**
+	 * Notify the execution's pause of this token
+	 * @throws GkException GkException
+	 */
+	protected void pauseExecution() throws GkException {
+		if(isMonitorService()){			
+			getMonitorService().notifyExecutionPause(this);			
+		}
 	}
 
 	/** (inheritDoc)
@@ -251,6 +270,9 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 		}
 	}
 
+	public boolean isMonitorService() {
+		return monitorService != null;
+	}
 	/**
 	 * @return the monitorService
 	 */
@@ -263,6 +285,27 @@ public class GCodeExecutionToken  extends EventDispatcher implements IGCodeExecu
 	 */
 	public void setMonitorService(IGCodeExecutionMonitorService monitorService) {
 		this.monitorService = monitorService;
+	}
+
+	/**
+	 * @return the paused
+	 */
+	public boolean isPaused() {
+		return paused;
+	}
+
+	/**
+	 * @param paused the paused to set
+	 * @throws GkException GkException 
+	 */
+	public void setPaused(boolean paused) throws GkException {
+		this.paused = paused;
+		if(paused){
+			pauseExecution();
+		}
+		synchronized (this) {
+			notify();
+		}
 	}
 
 

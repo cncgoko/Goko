@@ -143,8 +143,8 @@ public class RS274 {
 
 	public static BigDecimal buildBigDecimal(String value) throws GkException{
 		BigDecimal bigDecimal = new BigDecimal(value);
-		if(RS274Config.getConfig().isDecimalTruncateEnabled()){
-			int decimalCount = RS274Config.getConfig().getDecimalCount();
+		if(RS274Config.getInstance().isDecimalTruncateEnabled()){
+			int decimalCount = RS274Config.getInstance().getDecimalCount();
 			if(bigDecimal.scale() > decimalCount){
 				bigDecimal = bigDecimal.setScale(decimalCount,RoundingMode.DOWN);
 			}

@@ -3,11 +3,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Jn2BYA6HEeOOz9g2jG0xHg" featurename="children" parentElementId="goko.application.partstack">
     <elements xsi:type="basic:Part" xmi:id="_Kzi_gA6HEeOOz9g2jG0xHg" elementId="goko.application.parts.gcode.filesender" contributionURI="bundleclass://org.goko.gcode.filesender/org.goko.gcode.filesender.FileSenderPart" label="GCode streaming" iconURI="platform:/plugin/org.goko.gcode.filesender/icons/document-attribute-g.png"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4E8uoEirEeOMkdwP08CNxA" featurename="children" parentElementId="goko.trim.top">
-    <elements xsi:type="menu:ToolBar" xmi:id="_TTm4UEisEeOMkdwP08CNxA"/>
-  </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_B4pLIHWYEeS8PPI0XIKCbQ" featurename="children" parentElementId="goko.application.menu.open">
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_CpTMAHWYEeS8PPI0XIKCbQ" elementId="org.goko.gcode.filesender.directmenuitem.gcodeFile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.filesender/icons/document-attribute-g.png" contributionURI="bundleclass://org.goko.gcode.filesender/org.goko.gcode.filesender.handler.OpenGCodeFileHandler"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_34ZYwHWYEeS8PPI0XIKCbQ" elementId="org.goko.gcode.filesender.handledmenuitem.openWithCommand" label="Open with command"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zxz4IALVEeWNAc6kezL54A" featurename="children" parentElementId="org.goko.core.open.menu">
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_1mXmAALVEeWNAc6kezL54A" elementId="org.goko.gcode.filesender.directmenuitem.gcodeFile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.filesender/icons/document-attribute-g.png" contributionURI="bundleclass://org.goko.gcode.filesender/org.goko.gcode.filesender.handler.OpenGCodeFileHandler"/>
   </fragments>
 </fragment:ModelFragments>

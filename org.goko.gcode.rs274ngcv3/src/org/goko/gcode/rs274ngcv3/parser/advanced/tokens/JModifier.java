@@ -16,7 +16,10 @@
  *******************************************************************************/
 package org.goko.gcode.rs274ngcv3.parser.advanced.tokens;
 
+import java.math.BigDecimal;
+
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 import org.goko.gcode.rs274ngcv3.RS274;
@@ -35,7 +38,7 @@ public class JModifier extends LetterTokenCommandModifier<ArcMotionCommand>{
 	@Override
 	public void apply(GCodeToken token, ArcMotionCommand command) throws GkException {
 		Tuple6b coordinates = command.getIJKValues();
-		coordinates.setY(RS274.buildBigDecimal( RS274.getTokenValue(token) ) );
+		coordinates.setY( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), command.getUnit().getUnit()));
 		command.setIJKValues(coordinates);
 	}
 

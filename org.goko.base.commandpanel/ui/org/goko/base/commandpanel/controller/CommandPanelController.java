@@ -40,11 +40,14 @@ import org.goko.base.commandpanel.CommandPanelParameter;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IStepJogService;
-import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
@@ -72,6 +75,25 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Optional
 	private IStepJogService stepJogService;
 
+	@Inject	
+	public void initServices(){
+		// tinyg
+//		try {
+//			Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+//			BundleContext context = bundle.getBundleContext();
+//			List<ServiceReference<IControllerService>> serviceReferences = new ArrayList<ServiceReference<IControllerService>>();
+//			serviceReferences.addAll( context.getServiceReferences(IControllerService.class, "(targetBoard=tinyg)") );
+//			
+//			String filterString = "(targetBoard=tinyg)";
+//			
+//		   	context.getServiceReferences(IControllerService.class, filterString);
+//		   	controllerService = context.getService(serviceReferences.get(0));
+//			
+//		} catch (InvalidSyntaxException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
 	public CommandPanelController(CommandPanelModel binding) {
 		super(binding);
 	}
@@ -135,6 +157,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			});
 		}
 	}
+	
 	@Inject
 	@Optional
 	public void settingChanged(@Preference(nodePath=Activator.PREFERENCE_NODE, value=CommandPanelParameter.JOG_FEEDRATE) String val){
@@ -148,7 +171,10 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			public void mouseDown(MouseEvent e) {
 				try {
 					if(getDataModel().isIncrementalJog()){
-						stepJogService.startJog(axis, getDataModel().getJogSpeed(), getDataModel().getJogIncrement());
+						Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+						getDataModel().setLengthUnit(unit);
+						BigDecimalQuantity<Length> step = NumberQuantity.of(getDataModel().getJogIncrement(), unit);
+						stepJogService.startJog(axis, getDataModel().getJogSpeed(), step);
 					}else{
 						continuousJogService.startJog(axis, getDataModel().getJogSpeed());
 					}
@@ -160,6 +186,8 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
+					Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+					getDataModel().setLengthUnit(unit);
 					if(getDataModel().isIncrementalJog()){
 						stepJogService.stopJog();
 					}else{
@@ -172,40 +200,9 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		});
 	}
 
-	public void oldbindJogButton(Button widget, final String axis) throws GkException {
-		if(controllerService.isControllerAction(DefaultControllerAction.JOG_START)
-				&& controllerService.isControllerAction(DefaultControllerAction.JOG_STOP)){
-			final IGkControllerAction actionStart = controllerService.getControllerAction(DefaultControllerAction.JOG_START);
-			final IGkControllerAction actionStop  = controllerService.getControllerAction(DefaultControllerAction.JOG_STOP);
-
-			widget.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseDown(MouseEvent e) {
-					try {
-						if(getDataModel().isIncrementalJog()){
-							actionStart.execute(axis, String.valueOf(getDataModel().getJogSpeed()), String.valueOf(getDataModel().getJogIncrement()));
-						}else{
-							actionStart.execute(axis, String.valueOf(getDataModel().getJogSpeed()));
-						}
-					} catch (GkException e1) {
-						LOG.error(e1);
-					}
-				}
-				@Override
-				public void mouseUp(MouseEvent e) {
-					try {
-						if(!getDataModel().isIncrementalJog()){
-							actionStop.execute(axis);
-						}
-					} catch (GkException e1) {
-						LOG.error(e1);
-					}
-				}
-			});
-		}
-	}
-
-	public void initilizeValues() {
+	public void initilizeValues() throws GkException {
+		Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+		getDataModel().setLengthUnit(unit);
 		getDataModel().setJogSpeed( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_FEEDRATE, StringUtils.EMPTY)) );
 		getDataModel().setJogIncrement( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_STEP_SIZE, StringUtils.EMPTY)) );
 		if(stepJogService != null && continuousJogService != null){
@@ -231,7 +228,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			}
 		}
 	}
-
+	
 	private IEclipsePreferences getPreferences(){
 		return Activator.getPreferences();
 	}

@@ -17,62 +17,32 @@
 
 package org.goko.core.config;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
-import org.osgi.service.prefs.BackingStoreException;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 public abstract class AbstractGkConfig {
 	/** The stored preference */
-	private IEclipsePreferences preferences;
-
+	private ScopedPreferenceStore preferences;
+	
 	/**
 	 * Constructor
 	 */
 	protected AbstractGkConfig(String id) {
-		preferences = InstanceScope.INSTANCE.getNode(id);
+		preferences = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,id);		
 	}
 
-	protected IEclipsePreferences getPreferences(){
+	/**
+	 * @return the preferences
+	 */
+	public ScopedPreferenceStore getPreferences() {
 		return preferences;
 	}
 
 	/**
-	 * Save the current values
-	 * @throws GkException GkException
+	 * @param preferences the preferences to set
 	 */
-	public void save() throws GkException{
-		try {
-			preferences.flush();
-		} catch (BackingStoreException e) {
-			throw new GkTechnicalException(e);
-		}
+	protected void setPreferences(ScopedPreferenceStore preferences) {
+		this.preferences = preferences;
 	}
-}
 
-///** The stored preference */
-//private IPersistentPreferenceStore preferences;
-//
-///**
-// * Constructor
-// */
-//protected AbstractGkConfig(String id) {
-//	preferences = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, id);
-//}
-//
-//protected IPreferenceStore getPreferences(){
-//	return preferences;
-//}
-//
-///**
-// * Save the current values
-// * @throws GkException GkException
-// */
-//public void save() throws GkException{		
-//	try {
-//		preferences.save();
-//	} catch (IOException e) {
-//		throw new GkTechnicalException(e);
-//	}
-//}
+}
