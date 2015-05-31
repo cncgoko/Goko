@@ -1,6 +1,5 @@
 package goko.handlers;
 
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -27,116 +26,95 @@ import org.eclipse.swt.widgets.Shell;
 // !!! Do not run from within IDE. Update only works in an exported product !!!
 //
 public class UpdateHandler {
-  private static final String REPOSITORY_LOC = System.getProperty("UpdateHandler.Repo", "http://download.goko.fr/repository");
+	
+	@Execute
+	public void execute(final IProvisioningAgent agent, final Shell shell, final UISynchronize sync, final IWorkbench workbench, final Logger logger) {
+		Job job = new Job("Update Job") {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				return checkForUpdates(agent, shell, sync, workbench, monitor,logger);
+			}
+		};
+		job.schedule();
+	}
 
-  @Execute
-  public void execute(final IProvisioningAgent agent, final Shell shell,
-      final UISynchronize sync, final IWorkbench workbench,
-      final Logger logger) {
-    Job j = new Job("Update Job") {
-      @Override
-      protected IStatus run(final IProgressMonitor monitor) {
-        return checkForUpdates(agent, shell, sync, workbench, monitor,
-            logger);
-      }
-    };
-    j.schedule();
-  }
+	private IStatus checkForUpdates(final IProvisioningAgent agent, final Shell shell, final UISynchronize sync, final IWorkbench workbench, IProgressMonitor monitor, Logger logger) {
 
-  private IStatus checkForUpdates(final IProvisioningAgent agent,
-      final Shell shell, final UISynchronize sync,
-      final IWorkbench workbench, IProgressMonitor monitor, Logger logger) {
+		/* 1. configure update operation */
+		final ProvisioningSession session = new ProvisioningSession(agent);
+		final UpdateOperation operation = new UpdateOperation(session);
+		//configureUpdate(operation, logger);
 
-    /* 1. configure update operation */
-    final ProvisioningSession session = new ProvisioningSession(agent);
-    final UpdateOperation operation = new UpdateOperation(session);
-    configureUpdate(operation, logger);
+		/* 2. Check for updates */
 
-    /* 2. Check for updates */
+		// run check if updates are available (causing I/O)
+		final IStatus status = operation.resolveModal(monitor);
+		
+		// Failed to find updates (inform user and exit)
+		if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
+			showNoUpdateMessage(shell, sync);
+			return Status.CANCEL_STATUS;
+		}
 
-    // run check if updates are available (causing I/O)
-    final IStatus status = operation.resolveModal(monitor);
+		/* 3. run installation */
+		final ProvisioningJob provisioningJob = operation.getProvisioningJob(monitor);
 
-    // Failed to find updates (inform user and exit)
-    if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
-      showMessage(shell, sync);
-      return Status.CANCEL_STATUS;
-    }
+		// updates cannot run from within Eclipse IDE!!!
+		if (provisioningJob == null) {
+			logger.error("Maybe you are trying to update from the Eclipse IDE? This won't work!!!");
+			return Status.CANCEL_STATUS;
+		}
+		sync.syncExec(new Runnable() {
 
-    /* 3. run installation */
-    final ProvisioningJob provisioningJob = operation
-        .getProvisioningJob(monitor);
+			@Override
+			public void run() {
+				boolean result = MessageDialog.openQuestion(shell, "Update available","An update is available. Would you like to install it now ? (Restart will be required)");
+				
+				if(result){
+					configureProvisioningJob(provisioningJob, shell, sync, workbench);
+					provisioningJob.schedule();
+				}
+			}
+		});
+		
+		return Status.OK_STATUS;
 
-    // updates cannot run from within Eclipse IDE!!!
-    if (provisioningJob == null) {
-      logger.error("Maybe you are trying to update from the Eclipse IDE? This won't work!!!");
-      return Status.CANCEL_STATUS;
-    }
-    configureProvisioningJob(provisioningJob, shell, sync, workbench);
+	}
 
-    provisioningJob.schedule();
-    return Status.OK_STATUS;
+	private void configureProvisioningJob(ProvisioningJob provisioningJob,final Shell shell, final UISynchronize sync, final IWorkbench workbench) {
 
-  }
+		// Register a job change listener to track
+		// installation progress and notify user upon success
+		provisioningJob.addJobChangeListener(new JobChangeAdapter() {
+			@Override
+			public void done(IJobChangeEvent event) {
+				if (event.getResult().isOK()) {
+					sync.syncExec(new Runnable() {
 
-  private void configureProvisioningJob(ProvisioningJob provisioningJob,
-      final Shell shell, final UISynchronize sync,
-      final IWorkbench workbench) {
+						@Override
+						public void run() {
+							boolean restart = MessageDialog
+									.openQuestion(shell, "Updates installed?", "Updates have been installed successfully. Do you want to restart?");
+							if (restart) {
+								workbench.restart();
+							}
+						}
+					});
 
-    // Register a job change listener to track
-    // installation progress and notify user upon success
-    provisioningJob.addJobChangeListener(new JobChangeAdapter() {
-      @Override
-      public void done(IJobChangeEvent event) {
-        if (event.getResult().isOK()) {
-          sync.syncExec(new Runnable() {
+				}
+				super.done(event);
+			}
+		});
 
-            @Override
-            public void run() {
-              boolean restart = MessageDialog
-                  .openQuestion(shell,
-                      "Updates installed, restart?",
-                      "Updates have been installed successfully, do you want to restart?");
-              if (restart) {
-                workbench.restart();
-              }
-            }
-          });
+	}
 
-        }
-        super.done(event);
-      }
-    });
+	private void showNoUpdateMessage(final Shell parent, final UISynchronize sync) {
+		sync.syncExec(new Runnable() {
 
-  }
-
-  private void showMessage(final Shell parent, final UISynchronize sync) {
-    sync.syncExec(new Runnable() {
-
-      @Override
-      public void run() {
-        MessageDialog
-            .openWarning(parent, "No update",
-                "No updates for the current installation have been found");
-      }
-    });
-  }
-
-  private UpdateOperation configureUpdate(final UpdateOperation operation,
-      Logger logger) {
-    // create uri and check for validity
-    URI uri = null;
-    try {
-      uri = new URI(REPOSITORY_LOC);
-    } catch (final URISyntaxException e) {
-      logger.error(e);
-      return null;
-    }
-
-    // set location of artifact and metadata repo
-    operation.getProvisioningContext().setArtifactRepositories(new URI[] { uri });
-    operation.getProvisioningContext().setMetadataRepositories(new URI[] { uri });
-    return operation;
-  }
-} 
-
+			@Override
+			public void run() {
+				MessageDialog.openInformation(parent, "No update","Your version of Goko is up to date.");
+			}
+		});
+	}
+}
