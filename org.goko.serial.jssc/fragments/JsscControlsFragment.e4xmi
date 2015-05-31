@@ -12,7 +12,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_eOP_AP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.serial.jssc.toolbar.disconnect.handler" contributionURI="bundleclass://org.goko.serial.jssc/org.goko.serial.jssc.toolbar.handler.JsscDisconnectHandler" command="_g5PloP8ZEeOZbpDQ7wgKzQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_Sao0gAIuEeSwg8sHuXwnow" elementId="org.goko.serial.jssc.toolbar.settings.handler" contributionURI="bundleclass://Goko/goko.handlers.PreferencesHandler" command="_OwalgAIuEeSwg8sHuXwnow"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lxFMMP72EeOf-uPkbeZVyA" featurename="trimBars" parentElementId="goko.application.window">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lxFMMP72EeOf-uPkbeZVyA" featurename="trimBars" parentElementId="goko.application.window" positionInList="10">
     <elements xsi:type="basic:TrimBar" xmi:id="_mDQJkARBEeSKrZ87v5iHbA" elementId="org.goko.serial.jssc.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_rLGk4P72EeOf-uPkbeZVyA" elementId="">
         <children xsi:type="menu:ToolControl" xmi:id="_C2GRkAQ8EeSKrZ87v5iHbA" elementId="org.goko.serial.jssc.toolcontrol.0" contributionURI="bundleclass://Goko/goko.toolbar.SeparatorToolControl"/>

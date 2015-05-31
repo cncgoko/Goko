@@ -19,7 +19,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_fLuz4AL0EeWNAc6kezL54A" elementId="org.goko.grbl.controller.v08.handler.0" contributionURI="bundleclass://org.goko.grbl.controller.v08/org.goko.grbl.controller.internal.handlers.GrblCheckModeHandler" command="_gBNqYAL0EeWNAc6kezL54A"/>
     <elements xsi:type="commands:Handler" xmi:id="_74214APUEeWX6eDFOGSLJw" elementId="org.goko.grbl.controller.v08.handler.stateupdate" contributionURI="bundleclass://org.goko.grbl.controller.v08/org.goko.grbl.controller.internal.handlers.GrblStateUpdateHandler" command="_zdK3cAPeEeWX6eDFOGSLJw"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lVUlIALwEeWNAc6kezL54A" featurename="trimBars" parentElementId="goko.application.window" positionInList="">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lVUlIALwEeWNAc6kezL54A" featurename="trimBars" parentElementId="goko.application.window" positionInList="20">
     <elements xsi:type="basic:TrimBar" xmi:id="_mlt2AALwEeWNAc6kezL54A" elementId="org.goko.grbl.controller.v08.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_qrJaUALwEeWNAc6kezL54A" elementId="">
         <children xsi:type="menu:HandledToolItem" xmi:id="_lceZMAL0EeWNAc6kezL54A" elementId="org.goko.grbl.controller.v08.handledtoolitem.grblCheckMode" label="GRBL Check mode" iconURI="platform:/plugin/org.goko.grbl.controller.v08/resources/icons/system-monitor.png" tooltip="GRBL Check mode" type="Check" command="_gBNqYAL0EeWNAc6kezL54A"/>
