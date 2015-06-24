@@ -88,7 +88,9 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void stop() throws GkException {
-		deamon.stop();
+		if(deamon != null){
+			deamon.stop();
+		}		
 		this.inputListeners.clear();
 		this.outputListeners.clear();
 		this.connectionListeners.clear();

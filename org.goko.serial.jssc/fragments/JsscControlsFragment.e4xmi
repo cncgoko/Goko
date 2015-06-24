@@ -10,7 +10,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GNqT0P8ZEeOZbpDQ7wgKzQ" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_QR1HcP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.serial.jssc.toolbar.connect.handler" contributionURI="bundleclass://org.goko.serial.jssc/org.goko.serial.jssc.toolbar.handler.JsscConnectHandler" command="_YE9skP8ZEeOZbpDQ7wgKzQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_eOP_AP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.serial.jssc.toolbar.disconnect.handler" contributionURI="bundleclass://org.goko.serial.jssc/org.goko.serial.jssc.toolbar.handler.JsscDisconnectHandler" command="_g5PloP8ZEeOZbpDQ7wgKzQ"/>
-    <elements xsi:type="commands:Handler" xmi:id="_Sao0gAIuEeSwg8sHuXwnow" elementId="org.goko.serial.jssc.toolbar.settings.handler" contributionURI="bundleclass://Goko/goko.handlers.PreferencesHandler" command="_OwalgAIuEeSwg8sHuXwnow"/>
+    <elements xsi:type="commands:Handler" xmi:id="_Sao0gAIuEeSwg8sHuXwnow" elementId="org.goko.serial.jssc.toolbar.settings.handler" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_OwalgAIuEeSwg8sHuXwnow"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lxFMMP72EeOf-uPkbeZVyA" featurename="trimBars" parentElementId="goko.application.window" positionInList="10">
     <elements xsi:type="basic:TrimBar" xmi:id="_mDQJkARBEeSKrZ87v5iHbA" elementId="org.goko.serial.jssc.trimbar">

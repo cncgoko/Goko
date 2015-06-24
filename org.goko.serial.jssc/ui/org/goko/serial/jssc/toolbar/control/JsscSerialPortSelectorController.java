@@ -34,6 +34,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.serial.jssc.internal.JsscSerialActivator;
+import org.goko.serial.jssc.preferences.connection.SerialConnectionPreference;
 import org.goko.serial.jssc.service.IJsscSerialConnectionService;
 import org.goko.serial.jssc.service.JsscParameter;
 
@@ -49,7 +50,7 @@ public class JsscSerialPortSelectorController extends AbstractController<JsscSer
 	@Override
 	public void initialize() throws GkException {
 		refreshSerialPortList();
-		String port = JsscSerialActivator.getPreferenceStore().getString(JsscParameter.PORTNAME.name());
+		String port = SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name());
 		LabeledValue<String> preferredPort = GkUiUtils.getLabelledValueByKey(port, getDataModel().getAvailableSerialPorts());
 		if(preferredPort != null){
 			getDataModel().setSelectedSerialPort(preferredPort);
@@ -60,9 +61,9 @@ public class JsscSerialPortSelectorController extends AbstractController<JsscSer
 
 	public void onSerialPortChange() {
 		if(getDataModel().getSelectedSerialPort() != null){
-			JsscSerialActivator.getPreferenceStore().setValue(JsscParameter.PORTNAME.name(), getDataModel().getSelectedSerialPort().getValue());
+			SerialConnectionPreference.getInstance().setValue(JsscParameter.PORTNAME.name(), getDataModel().getSelectedSerialPort().getValue());
 		}else{
-			JsscSerialActivator.getPreferenceStore().setValue(JsscParameter.PORTNAME.name(), StringUtils.EMPTY);
+			SerialConnectionPreference.getInstance().setValue(JsscParameter.PORTNAME.name(), StringUtils.EMPTY);
 		}
 
 		eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);

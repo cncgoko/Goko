@@ -2,12 +2,20 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="Goko.org.goko.ui.gkPreferencesPages">
+         point="Goko.org.goko.ui.gkPreferencePage">
       <page
             class="org.goko.gcode.rs274ngcv3.RS274GCodePreferences"
             id="org.goko.gcode.rs274ngcv3.preferences"
-            name="GCode">
+            name="GCode"
+            storeProvider="org.goko.core.config.GokoConfig">
       </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.gcode.rs274ngcv3.RS274GCodePreferences"
+            id="org.goko.gcode.rs274ngcv3.provider">
+      </provider>
    </extension>
 
 </plugin>

@@ -26,7 +26,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.viewer.jogl.utils.render.basic.CircleRenderer;
 import org.goko.viewer.jogl.utils.render.basic.PolylineRenderer;
@@ -102,7 +102,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		txtHeight.cross(normal,direction);
 
 		Point3d pos3d = new Point3d(p3.x, p3.y, p3.z);
-		addRenderer(new TextRenderer( GokoConfig.getInstance().format(diameter), 3.0, pos3d, direction, txtHeight, TextRenderer.RIGHT | TextRenderer.MIDDLE));
+		addRenderer(new TextRenderer( GokoPreference.getInstance().format(diameter), 3.0, pos3d, direction, txtHeight, TextRenderer.RIGHT | TextRenderer.MIDDLE));
 
 	}
 

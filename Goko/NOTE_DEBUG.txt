@@ -9,3 +9,17 @@ Pourquoi un service ne démarre pas :
      + A référence le service B (optionel, 0..1) en static => si A est resolu avant B, B ne sera plus injecté dans A car la référence est statique
      + A référence le service B (optionel, 0..1) en dynamique  => si A est resolu avant B, B sera injecté dans A car la référence est dynamique (holder sur le service, etc...)
      
+     
+     
+
+
+    Require-Bundle: org.eclipse.core.runtime,
+     org.eclipse.swt,
+     org.eclipse.e4.core.di,
+     org.eclipse.e4.core.di.extensions,
+     org.eclipse.e4.ui.di,
+     org.eclipse.e4.ui.workbench,
+     org.eclipse.e4.ui.model.workbench,
+     org.eclipse.e4.ui.services
+
+     

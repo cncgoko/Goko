@@ -34,6 +34,7 @@ import org.goko.common.bindings.AbstractController;
 import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.event.GokoEventBus;
+import org.goko.core.common.event.GokoTopic;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineState;
@@ -52,6 +53,8 @@ import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.gcode.filesender.editor.GCodeEditor;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -116,7 +119,19 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Override
 	public void initialize() throws GkException {
 		getControllerService().addListener(this);
-		monitorService.addExecutionListener(this);
+		monitorService.addExecutionListener(this);		
+		EventHandler eventHandler = new EventHandler() {			
+			@Override
+			public void handleEvent(Event event) {
+				try {
+					String filepath = (String) event.getProperty(GokoTopic.File.PROPERTY_FILEPATH);
+					setGCodeFilepath(filepath);					
+				} catch (GkException e) {					
+					LOG.error(e);
+				}
+			}
+		};
+		eventBroker.subscribe(GokoTopic.File.Open.TOPIC, eventHandler);
 	}
 	/**
 	 * Action called when selecting file to send
@@ -194,9 +209,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
 
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getGCodeCommands()));
-		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));
-	//	getDataModel().setgCodeDocument(new GCodeDocumentProvider(gcodeFile, gCodeService));
-		eventBroker.post("gcodefile", gcodeFile);
+		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));		
 		workspaceService.addGCodeProvider(gcodeFile);
 
 	}

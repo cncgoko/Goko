@@ -6,7 +6,7 @@ import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.common.preferences.fieldeditor.ComboFieldEditor;
 import org.goko.common.preferences.fieldeditor.IntegerFieldEditor;
 import org.goko.core.config.EnumGokoUnit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 
 /**
  * Configuration of the units used in Goko
@@ -19,7 +19,7 @@ public class GokoUnitsPreferences extends GkFieldEditorPreferencesPage {
 	public GokoUnitsPreferences() {
 		setDescription("Configure the units used in the application");
 		setTitle("Units");
-		setPreferenceStore(GokoConfig.getInstance().getPreferences());
+		setPreferenceStore(GokoPreference.getInstance());
 	}
 
 	@Override
@@ -36,13 +36,13 @@ public class GokoUnitsPreferences extends GkFieldEditorPreferencesPage {
 			i++;
 		};
 		comboFieldEditor.setEntry(values);
-		comboFieldEditor.setPreferenceName(GokoConfig.KEY_DISTANCE_UNIT);
+		comboFieldEditor.setPreferenceName(GokoPreference.KEY_DISTANCE_UNIT);
 		
 		IntegerFieldEditor integerFieldEditor = new IntegerFieldEditor(parent, SWT.NONE);
 		integerFieldEditor.setWidthInChars(5);
 		integerFieldEditor.setLabelWidthInChar(7);
 		integerFieldEditor.setLabel("Digits");
-		integerFieldEditor.setPreferenceName(GokoConfig.KEY_DISTANCE_DIGIT_COUNT);
+		integerFieldEditor.setPreferenceName(GokoPreference.KEY_DISTANCE_DIGIT_COUNT);
 		
 		addField(comboFieldEditor);
 		addField(integerFieldEditor);

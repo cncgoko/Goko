@@ -19,14 +19,12 @@
  */
 package org.goko.grbl.controller.internal.handlers;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
@@ -43,8 +41,6 @@ import org.goko.grbl.controller.configuration.GrblConfigurationDialog;
  *
  */
 public class GrblConfigurationOpenHandler {
-	@Inject
-	IEventBroker brok;
 	
 	@CanExecute
 	public boolean canExecute(IGrblControllerService controllerService, IConnectionService connectionService){		

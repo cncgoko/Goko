@@ -10,12 +10,19 @@
       </fragment>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencesPages">
+         point="Goko.org.goko.ui.gkPreferencePage">
       <page
             class="org.goko.tinyg.configuration.TinyGPreferencesPage"
             id="org.goko.tinyg.page2"
             name="TinyG">
       </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.tinyg.controller.prefs.TinyGPreferenceStoreProvider"
+            id="org.goko.tinyg.provider">
+      </provider>
    </extension>
 
 </plugin>

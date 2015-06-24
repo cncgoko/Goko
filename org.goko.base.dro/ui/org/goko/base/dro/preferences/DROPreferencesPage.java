@@ -5,12 +5,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.common.preferences.fieldeditor.ObjectCollectionFieldEditor;
@@ -20,7 +19,7 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.log.GkLog;
 
-public class DROPreferencesPage extends GkFieldEditorPreferencesPage {
+public class DROPreferencesPage extends GkFieldEditorPreferencesPage{
 	private static final GkLog LOG = GkLog.getLogger(DROPreferencesPage.class);
 	@Inject
 	private IControllerService controller;
@@ -28,8 +27,8 @@ public class DROPreferencesPage extends GkFieldEditorPreferencesPage {
 	public DROPreferencesPage() {
 		setImageDescriptor(ResourceManager.getPluginImageDescriptor("org.goko.base.dro", "icons/compass.png"));
 		setDescription("Configure the displayed values");
-		setTitle("Digital read out");		
-		setPreferenceStore(new ScopedPreferenceStore(ConfigurationScope.INSTANCE,"org.goko.base.droservice"));
+		setTitle("Digital read out");	
+		setPreferenceStore(new DROPreferenceStoreProvider().getPreferenceStore());
 	}
 
 	/** (inheritDoc)
@@ -50,10 +49,12 @@ public class DROPreferencesPage extends GkFieldEditorPreferencesPage {
 		// TODO Auto-generated method stub
 		addField(objectCollectionFieldEditor);
 		try{
-			List<MachineValueDefinition> lstValues = controller.getMachineValueDefinition();
 			List<CollectionObject> lstObject = new ArrayList<CollectionObject>();
-			for (MachineValueDefinition def : lstValues) {
-				lstObject.add( new CollectionObject(def.getName(), def.getId(), def.getDescription()));
+			if(controller != null){
+				List<MachineValueDefinition> lstValues = controller.getMachineValueDefinition();				
+				for (MachineValueDefinition def : lstValues) {
+					lstObject.add( new CollectionObject(def.getName(), def.getId(), def.getDescription()));
+				}			
 			}
 			objectCollectionFieldEditor.setAvailableObjects(lstObject);
 		}catch(GkException e){

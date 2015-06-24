@@ -4,6 +4,10 @@
    <extension
          id="org.goko.core.fragment"
          point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="fragments/CoreFragment.e4xmi">
+      </fragment>
    </extension>
 
 </plugin>

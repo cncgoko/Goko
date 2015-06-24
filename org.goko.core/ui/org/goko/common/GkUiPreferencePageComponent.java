@@ -17,7 +17,6 @@
 package org.goko.common;
 
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.common.bindings.ErrorEvent;
@@ -26,7 +25,7 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
-public abstract class GkUiPreferencePageComponent<C extends AbstractController<D>, D extends AbstractModelObject> extends PreferencePage implements IWorkbenchPreferencePage {
+public abstract class GkUiPreferencePageComponent<C extends AbstractController<D>, D extends AbstractModelObject> extends PreferencePage {
 	private static final GkLog LOG = GkLog.getLogger(GkUiPreferencePageComponent.class);
 	GkUiComponentProxy<C, D> uiComponent;
 

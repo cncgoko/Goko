@@ -26,7 +26,7 @@ import java.util.Map;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
@@ -103,13 +103,13 @@ public class GrblState extends MachineValueStore{
 	public void setMachinePosition(Tuple6b position, Unit<Length> unit) throws GkException{
 		if(position != null){			
 			if(position.getX() != null){
-				updateValue(Grbl.MACHINE_POSITION_X, GokoConfig.getInstance().format( position.getX(), true));
+				updateValue(Grbl.MACHINE_POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
 			}
 			if(position.getY() != null){
-				updateValue(Grbl.MACHINE_POSITION_Y, GokoConfig.getInstance().format( position.getY(), true));
+				updateValue(Grbl.MACHINE_POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
 			}
 			if(position.getZ() != null){
-				updateValue(Grbl.MACHINE_POSITION_Z, GokoConfig.getInstance().format( position.getZ(), true));
+				updateValue(Grbl.MACHINE_POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
 			}
 		}
 	}
@@ -132,13 +132,13 @@ public class GrblState extends MachineValueStore{
 		if(position != null){			
 			if(position.getX() != null){				
 				// updateValue(Grbl.POSITION_X, GokoConfig.getInstance().format( position.getX(), true));				
-				updateValue(Grbl.POSITION_X, GokoConfig.getInstance().format( position.getX(), true));
+				updateValue(Grbl.POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
 			}
 			if(position.getY() != null){
-				updateValue(Grbl.POSITION_Y, GokoConfig.getInstance().format( position.getY(), true));
+				updateValue(Grbl.POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
 			}
 			if(position.getZ() != null){
-				updateValue(Grbl.POSITION_Z, GokoConfig.getInstance().format( position.getZ(), true));
+				updateValue(Grbl.POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
 			}
 		}
 		if(position != null && currentContext != null){

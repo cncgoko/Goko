@@ -20,12 +20,10 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 	private static final GkLog LOG = GkLog.getLogger(Activator.class);	
-	private static final String PLUGIN_FOLDER = "plugins";
-	private static final String PLUGIN_CONFIG_FILE = "goko.features.xml";
 	
 	private static BundleContext context;
 
-	static BundleContext getContext() {
+	public static BundleContext getContext() {
 		return context;
 	}
 
@@ -34,9 +32,11 @@ public class Activator implements BundleActivator {
 	 */
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
+		Activator.context = bundleContext;
 		IFeatureManager featureManager = new FeatureManagerImpl();
 		bundleContext.registerService(IFeatureManager.class, featureManager, null);
 		featureManager.start();
+		
 		//LOG.info("Starting PluginManager");
 //		Activator.context = bundleContext;
 //		

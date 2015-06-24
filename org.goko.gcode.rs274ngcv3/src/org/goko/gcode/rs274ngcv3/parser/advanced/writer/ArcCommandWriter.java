@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 
@@ -45,14 +45,14 @@ public class ArcCommandWriter extends AbstractMotionCommandWriter<ArcMotionComma
 		Tuple6b offsets = command.getAbsoluteCenterCoordinate().subtract(command.getAbsoluteStartCoordinate());
 		Unit<Length> unit = command.getUnit().getUnit();
 		if(offsets.getX() != null ){
-			str += " I"+ GokoConfig.getInstance().format(offsets.getX().to(unit), false, false);
+			str += " I"+ GokoPreference.getInstance().format(offsets.getX().to(unit), false, false);
 		}
 		if(offsets.getY() != null){
-			str += " J"+GokoConfig.getInstance().format(offsets.getY().to(unit), false, false);
+			str += " J"+GokoPreference.getInstance().format(offsets.getY().to(unit), false, false);
 		}
 
 		if(offsets.getZ() != null &&  Math.abs(offsets.getZ().doubleValue()) > 0.00001){ // Ugly hack to avoid having K with zero close value
-			str += " K"+GokoConfig.getInstance().format(offsets.getZ().to(unit), false, false);
+			str += " K"+GokoPreference.getInstance().format(offsets.getZ().to(unit), false, false);
 		}
 		return str;
 	}

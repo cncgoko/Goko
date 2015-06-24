@@ -3,15 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Core
 Bundle-SymbolicName: org.goko.core;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Bundle-ClassPath: libs/vecmath-1.3.1.jar,
- .,
- libs/commons-collections-3.2.1/commons-collections-3.2.1.jar,
- libs/commons-lang3-3.1/commons-lang3-3.1.jar,
- libs/guava-16.0.1.jar,
- libs/commons-io-2.4/commons-io-2.4.jar,
- libs/simple-xml/simple-xml-2.7.1.jar,
- libs/commons-validator-1.4.1/commons-validator-1.4.1.jar
-Bundle-Activator: org.goko.core.internal.GokoCoreActivator
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: com.ibm.icu.text;version="52.1.0",
+ org.eclipse.core.runtime;version="3.4.0",
+ org.eclipse.e4.ui.model.application.ui.basic,
+ org.osgi.framework;version="1.3.0",
+ org.osgi.service.log;version="1.3.0"
 Export-Package: com.google.common.eventbus,
  javax.vecmath,
  org.apache.commons.collections,
@@ -48,6 +46,7 @@ Export-Package: com.google.common.eventbus,
  org.goko.common,
  org.goko.common.bindings,
  org.goko.common.bindings.converters,
+ org.goko.common.bindings.toolbar,
  org.goko.common.bindings.validator,
  org.goko.common.elements.combo,
  org.goko.common.elements.combo.v2,
@@ -56,7 +55,7 @@ Export-Package: com.google.common.eventbus,
  org.goko.common.handlers,
  org.goko.common.preferences,
  org.goko.common.preferences.fieldeditor,
- org.goko.common.preferences.fieldeditor.objectcollection,
+ org.goko.common.preferences.fieldeditor.objectcollection, 
  org.goko.core.common,
  org.goko.core.common.applicative.logging,
  org.goko.core.common.buffer,
@@ -93,26 +92,32 @@ Export-Package: com.google.common.eventbus,
  org.goko.core.workspace.service,
  org.goko.preferences.units,
  org.simpleframework.xml
-Require-Bundle: org.eclipse.core.databinding;bundle-version="[1.4.1,1.4.5)",
- org.eclipse.ui,
+Bundle-ClassPath: libs/vecmath-1.3.1.jar,
+ .,
+ libs/commons-collections-3.2.1/commons-collections-3.2.1.jar,
+ libs/commons-lang3-3.1/commons-lang3-3.1.jar,
+ libs/guava-16.0.1.jar,
+ libs/commons-io-2.4/commons-io-2.4.jar,
+ libs/simple-xml/simple-xml-2.7.1.jar,
+ libs/commons-validator-1.4.1/commons-validator-1.4.1.jar
+Service-Component: OSGI-INF/component.xml
+Require-Bundle: org.eclipse.swt,
+ org.eclipse.e4.core.di,
+ org.eclipse.e4.core.di.extensions,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.ui.workbench,
+ org.eclipse.e4.ui.services,
+ org.eclipse.core.databinding;bundle-version="[1.4.1,1.4.5)",
  org.eclipse.e4.core.di;bundle-version="1.2.0",
  org.eclipse.e4.ui.workbench;bundle-version="0.11.0",
  org.eclipse.core.runtime;bundle-version="3.8.0",
  org.goko.log;bundle-version="1.0.0",
+ org.eclipse.jface;bundle-version="3.10.1",
  org.eclipse.core.databinding.property;bundle-version="1.4.200",
  org.eclipse.core.databinding.beans;bundle-version="1.2.200",
  org.eclipse.jface.databinding;bundle-version="[1.6.200,1.7.0)",
  org.eclipse.e4.ui.model.workbench,
- org.eclipse.e4.ui.model.workbench,
- org.eclipse.jface,
- org.eclipse.e4.core.services;bundle-version="1.2.1",
- org.eclipse.osgi.services;bundle-version="3.4.0"
-Service-Component: OSGI-INF/component.xml
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ActivationPolicy: lazy
-Import-Package: com.ibm.icu.text;version="52.1.0",
- org.eclipse.core.runtime;version="3.4.0",
- org.eclipse.e4.core.contexts,
- org.eclipse.e4.ui.model.application.ui.basic,
- org.osgi.framework;version="1.3.0",
- org.osgi.service.log;version="1.3.0"
+ org.eclipse.osgi.services;bundle-version="3.4.0",
+ org.eclipse.e4.core.contexts;bundle-version="1.3.100",
+ org.eclipse.e4.core.services;bundle-version="1.2.1"
+Bundle-Activator: org.goko.core.internal.GokoCoreActivator

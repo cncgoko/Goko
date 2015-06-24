@@ -1,5 +1,8 @@
 package org.goko.viewer.jogl.preferences.rotaryaxis;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -9,22 +12,28 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.goko.common.GkUiUtils;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
+import org.goko.common.preferences.IPreferenceStoreProvider;
 import org.goko.common.preferences.fieldeditor.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.ComboFieldEditor;
 import org.goko.common.preferences.fieldeditor.QuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
+import org.goko.core.config.GokoPreference;
 import org.goko.viewer.jogl.service.JoglViewerSettings;
 import org.goko.viewer.jogl.service.JoglViewerSettings.EnumRotaryAxisDirection;
 
-public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage {
+public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 	private BooleanFieldEditor booleanFieldEditor;
 	private Group grpSettings;
+	private QuantityFieldEditor<Length> xPositionField;
+	private QuantityFieldEditor<Length> yPositionField;
+	private QuantityFieldEditor<Length> zPositionField;
 	
 	public JoglRotaryAxisPreferencePage() {
 		setTitle("4th axis");
 		setDescription("Configure the 4th axis display");
-		setPreferenceStore(JoglViewerSettings.getInstance().getPreferences());
+		setPreferenceStore(JoglViewerSettings.getInstance());
 	}
 
 	/** (inheritDoc)
@@ -40,7 +49,7 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage {
 	 * @see org.goko.common.preferences.GkPreferencesPage#createPreferencePage(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
-	protected void createPreferencePage(Composite parent) {
+	protected void createPreferencePage(Composite parent) throws GkException {
 		
 		booleanFieldEditor = new BooleanFieldEditor(parent, SWT.NONE);
 		booleanFieldEditor.setPreferenceName("rotaryAxisEnabled");
@@ -73,23 +82,28 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage {
 		Label lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setText("Rotary axis position");
 		
-		QuantityFieldEditor<Length> xPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
+		xPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
 		xPositionField.setPreferenceName("rotaryAxisPositionX");
 		xPositionField.setWidthInChars(6);
 		xPositionField.setLabel("X");
 		new Label(composite, SWT.NONE);
 		
-		QuantityFieldEditor<Length> yPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
+		yPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
 		yPositionField.setPreferenceName("rotaryAxisPositionY");
 		yPositionField.setWidthInChars(6);
 		yPositionField.setLabel("Y");
 		new Label(composite, SWT.NONE);
 		
-		QuantityFieldEditor<Length> zPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
+		zPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
 		zPositionField.setPreferenceName("rotaryAxisPositionZ");
 		zPositionField.setWidthInChars(6);
 		zPositionField.setLabel("Z");
 				
+		Unit<Length> lengthUnit = GokoPreference.getInstance().getLengthUnit();
+		xPositionField.setUnit(lengthUnit);
+		yPositionField.setUnit(lengthUnit);
+		zPositionField.setUnit(lengthUnit);
+		
 		addField(comboFieldEditor);
 		addField(xPositionField);
 		addField(yPositionField);
@@ -103,5 +117,15 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage {
 	@Override
 	protected void postInitialize() throws GkException {
 		GkUiUtils.setEnabled(grpSettings, booleanFieldEditor.getControl().getSelection());
+	}
+	
+	@Inject
+	public void onUnitPreferenceChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_DISTANCE_UNIT) String unit) throws GkException{			
+		Unit<Length> lengthUnit = GokoPreference.getInstance().getLengthUnit();
+		if(xPositionField != null && yPositionField != null && zPositionField != null){
+			xPositionField.setUnit(lengthUnit);
+			yPositionField.setUnit(lengthUnit);
+			zPositionField.setUnit(lengthUnit);
+		}
 	}
 }

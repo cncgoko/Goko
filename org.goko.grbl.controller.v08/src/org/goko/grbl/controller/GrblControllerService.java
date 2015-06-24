@@ -36,6 +36,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
+import org.goko.core.common.event.EventBrokerUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -44,7 +45,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
@@ -64,10 +65,12 @@ import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.goko.grbl.controller.bean.GrblExecutionError;
 import org.goko.grbl.controller.bean.StatusReport;
 import org.goko.grbl.controller.configuration.GrblConfiguration;
 import org.goko.grbl.controller.configuration.GrblSetting;
 import org.goko.grbl.controller.executionqueue.GrblGCodeExecutionToken;
+import org.goko.grbl.controller.topic.GrblExecutionErrorTopic;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -367,19 +370,24 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			}
 			LOG.error(formattedErrorMessage);
 			getApplicativeLogService().error(formattedErrorMessage, SERVICE_ID);
-				
-			pauseMotion();
-			Map<String, String> mapArgs = new HashMap<String, String>();
-			mapArgs.put(Grbl.Topic.GrblExecutionError.TITLE, "Error reported durring execution");
-			mapArgs.put(Grbl.Topic.GrblExecutionError.MESSAGE, "Execution was paused after error in Grbl. You can resume, or stop the execution at your own risk.");
-			mapArgs.put(Grbl.Topic.GrblExecutionError.ERROR, formattedErrorMessage);
-			eventAdmin.sendEvent(new Event(Grbl.Topic.GrblExecutionError.TOPIC, mapArgs));
+			// If not in check mode, let's pause the execution (disabled in check mode because check mode can't handle paused state and buffer would be flooded with commands)
+			if(!ObjectUtils.equals(GrblMachineState.CHECK, getState())){	
+				pauseMotion();
+//				Map<String, String> mapArgs = new HashMap<String, String>();
+//				mapArgs.put(Grbl.Topic.GrblExecutionError.TITLE, "Error reported durring execution");
+//				mapArgs.put(Grbl.Topic.GrblExecutionError.MESSAGE, "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.");
+//				mapArgs.put(Grbl.Topic.GrblExecutionError.ERROR, formattedErrorMessage);
+//				eventAdmin.sendEvent(new Event(Grbl.Topic.GrblExecutionError.TOPIC, mapArgs));
+				EventBrokerUtils.send(eventAdmin, new GrblExecutionErrorTopic(), new GrblExecutionError("Error reported durring execution", "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.", formattedErrorMessage));
+			//	Verifier pourquoi l'erreur n'est pas affichée
+			}
 		}else{
 			LOG.error("Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: "));
 			getApplicativeLogService().error(StringUtils.substringAfter(errorMessage, "error: "), SERVICE_ID);
 		}
 	}
 
+	
 	protected void handleOkResponse() throws GkException{
 		GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
 		if(currentToken != null){
@@ -696,7 +704,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @throws GkException GkException
 	 */
 	protected String getPositionAsString(BigDecimalQuantity<Length> q) throws GkException{	
-		return GokoConfig.getInstance().format( q.to(getCurrentUnit()), true, false);
+		return GokoPreference.getInstance().format( q.to(getCurrentUnit()), true, false);
 	}
 	
 	/**

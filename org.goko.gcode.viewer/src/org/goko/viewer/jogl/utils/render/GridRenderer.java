@@ -34,7 +34,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.service.JoglViewerSettings;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
@@ -72,7 +72,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	}
 
 	private void buildGrid() throws GkException{
-		Unit<Length> unit = GokoConfig.getInstance().getLengthUnit();
+		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
 		Quantity<Length> majorQuantity = NumberQuantity.of(JoglViewerSettings.getInstance().getMajorGridSpacing().doubleValue(), unit);
 		Quantity<Length> minorQuantity = NumberQuantity.of(JoglViewerSettings.getInstance().getMinorGridSpacing().doubleValue(), unit);
 		majorUnit = majorQuantity.to(SIPrefix.MILLI(SI.METRE)).doubleValue();

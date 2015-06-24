@@ -4,20 +4,27 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.goko.core.common.event.EventBrokerUtils;
+import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
+import org.goko.core.log.GkLog;
 import org.goko.grbl.controller.Grbl;
 import org.goko.grbl.controller.GrblControllerService;
+import org.goko.grbl.controller.bean.GrblExecutionError;
+import org.goko.grbl.controller.topic.GrblExecutionErrorTopic;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 public class GrblStateUpdateHandler implements EventHandler {
+	private static final GkLog LOG = GkLog.getLogger(GrblStateUpdateHandler.class);
 	@Inject
 	private IEventBroker broker;
-	@Inject
+	@Optional
 	private Shell currentShell;
 	
 	@Inject
@@ -47,12 +54,14 @@ public class GrblStateUpdateHandler implements EventHandler {
 	 * @param event the error event received
 	 */
 	protected void displayErrorMessage(Event event){	
-		String title = (String) event.getProperty(Grbl.Topic.GrblExecutionError.TITLE);
-		String message = (String) event.getProperty(Grbl.Topic.GrblExecutionError.MESSAGE);
-		String error = (String) event.getProperty(Grbl.Topic.GrblExecutionError.ERROR);
-			
-		Status status = new Status(IStatus.ERROR, GrblControllerService.SERVICE_ID, error);
-		      
-		ErrorDialog.openError(currentShell, title, message, status);
+		
+		try {
+			GrblExecutionError obj = EventBrokerUtils.getData(event, new GrblExecutionErrorTopic());
+			Status status = new Status(IStatus.ERROR, GrblControllerService.SERVICE_ID, obj.getErrorMessage());
+			      
+			ErrorDialog.openError(currentShell, obj.getTitle(), obj.getMessage(), status);
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 }

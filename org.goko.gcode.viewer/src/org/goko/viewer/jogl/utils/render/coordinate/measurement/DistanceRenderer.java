@@ -28,7 +28,7 @@ import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.viewer.jogl.utils.render.basic.PolylineRenderer;
@@ -70,7 +70,7 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 		endArrowRenderer = new ArrowRenderer(endPoint, new Vector3d(direction.x,direction.y,direction.z), baseDirection, new Color4f(1,1,1,1));
 		startArrowRenderer = new ArrowRenderer(startPoint, new Vector3d(-direction.x,-direction.y,-direction.z), baseDirection, new Color4f(1,1,1,1));
 
-		String sLength = GokoConfig.getInstance().format(length);
+		String sLength = GokoPreference.getInstance().format(length);
 		double dLength = length.doubleValue();
 		textRenderer = new TextRenderer(sLength, 3, new Point3d(startPoint.x + direction.x * dLength/2,startPoint.y + direction.y * dLength/2,startPoint.z + direction.z * dLength/2), this.direction, new Vector3d(-baseDirection.x,-baseDirection.y,-baseDirection.z), TextRenderer.CENTER | verticalAlignement);
 		addRenderer(lineRenderer);

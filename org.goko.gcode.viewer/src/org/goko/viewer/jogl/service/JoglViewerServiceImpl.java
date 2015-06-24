@@ -39,7 +39,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
@@ -115,7 +115,9 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	@Override
 	public void start() throws GkException {
-		JoglViewerSettings.getInstance().addPropertyChangeListener(this);
+		JoglViewerSettings.getInstance().addPropertyChangeListener(this);		
+		GokoPreference.getInstance().addPropertyChangeListener(this);
+		
 		jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
 		LOG.info("Starting "+this.getServiceId());
 		this.gridRenderer = new GridRenderer();
@@ -216,7 +218,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private Point3d getToolPosition(){
 		Point3d p = new Point3d();
 		try{
-			Unit<Length> targetLengthUnit = GokoConfig.getInstance().getLengthUnit();
+			Unit<Length> targetLengthUnit = GokoPreference.getInstance().getLengthUnit();
 			p.x = getControllerAdapter().getX().to(targetLengthUnit).doubleValue();
 			p.y = getControllerAdapter().getY().to(targetLengthUnit).doubleValue();
 			p.z = getControllerAdapter().getZ().to(targetLengthUnit).doubleValue();
@@ -327,18 +329,21 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		super.propertyChange(event);
+		super.propertyChange(event);		
 		try {
 			zeroRenderer.setDisplayRotaryAxis(JoglViewerSettings.getInstance().isRotaryAxisEnabled());
 			zeroRenderer.setRotationAxis(JoglViewerSettings.getInstance().getRotaryAxisDirection());
 			// Update the grid
 			if(StringUtils.equals(event.getProperty(), JoglViewerSettings.MAJOR_GRID_SPACING)
-					|| StringUtils.equals(event.getProperty(), JoglViewerSettings.MINOR_GRID_SPACING)){
+					|| StringUtils.equals(event.getProperty(), JoglViewerSettings.MINOR_GRID_SPACING)
+					|| StringUtils.equals(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
 				this.gridRenderer.destroy();
 				this.gridRenderer = new GridRenderer();
 				addRenderer(this.gridRenderer);
 			}
-			gcodeRenderer.update();
+			if(gcodeRenderer != null){
+				gcodeRenderer.update();
+			}
 		} catch (GkException e) {
 			LOG.error(e);
 		}

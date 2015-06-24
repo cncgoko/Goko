@@ -30,7 +30,7 @@ public class TestPreferencesPage extends GkFieldEditorPreferencesPage{
 	private Group grpPerformances;
 	
 	public TestPreferencesPage() {	
-		setPreferenceStore(JoglViewerSettings.getInstance().getPreferences());
+		setPreferenceStore(JoglViewerSettings.getInstance().getPreferenceStore());
 	}
 
 	@Override

@@ -12,5 +12,12 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8sy2IALVEeWNAc6kezL54A" featurename="commands" parentElementId="goko.application">
     <elements xsi:type="commands:Command" xmi:id="_92VREALVEeWNAc6kezL54A" elementId="org.goko.core.open.menu.command" commandName="Open command"/>
+    <elements xsi:type="commands:Command" xmi:id="_SLRO0A-YEeWArr9ccak6ZA" elementId="org.goko.core.command.preferences" commandName="Preferences"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VC_p4A-YEeWArr9ccak6ZA" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_XWYo0A-YEeWArr9ccak6ZA" elementId="org.goko.core.handler.preferences" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_SLRO0A-YEeWArr9ccak6ZA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_b2A10A-YEeWArr9ccak6ZA" featurename="children" parentElementId="goko.menu.window" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_tVjO0A-YEeWArr9ccak6ZA" elementId="org.goko.core.handledmenuitem.preferences" label="Preferences" command="_SLRO0A-YEeWArr9ccak6ZA"/>
   </fragments>
 </fragment:ModelFragments>

@@ -19,20 +19,16 @@
  */
 package org.goko.viewer.jogl.service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import javax.vecmath.Vector3f;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GkPreference;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 
@@ -42,7 +38,7 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class JoglViewerSettings {
+public class JoglViewerSettings extends GkPreference{
 	private static final GkLog LOG = GkLog.getLogger(JoglViewerSettings.class);
 	public static final String NODE = "org.goko.viewer.jogl";
 
@@ -56,7 +52,6 @@ public class JoglViewerSettings {
 	public static final String ROTARY_AXIS_POSITION_Y 	= "rotaryAxisPositionY";
 	public static final String ROTARY_AXIS_POSITION_Z 	= "rotaryAxisPositionZ";
 
-	private ScopedPreferenceStore preferenceStore;
 	private static JoglViewerSettings instance;
 	private boolean rotaryAxisEnabled;
 	private Tuple6b rotaryAxisPosition;
@@ -82,12 +77,9 @@ public class JoglViewerSettings {
 			return direction;
 		}
 	}
-
-	public IPreferenceStore getPreferences(){
-		return preferenceStore;
-	}
-	private JoglViewerSettings(){
-		preferenceStore = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,NODE);
+	
+	public JoglViewerSettings(){
+		super(NODE);		
 	}
 
 	public static JoglViewerSettings getInstance() {
@@ -103,50 +95,48 @@ public class JoglViewerSettings {
 	}
 
 	private void initializeValues() throws GkException {
-		preferenceStore.setDefault(ROTARY_AXIS_ENABLED, true);
-		preferenceStore.setDefault(ROTARY_AXIS_DIRECTION, "X");
-		preferenceStore.setDefault(ROTARY_AXIS_POSITION_X, "0");
-		preferenceStore.setDefault(ROTARY_AXIS_POSITION_Y, "0");
-		preferenceStore.setDefault(ROTARY_AXIS_POSITION_Z, "0");
-		preferenceStore.setDefault(MULTISAMPLING, "1");
-		preferenceStore.setDefault(MAJOR_GRID_SPACING, "5");
-		preferenceStore.setDefault(MINOR_GRID_SPACING, "1");
+		setDefault(ROTARY_AXIS_ENABLED, true);
+		setDefault(ROTARY_AXIS_DIRECTION, "X");
+		setDefault(ROTARY_AXIS_POSITION_X, "0");
+		setDefault(ROTARY_AXIS_POSITION_Y, "0");
+		setDefault(ROTARY_AXIS_POSITION_Z, "0");
+		setDefault(MULTISAMPLING, "1");
+		setDefault(MAJOR_GRID_SPACING, "5");
+		setDefault(MINOR_GRID_SPACING, "1");
 
-		setRotaryAxisEnabled(preferenceStore.getBoolean(ROTARY_AXIS_ENABLED));
-		if(StringUtils.isBlank(preferenceStore.getString(ROTARY_AXIS_DIRECTION))){
-			preferenceStore.setToDefault(ROTARY_AXIS_DIRECTION);
+		setRotaryAxisEnabled(getBoolean(ROTARY_AXIS_ENABLED));
+		if(StringUtils.isBlank(getString(ROTARY_AXIS_DIRECTION))){
+			setToDefault(ROTARY_AXIS_DIRECTION);
 		}
-		setRotaryAxisDirection( EnumRotaryAxisDirection.valueOf(preferenceStore.getString(ROTARY_AXIS_DIRECTION)));
+		setRotaryAxisDirection( EnumRotaryAxisDirection.valueOf(getString(ROTARY_AXIS_DIRECTION)));
 
-		if(StringUtils.isBlank(preferenceStore.getString(ROTARY_AXIS_POSITION_X))){
-			preferenceStore.setToDefault(ROTARY_AXIS_POSITION_X);
+		if(StringUtils.isBlank(getString(ROTARY_AXIS_POSITION_X))){
+			setToDefault(ROTARY_AXIS_POSITION_X);
 		}
-		if(StringUtils.isBlank(preferenceStore.getString(ROTARY_AXIS_POSITION_Y))){
-			preferenceStore.setToDefault(ROTARY_AXIS_POSITION_Y);
+		if(StringUtils.isBlank(getString(ROTARY_AXIS_POSITION_Y))){
+			setToDefault(ROTARY_AXIS_POSITION_Y);
 		}
-		if(StringUtils.isBlank(preferenceStore.getString(ROTARY_AXIS_POSITION_Z))){
-			preferenceStore.setToDefault(ROTARY_AXIS_POSITION_Z);
+		if(StringUtils.isBlank(getString(ROTARY_AXIS_POSITION_Z))){
+			setToDefault(ROTARY_AXIS_POSITION_Z);
 		}
-		if(StringUtils.isBlank(preferenceStore.getString(MULTISAMPLING))){
-			preferenceStore.setToDefault(MULTISAMPLING);
+		if(StringUtils.isBlank(getString(MULTISAMPLING))){
+			setToDefault(MULTISAMPLING);
 		}
-		if(StringUtils.isBlank(preferenceStore.getString(MAJOR_GRID_SPACING))){
-			preferenceStore.setToDefault(MAJOR_GRID_SPACING);
+		if(StringUtils.isBlank(getString(MAJOR_GRID_SPACING))){
+			setToDefault(MAJOR_GRID_SPACING);
 		}
-		if(StringUtils.isBlank(preferenceStore.getString(MINOR_GRID_SPACING))){
-			preferenceStore.setToDefault(MINOR_GRID_SPACING);
+		if(StringUtils.isBlank(getString(MINOR_GRID_SPACING))){
+			setToDefault(MINOR_GRID_SPACING);
 		}
 
 		Tuple6b position = new Tuple6b();
-		position.setX( NumberQuantity.of(new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_X)), GokoConfig.getInstance().getLengthUnit()));
-		position.setY( NumberQuantity.of(new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_Y)), GokoConfig.getInstance().getLengthUnit()));
-		position.setZ( NumberQuantity.of(new BigDecimal( preferenceStore.getString(ROTARY_AXIS_POSITION_Z)), GokoConfig.getInstance().getLengthUnit()));
+		position.setX( NumberQuantity.of(new BigDecimal( getString(ROTARY_AXIS_POSITION_X)), GokoPreference.getInstance().getLengthUnit()));
+		position.setY( NumberQuantity.of(new BigDecimal( getString(ROTARY_AXIS_POSITION_Y)), GokoPreference.getInstance().getLengthUnit()));
+		position.setZ( NumberQuantity.of(new BigDecimal( getString(ROTARY_AXIS_POSITION_Z)), GokoPreference.getInstance().getLengthUnit()));
 		setRotaryAxisPosition(position);
 
 	}
-	public void addPropertyChangeListener(IPropertyChangeListener listener){
-		preferenceStore.addPropertyChangeListener(listener);
-	}
+
 	/**
 	 * @return the rotaryAxisPosition
 	 */
@@ -158,15 +148,15 @@ public class JoglViewerSettings {
 	 */
 	public void setRotaryAxisPosition(Tuple6b rotaryAxisPosition) {
 		this.rotaryAxisPosition = rotaryAxisPosition;
-		preferenceStore.setValue(ROTARY_AXIS_POSITION_X, rotaryAxisPosition.getX().getValue().toPlainString());
-		preferenceStore.setValue(ROTARY_AXIS_POSITION_Y, rotaryAxisPosition.getY().getValue().toPlainString());
-		preferenceStore.setValue(ROTARY_AXIS_POSITION_Z, rotaryAxisPosition.getZ().getValue().toPlainString());
+		setValue(ROTARY_AXIS_POSITION_X, rotaryAxisPosition.getX().getValue().toPlainString());
+		setValue(ROTARY_AXIS_POSITION_Y, rotaryAxisPosition.getY().getValue().toPlainString());
+		setValue(ROTARY_AXIS_POSITION_Z, rotaryAxisPosition.getZ().getValue().toPlainString());
 	}
 	/**
 	 * @return the rotaryAxisDirection
 	 */
 	public EnumRotaryAxisDirection getRotaryAxisDirection() {
-		return EnumRotaryAxisDirection.valueOf(preferenceStore.getString(ROTARY_AXIS_DIRECTION));
+		return EnumRotaryAxisDirection.valueOf(getString(ROTARY_AXIS_DIRECTION));
 	}
 	/**
 	 * Return the vector defining the direction of the rotary axis
@@ -185,7 +175,7 @@ public class JoglViewerSettings {
 	 */
 	public void setRotaryAxisDirection(EnumRotaryAxisDirection rotaryAxisDirection) {
 		this.rotaryAxisDirection = rotaryAxisDirection;
-		preferenceStore.setValue(ROTARY_AXIS_DIRECTION, rotaryAxisDirection.name());
+		setValue(ROTARY_AXIS_DIRECTION, rotaryAxisDirection.name());
 	}
 	/**
 	 * @return the rotaryAxisDistanceMode
@@ -211,7 +201,7 @@ public class JoglViewerSettings {
 	 */
 	public void setRotaryAxisEnabled(boolean rotaryAxisEnabled) {
 		this.rotaryAxisEnabled = rotaryAxisEnabled;
-		preferenceStore.setValue(ROTARY_AXIS_ENABLED, rotaryAxisEnabled);
+		setValue(ROTARY_AXIS_ENABLED, rotaryAxisEnabled);
 	}
 
 	/**
@@ -228,12 +218,8 @@ public class JoglViewerSettings {
 		this.rotaryAxisTravelPerTurn = rotaryAxisTravelPerTurn;
 	}
 
-	private void savePreferences(){
-		try {
-			preferenceStore.save();
-		} catch (IOException e) {
-			LOG.error(e);
-		}
+	private void savePreferences(){		
+		save();		
 	}
 
 	public void save() {
@@ -245,14 +231,14 @@ public class JoglViewerSettings {
 	 * @return the multisampling
 	 */
 	public Integer getMultisampling() {
-		return Integer.valueOf(preferenceStore.getString(MULTISAMPLING));
+		return Integer.valueOf(getString(MULTISAMPLING));
 	}
 
 	/**
 	 * @param multisampling the multisampling to set
 	 */
 	public void setMultisampling(Integer multisampling) {
-		preferenceStore.setValue(MULTISAMPLING, String.valueOf(multisampling));
+		setValue(MULTISAMPLING, String.valueOf(multisampling));
 	}
 
 	/**
@@ -260,14 +246,14 @@ public class JoglViewerSettings {
 	 * @throws GkException 
 	 */
 	public BigDecimal getMajorGridSpacing() throws GkException {
-		return GkUtils.toBigDecimal(preferenceStore.getString(MAJOR_GRID_SPACING));			
+		return GkUtils.toBigDecimal(getString(MAJOR_GRID_SPACING));			
 	}
 
 	/**
 	 * @param majorGridSpacing the majorGridSpacing to set
 	 */
 	public void setMajorGridSpacing(BigDecimal majorGridSpacing) {
-		preferenceStore.setValue(MAJOR_GRID_SPACING, String.valueOf(majorGridSpacing));
+		setValue(MAJOR_GRID_SPACING, String.valueOf(majorGridSpacing));
 	}
 
 	/**
@@ -275,13 +261,13 @@ public class JoglViewerSettings {
 	 * @throws GkException 
 	 */
 	public BigDecimal getMinorGridSpacing() throws GkException {		
-		return GkUtils.toBigDecimal(preferenceStore.getString(MINOR_GRID_SPACING));		
+		return GkUtils.toBigDecimal(getString(MINOR_GRID_SPACING));		
 	}
 
 	/**
 	 * @param minorGridSpacing the minorGridSpacing to set
 	 */
 	public void setMinorGridSpacing(BigDecimal minorGridSpacing) {
-		preferenceStore.setValue(MINOR_GRID_SPACING, String.valueOf(minorGridSpacing));
+		setValue(MINOR_GRID_SPACING, String.valueOf(minorGridSpacing));
 	}
 }

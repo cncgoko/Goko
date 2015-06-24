@@ -17,19 +17,20 @@
 
 package org.goko.gcode.rs274ngcv3.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.config.AbstractGkConfig;
+import org.goko.core.config.GkPreference;
 
 
-public class RS274Config extends AbstractGkConfig{
+public class RS274Config extends GkPreference{
 	/** Identifier of the config */
 	private static final String CONFIG_ID = "org.goko.gcode.rs274ngcv3.config";
 	/** Singleton instance */
 	private static RS274Config instance;
 
 	public static final String KEY_DECIMAL_COUNT = "numberDecimalCount";
+	public static final int DEFAULT_DECIMAL_COUNT = 3;
 	public static final String KEY_TRUNCATE_ENABLED = "truncateEnabled";
+	public static final boolean DEFAULT_TRUNCATE_ENABLED = false;
 	/**
 	 * Constructor
 	 */
@@ -50,36 +51,32 @@ public class RS274Config extends AbstractGkConfig{
 		}
 		return instance;
 	}
-
-	private void initialize() {
-		getPreferences().setDefault(KEY_TRUNCATE_ENABLED, false);
-		getPreferences().setDefault(KEY_DECIMAL_COUNT, "3");		
-		if(StringUtils.isBlank(KEY_DECIMAL_COUNT)){
-			getPreferences().setToDefault(KEY_DECIMAL_COUNT);	
-		}
-	}
 	
+	protected void initialize(){
+		getPreferenceStore().setDefault(KEY_DECIMAL_COUNT, DEFAULT_DECIMAL_COUNT);
+		getPreferenceStore().setDefault(KEY_TRUNCATE_ENABLED, DEFAULT_TRUNCATE_ENABLED);
+	}
 	/**
 	 * @return the decimalCount
 	 */
 	public int getDecimalCount() {
-		return Integer.valueOf(getPreferences().getString(KEY_DECIMAL_COUNT));
+		return Integer.valueOf(getPreferenceStore().getInt(KEY_DECIMAL_COUNT));
 	}
 
 	/**
 	 * @param decimalCount the decimalCount to set
 	 */
-	public void setDecimalCount(int decimalCount) {
-		getPreferences().setValue(KEY_DECIMAL_COUNT, String.valueOf(decimalCount));
+	public void setDecimalCount(int decimalCount) {		
+		getPreferenceStore().setValue(KEY_DECIMAL_COUNT, String.valueOf(decimalCount));
 	}
 
 
 	public void setDecimalTruncateEnabled(boolean enabled) {
-		getPreferences().setValue(KEY_TRUNCATE_ENABLED, enabled);
+		getPreferenceStore().setValue(KEY_TRUNCATE_ENABLED, enabled);
 	}
 
 
 	public boolean isDecimalTruncateEnabled() {
-		return getPreferences().getBoolean(KEY_TRUNCATE_ENABLED);
+		return getPreferenceStore().getBoolean(KEY_TRUNCATE_ENABLED);
 	}
 }

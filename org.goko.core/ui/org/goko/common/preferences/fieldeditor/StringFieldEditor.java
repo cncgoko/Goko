@@ -107,7 +107,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 		if(textLimit != UNLIMITED && StringUtils.length(getText()) > textLimit){
 			isValid = false;
 		}
-		
+		String tt = getText();
 		if( !emptyStringAllowed && StringUtils.isBlank(getText())){
 			isValid = false;
 		}
@@ -149,8 +149,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
 	 */
 	@Override
-	protected void loadValue() throws GkException {
-		String val = getPreferenceStore().getString(getPreferenceName());
+	protected void loadValue() throws GkException {		
 		getControl().setText( getPreferenceStore().getString(getPreferenceName()));
 		refreshValidState();
 	}

@@ -9,7 +9,7 @@ import javax.vecmath.Point3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.service.JoglUtils;
@@ -48,7 +48,7 @@ public class ToolRenderer extends DeprecatedAbstractVboJoglRenderer {
 			if(getControllerAdapter() != null){
 				modelMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 				modelMatrix.glLoadIdentity();
-				Unit<Length> targetLengthUnit = GokoConfig.getInstance().getLengthUnit();
+				Unit<Length> targetLengthUnit = GokoPreference.getInstance().getLengthUnit();
 				p.x = getControllerAdapter().getX().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT); 
 				p.y = getControllerAdapter().getY().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT);
 				p.z = getControllerAdapter().getZ().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT);				

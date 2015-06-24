@@ -42,14 +42,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
@@ -71,8 +69,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 	/** Widget that displays OpenGL content. */
 	private GokoJoglCanvas glcanvas;
-
-	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Animator animator;
 	private static final String VIEWER_ENABLED = "org.goko.gcode.viewer.enabled";
 	private static final String VIEWER_GRID_ENABLED = "org.goko.gcode.viewer.gridEnabled";
@@ -96,8 +92,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	@PostConstruct
 	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {
 		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
-		formToolkit.adapt(compositeParent);
-		formToolkit.paintBordersFor(compositeParent);
 		GLData gldata = new GLData();
 		gldata.doubleBuffer = true;
 		GridLayout gl_compositeParent = new GridLayout(1, false);
@@ -108,8 +102,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 
 		final ToolBar toolBar = new ToolBar(compositeParent, SWT.FLAT | SWT.RIGHT);
-		formToolkit.adapt(toolBar);
-		formToolkit.paintBordersFor(toolBar);
 
 		glcanvas = viewerService.createCanvas(compositeParent);
 

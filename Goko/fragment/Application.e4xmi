@@ -16,13 +16,12 @@
         <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View"/>
         <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.tools" label="Tools"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_4jfc8NViEeOx56hryHQKyQ" elementId="goko.menuseparator.1"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_WRhasDXDEeODiJsoHSNCjQ" elementId="goko.handledmenuitem.0" label="Preferences" command="_i52IoBAdEeOTXNaDwRiLUA"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_wyCDwdwYEeKC274TynxXSA" label="Help">
+      <children xsi:type="menu:Menu" xmi:id="_wyCDwdwYEeKC274TynxXSA" elementId="goko.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_EuPSEN79EeSbWNQONxf66w" elementId="goko.handledmenuitem.update" label="Update" command="_ASrswN79EeSbWNQONxf66w"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_3z5r0Ad7EeW5EMyXN5EkVg" elementId="goko.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwtwYEeKC274TynxXSA" label="About" command="_wyCDuNwYEeKC274TynxXSA"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_Yr_DYNVjEeOx56hryHQKyQ" elementId="goko.menu.controller" label="Controller"/>
     </mainMenu>
     <trimBars xmi:id="_nzUx0HNXEeS68rr8iXoRPQ" elementId="goko.trim.bottom" side="Bottom">
       <children xsi:type="menu:ToolBar" xmi:id="_qyXV0HNXEeS68rr8iXoRPQ" elementId="goko.toolbar.0"/>
@@ -32,7 +31,7 @@
   <handlers xmi:id="_wyCDs9wYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.OpenHandler" command="_wyCDstwYEeKC274TynxXSA"/>
   <handlers xmi:id="_wyCDttwYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.SaveHandler" command="_wyCDtdwYEeKC274TynxXSA"/>
   <handlers xmi:id="_wyCDudwYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.AboutHandler" command="_wyCDuNwYEeKC274TynxXSA"/>
-  <handlers xmi:id="_BvSLwBAeEeOTXNaDwRiLUA" elementId="goko.handler.preferences" contributionURI="bundleclass://Goko/goko.handlers.PreferencesHandler" command="_i52IoBAdEeOTXNaDwRiLUA"/>
+  <handlers xmi:id="_BvSLwBAeEeOTXNaDwRiLUA" elementId="goko.handler.preferences" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_i52IoBAdEeOTXNaDwRiLUA"/>
   <handlers xmi:id="_-NFSMN78EeSbWNQONxf66w" elementId="goko.handler.updateHandler" contributionURI="bundleclass://Goko/goko.handlers.UpdateHandler" command="_ASrswN79EeSbWNQONxf66w"/>
   <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" bindingContext="_wyBcodwYEeKC274TynxXSA">
     <bindings xmi:id="_wyCDsdwYEeKC274TynxXSA" keySequence="M1+Q" command="_wyBcqtwYEeKC274TynxXSA"/>

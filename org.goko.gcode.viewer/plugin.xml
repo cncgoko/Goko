@@ -10,7 +10,7 @@
       </fragment>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencesPages">
+         point="Goko.org.goko.ui.gkPreferencePage">
       <page
             class="org.goko.viewer.jogl.preferences.performances.JoglViewerPreferencePage"
             id="org.goko.jogl.viewer.preferences.viewer"
@@ -22,6 +22,13 @@
             id="org.goko.jogl.viewer.preferences.4thaxis"
             name="4th axis">
       </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.viewer.jogl.service.JoglViewerPreferenceStoreProvider"
+            id="org.goko.gcode.viewer.provider">
+      </provider>
    </extension>
 
 </plugin>

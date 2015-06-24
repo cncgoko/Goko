@@ -1,0 +1,16 @@
+package org.goko.gcode.rs274ngcv3.config;
+
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.goko.common.preferences.IPreferenceStoreProvider;
+
+public class RS274PreferenceStoreProvider implements IPreferenceStoreProvider {
+
+	/** (inheritDoc)
+	 * @see org.goko.common.preferences.IPreferenceStoreProvider#getPreferenceStore()
+	 */
+	@Override
+	public IPreferenceStore getPreferenceStore() {
+		return RS274Config.getInstance();
+	}
+
+}

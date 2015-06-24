@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.goko.core.internal;
 
+import org.goko.core.config.GokoPreference;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -26,12 +27,12 @@ public class GokoCoreActivator implements BundleActivator {
 	 */
 	@Override
 	public void start(BundleContext context) throws Exception {
-
+		GokoPreference.getInstance();
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		
+			
 	}
 
 }

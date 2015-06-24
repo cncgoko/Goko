@@ -40,14 +40,15 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
         layout.numColumns = 1;
         layout.marginHeight = 0;
         layout.marginWidth = 0;
-        fieldEditorParent.setLayout(layout);
-		createPreferencePage(fieldEditorParent);
-		if(getPreferenceStore() == null){
-			LOG.error("Preferences store is not set or null for page '"+getTitle()+"'");
-		}
+        fieldEditorParent.setLayout(layout);				
 		try {
+			createPreferencePage(fieldEditorParent);
+			if(getPreferenceStore() == null){
+				LOG.error("Preferences store is not set or null for page '"+getTitle()+"'");
+			}
 			initialize();
 			postInitialize();
+			validate();
 		} catch (GkException e) {
 			LOG.error(e);			
 		}
@@ -58,7 +59,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 		
 	}
 	
-	protected abstract void createPreferencePage(Composite parent);
+	protected abstract void createPreferencePage(Composite parent) throws GkException;
 	/**
 	 * Add the given field editor to this preference page
 	 * @param field the field editor to add

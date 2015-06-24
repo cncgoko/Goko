@@ -288,7 +288,7 @@ public class GCodeFileSenderBindings extends AbstractModelObject {
 	 * @param gcodeProvider the gcodeProvider to set
 	 */
 	public void setGcodeProvider(IGCodeProvider gcodeProvider) {
-		this.gcodeProvider = gcodeProvider;
+		firePropertyChange("gcodeProvider", this.gcodeProvider, this.gcodeProvider = gcodeProvider);
 	}
 
 

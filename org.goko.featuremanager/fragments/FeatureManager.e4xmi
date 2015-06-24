@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_0iBBcAiFEeWxxOl2iYMmNw">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-ULfEAiFEeWxxOl2iYMmNw" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_BOqTMAiGEeWxxOl2iYMmNw" elementId="org.goko.featuremanager.command.install" commandName="Install feature command"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_DdCPQAiGEeWxxOl2iYMmNw" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_EgJSEAiGEeWxxOl2iYMmNw" elementId="org.goko.featuremanager.handler.install" contributionURI="bundleclass://org.goko.featuremanager/org.goko.featuremanager.installer.InstallerHandler" command="_BOqTMAiGEeWxxOl2iYMmNw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7ZWFoAiFEeWxxOl2iYMmNw" featurename="children" parentElementId="goko.menu.help">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9Rc2wAiFEeWxxOl2iYMmNw" elementId="org.goko.featuremanager.handledmenuitem.install" label="Install" command="_BOqTMAiGEeWxxOl2iYMmNw"/>
+  </fragments>
+</fragment:ModelFragments>

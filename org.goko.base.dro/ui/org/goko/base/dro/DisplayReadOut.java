@@ -25,16 +25,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.base.dro.controller.DisplayReadOutController;
 import org.goko.base.dro.controller.DisplayReadOutModel;
 import org.goko.common.GkUiComponent;
+import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.controller.bean.MachineValueDefinition;
@@ -49,7 +47,6 @@ import org.goko.core.log.GkLog;
 public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, DisplayReadOutModel> implements IPropertyChangeListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(DisplayReadOut.class);
-	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Composite parentComposite;
 	@Inject
 	private ECommandService commandService;
@@ -64,9 +61,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			getController().initialize();			
 		} catch (GkException e) {
 			displayMessage(e);
-		}
-		ScopedPreferenceStore prefs = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,"org.goko.base.droservice");
-		prefs.addPropertyChangeListener(this);		
+		}	
 	}
 
 	/**
@@ -90,18 +85,16 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 		Composite composite = new Composite(parent, SWT.WRAP);
 		composite.setLayout(new GridLayout(1, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		formToolkit.adapt(composite);
-		formToolkit.paintBordersFor(composite);
+		
 
 		Label lblNoValueHere = new Label(composite, SWT.WRAP | SWT.CENTER);
 		lblNoValueHere.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-		formToolkit.adapt(lblNoValueHere, true, true);
+
 		lblNoValueHere.setText("No value here ? You can configure the displayed values in the preferences.");
 
 		Button btnPreferences = new Button(composite, SWT.NONE);
 		btnPreferences.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 		btnPreferences.setImage(ResourceManager.getPluginImage("org.goko.base.dro", "icons/gear.png"));
-		formToolkit.adapt(btnPreferences, true, true);
 		btnPreferences.setText("Preferences");
 		btnPreferences.addMouseListener(new MouseAdapter() {
 			@Override
@@ -137,8 +130,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 			gridData.widthHint = 120;
 			valueTxt.setLayoutData(gridData );
-			getController().enableTextBindingOnValue(valueTxt, definition.getId());
-			formToolkit.adapt(valueTxt, true, true);
+			getController().enableTextBindingOnValue(valueTxt, definition.getId());			
 		}
 	}
 

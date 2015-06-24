@@ -20,7 +20,7 @@ public class TinyGPreferencesPage extends GkFieldEditorPreferencesPage{
 	public TinyGPreferencesPage() {
 		setDescription("Configure TinyG features");
 		setTitle("TinyG");
-		setPreferenceStore(TinyGPreferences.getInstance().getPreferenceStore());
+		setPreferenceStore(TinyGPreferences.getInstance());
 	}
 
 	@Override

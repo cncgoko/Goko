@@ -4,6 +4,6 @@
     <elements xsi:type="basic:Part" xmi:id="_Kzi_gA6HEeOOz9g2jG0xHg" elementId="goko.application.parts.gcode.filesender" contributionURI="bundleclass://org.goko.gcode.filesender/org.goko.gcode.filesender.FileSenderPart" label="GCode streaming" iconURI="platform:/plugin/org.goko.gcode.filesender/icons/document-attribute-g.png"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zxz4IALVEeWNAc6kezL54A" featurename="children" parentElementId="org.goko.core.open.menu">
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_1mXmAALVEeWNAc6kezL54A" elementId="org.goko.gcode.filesender.directmenuitem.gcodeFile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.filesender/icons/document-attribute-g.png" contributionURI="bundleclass://org.goko.gcode.filesender/org.goko.gcode.filesender.handler.OpenGCodeFileHandler"/>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_1mXmAALVEeWNAc6kezL54A" elementId="org.goko.gcode.filesender.directmenuitem.gcodeFile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.filesender/icons/document-attribute-g.png" contributionURI="bundleclass://org.goko.gcode.filesender/org.goko.gcode.filesender.OpenGCodeFileHandler"/>
   </fragments>
 </fragment:ModelFragments>

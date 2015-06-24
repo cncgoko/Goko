@@ -40,11 +40,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
@@ -56,7 +54,6 @@ import org.goko.tools.centerfinder.model.CenterFinderModel;
 
 public class CenterFinderPart extends GkUiComponent<CenterFinderController, CenterFinderModel> {
 	private static final GkLog LOG = GkLog.getLogger(CenterFinderPart.class);
-	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 	private Table table;
 	private TableViewer tableViewer;
 	private Button grabPoint;
@@ -82,8 +79,8 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		Composite composite = new Composite(parent, SWT.NONE);
-		formToolkit.adapt(composite);
-		formToolkit.paintBordersFor(composite);
+		
+		
 		composite.setLayout(new GridLayout(1, false));
 
 		tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
@@ -93,7 +90,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd_table.heightHint = 85;
 		table.setLayoutData(gd_table);
-		formToolkit.paintBordersFor(table);
+		
 
 		TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnX = tableViewerColumn.getColumn();
@@ -112,14 +109,14 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 
 		Composite composite_1 = new Composite(composite, SWT.NONE);
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		formToolkit.adapt(composite_1);
-		formToolkit.paintBordersFor(composite_1);
+		
+		
 		GridLayout gl_composite_1 = new GridLayout(3, false);
 		gl_composite_1.marginWidth = 0;
 		gl_composite_1.marginHeight = 0;
 		composite_1.setLayout(gl_composite_1);
 
-		grabPoint = formToolkit.createButton(composite_1, "", SWT.NONE);
+		grabPoint = new Button(composite_1, SWT.NONE);
 		grabPoint.setToolTipText("Create point from position");
 		grabPoint.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/grab-point.png"));
 		grabPoint.addMouseListener(new MouseAdapter() {
@@ -133,7 +130,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 			}
 		});
 
-		Button btnNewButton_1 = formToolkit.createButton(composite_1, "", SWT.NONE);
+		Button btnNewButton_1 = new Button(composite_1, SWT.NONE);
 		btnNewButton_1.setToolTipText("Remove selected point");
 		btnNewButton_1.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/eraser.png"));
 
@@ -147,7 +144,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		goToCenterBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		goToCenterBtn.setToolTipText("Go to calculated center");
 		goToCenterBtn.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/arrow-step.png"));
-		formToolkit.adapt(goToCenterBtn, true, true);
+		
 		btnNewButton_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent evt) {
@@ -161,56 +158,56 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 
 		Composite composite_2 = new Composite(composite, SWT.NONE);
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(composite_2);
-		formToolkit.paintBordersFor(composite_2);
+		
+		
 		composite_2.setLayout(new GridLayout(5, false));
 
 		Label lblCenter = new Label(composite_2, SWT.NONE);
-		formToolkit.adapt(lblCenter, true, true);
+		
 		lblCenter.setText("Center");
 
 		Label lblX = new Label(composite_2, SWT.NONE);
-		formToolkit.adapt(lblX, true, true);
+		
 		lblX.setText("X:");
 
 		centerXLabel = new Label(composite_2, SWT.NONE);
 		GridData gd_centerXLabel = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
 		gd_centerXLabel.widthHint = 80;
 		centerXLabel.setLayoutData(gd_centerXLabel);
-		formToolkit.adapt(centerXLabel, true, true);
+		
 		centerXLabel.setText("New Label");
 
 		Label lblRadius = new Label(composite_2, SWT.NONE);
 		lblRadius.setText("Radius :");
-		formToolkit.adapt(lblRadius, true, true);
+		
 
 		radiusLabel = new Label(composite_2, SWT.NONE);
 		GridData gd_radiusLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_radiusLabel.widthHint = 80;
 		radiusLabel.setLayoutData(gd_radiusLabel);
 		radiusLabel.setText("New Label");
-		formToolkit.adapt(radiusLabel, true, true);
+		
 		new Label(composite_2, SWT.NONE);
 
 		Label lblY = new Label(composite_2, SWT.NONE);
-		formToolkit.adapt(lblY, true, true);
+		
 		lblY.setText("Y:");
 
 		centerYLabel = new Label(composite_2, SWT.NONE);
 		centerYLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(centerYLabel, true, true);
+		
 		centerYLabel.setText("New Label");
 		new Label(composite_2, SWT.NONE);
 		new Label(composite_2, SWT.NONE);
 		new Label(composite_2, SWT.NONE);
 
 		Label lblZ = new Label(composite_2, SWT.NONE);
-		formToolkit.adapt(lblZ, true, true);
+		
 		lblZ.setText("Z:");
 
 		centerZLabel = new Label(composite_2, SWT.NONE);
 		centerZLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(centerZLabel, true, true);
+		
 		centerZLabel.setText("New Label");
 		new Label(composite_2, SWT.NONE);
 		new Label(composite_2, SWT.NONE);
