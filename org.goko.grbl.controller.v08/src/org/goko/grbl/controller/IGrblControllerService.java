@@ -21,6 +21,7 @@ package org.goko.grbl.controller;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
+import org.goko.core.controller.IStepJogService;
 import org.goko.grbl.controller.configuration.GrblConfiguration;
 
 /**
@@ -29,11 +30,19 @@ import org.goko.grbl.controller.configuration.GrblConfiguration;
  * @author PsyKo
  *
  */
-public interface IGrblControllerService extends IControllerService{
+public interface IGrblControllerService extends IControllerService, IStepJogService{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 
 	GrblConfiguration getConfiguration() throws GkException;
 
 	GrblState getGrblState();
+	
+	void setActivePollingEnabled(boolean enabled) throws GkException;
+	
+	boolean isActivePollingEnabled() throws GkException;
+	
+	GrblMachineState getState() throws GkException;
+	
+	void setCheckModeEnabled(boolean enabled) throws GkException;
 }

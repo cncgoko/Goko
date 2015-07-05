@@ -19,13 +19,17 @@
  */
 package org.goko.log.part.model;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogListener;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 
 /**
  * Controller for problems view
@@ -34,6 +38,7 @@ import org.goko.core.common.exception.GkException;
  *
  */
 public class ProblemsLogController extends AbstractController<ProblemsLogModel> implements IApplicativeLogListener{
+	private static final GkLog LOG = GkLog.getLogger(ProblemsLogController.class);
 	@Inject
 	private IApplicativeLogService logListenerService;
 	/**
@@ -49,7 +54,13 @@ public class ProblemsLogController extends AbstractController<ProblemsLogModel> 
 	 */
 	@Override
 	public void initialize() throws GkException {
-		logListenerService.registerApplicativeLogListener(this);
+		List<ApplicativeLogEvent> lstEvents = logListenerService.getEvents();
+		if(CollectionUtils.isNotEmpty(lstEvents)){
+			for (ApplicativeLogEvent applicativeLogEvent : lstEvents) {
+				onLogEvent(applicativeLogEvent);
+			}
+		}
+		logListenerService.registerApplicativeLogListener(this);		
 	}
 
 	/** (inheritDoc)
@@ -66,6 +77,11 @@ public class ProblemsLogController extends AbstractController<ProblemsLogModel> 
 
 	public void clearLog(){
 		getDataModel().getTableContent().clearAll();
+		try {
+			logListenerService.clearEvents();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 
 }

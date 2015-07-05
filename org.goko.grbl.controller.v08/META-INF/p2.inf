@@ -1,0 +1,5 @@
+provides.0.namespace = org.goko.grbl.v08
+provides.0.name = Grbl
+ 
+instructions.configure = org.eclipse.equinox.p2.touchpoint.eclipse.setStartLevel(startLevel:4); \
+	org.eclipse.equinox.p2.touchpoint.eclipse.markStarted(started:true);

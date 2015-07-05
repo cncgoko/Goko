@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 
@@ -37,12 +38,9 @@ public abstract class AbstractMotionCommandWriter<T extends MotionCommand> exten
 		return super.write(strCommand, command);
 	}
 
-	protected String writeCoordinate(String base, String letter, BigDecimal value, EnumGCodeCommandUnit unit) throws GkException{
+	protected String writeCoordinate(String base, String letter, BigDecimalQuantity<?> value, EnumGCodeCommandUnit unit) throws GkException{
 		if(value != null){
-			BigDecimal tmpVal = value;
-			if(unit == EnumGCodeCommandUnit.INCHES){
-				//tmpVal = value.divide(new BigDecimal("25.4"));
-			}
+			BigDecimal tmpVal = value.value();			
 			if(StringUtils.isEmpty(base)){
 				base += letter + tmpVal;
 			}else{

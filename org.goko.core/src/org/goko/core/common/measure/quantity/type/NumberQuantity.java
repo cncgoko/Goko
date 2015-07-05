@@ -31,4 +31,5 @@ public class NumberQuantity {
 	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> of(BigDecimal value, Unit<Q> unit){
 		return new BigDecimalQuantity<Q>(unit, value);
 	}
+
 }

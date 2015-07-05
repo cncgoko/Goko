@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.gcode.filesender;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
@@ -33,6 +35,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -54,7 +57,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -63,14 +65,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.common.bindings.validator.FilepathValidator;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
+import org.goko.core.common.event.GokoTopic;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.gcode.filesender.controller.GCodeFileSenderBindings;
 import org.goko.gcode.filesender.controller.GCodeFileSenderController;
 
@@ -80,11 +85,11 @@ import org.goko.gcode.filesender.controller.GCodeFileSenderController;
  * @author PsyKo
  *
  */
-public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> {
-	// s
-	private final FormToolkit formToolkit = new FormToolkit( Display.getDefault());
+public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener, PropertyChangeListener {
 	@Inject
 	private IApplicativeLogService applicativeLogService;
+	@Inject
+	private IGCodeExecutionMonitorService monitorService;
 	private Text txtFilepath;
 	private Label lblFilesize;
 	private Label lblName;
@@ -116,13 +121,17 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		context.set(FileSenderPart.class, this);
 		ContextInjectionFactory.inject(getController(), context);
 		try {
-			getController().initialize();
+			getController().initialize();			
+			getController().getDataModel().addPropertyChangeListener(this);
 		} catch (GkException e) {
 			displayMessage(e);
 		}
 
 	}
-
+	@PostConstruct
+	protected void postConstruct() throws GkException{
+		monitorService.addExecutionListener(this);		
+	}
 	private void startFileParsingJob(final String filePath) {
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
 		try {
@@ -132,7 +141,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 					monitor.beginTask("Opening " + filePath, 100);
 					monitor.worked(30);
 					try {
-						getController().setGCodeFilepath(filePath);
+						getController().setGCodeFilepath(filePath);						
 					} catch (GkException e) {
 						displayError(e);
 					}
@@ -166,42 +175,33 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 				startFileParsingJob(((String[]) event.data)[0]);
 				refreshCommandTable();
 			}
-		});
-		parent.setBackground(SWTResourceManager .getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		});		
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 		shell = parent.getShell();
 
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setBackground(SWTResourceManager .getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		formToolkit.adapt(composite);
-		formToolkit.paintBordersFor(composite);
+		Composite composite = new Composite(parent, SWT.NONE);		
 		composite.setLayout(new GridLayout(1, false));
 
-		Group grpFile = new Group(composite, SWT.NONE);
-		grpFile.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		Group grpFile = new Group(composite, SWT.NONE);	
 
 		grpFile.setLayout(new GridLayout(1, false));
 		grpFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpFile.setText("File");
-		formToolkit.adapt(grpFile);
-		formToolkit.paintBordersFor(grpFile);
-
+		
 		Composite composite_2 = new Composite(grpFile, SWT.NONE);
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		formToolkit.adapt(composite_2);
-		formToolkit.paintBordersFor(composite_2);
+		
 		composite_2.setLayout(new GridLayout(3, false));
 
 		Label lblPath = new Label(composite_2, SWT.NONE);
 		lblPath.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		formToolkit.adapt(lblPath, true, true);
+		
 		lblPath.setText("Path :");
 
 		txtFilepath = new Text(composite_2, SWT.BORDER);
 		txtFilepath.setEditable(false);
 		txtFilepath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		formToolkit.adapt(txtFilepath, true, true);
-
+		
 		btnBrowse = new Button(composite_2, SWT.NONE);
 		btnBrowse.addMouseListener(new MouseAdapter() {
 			@Override
@@ -219,82 +219,63 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 
 		});
-		formToolkit.adapt(btnBrowse, true, true);
 		btnBrowse.setText("Browse");
 
-		Label label = formToolkit.createSeparator(grpFile, SWT.HORIZONTAL);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
+		Label label = new Label(grpFile, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		Composite composite_5 = formToolkit.createComposite(grpFile, SWT.NONE);
-		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
-		formToolkit.paintBordersFor(composite_5);
+		Composite composite_5 = new Composite(grpFile, SWT.NONE);
+		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
 		composite_5.setLayout(new GridLayout(2, false));
 
 		Label lblFileName = new Label(composite_5, SWT.NONE);
 		lblFileName.setAlignment(SWT.RIGHT);
-		GridData gd_lblFileName = new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1);
+		GridData gd_lblFileName = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		gd_lblFileName.widthHint = 100;
 		lblFileName.setLayoutData(gd_lblFileName);
 		lblFileName.setSize(57, 15);
-		formToolkit.adapt(lblFileName, true, true);
+		
 		lblFileName.setText("File name :");
 
 		lblName = new Label(composite_5, SWT.NONE);
 		lblName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1));
-		formToolkit.adapt(lblName, true, true);
 		lblName.setText("--");
 
 		Composite composite_1 = new Composite(grpFile, SWT.NONE);
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
 				false, 1, 1));
-		formToolkit.adapt(composite_1);
-		formToolkit.paintBordersFor(composite_1);
 		composite_1.setLayout(new GridLayout(4, false));
 
-		Label lblLastModification = formToolkit.createLabel(composite_1,
-				"Last modification :", SWT.NONE);
-		GridData gd_lblLastModification = new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1);
+		Label lblLastModification = new Label(composite_1, SWT.NONE);
+		lblLastModification.setText("Last modification :");
+		GridData gd_lblLastModification = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		gd_lblLastModification.widthHint = 100;
 		lblLastModification.setLayoutData(gd_lblLastModification);
 
-		lblLastupdate = formToolkit.createLabel(composite_1, "--", SWT.NONE);
-		GridData gd_lblLastupdate = new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 1, 1);
+		lblLastupdate = new Label(composite_1, SWT.NONE);		
+		GridData gd_lblLastupdate = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_lblLastupdate.widthHint = 150;
 		lblLastupdate.setLayoutData(gd_lblLastupdate);
 
 		Label lblSize = new Label(composite_1, SWT.NONE);
-		formToolkit.adapt(lblSize, true, true);
+		
 		lblSize.setText("Size :");
 
 		lblFilesize = new Label(composite_1, SWT.NONE);
 		GridData gd_lblFilesize = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 1, 1);
 		gd_lblFilesize.widthHint = 80;
-		lblFilesize.setLayoutData(gd_lblFilesize);
-		formToolkit.adapt(lblFilesize, true, true);
+		lblFilesize.setLayoutData(gd_lblFilesize);		
 		lblFilesize.setText("--");
 
-		Group grpControls = new Group(composite, SWT.NONE);
-		grpControls.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		Group grpControls = new Group(composite, SWT.NONE);		
 		grpControls.setLayout(new GridLayout(1, false));
-		grpControls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
+		grpControls.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpControls.setText("Controls");
-		formToolkit.adapt(grpControls);
-		formToolkit.paintBordersFor(grpControls);
 
 		Composite composite_3 = new Composite(grpControls, SWT.NONE);
-		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
-		formToolkit.adapt(composite_3);
-		formToolkit.paintBordersFor(composite_3);
+		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		composite_3.setLayout(new GridLayout(4, false));
 
 		btnSendFile = new Button(composite_3, SWT.NONE);
@@ -306,12 +287,10 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 			}
 		});
 		btnSendFile.setBounds(0, 0, 75, 25);
-		formToolkit.adapt(btnSendFile, true, true);
 		btnSendFile.setText("Send file");
 
 		btnCancel = new Button(composite_3, SWT.NONE);
-
-		formToolkit.adapt(btnCancel, true, true);
+		
 		btnCancel.setText("Cancel");
 		btnCancel.addMouseListener(new MouseAdapter() {
 			@Override
@@ -326,15 +305,13 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 				false, 1, 1);
 		gd_lblProgress.widthHint = 100;
 		lblProgress.setLayoutData(gd_lblProgress);
-		formToolkit.adapt(lblProgress, true, true);
 		lblProgress.setText("Line count :");
 
 		totalCommandCountTxt = new Label(composite_3, SWT.NONE);
 		GridData gd_totalCommandCountTxt = new GridData(SWT.LEFT, SWT.CENTER,
 				false, false, 1, 1);
 		gd_totalCommandCountTxt.widthHint = 80;
-		totalCommandCountTxt.setLayoutData(gd_totalCommandCountTxt);
-		formToolkit.adapt(totalCommandCountTxt, true, true);
+		totalCommandCountTxt.setLayoutData(gd_totalCommandCountTxt);		
 		totalCommandCountTxt.setText("--");
 
 		Composite composite_4 = new Composite(grpControls, SWT.NONE);
@@ -342,19 +319,14 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		composite_4.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
 		composite_4.setBounds(0, 0, 64, 64);
-		formToolkit.adapt(composite_4);
-		formToolkit.paintBordersFor(composite_4);
 
 		Label lblSentCommands = new Label(composite_4, SWT.NONE);
-		lblSentCommands.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1));
-		formToolkit.adapt(lblSentCommands, true, true);
+		lblSentCommands.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+
 		lblSentCommands.setText("Progress :");
 
 		progressSentCommand = new ProgressBar(composite_4, SWT.NONE);
-		progressSentCommand.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-				true, false, 1, 1));
-		formToolkit.adapt(progressSentCommand, true, true);
+		progressSentCommand.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		new Label(composite_4, SWT.NONE);
 
 		sentCommandsCountTxt = new Label(composite_4, SWT.NONE);
@@ -362,16 +334,12 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 				false, false, 1, 1);
 		gd_sentCommandsCountTxt.widthHint = 80;
 		sentCommandsCountTxt.setLayoutData(gd_sentCommandsCountTxt);
-		formToolkit.adapt(sentCommandsCountTxt, true, true);
 		sentCommandsCountTxt.setText("--");
 
 		Composite composite_6 = new Composite(grpControls, SWT.NONE);
-		formToolkit.adapt(composite_6);
-		formToolkit.paintBordersFor(composite_6);
 		composite_6.setLayout(new GridLayout(5, false));
 
 		Label lblElapsedTime = new Label(composite_6, SWT.NONE);
-		formToolkit.adapt(lblElapsedTime, true, true);
 		lblElapsedTime.setText("Elapsed time :");
 
 		elapsedTimeLbl = new Label(composite_6, SWT.NONE);
@@ -379,12 +347,10 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 				false, 1, 1);
 		gd_elapsedTimeLbl.widthHint = 80;
 		elapsedTimeLbl.setLayoutData(gd_elapsedTimeLbl);
-		formToolkit.adapt(elapsedTimeLbl, true, true);
 		elapsedTimeLbl.setText("New Label");
 		new Label(composite_6, SWT.NONE);
 
 		Label lblRemainingTime = new Label(composite_6, SWT.NONE);
-		formToolkit.adapt(lblRemainingTime, true, true);
 		lblRemainingTime.setText("Estimated time :");
 
 		remainingTimeLbl = new Label(composite_6, SWT.NONE);
@@ -392,7 +358,6 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 				false, false, 1, 1);
 		gd_remainingTimeLbl.widthHint = 80;
 		remainingTimeLbl.setLayoutData(gd_remainingTimeLbl);
-		formToolkit.adapt(remainingTimeLbl, true, true);
 		remainingTimeLbl.setText("New Label");
 
 		Group grpGcodeEditor = new Group(composite, SWT.NONE);
@@ -400,8 +365,6 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		grpGcodeEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true, 1, 1));
 		grpGcodeEditor.setText("GCode viewer");
-		formToolkit.adapt(grpGcodeEditor);
-		formToolkit.paintBordersFor(grpGcodeEditor);
 
 		Composite composite_8 = new Composite(grpGcodeEditor, SWT.NONE);
 		GridLayout gl_composite_8 = new GridLayout(1, false);
@@ -411,14 +374,12 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		gl_composite_8.horizontalSpacing = 0;
 		composite_8.setLayout(gl_composite_8);
 		composite_8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		formToolkit.adapt(composite_8);
-		formToolkit.paintBordersFor(composite_8);
+
 
 		tableViewer = new TableViewer(composite_8, SWT.BORDER | SWT.FULL_SELECTION | SWT.HIDE_SELECTION | SWT.VIRTUAL);
 		table = tableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		formToolkit.paintBordersFor(table);
 
 		TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE |  SWT.RIGHT);
 		TableColumn tblclmnLine = tableViewerColumn.getColumn();
@@ -459,7 +420,6 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 
 		initCustomBindings();
-		//testNatTAble(composite_7);
 	}
 
 	private void initCustomBindings() throws GkException {
@@ -477,9 +437,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 
 		this.getController().addEnableBinding(btnSendFile, "streamingAllowed");
 		this.getController().addEnableReverseBinding(btnBrowse, "streamingInProgress");
-		// this.getController().addEnableBinding(btnCancel,
-		// "streamingInProgress");
-		// Progress bar bindings
+
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue( progressSentCommand, "maximum");
 			IObservableValue modelObserver = BeanProperties.value( "totalCommandCount").observe(getDataModel());
@@ -511,6 +469,72 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(IGCodeExecutionToken token) throws GkException {
+		getController().onExecutionStart(token);
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+		getController().onExecutionCanceled(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(IGCodeExecutionToken token) throws GkException {		
+		getController().onExecutionComplete(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {	
+		System.err.println("FileSenderPart onExecutionComplete");
+		if(!shell.isDisposed()){
+			final int errorCount 	= token.getErrorCommandCount();
+			final int executedCount = token.getExecutedCommandCount();
+			final int totalCount 	= token.getCommandCount();
+			shell.getDisplay().asyncExec(new Runnable() {
+		      @Override
+		      public void run() {
+		    	  if(executedCount == totalCount){
+		    		  MessageDialog.openInformation(shell, "Execution complete", "GCode file successfully executed.");
+		    	  }else{
+		    		  MessageDialog.openInformation(shell, "Execution finished with errors", "GCode file was completely executed but some error were reported.Please refers to the Problems view.");
+		    	  }
+		      }
+		    });
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onCommandStateChanged(org.goko.core.gcode.bean.execution.IGCodeExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void propertyChange(PropertyChangeEvent changeEvent) {
+		if(StringUtils.equals(changeEvent.getPropertyName(), "gcodeProvider")){
+			getShell().getDisplay().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					refreshCommandTable();
+				}
+			});			
+		}
+	}
 }
 

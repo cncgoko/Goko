@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tools
+Bundle-SymbolicName: org.goko.junit.tools
+Bundle-Version: 0.0.1.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: org.goko.junit.tools.assertion,
+ org.goko.junit.tools.connection
+Require-Bundle: org.goko.core;bundle-version="0.0.1"
+Import-Package: org.junit;version="4.11.0"

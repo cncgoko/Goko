@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.grbl.controller.v08">
-   <implementation class="org.goko.grbl.controller.GrblRendererService"/>
-   <service>
-      <provide interface="org.goko.core.viewer.renderer.IViewer3DRenderer"/>
-   </service>
-   <reference bind="setGrblRendererService" cardinality="0..n" interface="org.goko.grbl.controller.IGrblControllerService" name="IGrblControllerService" policy="dynamic"/>
-</scr:component>

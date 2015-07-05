@@ -20,16 +20,30 @@ import java.math.BigDecimal;
 
 import javax.vecmath.Point3d;
 
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.QuantityUtils;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
+import org.goko.core.common.utils.BigDecimalUtils;
 import org.goko.core.math.Tuple6f;
 
 public class Tuple6b {
-	private BigDecimal x;
-	private BigDecimal y;
-	private BigDecimal z;
-	private BigDecimal a;
-	private BigDecimal b;
-	private BigDecimal c;
+	private BigDecimalQuantity<Length> x;
+	private BigDecimalQuantity<Length> y;
+	private BigDecimalQuantity<Length> z;
+	private BigDecimalQuantity<Angle> a;
+	private BigDecimalQuantity<Angle> b;
+	private BigDecimalQuantity<Angle> c;
 
+	public Tuple6b(){
+		this(SIPrefix.MILLI(SI.METRE), SI.DEGREE_ANGLE);
+	}
+	
 	public Tuple6b(Tuple6b tuple){
 		this.x = tuple.x;
 		this.y = tuple.y;
@@ -39,36 +53,36 @@ public class Tuple6b {
 		this.c = tuple.c;
 	}
 
-	public Tuple6b() {
+	public Tuple6b(Unit<Length> unit, Unit<Angle> angleUnit) {
 		super();
-		this.x = BigDecimal.ZERO;
-		this.y = BigDecimal.ZERO;
-		this.z = BigDecimal.ZERO;
-		this.a = BigDecimal.ZERO;
-		this.b = BigDecimal.ZERO;
-		this.c = BigDecimal.ZERO;
+		this.x = NumberQuantity.of(BigDecimal.ZERO, unit);
+		this.y = NumberQuantity.of(BigDecimal.ZERO, unit);
+		this.z = NumberQuantity.of(BigDecimal.ZERO, unit);
+		this.a = NumberQuantity.of(BigDecimal.ZERO, angleUnit);
+		this.b = NumberQuantity.of(BigDecimal.ZERO, angleUnit);
+		this.c = NumberQuantity.of(BigDecimal.ZERO, angleUnit);
 	}
 	/**
 	 * @param x
 	 * @param y
 	 * @param z
 	 */
-	public Tuple6b(double x, double y, double z) {
+	public Tuple6b(double x, double y, double z, Unit<Length> unit) {
 		super();
-		this.x = new BigDecimal(String.valueOf(x));
-		this.y = new BigDecimal(String.valueOf(y));
-		this.z = new BigDecimal(String.valueOf(z));
+		this.x = NumberQuantity.of(new BigDecimal(String.valueOf(x)), unit);
+		this.y = NumberQuantity.of(new BigDecimal(String.valueOf(y)), unit);
+		this.z = NumberQuantity.of(new BigDecimal(String.valueOf(z)), unit);
 	}
 	/**
 	 * @param x
 	 * @param y
 	 * @param z
 	 */
-	public Tuple6b(BigDecimal x, BigDecimal y, BigDecimal z) {
+	public Tuple6b(BigDecimal x, BigDecimal y, BigDecimal z, Unit<Length> unit) {
 		super();
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = NumberQuantity.of(x, unit);
+		this.y = NumberQuantity.of(y, unit);
+		this.z = NumberQuantity.of(z, unit);
 	}
 
 	/**
@@ -79,28 +93,14 @@ public class Tuple6b {
 	 * @param b
 	 * @param c
 	 */
-	public Tuple6b(BigDecimal x, BigDecimal y, BigDecimal z, BigDecimal a, BigDecimal b, BigDecimal c) {
+	public Tuple6b(BigDecimal x, BigDecimal y, BigDecimal z, BigDecimal a, BigDecimal b, BigDecimal c, Unit<Length> unit, Unit<Angle> angleUnit) {
 		super();
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.a = a;
-		this.b = b;
-		this.c = c;
-	}
-
-	/**
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param a
-	 */
-	public Tuple6b(BigDecimal x, BigDecimal y, BigDecimal z, BigDecimal a) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.a = a;
+		this.x = NumberQuantity.of(x, unit);
+		this.y = NumberQuantity.of(y, unit);
+		this.z = NumberQuantity.of(z, unit);
+		this.a = NumberQuantity.of(a, angleUnit);
+		this.b = NumberQuantity.of(b, angleUnit);
+		this.c = NumberQuantity.of(c, angleUnit);
 	}
 
 	public void updateRelative(Tuple6b position){
@@ -112,9 +112,9 @@ public class Tuple6b {
 		this.c = atomUpdateRelative(c, position.c);
 	}
 
-	protected BigDecimal atomUpdateRelative(BigDecimal a, BigDecimal b) {
+	protected <Q extends Quantity<Q>> BigDecimalQuantity<Q> atomUpdateRelative(BigDecimalQuantity<Q> a, BigDecimalQuantity<Q> b) {
 		if( a != null && b!=null){
-			return a.add(b);
+			return (BigDecimalQuantity<Q>) a.add(b);
 		}else if( a != null){
 			return a;
 		}else if(b != null){
@@ -125,60 +125,45 @@ public class Tuple6b {
 
 	public Tuple6b min(Tuple6b t){
 		Tuple6b result = new Tuple6b(this);
-		result.x = atomMin(x, t.x);
-		result.y = atomMin(y, t.y);
-		result.z = atomMin(z, t.z);
-		result.a = atomMin(a, t.a);
-		result.b = atomMin(b, t.b);
-		result.c = atomMin(c, t.c);
+		result.x = QuantityUtils.min(x, t.x);
+		result.y = QuantityUtils.min(y, t.y);
+		result.z = QuantityUtils.min(z, t.z);
+		result.a = QuantityUtils.min(a, t.a);
+		result.b = QuantityUtils.min(b, t.b);
+		result.c = QuantityUtils.min(c, t.c);
 		return result;
 	}
+	
 	public Tuple6b max(Tuple6b t){
 		Tuple6b result = new Tuple6b(this);
-		result.x = atomMax(x, t.x);
-		result.y = atomMax(y, t.y);
-		result.z = atomMax(z, t.z);
-		result.a = atomMax(a, t.a);
-		result.b = atomMax(b, t.b);
-		result.c = atomMax(c, t.c);
+		result.x = QuantityUtils.max(x, t.x);
+		result.y = QuantityUtils.max(y, t.y);
+		result.z = QuantityUtils.max(z, t.z);
+		result.a = QuantityUtils.max(a, t.a);
+		result.b = QuantityUtils.max(b, t.b);
+		result.c = QuantityUtils.max(c, t.c);
 		return result;
 	}
-	private BigDecimal atomMin(BigDecimal a, BigDecimal b) {
-		if(a == null){
-			return b;
-		}else if(b == null){
-			return a;
-		}
-		return a.min(b);
-	}
-	private BigDecimal atomMax(BigDecimal a, BigDecimal b) {
-		if(a == null){
-			return b;
-		}else if(b == null){
-			return a;
-		}
-		return a.max(b);
-	}
-
+	
 	public Tuple6b subtract(Tuple6b sub){
 		Tuple6b result = new Tuple6b(this);
-		result.x = atomSubtract(x, sub.x);
-		result.y = atomSubtract(y, sub.y);
-		result.z = atomSubtract(z, sub.z);
-		result.a = atomSubtract(a, sub.a);
-		result.b = atomSubtract(b, sub.b);
-		result.c = atomSubtract(c, sub.c);
+		result.x = QuantityUtils.subtract(x, sub.x);
+		result.y = QuantityUtils.subtract(y, sub.y);
+		result.z = QuantityUtils.subtract(z, sub.z);
+		result.a = QuantityUtils.subtract(a, sub.a);
+		result.b = QuantityUtils.subtract(b, sub.b);
+		result.c = QuantityUtils.subtract(c, sub.c);
 		return result;
 	}
 
 	public Tuple6b add(Tuple6b sub){
 		Tuple6b result = new Tuple6b(this);
-		result.x = atomAdd(x, sub.x);
-		result.y = atomAdd(y, sub.y);
-		result.z = atomAdd(z, sub.z);
-		result.a = atomAdd(a, sub.a);
-		result.b = atomAdd(b, sub.b);
-		result.c = atomAdd(c, sub.c);
+		result.x = QuantityUtils.add(x, sub.x);
+		result.y = QuantityUtils.add(y, sub.y);
+		result.z = QuantityUtils.add(z, sub.z);
+		result.a = QuantityUtils.add(a, sub.a);
+		result.b = QuantityUtils.add(b, sub.b);
+		result.c = QuantityUtils.add(c, sub.c);
 		return result;
 	}
 
@@ -191,29 +176,7 @@ public class Tuple6b {
 		this.c = atomUpdateAbsolute(c, position.c);
 	}
 
-	protected BigDecimal atomSubtract(BigDecimal a, BigDecimal b) {
-		if( a != null && b!=null){
-			return a.subtract(b);
-		}else if( a != null){
-			return a;
-		}else if(b != null){
-			return b.negate();
-		}
-		return null;
-	}
-
-	protected BigDecimal atomAdd(BigDecimal a, BigDecimal b) {
-		if( a != null && b!=null){
-			return a.add(b);
-		}else if( a != null){
-			return a;
-		}else if(b != null){
-			return b;
-		}
-		return null;
-	}
-
-	protected BigDecimal atomUpdateAbsolute(BigDecimal a, BigDecimal b) {
+	protected <Q extends Quantity<Q>> BigDecimalQuantity<Q> atomUpdateAbsolute(BigDecimalQuantity<Q> a, BigDecimalQuantity<Q> b) {
 		if( a != null && b!=null){
 			return b;
 		}else if( a != null){
@@ -226,73 +189,73 @@ public class Tuple6b {
 	/**
 	 * @return the x
 	 */
-	public BigDecimal getX() {
+	public BigDecimalQuantity<Length> getX() {
 		return x;
 	}
 	/**
 	 * @param x the x to set
 	 */
-	public void setX(BigDecimal x) {
+	public void setX( BigDecimalQuantity<Length> x) {
 		this.x = x;
 	}
 	/**
 	 * @return the y
 	 */
-	public BigDecimal getY() {
+	public  BigDecimalQuantity<Length> getY() {
 		return y;
 	}
 	/**
 	 * @param y the y to set
 	 */
-	public void setY(BigDecimal y) {
+	public void setY( BigDecimalQuantity<Length> y) {
 		this.y = y;
 	}
 	/**
 	 * @return the z
 	 */
-	public BigDecimal getZ() {
+	public  BigDecimalQuantity<Length> getZ() {
 		return z;
 	}
 	/**
 	 * @param z the z to set
 	 */
-	public void setZ(BigDecimal z) {
+	public void setZ( BigDecimalQuantity<Length> z) {
 		this.z = z;
 	}
 	/**
 	 * @return the a
 	 */
-	public BigDecimal getA() {
+	public  BigDecimalQuantity<Angle> getA() {
 		return a;
 	}
 	/**
 	 * @param a the a to set
 	 */
-	public void setA(BigDecimal a) {
+	public void setA( BigDecimalQuantity<Angle> a) {
 		this.a = a;
 	}
 	/**
 	 * @return the b
 	 */
-	public BigDecimal getB() {
+	public BigDecimalQuantity<Angle> getB() {
 		return b;
 	}
 	/**
 	 * @param b the b to set
 	 */
-	public void setB(BigDecimal b) {
+	public void setB(BigDecimalQuantity<Angle> b) {
 		this.b = b;
 	}
 	/**
 	 * @return the c
 	 */
-	public BigDecimal getC() {
+	public BigDecimalQuantity<Angle> getC() {
 		return c;
 	}
 	/**
 	 * @param c the c to set
 	 */
-	public void setC(BigDecimal c) {
+	public void setC(BigDecimalQuantity<Angle> c) {
 		this.c = c;
 	}
 
@@ -310,16 +273,43 @@ public class Tuple6b {
 		return this;
 	}
 
+	public Tuple6b to(Unit<Length> unit){
+		Tuple6b result = new Tuple6b(this);
+		result.setX( getX().to(unit) );
+		result.setY( getY().to(unit) );
+		result.setZ( getZ().to(unit) );
+		return result;
+	}
+	
+	public Tuple6b toAngle(Unit<Angle> unit){
+		Tuple6b result = new Tuple6b(this);
+		result.setA( getA().to(unit) );
+		result.setB( getB().to(unit) );
+		result.setC( getC().to(unit) );
+		return result;
+	}
+	
 	public Tuple6b setZero() {
-		this.x = BigDecimal.ZERO;
-		this.y = BigDecimal.ZERO;
-		this.z = BigDecimal.ZERO;
-		this.a = BigDecimal.ZERO;
-		this.b = BigDecimal.ZERO;
-		this.c = BigDecimal.ZERO;
+		this.x = NumberQuantity.of(BigDecimal.ZERO, SI.METRE);
+		this.y = NumberQuantity.of(BigDecimal.ZERO, SI.METRE);
+		this.z = NumberQuantity.of(BigDecimal.ZERO, SI.METRE);
+		this.a = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		this.b = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		this.c = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
 		return this;
 	}
 
+	public BigDecimalQuantity<Length> distance(Tuple6b target){		
+		BigDecimalQuantity<Length> dx = target.getX().subtract(x); 
+		BigDecimalQuantity<Length> dy = target.getY().subtract(y); 
+		BigDecimalQuantity<Length> dz = target.getZ().subtract(z);
+		BigDecimal dx2 = dx.getValue().pow(2);
+		BigDecimal dy2 = dy.getValue().pow(2);
+		BigDecimal dz2 = dz.getValue().pow(2);
+		BigDecimal result = BigDecimalUtils.sqrt(dx2.add(dy2).add(dz2), dx.getValue().scale());
+		
+		return NumberQuantity.of(result, dx.getUnit());
+	}
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -406,5 +396,6 @@ public class Tuple6b {
 				);
 	}
 
+	
 
 }

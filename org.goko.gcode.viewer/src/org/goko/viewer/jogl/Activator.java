@@ -3,7 +3,7 @@ package org.goko.viewer.jogl;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.goko.common.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

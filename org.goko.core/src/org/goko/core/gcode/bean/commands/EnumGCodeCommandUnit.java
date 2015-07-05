@@ -16,6 +16,12 @@
  *******************************************************************************/
 package org.goko.core.gcode.bean.commands;
 
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.US;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
+
 /**
  * GCode units
  *
@@ -23,6 +29,16 @@ package org.goko.core.gcode.bean.commands;
  *
  */
 public enum EnumGCodeCommandUnit {
-	MILLIMETERS,
-	INCHES;
+	MILLIMETERS(SIPrefix.MILLI(SI.METRE)),
+	INCHES(US.INCH);
+	
+	private Unit<Length> unit;
+
+	private EnumGCodeCommandUnit(Unit<Length> unit) {
+		this.unit = unit;
+	}
+
+	public Unit<Length> getUnit() {
+		return unit;
+	}
 }

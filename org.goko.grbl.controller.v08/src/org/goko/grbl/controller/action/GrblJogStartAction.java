@@ -19,11 +19,17 @@
  */
 package org.goko.grbl.controller.action;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.action.DefaultControllerAction;
+import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.grbl.controller.EnumGrblAxis;
 import org.goko.grbl.controller.GrblControllerService;
 
 /**
@@ -56,9 +62,10 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 	@Override
 	public void execute(Object... parameters) throws GkException {
 		String 			axis 	 = getStringParameter(parameters[0]);
-		EnumGrblAxis 	enumAxis = EnumGrblAxis.getEnum(axis);
-		String 			feed 	 = getStringParameter(parameters[1]);
-		String 			step 	 = getStringParameter(parameters[2]);
+		EnumControllerAxis 	enumAxis = EnumControllerAxis.getEnum(axis);
+		BigDecimal 			feed 	 = new BigDecimal(getStringParameter(parameters[1]));
+		Unit<Length> unit = getControllerService().getCurrentGCodeContext().getUnit().getUnit();
+		BigDecimalQuantity<Length>	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
 		getControllerService().startJog(enumAxis, feed, step);
 	}
 

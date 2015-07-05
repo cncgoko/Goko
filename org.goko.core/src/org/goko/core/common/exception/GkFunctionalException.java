@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.core.common.exception;
 
+import org.goko.core.common.i18n.MessageResource;
+
 /**
  * Goko functional exception
  * 
@@ -23,18 +25,58 @@ package org.goko.core.common.exception;
  *
  */
 public class GkFunctionalException extends GkException {
-
 	/**
 	 * serialVersionUID
 	 */
 	private static final long serialVersionUID = -2648838559567768949L;
-
-	/**
-	 * Constructor from superclass
-	 * @param message the message
-	 */
-	public GkFunctionalException(String message) {
-		super(message);
+	/** Key for the exception message */
+	private String key;
+	/** arguments of the message */
+	private String[] arguments;
+		
+	public GkFunctionalException(String key, String... args ){
+		super();
+		this.key = key;
+		this.arguments = args;
 	}
 
+	@Override
+	public String getLocalizedMessage() {
+		return MessageResource.getMessage(key);		
+	}
+	
+	@Override
+	public String getMessage() {		
+		return getLocalizedMessage();
+	}
+	/**
+	 * @return the key
+	 */
+	public String getKey() {
+		return key;
+	}
+
+
+	/**
+	 * @param key the key to set
+	 */
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+
+	/**
+	 * @return the arguments
+	 */
+	public String[] getArguments() {
+		return arguments;
+	}
+
+
+	/**
+	 * @param arguments the arguments to set
+	 */
+	public void setArguments(String[] arguments) {
+		this.arguments = arguments;
+	}
 }

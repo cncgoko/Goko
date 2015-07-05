@@ -20,9 +20,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.gcode.rs274ngcv3.RS274;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
@@ -80,34 +84,33 @@ public abstract class AbstractMotionCommandBuilder<T extends MotionCommand> exte
 	 * @throws GkException GkException
 	 */
 	private void setCoordinates(List<GCodeToken> lstTokens, GCodeContext context, T targetCommand) throws GkException{
-		Tuple6b coordinates = new Tuple6b().setNull();
-		GCodeToken token = RS274.removeUniqueTokenByLetter("x", lstTokens);
-		BigDecimal scale = new BigDecimal("1");
-		if(targetCommand.getUnit() == EnumGCodeCommandUnit.INCHES){
-			scale = new BigDecimal("25.4");
-		}
+		Unit<Length> unit = targetCommand.getUnit().getUnit();
+		Unit<Angle> angleUnit = SI.DEGREE_ANGLE;
+		Tuple6b coordinates = new Tuple6b(unit, angleUnit).setNull();
+		GCodeToken token = RS274.removeUniqueTokenByLetter("x", lstTokens);	
+		
 		if(token != null){
-			coordinates.setX( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
+			coordinates.setX( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), unit));
 		}
 		token = RS274.removeUniqueTokenByLetter("y", lstTokens);
 		if(token != null){
-			coordinates.setY( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
+			coordinates.setY( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), unit));
 		}
 		token= RS274.removeUniqueTokenByLetter("z", lstTokens);
 		if(token != null){
-			coordinates.setZ( new BigDecimal( RS274.getTokenValue(token)).multiply(scale));
+			coordinates.setZ( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), unit));
 		}
 		token = RS274.removeUniqueTokenByLetter("a", lstTokens);
 		if(token != null){
-			coordinates.setA( new BigDecimal( RS274.getTokenValue(token)));
+			coordinates.setA( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), angleUnit));
 		}
 		token = RS274.removeUniqueTokenByLetter("b", lstTokens);
 		if(token != null){
-			coordinates.setB( new BigDecimal( RS274.getTokenValue(token)));
+			coordinates.setB( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), angleUnit));
 		}
 		token = RS274.removeUniqueTokenByLetter("c", lstTokens);
 		if(token != null){
-			coordinates.setC( new BigDecimal( RS274.getTokenValue(token)));
+			coordinates.setC( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), angleUnit));
 		}
 		targetCommand.setCoordinates(coordinates);
 	}

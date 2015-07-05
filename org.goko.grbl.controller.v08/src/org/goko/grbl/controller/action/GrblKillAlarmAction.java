@@ -24,6 +24,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.grbl.controller.GrblControllerService;
+import org.goko.grbl.controller.GrblMachineState;
 
 /**
  * Implementation of kill alarm action for Grbl
@@ -44,7 +45,7 @@ public class GrblKillAlarmAction extends AbstractGrblControllerAction{
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return ObjectUtils.equals(MachineState.ALARM, getControllerService().getState());
+		return ObjectUtils.equals(GrblMachineState.ALARM, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

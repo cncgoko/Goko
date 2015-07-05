@@ -23,6 +23,8 @@ import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.goko.common.bindings.AbstractModelObject;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
 
 /**
  * Command panel data model
@@ -36,6 +38,8 @@ public class CommandPanelModel extends AbstractModelObject{
 	private BigDecimal jogIncrement;
 	private boolean incrementalJog;
 	private boolean stepModeChoiceEnabled;
+	private Unit<Length> lengthUnit;
+	private String lengthUnitSymbol;
 
 	public CommandPanelModel(){
 		actionState = new WritableMap(String.class, Boolean.class);
@@ -86,30 +90,7 @@ public class CommandPanelModel extends AbstractModelObject{
 	public void setIncrementalJog(boolean incrementalJog) {
 		firePropertyChange("incrementalJog", this.incrementalJog, this.incrementalJog = incrementalJog);
 	}
-	/**
-//	 * @return the incrementalJogSupported
-//	 */
-//	public boolean isIncrementalJogSupported() {
-//		return incrementalJogSupported;
-//	}
-//	/**
-//	 * @param incrementalJogSupported the incrementalJogSupported to set
-//	 */
-//	public void setIncrementalJogSupported(boolean incrementalJogSupported) {
-//		firePropertyChange("incrementalJogSupported", this.incrementalJogSupported, this.incrementalJogSupported = incrementalJogSupported);
-//	}
-//	/**
-//	 * @return the continuousJogSupported
-//	 */
-//	public boolean isContinuousJogSupported() {
-//		return continuousJogSupported;
-//	}
-//	/**
-//	 * @param continuousJogSupported the continuousJogSupported to set
-//	 */
-//	public void setContinuousJogSupported(boolean continuousJogSupported) {
-//		firePropertyChange("continuousJogSupported", this.continuousJogSupported, this.continuousJogSupported = continuousJogSupported);
-//	}
+
 	/**
 	 * @return the stepModeChoiceEnabled
 	 */
@@ -123,6 +104,21 @@ public class CommandPanelModel extends AbstractModelObject{
 		firePropertyChange("stepModeChoiceEnabled", this.stepModeChoiceEnabled, this.stepModeChoiceEnabled = stepModeChoiceEnabled);
 	}
 
+	public void setLengthUnitSymbol(String symbol) {
+		firePropertyChange("lengthUnitSymbol", this.lengthUnitSymbol, this.lengthUnitSymbol = symbol);
+	}
+	
+	public String getLengthUnitSymbol() {
+		return lengthUnitSymbol;
+	}
+	
+	public void setLengthUnit(Unit<Length> unit) {
+		firePropertyChange("lengthUnit", this.lengthUnit, this.lengthUnit = unit);
+		setLengthUnitSymbol(unit.getSymbol());
+	}
 
+	public Unit<Length> getLengthUnit() {
+		return lengthUnit;
+	}
 
 }

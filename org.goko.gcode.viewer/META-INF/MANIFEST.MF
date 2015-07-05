@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Viewer
 Bundle-SymbolicName: org.goko.gcode.viewer;singleton:=true
-Bundle-Version: 0.0.1.qualifier
+Bundle-Version: 0.0.2.qualifier
 Bundle-Activator: org.goko.viewer.jogl.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -10,7 +10,6 @@ Import-Package: org.eclipse.jface.text,
  org.eclipse.jface.text.presentation,
  org.eclipse.jface.text.rules,
  org.eclipse.jface.text.source,
- org.eclipse.ui,
  org.osgi.framework;version="1.3.0"
 Require-Bundle: com.jogamp.jogl;bundle-version="2.0.0",
  org.eclipse.e4.core.di;bundle-version="1.1.0",
@@ -21,7 +20,6 @@ Require-Bundle: com.jogamp.jogl;bundle-version="2.0.0",
  org.eclipse.e4.ui.di;bundle-version="0.10.1",
  org.eclipse.jface;bundle-version="3.8.101",
  org.eclipse.e4.ui.widgets;bundle-version="0.12.0",
- org.eclipse.ui.forms;bundle-version="3.5.200",
  org.eclipse.jface.databinding;bundle-version="1.6.0",
  org.eclipse.core.databinding.property;bundle-version="1.4.100",
  org.eclipse.core.databinding.beans;bundle-version="1.2.200",
@@ -29,7 +27,6 @@ Require-Bundle: com.jogamp.jogl;bundle-version="2.0.0",
  org.eclipse.core.databinding;bundle-version="1.4.1",
  org.eclipse.core.runtime;bundle-version="3.8.0",
  org.eclipse.e4.core.contexts;bundle-version="1.2.0",
- org.eclipse.ui,
  org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.services;bundle-version="1.0.0",
  org.eclipse.osgi.services;bundle-version="3.3.100",
@@ -43,7 +40,8 @@ Bundle-ClassPath: .,
  libs/j3dutils.jar,
  libs/vecmath.jar
 Service-Component: OSGI-INF/JoglViewerServiceComponant.xml
-Export-Package: org.goko.viewer.jogl.service,
+Export-Package: org.goko.viewer.jogl.preferences.performances,
+ org.goko.viewer.jogl.service,
  org.goko.viewer.jogl.utils.render,
  org.goko.viewer.jogl.utils.render.basic,
  org.goko.viewer.jogl.utils.render.coordinate.measurement,

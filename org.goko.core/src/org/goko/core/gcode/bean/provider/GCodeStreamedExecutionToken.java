@@ -19,6 +19,7 @@ package org.goko.core.gcode.bean.provider;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
@@ -59,7 +60,9 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 		this.mapSentCommandById.put(command.getId(), command);
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.SENT);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.SENT));
-		getMonitorService().notifyCommandStateChanged(this, idCommand);
+		if(isMonitorService()){
+			getMonitorService().notifyCommandStateChanged(this, idCommand);
+		}
 	}
 
 	/** (inheritDoc)
@@ -80,7 +83,9 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 		this.mapConfirmedCommandById.put(command.getId(), command);
 		mapStateByIdCommand.put(command.getId(), GCodeCommandState.CONFIRMED);
 		notifyListeners(new GCodeCommandExecutionEvent(this, command, GCodeCommandState.CONFIRMED));
-		getMonitorService().notifyCommandStateChanged(this, idCommand);
+		if(isMonitorService()){
+			getMonitorService().notifyCommandStateChanged(this, idCommand);
+		}
 	}
 
 	/** (inheritDoc)
@@ -98,6 +103,7 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 	public void markAsExecuted(Integer idCommand) throws GkException {
 		GCodeCommand command = getCommandById(idCommand);
 		this.mapConfirmedCommandById.remove(command.getId());
+		updateCompleteState();
 		super.markAsExecuted(idCommand);
 	}
 
@@ -108,7 +114,16 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 	public void markAsError(Integer idCommand) throws GkException {
 		GCodeCommand command = getCommandById(idCommand);
 		this.mapSentCommandById.remove(command.getId());
+		updateCompleteState();
 		super.markAsError(idCommand);
+	}
+	
+	protected void updateCompleteState(){
+		if(CollectionUtils.isNotEmpty(mapExecutedCommandById)){
+			if(mapErrorsCommandById.size() + mapExecutedCommandById.size() == mapCommandById.size()){
+				setComplete(true);
+			}
+		}
 	}
 }
 //

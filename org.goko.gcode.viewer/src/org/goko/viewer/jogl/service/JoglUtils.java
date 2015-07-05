@@ -15,12 +15,13 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
-
-import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
  * Utility class for Jogl rendering
@@ -29,7 +30,10 @@ import com.jogamp.opengl.util.gl2.GLUT;
  *
  */
 public class JoglUtils {
-
+	/** Default Jogl unit (by convention)*/
+	public static final Unit<Length> JOGL_UNIT = SI.MILLIMETRE;
+	
+	
 
 	private static final Point3f DEFAULT_COLOR = new Point3f(0.8f,0.8f,0.8f);
 
@@ -172,44 +176,45 @@ public class JoglUtils {
 	}
 
 	public static void drawXYZAxis(GL2 gl, Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale, String label, double charWidth) throws GkException {
-		gl.glLineWidth(1.5f);
-		GLUT glut = new GLUT();
-
-		Tuple6b zero =  new Tuple6b(0, 0, 0);
-		Tuple6b xaxis = new Tuple6b(1 * scale, 0, 0);
-		Tuple6b yaxis = new Tuple6b(0, 1 * scale, 0);
-		Tuple6b zaxis = new Tuple6b(0, 0, 1 * scale);
-		gl.glPushMatrix();
-		gl.glTranslated(position.getX().doubleValue(), position.getY().doubleValue(), position.getZ().doubleValue());
-
-		gl.glPushMatrix();
-		drawSegment(gl, zero, xaxis, xColor);
-		gl.glTranslated(xaxis.getX().doubleValue() - 1, xaxis.getY().doubleValue(), xaxis.getZ().doubleValue());
-		gl.glRotated(90, 0, 1, 0);
-		glut.glutSolidCone(0.5, 1, 8, 1);
-		gl.glPopMatrix();
-
-		gl.glPushMatrix();
-		drawSegment(gl, zero, yaxis, yColor);
-		gl.glTranslated(yaxis.getX().doubleValue(), yaxis.getY().doubleValue() - 1, yaxis.getZ().doubleValue());
-		gl.glRotated(-90, 1, 0, 0);
-		glut.glutSolidCone(0.5, 1, 8, 1);
-		gl.glPopMatrix();
-
-		gl.glPushMatrix();
-		drawSegment(gl, zero, zaxis, zColor);
-		gl.glTranslated(zaxis.getX().doubleValue(), zaxis.getY().doubleValue(), zaxis.getZ().doubleValue() - 1);
-		glut.glutSolidCone(0.5, 1, 8, 1);
-		gl.glPopMatrix();
-		if(StringUtils.isNotBlank(label)){
-			gl.glPushMatrix();
-			double textScale = charWidth / glut.glutStrokeWidth(GLUT.STROKE_MONO_ROMAN, ' ');
-			gl.glTranslated(1, 1, 0);
-			gl.glScaled(textScale, textScale, textScale);
-			glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, label);
-			gl.glPopMatrix();
-		}
-		gl.glPopMatrix();
+//		gl.glLineWidth(1.5f);
+//		GLUT glut = new GLUT();
+//
+//		Tuple6b zero =  new Tuple6b(0, 0, 0);
+//		Tuple6b xaxis = new Tuple6b(1 * scale, 0, 0);
+//		Tuple6b yaxis = new Tuple6b(0, 1 * scale, 0);
+//		Tuple6b zaxis = new Tuple6b(0, 0, 1 * scale);
+//		gl.glPushMatrix();
+//		gl.glTranslated(position.getX().doubleValue(), position.getY().doubleValue(), position.getZ().doubleValue());
+//
+//		gl.glPushMatrix();
+//		drawSegment(gl, zero, xaxis, xColor);
+//		gl.glTranslated(xaxis.getX().doubleValue() - 1, xaxis.getY().doubleValue(), xaxis.getZ().doubleValue());
+//		gl.glRotated(90, 0, 1, 0);
+//		glut.glutSolidCone(0.5, 1, 8, 1);
+//		gl.glPopMatrix();
+//
+//		gl.glPushMatrix();
+//		drawSegment(gl, zero, yaxis, yColor);
+//		gl.glTranslated(yaxis.getX().doubleValue(), yaxis.getY().doubleValue() - 1, yaxis.getZ().doubleValue());
+//		gl.glRotated(-90, 1, 0, 0);
+//		glut.glutSolidCone(0.5, 1, 8, 1);
+//		gl.glPopMatrix();
+//
+//		gl.glPushMatrix();
+//		drawSegment(gl, zero, zaxis, zColor);
+//		gl.glTranslated(zaxis.getX().doubleValue(), zaxis.getY().doubleValue(), zaxis.getZ().doubleValue() - 1);
+//		glut.glutSolidCone(0.5, 1, 8, 1);
+//		gl.glPopMatrix();
+//		if(StringUtils.isNotBlank(label)){
+//			gl.glPushMatrix();
+//			double textScale = charWidth / glut.glutStrokeWidth(GLUT.STROKE_MONO_ROMAN, ' ');
+//			gl.glTranslated(1, 1, 0);
+//			gl.glScaled(textScale, textScale, textScale);
+//			glut.glutStrokeString(GLUT.STROKE_MONO_ROMAN, label);
+//			gl.glPopMatrix();
+//		}
+//		gl.glPopMatrix();
+		throw new GkTechnicalException("Not implemented");
 	}
 
 	public static void drawXYZAxis(GL2 gl, Tuple6b position, Point3f xColor, Point3f yColor, Point3f zColor, double scale) throws GkException {

@@ -22,12 +22,21 @@ package org.goko.core.common.exception;
  *
  */
 public class GkTechnicalException extends GkException {
-
 	/**
 	 * serialVersionUID
 	 */
 	private static final long serialVersionUID = -1125645831362340170L;
-
+	/** The message of the exception */ 
+	private String message;
+	
+	/**
+	 * Constructor
+	 * @param message the message
+	 */
+	public GkTechnicalException(String message){
+		super();
+		this.message = message;
+	}
 	/**
 	 * Constructor
 	 * @param t Throwable
@@ -35,13 +44,16 @@ public class GkTechnicalException extends GkException {
 	public GkTechnicalException(Throwable t) {
 		super(t);		
 	}
-	
 	/**
-	 * Constructor
-	 * @param message the message
+	 * @return the message
 	 */
-	public GkTechnicalException(String message) {
-		super(message);		
+	public String getMessage() {
+		return message;
 	}
-
+	/**
+	 * @param message the message to set
+	 */
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

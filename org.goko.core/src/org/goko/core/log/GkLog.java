@@ -16,6 +16,9 @@
  *******************************************************************************/
 package org.goko.core.log;
 
+import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.i18n.MessageResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,10 @@ public class GkLog {
 	public void info(String msg) {
 		logger.info(msg);
 	}
+	
+	public void warn(String msg) {
+		logger.warn(msg);
+	}
 
 	public void debug(String msg) {
 		logger.debug(msg);
@@ -36,6 +43,14 @@ public class GkLog {
 
 	public void error(String msg) {
 		logger.error(msg);
+	}
+	
+	public void log(GkTechnicalException exception) {
+		logger.error(exception.getMessage());
+	}
+	
+	public void log(GkFunctionalException exception) {
+		logger.warn(MessageResource.getMessage(exception.getKey()), exception.getArguments());
 	}
 	/**
 	 * Error logging
@@ -46,6 +61,7 @@ public class GkLog {
 	}
 
 	public static GkLog getLogger(Class<?> clazz) {
+		MessageResource.getInstance();
 		return new GkLog(LoggerFactory.getLogger(clazz));
 	}
 }

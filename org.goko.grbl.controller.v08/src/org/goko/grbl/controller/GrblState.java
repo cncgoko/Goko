@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
-import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.gcode.bean.GCodeContext;
@@ -42,11 +44,14 @@ public class GrblState extends MachineValueStore{
 	private static final GkLog LOG = GkLog.getLogger(GrblState.class);
 	private Map<EnumCoordinateSystem, Tuple6b> offsets;
 	private GCodeContext currentContext;
+	private boolean activePolling;
+	private Tuple6b workPosition;
 
 	public GrblState() {
 		super();
-		offsets = new HashMap<EnumCoordinateSystem, Tuple6b>();
-		currentContext = new GCodeContext();
+		offsets 		= new HashMap<EnumCoordinateSystem, Tuple6b>();
+		currentContext 	= new GCodeContext();
+		workPosition 	= new Tuple6b().setZero();
 		try {
 			initValues();
 		} catch (GkException e) {
@@ -55,14 +60,22 @@ public class GrblState extends MachineValueStore{
 
 	}
 
+	public boolean isActivePolling() {
+		return activePolling;
+	}
+
+	public void setActivePolling(boolean activePolling) {
+		this.activePolling = activePolling;
+	}
+
 	private void initValues() throws GkException{
-		storeValue(DefaultControllerValues.STATE, "State", "The state of Grbl controller board", MachineState.UNDEFINED);
-		storeValue(Grbl.MACHINE_POSITION_X, "X", "The X position of the machine", new BigDecimal("0.000"));
-		storeValue(Grbl.MACHINE_POSITION_Y, "Y", "The Y position of the machine", new BigDecimal("0.000"));
-		storeValue(Grbl.MACHINE_POSITION_Z, "Z", "The Z position of the machine", new BigDecimal("0.000"));
-		storeValue(Grbl.WORK_POSITION_X, "Wor. X", "The X work position", new BigDecimal("0.000"));
-		storeValue(Grbl.WORK_POSITION_Y, "Wor. Y", "The Y work position", new BigDecimal("0.000"));
-		storeValue(Grbl.WORK_POSITION_Z, "Wor. Z", "The Z work position", new BigDecimal("0.000"));
+		storeValue(DefaultControllerValues.STATE, "State", "The state of Grbl controller board", GrblMachineState.UNDEFINED);
+		storeValue(Grbl.POSITION_X, "X", "The X work position of the machine", "0");
+		storeValue(Grbl.POSITION_Y, "Y", "The Y work position of the machine", "0");
+		storeValue(Grbl.POSITION_Z, "Z", "The Z work position of the machine", "0");
+		storeValue(Grbl.MACHINE_POSITION_X, "Machine X", "The X position of the machine", "0");
+		storeValue(Grbl.MACHINE_POSITION_Y, "Machine Y", "The Y position of the machine", "0");
+		storeValue(Grbl.MACHINE_POSITION_Z, "Machine Z", "The Z position of the machine", "0");
 		storeValue(Grbl.GRBL_USED_BUFFER, "Grbl Buffer", "The space used in Grbl buffer", 0);
 		storeValue(Grbl.CONTEXT_FEEDRATE, "Feedrate", "The current feedrate", new BigDecimal("0.000"));
 		storeValue(Grbl.CONTEXT_PLANE, "Plane", "The current plane", EnumGCodeCommandPlane.XY_PLANE);
@@ -77,36 +90,26 @@ public class GrblState extends MachineValueStore{
 		offsets.put(EnumCoordinateSystem.G55, new Tuple6b());
 		offsets.put(EnumCoordinateSystem.G56, new Tuple6b());
 		offsets.put(EnumCoordinateSystem.G57, new Tuple6b());
-
+		activePolling = true;
+		
 		addListener(this);
 	}
 
 	/**
-	 * Return the machine position in the machine space coordinate
-	 * @return the position of the tool
-	 * @throws GkException GkException
-	 */
-	public Tuple6b getMachinePosition() throws GkException{
-		MachineValue<BigDecimal> x = getBigDecimalValue(Grbl.MACHINE_POSITION_X);
-		MachineValue<BigDecimal> y = getBigDecimalValue(Grbl.MACHINE_POSITION_Y);
-		MachineValue<BigDecimal> z = getBigDecimalValue(Grbl.MACHINE_POSITION_Z);
-		return new Tuple6b(x.getValue(), y.getValue(), z.getValue());
-	}
-	/**
 	 * Sets the machine position in the machine space coordinate
 	 * @param position the position
 	 * @throws GkException GkException
 	 */
-	public void setMachinePosition(Tuple6b position) throws GkException{
-		if(position != null){
+	public void setMachinePosition(Tuple6b position, Unit<Length> unit) throws GkException{
+		if(position != null){			
 			if(position.getX() != null){
-				updateValue(Grbl.MACHINE_POSITION_X, position.getX());
+				updateValue(Grbl.MACHINE_POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
 			}
 			if(position.getY() != null){
-				updateValue(Grbl.MACHINE_POSITION_Y, position.getY());
+				updateValue(Grbl.MACHINE_POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
 			}
 			if(position.getZ() != null){
-				updateValue(Grbl.MACHINE_POSITION_Z, position.getZ());
+				updateValue(Grbl.MACHINE_POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
 			}
 		}
 	}
@@ -116,31 +119,33 @@ public class GrblState extends MachineValueStore{
 	 * @return the position of the tool
 	 * @throws GkException GkException
 	 */
-	public Tuple6b getWorkPosition() throws GkException{
-		MachineValue<BigDecimal> x = getBigDecimalValue(Grbl.WORK_POSITION_X);
-		MachineValue<BigDecimal> y = getBigDecimalValue(Grbl.WORK_POSITION_Y);
-		MachineValue<BigDecimal> z = getBigDecimalValue(Grbl.WORK_POSITION_Z);
-		return new Tuple6b(x.getValue(), y.getValue(), z.getValue());
+	public synchronized Tuple6b getWorkPosition() throws GkException{		
+		return new Tuple6b(workPosition);
 	}
 	/**
 	 * Sets the machine position in the machine space coordinate
 	 * @param position the position
 	 * @throws GkException GkException
 	 */
-	public void setWorkPosition(Tuple6b position) throws GkException{
-		if(position != null){
-			if(position.getX() != null){
-				updateValue(Grbl.WORK_POSITION_X, position.getX());
+	public synchronized void setWorkPosition(Tuple6b position, Unit<Length> unit) throws GkException{		
+		if(position != null){		
+			
+			if(position.getX() != null){		
+				workPosition.setX(position.getX());
+				// updateValue(Grbl.POSITION_X, GokoConfig.getInstance().format( position.getX(), true));				
+				updateValue(Grbl.POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
 			}
 			if(position.getY() != null){
-				updateValue(Grbl.WORK_POSITION_Y, position.getY());
+				workPosition.setY(position.getY());
+				updateValue(Grbl.POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
 			}
 			if(position.getZ() != null){
-				updateValue(Grbl.WORK_POSITION_Z, position.getZ());
+				workPosition.setZ(position.getZ());
+				updateValue(Grbl.POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
 			}
 		}
-		if(position != null && currentContext != null){
-			currentContext.setPosition(position);
+		if(currentContext != null){			
+			currentContext.setPosition(workPosition);
 		}
 	}
 	public int getUsedBuffer() throws GkException{
@@ -228,7 +233,7 @@ public class GrblState extends MachineValueStore{
 	 * @param state the state to set
 	 * @throws GkException GkException
 	 */
-	public void setState(MachineState state)throws GkException{
+	public void setState(GrblMachineState state)throws GkException{
 		updateValue(Grbl.STATE, state);
 	}
 	/**
@@ -236,8 +241,8 @@ public class GrblState extends MachineValueStore{
 	 * @return the State
 	 * @throws GkException
 	 */
-	public MachineState getState()throws GkException{
-		return getValue(Grbl.STATE, MachineState.class).getValue();
+	public GrblMachineState getState()throws GkException{
+		return getValue(Grbl.STATE, GrblMachineState.class).getValue();
 	}
 
 	public void setUsedGrblBuffer(int usedGrblBuffer) throws GkException {
@@ -248,6 +253,11 @@ public class GrblState extends MachineValueStore{
 		return getValue(Grbl.GRBL_USED_BUFFER, Integer.class).getValue();
 	}
 
+	public EnumGCodeCommandUnit getContextUnit(){
+		return currentContext.getUnit();
+		//return getValue(Grbl.CONTEXT_UNIT, EnumGCodeCommandUnit.class).getValue();
+	}
+	
 	/**
 	 * @return the currentContext
 	 */
@@ -266,10 +276,18 @@ public class GrblState extends MachineValueStore{
 			updateValue(Grbl.CONTEXT_DISTANCE_MODE, currentContext.getDistanceMode());
 			updateValue(Grbl.CONTEXT_MOTION_MODE, currentContext.getMotionMode());
 			updateValue(Grbl.CONTEXT_PLANE, currentContext.getPlane());
-			updateValue(Grbl.CONTEXT_UNIT, currentContext.getUnit());
+			updateValue(Grbl.CONTEXT_UNIT, currentContext.getUnit());			
 		} catch (GkException e) {
 			LOG.error(e);
 		}
+	}
+	
+	public EnumGCodeCommandDistanceMode getDistanceMode() throws GkException {
+		return getValue(Grbl.CONTEXT_DISTANCE_MODE, EnumGCodeCommandDistanceMode.class).getValue();
+	}
+
+	public void setDistanceMode(EnumGCodeCommandDistanceMode distanceMode) throws GkException {
+		updateValue(Grbl.CONTEXT_DISTANCE_MODE, distanceMode);
 	}
 }
 

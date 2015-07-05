@@ -9,9 +9,10 @@ import javax.vecmath.Point3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.log.GkLog;
+import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer;
 
 import com.jogamp.opengl.util.PMVMatrix;
@@ -47,10 +48,10 @@ public class ToolRenderer extends DeprecatedAbstractVboJoglRenderer {
 			if(getControllerAdapter() != null){
 				modelMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 				modelMatrix.glLoadIdentity();
-				Unit<Length> targetLengthUnit = GokoConfig.getInstance().getLengthUnit();
-				p.x = getControllerAdapter().getX().to(targetLengthUnit).doubleValue();
-				p.y = getControllerAdapter().getY().to(targetLengthUnit).doubleValue();
-				p.z = getControllerAdapter().getZ().to(targetLengthUnit).doubleValue();
+				Unit<Length> targetLengthUnit = GokoPreference.getInstance().getLengthUnit();
+				p.x = getControllerAdapter().getX().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT); 
+				p.y = getControllerAdapter().getY().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT);
+				p.z = getControllerAdapter().getZ().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT);				
 				modelMatrix.glTranslatef((float)p.x, (float)p.y, (float)p.z);
 				modelMatrix.update();
 			}

@@ -52,9 +52,9 @@ import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.goko.common.bindings.converters.NegateBooleanConverter;
@@ -87,7 +87,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		this.dataModel = binding;
 		this.bindings = new ArrayList<Binding>();
 	}
-
+	
 	/**
 	 * Initialization method
 	 * @throws GkException GkException
@@ -103,7 +103,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
 		symbols.setDecimalSeparator('.');
 		format.setDecimalFormatSymbols(symbols);
-
+		
 		StringToNumberConverter stringConverter = StringToNumberConverter.toBigDecimal(format);
 		NumberToStringConverter numberConverter = NumberToStringConverter.fromBigDecimal(format);
 
@@ -455,7 +455,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	 * @return
 	 * @throws GkException
 	 */
-	public boolean validate() throws GkException{
+	public boolean validate() {
 		List<BindingStatus> lstStatus = new ArrayList<BindingStatus>();
 		for(Binding binding : bindings){
 			IObservableValue status = binding.getValidationStatus();
@@ -507,7 +507,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	 * @param source the label in which the errors will be displayed
 	 * @throws GkException GkException
 	 */
-	public void addValidationMessagesBinding(final CLabel source) throws GkException {
+	public void addValidationMessagesBinding(final Label source) throws GkException {
 
 		AggregateValidationStatus aggValidationStatus = new AggregateValidationStatus(bindingContext.getBindings(), AggregateValidationStatus.MAX_SEVERITY);
 		aggValidationStatus.addChangeListener(new IChangeListener() {

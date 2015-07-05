@@ -21,6 +21,7 @@ package org.goko.grbl.controller.internal.handlers;
 
 import javax.inject.Named;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -29,6 +30,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IControllerService;
+import org.goko.grbl.controller.GrblMachineState;
+import org.goko.grbl.controller.IGrblControllerService;
 import org.goko.grbl.controller.configuration.GrblConfigurationDialog;
 
 
@@ -38,19 +41,17 @@ import org.goko.grbl.controller.configuration.GrblConfigurationDialog;
  *
  */
 public class GrblConfigurationOpenHandler {
-
+	
 	@CanExecute
-	public boolean canExecute(IControllerService controllerService, IConnectionService connectionService){
-		return true;
-		/*
+	public boolean canExecute(IGrblControllerService controllerService, IConnectionService connectionService){		
 		try {
-			return  connectionService.isConnected()
-					&& StringUtils.equals(controllerService.getServiceId(), GrblControllerService.SERVICE_ID);
-		} catch (GkException e) {
+			return !ObjectUtils.equals(GrblMachineState.UNDEFINED, controllerService.getState());
+		} catch (GkException e) {			
 			e.printStackTrace();
-			return false;
-		}*/
+		}
+		return false;		
 	}
+	
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, IControllerService service, IEclipseContext context) throws GkException {
 		GrblConfigurationDialog cfgPanel = new GrblConfigurationDialog(shell, context);

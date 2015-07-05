@@ -267,6 +267,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 */
 	@Override
 	public void performDestroy(GL3 gl) throws GkException {
+		if(!isInitialized()){
+			return;
+		}
 		List<Integer> lstBuffers = new ArrayList<Integer>();
 
 		if(useVerticesBuffer){

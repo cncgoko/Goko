@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
@@ -80,16 +81,16 @@ public class TinyGControllerUtility {
 		JsonValue newPositionZ = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_Z);
 		JsonValue newPositionA = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_A);
 		if(newPositionX != null){
-			newPosition.setX(newPositionX.asBigDecimal());
+			newPosition.setX( NumberQuantity.of(newPositionX.asBigDecimal(), lastKnownPosition.getX().getUnit()));
 		}
 		if(newPositionY != null){
-			newPosition.setY(newPositionY.asBigDecimal());
+			newPosition.setY(NumberQuantity.of(newPositionY.asBigDecimal() , lastKnownPosition.getY().getUnit()));
 		}
 		if(newPositionZ != null){
-			newPosition.setZ(newPositionZ.asBigDecimal());
+			newPosition.setZ(NumberQuantity.of(newPositionZ.asBigDecimal() , lastKnownPosition.getZ().getUnit()));
 		}
 		if(newPositionA != null){
-			newPosition.setA(newPositionA.asBigDecimal());
+			newPosition.setA(NumberQuantity.of(newPositionA.asBigDecimal() , lastKnownPosition.getA().getUnit()));
 		}
 		return newPosition;
 	}

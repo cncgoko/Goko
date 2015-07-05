@@ -25,6 +25,7 @@ import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.service.IJoglViewerService;
+import org.goko.viewer.jogl.service.Layer;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
 import org.goko.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
 import org.goko.viewer.jogl.utils.render.gcode.BoundsRenderer;
@@ -48,10 +49,6 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 		//controllerService.addListener(this);
 	}
 
-//	@EventListener(MachineValueUpdateEvent.class)
-//	public void onMachineValueUpdate(MachineValueUpdateEvent updateEvent) throws GkException{
-//		getDataModel().setCurrentPosition(controllerService.getPosition());
-//	}
 
 	public void setPerspectiveCamera() throws GkException{
 		viewerService.setActiveCamera(PerspectiveCamera.ID);
@@ -69,7 +66,7 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 	}
 
 	public void setShowGrid(boolean showGrid) throws GkException {
-		viewerService.setRendererEnabled(GridRenderer.ID, showGrid);
+		viewerService.setLayerVisible(Layer.LAYER_GRIDS, showGrid);
 	}
 
 	public void setRenderEnabled(boolean enabled){
@@ -80,8 +77,8 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 		viewerService.setRendererEnabled(CoordinateSystemSetRenderer.ID, selection);
 	}
 
-	public void setDisplayBounds(boolean selection) throws GkException {
-		viewerService.setRendererEnabled(BoundsRenderer.ID, selection);
+	public void setDisplayBounds(boolean selection) throws GkException {		
+		viewerService.setLayerVisible(Layer.LAYER_BOUNDS, selection);		
 	}
 
 

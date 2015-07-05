@@ -26,14 +26,13 @@ import javax.vecmath.Vector3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
+import org.goko.viewer.jogl.service.Layer;
 import org.goko.viewer.jogl.utils.render.coordinate.measurement.DistanceRenderer;
 import org.goko.viewer.jogl.utils.render.text.TextRenderer;
 
 public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	public static final String ID = "org.goko.viewer.jogl.boundsRenderer";
 	private BoundingTuple6b bounds;
-	private float offset = 5;
-	private DistanceRenderer xDistanceRenderer;
 
 	/**
 	 * Constructor
@@ -41,6 +40,7 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	 */
 	public BoundsRenderer(BoundingTuple6b bounds) {
 		this.setBounds(bounds);
+		this.setLayerId(Layer.LAYER_BOUNDS);
 	}
 
 	@Override

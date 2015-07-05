@@ -5,3 +5,21 @@ Pourquoi un service ne démarre pas :
 - une de ses dépendances obligatoire de démarre pas (Service OSGI qui a un Refered service à 1..n par exemple)
 - vérifier que tous les repertoirs sources sont listés à l'export dans le build (src/, ui/, etc...)
 - problèmes avec batik 1.6.0 et 1.7.0 (p2 repository)
+- Un declarative Service optionel et static peut ne pas etre resolu. 
+     + A référence le service B (optionel, 0..1) en static => si A est resolu avant B, B ne sera plus injecté dans A car la référence est statique
+     + A référence le service B (optionel, 0..1) en dynamique  => si A est resolu avant B, B sera injecté dans A car la référence est dynamique (holder sur le service, etc...)
+     
+     
+     
+
+
+    Require-Bundle: org.eclipse.core.runtime,
+     org.eclipse.swt,
+     org.eclipse.e4.core.di,
+     org.eclipse.e4.core.di.extensions,
+     org.eclipse.e4.ui.di,
+     org.eclipse.e4.ui.workbench,
+     org.eclipse.e4.ui.model.workbench,
+     org.eclipse.e4.ui.services
+
+     

@@ -20,12 +20,15 @@
 package org.goko.log.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.list.SynchronizedList;
 import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogListener;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
+import org.goko.core.common.exception.GkException;
 
 /**
  * Simple applicative log service implementation
@@ -35,12 +38,14 @@ import org.goko.core.common.applicative.logging.IApplicativeLogService;
  */
 public class ApplicativeLogListenerService implements IApplicativeLogService{
 	private List<IApplicativeLogListener> listeners;
+	private List<ApplicativeLogEvent> events;
 
 	/**
 	 * Constructor
 	 */
 	public ApplicativeLogListenerService() {
-		listeners = new ArrayList<IApplicativeLogListener>();
+		listeners = Collections.synchronizedList(new ArrayList<IApplicativeLogListener>());
+		events = Collections.synchronizedList(new ArrayList<ApplicativeLogEvent>());
 	}
 
 	/** (inheritDoc)
@@ -56,10 +61,14 @@ public class ApplicativeLogListenerService implements IApplicativeLogService{
 	 */
 	@Override
 	public void log(int severity, String message, String source) {
-		if(CollectionUtils.isNotEmpty(listeners)){
-			ApplicativeLogEvent event = new ApplicativeLogEvent(severity, message, source);
-			for (IApplicativeLogListener logListener : listeners) {
-				logListener.onLogEvent(event);
+		ApplicativeLogEvent event = new ApplicativeLogEvent(severity, message, source);
+		events.add(event);
+		
+		if(CollectionUtils.isNotEmpty(listeners)){	
+			synchronized (listeners) {
+				for (IApplicativeLogListener logListener : listeners) {
+					logListener.onLogEvent(event);
+				}
 			}
 		}
 
@@ -101,6 +110,22 @@ public class ApplicativeLogListenerService implements IApplicativeLogService{
 	@Override
 	public void info(String message, String source) {
 		log(ApplicativeLogEvent.LOG_INFO, message, source);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.applicative.logging.IApplicativeLogService#getEvents()
+	 */
+	@Override
+	public List<ApplicativeLogEvent> getEvents() throws GkException {		
+		return events;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.applicative.logging.IApplicativeLogService#clearEvents()
+	 */
+	@Override
+	public void clearEvents() throws GkException {
+		events.clear();
 	}
 
 }

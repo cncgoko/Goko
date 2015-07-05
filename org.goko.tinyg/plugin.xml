@@ -10,25 +10,19 @@
       </fragment>
    </extension>
    <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            allPopups="false"            
-            locationURI="popup:formsToolBar">
-         <command
-               commandId="org.goko.tinyg.commands.configuration.refresh"
-               icon="icons/arrow-circle-double.png"
-               label="Refresh"
-               style="push">
-         </command>
-      </menuContribution>
-   </extension>
-   <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencePage">
       <page
-            class="org.goko.tinyg.configuration.TinyGFirmwarePreferencePage"
-            id="org.goko.tinyg.firmwarePreferences"
+            class="org.goko.tinyg.configuration.TinyGPreferencesPage"
+            id="org.goko.tinyg.page2"
             name="TinyG">
       </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.tinyg.controller.prefs.TinyGPreferenceStoreProvider"
+            id="org.goko.tinyg.provider">
+      </provider>
    </extension>
 
 </plugin>

@@ -32,4 +32,6 @@ public interface IJsscSerialConnectionService extends IConnectionService {
 	 * @throws  GkException GkException
 	 */
 	List<String> getAvailableSerialPort() throws GkException;
+	
+	JsscSerialConnection getCurrentConnectionInformation() throws GkException;
 }

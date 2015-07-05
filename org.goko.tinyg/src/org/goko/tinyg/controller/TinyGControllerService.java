@@ -7,8 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.vecmath.Point3d;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +19,7 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.action.IGkControllerAction;
@@ -110,12 +108,15 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		tinygState = new TinyGState();
 		tinygState.addListener(this);
 
+		TinyGPreferences.getInstance();
+		
 		// Initiate execution queue
 		executionQueue 				= new ExecutionQueue<TinyGExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
 		currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);
 		executor.execute(currentSendingRunnable);
-
+		
+		
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -124,16 +125,17 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
-
+		if(currentSendingRunnable != null){
+			currentSendingRunnable.stop();
+		}
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#getPosition()
 	 */
 	@Override
-	public Point3d getPosition() throws GkException {
-		return tinygState.getWorkPosition().toPoint3d();
+	public Tuple6b getPosition() throws GkException {
+		return tinygState.getWorkPosition();
 	}
 
 	/** (inheritDoc)
@@ -143,7 +145,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
 		checkExecutionControl();
 		if(!getConnectionService().isConnected()){
-			throw new GkFunctionalException("Cannot send command. Connection service is not connected");
+			throw new GkFunctionalException("TNG-002");
 		}
 		updateQueueReport();
 		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
@@ -157,14 +159,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		BigDecimal qrVerbosity = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.QUEUE_REPORT_VERBOSITY, BigDecimal.class);
 		BigDecimal flowControl = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
 
+		// We always need to use flow control
+		if(ObjectUtils.equals(flowControl, TinyGConfigurationValue.FLOW_CONTROL_OFF)){				
+			throw new GkFunctionalException("TNG-001");				
+		}
+		
 		if(isPlannerBufferSpaceCheck()){
 			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
-				throw new GkFunctionalException("File exectuion is based on TinyG planner buffer space, but Queue Report is disabled in the TinyG Setting. Please enable it before executing GCode.");
-			}
-		}else{
-			// We don't use TinyG Buffer sapce, let's make sure we use flow control
-			if(ObjectUtils.equals(flowControl, TinyGConfigurationValue.FLOW_CONTROL_OFF)){
-				throw new GkFunctionalException("No execution control enabled. Please use flow control ($ex) or queue report ($qr)");
+				throw new GkFunctionalException("TNG-002");
 			}
 		}
 	}
@@ -387,7 +389,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public IGkControllerAction getControllerAction(String actionId) throws GkException {
 		IGkControllerAction action = actionFactory.findAction(actionId);
 		if(action == null){
-			throw new GkFunctionalException("Action '"+actionId+"' is not supported by this controller ("+getServiceId()+")");
+			throw new GkFunctionalException("TNG-004", actionId, getServiceId());
 		}
 		return action;
 	}
@@ -436,6 +438,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	public void pauseMotion() throws GkException{
 		communicator.send(GkUtils.toBytesList(TinyG.FEED_HOLD));
+		if(executionQueue != null){
+			executionQueue.setPaused(true);
+		}
 	}
 
 	public void resumeMotion() throws GkException{
@@ -454,9 +459,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			currentSendingRunnable.stop();
 		}
 		// Force a queue report update
-	//	updateQueueReport();
-	//	this.resetAvailableBuffer();
-
+		//	updateQueueReport();
+		//	this.resetAvailableBuffer();
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
@@ -586,19 +590,22 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
 		String cmd = "G1F800";
-		if(position.getX() != null){
-			cmd += "X"+position.getX();
+		if(position.getX() != null){			
+			cmd += "X"+getPositionAsString(position.getX());
 		}
 		if(position.getY() != null){
-			cmd += "Y"+position.getY();
+			cmd += "Y"+getPositionAsString(position.getY());
 		}
 		if(position.getZ() != null){
-			cmd += "Z"+position.getZ();
+			cmd += "Z"+getPositionAsString(position.getZ());
 		}
 		IGCodeProvider command = gcodeService.parse(cmd, getCurrentGCodeContext());
 		executeGCode(command);
 	}
 
+	protected String getPositionAsString(BigDecimalQuantity<Length> q){
+		return String.valueOf(q.to(getCurrentUnit()).getValue());
+	}
 	/**
 	 * @param logListenerService the logListenerService to set
 	 */
@@ -623,21 +630,21 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public Quantity<Length> getX() throws GkException {
-		return NumberQuantity.of(tinygState.getX(), tinygState.getCurrentUnit());
+		return tinygState.getX();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
 	public Quantity<Length> getY() throws GkException {
-		return NumberQuantity.of(tinygState.getY(), tinygState.getCurrentUnit());
+		return tinygState.getY();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
 	public Quantity<Length> getZ() throws GkException {
-		return NumberQuantity.of(tinygState.getZ(), tinygState.getCurrentUnit());
+		return tinygState.getZ();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
@@ -698,7 +705,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#resetCurrentCoordinateSystem()
 	 */
 	@Override
 	public void resetCurrentCoordinateSystem() throws GkException {
@@ -707,11 +714,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		Tuple6b mPos = new Tuple6b(tinygState.getWorkPosition());
 		mPos = mPos.add(offsets);
 		String cmd = "{\""+String.valueOf(current) +"\":{";
-		cmd += "\"x\":"+ String.valueOf( mPos.getX() )+", ";
-		cmd += "\"y\":"+ String.valueOf( mPos.getY() )+", ";
-		cmd += "\"z\":"+ String.valueOf( mPos.getZ() )+"}} ";
+		
+		cmd += "\"x\":"+ getPositionAsString(mPos.getX()) +", ";		
+		cmd += "\"y\":"+ getPositionAsString(mPos.getY())+", ";
+		cmd += "\"z\":"+ getPositionAsString(mPos.getZ())+"}} ";
 		communicator.send( GkUtils.toBytesList( cmd ) );
-
+		communicator.updateCoordinateSystem(current);		
 	}
 
 	/**

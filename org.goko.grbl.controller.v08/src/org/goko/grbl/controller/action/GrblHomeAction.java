@@ -24,6 +24,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.grbl.controller.GrblControllerService;
+import org.goko.grbl.controller.GrblMachineState;
 
 public class GrblHomeAction extends AbstractGrblControllerAction {
 
@@ -36,8 +37,8 @@ public class GrblHomeAction extends AbstractGrblControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return ObjectUtils.equals(MachineState.READY, getControllerService().getState())
-			|| ObjectUtils.equals(MachineState.ALARM, getControllerService().getState());
+		return ObjectUtils.equals(GrblMachineState.READY, getControllerService().getState())
+			|| ObjectUtils.equals(GrblMachineState.ALARM, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

@@ -27,7 +27,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.viewer.jogl.service.JoglViewerSettings.EnumRotaryAxisDirection;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxisDirection;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
 import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;

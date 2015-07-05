@@ -31,6 +31,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.goko.core.common.exception.GkException;
 import org.goko.serial.jssc.internal.JsscSerialActivator;
+import org.goko.serial.jssc.preferences.connection.SerialConnectionPreference;
 import org.goko.serial.jssc.service.IJsscSerialConnectionService;
 import org.goko.serial.jssc.service.JsscParameter;
 
@@ -55,13 +56,13 @@ public class JsscConnectHandler {
 	@Execute
 	public void execute() throws GkException{
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(JsscParameter.PORTNAME.name(), JsscSerialActivator.getPreferenceStore().getString(JsscParameter.PORTNAME.name()));
-		params.put(JsscParameter.BAUDRATE.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.BAUDRATE.name()));//SerialPort.BAUDRATE_115200);
-		params.put(JsscParameter.PARITY.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.PARITY.name()));//SerialPort.PARITY_NONE);
-		params.put(JsscParameter.STOPBITS.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.STOPBITS.name()));//SerialPort.STOPBITS_1);
-		params.put(JsscParameter.DATABITS.name(), JsscSerialActivator.getPreferenceStore().getInt(JsscParameter.DATABITS.name()));//SerialPort.DATABITS_8);
-		params.put(JsscParameter.RCSCTS.name(), JsscSerialActivator.getPreferenceStore().getString(JsscParameter.RCSCTS.name()));//SerialPort.DATABITS_8);
-		params.put(JsscParameter.XONXOFF.name(), JsscSerialActivator.getPreferenceStore().getString(JsscParameter.XONXOFF.name()));//SerialPort.DATABITS_8);
+		params.put(JsscParameter.PORTNAME.name(), SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name()));
+		params.put(JsscParameter.BAUDRATE.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.BAUDRATE.name()));//SerialPort.BAUDRATE_115200);
+		params.put(JsscParameter.PARITY.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.PARITY.name()));//SerialPort.PARITY_NONE);
+		params.put(JsscParameter.STOPBITS.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.STOPBITS.name()));//SerialPort.STOPBITS_1);
+		params.put(JsscParameter.DATABITS.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.DATABITS.name()));//SerialPort.DATABITS_8);
+		params.put(JsscParameter.RCSCTS.name(), SerialConnectionPreference.getInstance().getString(JsscParameter.RCSCTS.name()));//SerialPort.DATABITS_8);
+		params.put(JsscParameter.XONXOFF.name(), SerialConnectionPreference.getInstance().getString(JsscParameter.XONXOFF.name()));//SerialPort.DATABITS_8);
 
 		connectionService.connect(params);
 

@@ -26,15 +26,19 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
+import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.utils.render.basic.CircleRenderer;
+import org.goko.viewer.jogl.utils.render.basic.PointRenderer;
 import org.goko.viewer.jogl.utils.render.basic.PolylineRenderer;
+import org.goko.viewer.jogl.utils.render.text.OldTextRenderer;
 import org.goko.viewer.jogl.utils.render.text.TextRenderer;
 
 public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	/** The center of the diameter*/
-	private Point3d center;
+	private Tuple6b center;
 	/** The value of the diameter */
 	private Quantity<Length> diameter;
 	private Quantity<Length> radius;
@@ -42,15 +46,23 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	private Color4f color;
 	/** The normal */
 	private Vector3d normal;
-
+	/** Center color */
+	private Color4f centerColor;
+	
 	/** Constructor */
-	public DiameterRenderer(Point3d center, Quantity<Length> diameter, Color4f color, Vector3d normal) {
+	public DiameterRenderer(Tuple6b center, Quantity<Length> diameter, Color4f color, Vector3d normal) {
+		this(center, diameter, color, normal, color);
+	}
+	
+	/** Constructor */
+	public DiameterRenderer(Tuple6b center, Quantity<Length> diameter, Color4f color, Vector3d normal, Color4f centerColor) {
 		super();
 		this.center = center;
 		this.diameter = diameter;
 		this.radius = NumberQuantity.of( diameter.doubleValue() / 2, diameter.getUnit());
 		this.color = color;
 		this.normal = normal;
+		this.centerColor = centerColor;
 	}
 
 
@@ -59,7 +71,8 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	 */
 	@Override
 	protected void performInitialize(GL3 gl) throws GkException {
-		addRenderer(new CircleRenderer(center, radius.doubleValue(), color, normal));
+		addRenderer(new CircleRenderer(center, radius, color, normal));
+		addRenderer(new PointRenderer(center, 1, centerColor));
 		Vector3d a = new Vector3d(1,0,0);
 		Vector3d b = new Vector3d(1,0,0);
 		if(a.dot(normal) <= 0.01){
@@ -68,7 +81,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		b.cross(normal, a);
 		a.cross(b, normal);
 		Vector3d direction = new Vector3d();
-		Point3d pos = new Point3d(center);
+		Point3d pos = center.to(JoglUtils.JOGL_UNIT).toPoint3d();
 		direction.add(a, b);
 		direction.normalize();
 		direction.scale((float) radius.doubleValue());
@@ -77,8 +90,8 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		base.sub(a,b);
 
 		// Points on the circle
-		Point3d p1 = new Point3d(center);
-		Point3d p2 = new Point3d(center);
+		Point3d p1 = center.to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d p2 = new Point3d(p1);
 		direction.normalize();
 		direction.scale((float) radius.doubleValue());
 		p1.add(direction);
@@ -101,8 +114,8 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		direction.normalize();
 		txtHeight.cross(normal,direction);
 
-		Point3d pos3d = new Point3d(p3.x, p3.y, p3.z);
-		addRenderer(new TextRenderer( GokoConfig.getInstance().format(diameter), 3.0, pos3d, direction, txtHeight, TextRenderer.RIGHT | TextRenderer.MIDDLE));
+		Point3d pos3d = new Point3d(p3.x, p3.y, p3.z);		
+		addRenderer(new TextRenderer( GokoPreference.getInstance().format(diameter), 3.0, pos3d, direction, txtHeight, TextRenderer.RIGHT | TextRenderer.MIDDLE));
 
 	}
 

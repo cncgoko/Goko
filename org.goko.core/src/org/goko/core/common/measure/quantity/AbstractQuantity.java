@@ -39,15 +39,27 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		}
 		return this.getUnit().getConverterToReferenceUnit().then(unit.getConverterToReferenceUnit().inverse());
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#doubleValue(org.goko.core.common.measure.units.Unit)
+	 */
+	@Override
+	public double doubleValue(Unit<Q> unit){
+		return this.to(unit).doubleValue();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#to(org.goko.core.common.measure.units.Unit)
+	 */
 	@Override
 	public Quantity<Q> to(Unit<Q> unit) {
 		if(unit == getUnit()){
 			return this;
 		}
-		UnitConverter converter = getUnit().getConverterTo(unit);
+		UnitConverter converter = getUnit().getConverterTo(unit);		
 		return NumberQuantity.of(converter.convert(doubleValue()), unit);
 	}
+	
 	/**
 	 * @return the unit
 	 */
@@ -55,10 +67,45 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		return unit;
 	}
 
+//	public abstract T add(Quantity<Q> q);
+//	
+//	public abstract T add(T q);
 	/**
 	 * @param unit the unit to set
 	 */
 	public void setUnit(Unit<Q> unit) {
 		this.unit = unit;
 	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractQuantity other = (AbstractQuantity) obj;
+		if (unit == null) {
+			if (other.unit != null)
+				return false;
+		} else if (!unit.equals(other.unit))
+			return false;
+		return true;
+	}	
+	
 }

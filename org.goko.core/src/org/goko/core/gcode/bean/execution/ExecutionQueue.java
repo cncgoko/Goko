@@ -55,7 +55,11 @@ public class ExecutionQueue<T extends GCodeExecutionToken> {
 			currentToken = null;
 		}
 	}
-
+	public void setPaused(boolean paused) throws GkException{
+		if(currentToken != null){
+			currentToken.setPaused(paused);
+		}
+	}
 	/**
 	 * @return the currentToken
 	 */

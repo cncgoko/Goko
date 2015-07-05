@@ -16,6 +16,10 @@
  *******************************************************************************/
 package org.goko.core.common.applicative.logging;
 
+import java.util.List;
+
+import org.goko.core.common.exception.GkException;
+
 /**
  * Defines an applicative log service (use to notify error to the end user)
  * @author PsyKo
@@ -65,4 +69,17 @@ public interface IApplicativeLogService {
 	 * @param listener the listener to unregister
 	 */
 	void unregisterApplicativeLogListener(IApplicativeLogListener listener);
+	
+	/**
+	 * Return the list of all logged events so far
+	 * @return a list of ApplicativeLogEvent
+	 * @throws GkException GkException
+	 */
+	List<ApplicativeLogEvent> getEvents() throws GkException; 
+	
+	/**
+	 * Clear the list of all logged events so far
+	 * @throws GkException GkException
+	 */
+	void clearEvents() throws GkException; 
 }

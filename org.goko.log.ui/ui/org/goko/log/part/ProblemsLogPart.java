@@ -12,10 +12,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.log.part.model.ProblemTreeContentProvider;
@@ -24,7 +22,6 @@ import org.goko.log.part.model.ProblemsLogController;
 import org.goko.log.part.model.ProblemsLogModel;
 
 public class ProblemsLogPart extends GkUiComponent<ProblemsLogController, ProblemsLogModel>{
-	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 
 	@Inject
 	public ProblemsLogPart(IEclipseContext context) {
@@ -47,17 +44,15 @@ public class ProblemsLogPart extends GkUiComponent<ProblemsLogController, Proble
 		gl_parent.marginHeight = 0;
 		parent.setLayout(gl_parent);
 
-		Composite composite = formToolkit.createComposite(parent, SWT.NONE);
+		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		formToolkit.paintBordersFor(composite);
 
 		TreeViewer treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.VIRTUAL);
 		Tree tree = treeViewer.getTree();
 		tree.setLinesVisible(true);
 		tree.setHeaderVisible(true);
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		formToolkit.paintBordersFor(tree);
 
 		TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
 		TreeColumn columnDescription = treeViewerColumn.getColumn();

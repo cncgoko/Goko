@@ -41,7 +41,7 @@ public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator
 	@Override
 	public double evaluateExecutionTime(ArcMotionCommand command, final GCodeContext context) throws GkException {
 
-		Point3d start 	= command.getAbsoluteStartCoordinate().toPoint3d();
+		Point3d start 	= command.getAbsoluteStartCoordinate().toPoint3d(); 
 		Point3d center 	= command.getAbsoluteCenterCoordinate().toPoint3d();
 		Point3d end 	= command.getAbsoluteEndCoordinate().toPoint3d();
 
@@ -75,39 +75,5 @@ public class ArcMotionCalculator implements IGCodeCommandExecutionTimeCalculator
 			return 0;
 		}
 		return ((Math.abs(angle) * v1.length()) / feedrate) * 60;
-
-//
-//		Point3d endPos 	= command.getAbsoluteEndCoordinate().toPoint3d();
-//		Point3d startPos= command.getAbsoluteStartCoordinate().toPoint3d();
-//		Point3d center 	= command.getAbsoluteCenterCoordinate().toPoint3d();
-//
-//		Vector3d centerToStartVector = new Vector3d(startPos.x - center.x, startPos.y - center.y, startPos.z - center.z);
-//		Vector3d centerToEndVector = new Vector3d(endPos.x - center.x, endPos.y - center.y, endPos.z - center.z);
-//
-//		double smallestAngle = StrictMath.atan2(centerToStartVector.y,centerToStartVector.x) - StrictMath.atan2(centerToEndVector.y,centerToEndVector.x);
-//		double angle = smallestAngle ;
-//		boolean isClockwise = command.isClockwise();
-//		// If smallestAngle < 0 then it is a counterclockwise angle.
-//		if(smallestAngle < 0){
-//			if(isClockwise){ // The angle is CCW but the command is CCW
-//				angle = - ( 2*Math.PI - Math.abs(smallestAngle) );  // When rotating, CW rotation = negative angle
-//			}else{
-//				angle = Math.abs(smallestAngle); // When rotating, CCW rotation = positive angle
-//			}
-//		}else{
-//			if(isClockwise){ // The angle is CW and we have a CW command
-//				angle = - Math.abs(smallestAngle); // When rotating, CW rotation = negative angle
-//			}else{ // The angle is CW but we want the CCW command
-//				angle =  2*Math.PI - smallestAngle;
-//			}
-//		}
-//
-//		double feedrate = 0;
-//		if(command.getFeedrate() != null){
-//			feedrate = command.getFeedrate().doubleValue();
-//		}else{
-//			return 0;
-//		}
-//		return ((Math.abs(angle) * centerToStartVector.length()) / feedrate) * 60;
 	}
 }

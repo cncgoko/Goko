@@ -16,6 +16,9 @@
  *******************************************************************************/
 package org.goko.gcode.rs274ngcv3;
 
+import java.util.ResourceBundle;
+
+import org.goko.core.common.i18n.MessageResource;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -34,6 +37,7 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		MessageResource.registerResourceBundle(ResourceBundle.getBundle("org.goko.gcode.rs274ngcv3.i18n.Messages"));
 	}
 
 	/*

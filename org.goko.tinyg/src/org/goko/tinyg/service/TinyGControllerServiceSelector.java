@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import javax.vecmath.Point3d;
-
 import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
@@ -142,7 +140,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IControllerService#getPosition()
 	 */
 	@Override
-	public Point3d getPosition() throws GkException {
+	public Tuple6b getPosition() throws GkException {
 		return getCurrentService().getPosition();
 	}
 

@@ -19,6 +19,8 @@ package org.goko.gcode.rs274ngcv3.parser.advanced.tokens;
 import java.math.BigDecimal;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.gcode.rs274ngcv3.RS274;
@@ -37,7 +39,7 @@ public class CModifier extends LetterTokenCommandModifier<MotionCommand>{
 	@Override
 	public void apply(GCodeToken token, MotionCommand command) throws GkException {
 		Tuple6b coordinates = command.getCoordinates();
-		coordinates.setC(new BigDecimal( RS274.getTokenValue(token) ));
+		coordinates.setC( NumberQuantity.of(new BigDecimal(RS274.getTokenValue(token)), SI.DEGREE_ANGLE));
 		command.setCoordinates(coordinates);
 	}
 

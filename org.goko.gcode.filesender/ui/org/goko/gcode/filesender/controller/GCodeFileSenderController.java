@@ -34,9 +34,9 @@ import org.goko.common.bindings.AbstractController;
 import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.event.GokoEventBus;
+import org.goko.core.common.event.GokoTopic;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
@@ -44,12 +44,17 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
 import org.goko.core.gcode.bean.provider.GCodeCommandExecutionEvent;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.gcode.filesender.editor.GCodeEditor;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -59,7 +64,7 @@ import com.google.common.eventbus.Subscribe;
  * @author PsyKo
  *
  */
-public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings>{
+public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GCodeFileSenderController.class);
 	private static final String[] UNITS = {"bytes", "kB","mB","gB"};
@@ -74,6 +79,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	private IGCodeExecutionTimeService timeService;
 	@Inject
 	private IWorkspaceService workspaceService;
+	@Inject
+	private IGCodeExecutionMonitorService monitorService;
 
 	private Runnable elapsedTimeRunnable;
 
@@ -86,7 +93,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		getDataModel().setStreamingInProgress(false);
 		GokoEventBus.getInstance().register(this);
 		createElapsedTimeRunnable();
-		Display.getCurrent().timerExec(400, elapsedTimeRunnable);
+		Display.getCurrent().timerExec(400, elapsedTimeRunnable);		
 	}
 
 	/**
@@ -112,6 +119,19 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Override
 	public void initialize() throws GkException {
 		getControllerService().addListener(this);
+		monitorService.addExecutionListener(this);		
+		EventHandler eventHandler = new EventHandler() {			
+			@Override
+			public void handleEvent(Event event) {
+				try {
+					String filepath = (String) event.getProperty(GokoTopic.File.PROPERTY_FILEPATH);
+					setGCodeFilepath(filepath);					
+				} catch (GkException e) {					
+					LOG.error(e);
+				}
+			}
+		};
+		eventBroker.subscribe(GokoTopic.File.Open.TOPIC, eventHandler);
 	}
 	/**
 	 * Action called when selecting file to send
@@ -189,9 +209,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
 
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getGCodeCommands()));
-		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));
-	//	getDataModel().setgCodeDocument(new GCodeDocumentProvider(gcodeFile, gCodeService));
-		eventBroker.post("gcodefile", gcodeFile);
+		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));		
 		workspaceService.addGCodeProvider(gcodeFile);
 
 	}
@@ -276,22 +294,25 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		MachineState newState = MachineState.UNDEFINED;
 		MachineValue machineValue = updateEvt.getTarget();
 		MachineValueDefinition definition = controllerService.getMachineValueDefinition(machineValue.getIdDescriptor());
-		if(StringUtils.equals(definition.getId(), DefaultControllerValues.STATE)){
-			newState = (MachineState) machineValue.getValue();
-
-			if(MachineState.RUNNING.equals( newState)){
-				getDataModel().setStreamingInProgress(true);
-
-			}else if(MachineState.PROGRAM_END.equals( newState)
-					|| MachineState.PROGRAM_STOP.equals( newState)
-					|| MachineState.READY.equals( newState)){
-				getDataModel().setStreamingInProgress(false);
-				updateStreamingAllowed();
-				stopElapsedTimer();
-			}
-		}
+//		if(StringUtils.equals(definition.getId(), DefaultControllerValues.STATE)){
+//			newState = (MachineState) machineValue.getValue();
+//
+//			if(MachineState.RUNNING.equals( newState)){
+//				getDataModel().setStreamingInProgress(true);
+//
+//			}else if(MachineState.PROGRAM_END.equals( newState)
+//					|| MachineState.PROGRAM_STOP.equals( newState)
+//					|| MachineState.READY.equals( newState)){
+//				
+//			}
+//		}
 	}
 
+	public void onExecutionComplete(){
+		getDataModel().setStreamingInProgress(false);
+		updateStreamingAllowed();
+		stopElapsedTimer();
+	}
 	/**
 	 * Listener for stream status update
 	 * @param event the GCodeCommandExecutionEvent
@@ -302,6 +323,9 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		try {
 			getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
 			getDataModel().setTotalCommandCount( token.getCommandCount() );
+			if(token.isComplete()){
+				onExecutionComplete();
+			}
 		} catch (GkException e) {
 			log(e);
 		}
@@ -334,5 +358,38 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 	private void stopElapsedTimer(){
 		getDataModel().setEndDate(new Date());
+	}
+
+	@Override
+	public void onExecutionStart(IGCodeExecutionToken token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+		onExecutionComplete();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(IGCodeExecutionToken token) throws GkException {
+		
+	}
+
+	@Override
+	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {
+		onExecutionComplete();
+	}
+
+	@Override
+	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+		getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
+		getDataModel().setTotalCommandCount( token.getCommandCount() );		
 	}
 }

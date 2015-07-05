@@ -28,14 +28,13 @@ import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
 
 
 public class TinyGExecutionToken extends GCodeStreamedExecutionToken{
-	private Object lock;
-
+	private Object lock;	
 	/**
 	 * Constructor
 	 * @param provider the provider to execute
 	 */
 	public TinyGExecutionToken(IGCodeProvider provider) {
-		super(provider);
+		super(provider);		
 		lock = new Object();
 	}
 
@@ -68,14 +67,5 @@ public class TinyGExecutionToken extends GCodeStreamedExecutionToken{
 			updateCompleteState();
 		}
 	}
-
-	private void updateCompleteState(){
-		if(CollectionUtils.isNotEmpty(mapExecutedCommandById)){
-			if(mapExecutedCommandById.size() == mapCommandById.size()){
-				setComplete(true);
-			}
-		}
-	}
-
 
 }

@@ -30,6 +30,8 @@ import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
@@ -221,11 +223,11 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		JsonValue zOffset = offsetObj.get("z");
 		JsonValue aOffset = offsetObj.get("a");
 		Tuple6b offset = new Tuple6b().setZero();
-		offset.setX( xOffset.asBigDecimal() );
-		offset.setY( yOffset.asBigDecimal() );
-		offset.setZ( zOffset.asBigDecimal() );
+		offset.setX( NumberQuantity.of(xOffset.asBigDecimal(), tinyg.getCurrentUnit() ));
+		offset.setY( NumberQuantity.of(yOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
+		offset.setZ( NumberQuantity.of(zOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
 		if(aOffset != null){
-			offset.setA( aOffset.asBigDecimal() );
+			offset.setA(  NumberQuantity.of(aOffset.asBigDecimal(), SI.DEGREE_ANGLE )  );
 		}
 		tinyg.setCoordinateSystemOffset(cs, offset);
 	}
@@ -264,22 +266,22 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 				JsonValue cProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_C);
 				probePosition = new Tuple6b();
 				if(xProbeResult != null){
-					probePosition.setX( xProbeResult.asBigDecimal() );
+					probePosition.setX( NumberQuantity.of(xProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(yProbeResult != null){
-					probePosition.setY( yProbeResult.asBigDecimal() );
+					probePosition.setY( NumberQuantity.of(yProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(zProbeResult != null){
-					probePosition.setZ( zProbeResult.asBigDecimal() );
+					probePosition.setZ( NumberQuantity.of(zProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(aProbeResult != null){
-					probePosition.setA( aProbeResult.asBigDecimal() );
+					probePosition.setA( NumberQuantity.of(aProbeResult.asBigDecimal(), SI.DEGREE_ANGLE) );
 				}
 				if(bProbeResult != null){
-					probePosition.setB( bProbeResult.asBigDecimal() );
+					probePosition.setB( NumberQuantity.of(bProbeResult.asBigDecimal(), SI.DEGREE_ANGLE) );
 				}
 				if(cProbeResult != null){
-					probePosition.setC( cProbeResult.asBigDecimal() );
+					probePosition.setC( NumberQuantity.of(cProbeResult.asBigDecimal(), SI.DEGREE_ANGLE) );
 				}
 			}
 			tinyg.handleProbeResult(probeSuccess, probePosition);
@@ -411,13 +413,18 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		return coordinateSystem;
 	}
 
-	private void updateCoordinateSystem() throws GkException{
+	protected void updateCoordinateSystem() throws GkException{
 		send(GkUtils.toBytesList("{\"G55\":\"\"}"));
 		send(GkUtils.toBytesList("{\"G56\":\"\"}"));
 		send(GkUtils.toBytesList("{\"G57\":\"\"}"));
 		send(GkUtils.toBytesList("{\"G58\":\"\"}"));
 		send(GkUtils.toBytesList("{\"G59\":\"\"}"));
 	}
+	
+	protected void updateCoordinateSystem(EnumCoordinateSystem cs) throws GkException{
+		send(GkUtils.toBytesList("{\""+cs.name()+"\":\"\"}"));		
+	}
+	
 	/**
 	 * @return the connectionService
 	 */

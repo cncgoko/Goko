@@ -42,7 +42,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.gcode.rs274ngcv3.config.RS274Config;
+import org.goko.gcode.rs274ngcv3.config.RS274Preference;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 
 public class RS274 {
@@ -143,8 +143,8 @@ public class RS274 {
 
 	public static BigDecimal buildBigDecimal(String value) throws GkException{
 		BigDecimal bigDecimal = new BigDecimal(value);
-		if(RS274Config.getConfig().isDecimalTruncateEnabled()){
-			int decimalCount = RS274Config.getConfig().getDecimalCount();
+		if(RS274Preference.getInstance().isDecimalTruncateEnabled()){
+			int decimalCount = RS274Preference.getInstance().getDecimalCount();
 			if(bigDecimal.scale() > decimalCount){
 				bigDecimal = bigDecimal.setScale(decimalCount,RoundingMode.DOWN);
 			}

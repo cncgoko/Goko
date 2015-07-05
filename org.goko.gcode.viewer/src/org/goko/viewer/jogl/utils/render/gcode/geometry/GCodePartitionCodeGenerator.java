@@ -32,7 +32,7 @@ import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.core.gcode.bean.commands.RawCommand;
 import org.goko.core.gcode.bean.commands.SettingCommand;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 
 public class GCodePartitionCodeGenerator implements IGCodeCommandVisitor{
 	private List<Point3d> vertices;
@@ -86,7 +86,7 @@ public class GCodePartitionCodeGenerator implements IGCodeCommandVisitor{
 	}
 
 	private void rotateMatrix(Matrix4d matrix, double angleRadians){
-		JoglViewerSettings settings = JoglViewerSettings.getInstance();
+		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		switch(settings.getRotaryAxisDirection()){
 			case X:matrix.rotX( angleRadians );
 			break;

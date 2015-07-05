@@ -21,21 +21,20 @@ package org.goko.tools.centerfinder;
 
 import java.util.List;
 
-import javax.vecmath.Point3d;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 
 public interface ICenterFinderService extends IGokoService{
 
-	void capturePoint(Point3d point) throws GkException;
+	void capturePoint(Tuple6b point) throws GkException;
 
-	List<Point3d> getCapturedPoint() throws GkException;
+	List<Tuple6b> getCapturedPoint() throws GkException;
 
 	void clearCapturedPoint() throws GkException;
 
-	void removeCapturedPoint(Point3d point) throws GkException;
+	void removeCapturedPoint(Tuple6b point) throws GkException;
 
-	CircleCenterFinderResult getCenter(List<Point3d> lstPoints);
+	CircleCenterFinderResult getCenter(List<Tuple6b> lstPoints) throws GkException;
 }

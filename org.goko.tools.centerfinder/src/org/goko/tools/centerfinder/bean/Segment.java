@@ -19,43 +19,47 @@
  */
 package org.goko.tools.centerfinder.bean;
 
-import javax.vecmath.Point3d;
+import org.goko.core.gcode.bean.Tuple6b;
 
 public class Segment {
-	private Point3d start;
-	private Point3d end;
-
+	private Tuple6b start;
+	private Tuple6b end;
+	
 	/**
 	 * @param start
 	 * @param end
 	 */
-	public Segment(Point3d start, Point3d end) {
+	public Segment(Tuple6b start, Tuple6b end) {
 		super();
 		this.start = start;
 		this.end = end;
 	}
+
 	/**
 	 * @return the start
 	 */
-	public Point3d getStart() {
+	public Tuple6b getStart() {
 		return start;
 	}
+
 	/**
 	 * @param start the start to set
 	 */
-	public void setStart(Point3d start) {
+	public void setStart(Tuple6b start) {
 		this.start = start;
 	}
+
 	/**
 	 * @return the end
 	 */
-	public Point3d getEnd() {
+	public Tuple6b getEnd() {
 		return end;
 	}
+
 	/**
 	 * @param end the end to set
 	 */
-	public void setEnd(Point3d end) {
+	public void setEnd(Tuple6b end) {
 		this.end = end;
 	}
 

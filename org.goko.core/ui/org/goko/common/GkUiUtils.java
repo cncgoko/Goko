@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 
@@ -27,6 +29,18 @@ public final class GkUiUtils {
 
 	private GkUiUtils() { }
 
+	public static void setEnabled(Composite composite, boolean enabled){
+		Control[] children = composite.getChildren();
+
+	    for (int i = 0; i < children.length; i++) {
+	        if (children[i] instanceof Composite) {
+	        	setEnabled((Composite) children[i], enabled);
+	        } else {
+	            children[i].setEnabled(enabled);
+	        }
+	    }
+	    composite.setEnabled(enabled);		
+	}
 	public static <T> LabeledValue<T> getLabelledValueByKey(T key, List<LabeledValue<T>> lstValues) throws GkException{
 		for(LabeledValue<T> value : lstValues){
 			if(ObjectUtils.equals(key, value.getValue())){

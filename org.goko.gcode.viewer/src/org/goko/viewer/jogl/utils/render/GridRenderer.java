@@ -34,9 +34,10 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.viewer.jogl.service.JoglUtils;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.service.Layer;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
 import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
@@ -61,6 +62,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	 */
 	public GridRenderer() {
 		super(GL.GL_LINES, COLORS | VERTICES);
+		this.setLayerId(Layer.LAYER_GRIDS);
 	}
 
 	/** (inheritDoc)
@@ -72,9 +74,9 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	}
 
 	private void buildGrid() throws GkException{
-		Unit<Length> unit = GokoConfig.getInstance().getLengthUnit();
-		Quantity<Length> majorQuantity = NumberQuantity.of(JoglViewerSettings.getInstance().getMajorGridSpacing().doubleValue(), unit);
-		Quantity<Length> minorQuantity = NumberQuantity.of(JoglViewerSettings.getInstance().getMinorGridSpacing().doubleValue(), unit);
+		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
+		Quantity<Length> majorQuantity = NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing().doubleValue(), unit);
+		Quantity<Length> minorQuantity = NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing().doubleValue(), unit);
 		majorUnit = majorQuantity.to(SIPrefix.MILLI(SI.METRE)).doubleValue();
 		minorUnit = minorQuantity.to(SIPrefix.MILLI(SI.METRE)).doubleValue();
 		size = 10 * majorUnit;

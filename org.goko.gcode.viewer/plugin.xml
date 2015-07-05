@@ -10,18 +10,31 @@
       </fragment>
    </extension>
    <extension
-         point="Goko.org.goko.ui.gkPreferencePages">
+         point="Goko.org.goko.ui.gkPreferencePage">
       <page
-            class="org.goko.viewer.jogl.preferences.performances.JoglPerformancesPreferences"
+            class="org.goko.viewer.jogl.preferences.performances.JoglViewerPreferencePage"
             id="org.goko.jogl.viewer.preferences.viewer"
             name="Viewer">
       </page>
       <page
             category="org.goko.jogl.viewer.preferences.viewer"
-            class="org.goko.viewer.jogl.JoglViewerPreferences"
-            id="org.goko.jogl.viewer.preferences.rotaryaxis"
-            name="Rotary axis">
+            class="org.goko.viewer.jogl.preferences.rotaryaxis.JoglRotaryAxisPreferencePage"
+            id="org.goko.jogl.viewer.preferences.4thaxis"
+            name="4th axis">
       </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.viewer.jogl.preferences.JoglViewerPreferenceStoreProvider"
+            id="org.goko.gcode.viewer.provider">
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.viewer.jogl.preferences.JoglViewerPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

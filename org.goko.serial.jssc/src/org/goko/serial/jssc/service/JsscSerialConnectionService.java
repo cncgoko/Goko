@@ -63,6 +63,8 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	private JsscSerialListenerDeamon deamon;
 	private Thread deamonThread;
 	private Thread senderThread;
+	private JsscSerialConnection currentConnection;
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -88,8 +90,12 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
-
+		if(deamon != null){
+			deamon.stop();
+		}		
+		this.inputListeners.clear();
+		this.outputListeners.clear();
+		this.connectionListeners.clear();
 	}
 
 	/** (inheritDoc)
@@ -113,6 +119,7 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			this.deamon = new JsscSerialListenerDeamon(this);
 			this.serialPort.addEventListener(deamon, getEventMask());
 			LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ databits +", parity: "+ parity +",stop bits: "+stopbits);
+			currentConnection = new JsscSerialConnection(portName, baudrate, databits, stopbits, parity);
 			// Start the sender thread
 			jsscSender = new JsscSender(this);
 			deamonThread = new Thread(deamon);
@@ -133,6 +140,7 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	@Override
 	public void disconnect(Map<String, Object> parameters) throws GkException {
 		try {
+			this.currentConnection = null;
 			if(serialPort != null){// && serialPort.isOpened()){
 				serialPort.closePort();
 			}
@@ -297,5 +305,16 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	@Override
 	public List<String> getAvailableSerialPort() throws GkException {
 		return Arrays.asList(SerialPortList.getPortNames());
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.serial.jssc.service.IJsscSerialConnectionService#getCurrentConnectionInformation()
+	 */
+	@Override
+	public JsscSerialConnection getCurrentConnectionInformation() throws GkException {
+		if(!isConnected()){
+			throw new GkFunctionalException("Not connected to any serial device.");
+		}
+		return currentConnection;
 	}
 }

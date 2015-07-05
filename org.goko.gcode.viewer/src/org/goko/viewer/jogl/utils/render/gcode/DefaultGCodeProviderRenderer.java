@@ -133,6 +133,7 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 	 */
 	@Override
 	protected void performUpdateBufferObjects(GL3 gl) throws GkException {
+		//super.performUpdateBufferObjects(gl);
 		stateBuffer.rewind();
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, stateBufferObject);
 		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*Buffers.SIZEOF_FLOAT, stateBuffer, GL.GL_DYNAMIC_DRAW);
