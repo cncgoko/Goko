@@ -134,7 +134,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		final ToolItem btnEnableBounds = new ToolItem(toolBar, SWT.CHECK);
 		btnEnableBounds.addSelectionListener(new SelectionAdapter() {
 			@Override public void widgetSelected(SelectionEvent e) {
-				try {
+				try {					
 					getController().setDisplayBounds(btnEnableBounds.getSelection());
 				} catch (GkException ex) {
 					displayError(ex);

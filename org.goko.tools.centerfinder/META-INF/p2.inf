@@ -1,0 +1,5 @@
+provides.0.namespace = org.goko.tools.centerfinder
+provides.0.name = Center finder
+ 
+instructions.configure = org.eclipse.equinox.p2.touchpoint.eclipse.setStartLevel(startLevel:4); \
+	org.eclipse.equinox.p2.touchpoint.eclipse.markStarted(started:true);

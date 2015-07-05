@@ -7,7 +7,7 @@ import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.gcode.rs274ngcv3.RS274GCodeService;
 import org.goko.gcode.rs274ngcv3.assertion.AssertGCode;
-import org.goko.gcode.rs274ngcv3.config.RS274Config;
+import org.goko.gcode.rs274ngcv3.config.RS274Preference;
 
 public class RS274GCodeServiceTestCase extends TestCase{
 	private IGCodeService gcodeService;
@@ -17,7 +17,7 @@ public class RS274GCodeServiceTestCase extends TestCase{
 		super.setUp();
 		this.gcodeService = new RS274GCodeService();
 		this.gcodeService.start();
-		RS274Config.getInstance().setDecimalTruncateEnabled(false);
+		RS274Preference.getInstance().setDecimalTruncateEnabled(false);
 	}
 
 	public void testCommands() throws Exception{
@@ -25,25 +25,25 @@ public class RS274GCodeServiceTestCase extends TestCase{
 	}
 
 	public void testTruncateHalfDownCommands() throws Exception{
-		RS274Config.getInstance().setDecimalTruncateEnabled(true);
-		RS274Config.getInstance().setDecimalCount(3);
+		RS274Preference.getInstance().setDecimalTruncateEnabled(true);
+		RS274Preference.getInstance().setDecimalCount(3);
 
 		GCodeCommand comm = gcodeService.parseCommand("G90 X12.53642", new GCodeContext());
 		String converted = new String(gcodeService.convert(comm));
 		AssertGCode.assertEquals("G90 X12.536", converted);
 
-		RS274Config.getInstance().setDecimalTruncateEnabled(false);
+		RS274Preference.getInstance().setDecimalTruncateEnabled(false);
 	}
 
 	public void testTruncateHalfUpCommands() throws Exception{
-		RS274Config.getInstance().setDecimalTruncateEnabled(true);
-		RS274Config.getInstance().setDecimalCount(3);
+		RS274Preference.getInstance().setDecimalTruncateEnabled(true);
+		RS274Preference.getInstance().setDecimalCount(3);
 
 		GCodeCommand comm = gcodeService.parseCommand("G90 X12.53672", new GCodeContext());
 		String converted = new String(gcodeService.convert(comm));
 		AssertGCode.assertEquals("G90 X12.536", converted);
 
-		RS274Config.getInstance().setDecimalTruncateEnabled(false);
+		RS274Preference.getInstance().setDecimalTruncateEnabled(false);
 	}
 
 	public void testCommandPartialNumber() throws Exception{

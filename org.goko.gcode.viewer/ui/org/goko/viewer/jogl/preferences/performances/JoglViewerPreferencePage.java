@@ -16,7 +16,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 
 /**
  * Jogl viewer preferences page
@@ -32,7 +32,7 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 	public JoglViewerPreferencePage() {
 		setDescription("Configure the 3D viewer component.");
 		setTitle("Viewer");
-		setPreferenceStore(JoglViewerSettings.getInstance());
+		setPreferenceStore(JoglViewerPreference.getInstance());
 	}
 
 	/** (inheritDoc)

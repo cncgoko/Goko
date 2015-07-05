@@ -9,7 +9,7 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 
 /**
  * Linear motion renderer
@@ -20,7 +20,7 @@ import org.goko.viewer.jogl.service.JoglViewerSettings;
 public class LinearMotionRenderer{
 
 	public List<Point3d> render(LinearMotionCommand command) throws GkException{
-		JoglViewerSettings settings = JoglViewerSettings.getInstance();
+		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		if(command != null){
 			if(settings.isRotaryAxisEnabled()){
 				// The complete angle around the 4th axis
@@ -43,7 +43,7 @@ public class LinearMotionRenderer{
 	}
 
 	private List<Point3d> renderLinearLine(LinearMotionCommand command) throws GkException {
-		JoglViewerSettings settings = JoglViewerSettings.getInstance();
+		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		List<Point3d> vertices = new ArrayList<Point3d>();
 		Point3d startPoint 	= command.getAbsoluteStartCoordinate().toPoint3d();
 		Point3d endPoint 	= command.getAbsoluteEndCoordinate().toPoint3d();
@@ -74,7 +74,7 @@ public class LinearMotionRenderer{
 	}
 
 	private void rotateMatrix(Matrix4d matrix, double angleRadians){
-		JoglViewerSettings settings = JoglViewerSettings.getInstance();
+		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		switch(settings.getRotaryAxisDirection()){
 			case X:matrix.rotX( angleRadians );
 			break;
@@ -86,7 +86,7 @@ public class LinearMotionRenderer{
 		}
 	}
 	private List<Point3d> renderRotaryLine(LinearMotionCommand command) throws GkException {
-		JoglViewerSettings settings = JoglViewerSettings.getInstance();
+		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		ArrayList<Point3d> vertices = new ArrayList<Point3d>();
 
 		Point3d startPoint 	= command.getAbsoluteStartCoordinate().toPoint3d();

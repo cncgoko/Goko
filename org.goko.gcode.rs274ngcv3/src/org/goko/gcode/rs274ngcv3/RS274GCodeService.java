@@ -47,7 +47,7 @@ import org.goko.core.gcode.bean.GCodeFile;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
-import org.goko.gcode.rs274ngcv3.config.RS274Config;
+import org.goko.gcode.rs274ngcv3.config.RS274Preference;
 import org.goko.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.gcode.rs274ngcv3.parser.advanced.AdvancedGCodeAnalyser;
@@ -90,7 +90,7 @@ public class RS274GCodeService implements IGCodeService {
 	 */
 	@Override
 	public void start() throws GkException {
-		RS274Config.getInstance();
+		RS274Preference.getInstance();
 	}
 
 	/** (inheritDoc)

@@ -22,7 +22,7 @@ import org.goko.common.preferences.fieldeditor.QuantityFieldEditor;
 import org.goko.common.preferences.fieldeditor.StringFieldEditor;
 import org.goko.common.preferences.fieldeditor.objectcollection.CollectionObject;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 
 public class TestPreferencesPage extends GkFieldEditorPreferencesPage{
 	private Text text;
@@ -30,7 +30,7 @@ public class TestPreferencesPage extends GkFieldEditorPreferencesPage{
 	private Group grpPerformances;
 	
 	public TestPreferencesPage() {	
-		setPreferenceStore(JoglViewerSettings.getInstance().getPreferenceStore());
+		setPreferenceStore(JoglViewerPreference.getInstance().getPreferenceStore());
 	}
 
 	@Override

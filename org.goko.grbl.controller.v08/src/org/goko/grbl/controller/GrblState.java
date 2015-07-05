@@ -73,7 +73,7 @@ public class GrblState extends MachineValueStore{
 		storeValue(Grbl.POSITION_X, "X", "The X work position of the machine", "0");
 		storeValue(Grbl.POSITION_Y, "Y", "The Y work position of the machine", "0");
 		storeValue(Grbl.POSITION_Z, "Z", "The Z work position of the machine", "0");
-		storeValue(Grbl.MACHINE_POSITION_X, "Machine Z", "The X position of the machine", "0");
+		storeValue(Grbl.MACHINE_POSITION_X, "Machine X", "The X position of the machine", "0");
 		storeValue(Grbl.MACHINE_POSITION_Y, "Machine Y", "The Y position of the machine", "0");
 		storeValue(Grbl.MACHINE_POSITION_Z, "Machine Z", "The Z position of the machine", "0");
 		storeValue(Grbl.GRBL_USED_BUFFER, "Grbl Buffer", "The space used in Grbl buffer", 0);
@@ -120,29 +120,32 @@ public class GrblState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	public synchronized Tuple6b getWorkPosition() throws GkException{		
-		return workPosition;
+		return new Tuple6b(workPosition);
 	}
 	/**
 	 * Sets the machine position in the machine space coordinate
 	 * @param position the position
 	 * @throws GkException GkException
 	 */
-	public synchronized void setWorkPosition(Tuple6b position, Unit<Length> unit) throws GkException{
-		workPosition = new Tuple6b(position);
-		if(position != null){			
-			if(position.getX() != null){				
+	public synchronized void setWorkPosition(Tuple6b position, Unit<Length> unit) throws GkException{		
+		if(position != null){		
+			
+			if(position.getX() != null){		
+				workPosition.setX(position.getX());
 				// updateValue(Grbl.POSITION_X, GokoConfig.getInstance().format( position.getX(), true));				
 				updateValue(Grbl.POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
 			}
 			if(position.getY() != null){
+				workPosition.setY(position.getY());
 				updateValue(Grbl.POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
 			}
 			if(position.getZ() != null){
+				workPosition.setZ(position.getZ());
 				updateValue(Grbl.POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
 			}
 		}
-		if(position != null && currentContext != null){
-			currentContext.setPosition(position);
+		if(currentContext != null){			
+			currentContext.setPosition(workPosition);
 		}
 	}
 	public int getUsedBuffer() throws GkException{

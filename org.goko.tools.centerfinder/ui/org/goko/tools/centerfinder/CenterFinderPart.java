@@ -22,6 +22,7 @@ package org.goko.tools.centerfinder;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
@@ -30,8 +31,11 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -46,6 +50,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
 import org.goko.tools.centerfinder.model.CenterFinderController;
@@ -96,17 +104,20 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		TableColumn tblclmnX = tableViewerColumn.getColumn();
 		tblclmnX.setWidth(100);
 		tblclmnX.setText("X");
-
+		tableViewerColumn.setLabelProvider(new QuantityLableProvider(0));
+		
 		TableViewerColumn tableViewerColumn_1 = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnY = tableViewerColumn_1.getColumn();
 		tblclmnY.setWidth(100);
 		tblclmnY.setText("Y");
-
+		tableViewerColumn_1.setLabelProvider(new QuantityLableProvider(1));
+		
 		TableViewerColumn tableViewerColumn_2 = new TableViewerColumn(tableViewer, SWT.NONE);
 		TableColumn tblclmnZ = tableViewerColumn_2.getColumn();
 		tblclmnZ.setWidth(100);
 		tblclmnZ.setText("Z");
-
+		tableViewerColumn_2.setLabelProvider(new QuantityLableProvider(2));
+		
 		Composite composite_1 = new Composite(composite, SWT.NONE);
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
@@ -219,7 +230,10 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		//
 		ObservableListContentProvider listContentProvider = new ObservableListContentProvider();
 		IObservableMap[] observeMaps = PojoObservables.observeMaps(listContentProvider.getKnownElements(), Tuple6b.class, new String[]{"x", "y", "z"});
-		tableViewer.setLabelProvider(new ObservableMapLabelProvider(observeMaps));
+		//A CORRIGER (les valeurs ne s'affichent pas bien suite au passage des tuples en Quantity)
+		//tableViewer.setLabelProvider(new ObservableMapLabelProvider(observeMaps));
+		//tableViewer.setLabelProvider(new QuantityLableProvider());
+		
 		tableViewer.setContentProvider(listContentProvider);
 		//
 		tableViewer.setInput(getDataModel().getSamplePoints());
@@ -234,9 +248,42 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 			LOG.error(e);
 		}
 
-
-
-
 		return bindingContext;
+	}
+	
+	class QuantityLableProvider extends CellLabelProvider{
+		private int axis;
+		
+		/**
+		 * @param axis
+		 */
+		public QuantityLableProvider(int axis) {
+			super();
+			this.axis = axis;
+		}
+
+		public String getText(Object element) {			
+			if(element == null ){
+				return StringUtils.EMPTY;
+			}
+			Tuple6b tuple = (Tuple6b) element;			
+			Quantity<Length> quantity = tuple.getX();
+			if(axis == 1){
+				quantity = tuple.getY();
+			}else if(axis == 2){
+				quantity = tuple.getZ();
+			}
+			try {
+				return GokoPreference.getInstance().format(quantity, true, true);
+			} catch (GkException e) {
+				LOG.error(e);
+			}
+			return StringUtils.EMPTY;
+		}
+
+		@Override
+		public void update(ViewerCell cell) {
+			cell.setText(getText(cell.getElement()));
+		}
 	}
 }

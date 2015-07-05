@@ -22,9 +22,6 @@ package org.goko.grbl.controller.configuration;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -33,17 +30,16 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiDialogComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 import org.goko.grbl.controller.configuration.model.GrblConfigurationController;
 import org.goko.grbl.controller.configuration.model.GrblConfigurationModel;
-import org.eclipse.swt.widgets.Group;
 
 /**
  *
@@ -51,6 +47,7 @@ import org.eclipse.swt.widgets.Group;
  *
  */
 public class GrblConfigurationDialog extends GkUiDialogComponent<GrblConfigurationController, GrblConfigurationModel> {
+	private static final GkLog LOG = GkLog.getLogger(GrblConfigurationDialog.class);
 	private Text p0txt;	
 	private Text p1txt;
 	private Text p2txt;
@@ -356,7 +353,11 @@ public class GrblConfigurationDialog extends GkUiDialogComponent<GrblConfigurati
 			p22txt = new Text(composite_8, SWT.BORDER);
 			p22txt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			p22txt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
+			try {
+				initCustomDataBindings();
+			} catch (GkException e1) {
+				LOG.error(e1);
+			}
 		return composite;
 	}
 

@@ -5,9 +5,15 @@
          id="org.goko.core.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="always"
+            apply="initial"
             uri="fragments/CoreFragment.e4xmi">
       </fragment>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.core.config.GokoPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

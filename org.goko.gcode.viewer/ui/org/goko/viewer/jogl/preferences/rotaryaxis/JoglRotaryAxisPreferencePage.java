@@ -20,8 +20,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
-import org.goko.viewer.jogl.service.JoglViewerSettings.EnumRotaryAxisDirection;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxisDirection;
 
 public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 	private BooleanFieldEditor booleanFieldEditor;
@@ -33,7 +33,7 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 	public JoglRotaryAxisPreferencePage() {
 		setTitle("4th axis");
 		setDescription("Configure the 4th axis display");
-		setPreferenceStore(JoglViewerSettings.getInstance());
+		setPreferenceStore(JoglViewerPreference.getInstance());
 	}
 
 	/** (inheritDoc)

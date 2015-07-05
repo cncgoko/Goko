@@ -388,12 +388,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	}
 
 	@Override
-	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {		
-		try {
-			getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
-			getDataModel().setTotalCommandCount( token.getCommandCount() );
-		} catch (GkException e) {
-			log(e);
-		}
+	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+		getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
+		getDataModel().setTotalCommandCount( token.getCommandCount() );		
 	}
 }

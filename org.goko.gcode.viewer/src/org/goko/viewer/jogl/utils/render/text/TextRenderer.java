@@ -1,20 +1,3 @@
-/*
- *	This file is part of Goko.
- *
- *  Goko is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Goko is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Goko.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.goko.viewer.jogl.utils.render.text;
 
 import java.nio.FloatBuffer;
@@ -31,12 +14,11 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
-import org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer;
+import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 
-import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.texture.Texture;
 
-public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
+public class TextRenderer extends AbstractVboJoglRenderer {
 	private static GkLog LOG = GkLog.getLogger(TextRenderer.class);
 	public static final int LEFT 	= 0;
 	public static final int CENTER 	= 1 << 1;
@@ -56,12 +38,9 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 	private int textureUniformLocation;
 	private EnumBitmapFont enumBitmapFont;
 	private BitmapFontFile bff;
-	private FloatBuffer vertices;
-	private FloatBuffer uvs;
-	private FloatBuffer colors;
 	private int alignement;
 	private int textureSize;
-
+	
 	public TextRenderer(String text, double size, Point3d position) {
 		this(text, size, position, new Vector3d(1,0,0), new Vector3d(0,1,0));
 	}
@@ -74,8 +53,8 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 	}
 
 	public TextRenderer(String text, double size, Point3d position, Vector3d widthVector, Vector3d heightVector, int alignement) {
-		super();
-		this.text = text;
+		super(GL.GL_TRIANGLES, VERTICES | COLORS | UVS);
+		this.text = text;		
 		this.widthVector = new Vector3d(widthVector);
 		this.heightVector = new Vector3d(heightVector);
 		this.size = size;
@@ -86,10 +65,21 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer#generateVbo(javax.media.opengl.GL3)
+	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#buildGeometry()
 	 */
 	@Override
-	protected void generateVbo(GL3 gl) throws GkException{
+	protected void buildGeometry() throws GkException {
+		setVerticesCount(StringUtils.length(text)*6);
+		
+		
+		generateVertices();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#performInitialize(javax.media.opengl.GL3)
+	 */
+	@Override
+	protected void performInitialize(GL3 gl) throws GkException {		
 		IntBuffer intBuffer = IntBuffer.allocate(1);
 		gl.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE, intBuffer);
 		textureSize = Math.min(2048, intBuffer.get());
@@ -98,111 +88,61 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 
 		texture = BitmapFontFileManager.getTextureFont(gl, enumBitmapFont, textureSize);
 		texture.setTexParameteri(gl,GL.GL_TEXTURE_MIN_FILTER,GL.GL_LINEAR);
-		texture.setTexParameteri(gl,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);
-
-		setVertices(generateVertices());
-		getVertices().rewind();
-
-		setColors(generateColors());
-		getColors().rewind();
-
-		// JOGL Part now
-		vao = IntBuffer.allocate(1);
-		gl.glGenVertexArrays(1, vao);
-		gl.glBindVertexArray(vao.get(0));
-		vbo = new int[3];
-		gl.glGenBuffers(3, vbo, 0);
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, getInternVerticesCount()*4*Buffers.SIZEOF_FLOAT, getVertices(), GL.GL_STATIC_DRAW);
-		gl.glEnableVertexAttribArray(0);
-
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[1]);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER,  getInternVerticesCount()*4*Buffers.SIZEOF_FLOAT, getColors(), GL.GL_STATIC_DRAW);
-		gl.glEnableVertexAttribArray(1);
-
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[2]);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER,  getInternVerticesCount()*2*Buffers.SIZEOF_FLOAT, getUvs(), GL.GL_STATIC_DRAW);
-		gl.glEnableVertexAttribArray(2);
+		texture.setTexParameteri(gl,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);		
+		setShaderProgram(loadShaderProgram(gl));
+		textureUniformLocation = gl.glGetUniformLocation(getShaderProgram(),"fontTextureSampler");		
+		super.performInitialize(gl);
+		
+		
 	}
-
-	private FloatBuffer getUvs() throws GkException {
-		return uvs;
-	}
-
+	
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer#performInitialize(javax.media.opengl.GL3)
+	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#initializeAdditionalBufferObjects(javax.media.opengl.GL3)
 	 */
 	@Override
-	protected void performInitialize(GL3 gl) throws GkException {
-		super.performInitialize(gl);
-		setShaderProgram(ShaderLoader.loadShader(gl, EnumGokoShaderProgram.TEXT_SHADER));
-		textureUniformLocation = gl.glGetUniformLocation(getShaderProgram(),"fontTextureSampler");
-	}
-
-
-	@Override
-	protected void performRender(GL3 gl) throws GkException {
-		if(!isInitialized()){
-			initialize(gl);
-		}
-
-		gl.glUseProgram(getShaderProgram());
-		gl.glEnableVertexAttribArray(0);
-		gl.glEnableVertexAttribArray(1);
-		gl.glEnableVertexAttribArray(2);
-
+	protected void initializeAdditionalBufferObjects(GL3 gl) throws GkException {		
+		super.initializeAdditionalBufferObjects(gl);		
 		gl.glActiveTexture(GL3.GL_TEXTURE0);
 		texture.enable(gl);
-		texture.bind(gl);
-		gl.glUniform1i(textureUniformLocation, 0);
-
-
-	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
-	    gl.glVertexAttribPointer(0,4, GL.GL_FLOAT, false, 0, 0);
-	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[1]);
-	    gl.glVertexAttribPointer(1,4, GL.GL_FLOAT, false, 0, 0);
-	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[2]);
-	    gl.glVertexAttribPointer(2,2, GL.GL_FLOAT, false, 0, 0);
-	    // Actual draw
-	    gl.glDrawArrays(getRenderType(), 0, getVerticesCount());
-	    texture.disable(gl);
-	    gl.glDisableVertexAttribArray(0);
-	    gl.glDisableVertexAttribArray(1);
-	    gl.glDisableVertexAttribArray(2);
-	    gl.glUseProgram(0);
-
+		texture.bind(gl);		
+	//	gl.glUniform1i(textureUniformLocation, 0);
 	}
-
+	
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer#generateColors()
+	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#disableAdditionalVertexAttribArray(javax.media.opengl.GL3)
 	 */
 	@Override
-	protected FloatBuffer generateColors() throws GkException {
-		return colors;
+	protected void disableAdditionalVertexAttribArray(GL3 gl) throws GkException {
+		super.disableAdditionalVertexAttribArray(gl);
+		texture.disable(gl);
 	}
-
+	
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer#generateVertices()
+	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#loadShaderProgram(javax.media.opengl.GL3)
 	 */
 	@Override
-	protected FloatBuffer generateVertices() throws GkException {
-		vertices = FloatBuffer.allocate(4*getVerticesCount());
-		uvs 	 = FloatBuffer.allocate(2*getVerticesCount());
-		colors   = FloatBuffer.allocate(4*getVerticesCount());
+	protected int loadShaderProgram(GL3 gl) throws GkException {		
+		return ShaderLoader.loadShader(gl, EnumGokoShaderProgram.TEXT_SHADER);
+	}
+
+	
+	protected void generateVertices() throws GkException {
+		FloatBuffer verticesBuffer  = FloatBuffer.allocate(4*getVerticesCount());
+		FloatBuffer uvsBuffer 	 	= FloatBuffer.allocate(2*getVerticesCount());
+		FloatBuffer colorsBuffer    = FloatBuffer.allocate(4*getVerticesCount());
 
 		Point3d lowerLeft = computeLowerLeftCorner();
 		Point3d p1 = new Point3d(lowerLeft);
 
 		int length = StringUtils.length(text);
 		for (int i = 0; i < length; i++) {
-			generateBuffers(text.charAt(i), p1);
+			generateBuffers(text.charAt(i), p1, verticesBuffer, colorsBuffer, uvsBuffer);
 		}
-		vertices.rewind();
-		colors.rewind();
-		uvs.rewind();
-		return vertices;
+		setVerticesBuffer(verticesBuffer);
+		setColorsBuffer(colorsBuffer);
+		setUvsBuffer(uvsBuffer);
 	}
-
+	
 	private Point3d computeLowerLeftCorner() {
 		Point3d lowerLeft = new Point3d(position);
 		int length = StringUtils.length(text);
@@ -246,7 +186,7 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 		return lowerLeft;
 	}
 
-	private void generateBuffers(char letter, Point3d position){
+	private void generateBuffers(char letter, Point3d position, FloatBuffer vertices, FloatBuffer colors, FloatBuffer uvs){
 		
 		int glyph = letter - bff.getFirstCharOffset();
 		int col = glyph % bff.getColumnCount();
@@ -308,22 +248,8 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 
 		position.add(wVector);
 	}
+	
 
-	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer#getVerticesCount()
-	 */
-	@Override
-	protected int getVerticesCount() throws GkException {
-		return StringUtils.length(text) * 6;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer#getRenderType()
-	 */
-	@Override
-	protected int getRenderType() {
-		return GL3.GL_TRIANGLES;
-	}
 
 	/**
 	 * @return the text
@@ -401,5 +327,4 @@ public class TextRenderer extends DeprecatedAbstractVboJoglRenderer {
 	protected void setColor(Vector4f color) {
 		this.color = color;
 	}
-
 }

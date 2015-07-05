@@ -10,15 +10,15 @@ import org.goko.common.preferences.IPreferenceStoreProvider;
 import org.goko.common.preferences.fieldeditor.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.IntegerFieldEditor;
 import org.goko.core.common.exception.GkException;
-import org.goko.gcode.rs274ngcv3.config.RS274Config;
+import org.goko.gcode.rs274ngcv3.config.RS274Preference;
 
-public class RS274GCodePreferences extends GkFieldEditorPreferencesPage implements IPreferenceStoreProvider{
+public class RS274GCodePreferences extends GkFieldEditorPreferencesPage{
 	private BooleanFieldEditor truncateEnabledEditor;
 	private IntegerFieldEditor decimalCountEditor;
 
 	public RS274GCodePreferences() {
 		setTitle("GCode");
-		setPreferenceStore(RS274Config.getInstance());
+		setPreferenceStore(RS274Preference.getInstance());
 	}
 
 	@Override
@@ -27,14 +27,14 @@ public class RS274GCodePreferences extends GkFieldEditorPreferencesPage implemen
 		content.setLayout(new GridLayout(1, false));
 		
 		truncateEnabledEditor = new BooleanFieldEditor(content, SWT.NONE);
-		truncateEnabledEditor.setPreferenceName(RS274Config.KEY_TRUNCATE_ENABLED);
+		truncateEnabledEditor.setPreferenceName(RS274Preference.KEY_TRUNCATE_ENABLED);
 		truncateEnabledEditor.setLabel("Truncate decimal");
 		
 		decimalCountEditor = new IntegerFieldEditor(parent, SWT.NONE);
 		decimalCountEditor.setEmptyStringAllowed(false);
 		decimalCountEditor.setLabel("Decimal count :");
 		decimalCountEditor.setWidthInChars(5);
-		decimalCountEditor.setPreferenceName(RS274Config.KEY_DECIMAL_COUNT);
+		decimalCountEditor.setPreferenceName(RS274Preference.KEY_DECIMAL_COUNT);
 		
 		
 		addField(truncateEnabledEditor);	

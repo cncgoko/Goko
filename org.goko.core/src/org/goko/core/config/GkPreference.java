@@ -19,9 +19,9 @@ package org.goko.core.config;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.goko.common.preferences.ScopedPreferenceStore;
@@ -30,11 +30,8 @@ public abstract class GkPreference implements IPreferenceStore{
 	private ScopedPreferenceStore store;
 
 	public GkPreference(String id) {
-		store = new ScopedPreferenceStore(InstanceScope.INSTANCE, id);
-		initialize();
+		store = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, id);	
 	}
-	
-	protected void initialize(){};
 	
 	public ScopedPreferenceStore getPreferenceStore(){
 		return store;
@@ -106,7 +103,7 @@ public abstract class GkPreference implements IPreferenceStore{
 	 * @return
 	 * @see org.goko.common.preferences.ScopedPreferenceStore#getDefaultBoolean(java.lang.String)
 	 */
-	public boolean getDefaultBoolean(String name) {
+	public boolean getDefaultBoolean(String name) {		
 		return store.getDefaultBoolean(name);
 	}
 

@@ -27,6 +27,8 @@ public interface ICoreJoglRenderer {
 
 	public String getId();
 
+	public int getLayerId();
+	
 	public void render(GL3 gl, PMVMatrix modelViewMatrix) throws GkException;
 
 	public void setEnabled(boolean enabled);

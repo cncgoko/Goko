@@ -32,10 +32,13 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionListener;
+import org.goko.core.log.GkLog;
 import org.goko.serial.jssc.service.IJsscSerialConnectionService;
+import org.goko.serial.jssc.service.JsscSerialConnection;
 
 
 public class JsscSerialPortConnectionState implements IConnectionListener {
+	private static final GkLog LOG = GkLog.getLogger(JsscSerialPortConnectionState.class);
 	@Inject
 	private IJsscSerialConnectionService jsscService;
 
@@ -60,7 +63,7 @@ public class JsscSerialPortConnectionState implements IConnectionListener {
 		lblConnectionState.setText("Disconnected");
 		lblConnectionState.setToolTipText("");
 		GridData gd_lblConnectionState = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_lblConnectionState.widthHint = 100;
+		gd_lblConnectionState.widthHint = 200;
 		lblConnectionState.setLayoutData(gd_lblConnectionState);
 		jsscService.addConnectionListener(this);
 	}
@@ -69,13 +72,19 @@ public class JsscSerialPortConnectionState implements IConnectionListener {
 	 * @see org.goko.core.connection.IConnectionListener#onConnectionEvent(org.goko.core.connection.EnumConnectionEvent)
 	 */
 	@Override
-	public void onConnectionEvent(final EnumConnectionEvent event) throws GkException {
+	public void onConnectionEvent(final EnumConnectionEvent event) throws GkException {				
 		Display.getDefault().asyncExec(new Runnable(){
 			@Override
 			public void run() {
-				if(event == EnumConnectionEvent.CONNECTED){
-					lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status.png"));
-					lblConnectionState.setText("Connected");
+				if(event == EnumConnectionEvent.CONNECTED){					
+					try {
+						JsscSerialConnection currentConnection = jsscService.getCurrentConnectionInformation();					
+						lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status.png"));					
+						lblConnectionState.setText("Connected "+currentConnection.getPortName()+" @ "+currentConnection.getBaudrate()+" baud" );
+						lblConnectionState.pack();
+					} catch (GkException e) {						
+						LOG.error(e);
+					}
 				}else if(event == EnumConnectionEvent.DISCONNECTED){
 					lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status-offline.png"));
 					lblConnectionState.setText("Disconnected");

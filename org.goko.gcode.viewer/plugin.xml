@@ -26,9 +26,15 @@
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
       <provider
-            class="org.goko.viewer.jogl.service.JoglViewerPreferenceStoreProvider"
+            class="org.goko.viewer.jogl.preferences.JoglViewerPreferenceStoreProvider"
             id="org.goko.gcode.viewer.provider">
       </provider>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.viewer.jogl.preferences.JoglViewerPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

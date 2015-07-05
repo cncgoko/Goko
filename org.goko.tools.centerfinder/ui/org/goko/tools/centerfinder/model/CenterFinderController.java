@@ -68,7 +68,7 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 		lst.add(tuple );
 		getDataModel().setSamplePoints(lst);
 		getDataModel().setSelectedPoint(tuple);
-		centerFinderService.capturePoint(new Point3d( tuple.getX().doubleValue(SI.MILLIMETRE),tuple.getY().doubleValue(SI.MILLIMETRE), tuple.getZ().doubleValue(SI.MILLIMETRE)));
+		centerFinderService.capturePoint(tuple);
 		if(getDataModel().getSamplePoints().size() >= 3){
 			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint()));
 		}else{

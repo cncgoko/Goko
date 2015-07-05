@@ -29,6 +29,7 @@ import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
+import org.goko.core.common.utils.BigDecimalUtils;
 import org.goko.core.math.Tuple6f;
 
 public class Tuple6b {
@@ -298,6 +299,17 @@ public class Tuple6b {
 		return this;
 	}
 
+	public BigDecimalQuantity<Length> distance(Tuple6b target){		
+		BigDecimalQuantity<Length> dx = target.getX().subtract(x); 
+		BigDecimalQuantity<Length> dy = target.getY().subtract(y); 
+		BigDecimalQuantity<Length> dz = target.getZ().subtract(z);
+		BigDecimal dx2 = dx.getValue().pow(2);
+		BigDecimal dy2 = dy.getValue().pow(2);
+		BigDecimal dz2 = dz.getValue().pow(2);
+		BigDecimal result = BigDecimalUtils.sqrt(dx2.add(dy2).add(dz2), dx.getValue().scale());
+		
+		return NumberQuantity.of(result, dx.getUnit());
+	}
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -384,5 +396,6 @@ public class Tuple6b {
 				);
 	}
 
+	
 
 }

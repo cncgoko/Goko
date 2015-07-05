@@ -5,7 +5,7 @@
          id="org.goko.featuremanager.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="always"
+            apply="notexists"
             uri="fragments/FeatureManager.e4xmi">
       </fragment>
    </extension>

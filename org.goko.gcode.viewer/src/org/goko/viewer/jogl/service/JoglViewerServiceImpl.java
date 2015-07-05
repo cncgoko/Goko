@@ -55,6 +55,7 @@ import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType
 import org.goko.core.workspace.service.IWorkspaceListener;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.viewer.jogl.GokoJoglCanvas;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
 import org.goko.viewer.jogl.utils.render.ToolRenderer;
 import org.goko.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
@@ -115,7 +116,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	@Override
 	public void start() throws GkException {
-		JoglViewerSettings.getInstance().addPropertyChangeListener(this);		
+		JoglViewerPreference.getInstance().addPropertyChangeListener(this);		
 		GokoPreference.getInstance().addPropertyChangeListener(this);
 		
 		jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
@@ -134,9 +135,11 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(xTextRenderer);
 		addRenderer(yTextRenderer);
 		addRenderer(zTextRenderer);
-		zeroRenderer = new FourAxisRenderer(10, JoglViewerSettings.getInstance().getRotaryAxisDirection(), new Color3f(1,0,0), new Color3f(0,1,0), new Color3f(0,0,1), new Color3f(1,1,0));
-		zeroRenderer.setDisplayRotaryAxis(JoglViewerSettings.getInstance().isRotaryAxisEnabled());
-		addRenderer(zeroRenderer);		
+		zeroRenderer = new FourAxisRenderer(10, JoglViewerPreference.getInstance().getRotaryAxisDirection(), new Color3f(1,0,0), new Color3f(0,1,0), new Color3f(0,0,1), new Color3f(1,1,0));
+		zeroRenderer.setDisplayRotaryAxis(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
+		addRenderer(zeroRenderer);	
+		boundsRenderer = new BoundsRenderer(null);
+		addRenderer(boundsRenderer);		
 	}
 
 	/** (inheritDoc)
@@ -198,7 +201,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 
 	protected void applyRotationAngle(PMVMatrix matrix) throws GkException{
 		double angle = controllerAdapter.getA().doubleValue();
-		Vector3d rotaryVector = new Vector3d(JoglViewerSettings.getInstance().getRotaryAxisDirection().getVector3f());
+		Vector3d rotaryVector = new Vector3d(JoglViewerPreference.getInstance().getRotaryAxisDirection().getVector3f());
 		PMVMatrix rotMatrix = new PMVMatrix();
 		rotMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 		rotMatrix.glLoadIdentity();
@@ -331,11 +334,11 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	public void propertyChange(PropertyChangeEvent event) {
 		super.propertyChange(event);		
 		try {
-			zeroRenderer.setDisplayRotaryAxis(JoglViewerSettings.getInstance().isRotaryAxisEnabled());
-			zeroRenderer.setRotationAxis(JoglViewerSettings.getInstance().getRotaryAxisDirection());
+			zeroRenderer.setDisplayRotaryAxis(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
+			zeroRenderer.setRotationAxis(JoglViewerPreference.getInstance().getRotaryAxisDirection());
 			// Update the grid
-			if(StringUtils.equals(event.getProperty(), JoglViewerSettings.MAJOR_GRID_SPACING)
-					|| StringUtils.equals(event.getProperty(), JoglViewerSettings.MINOR_GRID_SPACING)
+			if(StringUtils.equals(event.getProperty(), JoglViewerPreference.MAJOR_GRID_SPACING)
+					|| StringUtils.equals(event.getProperty(), JoglViewerPreference.MINOR_GRID_SPACING)
 					|| StringUtils.equals(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
 				this.gridRenderer.destroy();
 				this.gridRenderer = new GridRenderer();
@@ -373,8 +376,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 			// Draw a big red warning saying jog is enabled
 			FontRenderContext 	frc = g2d.getFontRenderContext();
 			String warn = "Keyboard jog enabled";
-			GlyphVector 		gv =		 jogWarnFont.createGlyphVector(frc, warn);
-		    Rectangle 			bounds = gv.getPixelBounds(frc, 0, 0);
+			GlyphVector gv =		 jogWarnFont.createGlyphVector(frc, warn);
+		    Rectangle 	bounds = gv.getPixelBounds(frc, 0, 0);
 		    int x = (getWidth() - bounds.width) / 2;
 		    int y = 5 + bounds.height;
 		    Rectangle2D bg = new Rectangle2D.Double(x-5,2, bounds.width + 15, bounds.height + 10);

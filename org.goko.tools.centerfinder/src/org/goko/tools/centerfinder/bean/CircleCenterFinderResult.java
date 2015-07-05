@@ -19,35 +19,43 @@
  */
 package org.goko.tools.centerfinder.bean;
 
-import javax.vecmath.Point3d;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.gcode.bean.Tuple6b;
 
 public class CircleCenterFinderResult {
 	/** The center of the circle */
-	private Point3d center;
+	private Tuple6b center;
 	/** the radius of the circle */
-	private double radius;
+	private BigDecimalQuantity<Length> radius;
 	/**
 	 * @return the center
 	 */
-	public Point3d getCenter() {
+	public Tuple6b getCenter() {
 		return center;
 	}
 	/**
 	 * @param center the center to set
 	 */
-	public void setCenter(Point3d center) {
+	public void setCenter(Tuple6b center) {
 		this.center = center;
 	}
 	/**
 	 * @return the radius
 	 */
-	public double getRadius() {
+	public BigDecimalQuantity<Length> getRadius() {
 		return radius;
 	}
 	/**
 	 * @param radius the radius to set
 	 */
-	public void setRadius(double radius) {
+	public void setRadius(BigDecimalQuantity<Length> radius) {
 		this.radius = radius;
 	}
+	public BigDecimalQuantity<Length> getDiameter() {		
+		return this.radius.multiply(2);
+	}
+	
+	
 }

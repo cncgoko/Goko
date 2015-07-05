@@ -43,14 +43,16 @@ public class GokoPreference extends GkPreference{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GokoPreference.class);
 	/** ID of this configuration */
-	public static final String NODE_ID = "goko.config";
+	public static final String NODE_ID = "org.goko.core";
 	/** The instance of this config */
 	private static GokoPreference instance;	
 	/** The unit configured for distances */
 	public static final String KEY_DISTANCE_UNIT = "distanceUnit";
+	/** The default unit configured for distances */
 	public static final String DEFAULT_DISTANCE_UNIT = EnumGokoUnit.MILLIMETERS.getCode();
 	/** The precision to display after coma for distance values */
 	public static final String KEY_DISTANCE_DIGIT_COUNT = "distanceDigitCount";
+	/** The default precision to display after coma for distance values  */
 	public static final int DEFAULT_DISTANCE_DIGIT_COUNT = 3;
 	/** Used units */
 	private Map<Dimension, Unit> mapConfiguredUnits;
@@ -59,6 +61,7 @@ public class GokoPreference extends GkPreference{
 		super(NODE_ID);
 		mapConfiguredUnits = new HashMap<Dimension, Unit>();		
 	}
+		
 	/**
 	 * Singleton like access
 	 * @return the instance of this configuration
@@ -67,7 +70,7 @@ public class GokoPreference extends GkPreference{
 		if(instance == null){
 			try {
 				instance = new GokoPreference();
-				instance.initialize();
+				//nstance.initialize();
 			} catch (GkException e) {
 				LOG.error(e);
 			}
@@ -75,18 +78,6 @@ public class GokoPreference extends GkPreference{
 		return instance;
 	}
 	
-	@Override
-	protected void initialize(){
-		getPreferenceStore().setDefault(KEY_DISTANCE_UNIT, DEFAULT_DISTANCE_UNIT);
-		if(StringUtils.equals(getPreferenceStore().getString(KEY_DISTANCE_UNIT), StringUtils.EMPTY)){
-			getPreferenceStore().setToDefault(KEY_DISTANCE_UNIT);
-		}
-		getPreferenceStore().setDefault(KEY_DISTANCE_DIGIT_COUNT, DEFAULT_DISTANCE_DIGIT_COUNT);
-		int val = getPreferenceStore().getInt(KEY_DISTANCE_DIGIT_COUNT) ;
-		if(getPreferenceStore().getInt(KEY_DISTANCE_DIGIT_COUNT) == GkPreference.INT_DEFAULT_DEFAULT){
-			getPreferenceStore().setToDefault(KEY_DISTANCE_DIGIT_COUNT);
-		}
-	}
 	/**
 	 * @return the distanceUnit
 	 * @throws GkException

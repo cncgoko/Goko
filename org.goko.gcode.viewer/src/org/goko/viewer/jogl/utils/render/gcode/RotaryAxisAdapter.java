@@ -24,7 +24,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
-import org.goko.viewer.jogl.service.JoglViewerSettings;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -61,7 +61,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 		if(realAngle != null){
 			 angle = realAngle.floatValue();
 		}
-		Vector3f rotationAxis = JoglViewerSettings.getInstance().getRotaryAxisDirectionVector();
+		Vector3f rotationAxis = JoglViewerPreference.getInstance().getRotaryAxisDirectionVector();
 		modelViewMatrix.glRotatef(-angle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
 		backedRenderer.render(gl, modelViewMatrix);
 	}
@@ -180,6 +180,14 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	@Override
 	public void update() {
 		backedRenderer.update();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.ICoreJoglRenderer#getLayerId()
+	 */
+	@Override
+	public int getLayerId() {
+		return backedRenderer.getLayerId();
 	}
 
 }

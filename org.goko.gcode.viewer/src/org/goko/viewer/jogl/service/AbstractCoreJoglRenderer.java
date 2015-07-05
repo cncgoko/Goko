@@ -38,6 +38,8 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	private boolean disabled;
 	/** Destroy request */
 	private boolean shouldDestroy;
+	/** Layer id */
+	private int layerId;
 	/**
 	 * Constructor
 	 * @param shaderProgram the shader program
@@ -48,6 +50,7 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 		this.modelMatrix = new PMVMatrix();
 		this.modelMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 		this.modelMatrix.glLoadIdentity();
+		this.layerId= Layer.LAYER_DEFAULT;
 	}
 
 	public AbstractCoreJoglRenderer() {
@@ -177,6 +180,20 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	@Override
 	public void destroy() throws GkException {
 		shouldDestroy = true;
+	}
+
+	/**
+	 * @return the layerId
+	 */
+	public int getLayerId() {
+		return layerId;
+	}
+
+	/**
+	 * @param layerId the layerId to set
+	 */
+	public void setLayerId(int layerId) {
+		this.layerId = layerId;
 	}
 
 }

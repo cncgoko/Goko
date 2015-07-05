@@ -23,9 +23,7 @@ import org.goko.core.common.measure.converter.UnitConverter;
 import org.goko.core.common.measure.quantity.AbstractQuantity;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.units.Unit;
-
-
-//public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q, BigDecimalQuantity<Q>> {	
+	
 public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q> {
 	private BigDecimal value;
 
@@ -35,11 +33,10 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 		this.value = value;
 	}
 
-@Override
-public String toString() {
-	// TODO Auto-generated method stub
-	return super.toString();
-}
+	@Override
+	public String toString() {
+		return String.valueOf(value)+" "+getUnit().getSymbol();
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#doubleValue()
 	 */
@@ -92,17 +89,16 @@ public String toString() {
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.AbstractQuantity#add(org.goko.core.common.measure.quantity.AbstractQuantity)
-	 */
-	
+	 */	
 	public BigDecimalQuantity<Q> add(BigDecimalQuantity<Q> q) {		
 		return new BigDecimalQuantity<Q>(getUnit(), value.add( q.value(getUnit()) ));
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#subtract(org.goko.core.common.measure.quantity.Quantity)
 	 */
 	@Override
-	public Quantity<Q> subtract(Quantity<Q> q) {
+	public BigDecimalQuantity<Q> subtract(Quantity<Q> q) {
 		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() - q.to(getUnit()).doubleValue()));
 	}
 
@@ -113,7 +109,7 @@ public String toString() {
 	 * @see org.goko.core.common.measure.quantity.Quantity#multiply(java.lang.Number)
 	 */
 	@Override
-	public Quantity<Q> multiply(Number n) {
+	public BigDecimalQuantity<Q> multiply(Number n) {
 		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() * n.doubleValue()));
 	}
 
@@ -122,8 +118,41 @@ public String toString() {
 	 * @see org.goko.core.common.measure.quantity.Quantity#divide(java.lang.Number)
 	 */
 	@Override
-	public Quantity<Q> divide(Number n) {
+	public BigDecimalQuantity<Q> divide(Number n) {
 		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() / n.doubleValue()));
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BigDecimalQuantity other = (BigDecimalQuantity) obj;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
+	}
+	
+	
+	
 }

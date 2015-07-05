@@ -19,6 +19,8 @@
  */
 package org.goko.tools.centerfinder;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,12 @@ import javax.vecmath.Vector3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 import org.goko.tools.centerfinder.bean.Segment;
 import org.goko.viewer.jogl.service.ICoreJoglRenderer;
@@ -41,7 +48,9 @@ import org.goko.viewer.jogl.utils.render.coordinate.measurement.DiameterRenderer
 public class CenterFinderServiceImpl implements ICenterFinderService{
 	private static final String SERVICE_ID = "org.goko.tools.centerfinder";
 	private static final Color4f POINT_COLOR = new Color4f(1f,0.82f,0.16f,1f);
-	private List<Point3d> memorizedPoints;
+	private static final Color4f CENTER_COLOR = new Color4f(0f,0.47f,0.62f,1f);
+	private static final Color4f CIRCLE_COLOR = new Color4f(0.26f,0.47f,0.0f,1f);
+	private List<Tuple6b> memorizedPoints;
 	private List<PointRenderer> pointsRenderer;
 	private CircleCenterFinderResult centerResult;
 	private IJoglViewerService rendererService;
@@ -50,7 +59,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 * Constructor
 	 */
 	public CenterFinderServiceImpl() {
-		memorizedPoints = new ArrayList<Point3d>();
+		memorizedPoints = new ArrayList<Tuple6b>();
 		pointsRenderer = new ArrayList<PointRenderer>();
 	}
 
@@ -84,7 +93,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 * @see org.goko.tools.centerfinder.ICenterFinderService#getCapturedPoint()
 	 */
 	@Override
-	public List<Point3d> getCapturedPoint() throws GkException{
+	public List<Tuple6b> getCapturedPoint() throws GkException{
 		return memorizedPoints;
 	}
 
@@ -92,7 +101,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 * @see org.goko.tools.centerfinder.ICenterFinderService#capturePoint(javax.vecmath.Point3d)
 	 */
 	@Override
-	public void capturePoint(Point3d point) throws GkException {
+	public void capturePoint(Tuple6b point) throws GkException {
 		memorizedPoints.add(point);
 		if(getRendererService() != null){
 			PointRenderer pRenderer = new PointRenderer(point, 2, POINT_COLOR);
@@ -114,7 +123,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 * @see org.goko.tools.centerfinder.ICenterFinderService#clearCapturedPoint()
 	 */
 	@Override
-	public void removeCapturedPoint(Point3d point) throws GkException {
+	public void removeCapturedPoint(Tuple6b point) throws GkException {
 		if(getRendererService() != null){
 			int pos = memorizedPoints.indexOf(point);
 			PointRenderer pRenderer = pointsRenderer.get(pos);
@@ -127,22 +136,22 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	}
 
 	@Override
-	public CircleCenterFinderResult getCenter(List<Point3d> lstPoints) throws GkException{
+	public CircleCenterFinderResult getCenter(List<Tuple6b> lstPoints) throws GkException{
 		centerResult = new CircleCenterFinderResult();
-		Point3d center = new Point3d();
+		Tuple6b center = new Tuple6b();
 		List<Segment> lstSegment = new ArrayList<Segment>();
-
-		Point3d p1 = lstPoints.get(0);
-		Point3d p2 = lstPoints.get(1);
-		Point3d p3 = lstPoints.get(2);
-
-//		int maxScale  = Math.max(t1.getX().scale(), Math.max(t1.getY().scale(), t1.getZ().scale()));
-//		maxScale  = Math.max(maxScale, Math.max(t2.getX().scale(), Math.max(t2.getY().scale(), t2.getZ().scale())));
-//		maxScale  = Math.max(maxScale, Math.max(t3.getX().scale(), Math.max(t3.getY().scale(), t3.getZ().scale())));
-
-		lstSegment.add(new Segment(p1, p2));
-		lstSegment.add(new Segment(p2, p3));
-		lstSegment.add(new Segment(p3, p1));
+		// Get the result unit (arbitrary)
+		Unit<Length> resultUnit = lstPoints.get(0).getX().getUnit();
+		Tuple6b t1 = lstPoints.get(0).to(resultUnit);
+		Tuple6b t2 = lstPoints.get(1).to(resultUnit);
+		Tuple6b t3 = lstPoints.get(2).to(resultUnit);
+		Point3d p1 = t1.to(resultUnit).toPoint3d();
+		Point3d p2 = t2.to(resultUnit).toPoint3d();
+		Point3d p3 = t3.to(resultUnit).toPoint3d();
+		
+		lstSegment.add(new Segment(t1, t2));
+		lstSegment.add(new Segment(t2, t3));
+		lstSegment.add(new Segment(t3, t1));
 
 		int xParallelSegment = -1;
 		int yParallelSegment = -1;
@@ -168,54 +177,49 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		Segment s2 = lstSegment.get(1);
 		if(xParallelSegment >= 0 && yParallelSegment >= 0){ // 3 Points make a rectangle triangle
 			s1 = lstSegment.get(xParallelSegment);
-			s2 = lstSegment.get(yParallelSegment);
-			center.x = (s1.getStart().x + s1.getEnd().x)/2;
-			center.y = (s2.getStart().y + s2.getEnd().y)/2;
+			s2 = lstSegment.get(yParallelSegment);			
+			BigDecimalQuantity<Length> centerX = s1.getStart().getX().add(s1.getEnd().getX()).divide(2);
+			BigDecimalQuantity<Length> centerY = s2.getStart().getY().add(s2.getEnd().getY()).divide(2);
+			center.setX(centerX);
+			center.setY(centerY);
 			centerResult.setCenter(center);
-			centerResult.setRadius(p1.distance(center));
+			centerResult.setRadius(t1.distance(center));
+			updateRenderer();
 			return centerResult;
 		}else if(xParallelSegment >= 0){ // Avoid x parallel axis to avoid division by zero
 			s1 = lstSegment.get((xParallelSegment+1)%3);
 			s2 = lstSegment.get((xParallelSegment+2)%3);
 		}
 
-		double x1 = s1.getStart().x;
-		double x2 = s1.getEnd().x;
-		double x3 = s2.getEnd().x;
+		BigDecimal x1 = s1.getStart().getX().getValue();
+		BigDecimal x2 = s1.getEnd().getX().getValue();
+		BigDecimal x3 = s2.getEnd().getX().getValue();
 
-		double y1 = s1.getStart().y;
-		double y2 = s1.getEnd().y;
-		double y3 = s2.getEnd().y;
+		BigDecimal y1 = s1.getStart().getY().getValue();
+		BigDecimal y2 = s1.getEnd().getY().getValue();
+		BigDecimal y3 = s2.getEnd().getY().getValue();
 		if(s2.getEnd().equals(s1.getStart()) || s2.getEnd().equals(s1.getEnd())){
-			x3 = s2.getStart().x;
-			y3 = s2.getStart().y;
+			x3 = s2.getStart().getX().getValue();
+			y3 = s2.getStart().getY().getValue();
 		}
-		double a = ( x3*x3 - x2*x2 + y3*y3 - y2*y2) / (2*(y3-y2));
-		double b = ( x2*x2 - x1*x1 + y2*y2 - y1*y1)/(2*(y2-y1));
-		double c = ( x3-x2) / (y3-y2);
-		double d = ( x2-x1) / (y2-y1);
+		
+//		BigDecimal a = ( x3*x3 - x2*x2 + y3*y3 - y2*y2) / (2*(y3-y2));
+//		BigDecimal b = ( x2*x2 - x1*x1 + y2*y2 - y1*y1)/(2*(y2-y1));
+//		BigDecimal c = ( x3-x2) / (y3-y2);
+//		BigDecimal d = ( x2-x1) / (y2-y1);
 
-		center.x = (a - b)/( c - d);
-		center.y = -d*center.x + b;
-
-//		if(!Double.isNaN(center.x)){
-//			BigDecimal centerX = new BigDecimal(String.valueOf(center.x));
-//			centerX = centerX.setScale(3, BigDecimal.ROUND_HALF_DOWN);
-//
-//			getDataModel().setCenterXPosition(centerX.toString());
-//		}else{
-//			getDataModel().setCenterXPosition("Invalid");
-//		}
+		BigDecimal a = ( x3.pow(2).subtract(x2.pow(2)).add(y3.pow(2)).subtract(y2.pow(2)).divide( y3.subtract(y2).multiply(BigDecimal.valueOf(2)), RoundingMode.HALF_UP  ));
+		BigDecimal b = ( x2.pow(2).subtract(x1.pow(2)).add(y2.pow(2)).subtract(y1.pow(2)).divide( y2.subtract(y1).multiply(BigDecimal.valueOf(2)), RoundingMode.HALF_UP  ));
+		BigDecimal c = ( x3.subtract(x2).divide(y3.subtract(y2), RoundingMode.HALF_UP ));
+		BigDecimal d = ( x2.subtract(x1).divide(y2.subtract(y1), RoundingMode.HALF_UP ));
+		
+		BigDecimal centerX = (a.subtract(b).divide(c.subtract(d), RoundingMode.HALF_UP));
+		BigDecimal centerY = b.subtract(d.multiply(centerX));
+		center.setX( NumberQuantity.of(centerX, resultUnit));
+		center.setY( NumberQuantity.of(centerY, resultUnit));
 		centerResult.setCenter(center);
-//		if(!Double.isNaN(center.y)){
-//			BigDecimal centerY = new BigDecimal(String.valueOf(center.y));
-//			centerY = centerY.setScale(3, BigDecimal.ROUND_HALF_DOWN);
-//
-//			getDataModel().setCenterYPosition(centerY.toString());
-//		}else{
-//			getDataModel().setCenterYPosition("Invalid");
-//		}
-		centerResult.setRadius(p1.distance(center));
+
+		centerResult.setRadius(t1.distance(center));
 		updateRenderer();
 		return centerResult;
 	}
@@ -226,8 +230,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 				renderer.destroy();
 				renderer = null;
 			}
-			if(centerResult != null){
-				renderer = new DiameterRenderer(centerResult.getCenter(), NumberQuantity.of(centerResult.getRadius()*2, SIPrefix.MILLI(SI.METRE)), POINT_COLOR, new Vector3d(0,0,1) );
+			if(centerResult != null && renderer == null){
+				renderer = new DiameterRenderer(centerResult.getCenter(), centerResult.getDiameter(), CIRCLE_COLOR, new Vector3d(0,0,1), CENTER_COLOR );
 				getRendererService().addRenderer(renderer);
 			}
 		}

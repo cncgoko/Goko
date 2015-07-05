@@ -25,6 +25,8 @@ import java.util.List;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.goko.common.bindings.AbstractModelObject;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 
@@ -117,14 +119,20 @@ public class CenterFinderModel extends AbstractModelObject{
 	}
 	/**
 	 * @param circleCenterResult the circleCenterResult to set
+	 * @throws GkException 
 	 */
-	public void setCircleCenterResult(CircleCenterFinderResult circleCenterResult) {
+	public void setCircleCenterResult(CircleCenterFinderResult circleCenterResult) throws GkException {
 		this.circleCenterResult = circleCenterResult;
 		if(circleCenterResult != null && circleCenterResult.getCenter() != null){
-			setCenterXPosition(new BigDecimal(circleCenterResult.getCenter().x).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
-			setCenterYPosition(new BigDecimal(circleCenterResult.getCenter().y).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
-			setCenterZPosition(new BigDecimal(circleCenterResult.getCenter().z).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
-			setRadius(new BigDecimal(circleCenterResult.getRadius()).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+			
+			setCenterXPosition(GokoPreference.getInstance().format(circleCenterResult.getCenter().getX(), true, true));
+			setCenterYPosition(GokoPreference.getInstance().format(circleCenterResult.getCenter().getY(), true, true));
+			setCenterZPosition(GokoPreference.getInstance().format(circleCenterResult.getCenter().getZ(), true, true));
+			setRadius(GokoPreference.getInstance().format(circleCenterResult.getRadius(), true, true));
+//			setCenterXPosition(new BigDecimal(circleCenterResult.getCenter().x).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+//			setCenterYPosition(new BigDecimal(circleCenterResult.getCenter().y).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+//			setCenterZPosition(new BigDecimal(circleCenterResult.getCenter().z).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
+//			setRadius(new BigDecimal(circleCenterResult.getRadius()).setScale(3, BigDecimal.ROUND_HALF_DOWN).toString());
 		}else{
 			setCenterXPosition("--");
 			setCenterYPosition("--");

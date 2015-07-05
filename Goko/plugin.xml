@@ -38,7 +38,7 @@
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
       <provider
-            class="org.goko.core.config.GokoConfigPreferenceStoreProvider"
+            class="org.goko.core.config.GokoPreferenceStoreProvider"
             id="org.goko.core.preference.provider">
       </provider>
    </extension>

@@ -24,5 +24,11 @@
             id="org.goko.serial.jssc.provider">
       </provider>
    </extension>
+   <extension
+         point="org.eclipse.equinox.preferences.preferences">
+      <initializer
+            class="org.goko.serial.jssc.preferences.connection.SerialConnectionPreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

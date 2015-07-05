@@ -29,7 +29,7 @@ public class JsscSerialActivator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		JsscSerialActivator.context = bundleContext;
-		SerialConnectionPreference.getInstance();
+//		SerialConnectionPreference.getInstance();
 	}
 
 

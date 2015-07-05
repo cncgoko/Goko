@@ -21,11 +21,11 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GkPreference;
 
 
-public class RS274Config extends GkPreference{
+public class RS274Preference extends GkPreference{
 	/** Identifier of the config */
-	private static final String CONFIG_ID = "org.goko.gcode.rs274ngcv3.config";
+	public static final String NODE_ID = "org.goko.gcode.rs274ngcv3";
 	/** Singleton instance */
-	private static RS274Config instance;
+	private static RS274Preference instance;
 
 	public static final String KEY_DECIMAL_COUNT = "numberDecimalCount";
 	public static final int DEFAULT_DECIMAL_COUNT = 3;
@@ -34,8 +34,8 @@ public class RS274Config extends GkPreference{
 	/**
 	 * Constructor
 	 */
-	private RS274Config() {
-		super(CONFIG_ID);
+	private RS274Preference() {
+		super(NODE_ID);
 
 	}
 
@@ -44,9 +44,9 @@ public class RS274Config extends GkPreference{
 	 * @return the RS274Config instance
 	 * @throws GkException GkException
 	 */
-	public static final RS274Config getInstance(){
+	public static final RS274Preference getInstance(){
 		if(instance == null){
-			instance = new RS274Config();
+			instance = new RS274Preference();
 			instance.initialize();
 		}
 		return instance;

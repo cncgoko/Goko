@@ -24,11 +24,14 @@ import javax.media.opengl.GL;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 
+import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.viewer.jogl.service.JoglUtils;
+
 public class PointRenderer extends PolylineRenderer{
-	private Point3d position;
+	private Tuple6b position;
 	private double size;
 
-	public PointRenderer(Point3d position, double size, Color4f color) {
+	public PointRenderer(Tuple6b position, double size, Color4f color) {
 		super();
 		this.position = position;
 		this.size = size;
@@ -40,13 +43,14 @@ public class PointRenderer extends PolylineRenderer{
 
 	private void generatePoints() {
 		double hSize = size / 2;
+		Point3d tmpPos = position.to(JoglUtils.JOGL_UNIT).toPoint3d();
 		List<Point3d> lstPoints = new ArrayList<Point3d>();
-		lstPoints.add( new Point3d(position.x + hSize, position.y, position.z) );
-		lstPoints.add( new Point3d(position.x - hSize, position.y, position.z) );
-		lstPoints.add( new Point3d(position.x, position.y + hSize, position.z) );
-		lstPoints.add( new Point3d(position.x, position.y - hSize, position.z) );
-		lstPoints.add( new Point3d(position.x, position.y, position.z + hSize) );
-		lstPoints.add( new Point3d(position.x, position.y, position.z - hSize) );
+		lstPoints.add( new Point3d(tmpPos.x + hSize, tmpPos.y, tmpPos.z) );
+		lstPoints.add( new Point3d(tmpPos.x - hSize, tmpPos.y, tmpPos.z) );
+		lstPoints.add( new Point3d(tmpPos.x, tmpPos.y + hSize, tmpPos.z) );
+		lstPoints.add( new Point3d(tmpPos.x, tmpPos.y - hSize, tmpPos.z) );
+		lstPoints.add( new Point3d(tmpPos.x, tmpPos.y, tmpPos.z + hSize) );
+		lstPoints.add( new Point3d(tmpPos.x, tmpPos.y, tmpPos.z - hSize) );
 		setPoints(lstPoints);
 	}
 

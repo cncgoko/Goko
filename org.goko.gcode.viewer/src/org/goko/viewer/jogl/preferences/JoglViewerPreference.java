@@ -17,20 +17,16 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.viewer.jogl.service;
+package org.goko.viewer.jogl.preferences;
 
 import java.math.BigDecimal;
 
 import javax.vecmath.Vector3f;
 
-import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GkPreference;
-import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.log.GkLog;
 
 /**
  * Jogl Viewer settings
@@ -38,9 +34,8 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class JoglViewerSettings extends GkPreference{
-	private static final GkLog LOG = GkLog.getLogger(JoglViewerSettings.class);
-	public static final String NODE = "org.goko.viewer.jogl";
+public class JoglViewerPreference extends GkPreference{	
+	public static final String NODE = "org.goko.gcode.viewer";
 
 	public static final String MULTISAMPLING 	= "performances.multisampling";
 	public static final String MAJOR_GRID_SPACING 	= "grid.majorSpacing";
@@ -52,7 +47,7 @@ public class JoglViewerSettings extends GkPreference{
 	public static final String ROTARY_AXIS_POSITION_Y 	= "rotaryAxisPositionY";
 	public static final String ROTARY_AXIS_POSITION_Z 	= "rotaryAxisPositionZ";
 
-	private static JoglViewerSettings instance;
+	private static JoglViewerPreference instance;
 	private boolean rotaryAxisEnabled;
 	private Tuple6b rotaryAxisPosition;
 	private EnumRotaryAxisDirection rotaryAxisDirection;
@@ -78,63 +73,15 @@ public class JoglViewerSettings extends GkPreference{
 		}
 	}
 	
-	public JoglViewerSettings(){
+	public JoglViewerPreference(){
 		super(NODE);		
 	}
 
-	public static JoglViewerSettings getInstance() {
+	public static JoglViewerPreference getInstance() {
 		if(instance == null){
-			instance = new JoglViewerSettings();
-			try {
-				instance.initializeValues();
-			} catch (GkException e) {
-				LOG.error(e);
-			}
+			instance = new JoglViewerPreference();
 		}
 		return instance;
-	}
-
-	private void initializeValues() throws GkException {
-		setDefault(ROTARY_AXIS_ENABLED, true);
-		setDefault(ROTARY_AXIS_DIRECTION, "X");
-		setDefault(ROTARY_AXIS_POSITION_X, "0");
-		setDefault(ROTARY_AXIS_POSITION_Y, "0");
-		setDefault(ROTARY_AXIS_POSITION_Z, "0");
-		setDefault(MULTISAMPLING, "1");
-		setDefault(MAJOR_GRID_SPACING, "5");
-		setDefault(MINOR_GRID_SPACING, "1");
-
-		setRotaryAxisEnabled(getBoolean(ROTARY_AXIS_ENABLED));
-		if(StringUtils.isBlank(getString(ROTARY_AXIS_DIRECTION))){
-			setToDefault(ROTARY_AXIS_DIRECTION);
-		}
-		setRotaryAxisDirection( EnumRotaryAxisDirection.valueOf(getString(ROTARY_AXIS_DIRECTION)));
-
-		if(StringUtils.isBlank(getString(ROTARY_AXIS_POSITION_X))){
-			setToDefault(ROTARY_AXIS_POSITION_X);
-		}
-		if(StringUtils.isBlank(getString(ROTARY_AXIS_POSITION_Y))){
-			setToDefault(ROTARY_AXIS_POSITION_Y);
-		}
-		if(StringUtils.isBlank(getString(ROTARY_AXIS_POSITION_Z))){
-			setToDefault(ROTARY_AXIS_POSITION_Z);
-		}
-		if(StringUtils.isBlank(getString(MULTISAMPLING))){
-			setToDefault(MULTISAMPLING);
-		}
-		if(StringUtils.isBlank(getString(MAJOR_GRID_SPACING))){
-			setToDefault(MAJOR_GRID_SPACING);
-		}
-		if(StringUtils.isBlank(getString(MINOR_GRID_SPACING))){
-			setToDefault(MINOR_GRID_SPACING);
-		}
-
-		Tuple6b position = new Tuple6b();
-		position.setX( NumberQuantity.of(new BigDecimal( getString(ROTARY_AXIS_POSITION_X)), GokoPreference.getInstance().getLengthUnit()));
-		position.setY( NumberQuantity.of(new BigDecimal( getString(ROTARY_AXIS_POSITION_Y)), GokoPreference.getInstance().getLengthUnit()));
-		position.setZ( NumberQuantity.of(new BigDecimal( getString(ROTARY_AXIS_POSITION_Z)), GokoPreference.getInstance().getLengthUnit()));
-		setRotaryAxisPosition(position);
-
 	}
 
 	/**

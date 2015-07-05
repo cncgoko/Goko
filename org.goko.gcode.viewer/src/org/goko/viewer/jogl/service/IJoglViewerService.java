@@ -66,4 +66,8 @@ public interface IJoglViewerService extends IViewer3DService{
 	public ICoordinateSystemAdapter getCoordinateSystemAdapter() throws GkException;
 
 	public void setCoordinateSystemEnabled(EnumCoordinateSystem cs, boolean enabled);
+	
+	public void setLayerVisible(int layerId, boolean visible);
+	
+	public boolean isLayerVisible(int layerId);
 }

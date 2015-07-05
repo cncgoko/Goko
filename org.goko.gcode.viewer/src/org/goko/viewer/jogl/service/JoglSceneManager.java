@@ -25,7 +25,9 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.opengl.DebugGL3;
 import javax.media.opengl.GL;
@@ -50,6 +52,7 @@ import org.goko.viewer.jogl.GokoJoglCanvas;
 import org.goko.viewer.jogl.camera.AbstractCamera;
 import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
+import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
 import org.goko.viewer.jogl.utils.render.JoglRendererWrapper;
@@ -74,7 +77,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/** Current camera */
 	private AbstractCamera camera;
 	/** The list of supported camera */
-	private List<AbstractCamera> supportedCamera;
+	private List<AbstractCamera> supportedCamera;	
 	/** Display canvas */
 	private GokoJoglCanvas canvas;
 	/** Rendering proxy */
@@ -85,11 +88,20 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private List<ICoreJoglRenderer> renderersToRemove;
 	private GLAutoDrawable glAutoDrawable;
 	private GLCapabilities canvasCapabilities;
-
+	private Map<Integer, Boolean> layerVisibility;
+	
 	public JoglSceneManager() {
 		getRenderers();
-		renderersToRemove = new ArrayList<ICoreJoglRenderer>();
-		JoglViewerSettings.getInstance().addPropertyChangeListener(this);
+		initLayers();		
+		this.renderersToRemove 	= new ArrayList<ICoreJoglRenderer>();
+		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
+	}
+
+	private void initLayers() {
+		this.layerVisibility 	= new HashMap<Integer, Boolean>();
+		this.layerVisibility.put(Layer.LAYER_GRIDS, true);
+		this.layerVisibility.put(Layer.LAYER_BOUNDS, true);
+		this.layerVisibility.put(Layer.LAYER_DEFAULT, true);
 	}
 
 	public GokoJoglCanvas createCanvas(Composite parent) throws GkException {
@@ -100,7 +112,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getDefault();
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
-	    canvasCapabilities.setNumSamples(JoglViewerSettings.getInstance().getMultisampling());
+	    canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 	    canvasCapabilities.setHardwareAccelerated(true);
 	    canvasCapabilities.setDoubleBuffered(true);
 	   // caps.se
@@ -160,7 +172,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 				if(renderer.shouldDestroy()){
 					renderersToRemove.add(renderer);
 				}else{
-					renderer.render(gl, camera.getPmvMatrix());
+					if(isLayerVisible(renderer.getLayerId())){
+						renderer.render(gl, camera.getPmvMatrix());
+					}
 				}
 			}
 
@@ -173,6 +187,13 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			}
 		}
 	}
+	
+	public boolean isLayerVisible(int layerId) {
+		if(layerVisibility.containsKey(layerId)){
+			return layerVisibility.get(layerId);
+		}
+		return true;
+	}
 
 	public void addRenderer(IViewer3DRenderer renderer) throws GkException {
 		addRenderer(new JoglRendererWrapper(renderer));
@@ -183,8 +204,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			getRenderers().add(renderer);
 		}
 	}
-
-
+	
 	public void removeRenderer(ICoreJoglRenderer renderer) throws GkException {
 		synchronized (renderers) {
 			getRenderers().remove(renderer);
@@ -214,7 +234,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		return renderers;
 	}
 
-	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException{
+	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException{		
 		getJoglRenderer(idRenderer).setEnabled(enabled);
 	}
 
@@ -372,7 +392,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		if(canvasCapabilities != null){
-			canvasCapabilities.setNumSamples(JoglViewerSettings.getInstance().getMultisampling());
+			canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 		}
 	}
 
@@ -428,4 +448,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	
+	public void setLayerVisible(int  layerId, boolean visible){
+		this.layerVisibility.put(layerId, visible);
+	}
+		
 }

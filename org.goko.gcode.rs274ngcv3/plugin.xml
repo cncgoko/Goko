@@ -13,9 +13,15 @@
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
       <provider
-            class="org.goko.gcode.rs274ngcv3.RS274GCodePreferences"
+            class="org.goko.gcode.rs274ngcv3.config.RS274PreferenceStoreProvider"
             id="org.goko.gcode.rs274ngcv3.provider">
       </provider>
+   </extension>
+   <extension
+         point="org.eclipse.equinox.preferences.preferences">
+      <initializer
+            class="org.goko.gcode.rs274ngcv3.config.RS274PreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

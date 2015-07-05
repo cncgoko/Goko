@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.goko"
+      id="org.goko.feature"
       label="Goko Feature"
       version="0.0.1.qualifier"
-      provider-name="Goko"
-      arch="x86,x86_64">
+      provider-name="Goko">
 
    <license url="http://www.gnu.org/licenses/gpl-3.0.en.html">
       GNU GENERAL PUBLIC LICENSE
@@ -793,13 +792,6 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.tools.centerfinder"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.goko.workspace"
          download-size="0"
          install-size="0"
@@ -880,6 +872,20 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="org.eclipse.text"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.core.net"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.goko.tools.centerfinder"
          download-size="0"
          install-size="0"
          version="0.0.0"
