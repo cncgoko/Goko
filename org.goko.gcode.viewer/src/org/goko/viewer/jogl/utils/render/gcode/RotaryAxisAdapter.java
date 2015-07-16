@@ -57,7 +57,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	@Override
 	public void render(GL3 gl, PMVMatrix modelViewMatrix) throws GkException {
 		float angle = 0;
-		Double realAngle = fourAxisControllerAdapter.getA();
+		Double realAngle = fourAxisControllerAdapter.getA().doubleValue();
 		if(realAngle != null){
 			 angle = realAngle.floatValue();
 		}

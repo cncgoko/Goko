@@ -17,6 +17,7 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -61,8 +62,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
 	public static final String SERVICE_ID = "TinyG Controller";
-	private static final String JOG_SIMULATION_DISTANCE = "1000.0";
-	private static final double JOG_SIMULATION_DISTANCE_DOUBLE = 1000.0;
+	private static final String JOG_SIMULATION_DISTANCE = "10000.0";
+	private static final double JOG_SIMULATION_DISTANCE_DOUBLE = 10000.0;
 
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
@@ -505,6 +506,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			break;
 		case Z_POSITIVE: target = getZ().doubleValue() + delta;
 			break;
+		case A_NEGATIVE: target = getA().doubleValue() - delta;
+			break;
+		case A_POSITIVE: target = getA().doubleValue() + delta;
+			break;
 		default:
 			break;
 		}
@@ -515,7 +520,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		String command = "G1"+axis.getAxisCode();
 		if(axis.isNegative()){
 			command+="-";
-		}
+		}		
 		command += JOG_SIMULATION_DISTANCE;
 		return command;
 	}
@@ -650,8 +655,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
 	 */
 	@Override
-	public Double getA() throws GkException {
-		return tinygState.getA().doubleValue();
+	public Quantity<Angle> getA() throws GkException {
+		return tinygState.getA();
 	}
 
 	/** (inheritDoc)

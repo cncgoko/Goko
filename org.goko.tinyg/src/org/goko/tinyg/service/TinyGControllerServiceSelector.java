@@ -29,6 +29,7 @@ import java.util.concurrent.Future;
 import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.controller.action.IGkControllerAction;
@@ -339,7 +340,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 
 	@Override
-	public Double getA() throws GkException {
+	public Quantity<Angle> getA() throws GkException {
 		return getCurrentService().getA();
 	}
 
