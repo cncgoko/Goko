@@ -17,11 +17,13 @@
 package org.goko.core.controller;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Quantity;
 
 public interface IFourAxisControllerAdapter extends IThreeAxisControllerAdapter{
 	/**
 	 * Returns the A position of the controller
 	 * @return the current A position
 	 */
-	Double getA() throws GkException;
+	Quantity<Angle> getA() throws GkException;
 }

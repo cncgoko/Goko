@@ -102,7 +102,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	/**
 	 * Update the valid state of this input
 	 */
-	private void refreshValidState() {
+	protected void refreshValidState() {
 		isValid = true;
 		if(textLimit != UNLIMITED && StringUtils.length(getText()) > textLimit){
 			isValid = false;

@@ -1,4 +1,4 @@
-package org.goko.tinyg.configuration;
+package org.goko.tinyg.preferences;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

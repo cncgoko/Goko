@@ -13,17 +13,18 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.goko.common.preferences.fieldeditor.FieldEditor;
+import org.goko.common.preferences.fieldeditor.IFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
 public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	private static final GkLog LOG = GkLog.getLogger(GkPreferencesPage.class);
 	/** List of field editors*/
-	private List<FieldEditor<?>> fields;
+	private List<IFieldEditor<?>> fields;
 	/** The parent composite of all editors */
 	private Composite fieldEditorParent;
 	/** The invalid field editor*/
-	private FieldEditor<?> invalidFieldEditor;
+	private IFieldEditor<?> invalidFieldEditor;
 	/** Decorator for current invalid field*/
 	private ControlDecoration invalidFieldDecorator;
 	
@@ -64,9 +65,9 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	 * Add the given field editor to this preference page
 	 * @param field the field editor to add
 	 */
-	public void addField(FieldEditor field){
+	public void addField(IFieldEditor<?> field){
 		if(fields == null){
-			fields = new ArrayList<FieldEditor<?>>();
+			fields = new ArrayList<IFieldEditor<?>>();
 		}
 		fields.add(field);
 		
@@ -78,7 +79,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	 */
 	protected void initialize() throws GkException{
 		if(CollectionUtils.isNotEmpty(fields)){
-			for (FieldEditor<?> fieldEditor : fields) {
+			for (IFieldEditor<?> fieldEditor : fields) {
 				fieldEditor.setPage(this);
 				fieldEditor.setPropertyChangeListener(this);
 				fieldEditor.setPreferenceStore(getPreferenceStore());
@@ -93,7 +94,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	protected void validate(){
 		boolean valid = true;
 		if(CollectionUtils.isNotEmpty(fields)){
-			for (FieldEditor<?> fieldEditor : fields) {
+			for (IFieldEditor<?> fieldEditor : fields) {
 				valid = fieldEditor.isValid();
 				if(!valid){
 					break;
@@ -135,7 +136,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	@Override
 	protected void performDefaults() {
 		try{
-			for (FieldEditor<?> fieldEditor : fields) {
+			for (IFieldEditor<?> fieldEditor : fields) {
 				fieldEditor.setDefault();
 			}
 		}catch(GkException e){
@@ -147,7 +148,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	public boolean performOk() {
 		try{
 			if(CollectionUtils.isNotEmpty(fields)){
-				for (FieldEditor<?> fieldEditor : fields) {
+				for (IFieldEditor<?> fieldEditor : fields) {
 					fieldEditor.store();
 				}	
 			}

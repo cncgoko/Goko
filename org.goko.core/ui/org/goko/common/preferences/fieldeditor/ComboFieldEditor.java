@@ -11,15 +11,6 @@ import org.goko.core.common.exception.GkException;
  * Field editor using a combo control
  * @author PsyKo
  */
-/**
- * @author PsyKo
- *
- */
-/**
- * @author PsyKo
- *
- * @param <T>
- */
 public class ComboFieldEditor extends LabeledFieldEditor<Combo> {	
 	/**
 	 * The value (not the name) of the currently selected item in the Combo widget.
@@ -97,7 +88,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 	/*
 	 * Given the name (label) of an entry, return the corresponding value.
 	 */
-	private String getValueForName(String name) {
+	protected String getValueForName(String name) {
 		for (int i = 0; i < fEntryNamesAndValues.length; i++) {
 			String[] entry = fEntryNamesAndValues[i];
 			if (name.equals(entry[0])) {
@@ -110,7 +101,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 	/*
 	 * Set the name in the combo widget to match the specified value.
 	 */
-	private void updateComboForValue(String value) {
+	protected void updateComboForValue(String value) {
 		fValue = value;
 		for (int i = 0; i < fEntryNamesAndValues.length; i++) {
 			if (value.equals(fEntryNamesAndValues[i][1])) {
@@ -124,4 +115,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 		}
 	}
 
+	public String getValue() {
+		return fValue;
+	}
 }

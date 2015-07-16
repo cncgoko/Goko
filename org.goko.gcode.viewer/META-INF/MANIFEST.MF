@@ -42,6 +42,7 @@ Bundle-ClassPath: .,
 Service-Component: OSGI-INF/JoglViewerServiceComponant.xml
 Export-Package: org.goko.viewer.jogl.preferences.performances,
  org.goko.viewer.jogl.service,
+ org.goko.viewer.jogl.shaders,
  org.goko.viewer.jogl.utils.render,
  org.goko.viewer.jogl.utils.render.basic,
  org.goko.viewer.jogl.utils.render.coordinate.measurement,

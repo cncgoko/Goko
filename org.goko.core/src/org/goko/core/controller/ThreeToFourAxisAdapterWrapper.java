@@ -16,9 +16,14 @@
  *******************************************************************************/
 package org.goko.core.controller;
 
+import java.math.BigDecimal;
+
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 
 public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter {
 	/** Nase 3 axis adapter */
@@ -55,8 +60,8 @@ public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter
 	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
 	 */
 	@Override
-	public Double getA() {
-		return 0d;
+	public Quantity<Angle> getA() {
+		return NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
 	}
 
 }

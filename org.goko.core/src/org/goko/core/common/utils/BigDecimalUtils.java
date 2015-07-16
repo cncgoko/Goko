@@ -2,6 +2,14 @@ package org.goko.core.common.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.regex.Pattern;
+
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 
 public class BigDecimalUtils {
 	/**
@@ -41,4 +49,67 @@ public class BigDecimalUtils {
 
 		return new BigDecimal(ix, scale);
 	}
+	
+	public static String toString(BigDecimal value){
+		DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance();
+		df.setGroupingUsed(false);
+		return df.format(value);
+	}
+	
+	public static BigDecimal parse(String value) throws GkException{
+		try {
+			DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance();
+			df.setGroupingUsed(false);
+			df.setParseBigDecimal(true);		
+			return (BigDecimal) df.parse(value);
+		} catch (ParseException e) {
+			throw new GkTechnicalException(e);
+		}		
+	}
+	
+	public static boolean isBigDecimal(String value){
+		DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance();
+		df.setGroupingUsed(false);
+		DecimalFormatSymbols sym = df.getDecimalFormatSymbols();
+		
+		String decimalSepStr = ""+sym.getDecimalSeparator();		
+		if(".".equals(decimalSepStr)){
+			decimalSepStr = "\\"+decimalSepStr;
+		}
+		String integerPart = "-?[0-9]+";
+		String decimalPart = "("+decimalSepStr+"[0-9]+)?";
+		
+		String numberRegex = integerPart+decimalPart;		
+		Pattern pattern = Pattern.compile(numberRegex);
+		return pattern.matcher(value).matches();
+	}
+	
+//	public static BigDecimal parseUser(String value) throws GkException{
+//		try {  
+//			DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.US);			
+//          	df.setParseBigDecimal(true);
+//          	df.setGroupingUsed(false);
+//			return (BigDecimal) df.parseObject(value);
+//		} catch (ParseException e) {
+//			throw new GkTechnicalException(e);
+//		}
+//	}
+//	
+//	public static String formatUser(BigDecimal value) throws GkException{
+//		DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+//		return df.format(value);
+//	}	
+//	
+//	public static boolean isBigDecimal(String value){
+//		//return new BigDecimalValidator().isValid(value, Locale.US);
+//		try {  
+//			DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.US);			
+//          	df.setParseBigDecimal(true);          	
+//          	df.setGroupingUsed(false);          	
+//			df.parseObject(value);
+//			return true;
+//		} catch (ParseException e) {
+//			return false;
+//		}
+//	}
 }

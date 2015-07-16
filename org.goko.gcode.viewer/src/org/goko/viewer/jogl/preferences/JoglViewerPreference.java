@@ -48,11 +48,11 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String ROTARY_AXIS_POSITION_Z 	= "rotaryAxisPositionZ";
 
 	private static JoglViewerPreference instance;
-	private boolean rotaryAxisEnabled;
+//	private boolean rotaryAxisEnabled;
 	private Tuple6b rotaryAxisPosition;
-	private EnumRotaryAxisDirection rotaryAxisDirection;
-	private boolean rotaryAxisDistanceMode;
-	private boolean rotaryAxisTravelPerTurn;
+//	private EnumRotaryAxisDirection rotaryAxisDirection;
+//	private boolean rotaryAxisDistanceMode;
+//	private boolean rotaryAxisTravelPerTurn;
 
 	public enum EnumRotaryAxisDirection{
 		X(1,0,0),
@@ -74,7 +74,7 @@ public class JoglViewerPreference extends GkPreference{
 	}
 	
 	public JoglViewerPreference(){
-		super(NODE);		
+		super(NODE);	
 	}
 
 	public static JoglViewerPreference getInstance() {
@@ -110,7 +110,7 @@ public class JoglViewerPreference extends GkPreference{
 	 * @return Vector3f
 	 */
 	public Vector3f getRotaryAxisDirectionVector() {
-		switch(rotaryAxisDirection){
+		switch(getRotaryAxisDirection()){
 		case X: return new Vector3f(1,0,0);
 		case Y: return new Vector3f(0,1,0);
 		case Z: return new Vector3f(0,0,1);
@@ -120,50 +120,48 @@ public class JoglViewerPreference extends GkPreference{
 	/**
 	 * @param rotaryAxisDirection the rotaryAxisDirection to set
 	 */
-	public void setRotaryAxisDirection(EnumRotaryAxisDirection rotaryAxisDirection) {
-		this.rotaryAxisDirection = rotaryAxisDirection;
+	public void setRotaryAxisDirection(EnumRotaryAxisDirection rotaryAxisDirection) {		
 		setValue(ROTARY_AXIS_DIRECTION, rotaryAxisDirection.name());
 	}
-	/**
-	 * @return the rotaryAxisDistanceMode
-	 */
-	public boolean isRotaryAxisDistanceMode() {
-		return rotaryAxisDistanceMode;
-	}
-	/**
-	 * @param rotaryAxisDistanceMode the rotaryAxisDistanceMode to set
-	 */
-	public void setRotaryAxisDistanceMode(boolean rotaryAxisDistanceMode) {
-		this.rotaryAxisDistanceMode = rotaryAxisDistanceMode;
-	}
+//	/**
+//	 * @return the rotaryAxisDistanceMode
+//	 */
+//	public boolean isRotaryAxisDistanceMode() {
+//		return rotaryAxisDistanceMode;
+//	}
+//	/**
+//	 * @param rotaryAxisDistanceMode the rotaryAxisDistanceMode to set
+//	 */
+//	public void setRotaryAxisDistanceMode(boolean rotaryAxisDistanceMode) {
+//		this.rotaryAxisDistanceMode = rotaryAxisDistanceMode;
+//	}
 	/**
 	 * @return the rotaryAxisEnabled
 	 */
 	public boolean isRotaryAxisEnabled() {
-		return rotaryAxisEnabled;
+		return getBoolean(ROTARY_AXIS_ENABLED);
 	}
 
 	/**
 	 * @param rotaryAxisEnabled the rotaryAxisEnabled to set
 	 */
 	public void setRotaryAxisEnabled(boolean rotaryAxisEnabled) {
-		this.rotaryAxisEnabled = rotaryAxisEnabled;
 		setValue(ROTARY_AXIS_ENABLED, rotaryAxisEnabled);
 	}
 
-	/**
-	 * @return the rotaryAxisTravelPerTurn
-	 */
-	public boolean isRotaryAxisTravelPerTurn() {
-		return rotaryAxisTravelPerTurn;
-	}
-
-	/**
-	 * @param rotaryAxisTravelPerTurn the rotaryAxisTravelPerTurn to set
-	 */
-	public void setRotaryAxisTravelPerTurn(boolean rotaryAxisTravelPerTurn) {
-		this.rotaryAxisTravelPerTurn = rotaryAxisTravelPerTurn;
-	}
+//	/**
+//	 * @return the rotaryAxisTravelPerTurn
+//	 */
+//	public boolean isRotaryAxisTravelPerTurn() {
+//		return rotaryAxisTravelPerTurn;
+//	}
+//
+//	/**
+//	 * @param rotaryAxisTravelPerTurn the rotaryAxisTravelPerTurn to set
+//	 */
+//	public void setRotaryAxisTravelPerTurn(boolean rotaryAxisTravelPerTurn) {
+//		this.rotaryAxisTravelPerTurn = rotaryAxisTravelPerTurn;
+//	}
 
 	private void savePreferences(){		
 		save();		

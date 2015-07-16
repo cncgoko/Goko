@@ -91,7 +91,7 @@ public class ArrowRenderer extends AbstractVboJoglRenderer{
 	 */
 	@Override
 	protected int loadShaderProgram(GL3 gl) throws GkException {
-		return ShaderLoader.loadShader(gl, EnumGokoShaderProgram.SHADED_SHADER);
+		return ShaderLoader.loadShader(gl, EnumGokoShaderProgram.SHADED_FLAT_SHADER);
 	}
 
 }
