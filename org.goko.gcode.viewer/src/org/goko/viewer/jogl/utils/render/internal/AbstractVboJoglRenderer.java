@@ -40,7 +40,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	private static final int COLORS_LAYOUT = 1;
 	protected static final int UVS = 1 << 3;
 	private static final int UVS_LAYOUT = 2;
-
+	protected static final int NORMALS = 1 << 4;
+	private static final int NORMALS_LAYOUT = 3;
+	
 	private Integer verticesCount;
 	private boolean useVerticesBuffer;
 	private FloatBuffer verticesBuffer;
@@ -48,6 +50,8 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	private FloatBuffer colorsBuffer;
 	private boolean useUvsBuffer;
 	private FloatBuffer uvsBuffer;
+	private boolean useNormalsBuffer;
+	private FloatBuffer normalsBuffer;
 	/** The type of primitive used for render */
 	private Integer renderPrimitive;
 	/** The id of the VAO in use */
@@ -58,6 +62,8 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	private Integer colorsBufferObject;
 	/** The id of the VBO in use for the uvs */
 	private Integer uvsBufferObject;
+	/** The id of the VBO in use for the normals */
+	private Integer normalsBufferObject;
 	/** Request for buffer update */
 	private boolean updateBuffer;
 
@@ -67,6 +73,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		this.useVerticesBuffer = (usedBuffers & VERTICES) == VERTICES;
 		this.useColorsBuffer = (usedBuffers & COLORS) == COLORS;
 		this.useUvsBuffer = (usedBuffers & UVS) == UVS;
+		this.useNormalsBuffer = (usedBuffers & NORMALS) == NORMALS;
 	}
 
 	/**
@@ -115,6 +122,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		initializeVerticesBufferObject(gl);
 		initializeColorsBufferObject(gl);
 		initializeUvsBufferObject(gl);
+		initializeNormalsBufferObject(gl);
 		initializeAdditionalBufferObjects(gl);
 	}
 	/**
@@ -200,6 +208,31 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	}
 
 	/**
+	 * Initializes and bind the buffer object for Normals
+	 * @param gl the GL
+	 * @throws GkException GkException
+	 */
+	private void initializeNormalsBufferObject(GL3 gl) throws GkException {
+		if(!useNormalsBuffer){
+			return;	// Vertices not used, nothing to do
+		}
+		if(getNormalsBuffer() == null){
+			throw new GkTechnicalException(" Uvs buffer not initialized.");
+		}
+		// Everything looks fine, we can initialize
+		if(this.normalsBufferObject ==null){
+			int[] vbo = new int[1];
+			gl.glGenBuffers(1, vbo, 0);
+			this.normalsBufferObject = vbo[0];
+		}
+		// Make sure we take everything
+		getNormalsBuffer().rewind();
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsBufferObject);
+		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*4*Buffers.SIZEOF_FLOAT, getNormalsBuffer(), GL.GL_DYNAMIC_DRAW);
+		gl.glEnableVertexAttribArray(NORMALS_LAYOUT);
+	}
+	
+	/**
 	 * Initializes and bind the main vertex array object
 	 * @param gl the GL
 	 */
@@ -239,6 +272,11 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, uvsBufferObject);
 			gl.glVertexAttribPointer(UVS_LAYOUT, 2, GL.GL_FLOAT, false, 0, 0);
 		}
+		if(useNormalsBuffer){
+			gl.glEnableVertexAttribArray(NORMALS_LAYOUT);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsBufferObject);
+			gl.glVertexAttribPointer(NORMALS_LAYOUT, 4, GL.GL_FLOAT, false, 0, 0);
+		}
 		enableAdditionalVertexAttribArray(gl);
 
 		gl.glDrawArrays(getRenderPrimitive(), 0, getVerticesCount());
@@ -252,6 +290,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	    }
 	    if(useUvsBuffer){
 	    	gl.glDisableVertexAttribArray(UVS_LAYOUT);
+	    }
+	    if(useNormalsBuffer){
+	    	gl.glDisableVertexAttribArray(NORMALS_LAYOUT);
 	    }
 	    gl.glUseProgram(0);
 	}
@@ -340,6 +381,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		this.uvsBuffer = uvsBuffer;
 	}
 
+	
 	/**
 	 * @return the verticesCount
 	 */
@@ -384,6 +426,20 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 */
 	protected void setUpdateBuffer(boolean updateBuffer) {
 		this.updateBuffer = updateBuffer;
+	}
+
+	/**
+	 * @return the normalsBuffer
+	 */
+	public FloatBuffer getNormalsBuffer() {
+		return normalsBuffer;
+	}
+
+	/**
+	 * @param normalsBuffer the normalsBuffer to set
+	 */
+	public void setNormalsBuffer(FloatBuffer normalsBuffer) {
+		this.normalsBuffer = normalsBuffer;
 	}
 
 

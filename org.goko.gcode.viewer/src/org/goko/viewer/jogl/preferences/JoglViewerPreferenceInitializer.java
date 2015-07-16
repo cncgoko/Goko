@@ -29,6 +29,7 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		position.setX( NumberQuantity.of(new BigDecimal( prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X)), GokoPreference.getInstance().getLengthUnit()));
 		position.setY( NumberQuantity.of(new BigDecimal( prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Y)), GokoPreference.getInstance().getLengthUnit()));
 		position.setZ( NumberQuantity.of(new BigDecimal( prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Z)), GokoPreference.getInstance().getLengthUnit()));
+		
 		prefs.setRotaryAxisPosition(position);
 	}
 

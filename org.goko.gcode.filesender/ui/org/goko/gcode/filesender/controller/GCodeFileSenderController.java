@@ -96,6 +96,10 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		Display.getCurrent().timerExec(400, elapsedTimeRunnable);		
 	}
 
+	@Inject
+	public void test(){
+		System.err.println("");
+	}
 	/**
 	 * Create the runnable used to display elapsed time
 	 */

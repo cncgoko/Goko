@@ -24,8 +24,6 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.vecmath.Point3d;
-
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
@@ -36,7 +34,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoConfig;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
@@ -220,9 +218,9 @@ public class TinyGState extends MachineValueStore{
 	 */
 	public void setWorkPosition(Tuple6b position) throws GkException {
 		this.position = new Tuple6b(position);
-		String x = GokoConfig.getInstance().format(NumberQuantity.of(new BigDecimal(position.getX().doubleValue()), currentUnit), true);
-		String y = GokoConfig.getInstance().format(NumberQuantity.of(new BigDecimal(position.getY().doubleValue()), currentUnit), true);
-		String z = GokoConfig.getInstance().format(NumberQuantity.of(new BigDecimal(position.getZ().doubleValue()), currentUnit), true);
+		String x = GokoPreference.getInstance().format(NumberQuantity.of(new BigDecimal(position.getX().doubleValue()), currentUnit), true);
+		String y = GokoPreference.getInstance().format(NumberQuantity.of(new BigDecimal(position.getY().doubleValue()), currentUnit), true);
+		String z = GokoPreference.getInstance().format(NumberQuantity.of(new BigDecimal(position.getZ().doubleValue()), currentUnit), true);
 		updateValue(TinyG.POSITION_X, x);
 		updateValue(TinyG.POSITION_Y, y);
 		updateValue(TinyG.POSITION_Z, z);

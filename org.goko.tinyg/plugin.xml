@@ -12,7 +12,7 @@
    <extension
          point="Goko.org.goko.ui.gkPreferencePage">
       <page
-            class="org.goko.tinyg.configuration.TinyGPreferencesPage"
+            class="org.goko.tinyg.preferences.TinyGPreferencesPage"
             id="org.goko.tinyg.page2"
             name="TinyG">
       </page>

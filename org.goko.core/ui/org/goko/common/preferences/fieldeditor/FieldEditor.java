@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 
-public abstract class FieldEditor<C extends Control> extends Composite{
+public abstract class FieldEditor<C extends Control> extends Composite implements IFieldEditor<C>{
     /**
      * Property name constant (value <code>"field_editor_is_valid"</code>)
      * to signal a change in the validity of the value of this field editor.
@@ -25,7 +25,7 @@ public abstract class FieldEditor<C extends Control> extends Composite{
 	  /** The preference store, or <code>null</code> if none. */
     private IPreferenceStore preferenceStore = null;
     /** The name of the preference displayed in this field editor. */
-    private String preferenceName;
+    protected String preferenceName;
     /** The label's text. */
     private String label;
     /**  The associated control */
