@@ -26,6 +26,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 
 public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	private static final String SHADER_MODEL_VIEW_MATRIX_NAME = "modelViewMatrix";
+	private static final String SHADER_LIGHT_0_NAME = "light0Position";
 	/** The model matrix of this renderer */
 	private PMVMatrix modelMatrix;
 	/** The ID of the shader program */
@@ -103,7 +104,8 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	protected void initialize(GL3 gl) throws GkException {
 		if(!isInitialized()){
 			performInitialize(gl);
-			shaderModelViewMatrixId = gl.glGetUniformLocation(shaderProgram, SHADER_MODEL_VIEW_MATRIX_NAME);
+			shaderModelViewMatrixId = gl.glGetUniformLocation(shaderProgram, SHADER_MODEL_VIEW_MATRIX_NAME);			
+			int lig = gl.glGetUniformLocation(shaderProgram, SHADER_LIGHT_0_NAME);
 			setInitialized(true);
 		}
 	}

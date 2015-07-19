@@ -37,6 +37,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3f;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +57,7 @@ import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
+import org.goko.viewer.jogl.utils.light.Light;
 import org.goko.viewer.jogl.utils.render.JoglRendererWrapper;
 
 import com.jogamp.opengl.util.PMVMatrix;
@@ -89,6 +92,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private GLAutoDrawable glAutoDrawable;
 	private GLCapabilities canvasCapabilities;
 	private Map<Integer, Boolean> layerVisibility;
+	private Light light0;
+	private Light light1;
 	
 	public JoglSceneManager() {
 		getRenderers();
@@ -128,7 +133,17 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		onCanvasCreated(canvas);
 		return canvas;
 	}
+	
 	protected abstract void onCanvasCreated(GokoJoglCanvas canvas);
+	
+	/**
+	 * Initialization of the lights
+	 */
+	protected void initLights(){
+		light0 = new Light(new Point3f(1000,1000,1000), new Color4f(0.5f,0.5f,0.45f,1), new Color4f(0.25f,0.2f,0.2f,1));		
+		light1 = new Light(new Point3f(-500,-1000,-600), new Color4f(0.3f,0.3f,0.31f,1), new Color4f(0.1f,0.1f,0.15f,1));		
+	}
+	
 	/** (inheritDoc)
 	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
 	 */
@@ -149,6 +164,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 		PMVMatrix cameraMatrix = camera.getPmvMatrix();
 		ShaderLoader.getInstance().updateProjectionMatrix(gl, cameraMatrix);
+		
+		ShaderLoader.getInstance().updateLightData(gl, light0, light1);
 
 		proxy.setGl(gl);
 
@@ -275,6 +292,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	    gl.glBindAttribLocation(shaderProgram, 0, "vertexPosition_modelspace");
 	    gl.glUseProgram(shaderProgram);
 
+	    initLights();
+	    
 		overlay = new Overlay(gLAutoDrawable);
 		overlay.createGraphics();
 	}
