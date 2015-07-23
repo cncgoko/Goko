@@ -45,7 +45,11 @@ public class GokoPreference extends GkPreference{
 	/** ID of this configuration */
 	public static final String NODE_ID = "org.goko.core";
 	/** The instance of this config */
-	private static GokoPreference instance;	
+	private static GokoPreference instance;
+	/** The target board id */
+	public static final String KEY_TARGET_BOARD = "targetBoard";
+	/** Default target board */
+	public static final String DEFAULT_TARGET_BOARD = StringUtils.EMPTY;
 	/** The unit configured for distances */
 	public static final String KEY_DISTANCE_UNIT = "distanceUnit";
 	/** The default unit configured for distances */
@@ -95,6 +99,21 @@ public class GokoPreference extends GkPreference{
 			}
 		}
 		return foundUnit;
+	}
+	/**
+	 * Returns the configured target board 
+	 * @return the configured target board
+	 */
+	public String getTargetBoard(){
+		return getString(KEY_TARGET_BOARD);
+	}
+	
+	/**
+	 * Sets the configured target board
+	 * @param targetBoard the target board id to use 
+	 */
+	public void setTargetBoard(String targetBoard){
+		putValue(KEY_TARGET_BOARD, targetBoard);
 	}
 	/**
 	 * @param distanceUnit the distanceUnit to set

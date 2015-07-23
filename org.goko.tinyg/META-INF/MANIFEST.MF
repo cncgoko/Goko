@@ -24,8 +24,7 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.services,
  Goko;bundle-version="0.0.1",
  org.eclipse.e4.ui.model.workbench
-Service-Component: OSGI-INF/TinyGControllerComponent.xml,
- OSGI-INF/TinyGControllerServiceSelector.xml
+Service-Component: OSGI-INF/TinyGFeatureSetComponent.xml
 Bundle-ClassPath: .,
  swing2swt.jar
 Export-Package: org.goko.tinyg.controller,
