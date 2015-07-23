@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.internal.TinyGFeatureSet">
+   <implementation class="org.goko.internal.TinyGFeatureSet"/>
+   <service>
+      <provide interface="org.goko.core.feature.IFeatureSet"/>
+   </service>
+</scr:component>

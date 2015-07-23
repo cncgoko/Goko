@@ -27,7 +27,7 @@ public class GrblActivator implements BundleActivator{
 	@Override
 	public void start(BundleContext context) throws Exception {
 		// TODO Auto-generated method stub
-
+System.out.println();
 	}
 
 	@Override
