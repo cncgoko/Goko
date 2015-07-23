@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension-point id="featureset.model" name="model" schema="schema/featureset.model.exsd"/>
 
    <extension
          id="org.goko.core.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="initial"
+            apply="always"
             uri="fragments/CoreFragment.e4xmi">
       </fragment>
+      <processor
+            apply="always"
+            beforefragment="false"
+            class="org.goko.common.addons.ModelFragmentLoaderAddon">
+      </processor>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

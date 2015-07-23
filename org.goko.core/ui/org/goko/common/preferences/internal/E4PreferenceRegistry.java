@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -27,6 +28,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.goko.common.preferences.IPreferenceStoreProvider;
 import org.goko.common.preferences.ScopedPreferenceStore;
+import org.goko.core.config.GokoPreference;
 
 
 @Creatable
@@ -43,6 +45,7 @@ public class E4PreferenceRegistry{
 	protected static final String ATTR_CATEGORY = "category"; // $NON-NLS-1$
 	protected static final String ATTR_CLASS = "class"; // $NON-NLS-1$
 	protected static final String ATTR_NAME = "name"; // $NON-NLS-1$
+	protected static final String ATTR_TARGET_BOARD = "targetBoard"; // $NON-NLS-1$
 
 	protected static final String ATTR_PLUGIN_ID = "pluginId"; // $NON-NLS-1$
 	protected static final String ATTR_ID_IN_WBCONTEXT = "idInWorkbenchContext"; // $NON-NLS-1$
@@ -73,9 +76,9 @@ public class E4PreferenceRegistry{
 
 		pm = new PreferenceManager();
 		IContributionFactory factory = context.get(IContributionFactory.class);
-
+		String targetBoard = GokoPreference.getInstance().getTargetBoard();
 		for (IConfigurationElement elmt : registry.getConfigurationElementsFor(PREFS_PAGE_XP))
-		{
+		{			
 			String bundleId = elmt.getNamespaceIdentifier();
 			if (!elmt.getName().equals(ELMT_PAGE))
 			{
@@ -85,6 +88,10 @@ public class E4PreferenceRegistry{
 			{
 				logger.warn("missing id and/or name: {}", bundleId);
 				continue;
+			}
+			String pageTargetBoard = elmt.getAttribute(ATTR_TARGET_BOARD);
+			if(StringUtils.isNotBlank(pageTargetBoard) && !StringUtils.equals(pageTargetBoard, targetBoard)){
+				continue; // Page is not designed for target board. Ignore it
 			}
 			PreferenceNode pn = null;
 			if (elmt.getAttribute(ATTR_CLASS) != null)

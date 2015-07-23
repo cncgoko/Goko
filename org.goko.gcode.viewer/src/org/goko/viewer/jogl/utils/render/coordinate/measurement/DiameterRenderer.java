@@ -33,7 +33,6 @@ import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.utils.render.basic.CircleRenderer;
 import org.goko.viewer.jogl.utils.render.basic.PointRenderer;
 import org.goko.viewer.jogl.utils.render.basic.PolylineRenderer;
-import org.goko.viewer.jogl.utils.render.text.OldTextRenderer;
 import org.goko.viewer.jogl.utils.render.text.TextRenderer;
 
 public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{

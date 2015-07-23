@@ -25,6 +25,10 @@
                name="windowImages"
                value="icons/launch/goko16.png,icons/launch/goko32.png,icons/launch/goko48.png,icons/launch/goko64.png,icons/launch/goko128.png,icons/launch/goko256.png">
          </property>
+         <property
+               name="lifeCycleURI"
+               value="platform:/plugin/org.goko.core/org.goko.core.internal.TargetBoardChecker">
+         </property>
       </product>
    </extension>   
    <extension
@@ -33,6 +37,11 @@
             class="org.goko.preferences.units.GokoUnitsPreferences"
             id="Goko.preferencePages.general.units"
             name="Units">
+      </page>
+      <page
+            class="org.goko.preferences.units.GokoGeneralPreferences"
+            id=".Goko.preferencePages.general"
+            name="General">
       </page>
    </extension>
    <extension

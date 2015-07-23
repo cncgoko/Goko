@@ -30,11 +30,14 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3f;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.log.GkLog;
+import org.goko.viewer.jogl.utils.light.Light;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -79,6 +82,7 @@ public class ShaderLoader {
 				Integer shaderProgram = mapShaderByType.get(enumShaderProgram);
 				gl.glUseProgram(shaderProgram);
 				int shaderProjectionMatrixId = gl.glGetUniformLocation(shaderProgram, "projectionMatrix");
+				
 				if(shaderProjectionMatrixId >= 0){
 					gl.glUniformMatrix4fv(shaderProjectionMatrixId, 1, false, matrix.glGetPMatrixf());
 				}
@@ -86,6 +90,60 @@ public class ShaderLoader {
 		}
 		gl.glUseProgram(0);
 	}
+	
+	public void updateLightData(GL3 gl, Light light0, Light light1){
+		if(MapUtils.isNotEmpty(mapShaderByType)){
+			for (EnumGokoShaderProgram enumShaderProgram : mapShaderByType.keySet()) {
+				Integer shaderProgram = mapShaderByType.get(enumShaderProgram);
+				gl.glUseProgram(shaderProgram);
+//				int hack					= gl.glGetUniformLocation(shaderProgram, "material.ambient");
+//				if(hack >= 0){
+//					int ambient = gl.glGetUniformLocation(shaderProgram, "material.ambient");
+//					gl.glUniform3fv(ambient, 1, new float[]{0.2f,0.4f,0.2f},0);
+//					int diffuse = gl.glGetUniformLocation(shaderProgram, "material.diffuse");
+//					gl.glUniform3fv(diffuse, 1, new float[]{0.0f,1f,0},0);
+//					int specular = gl.glGetUniformLocation(shaderProgram, "material.specular");
+//					gl.glUniform3fv(specular, 1, new float[]{0.0f,0,0.5f},0);
+//				}
+				// First light
+				if(light0 != null){
+					int light0ShaderId					= gl.glGetUniformLocation(shaderProgram, "iLight0Position");
+					int diffuse0ShaderId			 	= gl.glGetUniformLocation(shaderProgram, "iLight0Diffuse");
+					int ambientShaderId			 	= gl.glGetUniformLocation(shaderProgram, "iLight0Ambient");
+					if(light0ShaderId >= 0){
+						Point3f position = light0.getPosition();
+						gl.glUniform4fv(light0ShaderId, 1, new float[]{position.x,position.y,position.z,1},0);
+					}
+					if(diffuse0ShaderId >= 0){
+						Color4f diffuse = light0.getDiffuse();
+						gl.glUniform4fv(diffuse0ShaderId, 1, new float[]{diffuse.x,diffuse.y,diffuse.z,diffuse.w},0);
+					}
+					if(ambientShaderId >= 0){
+						Color4f ambient = light0.getAmbient();
+						gl.glUniform4fv(ambientShaderId, 1, new float[]{ambient.x,ambient.y,ambient.z,ambient.w},0);
+					}
+				}
+				// Second light
+				if(light1 != null){
+					int light1ShaderId 					= gl.glGetUniformLocation(shaderProgram, "iLight1Position"); // Renvoi -1 si le champs n'est pas utilisé dans le shader
+					int diffuse1ShaderId			 	= gl.glGetUniformLocation(shaderProgram, "iLight1Diffuse");
+					
+					if(light1ShaderId >= 0){
+						Point3f p = light1.getPosition();
+						gl.glUniform4fv(light1ShaderId, 1, new float[]{p.x,p.y,p.z,1},0);
+					}
+					if(diffuse1ShaderId >= 0){
+						Color4f c = light1.getDiffuse();
+						gl.glUniform4fv(diffuse1ShaderId, 1, new float[]{c.x,c.y,c.z,c.w},0);
+					}
+				}
+			}
+		}	
+	}
+	
+//	a faire :	
+//		- tester la possibilité de changer les features sans les installer/desinstaller
+	
 	protected int loadShader(GL3 gl, InputStream vertexShaderInputStream, InputStream fragmentShaderInputStream){
 		int vertexShader   = gl.glCreateShader(GL3.GL_VERTEX_SHADER);
 		int fragmentShader = gl.glCreateShader(GL3.GL_FRAGMENT_SHADER);

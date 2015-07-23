@@ -278,7 +278,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 			gl.glVertexAttribPointer(NORMALS_LAYOUT, 4, GL.GL_FLOAT, false, 0, 0);
 		}
 		enableAdditionalVertexAttribArray(gl);
-
+		updateShaderData(gl);
 		gl.glDrawArrays(getRenderPrimitive(), 0, getVerticesCount());
 
 	    disableAdditionalVertexAttribArray(gl);
@@ -297,6 +297,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	    gl.glUseProgram(0);
 	}
 
+	protected void updateShaderData(GL3 gl) throws GkException {
+
+	}
 	protected void enableAdditionalVertexAttribArray(GL3 gl) throws GkException {
 
 	}

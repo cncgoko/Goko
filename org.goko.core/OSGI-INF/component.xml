@@ -7,5 +7,6 @@
  <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
  <reference cardinality="1..1" interface="org.goko.core.execution.IGCodeExecutionTimeService" name="IGCodeExecutionTimeService" policy="static"/>
  <reference cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
+ <reference cardinality="1..1" interface="org.goko.core.feature.IFeatureSetManager" name="IFeatureSetManager" policy="static"/>
  
 </scr:component>

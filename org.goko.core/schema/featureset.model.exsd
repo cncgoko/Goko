@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="featureset.model" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="featureset.model" id="model" name="Feature model extensions"/>
+      </appinfo>
+      <documentation>
+         &lt;strong&gt;This is not an API. The schema for this extension point is not frozen and might change in a non-backward compatible way in the future.&lt;/strong&gt;
+&lt;p&gt;
+This extension point provides extensibility for the UI model of the running application. Modifications can be done in a declarative manner by using XML model fragments, or programmatically by supplying model processors.
+&lt;/p&gt;&lt;p&gt;
+Whenever possible, the model extensions of dependent bundles are processed before the extensions of bundles that depend on them.
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="fragment" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="processor" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="fragment">
+      <annotation>
+         <documentation>
+            The model fragment to be added to the UI model of the running application. The root element of the model fragment is expected to conform to the &lt;code&gt;org.eclipse.e4.ui.model.fragment.MModelFragments&lt;/code&gt;  interface.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="uri" type="string" use="required">
+            <annotation>
+               <documentation>
+                  URI describing location of the model fragment.  Can be of the form &lt;code&gt;platform:/plugin/bundle.id/...path&lt;/code&gt;.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="apply" use="default" value="always">
+            <annotation>
+               <documentation>
+                  This attribute defines in which case a fragment is merged into the model:
+&lt;ul&gt;
+&lt;li&gt;always: each time the application started potentially replacing existing model elements and loosing information stored&lt;/li&gt;
+&lt;li&gt;initial: only when coming from a none persistent state&lt;/li&gt;
+&lt;li&gt;notexists: only if the given element does not exist already in the model&lt;/li&gt;
+&lt;/ul&gt;
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="always">
+                  </enumeration>
+                  <enumeration value="initial">
+                  </enumeration>
+                  <enumeration value="notexists">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="targetBoard" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="processor">
+      <annotation>
+         <documentation>
+            Programmatic processor that gets called with the intention of modifying UI model.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="element" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Java class containing model processor. A class method with the qualifier &lt;code&gt;&quot;org.eclipse.e4.core.di.annotations.Execute&quot;&lt;/code&gt;  will be invoked as a part of the model processing.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="beforefragment" type="boolean" use="required">
+            <annotation>
+               <documentation>
+                  This flag specifies that the processor has to be invoked before model fragments are added.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="apply" use="default" value="always">
+            <annotation>
+               <documentation>
+                  This attribute defines in which case a processor is run
+&lt;ul&gt;
+&lt;li&gt;always: each time the application started&lt;/li&gt;
+&lt;li&gt;initial: only when coming from a none persistent state&lt;/li&gt;
+&lt;/ul&gt;
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="always">
+                  </enumeration>
+                  <enumeration value="initial">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="targetBoard" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="element">
+      <annotation>
+         <documentation>
+            A model element to be added to the context used to invoke the processor.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Identifier of a model element to be added to the context.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="contextKey" type="string">
+            <annotation>
+               <documentation>
+                  A optional key under which to store the model element in the context. The value of &quot;id&quot; is used if this value is not specified.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         4.2
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         The following is an example for the preference extension point: 
+&lt;p&gt;
+&lt;pre&gt;
+   &lt;extension
+         id=&quot;themeContribution&quot;
+         point=&quot;org.eclipse.e4.workbench.model&quot;&gt;
+      &lt;processor
+            beforefragment=&quot;true&quot;
+            class=&quot;org.eclipse.e4.demo.simpleide.internal.ThemeMenuProcessor&quot;&gt;
+         &lt;element
+               id=&quot;simpleide.mainmenu&quot;&gt;
+         &lt;/element&gt;
+      &lt;/processor&gt;
+   &lt;/extension&gt;
+   &lt;extension
+         id=&quot;logContribution&quot;
+         point=&quot;org.eclipse.e4.workbench.model&quot;&gt;
+      &lt;snippet
+            uri=&quot;platform:/plugin/org.eclipse.e4.demo.log/xmi/components.e4xmi&quot;&gt;
+      &lt;/snippet&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2010, 2014 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made
+available under the terms of the Eclipse Public License v1.0 which accompanies
+this distribution, and is available at &lt;a 
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

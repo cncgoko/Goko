@@ -2,19 +2,12 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="id1"
-         point="org.eclipse.e4.workbench.model">
-      <fragment
-            apply="always"
-            uri="fragments/TinyGFragment.e4xmi">
-      </fragment>
-   </extension>
-   <extension
          point="Goko.org.goko.ui.gkPreferencePage">
       <page
             class="org.goko.tinyg.preferences.TinyGPreferencesPage"
             id="org.goko.tinyg.page2"
-            name="TinyG">
+            name="TinyG"
+            targetBoard="tinyg.v097">
       </page>
    </extension>
    <extension
@@ -23,6 +16,15 @@
             class="org.goko.tinyg.controller.prefs.TinyGPreferenceStoreProvider"
             id="org.goko.tinyg.provider">
       </provider>
+   </extension>
+   <extension
+         id="id1"
+         point="org.goko.core.featureset.model">
+      <fragment
+            apply="always"
+            targetBoard="tinyg.v097"
+            uri="fragments/TinyGFragment.e4xmi">
+      </fragment>
    </extension>
 
 </plugin>
