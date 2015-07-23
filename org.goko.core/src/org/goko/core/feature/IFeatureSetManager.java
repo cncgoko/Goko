@@ -42,4 +42,11 @@ public interface IFeatureSetManager {
 	 * @return the list of supported boards
 	 */
 	List<TargetBoard> getSupportedBoards();
+	
+	/**
+	 * Set the given id as the current target board 
+	 * @param id the id of the target board to use 
+	 * @throws GkException GkException
+	 */
+	void setTargetBoard(String id) throws GkException;
 }

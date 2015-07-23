@@ -26,9 +26,7 @@ import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.viewer.jogl.service.IJoglViewerService;
 import org.goko.viewer.jogl.service.Layer;
-import org.goko.viewer.jogl.utils.render.GridRenderer;
 import org.goko.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
-import org.goko.viewer.jogl.utils.render.gcode.BoundsRenderer;
 
 /**
  * GCode 3D Viewer controller

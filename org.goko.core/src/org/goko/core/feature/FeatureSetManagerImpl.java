@@ -6,12 +6,14 @@ package org.goko.core.feature;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
@@ -52,21 +54,29 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 		startIfRequired(featureSet);			
 	}
 
-	private void startIfRequired(IFeatureSet featureSet) throws GkException{			
-		if(/*StringUtils.isEmpty(getTargetBoard()) 
-		|| */StringUtils.equals(featureSet.getTargetBoard().getId(), getTargetBoard())){
-			startFeatureSet(featureSet);	
-			if(StringUtils.isEmpty(getTargetBoard())){ // Target board is not set, let's start the first one by default
-				setTargetBoard(featureSet.getTargetBoard());
-			}
+	private void startIfRequired(IFeatureSet featureSet) throws GkException{		
+		if(StringUtils.equals(featureSet.getTargetBoard().getId(), getTargetBoard())){
+			startFeatureSet(featureSet);			
 		}		
 	}
 		
 	/**
 	 * @param targetBoard
+	 * @throws GkException GkException 
 	 */
-	private void setTargetBoard(TargetBoard targetBoard) {
+	private void setTargetBoard(TargetBoard targetBoard) throws GkException {
 		 GokoPreference.getInstance().setTargetBoard(targetBoard.getId());
+		 if(CollectionUtils.isNotEmpty(lstActiveFeatureSet)){
+			 for (IFeatureSet iFeatureSet : lstActiveFeatureSet) {
+				iFeatureSet.stop();
+			}
+		 }
+		 
+		 if(CollectionUtils.isNotEmpty(lstFeatureSet)){
+			 for (IFeatureSet iFeatureSet : lstFeatureSet) {
+				 startIfRequired(iFeatureSet);
+			}
+		 }
 	}
 
 	/**
@@ -76,6 +86,16 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 		return GokoPreference.getInstance().getTargetBoard();
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.feature.IFeatureSetManager#setTargetBoard(java.lang.String)
+	 */
+	@Override
+	public void setTargetBoard(String id) throws GkException {
+		if(!existTargetBoard(id)){
+			throw new GkTechnicalException("Unknown board id ["+id+"]");
+		}
+		setTargetBoard(getTargetBoard(id));		
+	}
 	private void startFeatureSet(IFeatureSet featureSet) throws GkException{
 		lstActiveFeatureSet.add(featureSet);
 		BundleContext bundleContext = FrameworkUtil.getBundle(featureSet.getClass()).getBundleContext();		
@@ -105,6 +125,16 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 			}
 		}
 		return false;
+	}
+	
+	public TargetBoard getTargetBoard(String targetBoardId) throws GkTechnicalException {
+		List<TargetBoard> lstBoards = getSupportedBoards();
+		for (TargetBoard targetBoard : lstBoards) {
+			if(StringUtils.equals(targetBoard.getId(), targetBoardId)){
+				return targetBoard;
+			}
+		}
+		throw new GkTechnicalException("Unknown board id ["+targetBoardId+"]");
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()

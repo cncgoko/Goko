@@ -43,7 +43,7 @@ public class TargetBoardChecker {
 		}		
 	}
 
-	private void openTargetBoardSelection(IEclipseContext context) {
+	private void openTargetBoardSelection(IEclipseContext context) throws GkException {
 		final Shell shell = new Shell(SWT.INHERIT_NONE);
 
 		final TargetBoardSelectionDialog dialog = new TargetBoardSelectionDialog(shell);
@@ -56,6 +56,7 @@ public class TargetBoardChecker {
 		if (dialog.open() != Window.OK) {
 			System.exit(0);
 		}else{
+			featureSetManager.setTargetBoard(dialog.getTargetBoard());
 			GokoPreference.getInstance().setTargetBoard(dialog.getTargetBoard());
 		}
 	}
