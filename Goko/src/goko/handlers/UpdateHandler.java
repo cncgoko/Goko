@@ -18,14 +18,16 @@ import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.goko.core.log.GkLog;
+import org.goko.core.log.LogUtils;
 
 public class UpdateHandler {
-	
+	private static GkLog LOG = GkLog.getLogger(UpdateHandler.class);
 	boolean cancelled = false;
 	
 	@Execute
 	public void execute(final IProvisioningAgent agent, final UISynchronize sync, final IWorkbench workbench) {
-		
+		LOG.info("Ta race l'update");
 		// update using a progress monitor
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
             
@@ -54,13 +56,15 @@ public class UpdateHandler {
         
         //check if updates are available
         IStatus status = operation.resolveModal(sub.newChild(100));
+        
         if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
             showMessage(sync, "Nothing to update");
             return Status.CANCEL_STATUS;
         }
-        else {
-        	final ProvisioningJob provisioningJob = operation.getProvisioningJob(sub.newChild(100));
+        else {        
+        	final ProvisioningJob provisioningJob = operation.getProvisioningJob(sub.newChild(100));        	
         	if (provisioningJob != null) {
+        		 
         		sync.syncExec(new Runnable() {
                     
                     @Override
@@ -85,8 +89,8 @@ public class UpdateHandler {
 				                                }
 											}
 										});
-									}
-									else {
+									}else {
+										LOG.info( LogUtils.getMessage(event.getResult()));
 										showError(sync, event.getResult().getMessage());
 										cancelled = true;
 									}
@@ -106,8 +110,10 @@ public class UpdateHandler {
                 });
         	}
         	else {
-                if (operation.hasResolved()) {
+                if (operation.hasResolved()) {                	 
                     showError(sync, "Couldn't get provisioning job: " + operation.getResolutionResult());
+                    LOG.error( LogUtils.getMessage(operation.getResolutionResult()) );       
+                   
                 }
                 else {
                     showError(sync, "Couldn't resolve provisioning job");
@@ -123,7 +129,7 @@ public class UpdateHandler {
 		}
         return Status.OK_STATUS;
 	}
-		
+	
     private void showMessage(UISynchronize sync, final String message) {
         // as the provision needs to be executed in a background thread
         // we need to ensure that the message dialog is executed in 
@@ -149,4 +155,5 @@ public class UpdateHandler {
             }
         });
     }
+    
 }

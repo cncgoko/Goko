@@ -51,7 +51,7 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 	 */
 	public void addFeatureSet(IFeatureSet featureSet) throws GkException{
 		lstFeatureSet.add(featureSet);
-		startIfRequired(featureSet);			
+		//startIfRequired(featureSet);			
 	}
 
 	private void startIfRequired(IFeatureSet featureSet) throws GkException{		

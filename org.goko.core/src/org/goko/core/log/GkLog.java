@@ -49,6 +49,33 @@ public class GkLog {
 		logger.error(exception.getMessage());
 	}
 	
+//	public void info(IStatus status){
+//		info(status.getMessage());
+//		if(status.getChildren() != null && status.getChildren().length > 0){
+//			for (IStatus child : status.getChildren()) {
+//				info(child);
+//			}
+//		}
+//	}
+//	
+//	public void error(IStatus status){
+//		error(status.getMessage());
+//		if(status.getChildren() != null && status.getChildren().length > 0){
+//			for (IStatus child : status.getChildren()) {
+//				error(child);
+//			}
+//		}
+//	}
+//	
+//	public void warn(IStatus status){
+//		warn(status.getMessage());
+//		if(status.getChildren() != null && status.getChildren().length > 0){
+//			for (IStatus child : status.getChildren()) {
+//				warn(child);
+//			}
+//		}
+//	}
+	
 	public void log(GkFunctionalException exception) {
 		logger.warn(MessageResource.getMessage(exception.getKey()), exception.getArguments());
 	}
