@@ -27,7 +27,6 @@ public class UpdateHandler {
 	
 	@Execute
 	public void execute(final IProvisioningAgent agent, final UISynchronize sync, final IWorkbench workbench) {
-		LOG.info("Ta race l'update");
 		// update using a progress monitor
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
             
