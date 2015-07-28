@@ -18,8 +18,17 @@
       </provider>
    </extension>
    <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition id="org.goko.targetboard.tinyg">
+         <with variable="org.goko.targetBoard">
+            <equals value="tinyg.v097">
+            </equals>
+         </with>
+      </definition>
+   </extension>
+   <extension
          id="id1"
-         point="org.goko.core.featureset.model">
+         point="org.eclipse.e4.workbench.model">
       <fragment
             apply="always"
             targetBoard="tinyg.v097"

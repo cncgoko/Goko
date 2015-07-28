@@ -1,6 +1,7 @@
 package goko.handlers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -15,6 +16,7 @@ import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -52,7 +54,15 @@ public class UpdateHandler {
 		UpdateOperation operation = new UpdateOperation(session);
 		
 		final SubMonitor sub = SubMonitor.convert(monitor, "Checking for application updates...", 200);
-        
+		IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+		URI[] lstRepositories = manager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
+		
+		if(lstRepositories != null && lstRepositories.length > 0){
+			LOG.info("Checking updates from the following repositories :");
+			for (URI uri : lstRepositories) {
+				LOG.info("  + "+uri.toString());	
+			}
+		}
         //check if updates are available
         IStatus status = operation.resolveModal(sub.newChild(100));
         

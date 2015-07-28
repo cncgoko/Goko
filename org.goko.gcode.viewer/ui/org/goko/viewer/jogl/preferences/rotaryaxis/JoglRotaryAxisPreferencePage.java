@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.goko.common.GkUiUtils;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.IPreferenceStoreProvider;
 import org.goko.common.preferences.fieldeditor.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.ComboFieldEditor;
 import org.goko.common.preferences.fieldeditor.QuantityFieldEditor;
@@ -119,7 +118,7 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 		GkUiUtils.setEnabled(grpSettings, booleanFieldEditor.getControl().getSelection());
 	}
 	
-	@Inject
+	@Inject	
 	public void onUnitPreferenceChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_DISTANCE_UNIT) String unit) throws GkException{			
 		Unit<Length> lengthUnit = GokoPreference.getInstance().getLengthUnit();
 		if(xPositionField != null && yPositionField != null && zPositionField != null){

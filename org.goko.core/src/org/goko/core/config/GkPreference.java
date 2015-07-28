@@ -19,18 +19,20 @@ package org.goko.core.config;
 
 import java.io.IOException;
 
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.goko.common.preferences.ScopedPreferenceStore;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 
 public abstract class GkPreference implements IPreferenceStore{
 	private ScopedPreferenceStore store;
 
 	public GkPreference(String id) {
-		store = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, id);	
+		store = new ScopedPreferenceStore(InstanceScope.INSTANCE, id);	
 	}
 	
 	public ScopedPreferenceStore getPreferenceStore(){
@@ -359,8 +361,12 @@ public abstract class GkPreference implements IPreferenceStore{
 	 * @throws IOException
 	 * @see org.goko.common.preferences.ScopedPreferenceStore#save()
 	 */
-	public void save() throws IOException {
-		store.save();
+	public void save() throws GkException {
+		try {
+			store.save();
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
 	}
 
 	/**

@@ -16,10 +16,6 @@
       [Enter License Description here.]
    </license>
 
-   <url>
-      <update label="Goko Update site" url="http://update.goko.fr/"/>
-   </url>
-
    <requires>
       <import plugin="org.goko.core" version="0.0.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.core.di" version="1.1.0" match="greaterOrEqual"/>
@@ -29,7 +25,7 @@
       <import plugin="com.eclipsesource.json" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.di" version="0.10.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface" version="3.8.101" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.e4.ui.widgets" version="0.12.0" match="greaterOrEqual"/>      
+      <import plugin="org.eclipse.e4.ui.widgets" version="0.12.0" match="greaterOrEqual"/>
       <import plugin="javax.inject" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface.databinding" version="1.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.databinding.property" version="1.4.100" match="greaterOrEqual"/>

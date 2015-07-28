@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.0.1.qualifier" useFeatures="true" includeLaunchers="true">
-
+<product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.0.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog -equinox.ds.debug=true -equinox.ds.print=true -clearPersistedState -debug .options
+      <programArgs>-consoleLog -equinox.ds.debug=true -equinox.ds.print=true
       </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -25,7 +24,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
@@ -826,11 +824,10 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <plugin id="org.goko.featuremanager" autoStart="true" startLevel="4" />
    </configurations>
 
    <repositories>
-      <repository location="http://update.goko.fr/" enabled="true" />
+      <repository location="http://update.goko.fr/0.0.2" enabled="true" />
    </repositories>
 
 </product>

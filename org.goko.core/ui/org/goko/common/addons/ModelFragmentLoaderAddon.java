@@ -19,6 +19,6 @@ public class ModelFragmentLoaderAddon {
 		
 	@Execute
 	public void applicationStarted(IEclipseContext context, MApplication application, IFeatureSetManager featureSetManager) throws GkException {
-		featureSetManager.loadFeatureSetFragment(context);
+		featureSetManager.loadFeatureSetFragment(context);		
 	}
 }

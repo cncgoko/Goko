@@ -33,7 +33,8 @@ public class TargetBoardSelectionDialog extends Dialog {
 	 * @param parentShell
 	 */
 	public TargetBoardSelectionDialog(Shell parentShell) {
-		super(parentShell);		
+		super(parentShell);	
+		setShellStyle(SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);		
 	}
 
 	/**

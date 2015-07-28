@@ -15,7 +15,9 @@ import org.goko.core.common.exception.GkException;
  *
  */
 public interface IFeatureSetManager {
-	
+	public static final String TOPIC_LOAD_MODEL_FRAGMENTS = "topic/featureSet/loadModelFragments";
+	public static final String TOPIC_UNLOAD_MODEL_FRAGMENTS = "topic/featureSet/unloadModelFragments";
+	public static final String TOPIC_TARGET_BOARD_PROPERTY = "topic/featureSet/property/targetboard";
 	/**
 	 * Register the given {@link IFeatureSet}
 	 * @param featureSet the feature set to register 
@@ -29,6 +31,14 @@ public interface IFeatureSetManager {
 	 * @throws GkException GkException
 	 */
 	void loadFeatureSetFragment(IEclipseContext context) throws GkException;
+	
+	/**
+	 * Unload the model fragment related to the current Target board 
+	 * @param context the IEclipse context
+	 * @param oldTargetBoard the target board id to remove the fragments for
+	 * @throws GkException GkException
+	 */
+	void unloadFeatureSetFragment(IEclipseContext context, String oldTargetBoard) throws GkException;
 	
 	/**
 	 * Check if the given target board id is supported by a registered {@link IFeatureSet}

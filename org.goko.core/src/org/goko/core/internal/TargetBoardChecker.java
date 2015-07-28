@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.jface.window.Window;
@@ -19,15 +22,18 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.feature.IFeatureSetManager;
 import org.goko.core.feature.TargetBoard;
+import org.goko.core.log.GkLog;
 
 /**
  * @author PsyKo
  *
  */
 public class TargetBoardChecker {
+	private static final GkLog LOG = GkLog.getLogger(TargetBoardChecker.class);
 	@Inject
 	IFeatureSetManager featureSetManager;
 
+	
 	@PostContextCreate
 	public void startup(IEclipseContext context) throws GkException {
 		String targetBoard = GokoPreference.getInstance().getTargetBoard();
@@ -35,11 +41,11 @@ public class TargetBoardChecker {
 				|| !featureSetManager.existTargetBoard(targetBoard)) {
 			List<TargetBoard> lstSupportedBoard = featureSetManager.getSupportedBoards();
 			if(CollectionUtils.size(lstSupportedBoard) == 1){
-				GokoPreference.getInstance().setTargetBoard(lstSupportedBoard.get(0).getId());
+				featureSetManager.setTargetBoard(lstSupportedBoard.get(0).getId());
+				//GokoPreference.getInstance().setTargetBoard(lstSupportedBoard.get(0).getId());
 			}else{
 				openTargetBoardSelection(context);	
-			}
-			
+			}			
 		}		
 	}
 
@@ -57,7 +63,27 @@ public class TargetBoardChecker {
 			System.exit(0);
 		}else{
 			featureSetManager.setTargetBoard(dialog.getTargetBoard());
-			GokoPreference.getInstance().setTargetBoard(dialog.getTargetBoard());
+			//GokoPreference.getInstance().setTargetBoard(dialog.getTargetBoard());
 		}
 	}
+	
+	@Inject
+	@Optional
+	public void onTargetBoardChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_TARGET_BOARD) String targetBoard, IEclipseContext context) {				    
+		context.set("org.goko.targetBoard",  targetBoard);
+	}
+	@Inject
+	@Optional
+	public void unloadModelFramgents(@UIEventTopic(IFeatureSetManager.TOPIC_UNLOAD_MODEL_FRAGMENTS) String targetBoard, IEclipseContext context) throws GkException{
+		//System.err.println("TOPIC_UNLOAD_MODEL_FRAGMENTS"); TODO
+		featureSetManager.unloadFeatureSetFragment(context, targetBoard);
+	}
+	
+	@Inject
+	@Optional
+	public void loadModelFramgents(@UIEventTopic(IFeatureSetManager.TOPIC_LOAD_MODEL_FRAGMENTS) String targetBoard, IEclipseContext context) throws GkException{
+		System.err.println("TOPIC_LOAD_MODEL_FRAGMENTS");
+		featureSetManager.loadFeatureSetFragment(context);
+	}
+	
 }

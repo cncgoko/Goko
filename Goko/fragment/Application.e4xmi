@@ -14,9 +14,10 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_tvXhAAxJEeOHAtsV431cHw" elementId="goko.menu.window" label="Window">
         <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View"/>
-        <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.tools" label="Tools"/>
+        <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.window.tools" label="Tools"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_4jfc8NViEeOx56hryHQKyQ" elementId="goko.menuseparator.1"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_KqVSoDVYEeWwQZbApVM4lA" elementId="goko.menu.tools" label="Tools"/>
       <children xsi:type="menu:Menu" xmi:id="_wyCDwdwYEeKC274TynxXSA" elementId="goko.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_EuPSEN79EeSbWNQONxf66w" elementId="goko.handledmenuitem.update" label="Update" command="_ASrswN79EeSbWNQONxf66w"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_3z5r0Ad7EeW5EMyXN5EkVg" elementId="goko.menuseparator.0"/>

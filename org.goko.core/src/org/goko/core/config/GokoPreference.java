@@ -73,7 +73,7 @@ public class GokoPreference extends GkPreference{
 	public static GokoPreference getInstance() {
 		if(instance == null){
 			try {
-				instance = new GokoPreference();
+				instance = new GokoPreference();				
 				//nstance.initialize();
 			} catch (GkException e) {
 				LOG.error(e);

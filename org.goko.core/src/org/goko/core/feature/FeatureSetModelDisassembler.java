@@ -27,10 +27,13 @@ import org.eclipse.e4.ui.internal.workbench.ExtensionsSort;
 import org.eclipse.e4.ui.internal.workbench.URIHelper;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.MApplicationElement;
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.fragment.MModelFragment;
 import org.eclipse.e4.ui.model.fragment.MModelFragments;
 import org.eclipse.e4.ui.model.fragment.impl.FragmentPackageImpl;
 import org.eclipse.e4.ui.model.internal.ModelUtils;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -44,19 +47,23 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
  * @author PsyKo
  *
  */
-public class FeatureSetModelAssembler {
+public class FeatureSetModelDisassembler {
 	//static final GkLog logger = GkLog.getLogger(DynamicModelFragmentLoader.class);
 	@Inject
 	private Logger logger;
 
 	@Inject
 	private MApplication application;
-
+	
 	@Inject
 	private IEclipseContext context;
 
 	@Inject
 	private IExtensionRegistry registry;
+	
+	@Inject
+	private EModelService modelService;
+	
 	/** Extension point id of the feature model fragments */
 	private static final String EXTENSION_POINT_ID = "org.goko.core.featureset.model";//$NON-NLS-1$
 	private static final String ATTR_TARGET_BOARD = "targetBoard";//$NON-NLS-1$
@@ -66,22 +73,33 @@ public class FeatureSetModelAssembler {
 	private static final String NOTEXISTS = "notexists"; //$NON-NLS-1$ 
 
 	/**
-	 * Process the model
+	 * Process the model 
 	 */
-	public void processModel(String targetBoard, boolean initial) {
+	public void removeModel(String targetBoard) {
+		
+		List<String> tags = new ArrayList<String>();
+		tags.add(targetBoard);
+		List<MApplicationElement> elts = modelService.findElements(application.getChildren().get(0), null, null, tags);
+		for (MApplicationElement object : elts) {
+			System.err.println("Disassembling "+object);
+			MUIElement elt = (MUIElement) object;
+			
+			MElementContainer<MUIElement> eltParent = elt.getParent();
+			if(eltParent != null){
+				List<MUIElement> children = eltParent.getChildren();
+				children.remove(elt);				
+			}else{				
+				//elt.setToBeRendered(false);
+			}
+		}
+		if(true) return;
 		IExtensionPoint extPoint = registry.getExtensionPoint(EXTENSION_POINT_ID);
 		IExtension[] extensions = new ExtensionsSort().sort(extPoint.getExtensions());
 
-		List<MApplicationElement> imports = new ArrayList<MApplicationElement>();
 		List<MApplicationElement> addedElements = new ArrayList<MApplicationElement>();
 
-		// run processors which are marked to run before fragments
-		runProcessors(targetBoard, extensions, initial, false);
-		processFragments(targetBoard, extensions, imports, addedElements, initial);
-		// run processors which are marked to run after fragments
-		runProcessors(targetBoard, extensions, initial, true);
+		processFragments(targetBoard, extensions, addedElements);
 
-		resolveImports(imports, addedElements);
 	}
 
 	/**
@@ -89,24 +107,21 @@ public class FeatureSetModelAssembler {
 	 * @param imports
 	 * @param addedElements
 	 */
-	private void processFragments(String targetBoard, IExtension[] extensions, List<MApplicationElement> imports,
-			List<MApplicationElement> addedElements, boolean initial) {
+	private void processFragments(String targetBoard, IExtension[] extensions, List<MApplicationElement> addedElements) {
 
 		for (IExtension extension : extensions) {
 			IConfigurationElement[] ces = extension.getConfigurationElements();
 			for (IConfigurationElement ce : ces) {
 				if ("fragment".equals(ce.getName())) { //$NON-NLS-1$
-					if(StringUtils.equals(targetBoard, ce.getAttribute(ATTR_TARGET_BOARD))){
-						if (initial || !INITIAL.equals(ce.getAttribute("apply"))) { //$NON-NLS-1$ 
-							processFragment(targetBoard, ce, imports, addedElements, initial);
-						}
+					if(StringUtils.equals(targetBoard, ce.getAttribute(ATTR_TARGET_BOARD))){						 
+						processFragment(ce, addedElements);
 					}
 				}
 			}
 		}
 	}
 
-	private void processFragment(String targetBoard,IConfigurationElement ce, List<MApplicationElement> imports, List<MApplicationElement> addedElements, boolean initial) {
+	private void processFragment(IConfigurationElement ce, List<MApplicationElement> addedElements) {
 		E4XMIResource applicationResource = (E4XMIResource) ((EObject) application).eResource();
 		ResourceSet resourceSet = applicationResource.getResourceSet();
 		IContributor contributor = ce.getContributor();
@@ -151,7 +166,6 @@ public class FeatureSetModelAssembler {
 			logger.warn("Unable to create model extension \"{0}\"", bundleName); //$NON-NLS-1$
 			return;
 		}
-		boolean checkExist = !initial && NOTEXISTS.equals(ce.getAttribute("apply")); //$NON-NLS-1$ 
 
 		MModelFragments fragmentsContainer = (MModelFragments) extensionRoot;
 		List<MModelFragment> fragments = fragmentsContainer.getFragments();
@@ -159,7 +173,7 @@ public class FeatureSetModelAssembler {
 		for (MModelFragment fragment : fragments) {
 			List<MApplicationElement> elements = fragment.getElements();
 			if (elements.size() == 0) {
-				continue;
+			//	continue;
 			}
 
 			for (MApplicationElement el : elements) {
@@ -167,7 +181,9 @@ public class FeatureSetModelAssembler {
 
 				E4XMIResource r = (E4XMIResource) o.eResource();
 
-				if (checkExist && applicationResource.getIDToEObjectMap().containsKey(r.getID(o))) {
+				if (applicationResource.getIDToEObjectMap().containsKey(r.getID(o))) {
+					List<? extends E4XMIResource> elt = modelService.findElements(application, r.getID(o), r.getClass(), null);
+					
 					continue;
 				}
 
@@ -176,38 +192,25 @@ public class FeatureSetModelAssembler {
 				if (contributorURI != null)
 					el.setContributorURI(contributorURI);
 
-//				el.getTags().add(targetBoard); 
-//				System.err.println("    Tagging el+"+el+" with "+targetBoard);
 				// Remember IDs of subitems
 				TreeIterator<EObject> treeIt = EcoreUtil.getAllContents(o, true);
 				while (treeIt.hasNext()) {
 					EObject eObj = treeIt.next();
-					r = (E4XMIResource) eObj.eResource();					
+					r = (E4XMIResource) eObj.eResource();
 					if (contributorURI != null && (eObj instanceof MApplicationElement)){
-						MApplicationElement appElement = ((MApplicationElement) eObj); 
-						appElement.setContributorURI(contributorURI);						
+						((MApplicationElement) eObj).setContributorURI(contributorURI);
 					}
 					applicationResource.setID(eObj, r.getInternalId(eObj));
 				}
 			}
 
 			List<MApplicationElement> merged = fragment.merge(application);
-			for (MApplicationElement mApplicationElement : merged) {
-				mApplicationElement.getTags().add(targetBoard);  
-				System.err.println("    Tagging +"+mApplicationElement+" with "+targetBoard);
-			}
+
 			if (merged.size() > 0) {
 				evalImports = true;
 				addedElements.addAll(merged);
 			} else {
 				logger.info("Nothing to merge for \"{0}\"", uri); //$NON-NLS-1$
-			}
-		}
-
-		if (evalImports) {
-			List<MApplicationElement> localImports = fragmentsContainer.getImports();
-			if (localImports != null) {
-				imports.addAll(localImports);
 			}
 		}
 	}

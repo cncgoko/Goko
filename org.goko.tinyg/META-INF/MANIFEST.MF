@@ -23,7 +23,8 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.contexts;bundle-version="1.2.0",
  org.eclipse.e4.core.services,
  Goko;bundle-version="0.0.1",
- org.eclipse.e4.ui.model.workbench
+ org.eclipse.e4.ui.model.workbench,
+ org.eclipse.core.expressions;bundle-version="3.4.600"
 Service-Component: OSGI-INF/TinyGFeatureSetComponent.xml
 Bundle-ClassPath: .,
  swing2swt.jar
