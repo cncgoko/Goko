@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,7 +29,7 @@ import org.goko.core.common.exception.GkException;
  * @author PsyKo
  *
  */
-public class ObjectCollectionFieldEditor extends FieldEditor<Composite> {
+public class ObjectCollectionFieldEditor extends PreferenceFieldEditor<Composite> {
 	private static final String SEPARATOR = ";";
 	java.util.List<CollectionObject> availableObjects;
 	java.util.List<CollectionObject> selectedObjects;
@@ -46,7 +46,7 @@ public class ObjectCollectionFieldEditor extends FieldEditor<Composite> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {		
@@ -132,7 +132,7 @@ public class ObjectCollectionFieldEditor extends FieldEditor<Composite> {
 		removeButton.setEnabled(!selection.isEmpty());	
 	}
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -143,7 +143,7 @@ public class ObjectCollectionFieldEditor extends FieldEditor<Composite> {
 	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
 	 */
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {
@@ -173,7 +173,7 @@ public class ObjectCollectionFieldEditor extends FieldEditor<Composite> {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {

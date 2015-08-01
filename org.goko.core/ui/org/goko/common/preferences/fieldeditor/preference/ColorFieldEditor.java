@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -21,7 +21,7 @@ public class ColorFieldEditor extends LabeledFieldEditor<Button> {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#getControl()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#getControl()
 	 */
 	@Override
 	public Button getControl() {		
@@ -46,7 +46,7 @@ public class ColorFieldEditor extends LabeledFieldEditor<Button> {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -54,7 +54,7 @@ public class ColorFieldEditor extends LabeledFieldEditor<Button> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {
@@ -62,7 +62,7 @@ public class ColorFieldEditor extends LabeledFieldEditor<Button> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {

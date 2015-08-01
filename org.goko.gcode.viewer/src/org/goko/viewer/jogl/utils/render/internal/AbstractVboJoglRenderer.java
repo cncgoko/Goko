@@ -19,8 +19,6 @@ package org.goko.viewer.jogl.utils.render.internal;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
@@ -55,19 +53,16 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	/** The type of primitive used for render */
 	private Integer renderPrimitive;
 	/** The id of the VAO in use */
-	private Integer vertexArrayObject;
-	/** The id of the VBO in use for the vertices */
-	private Integer verticesBufferObject;
-	/** The id of the VBO in use for the colors */
-	private Integer colorsBufferObject;
-	/** The id of the VBO in use for the uvs */
-	private Integer uvsBufferObject;
-	/** The id of the VBO in use for the normals */
-	private Integer normalsBufferObject;
+	private Integer vertexArrayObject;	
 	/** Request for buffer update */
 	private boolean updateBuffer;
-
-
+	/** Interleaved buffer */
+	private FloatBuffer interleavedBuffer;
+	/** The id of the VBO in use for the vertices data */
+	private Integer interleavedBufferObject;
+	/** Stride in interleaved buffer */
+	private int stride;
+	
 	protected AbstractVboJoglRenderer(int renderPrimitive, int usedBuffers){
 		this.renderPrimitive = renderPrimitive;
 		this.useVerticesBuffer = (usedBuffers & VERTICES) == VERTICES;
@@ -119,10 +114,38 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @throws GkException GkException
 	 */
 	private void initializeBufferObjects(GL3 gl) throws GkException {
-		initializeVerticesBufferObject(gl);
-		initializeColorsBufferObject(gl);
-		initializeUvsBufferObject(gl);
-		initializeNormalsBufferObject(gl);
+		if(this.interleavedBufferObject == null){
+			int[] vbo = new int[1];
+			gl.glGenBuffers(1, vbo, 0);
+			this.interleavedBufferObject = vbo[0];
+		}
+		buildInterleavedBuffer();
+		interleavedBuffer.rewind();
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, interleavedBufferObject);
+		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*stride*Buffers.SIZEOF_FLOAT, interleavedBuffer, GL.GL_DYNAMIC_DRAW);
+		gl.glEnableVertexAttribArray(VERTICES_LAYOUT);
+		
+		int offset = 0;
+		if(useVerticesBuffer){								
+			gl.glVertexAttribPointer(VERTICES_LAYOUT, 4, GL.GL_FLOAT, false, stride*Buffers.SIZEOF_FLOAT, offset);
+			gl.glEnableVertexAttribArray(VERTICES_LAYOUT);
+			offset += 4;
+		}
+		if(useColorsBuffer){			
+			gl.glVertexAttribPointer(COLORS_LAYOUT, 4, GL.GL_FLOAT, false, stride*Buffers.SIZEOF_FLOAT, offset*Buffers.SIZEOF_FLOAT);
+			gl.glEnableVertexAttribArray(COLORS_LAYOUT);
+			offset += 4;
+		}
+		if(useUvsBuffer){			
+			gl.glVertexAttribPointer(UVS_LAYOUT, 2, GL.GL_FLOAT, false, stride*Buffers.SIZEOF_FLOAT, offset*Buffers.SIZEOF_FLOAT);
+			gl.glEnableVertexAttribArray(UVS_LAYOUT);
+			offset += 2;
+		}
+		if(useNormalsBuffer){			
+			gl.glVertexAttribPointer(NORMALS_LAYOUT, 4, GL.GL_FLOAT, false, stride*Buffers.SIZEOF_FLOAT, offset*Buffers.SIZEOF_FLOAT);
+			gl.glEnableVertexAttribArray(NORMALS_LAYOUT);
+			offset += 4;
+		}
 		initializeAdditionalBufferObjects(gl);
 	}
 	/**
@@ -131,105 +154,6 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @throws GkException GkException
 	 */
 	protected void initializeAdditionalBufferObjects(GL3 gl) throws GkException {
-	}
-	/**
-	 * Initializes and bind the buffer object for vertices
-	 * @param gl the GL
-	 * @throws GkException GkException
-	 */
-	private void initializeVerticesBufferObject(GL3 gl) throws GkException {
-		if(!useVerticesBuffer){
-			return;	// Vertices not used, nothing to do
-		}
-		if(getVerticesBuffer() == null){
-			throw new GkTechnicalException(this+" Vertices buffer not initialized.");
-		}
-		// Everything looks fine, we can initialize
-		if(this.verticesBufferObject == null){
-			int[] vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
-			this.verticesBufferObject = vbo[0];
-		}
-		// Make sure we take everything
-		getVerticesBuffer().rewind();
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesBufferObject);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*4*Buffers.SIZEOF_FLOAT, getVerticesBuffer(), GL.GL_DYNAMIC_DRAW);
-		gl.glEnableVertexAttribArray(VERTICES_LAYOUT);
-	}
-
-	/**
-	 * Initializes and bind the buffer object for Colors
-	 * @param gl the GL
-	 * @throws GkException GkException
-	 */
-	private void initializeColorsBufferObject(GL3 gl) throws GkException {
-		if(!useColorsBuffer){
-			return;	// Vertices not used, nothing to do
-		}
-		if(getColorsBuffer() == null){
-			throw new GkTechnicalException(" Colors buffer not initialized.");
-		}
-		// Everything looks fine, we can initialize
-		if(this.colorsBufferObject == null){
-			int[] vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
-			this.colorsBufferObject = vbo[0];
-		}
-		// Make sure we take everything
-		getColorsBuffer().rewind();
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, colorsBufferObject);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*4*Buffers.SIZEOF_FLOAT, getColorsBuffer(), GL.GL_DYNAMIC_DRAW);
-		gl.glEnableVertexAttribArray(COLORS_LAYOUT);
-	}
-
-	/**
-	 * Initializes and bind the buffer object for UVs
-	 * @param gl the GL
-	 * @throws GkException GkException
-	 */
-	private void initializeUvsBufferObject(GL3 gl) throws GkException {
-		if(!useUvsBuffer){
-			return;	// Vertices not used, nothing to do
-		}
-		if(getUvsBuffer() == null){
-			throw new GkTechnicalException(" Uvs buffer not initialized.");
-		}
-		// Everything looks fine, we can initialize
-		if(this.uvsBufferObject ==null){
-		int[] vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
-			this.uvsBufferObject = vbo[0];
-		}
-		// Make sure we take everything
-		getUvsBuffer().rewind();
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, uvsBufferObject);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*2*Buffers.SIZEOF_FLOAT, getUvsBuffer(), GL.GL_DYNAMIC_DRAW);
-		gl.glEnableVertexAttribArray(UVS_LAYOUT);
-	}
-
-	/**
-	 * Initializes and bind the buffer object for Normals
-	 * @param gl the GL
-	 * @throws GkException GkException
-	 */
-	private void initializeNormalsBufferObject(GL3 gl) throws GkException {
-		if(!useNormalsBuffer){
-			return;	// Vertices not used, nothing to do
-		}
-		if(getNormalsBuffer() == null){
-			throw new GkTechnicalException(" Uvs buffer not initialized.");
-		}
-		// Everything looks fine, we can initialize
-		if(this.normalsBufferObject ==null){
-			int[] vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
-			this.normalsBufferObject = vbo[0];
-		}
-		// Make sure we take everything
-		getNormalsBuffer().rewind();
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsBufferObject);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*4*Buffers.SIZEOF_FLOAT, getNormalsBuffer(), GL.GL_DYNAMIC_DRAW);
-		gl.glEnableVertexAttribArray(NORMALS_LAYOUT);
 	}
 	
 	/**
@@ -252,48 +176,26 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		if(!isInitialized()){
 			initialize(gl);
 		}
+		gl.glBindVertexArray(this.vertexArrayObject);	
 		if(updateBuffer){
 			performUpdateBufferObjects(gl);
 		}
+		if(interleavedBuffer == null){
+			buildInterleavedBuffer();
+		}
+			
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, interleavedBufferObject);
+		
 		gl.glUseProgram(getShaderProgram());
-
-		if(useVerticesBuffer){
-			gl.glEnableVertexAttribArray(VERTICES_LAYOUT);
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesBufferObject);
-			gl.glVertexAttribPointer(VERTICES_LAYOUT, 4, GL.GL_FLOAT, false, 0, 0);
-		}
-		if(useColorsBuffer){
-			gl.glEnableVertexAttribArray(COLORS_LAYOUT);
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, colorsBufferObject);
-			gl.glVertexAttribPointer(COLORS_LAYOUT, 4, GL.GL_FLOAT, false, 0, 0);
-		}
-		if(useUvsBuffer){
-			gl.glEnableVertexAttribArray(UVS_LAYOUT);
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, uvsBufferObject);
-			gl.glVertexAttribPointer(UVS_LAYOUT, 2, GL.GL_FLOAT, false, 0, 0);
-		}
-		if(useNormalsBuffer){
-			gl.glEnableVertexAttribArray(NORMALS_LAYOUT);
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalsBufferObject);
-			gl.glVertexAttribPointer(NORMALS_LAYOUT, 4, GL.GL_FLOAT, false, 0, 0);
-		}
+		
 		enableAdditionalVertexAttribArray(gl);
 		updateShaderData(gl);
+		
 		gl.glDrawArrays(getRenderPrimitive(), 0, getVerticesCount());
 
 	    disableAdditionalVertexAttribArray(gl);
-	    if(useVerticesBuffer){
-	    	gl.glDisableVertexAttribArray(VERTICES_LAYOUT);
-	    }
-	    if(useColorsBuffer){
-	    	gl.glDisableVertexAttribArray(COLORS_LAYOUT);
-	    }
-	    if(useUvsBuffer){
-	    	gl.glDisableVertexAttribArray(UVS_LAYOUT);
-	    }
-	    if(useNormalsBuffer){
-	    	gl.glDisableVertexAttribArray(NORMALS_LAYOUT);
-	    }
+    
+
 	    gl.glUseProgram(0);
 	}
 
@@ -314,28 +216,73 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		if(!isInitialized()){
 			return;
 		}
-		List<Integer> lstBuffers = new ArrayList<Integer>();
-
-		if(useVerticesBuffer){
-			lstBuffers.add(verticesBufferObject);
-		}
-		if(useColorsBuffer){
-			lstBuffers.add(colorsBufferObject);
-		}
-		if(useUvsBuffer){
-			lstBuffers.add(uvsBufferObject);
-		}
-
-		IntBuffer buffers = IntBuffer.allocate(lstBuffers.size());
-		for (Integer integer : lstBuffers) {
-			buffers.put(integer);
-		}
-		buffers.rewind();
-		gl.glDeleteBuffers(lstBuffers.size(),buffers);
+		IntBuffer buffers = IntBuffer.wrap(new int[]{interleavedBufferObject});
+		gl.glDeleteBuffers(1,buffers);
+		
 		IntBuffer intBuffer = IntBuffer.wrap(new int[]{vertexArrayObject});
 		gl.glDeleteVertexArrays(1, intBuffer);
 	}
 
+	protected void buildInterleavedBuffer() throws GkTechnicalException{
+		stride = 0;
+				
+		if(useVerticesBuffer){
+			stride += 4;		// 4
+			if(getVerticesBuffer() == null){
+				throw new GkTechnicalException(this+" Vertices buffer not initialized.");
+			}
+		}
+		if(useColorsBuffer){
+			stride +=4;			// 4	
+			if(getColorsBuffer() == null){
+				throw new GkTechnicalException(" Colors buffer not initialized.");
+			}
+		}
+		if(useUvsBuffer){
+			stride += 2;			//2
+			if(getUvsBuffer() == null){
+				throw new GkTechnicalException(" Uvs buffer not initialized.");
+			}
+		}
+		if(useNormalsBuffer){
+			stride += 4;		//4
+			if(getNormalsBuffer() == null){
+				throw new GkTechnicalException(" Normals buffer not initialized.");
+			}
+		}
+		if(interleavedBuffer != null){
+			interleavedBuffer.clear();
+		}
+		interleavedBuffer = FloatBuffer.allocate(getVerticesCount()*stride);
+		//interleavedBuffer = GLBuffers.newDirectFloatBuffer(getVerticesCount()*stride);
+		
+		for (int i = 0; i < verticesCount; i++) {
+			
+			if(useVerticesBuffer){				
+				interleavedBuffer.put(verticesBuffer.get(i * 4 ));
+				interleavedBuffer.put(verticesBuffer.get(i * 4 +1));
+				interleavedBuffer.put(verticesBuffer.get(i * 4 +2));
+				interleavedBuffer.put(verticesBuffer.get(i * 4 +3));
+			}
+			if(useColorsBuffer){;
+				interleavedBuffer.put(colorsBuffer.get(i * 4 ));
+				interleavedBuffer.put(colorsBuffer.get(i * 4 +1));
+				interleavedBuffer.put(colorsBuffer.get(i * 4 +2));
+				interleavedBuffer.put(colorsBuffer.get(i * 4 +3));
+			}
+			if(useUvsBuffer){
+				interleavedBuffer.put(uvsBuffer.get(i * 2 ));
+				interleavedBuffer.put(uvsBuffer.get(i * 2 +1));				
+			}
+			if(useNormalsBuffer){
+				interleavedBuffer.put(normalsBuffer.get(i * 4 ));
+				interleavedBuffer.put(normalsBuffer.get(i * 4 +1));
+				interleavedBuffer.put(normalsBuffer.get(i * 4 +2));
+				interleavedBuffer.put(normalsBuffer.get(i * 4 +3));
+			}
+		}
+		interleavedBuffer.rewind();
+	}
 	/**
 	 * Update the buffers
 	 */

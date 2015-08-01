@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -41,7 +41,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {
@@ -61,7 +61,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {
@@ -69,7 +69,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -77,7 +77,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {

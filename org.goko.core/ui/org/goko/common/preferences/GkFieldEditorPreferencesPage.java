@@ -12,19 +12,19 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.goko.common.preferences.fieldeditor.FieldEditor;
-import org.goko.common.preferences.fieldeditor.IFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.IPreferenceFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
 public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	private static final GkLog LOG = GkLog.getLogger(GkPreferencesPage.class);
 	/** List of field editors*/
-	private List<IFieldEditor<?>> fields;
+	private List<IPreferenceFieldEditor<?>> fields;
 	/** The parent composite of all editors */
 	private Composite fieldEditorParent;
 	/** The invalid field editor*/
-	private IFieldEditor<?> invalidFieldEditor;
+	private IPreferenceFieldEditor<?> invalidFieldEditor;
 	/** Decorator for current invalid field*/
 	private ControlDecoration invalidFieldDecorator;
 	
@@ -65,9 +65,9 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	 * Add the given field editor to this preference page
 	 * @param field the field editor to add
 	 */
-	public void addField(IFieldEditor<?> field){
+	public void addField(IPreferenceFieldEditor<?> field){
 		if(fields == null){
-			fields = new ArrayList<IFieldEditor<?>>();
+			fields = new ArrayList<IPreferenceFieldEditor<?>>();
 		}
 		fields.add(field);
 		
@@ -79,7 +79,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	 */
 	protected void initialize() throws GkException{
 		if(CollectionUtils.isNotEmpty(fields)){
-			for (IFieldEditor<?> fieldEditor : fields) {
+			for (IPreferenceFieldEditor<?> fieldEditor : fields) {
 				fieldEditor.setPage(this);
 				fieldEditor.setPropertyChangeListener(this);
 				fieldEditor.setPreferenceStore(getPreferenceStore());
@@ -94,7 +94,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	protected void validate(){
 		boolean valid = true;
 		if(CollectionUtils.isNotEmpty(fields)){
-			for (IFieldEditor<?> fieldEditor : fields) {
+			for (IPreferenceFieldEditor<?> fieldEditor : fields) {
 				valid = fieldEditor.isValid();
 				if(!valid){
 					break;
@@ -109,7 +109,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		if(StringUtils.equals(event.getProperty(), FieldEditor.IS_VALID)){			
+		if(StringUtils.equals(event.getProperty(), PreferenceFieldEditor.IS_VALID)){			
             boolean newValue = ((Boolean) event.getNewValue()).booleanValue();
             // If the new value is true then we must check all field editors.
             // If it is false, then the page is invalid in any case.
@@ -119,7 +119,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
             	}
             	validate();
             } else {
-                invalidFieldEditor = (FieldEditor<?>) event.getSource();    
+                invalidFieldEditor = (PreferenceFieldEditor<?>) event.getSource();    
                 invalidFieldDecorator = new ControlDecoration(invalidFieldEditor.getControl(), SWT.TOP | SWT.RIGHT);
                 Image image = FieldDecorationRegistry. getDefault(). getFieldDecoration(FieldDecorationRegistry.DEC_ERROR). getImage();
                 invalidFieldDecorator.setDescriptionText(getErrorMessage());
@@ -136,7 +136,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	@Override
 	protected void performDefaults() {
 		try{
-			for (IFieldEditor<?> fieldEditor : fields) {
+			for (IPreferenceFieldEditor<?> fieldEditor : fields) {
 				fieldEditor.setDefault();
 			}
 		}catch(GkException e){
@@ -148,7 +148,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	public boolean performOk() {
 		try{
 			if(CollectionUtils.isNotEmpty(fields)){
-				for (IFieldEditor<?> fieldEditor : fields) {
+				for (IPreferenceFieldEditor<?> fieldEditor : fields) {
 					fieldEditor.store();
 				}	
 			}

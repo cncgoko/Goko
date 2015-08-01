@@ -64,8 +64,9 @@ public class CommandPanelModel extends AbstractModelObject{
 	 * @param jogSpeed the jogSpeed to set
 	 */
 	public void setJogSpeed(BigDecimal jogSpeed) {
-		firePropertyChange("jogSpeed", this.jogSpeed, this.jogSpeed = jogSpeed);
+		firePropertyChange("jogSpeed", this.jogSpeed, this.jogSpeed = jogSpeed);		
 	}
+
 	/**
 	 * @return the jogIncrement
 	 */

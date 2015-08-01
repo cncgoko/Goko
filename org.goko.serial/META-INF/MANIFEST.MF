@@ -4,7 +4,7 @@ Bundle-Name: Serial
 Bundle-SymbolicName: org.goko.serial.rxtx;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.goko.core;bundle-version="1.0.0",
+Require-Bundle: org.goko.core,
  org.eclipse.e4.core.di;bundle-version="1.1.0",
  org.eclipse.e4.ui.workbench.renderers.swt;bundle-version="0.10.2",
  org.eclipse.e4.ui.workbench;bundle-version="0.10.3",
@@ -22,7 +22,7 @@ Require-Bundle: org.goko.core;bundle-version="1.0.0",
  org.eclipse.jface.databinding;bundle-version="1.6.200",
  com.ibm.icu,
  org.eclipse.ui,
- Goko;bundle-version="1.0.0",
+ Goko,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.equinox.preferences,

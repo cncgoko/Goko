@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -12,7 +12,7 @@ import org.goko.core.common.exception.GkException;
 /**
  * A field editor for a boolean type preference.
  */
-public class BooleanFieldEditor extends FieldEditor<Button> {
+public class BooleanFieldEditor extends PreferenceFieldEditor<Button> {
 	
 	public BooleanFieldEditor(Composite parent, int style) {
 		super(parent, style);	
@@ -27,7 +27,7 @@ public class BooleanFieldEditor extends FieldEditor<Button> {
     	setLayout(layout);  
 	}
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {	
@@ -49,7 +49,7 @@ public class BooleanFieldEditor extends FieldEditor<Button> {
 		return getControl().getSelection();
 	}
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {	
@@ -59,7 +59,7 @@ public class BooleanFieldEditor extends FieldEditor<Button> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {
@@ -69,7 +69,7 @@ public class BooleanFieldEditor extends FieldEditor<Button> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {
@@ -77,7 +77,7 @@ public class BooleanFieldEditor extends FieldEditor<Button> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setLabel(java.lang.String)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setLabel(java.lang.String)
 	 */
 	@Override
 	public void setLabel(String label) {		

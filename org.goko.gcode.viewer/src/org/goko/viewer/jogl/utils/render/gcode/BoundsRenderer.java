@@ -26,6 +26,7 @@ import javax.vecmath.Vector3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
+import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.service.Layer;
 import org.goko.viewer.jogl.utils.render.coordinate.measurement.DistanceRenderer;
 import org.goko.viewer.jogl.utils.render.text.TextRenderer;
@@ -52,9 +53,9 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	 */
 	@Override
 	protected void performInitialize(GL3 gl) throws GkException {
-		if(bounds != null){
-			Point3d ptMin = bounds.getMin().toPoint3d();
-			Point3d ptMax = bounds.getMax().toPoint3d();
+		if(bounds != null && bounds.getMin() != null && bounds.getMax() != null){
+			Point3d ptMin = bounds.getMin().to(JoglUtils.JOGL_UNIT).toPoint3d();
+			Point3d ptMax = bounds.getMax().to(JoglUtils.JOGL_UNIT).toPoint3d();
 
 			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMax.x,(float)ptMin.y-1,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
 			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMax.y,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );

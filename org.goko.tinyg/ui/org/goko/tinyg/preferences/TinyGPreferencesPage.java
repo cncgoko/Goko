@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.fieldeditor.BooleanFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.tinyg.controller.prefs.TinyGPreferences;
 
 /**

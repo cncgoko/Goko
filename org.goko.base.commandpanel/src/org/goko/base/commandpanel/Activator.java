@@ -14,7 +14,7 @@ public class Activator implements BundleActivator {
 
 	private static IEclipsePreferences preferences;
 
-	public static final IScopeContext SCOPE_CONTEXT = ConfigurationScope.INSTANCE;
+	public static final IScopeContext SCOPE_CONTEXT = InstanceScope.INSTANCE;
     public static final String PREFERENCE_NODE 		= "org.goko.base.commandpanel";
 
 	static BundleContext getContext() {

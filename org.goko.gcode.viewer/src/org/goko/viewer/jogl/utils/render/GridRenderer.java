@@ -28,14 +28,9 @@ import javax.vecmath.Point4d;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
-import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
-import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoPreference;
-import org.goko.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.service.Layer;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
@@ -51,18 +46,24 @@ import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 public class GridRenderer extends AbstractVboJoglRenderer {
 	public static final String ID = "org.goko.viewer.jogl.utils.render.GridRenderer";
 	private double size = 100;
-	private double majorUnit = 10;
-	private double minorUnit = 1;
+	private Quantity<Length> majorIncrement;
+	private Quantity<Length> minorIncrement;
 	private Point4d majorUnitColor	= new Point4d(0.4, 0.4, 0.4, 0.45);
 	private Point4d minorUnitColor	= new Point4d(0.4, 0.4, 0.4, 0.15);
 	private Point4d originColor		= new Point4d(0.8, 0.8, 0.8, 0.7);
-
+	private Tuple6b start;
+	private Tuple6b end;
+	
 	/**
 	 * Constructor
 	 */
-	public GridRenderer() {
-		super(GL.GL_LINES, COLORS | VERTICES);
+	public GridRenderer(Tuple6b start, Tuple6b end, Quantity<Length> majorIncrement, Quantity<Length> minorIncrement) {
+		super(GL.GL_LINES,  COLORS | VERTICES);
 		this.setLayerId(Layer.LAYER_GRIDS);
+		this.start 			= start.to(JoglUtils.JOGL_UNIT);
+		this.end 			= end.to(JoglUtils.JOGL_UNIT);
+		this.majorIncrement = majorIncrement.to(JoglUtils.JOGL_UNIT);
+		this.minorIncrement = minorIncrement.to(JoglUtils.JOGL_UNIT);
 	}
 
 	/** (inheritDoc)
@@ -74,12 +75,6 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	}
 
 	private void buildGrid() throws GkException{
-		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
-		Quantity<Length> majorQuantity = NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing().doubleValue(), unit);
-		Quantity<Length> minorQuantity = NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing().doubleValue(), unit);
-		majorUnit = majorQuantity.to(SIPrefix.MILLI(SI.METRE)).doubleValue();
-		minorUnit = minorQuantity.to(SIPrefix.MILLI(SI.METRE)).doubleValue();
-		size = 10 * majorUnit;
 		List<Point4d> lstVertices = new ArrayList<Point4d>();
 		List<Point4d> lstColors = new ArrayList<Point4d>();
 
@@ -92,31 +87,42 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		lstColors.add(originColor);
 		lstColors.add(originColor);
 		lstColors.add(originColor);
-
+		Tuple6b delta = new Tuple6b(end);
+		delta = delta.subtract(start);
+		int xMajor = delta.getX().divide(majorIncrement).intValue();
+		int yMajor = delta.getY().divide(majorIncrement).intValue();
+		
 		// Main divisions
-		for (double i = -size; i <= size; i += majorUnit) {
-			lstVertices.add(new Point4d(i, -size, 0,1));
-			lstVertices.add(new Point4d(i, size, 0,1));
-			lstVertices.add(new Point4d(-size, i, 0,1));
-			lstVertices.add(new Point4d(size, i, 0,1));
+		for (int i = 0; i <= xMajor; i++) {
+			lstVertices.add(new Point4d(start.getX().doubleValue()+i*majorIncrement.doubleValue(), start.getY().doubleValue() , 0,1));
+			lstVertices.add(new Point4d(start.getX().doubleValue()+i*majorIncrement.doubleValue(), end.getY().doubleValue() , 0,1));			
 			lstColors.add(majorUnitColor);
-			lstColors.add(majorUnitColor);
+			lstColors.add(majorUnitColor);			
+		}
+
+		for (int i = 0; i <= yMajor; i++) {
+			lstVertices.add(new Point4d(start.getX().doubleValue(), start.getY().doubleValue()+i*majorIncrement.doubleValue(), 0,1));
+			lstVertices.add(new Point4d(end.getX().doubleValue() ,  start.getY().doubleValue()+i*majorIncrement.doubleValue(), 0,1));
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);
 		}
-
+		
+		int xMinor = delta.getX().divide(minorIncrement).intValue();
+		int yMinor = delta.getY().divide(minorIncrement).intValue();
+		
 		// Subdivisions
-		for (double i = -size; i <= size; i+=minorUnit) {
-			if (i != 0 && Math.abs(i % majorUnit) >= 0.01) {
-				lstVertices.add(new Point4d(i, -size, 0,1));
-				lstVertices.add(new Point4d(i, size, 0,1));
-				lstVertices.add(new Point4d(-size, i, 0,1));
-				lstVertices.add(new Point4d(size, i, 0,1));
-				lstColors.add(minorUnitColor);
-				lstColors.add(minorUnitColor);
-				lstColors.add(minorUnitColor);
-				lstColors.add(minorUnitColor);
-			}
+		for (int i = 0; i <= xMinor; i++) {
+			lstVertices.add(new Point4d(start.getX().doubleValue()+i*minorIncrement.doubleValue(), start.getY().doubleValue() , 0,1));
+			lstVertices.add(new Point4d(start.getX().doubleValue()+i*minorIncrement.doubleValue(), end.getY().doubleValue() , 0,1));			
+			lstColors.add(minorUnitColor);
+			lstColors.add(minorUnitColor);			
+		}
+
+		for (int i = 0; i <= yMinor; i++) {
+			lstVertices.add(new Point4d(start.getX().doubleValue(), start.getY().doubleValue()+i*minorIncrement.doubleValue(), 0,1));
+			lstVertices.add(new Point4d(end.getX().doubleValue() ,  start.getY().doubleValue()+i*minorIncrement.doubleValue(), 0,1));
+			lstColors.add(minorUnitColor);
+			lstColors.add(minorUnitColor);
 		}
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		setColorsBuffer(JoglUtils.buildFloatBuffer4d(lstColors));
@@ -130,7 +136,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	protected void buildGeometry() throws GkException {
 		buildGrid();
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#loadShaderProgram(javax.media.opengl.GL3)
 	 */
@@ -139,4 +145,15 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		return ShaderLoader.loadShader(gl, EnumGokoShaderProgram.LINE_SHADER);
 	}
 
+	@Override
+	protected void updateShaderData(GL3 gl) throws GkException {		
+		super.updateShaderData(gl);
+		gl.glLineWidth(1);
+		gl.glEnable(GL3.GL_LINE_SMOOTH);
+	}
+	
+	@Override
+	protected void performRender(GL3 gl) throws GkException {		
+		super.performRender(gl);
+	}
 }

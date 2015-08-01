@@ -9,11 +9,6 @@
             apply="always"
             uri="fragments/CoreFragment.e4xmi">
       </fragment>
-      <processor
-            apply="always"
-            beforefragment="false"
-            class="org.goko.common.addons.ModelFragmentLoaderAddon">
-      </processor>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

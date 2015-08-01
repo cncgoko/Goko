@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.goko.common.preferences.fieldeditor.BigDecimalFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.BigDecimalFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.BigDecimalUtils;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
@@ -19,7 +19,7 @@ public class TinyGBigDecimalSettingFieldEditor extends BigDecimalFieldEditor imp
 	
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -28,7 +28,7 @@ public class TinyGBigDecimalSettingFieldEditor extends BigDecimalFieldEditor imp
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {
@@ -38,7 +38,7 @@ public class TinyGBigDecimalSettingFieldEditor extends BigDecimalFieldEditor imp
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {		

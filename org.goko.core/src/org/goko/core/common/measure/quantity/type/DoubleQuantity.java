@@ -94,4 +94,13 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 	}
 
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#divide(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public Number divide(Quantity<Q> q) {		
+		return value / q.to(getUnit()).doubleValue();
+	}
+
+
 }

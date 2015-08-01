@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.BoundingTuple6b;
+import org.goko.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
@@ -229,8 +230,8 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 	 */
 	@Override
 	public void zoomToFit(BoundingTuple6b bounds) throws GkException {
-		double bWidth  = bounds.getMax().getX().doubleValue() - bounds.getMin().getX().doubleValue();
-		double bHeight = bounds.getMax().getY().doubleValue() - bounds.getMin().getY().doubleValue();
+		double bWidth  = bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) - bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
+		double bHeight = bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT) - bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT);
 
 		double boundCenterX = (bounds.getMax().getX().doubleValue() + bounds.getMin().getX().doubleValue() ) /2;
 		double boundCenterY = (bounds.getMax().getY().doubleValue() + bounds.getMin().getY().doubleValue() ) /2;

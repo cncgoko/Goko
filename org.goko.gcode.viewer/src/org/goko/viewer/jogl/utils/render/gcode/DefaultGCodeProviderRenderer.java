@@ -40,6 +40,7 @@ import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
 import org.goko.viewer.jogl.utils.render.gcode.colorizer.MotionModeGCodeColorizer;
 import org.goko.viewer.jogl.utils.render.gcode.geometry.GCodePartitionCodeGenerator;
+import org.goko.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 
 import com.jogamp.common.nio.Buffers;
@@ -49,7 +50,7 @@ import com.jogamp.common.nio.Buffers;
  * @author PsyKo
  *
  */
-public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implements IGCodeProviderRenderer, IGCodeExecutionListener {
+public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implements IGCodeProviderRenderer, IGCodeExecutionListener {
 	/** Command state layout */
 	private static final int STATE_LAYOUT = 2;
 	/** The GCodeProvider to render */
@@ -76,6 +77,7 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 		this.gcodeProvider = gcodeProvider;
 		this.generator = new GCodePartitionCodeGenerator();
 		this.colorizer = new MotionModeGCodeColorizer();
+		setLineWidth(1f);
 	}
 
 
@@ -167,7 +169,7 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, stateBufferObject);
 		gl.glVertexAttribPointer(STATE_LAYOUT, 1, GL3.GL_FLOAT, false, 0, 0);
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#disableAdditionalVertexAttribArray(javax.media.opengl.GL3)
 	 */
@@ -183,7 +185,6 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 		return gcodeProvider;
 	}
 
-
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer#setGCodeProvider(org.goko.core.gcode.bean.IGCodeProvider)
 	 */
@@ -192,8 +193,6 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 		this.gcodeProvider = gcodeProvider;
 	}
 
-
-
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer#setColorizer(org.goko.viewer.jogl.utils.render.gcode.IGCodeColorizer)
 	 */
@@ -201,7 +200,6 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 	public void setColorizer(IGCodeColorizer colorizer) throws GkException {
 		this.colorizer = colorizer;
 	}
-
 
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer#getColorizer()
@@ -259,7 +257,6 @@ public class DefaultGCodeProviderRenderer extends AbstractVboJoglRenderer implem
 		// TODO Auto-generated method stub
 
 	}
-
 
 	/**
 	 * @param token

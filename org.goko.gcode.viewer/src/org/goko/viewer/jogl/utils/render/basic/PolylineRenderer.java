@@ -30,7 +30,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
-import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
+import org.goko.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 
 /**
  * A simple polyline render
@@ -38,7 +38,7 @@ import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
  * @author PsyKo
  *
  */
-public class PolylineRenderer extends AbstractVboJoglRenderer{
+public class PolylineRenderer extends AbstractLineRenderer{
 	private boolean closed;
 	private Color4f color;
 	private List<Point3d> points;

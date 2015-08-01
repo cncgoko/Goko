@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.goko.common.preferences.fieldeditor.BooleanFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 
@@ -20,7 +20,7 @@ public class TinyGBooleanFieldEditor extends BooleanFieldEditor implements ITiny
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {				
@@ -31,7 +31,7 @@ public class TinyGBooleanFieldEditor extends BooleanFieldEditor implements ITiny
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -41,7 +41,7 @@ public class TinyGBooleanFieldEditor extends BooleanFieldEditor implements ITiny
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {		

@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.common.preferences.ScopedPreferenceStore;
@@ -53,7 +54,7 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	@Override
 	public void start() throws GkException {	
 		lstDefinition = new ArrayList<MachineValueDefinition>();
-		prefs = new ScopedPreferenceStore(ConfigurationScope.INSTANCE,"org.goko.base.droservice");
+		prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE,"org.goko.base.droservice");		
 		prefs.addPropertyChangeListener(this);
 		updateValues();
 	}

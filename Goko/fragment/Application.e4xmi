@@ -2,7 +2,7 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_wyBcoNwYEeKC274TynxXSA" elementId="goko.application" bindingContexts="_wyBcodwYEeKC274TynxXSA">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" iconURI="platform:/plugin/Goko/icons/launch/goko32.png" width="500" height="400">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_wyCDw9wYEeKC274TynxXSA" elementId="goko.perspectivestack.main">
-      <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main">
+      <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main" label="Test">
         <children xsi:type="basic:PartSashContainer" xmi:id="_wyCDxdwYEeKC274TynxXSA" elementId="goko.partsashcontainer.main">
           <children xsi:type="basic:PartStack" xmi:id="_wyCDxtwYEeKC274TynxXSA" elementId="goko.application.partstack"/>
         </children>
@@ -24,9 +24,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwtwYEeKC274TynxXSA" label="About" command="_wyCDuNwYEeKC274TynxXSA"/>
       </children>
     </mainMenu>
-    <trimBars xmi:id="_nzUx0HNXEeS68rr8iXoRPQ" elementId="goko.trim.bottom" side="Bottom">
+    <trimBars xmi:id="_nzUx0HNXEeS68rr8iXoRPQ" elementId="goko.trimbar.bottom" side="Bottom">
       <children xsi:type="menu:ToolBar" xmi:id="_qyXV0HNXEeS68rr8iXoRPQ" elementId="goko.toolbar.0"/>
     </trimBars>
+    <trimBars xmi:id="_8p2AoDaaEeWPlfi1OCrE0Q" elementId="goko.trimbar.top"/>
   </children>
   <handlers xmi:id="_wyBcq9wYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.QuitHandler" command="_wyBcqtwYEeKC274TynxXSA"/>
   <handlers xmi:id="_wyCDs9wYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.OpenHandler" command="_wyCDstwYEeKC274TynxXSA"/>

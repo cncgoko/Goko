@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import java.math.BigDecimal;
 
@@ -40,7 +40,7 @@ public class BigDecimalFieldEditor extends StringFieldEditor {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.StringFieldEditor#isValidValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.StringFieldEditor#isValidValue()
 	 */
 	@Override
 	protected boolean isValidValue() {

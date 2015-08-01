@@ -21,8 +21,9 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		prefs.setDefault(JoglViewerPreference.ROTARY_AXIS_POSITION_X, "0");
 		prefs.setDefault(JoglViewerPreference.ROTARY_AXIS_POSITION_Y, "0");
 		prefs.setDefault(JoglViewerPreference.ROTARY_AXIS_POSITION_Z, "0");
+		int ms = prefs.getInt(JoglViewerPreference.MULTISAMPLING);
 		prefs.setDefault(JoglViewerPreference.MULTISAMPLING, "1");
-		prefs.setDefault(JoglViewerPreference.MAJOR_GRID_SPACING, "5");
+		prefs.setDefault(JoglViewerPreference.MAJOR_GRID_SPACING, "10");
 		prefs.setDefault(JoglViewerPreference.MINOR_GRID_SPACING, "1");
 		
 		Tuple6b position = new Tuple6b();

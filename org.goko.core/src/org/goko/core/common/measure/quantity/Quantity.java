@@ -25,4 +25,6 @@ public interface Quantity<Q extends Quantity<Q>> {
 	
 	Quantity<Q> divide(Number n);
 	
+	Number divide(Quantity<Q> q);
+	
 }

@@ -64,6 +64,7 @@ import org.goko.common.bindings.validator.StringRealNumberValidator;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.common.elements.combo.v2.GkCombo2;
+import org.goko.common.preferences.fieldeditor.ui.UiFieldEditor;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.exception.GkException;
@@ -82,10 +83,13 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	@Inject
 	private IApplicativeLogService applicativeLogService;
 
+	private List<UiFieldEditor<?>> lstFieldEditor;
+	
 	public AbstractController(T binding) {
 		bindingContext = new DataBindingContext();
 		this.dataModel = binding;
 		this.bindings = new ArrayList<Binding>();
+		lstFieldEditor = new ArrayList<UiFieldEditor<?>>();
 	}
 	
 	/**
@@ -263,7 +267,7 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		verifySetter(modelObject,property);
 
 		IObservableValue target = ViewersObservables.observeSingleSelection(source);
-		IObservableValue model = BeansObservables.observeValue(modelObject, property);
+		IObservableValue model = BeanProperties.value(property).observe(dataModel);
 
 		Binding binding = bindingContext.bindValue(target, model,null,null);
 		bindings.add(binding);
@@ -587,5 +591,10 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	 */
 	public void setBindingContext(DataBindingContext bindingContext) {
 		this.bindingContext = bindingContext;
+	}
+	
+	public void addFieldEditor(UiFieldEditor<?> fieldEditor) throws GkException{
+		this.lstFieldEditor.add(fieldEditor);
+		bindings.add(fieldEditor.getBinding(bindingContext, dataModel));
 	}
 }

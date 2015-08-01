@@ -9,6 +9,7 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
+import org.goko.viewer.jogl.service.JoglUtils;
 
 /**
  * Linear motion renderer
@@ -23,9 +24,9 @@ public class ArcMotionRenderer{
 		List<Point3d> vertices = new ArrayList<Point3d>();
 		boolean clockwise = command.isClockwise();
 
-		Point3d start 	= command.getAbsoluteStartCoordinate().toPoint3d();
-		Point3d center 	= command.getAbsoluteCenterCoordinate().toPoint3d();
-		Point3d end 	= command.getAbsoluteEndCoordinate().toPoint3d();
+		Point3d start 	= command.getAbsoluteStartCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d center 	= command.getAbsoluteCenterCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d end 	= command.getAbsoluteEndCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d();
 
 		Vector3d v1 = new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z);
 		Vector3d v2 = new Vector3d(end.x - center.x, end.y - center.y, end.z - center.z);

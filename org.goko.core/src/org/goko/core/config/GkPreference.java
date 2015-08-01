@@ -22,17 +22,22 @@ import java.io.IOException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 
-public abstract class GkPreference implements IPreferenceStore{
+public abstract class GkPreference implements IPreferenceStore, IPersistentPreferenceStore{
 	private ScopedPreferenceStore store;
 
 	public GkPreference(String id) {
-		store = new ScopedPreferenceStore(InstanceScope.INSTANCE, id);	
+		this(id, InstanceScope.INSTANCE);	
+	}
+	
+	public GkPreference(String id, IScopeContext scope) {
+		store = new ScopedPreferenceStore(scope, id);	
 	}
 	
 	public ScopedPreferenceStore getPreferenceStore(){
@@ -357,18 +362,13 @@ public abstract class GkPreference implements IPreferenceStore{
 		store.setValue(name, value);
 	}
 
-	/**
-	 * @throws IOException
-	 * @see org.goko.common.preferences.ScopedPreferenceStore#save()
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.preference.IPersistentPreferenceStore#save()
 	 */
-	public void save() throws GkException {
-		try {
-			store.save();
-		} catch (IOException e) {
-			throw new GkTechnicalException(e);
-		}
+	@Override
+	public void save() throws IOException {
+		store.save();
 	}
-
 	/**
 	 * @return
 	 * @see java.lang.Object#toString()

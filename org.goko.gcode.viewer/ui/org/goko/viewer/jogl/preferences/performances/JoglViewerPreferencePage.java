@@ -9,8 +9,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.fieldeditor.ComboFieldEditor;
-import org.goko.common.preferences.fieldeditor.QuantityFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.QuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
@@ -73,7 +73,7 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 		minorSpacingFieldEditor.setWidthInChars(5);
 		minorSpacingFieldEditor.setLabel("Minor grid spacing");
 		
-		Unit<Length> lengthUnit;lengthUnit = GokoPreference.getInstance().getLengthUnit();
+		Unit<Length> lengthUnit = GokoPreference.getInstance().getLengthUnit();
 		
 		majorSpacingFieldEditor.setUnit(lengthUnit);
 		minorSpacingFieldEditor.setUnit(lengthUnit);

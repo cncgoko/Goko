@@ -130,7 +130,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		setActiveCamera(PerspectiveCamera.ID);
 
 		setOverlayFont(new Font("SansSerif", Font.PLAIN, 12));
-		onCanvasCreated(canvas);
+		onCanvasCreated(canvas);		
 		return canvas;
 	}
 	
@@ -175,7 +175,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			LOG.error(e);
 		}
 		gl.glUseProgram(0);
-		drawOverlay();
+		drawOverlay();		
 	}
 
 	/**
@@ -285,7 +285,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
 
 		// Line smooth
-	    gl.glEnable(GL.GL_LINE_SMOOTH);
+	    gl.glEnable(GL.GL_LINE_SMOOTH);	    
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
 
 	    int shaderProgram = ShaderLoader.loadShader(new DebugGL3(gl.getGL3()), EnumGokoShaderProgram.LINE_SHADER);
@@ -411,6 +411,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		if(canvasCapabilities != null){
+			int ms = JoglViewerPreference.getInstance().getMultisampling();
 			canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 		}
 	}

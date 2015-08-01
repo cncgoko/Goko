@@ -30,7 +30,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxisDirection;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
-import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
+import org.goko.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 
 /**
  * Draw the XYZ axis
@@ -42,7 +42,7 @@ import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
  * @author PsyKo
  *
  */
-public class FourAxisRenderer extends AbstractVboJoglRenderer {
+class FourAxisRenderer extends AbstractLineRenderer {
 	protected static final String ID = "org.goko.viewer.jogl.utils.render.AxisRenderer";
 	public static final int ROTATION_AROUND_X = 1;
 	public static final int ROTATION_AROUND_Y = 2;
@@ -68,6 +68,7 @@ public class FourAxisRenderer extends AbstractVboJoglRenderer {
 		this.yColor = colorY;
 		this.zColor = colorZ;
 		this.aColor = colorA;
+		setLineWidth(3);
 	}
 	/**
 	 * (inheritDoc)
@@ -96,11 +97,11 @@ public class FourAxisRenderer extends AbstractVboJoglRenderer {
 		setVerticesCount(6 + rotationArcVerticesCount);
 		FloatBuffer axisVertices = FloatBuffer.allocate(getVerticesCount()*4);
 		axisVertices.put(new float[]{0f,0f,0.01f,1f});
-		axisVertices.put(new float[]{scale,0f,0.01f,1f});
+		axisVertices.put(new float[]{scale - 1,0f,0.01f,1f});
 		axisVertices.put(new float[]{0f,0f,0.01f,1f});
-		axisVertices.put(new float[]{0f,scale,0.01f,1f});
+		axisVertices.put(new float[]{0f,scale - 1,0.01f,1f});
 		axisVertices.put(new float[]{0f,0f,0f,1f});
-		axisVertices.put(new float[]{0f,0f,scale,1f});
+		axisVertices.put(new float[]{0f,0f,scale - 1,1f});
 
 
 		FloatBuffer axisColors = FloatBuffer.allocate(getVerticesCount()*4);
@@ -191,7 +192,8 @@ public class FourAxisRenderer extends AbstractVboJoglRenderer {
 	 */
 	public void setRotationAxis(EnumRotaryAxisDirection rotationAxis) throws GkException {
 		this.rotationAxis = rotationAxis;
-		buildGeometry();
+		//buildGeometry();
+		update();
 		this.updateBufferObjects();
 	}
 

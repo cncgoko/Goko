@@ -21,7 +21,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_J1FmQD8mEeOV84c-W_LF1A" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_3DfvgD8lEeOV84c-W_LF1A"/>
     <elements xsi:type="commands:Handler" xmi:id="_W2ocoFrsEeSeFYUQtBIr9A" elementId="org.goko.base.dro.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_YHJpUFrsEeSeFYUQtBIr9A"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p2ftQD8mEeOV84c-W_LF1A" featurename="children" parentElementId="goko.menu.window.tools">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p2ftQD8mEeOV84c-W_LF1A" featurename="children" parentElementId="goko.menu.window.view">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_qJ5xcD8mEeOV84c-W_LF1A" label="Digital Read Out" iconURI="platform:/plugin/org.goko.base.dro/icons/compass.png" command="_3DfvgD8lEeOV84c-W_LF1A">
       <parameters xmi:id="_vHtvQD8mEeOV84c-W_LF1A" elementId="" name="org.goko.commands.toggleView.viewName" value="goko.application.parts.base.dro"/>
     </elements>

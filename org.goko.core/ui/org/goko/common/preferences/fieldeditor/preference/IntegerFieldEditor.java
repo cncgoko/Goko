@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.IntegerValidator;
@@ -21,7 +21,7 @@ public class IntegerFieldEditor extends StringFieldEditor {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.StringFieldEditor#isValidValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.StringFieldEditor#isValidValue()
 	 */
 	@Override
 	protected boolean isValidValue() {

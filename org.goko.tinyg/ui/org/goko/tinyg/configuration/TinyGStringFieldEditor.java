@@ -3,7 +3,7 @@ package org.goko.tinyg.configuration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.goko.common.preferences.fieldeditor.StringFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.StringFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 
@@ -16,7 +16,7 @@ public class TinyGStringFieldEditor extends StringFieldEditor implements ITinyGF
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {
@@ -25,7 +25,7 @@ public class TinyGStringFieldEditor extends StringFieldEditor implements ITinyGF
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -33,7 +33,7 @@ public class TinyGStringFieldEditor extends StringFieldEditor implements ITinyGF
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {		

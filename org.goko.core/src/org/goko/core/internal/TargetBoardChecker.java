@@ -63,27 +63,19 @@ public class TargetBoardChecker {
 			System.exit(0);
 		}else{
 			featureSetManager.setTargetBoard(dialog.getTargetBoard());
+			featureSetManager.startFeatureSet();
 			//GokoPreference.getInstance().setTargetBoard(dialog.getTargetBoard());
 		}
 	}
 	
+	/**
+	 * Tracks the current target board 
+	 * @param targetBoard the target board 
+	 * @param context the IEclipseContext
+	 */
 	@Inject
 	@Optional
 	public void onTargetBoardChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_TARGET_BOARD) String targetBoard, IEclipseContext context) {				    
 		context.set("org.goko.targetBoard",  targetBoard);
-	}
-	@Inject
-	@Optional
-	public void unloadModelFramgents(@UIEventTopic(IFeatureSetManager.TOPIC_UNLOAD_MODEL_FRAGMENTS) String targetBoard, IEclipseContext context) throws GkException{
-		//System.err.println("TOPIC_UNLOAD_MODEL_FRAGMENTS"); TODO
-		featureSetManager.unloadFeatureSetFragment(context, targetBoard);
-	}
-	
-	@Inject
-	@Optional
-	public void loadModelFramgents(@UIEventTopic(IFeatureSetManager.TOPIC_LOAD_MODEL_FRAGMENTS) String targetBoard, IEclipseContext context) throws GkException{
-		System.err.println("TOPIC_LOAD_MODEL_FRAGMENTS");
-		featureSetManager.loadFeatureSetFragment(context);
-	}
-	
+	}	
 }

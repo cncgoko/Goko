@@ -19,18 +19,21 @@
  */
 package org.goko.tinyg.handlers;
 
-import javax.inject.Inject;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.bean.MachineState;
 import org.goko.tinyg.controller.ITinygControllerService;
 
 public class TinyGConfigurationRefreshHandler {
 
 	@Execute
-	@Inject
+	@Optional
 	public void execute(ITinygControllerService tinyg) throws GkException {
-		tinyg.refreshConfiguration();
+		if(!ObjectUtils.equals(MachineState.UNDEFINED,tinyg.getState())){
+			tinyg.refreshConfiguration();
+		}
 	}
 
 }

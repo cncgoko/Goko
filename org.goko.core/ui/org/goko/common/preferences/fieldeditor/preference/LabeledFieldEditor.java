@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public abstract class LabeledFieldEditor<C extends Control> extends FieldEditor<C> {
+public abstract class LabeledFieldEditor<C extends Control> extends PreferenceFieldEditor<C> {
     /**
      * Text limit constant (value <code>-1</code>) indicating unlimited
      * text limit and width.
@@ -29,7 +29,7 @@ public abstract class LabeledFieldEditor<C extends Control> extends FieldEditor<
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {		
@@ -42,7 +42,7 @@ public abstract class LabeledFieldEditor<C extends Control> extends FieldEditor<
 	
 	
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setLabel(java.lang.String)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setLabel(java.lang.String)
 	 */
 	@Override
 	public void setLabel(String label) {		

@@ -804,10 +804,9 @@ Public License instead of this License.  But first, please read
    </plugins>
 
    <features>
-      <feature id="org.eclipse.e4.rcp" version="1.3.100.v20140909-1633"/>
-      <feature id="org.eclipse.emf.ecore" version="2.10.2.v20150123-0348"/>
-      <feature id="org.eclipse.emf.common" version="2.10.1.v20150123-0348"/>
-      <feature id="org.eclipse.equinox.p2.core.feature" version="1.3.0.v20140523-0116"/>
+      <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
@@ -815,6 +814,7 @@ Public License instead of this License.  But first, please read
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.core.feature"/>
       <feature id="org.goko.feature"/>
+      <feature id="org.eclipse.equinox.p2.core.feature" version="1.3.100.v20150527-1706"/>
    </features>
 
    <configurations>

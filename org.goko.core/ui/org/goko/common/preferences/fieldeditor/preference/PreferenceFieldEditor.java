@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.DialogPage;
@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 
-public abstract class FieldEditor<C extends Control> extends Composite implements IFieldEditor<C>{
+public abstract class PreferenceFieldEditor<C extends Control> extends Composite implements IPreferenceFieldEditor<C>{
     /**
      * Property name constant (value <code>"field_editor_is_valid"</code>)
      * to signal a change in the validity of the value of this field editor.
@@ -40,7 +40,7 @@ public abstract class FieldEditor<C extends Control> extends Composite implement
      * @param parent
      * @param style
      */
-    public FieldEditor(Composite parent, int style){
+    public PreferenceFieldEditor(Composite parent, int style){
     	super(parent, style);		
     	label = "Default";    	
     }

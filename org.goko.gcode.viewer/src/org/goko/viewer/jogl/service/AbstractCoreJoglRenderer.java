@@ -99,6 +99,7 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 
 		// Deactivate shader
 		gl.glUseProgram(0);
+		
 	}
 
 	protected void initialize(GL3 gl) throws GkException {

@@ -123,18 +123,7 @@ public class JoglViewerPreference extends GkPreference{
 	public void setRotaryAxisDirection(EnumRotaryAxisDirection rotaryAxisDirection) {		
 		setValue(ROTARY_AXIS_DIRECTION, rotaryAxisDirection.name());
 	}
-//	/**
-//	 * @return the rotaryAxisDistanceMode
-//	 */
-//	public boolean isRotaryAxisDistanceMode() {
-//		return rotaryAxisDistanceMode;
-//	}
-//	/**
-//	 * @param rotaryAxisDistanceMode the rotaryAxisDistanceMode to set
-//	 */
-//	public void setRotaryAxisDistanceMode(boolean rotaryAxisDistanceMode) {
-//		this.rotaryAxisDistanceMode = rotaryAxisDistanceMode;
-//	}
+
 	/**
 	 * @return the rotaryAxisEnabled
 	 */
@@ -147,29 +136,6 @@ public class JoglViewerPreference extends GkPreference{
 	 */
 	public void setRotaryAxisEnabled(boolean rotaryAxisEnabled) {
 		setValue(ROTARY_AXIS_ENABLED, rotaryAxisEnabled);
-	}
-
-//	/**
-//	 * @return the rotaryAxisTravelPerTurn
-//	 */
-//	public boolean isRotaryAxisTravelPerTurn() {
-//		return rotaryAxisTravelPerTurn;
-//	}
-//
-//	/**
-//	 * @param rotaryAxisTravelPerTurn the rotaryAxisTravelPerTurn to set
-//	 */
-//	public void setRotaryAxisTravelPerTurn(boolean rotaryAxisTravelPerTurn) {
-//		this.rotaryAxisTravelPerTurn = rotaryAxisTravelPerTurn;
-//	}
-
-	private void savePreferences(){		
-		save();		
-	}
-
-	public void save() {
-		savePreferences();
-
 	}
 
 	/**

@@ -10,6 +10,7 @@ import javax.vecmath.Vector3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.viewer.jogl.service.JoglUtils;
 
 /**
  * Linear motion renderer
@@ -45,8 +46,8 @@ public class LinearMotionRenderer{
 	private List<Point3d> renderLinearLine(LinearMotionCommand command) throws GkException {
 		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		List<Point3d> vertices = new ArrayList<Point3d>();
-		Point3d startPoint 	= command.getAbsoluteStartCoordinate().toPoint3d();
-		Point3d endPoint 	= command.getAbsoluteEndCoordinate().toPoint3d();
+		Point3d startPoint 	= command.getAbsoluteStartCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d endPoint 	= command.getAbsoluteEndCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d();
 
 		if(settings.isRotaryAxisEnabled()){
 			// It's a simple line, but it doesn't mean the rotary (A, B or C) value is at 0
@@ -89,14 +90,14 @@ public class LinearMotionRenderer{
 		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		ArrayList<Point3d> vertices = new ArrayList<Point3d>();
 
-		Point3d startPoint 	= command.getAbsoluteStartCoordinate().toPoint3d();
+		Point3d startPoint 	= command.getAbsoluteStartCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d();
 
 		Matrix4d rotationMatrix = new Matrix4d();
 
 		double deltaAngleDeg = 0;
 
-		Vector3d deltaVector = new Vector3d(command.getAbsoluteEndCoordinate().toPoint3d());
-		deltaVector.sub(command.getAbsoluteStartCoordinate().toPoint3d());
+		Vector3d deltaVector = new Vector3d(command.getAbsoluteEndCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d());
+		deltaVector.sub(command.getAbsoluteStartCoordinate().to(JoglUtils.JOGL_UNIT).toPoint3d());
 
 		double startAngle = command.getAbsoluteStartCoordinate().getA().doubleValue();
 		deltaAngleDeg = command.getAbsoluteEndCoordinate().getA().doubleValue() - command.getAbsoluteStartCoordinate().getA().doubleValue();

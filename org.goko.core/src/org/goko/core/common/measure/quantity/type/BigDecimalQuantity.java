@@ -132,6 +132,14 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#divide(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public Number divide(Quantity<Q> q) {
+		return value.divide(new BigDecimal(q.to(getUnit()).doubleValue()), value.scale(), BigDecimal.ROUND_HALF_UP);		
+	}
 
 	/** (inheritDoc)
 	 * @see java.lang.Object#equals(java.lang.Object)

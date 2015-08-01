@@ -24,12 +24,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.vecmath.Color3f;
-import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -38,6 +34,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IContinuousJogService;
@@ -47,6 +44,7 @@ import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.log.GkLog;
@@ -59,13 +57,11 @@ import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
 import org.goko.viewer.jogl.utils.render.ToolRenderer;
 import org.goko.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
-import org.goko.viewer.jogl.utils.render.coordinate.FourAxisRenderer;
-import org.goko.viewer.jogl.utils.render.coordinate.measurement.ArrowRenderer;
+import org.goko.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
 import org.goko.viewer.jogl.utils.render.gcode.BoundsRenderer;
 import org.goko.viewer.jogl.utils.render.gcode.DefaultGCodeProviderRenderer;
 import org.goko.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer;
 import org.goko.viewer.jogl.utils.render.gcode.RotaryAxisAdapter;
-import org.goko.viewer.jogl.utils.render.text.TextRenderer;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -97,7 +93,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private BoundsRenderer boundsRenderer;
 	private CoordinateSystemSetRenderer coordinateSystemRenderer;
 	private GridRenderer gridRenderer;
-	private FourAxisRenderer zeroRenderer;
+	private FourAxisOriginRenderer zeroRenderer;
 	private BoundingTuple6b bounds;
 	private KeyboardJogAdatper keyboardJogAdapter;
 	private ToolRenderer toolRenderer;
@@ -121,25 +117,16 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		
 		jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
 		LOG.info("Starting "+this.getServiceId());
-		this.gridRenderer = new GridRenderer();
-		addRenderer(gridRenderer);
-		TextRenderer xTextRenderer = new TextRenderer("X",2, new Point3d(10,-0.1,0), TextRenderer.MIDDLE | TextRenderer.LEFT);
-		xTextRenderer.setColor(1,0,0,1);
-		addRenderer(new ArrowRenderer(new Point3d(10,0,0), new Vector3d(1,0,0), new Vector3d(0,1,0), new Color4f(1,0,0,1)));
-		TextRenderer yTextRenderer = new TextRenderer("Y",2, new Point3d(-0.5,10,0), TextRenderer.BOTTOM | TextRenderer.LEFT);
-		yTextRenderer.setColor(0,1,0,1);
-		addRenderer(new ArrowRenderer(new Point3d(0,10,0), new Vector3d(0,1,0), new Vector3d(1,0,0), new Color4f(0,1,0,1)));
-		TextRenderer zTextRenderer = new TextRenderer("Z",2, new Point3d(-0.5,0,10), new Vector3d(1,0,0), new Vector3d(0,0,1), TextRenderer.BOTTOM | TextRenderer.LEFT);
-		addRenderer(new ArrowRenderer(new Point3d(0,0,10), new Vector3d(0,0,1), new Vector3d(1,0,0), new Color4f(0,0,1,1)));
-		zTextRenderer.setColor(0,0,1,1);
-		addRenderer(xTextRenderer);
-		addRenderer(yTextRenderer);
-		addRenderer(zTextRenderer);
-		zeroRenderer = new FourAxisRenderer(10, JoglViewerPreference.getInstance().getRotaryAxisDirection(), new Color3f(1,0,0), new Color3f(0,1,0), new Color3f(0,0,1), new Color3f(1,1,0));
-		zeroRenderer.setDisplayRotaryAxis(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
-		addRenderer(zeroRenderer);	
+		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
+		addRenderer(zeroRenderer);
 		boundsRenderer = new BoundsRenderer(null);
-		addRenderer(boundsRenderer);		
+		addRenderer(boundsRenderer);	
+		this.gridRenderer = new GridRenderer(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
+				 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT), 
+				 NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT), 
+				 NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
+		addRenderer(gridRenderer);
+		
 	}
 
 	/** (inheritDoc)
@@ -210,14 +197,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		matrix.glMultMatrixf(rotMatrix.glGetMvMatrixf());
 		matrix.update();
 	}
-	/**
-	 * Clear the current canvas
-	 * @param gl the GL2
-	 */
-	private void clear(GL3 gl){
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-	}
-
+	
 	private Point3d getToolPosition(){
 		Point3d p = new Point3d();
 		try{
@@ -341,7 +321,11 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 					|| StringUtils.equals(event.getProperty(), JoglViewerPreference.MINOR_GRID_SPACING)
 					|| StringUtils.equals(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
 				this.gridRenderer.destroy();
-				this.gridRenderer = new GridRenderer();
+				this.gridRenderer = new GridRenderer(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
+													 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT), 
+													 NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT), 
+													 NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
+				
 				addRenderer(this.gridRenderer);
 			}
 			if(gcodeRenderer != null){

@@ -102,7 +102,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		}
 		glCanvas.getGL().getGL2().glMatrixMode(GL2.GL_MODELVIEW);  // choose projection matrix
 		glCanvas.getGL().getGL2().glLoadIdentity();             // reset projection matrix
-		glu.gluPerspective(45.0f, fAspect, 0.5f, 1000.0f);
+		glu.gluPerspective(45.0f, fAspect, 0.5f, 10000.0f);
 
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 		pmvMatrix.glLoadIdentity();
@@ -110,7 +110,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		float fov = 45.0f;
 		float aspect = fAspect;
 		float zNear = 0.5f;
-		float zFar = 1000.0f;
+		float zFar = 10000.0f;
 
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 		pmvMatrix.glLoadIdentity();
@@ -440,7 +440,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		float fov = 45.0f;
 		float aspect = (float) width / height;
 		float zNear = 0.5f;
-		float zFar = 1000.0f;
+		float zFar = 10000.0f;
 
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 		pmvMatrix.glLoadIdentity();

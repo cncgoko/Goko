@@ -3,29 +3,23 @@
  */
 package org.goko.core.feature;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 
 /**
  * @author PsyKo
@@ -40,14 +34,6 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	private List<IFeatureSet> lstFeatureSet;
 	/** Current running feature set */
 	private List<IFeatureSet> lstActiveFeatureSet;	
-	/** Extension registry for fragment search */
-	private IExtensionRegistry extensionRegistry;
-	/** Preferences service */ // FIXME : check why the GokoPreference.getInstance.getTarget board throw a NPE
-	private IPreferencesService preferencesService;
-	/** The current active target board*/
-	private String targetBoard;
-	/** Event admin for sync GUI model handling */
-	private EventAdmin eventAdmin;
 	
 	/**
 	 * Constructor
@@ -59,12 +45,9 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	}
 
 	/**
-	 * Add the given FeatureSet
-	 * 
-	 * @param featureSet
-	 *            the feature set to add
-	 * @throws GkException
-	 *             GkException
+	 * Add the given FeatureSet 
+	 * @param featureSet the feature set to add
+	 * @throws GkException GkException
 	 */
 	public void addFeatureSet(IFeatureSet featureSet) throws GkException {
 		lstFeatureSet.add(featureSet);		
@@ -78,30 +61,8 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 		if (StringUtils.isNotBlank(targetBoard) && CollectionUtils.isNotEmpty(lstActiveFeatureSet)) {			
 			for (IFeatureSet iFeatureSet : lstActiveFeatureSet) {				
 				iFeatureSet.stop();
-			}
-			Map<String, String> properties = new HashMap<String, String>();
-			properties.put(IEventBroker.DATA, targetBoard);
-			Event event = new Event(TOPIC_UNLOAD_MODEL_FRAGMENTS, properties);
-			eventAdmin.postEvent(event);
+			}			
 		}
-	}
-	private void activateTargetBoardSupport() throws GkException{		
-		// Now enable new feature set
-		if(StringUtils.isNotBlank(getTargetBoard())){			
-			if (CollectionUtils.isNotEmpty(lstFeatureSet)) {
-				for (IFeatureSet iFeatureSet : lstFeatureSet) {
-					startIfRequired(iFeatureSet);				
-				}
-				// Notify GUI
-				Map<String, String> properties = new HashMap<String, String>();
-				properties.put(IEventBroker.DATA, targetBoard);
-				Event event = new Event(TOPIC_LOAD_MODEL_FRAGMENTS, properties);
-				eventAdmin.postEvent(event);
-			}	
-		}
-//		else{
-//			throw new GkTechnicalException("No targetboard in preferences...");
-//		}
 	}
 	
 	private void startIfRequired(IFeatureSet featureSet) throws GkException {
@@ -116,53 +77,30 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	/**
 	 * @return the configured target board
 	 */
-	private String getTargetBoard() {
-		if(targetBoard == null && preferencesService != null){
-			targetBoard = preferencesService.getString(GokoPreference.NODE_ID,GokoPreference.KEY_TARGET_BOARD, StringUtils.EMPTY, null); 
-		}
-		return targetBoard;		
+	private String getTargetBoard() {		
+		return GokoPreference.getInstance().getTargetBoard();	
 	}
 
 	/**
 	 * (inheritDoc)
-	 * 
 	 * @see org.goko.core.feature.IFeatureSetManager#setTargetBoard(java.lang.String)
 	 */
 	@Override
 	public void setTargetBoard(String id) throws GkException {
 		String currentTargetBoard = getTargetBoard();
 		if(StringUtils.equals(currentTargetBoard, id)){
-			return; // Nothing to chang			
+			return; // Nothing to change		
 		}
 		GokoPreference.getInstance().setTargetBoard(id);
-		GokoPreference.getInstance().save();
-	}
-
-	/**
-	 * (inheritDoc)
-	 * 
-	 * @see org.goko.core.feature.IFeatureSetManager#loadFeatureSetFragment()
-	 */
-	@Override
-	public void loadFeatureSetFragment(IEclipseContext context) throws GkException {
-//		FeatureSetModelAssembler featureModelAssembler = new FeatureSetModelAssembler();
-//		ContextInjectionFactory.inject(featureModelAssembler, context);
-//		featureModelAssembler.processModel(getTargetBoard(), true);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.feature.IFeatureSetManager#unloadFeatureSetFragment(org.eclipse.e4.core.contexts.IEclipseContext, java.lang.String)
-	 */
-	@Override
-	public void unloadFeatureSetFragment(IEclipseContext context, String oldTargetBoard) throws GkException {		
-//		FeatureSetModelDisassembler disassembler = new FeatureSetModelDisassembler();
-//		ContextInjectionFactory.inject(disassembler, context);
-//		disassembler.removeModel(oldTargetBoard);
+		try {
+			GokoPreference.getInstance().save();
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
 	}
 	
 	/**
 	 * (inheritDoc)
-	 * 
 	 * @see org.goko.core.feature.IFeatureSetManager#existTargetBoard(java.lang.String)
 	 */
 	@Override
@@ -178,7 +116,6 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 
 	/**
 	 * (inheritDoc)
-	 * 
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
 	@Override
@@ -188,27 +125,16 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 
 	/**
 	 * (inheritDoc)
-	 * 
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
 	public void start() throws GkException {		
 		LOG.info("Starting " + SERVICE_ID);	
-		activateTargetBoardSupport();
+		startFeatureSet();
 	}
 
 	/**
-	 * @throws GkException 
-	 * 
-	 */
-	public void setPreferencesService(IPreferencesService prefs) throws GkException {
-		this.preferencesService = prefs;	
-		activateTargetBoardSupport();
-		//on ne detecte pas le changement de preference (le feature set manager n'est pas ajouté en listener sur les prefs)
-	}
-	/**
 	 * (inheritDoc)
-	 * 
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
@@ -240,37 +166,28 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {		
-//		try {
-//		//	deactivateTargetBoardSupport(String.valueOf(event.getOldValue()));
-//		//	activateTargetBoardSupport();
-//		} catch (GkException e) {
-//			LOG.error(e);
-//		}
-		
-		//a vertifier les cas à la con
+		try {
+			deactivateTargetBoardSupport(String.valueOf(event.getOldValue()));
+			startFeatureSet();
+		} catch (GkException e) {
+			LOG.error(e);
+		}		
 	}
 
-	/**
-	 * @return the extensionRegistry
+	/** (inheritDoc)
+	 * @see org.goko.core.feature.IFeatureSetManager#startFeatureSet()
 	 */
-	protected IExtensionRegistry getExtensionRegistry() {
-		return extensionRegistry;
+	@Override
+	public void startFeatureSet() throws GkException {
+		// Now enable new feature set
+		if(StringUtils.isNotBlank(getTargetBoard())){			
+			if (CollectionUtils.isNotEmpty(lstFeatureSet)) {
+				for (IFeatureSet iFeatureSet : lstFeatureSet) {
+					startIfRequired(iFeatureSet);				
+				}				
+			}	
+		}
 	}
-
-	/**
-	 * @param extensionRegistry the extensionRegistry to set
-	 */
-	public void setExtensionRegistry(IExtensionRegistry extensionRegistry) {
-		this.extensionRegistry = extensionRegistry;
-	}
-
-	/**
-	 * @param eventAdmin the eventAdmin to set
-	 */
-	public void setEventAdmin(EventAdmin eventAdmin) {
-		this.eventAdmin = eventAdmin;
-	}
-
 
 
 }

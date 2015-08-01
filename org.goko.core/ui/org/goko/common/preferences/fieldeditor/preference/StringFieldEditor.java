@@ -1,4 +1,4 @@
-package org.goko.common.preferences.fieldeditor;
+package org.goko.common.preferences.fieldeditor.preference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
@@ -58,7 +58,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {		
@@ -107,7 +107,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 		if(textLimit != UNLIMITED && StringUtils.length(getText()) > textLimit){
 			isValid = false;
 		}
-		String tt = getText();
+		
 		if( !emptyStringAllowed && StringUtils.isBlank(getText())){
 			isValid = false;
 		}
@@ -137,7 +137,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 		return getControl().getText();
 	}
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#setDefaultValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setDefaultValue()
 	 */
 	@Override
 	protected void setDefaultValue() throws GkException {
@@ -146,7 +146,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#loadValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()
 	 */
 	@Override
 	protected void loadValue() throws GkException {		
@@ -155,7 +155,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#storeValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#storeValue()
 	 */
 	@Override
 	protected void storeValue() throws GkException {
@@ -226,7 +226,7 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.FieldEditor#isValid()
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#isValid()
 	 */
 	@Override
 	public boolean isValid() {

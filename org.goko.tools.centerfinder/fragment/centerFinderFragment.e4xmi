@@ -11,7 +11,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LoGKkNLXEeOYCoZclXkiMg" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_OnO1MNLXEeOYCoZclXkiMg" elementId="org.goko.tools.centerfinder.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_I4o6sNLXEeOYCoZclXkiMg"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SLMrMNLXEeOYCoZclXkiMg" featurename="children" parentElementId="goko.menu.window.tools">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SLMrMNLXEeOYCoZclXkiMg" featurename="children" parentElementId="goko.menu.window.view">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_TgC-QNLXEeOYCoZclXkiMg" elementId="org.goko.tools.centerfinder.handledmenuitem.show" label="Center finder" iconURI="platform:/plugin/org.goko.tools.centerfinder/icons/geolocation.png" command="_I4o6sNLXEeOYCoZclXkiMg">
       <parameters xmi:id="_0Gx_4NLXEeOYCoZclXkiMg" elementId="" name="org.goko.commands.toggleView.viewName" value="goko.application.tools.centerfinder"/>
     </elements>

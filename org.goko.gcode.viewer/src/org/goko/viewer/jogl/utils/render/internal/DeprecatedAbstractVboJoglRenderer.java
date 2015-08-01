@@ -37,7 +37,7 @@ import com.jogamp.common.nio.Buffers;
  *
  */
 public abstract class DeprecatedAbstractVboJoglRenderer extends AbstractCoreJoglRenderer {
-	protected IntBuffer vao;
+	protected int vao;
 	protected int vbo[];
 	private int internVerticesCount;
 	private FloatBuffer vertices;
@@ -55,9 +55,10 @@ public abstract class DeprecatedAbstractVboJoglRenderer extends AbstractCoreJogl
 		colors.rewind();
 
 		// JOGL Part now
-		vao = IntBuffer.allocate(1);
-		gl.glGenVertexArrays(1, vao);
-		gl.glBindVertexArray(vao.get(0));
+		IntBuffer vaoBuffer = IntBuffer.allocate(1);
+		gl.glGenVertexArrays(1, vaoBuffer);		
+		vao = vaoBuffer.get();
+		gl.glBindVertexArray(vao);
 		vbo = new int[2];
 		gl.glGenBuffers(2, vbo, 0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
@@ -101,6 +102,7 @@ public abstract class DeprecatedAbstractVboJoglRenderer extends AbstractCoreJogl
 		if(!isInitialized()){
 			initialize(gl);
 		}
+		gl.glBindVertexArray(this.vao);
 		gl.glUseProgram(getShaderProgram());
 		gl.glEnableVertexAttribArray(0);
 		gl.glEnableVertexAttribArray(1);
@@ -112,8 +114,8 @@ public abstract class DeprecatedAbstractVboJoglRenderer extends AbstractCoreJogl
 	    gl.glVertexAttribPointer(1,4, GL.GL_FLOAT, false, 0, 0);
 
 	    gl.glDrawArrays(getRenderType(), 0, getVerticesCount());
-	    gl.glDisableVertexAttribArray(0);
-	    gl.glDisableVertexAttribArray(1);
+	//    gl.glDisableVertexAttribArray(0);
+	//    gl.glDisableVertexAttribArray(1);
 	    gl.glUseProgram(0);
 	}
 

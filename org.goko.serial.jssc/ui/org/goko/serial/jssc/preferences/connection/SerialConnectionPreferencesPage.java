@@ -1,16 +1,15 @@
 package org.goko.serial.jssc.preferences.connection;
 
-import jssc.SerialPort;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.fieldeditor.BooleanFieldEditor;
-import org.goko.common.preferences.fieldeditor.ComboFieldEditor;
-import org.goko.serial.jssc.internal.JsscSerialActivator;
+import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.serial.jssc.service.JsscParameter;
+
+import jssc.SerialPort;
 
 /**
  * Serial connection preference page

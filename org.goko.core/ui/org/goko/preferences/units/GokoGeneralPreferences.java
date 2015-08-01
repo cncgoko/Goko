@@ -8,7 +8,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.fieldeditor.ComboFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.feature.IFeatureSetManager;
 import org.goko.core.feature.TargetBoard;
