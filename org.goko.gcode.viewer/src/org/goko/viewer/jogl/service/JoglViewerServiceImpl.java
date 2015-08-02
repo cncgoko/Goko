@@ -44,7 +44,6 @@ import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.log.GkLog;
@@ -121,12 +120,9 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(zeroRenderer);
 		boundsRenderer = new BoundsRenderer(null);
 		addRenderer(boundsRenderer);	
-		this.gridRenderer = new GridRenderer(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
-				 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT), 
-				 NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT), 
-				 NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
-		addRenderer(gridRenderer);
-		
+		this.gridRenderer = new GridRenderer();
+		updateGridRenderer();
+		addRenderer(gridRenderer);		
 	}
 
 	/** (inheritDoc)
@@ -321,11 +317,15 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 					|| StringUtils.equals(event.getProperty(), JoglViewerPreference.MINOR_GRID_SPACING)
 					|| StringUtils.equals(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
 				this.gridRenderer.destroy();
-				this.gridRenderer = new GridRenderer(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
-													 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT), 
-													 NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT), 
-													 NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
+				this.gridRenderer = new GridRenderer();
+//				this.gridRenderer = new GridRenderer(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
+//													 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT), 
+//													 NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT), 
+//													 NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT),
+//													 JoglViewerPreference.getInstance().getMajorColor(),
+//													 JoglViewerPreference.getInstance().getMinorColor());
 				
+				updateGridRenderer();
 				addRenderer(this.gridRenderer);
 			}
 			if(gcodeRenderer != null){
@@ -384,4 +384,16 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}
 	}
 
+	private void updateGridRenderer() throws GkException{
+		
+		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
+		gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
+		gridRenderer.setMajorIncrement(NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT));
+		gridRenderer.setMinorIncrement(NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
+		gridRenderer.setMajorUnitColor( JoglViewerPreference.getInstance().getMajorColor());
+		gridRenderer.setMinorUnitColor( JoglViewerPreference.getInstance().getMinorColor());
+		gridRenderer.setOpacity(JoglViewerPreference.getInstance().getGridOpacity());
+		
+		gridRenderer.update();
+	}
 }

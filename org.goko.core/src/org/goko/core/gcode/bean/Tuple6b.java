@@ -134,6 +134,15 @@ public class Tuple6b {
 		return result;
 	}
 	
+	public void min(Tuple6b a, Tuple6b b){		
+		this.x = QuantityUtils.min(a.x, b.x);
+		this.y = QuantityUtils.min(a.y, b.y);
+		this.z = QuantityUtils.min(a.z, b.z);
+		this.a = QuantityUtils.min(a.a, b.a);
+		this.b = QuantityUtils.min(a.b, b.b);
+		this.c = QuantityUtils.min(a.c, b.c);		
+	}
+	
 	public Tuple6b max(Tuple6b t){
 		Tuple6b result = new Tuple6b(this);
 		result.x = QuantityUtils.max(x, t.x);
@@ -143,6 +152,15 @@ public class Tuple6b {
 		result.b = QuantityUtils.max(b, t.b);
 		result.c = QuantityUtils.max(c, t.c);
 		return result;
+	}
+	
+	public void max(Tuple6b a, Tuple6b b){		
+		this.x = QuantityUtils.max(a.x, b.x);
+		this.y = QuantityUtils.max(a.y, b.y);
+		this.z = QuantityUtils.max(a.z, b.z);
+		this.a = QuantityUtils.max(a.a, b.a);
+		this.b = QuantityUtils.max(a.b, b.b);
+		this.c = QuantityUtils.max(a.c, b.c);		
 	}
 	
 	public Tuple6b subtract(Tuple6b sub){

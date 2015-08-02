@@ -22,6 +22,12 @@
             id="org.goko.jogl.viewer.preferences.4thaxis"
             name="4th axis">
       </page>
+      <page
+            category="org.goko.jogl.viewer.preferences.viewer"
+            class="org.goko.viewer.jogl.preferences.GridPreferencesPage"
+            id="org.goko.jogl.viewer.preferences.grid"
+            name="Grid">
+      </page>
    </extension>
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
