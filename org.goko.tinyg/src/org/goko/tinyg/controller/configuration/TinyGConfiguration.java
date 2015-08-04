@@ -82,19 +82,19 @@ public class TinyGConfiguration {
 	public static final String DEFAULT_DISTANCE_MODE	= "gdi";
 
 	// Axis settings
-	public static final String AXIS_MODE 			= "am";
-	public static final String VELOCITY_MAXIMUM 	= "vm";
-	public static final String FEEDRATE_MAXIMUM 	= "fr";
-	public static final String TRAVEL_MAXIMUM 		= "tm";
-	public static final String JERK_MAXIMUM 		= "jm";
-	public static final String JERK_HOMING 			= "jh";
-	public static final String JUNCTION_DEVIATION	= "jd";
-	public static final String RADIUS_SETTING 		= "ra";
-	public static final String MINIMUM_SWITCH_MODE 	= "sn";
-	public static final String MAXIMUM_SWITCH_MODE 	= "sx";
-	public static final String SEARCH_VELOCITY		= "sv";
-	public static final String LATCH_VELOCITY 		= "lv";
-	public static final String ZERO_BACKOFF 		= "zb";
+//	public static final String AXIS_MODE 			= "am";
+//	public static final String VELOCITY_MAXIMUM 	= "vm";
+//	public static final String FEEDRATE_MAXIMUM 	= "fr";
+//	public static final String TRAVEL_MAXIMUM 		= "tm";
+//	public static final String JERK_MAXIMUM 		= "jm";
+//	public static final String JERK_HOMING 			= "jh";
+//	public static final String JUNCTION_DEVIATION	= "jd";
+//	public static final String RADIUS_SETTING 		= "ra";
+//	public static final String MINIMUM_SWITCH_MODE 	= "sn";
+//	public static final String MAXIMUM_SWITCH_MODE 	= "sx";
+//	public static final String SEARCH_VELOCITY		= "sv";
+//	public static final String LATCH_VELOCITY 		= "lv";
+//	public static final String ZERO_BACKOFF 		= "zb";
 
 	// Motor settings
 	public static final String MOTOR_MAPPING		= "ma";

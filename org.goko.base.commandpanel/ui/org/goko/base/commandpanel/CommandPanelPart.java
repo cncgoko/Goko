@@ -56,8 +56,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.base.commandpanel.controller.CommandPanelController;
 import org.goko.base.commandpanel.controller.CommandPanelModel;
 import org.goko.common.GkUiComponent;
-import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
-import org.goko.common.preferences.fieldeditor.ui.UiStringFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IGkConstants;
@@ -617,24 +615,6 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gd_btnSpindleOff.heightHint = 35;
 		btnSpindleOff.setLayoutData(gd_btnSpindleOff);
 		
-
-		UiStringFieldEditor testEditor = new UiStringFieldEditor(composite_3, SWT.NONE);
-		testEditor.setLabel("");
-		testEditor.setPropertyName("lengthUnitSymbol");
-		GridData gd_testEditor = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_testEditor.heightHint = 35;
-		testEditor.setLayoutData(gd_testEditor);
-		
-		UiBigDecimalFieldEditor testEditor2 = new UiBigDecimalFieldEditor(composite_3, SWT.NONE);		
-		testEditor2.setLabel("");
-		testEditor2.setPropertyName("jogSpeed");
-		GridData gd_testEditor2 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_testEditor2.heightHint = 35;
-		testEditor2.setLayoutData(gd_testEditor2);
-		
-		getController().addFieldEditor(testEditor);
-		getController().addFieldEditor(testEditor2);
-		
 		getController().initilizeValues();
 		initCustomBindings(part);
 		enableAdaptiveSpinner();
@@ -647,9 +627,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int selection = jogStepSpinner.getSelection();								
-				/*if (selection < 10) {
-					jogStepSpinner.setIncrement(1);
-				} else */if (selection < 100) {
+				if (selection < 100) {
 					jogStepSpinner.setIncrement(10);
 				} else if (selection < 1000) {
 					jogStepSpinner.setIncrement(100);

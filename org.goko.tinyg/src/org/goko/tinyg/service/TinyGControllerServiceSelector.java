@@ -400,4 +400,36 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		return getCurrentService().isPlannerBufferSpaceCheck();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMinimalPosition()
+	 */
+	@Override
+	public Tuple6b getWorkVolumeMinimalPosition() throws GkException {
+		return getCurrentService().getWorkVolumeMinimalPosition();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMinimalPosition()
+	 */
+	@Override
+	public Tuple6b findWorkVolumeMinimalPosition() throws GkException {
+		return getCurrentService().findWorkVolumeMinimalPosition();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMaximalPosition()
+	 */
+	@Override
+	public Tuple6b getWorkVolumeMaximalPosition() throws GkException {
+		return getCurrentService().getWorkVolumeMaximalPosition();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMaximalPosition()
+	 */
+	@Override
+	public Tuple6b findWorkVolumeMaximalPosition() throws GkException {
+		return getCurrentService().findWorkVolumeMaximalPosition();
+	}
+
 }

@@ -34,8 +34,10 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		
 		prefs.setDefault(JoglViewerPreference.GRID_START_X, "-100");
 		prefs.setDefault(JoglViewerPreference.GRID_START_Y, "-100");
+		prefs.setDefault(JoglViewerPreference.GRID_START_Z, "-100");
 		prefs.setDefault(JoglViewerPreference.GRID_END_X, "100");
 		prefs.setDefault(JoglViewerPreference.GRID_END_Y, "100");
+		prefs.setDefault(JoglViewerPreference.GRID_END_Z, "100");
 		
 		Tuple6b position = new Tuple6b();
 		position.setX( NumberQuantity.of(new BigDecimal( prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X)), GokoPreference.getInstance().getLengthUnit()));

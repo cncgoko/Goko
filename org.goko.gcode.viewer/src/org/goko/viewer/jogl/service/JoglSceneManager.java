@@ -52,9 +52,12 @@ import org.goko.core.log.GkLog;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
 import org.goko.viewer.jogl.GokoJoglCanvas;
 import org.goko.viewer.jogl.camera.AbstractCamera;
-import org.goko.viewer.jogl.camera.OrthographicCamera;
 import org.goko.viewer.jogl.camera.PerspectiveCamera;
+import org.goko.viewer.jogl.camera.orthographic.FrontCamera;
+import org.goko.viewer.jogl.camera.orthographic.LeftCamera;
+import org.goko.viewer.jogl.camera.orthographic.TopCamera;
 import org.goko.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.viewer.jogl.service.utils.CoreJoglRendererAlphaComparator;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
 import org.goko.viewer.jogl.utils.light.Light;
@@ -88,8 +91,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/** The list of renderer */
 	private List<ICoreJoglRenderer> renderers;
 	/** The list of renderer to remove */
-	private List<ICoreJoglRenderer> renderersToRemove;
-	private GLAutoDrawable glAutoDrawable;
+	private List<ICoreJoglRenderer> renderersToRemove;	
 	private GLCapabilities canvasCapabilities;
 	private Map<Integer, Boolean> layerVisibility;
 	private Light light0;
@@ -126,7 +128,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		proxy 		= new JoglRendererProxy(null);
 
 		addCamera(new PerspectiveCamera(canvas));
-		addCamera(new OrthographicCamera(canvas));
+		addCamera(new TopCamera(canvas));
+		addCamera(new LeftCamera(canvas));
+		addCamera(new FrontCamera(canvas));
 		setActiveCamera(PerspectiveCamera.ID);
 
 		setOverlayFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -148,8 +152,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
-	public void display(GLAutoDrawable gLAutoDrawable) {
-		this.glAutoDrawable = gLAutoDrawable;
+	public void display(GLAutoDrawable gLAutoDrawable) {		
 		GL3 gl = new DebugGL3( gLAutoDrawable.getGL().getGL3());
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -194,7 +197,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 					}
 				}
 			}
-
+			
 			if(CollectionUtils.isNotEmpty(renderersToRemove)){
 				for (ICoreJoglRenderer renderer : renderersToRemove) {
 					renderer.performDestroy(gl);
@@ -219,6 +222,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
 		synchronized (renderers) {
 			getRenderers().add(renderer);
+			// Make sure that renderer using alpha get rendered last
+			Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());
 		}
 	}
 	
@@ -250,7 +255,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		}
 		return renderers;
 	}
-
+	
 	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException{		
 		getJoglRenderer(idRenderer).setEnabled(enabled);
 	}
@@ -319,7 +324,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		}
 		return supportedCamera;
 	}
-
 
 	public void setActiveCamera(String idCamera) throws GkException {
 		for (AbstractCamera tmpCamera : getSupportedCamera()) {
@@ -411,7 +415,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		if(canvasCapabilities != null){
-			int ms = JoglViewerPreference.getInstance().getMultisampling();
 			canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 		}
 	}

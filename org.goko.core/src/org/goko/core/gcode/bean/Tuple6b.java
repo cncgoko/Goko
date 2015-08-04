@@ -19,6 +19,7 @@ package org.goko.core.gcode.bean;
 import java.math.BigDecimal;
 
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.SIPrefix;
@@ -281,6 +282,10 @@ public class Tuple6b {
 		return new Point3d(getX().doubleValue(), getY().doubleValue(), getZ().doubleValue());
 	}
 
+	public Point3f toPoint3f(){
+		return new Point3f((float)getX().doubleValue(), (float)getY().doubleValue(), (float)getZ().doubleValue());
+	}
+	
 	public Tuple6b setNull() {
 		this.x = null;
 		this.y = null;

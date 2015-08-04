@@ -35,6 +35,7 @@ import org.goko.core.connection.IConnectionListener;
 import org.goko.core.log.GkLog;
 import org.goko.serial.jssc.service.IJsscSerialConnectionService;
 import org.goko.serial.jssc.service.JsscSerialConnection;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 
 public class JsscSerialPortConnectionState implements IConnectionListener {
@@ -54,9 +55,14 @@ public class JsscSerialPortConnectionState implements IConnectionListener {
 	public void createGui(Composite parent) throws GkException {
 		GridLayout gl_parent = new GridLayout(2, false);
 		gl_parent.marginHeight = 0;
+		gl_parent.verticalSpacing = 0;
 		parent.setLayout(gl_parent);
 
 		lblConnection = new Label(parent, SWT.NONE);
+		GridData gd_lblConnection = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
+		gd_lblConnection.widthHint = 20;
+		gd_lblConnection.heightHint = 24;
+		lblConnection.setLayoutData(gd_lblConnection);
 		lblConnection.setImage(ResourceManager.getPluginImage("org.goko.serial.jssc", "resources/icons/network-status-offline.png"));
 
 		lblConnectionState = new Label(parent, SWT.NONE);
@@ -66,6 +72,7 @@ public class JsscSerialPortConnectionState implements IConnectionListener {
 		gd_lblConnectionState.widthHint = 200;
 		lblConnectionState.setLayoutData(gd_lblConnectionState);
 		jsscService.addConnectionListener(this);
+		
 	}
 
 	/** (inheritDoc)

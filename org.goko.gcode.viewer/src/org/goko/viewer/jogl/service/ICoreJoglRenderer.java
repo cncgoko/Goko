@@ -38,4 +38,7 @@ public interface ICoreJoglRenderer {
 	public boolean shouldDestroy() throws GkException;
 
 	public void performDestroy(GL3 gl) throws GkException;
+	
+	public boolean useAlpha();
+	
 }

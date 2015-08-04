@@ -64,7 +64,7 @@ import com.google.common.eventbus.Subscribe;
  * @author PsyKo
  *
  */
-public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener{
+public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener, EventHandler{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GCodeFileSenderController.class);
 	private static final String[] UNITS = {"bytes", "kB","mB","gB"};
@@ -124,18 +124,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void initialize() throws GkException {
 		getControllerService().addListener(this);
 		monitorService.addExecutionListener(this);		
-		EventHandler eventHandler = new EventHandler() {			
-			@Override
-			public void handleEvent(Event event) {
-				try {
-					String filepath = (String) event.getProperty(GokoTopic.File.PROPERTY_FILEPATH);
-					setGCodeFilepath(filepath);					
-				} catch (GkException e) {					
-					LOG.error(e);
-				}
-			}
-		};
-		eventBroker.subscribe(GokoTopic.File.Open.TOPIC, eventHandler);
+		eventBroker.subscribe(GokoTopic.File.Open.TOPIC, this);
 	}
 	/**
 	 * Action called when selecting file to send
@@ -395,5 +384,15 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
 		getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
 		getDataModel().setTotalCommandCount( token.getCommandCount() );		
+	}
+	
+	@Override
+	public void handleEvent(Event event) {
+		try {
+			String filepath = (String) event.getProperty(GokoTopic.File.PROPERTY_FILEPATH);
+			setGCodeFilepath(filepath);					
+		} catch (GkException e) {					
+			LOG.error(e);
+		}
 	}
 }

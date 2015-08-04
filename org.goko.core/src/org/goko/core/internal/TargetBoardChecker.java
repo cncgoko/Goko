@@ -45,7 +45,8 @@ public class TargetBoardChecker {
 				//GokoPreference.getInstance().setTargetBoard(lstSupportedBoard.get(0).getId());
 			}else{
 				openTargetBoardSelection(context);	
-			}			
+			}	
+			featureSetManager.startFeatureSet();
 		}		
 	}
 
@@ -62,8 +63,7 @@ public class TargetBoardChecker {
 		if (dialog.open() != Window.OK) {
 			System.exit(0);
 		}else{
-			featureSetManager.setTargetBoard(dialog.getTargetBoard());
-			featureSetManager.startFeatureSet();
+			featureSetManager.setTargetBoard(dialog.getTargetBoard());			
 			//GokoPreference.getInstance().setTargetBoard(dialog.getTargetBoard());
 		}
 	}

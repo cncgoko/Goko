@@ -24,9 +24,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwtwYEeKC274TynxXSA" label="About" command="_wyCDuNwYEeKC274TynxXSA"/>
       </children>
     </mainMenu>
-    <trimBars xmi:id="_nzUx0HNXEeS68rr8iXoRPQ" elementId="goko.trimbar.bottom" side="Bottom">
-      <children xsi:type="menu:ToolBar" xmi:id="_qyXV0HNXEeS68rr8iXoRPQ" elementId="goko.toolbar.0"/>
-    </trimBars>
+    <trimBars xmi:id="_nzUx0HNXEeS68rr8iXoRPQ" elementId="goko.trimbar.bottom" side="Bottom"/>
     <trimBars xmi:id="_8p2AoDaaEeWPlfi1OCrE0Q" elementId="goko.trimbar.top"/>
   </children>
   <handlers xmi:id="_wyBcq9wYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.QuitHandler" command="_wyBcqtwYEeKC274TynxXSA"/>
@@ -40,6 +38,7 @@
     <bindings xmi:id="_wyCDtNwYEeKC274TynxXSA" keySequence="M1+O" command="_wyCDstwYEeKC274TynxXSA"/>
     <bindings xmi:id="_wyCDt9wYEeKC274TynxXSA" keySequence="M1+S" command="_wyCDtdwYEeKC274TynxXSA"/>
     <bindings xmi:id="_wyCDutwYEeKC274TynxXSA" keySequence="M1+A" command="_wyCDuNwYEeKC274TynxXSA"/>
+    <bindings xmi:id="_9fdVsDqaEeWfb7Pq7VqslQ" elementId="goko.keybinding.0" keySequence="M1+P" command="_i52IoBAdEeOTXNaDwRiLUA"/>
   </bindingTables>
   <rootContext xmi:id="_wyBcodwYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_wyBcotwYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>

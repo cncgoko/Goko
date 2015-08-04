@@ -46,6 +46,7 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String NODE = "org.goko.gcode.viewer";
 
 	public static final String MULTISAMPLING 	= "performances.multisampling";
+	public static final String GROUP_GRID 			= "grid.";
 	public static final String MAJOR_GRID_SPACING 	= "grid.majorSpacing";
 	public static final String MINOR_GRID_SPACING 	= "grid.minorSpacing";
 	public static final String MAJOR_GRID_COLOR 	= "grid.majorColor";
@@ -53,9 +54,10 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String GRID_OPACITY 		= "grid.opacity";
 	public static final String GRID_START_X 		= "grid.start.x";
 	public static final String GRID_START_Y 		= "grid.start.y";
+	public static final String GRID_START_Z 		= "grid.start.z";
 	public static final String GRID_END_X 			= "grid.end.x";
 	public static final String GRID_END_Y 			= "grid.end.y";
-	public static final String GRID_CONTROLLER_LIMITS	= "grid.useControllerLimits";
+	public static final String GRID_END_Z 			= "grid.end.z";	
 	
 	public static final String ROTARY_AXIS_ENABLED 	= "rotaryAxisEnabled";
 	public static final String ROTARY_AXIS_DIRECTION 	= "rotaryAxisDirection";
@@ -216,7 +218,7 @@ public class JoglViewerPreference extends GkPreference{
 		Tuple6b start = new Tuple6b(unit, SI.DEGREE_ANGLE);
 		start.setX(NumberQuantity.of(new BigDecimal(getString(GRID_START_X)), unit));
 		start.setY(NumberQuantity.of(new BigDecimal(getString(GRID_START_Y)), unit));
-		start.setZ(NumberQuantity.of(BigDecimal.ZERO, unit));
+		start.setZ(NumberQuantity.of(new BigDecimal(getString(GRID_START_Z)), unit));
 		return start;
 	}
 	
@@ -225,7 +227,7 @@ public class JoglViewerPreference extends GkPreference{
 		Tuple6b end = new Tuple6b(unit, SI.DEGREE_ANGLE);
 		end.setX(NumberQuantity.of(new BigDecimal(getString(GRID_END_X)), unit));
 		end.setY(NumberQuantity.of(new BigDecimal(getString(GRID_END_Y)), unit));
-		end.setZ(NumberQuantity.of(BigDecimal.ZERO, unit));
+		end.setZ(NumberQuantity.of(new BigDecimal(getString(GRID_END_Z)), unit));
 		return end;
-	}
+	}	
 }

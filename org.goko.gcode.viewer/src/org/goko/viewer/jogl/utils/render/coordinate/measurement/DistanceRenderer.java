@@ -53,15 +53,15 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 	private ArrowRenderer endArrowRenderer;
 	private TextRenderer textRenderer;
 
-	public DistanceRenderer(Point3d startPoint, Point3d endPoint, Vector3d normal , int verticalAlignement) throws GkException {
+	public DistanceRenderer(Point3d pStartPoint, Point3d pEndPoint, Vector3d pNormal , int verticalAlignement) throws GkException {
 		super();
-		this.startPoint = new Point3d(startPoint);
-		this.endPoint = new Point3d(endPoint);
+		this.startPoint = new Point3d(pStartPoint);
+		this.endPoint = new Point3d(pEndPoint);
 		this.direction = new Vector3d();
 		this.direction.sub(endPoint, startPoint);
 		this.length = NumberQuantity.of(this.direction.length(), SIPrefix.MILLI(SI.METRE));
 		this.direction.normalize();
-		this.normal = new Vector3d(normal);
+		this.normal = new Vector3d(pNormal);
 		normal.normalize();
 		Vector3d baseDirection = new Vector3d();
 		baseDirection.cross(direction, normal);

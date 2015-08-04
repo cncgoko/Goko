@@ -1,10 +1,13 @@
 package org.goko.viewer.jogl.utils.render;
 
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
+import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point4f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
@@ -13,23 +16,25 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.log.GkLog;
 import org.goko.viewer.jogl.service.JoglUtils;
-import org.goko.viewer.jogl.utils.render.internal.DeprecatedAbstractVboJoglRenderer;
+import org.goko.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
-public class ToolRenderer extends DeprecatedAbstractVboJoglRenderer {
+public class ToolRenderer extends AbstractLineRenderer {
 	protected static final String ID = "org.goko.viewer.jogl.utils.render.ToolRenderer";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ToolRenderer.class);
 	/** the controller service used to retrieve the tool position */
 	private IThreeAxisControllerAdapter controllerAdapter;
 	/** */
-	private int segmentCount = 16;
+	private int segmentCount = 24;
+	
 	/**
 	 * Constructor
 	 * @param controllerService the controller service used to retrieve the tool position
 	 */
 	public ToolRenderer(IThreeAxisControllerAdapter controllerService) {
+		super(GL.GL_LINES, VERTICES | COLORS);
 		this.controllerAdapter = controllerService;
 	}
 
@@ -61,94 +66,15 @@ public class ToolRenderer extends DeprecatedAbstractVboJoglRenderer {
 		return p;
 	}
 
-	@Override
-	protected int getVerticesCount() throws GkException {
-		return segmentCount+3;
-	}
-
-	@Override
-	protected FloatBuffer generateVertices() throws GkException {
-		FloatBuffer vertices = FloatBuffer.allocate(getVerticesCount()*4);
-		int radius = 3 / 2;
-		vertices.put( new float[]{-radius,0, 6,1});
-		vertices.put( new float[]{0,0, 0,1});
-		float angle = (float) ((Math.PI * 2) / (segmentCount-1));
-		for (int i = 0; i <= segmentCount; i++) {
-			float x = (float) (radius * Math.cos(i * angle));
-			float y = (float) (radius * Math.sin(i * angle));
-			vertices.put( new float[]{x, y, 6,1});
-		}
-		return vertices;
-	}
-
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.AbstractCoreJoglRenderer#getModelMatrix()
+	 */
 	@Override
 	public PMVMatrix getModelMatrix() {
 		PMVMatrix modelMatrix = super.getModelMatrix();
 		updateRenderMatrix(modelMatrix);
 		return modelMatrix;
 	}
-
-	@Override
-	protected int getRenderType() {
-		return GL.GL_LINE_STRIP;
-	}
-
-//	/** (inheritDoc)
-//	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#render(org.goko.viewer.jogl.service.JoglRendererProxy)
-//	 */
-//	@Override
-//	public void render(JoglRendererProxy proxy) throws GkException {
-//		GL2 gl = proxy.getGl2();
-//		Point3d toolPosition = getToolPosition();
-//		if (toolPosition == null) {
-//			toolPosition = new Point3d(0,0,0);
-//		}
-//
-//		// Draw the path to the tool
-//		gl.glEnable(GL2.GL_LINE_STIPPLE);
-//		gl.glLineStipple(1, (short) 0x00FF);
-//		gl.glLineWidth(2f);
-//		gl.glBegin(GL2.GL_LINES);
-//		gl.glColor3f(1, 0, 0);
-//		gl.glVertex3d(0, 0, 0);
-//		gl.glVertex3d(toolPosition.x, 0, 0);
-//		gl.glColor3f(0, 1, 0);
-//		gl.glVertex3d(toolPosition.x, 0, 0);
-//		gl.glVertex3d(toolPosition.x, toolPosition.y, 0);
-//		gl.glColor3f(0, 0, 1);
-//		gl.glVertex3d(toolPosition.x, toolPosition.y, 0);
-//		gl.glVertex3d(toolPosition.x, toolPosition.y, toolPosition.z);
-//		gl.glEnd();
-//		gl.glDisable(GL2.GL_LINE_STIPPLE);
-//		// Draw the tool
-//		gl.glPushMatrix();
-//		gl.glTranslated(toolPosition.x, toolPosition.y, toolPosition.z);
-//
-//		gl.glLineWidth(3.0f);
-//		gl.glBegin(GL2.GL_LINE_STRIP);
-//		gl.glColor4f(0.87f, 0.31f, 0.43f, 1f);
-//		int segmentCount = 16;
-//		int radius = 3 / 2;
-//		float angle = (float) ((Math.PI * 2) / segmentCount);
-//		for (int i = 0; i <= segmentCount; i++) {
-//			double x = radius * Math.cos(i * angle);
-//			double y = radius * Math.sin(i * angle);
-//			gl.glVertex3d(x, y, 6);
-//		}
-//		gl.glEnd();
-//		gl.glBegin(GL2.GL_LINES);
-//		gl.glVertex3d(radius, 0, 6);
-//		gl.glVertex3d(0, 0, 0);
-//		gl.glVertex3d(0, 0, 0);
-//		gl.glVertex3d(-radius, 0, 6);
-//		gl.glVertex3d(0, radius, 6);
-//		gl.glVertex3d(0, 0, 0);
-//		gl.glVertex3d(0, 0, 0);
-//		gl.glVertex3d(0, -radius, 6);
-//		gl.glEnd();
-//		gl.glPopMatrix();
-//
-//	}
 
 	/**
 	 * @return the controllerService
@@ -157,12 +83,45 @@ public class ToolRenderer extends DeprecatedAbstractVboJoglRenderer {
 		return controllerAdapter;
 	}
 
+
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#buildGeometry()
+	 */
 	@Override
-	protected FloatBuffer generateColors() throws GkException {
-		FloatBuffer colors = FloatBuffer.allocate(18*4);
-		for(int i = 0; i < 18; i++){
-			colors.put(new float[]{0.87f, 0.31f, 0.43f, 1f});
+	protected void buildGeometry() throws GkException {
+		List<Point4f> lstPoint = new ArrayList<Point4f>();
+		List<Color4f> lstColor = new ArrayList<Color4f>();
+		int radius = 3 / 2;
+		int toolHeight = 6;
+		lstPoint.add( new Point4f(-radius,0, toolHeight,1));
+		lstPoint.add( new Point4f(0,0, 0,1));
+		
+		lstPoint.add( new Point4f(0,0, 0,1));
+		lstPoint.add( new Point4f( radius,0, toolHeight,1));
+		
+		lstPoint.add( new Point4f(0,-radius, toolHeight,1));
+		lstPoint.add( new Point4f(0,0, 0,1));
+				
+		lstPoint.add( new Point4f(0,0, 0,1));
+		lstPoint.add( new Point4f(0,radius, toolHeight,1));
+		
+		float angle = (float) ((Math.PI * 2) / (segmentCount));
+		
+		for (int i = 0; i <= segmentCount; i++) {
+			float x = (float) (radius * Math.cos(i * angle));
+			float y = (float) (radius * Math.sin(i * angle));
+			lstPoint.add( new Point4f(x, y, toolHeight,1));			
+			float x1 = (float) (radius * Math.cos((i+1) * angle));
+			float y1 = (float) (radius * Math.sin((i+1) * angle));
+			lstPoint.add( new Point4f(x1, y1, toolHeight,1));			
 		}
-		return colors;
+		
+		for (Point4f point4f : lstPoint) {
+			lstColor.add(new Color4f(0.87f, 0.31f, 0.43f, 1f));
+		}
+		setVerticesCount(lstPoint.size());
+		setVerticesBuffer( JoglUtils.buildFloatBuffer4f(lstPoint) );
+		setColorsBuffer(   JoglUtils.buildFloatBuffer4f(lstColor) );
 	}
+
 }

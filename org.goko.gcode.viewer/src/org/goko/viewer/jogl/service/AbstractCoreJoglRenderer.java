@@ -25,8 +25,7 @@ import org.goko.core.common.exception.GkException;
 import com.jogamp.opengl.util.PMVMatrix;
 
 public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
-	private static final String SHADER_MODEL_VIEW_MATRIX_NAME = "modelViewMatrix";
-	private static final String SHADER_LIGHT_0_NAME = "light0Position";
+	private static final String SHADER_MODEL_VIEW_MATRIX_NAME = "modelViewMatrix";	
 	/** The model matrix of this renderer */
 	private PMVMatrix modelMatrix;
 	/** The ID of the shader program */
@@ -41,6 +40,9 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	private boolean shouldDestroy;
 	/** Layer id */
 	private int layerId;
+	/** Indicate that this renderer uses alpha layer */
+	private boolean useAlpha;
+	
 	/**
 	 * Constructor
 	 * @param shaderProgram the shader program
@@ -105,8 +107,7 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	protected void initialize(GL3 gl) throws GkException {
 		if(!isInitialized()){
 			performInitialize(gl);
-			shaderModelViewMatrixId = gl.glGetUniformLocation(shaderProgram, SHADER_MODEL_VIEW_MATRIX_NAME);			
-			int lig = gl.glGetUniformLocation(shaderProgram, SHADER_LIGHT_0_NAME);
+			shaderModelViewMatrixId = gl.glGetUniformLocation(shaderProgram, SHADER_MODEL_VIEW_MATRIX_NAME);
 			setInitialized(true);
 		}
 	}
@@ -197,6 +198,20 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	 */
 	public void setLayerId(int layerId) {
 		this.layerId = layerId;
+	}
+
+	/**
+	 * @return the useAlpha
+	 */
+	public boolean useAlpha() {
+		return useAlpha;
+	}
+
+	/**
+	 * @param useAlpha the useAlpha to set
+	 */
+	public void setUseAlpha(boolean useAlpha) {
+		this.useAlpha = useAlpha;
 	}
 
 }

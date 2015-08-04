@@ -6,6 +6,7 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IProbingService;
+import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
 import org.goko.tinyg.controller.ITinygControllerService;
@@ -43,6 +44,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IFourAxisControllerAdapter.class, service, null);
 		context.registerService(ICoordinateSystemAdapter.class, service, null);
 		context.registerService(IContinuousJogService.class, service, null);
+		context.registerService(IWorkVolumeProvider.class, service, null);
 		
 		service.start();
 	}

@@ -190,4 +190,12 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 		return backedRenderer.getLayerId();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.ICoreJoglRenderer#useAlpha()
+	 */
+	@Override
+	public boolean useAlpha() {		
+		return backedRenderer.useAlpha();
+	}
+
 }

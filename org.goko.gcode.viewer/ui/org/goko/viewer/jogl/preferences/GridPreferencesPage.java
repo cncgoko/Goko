@@ -5,6 +5,7 @@ package org.goko.viewer.jogl.preferences;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -12,6 +13,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.goko.common.GkUiUtils;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ColorFieldEditor;
@@ -21,6 +23,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
+import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.log.GkLog;
 
 /**
@@ -33,8 +36,13 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 	private QuantityFieldEditor<Length> minorSpacingFieldEditor;
 	private QuantityFieldEditor<Length> startXFieldEditor;
 	private QuantityFieldEditor<Length> startYFieldEditor;
+	private QuantityFieldEditor<Length> startZFieldEditor;
 	private QuantityFieldEditor<Length> endXFieldEditor;
 	private QuantityFieldEditor<Length> endYFieldEditor;
+	private QuantityFieldEditor<Length> endZFieldEditor;
+	@Inject
+	@Optional
+	private IWorkVolumeProvider workVolumeProvider;
 	
 	public GridPreferencesPage() {
 		setTitle("Grid");
@@ -87,11 +95,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		grpLimits.setLayout(new GridLayout(1, false));
 		grpLimits.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpLimits.setText("Limits");
-		
-		BooleanFieldEditor booleanFieldEditor = new BooleanFieldEditor(grpLimits, SWT.NONE);
-		booleanFieldEditor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		booleanFieldEditor.setLabel("Inherit from controller");
-		
+
 		Composite composite = new Composite(grpLimits, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(5, false);
 		composite.setLayout(gl_composite);
@@ -138,6 +142,22 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		endYFieldEditor.setLabel("Y");
 		endYFieldEditor.setPreferenceName(JoglViewerPreference.GRID_END_Y);
 		
+		new Label(composite, SWT.NONE);
+		startZFieldEditor = new QuantityFieldEditor(composite, SWT.NONE);
+		startZFieldEditor.setEmptyStringAllowed(false);
+		startZFieldEditor.setWidthInChars(6);
+		startZFieldEditor.setLabel("Z");
+		startZFieldEditor.setPreferenceName(JoglViewerPreference.GRID_START_Z);
+		
+		new Label(composite, SWT.NONE);
+		new Label(composite, SWT.NONE);
+		
+		endZFieldEditor = new QuantityFieldEditor(composite, SWT.NONE);
+		endZFieldEditor.setEmptyStringAllowed(false);
+		endZFieldEditor.setWidthInChars(6);
+		endZFieldEditor.setLabel("Z");
+		endZFieldEditor.setPreferenceName(JoglViewerPreference.GRID_END_Z);
+		
 		// Adding fields
 		addField(majorSpacingFieldEditor);
 		addField(minorSpacingFieldEditor);
@@ -147,8 +167,10 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		addField(gridOpacityFieldEditor);
 		addField(startXFieldEditor);
 		addField(startYFieldEditor);
+		addField(startZFieldEditor);
 		addField(endXFieldEditor);
 		addField(endYFieldEditor);
+		addField(endZFieldEditor);
 		
 	}
 	

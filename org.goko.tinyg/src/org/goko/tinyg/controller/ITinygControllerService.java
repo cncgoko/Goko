@@ -26,10 +26,11 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IProbingService;
+import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 
-public interface ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService {
+public interface ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService, IWorkVolumeProvider {
 
 	/**
 	 * Returns the TinyG configuration

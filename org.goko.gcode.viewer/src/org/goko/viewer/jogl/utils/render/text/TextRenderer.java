@@ -35,7 +35,6 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	private double size;
 	private Vector4f color;
 	private Texture texture;
-	private int textureUniformLocation;
 	private EnumBitmapFont enumBitmapFont;
 	private BitmapFontFile bff;
 	private int alignement;
@@ -89,8 +88,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		texture = BitmapFontFileManager.getTextureFont(gl, enumBitmapFont, textureSize);
 		texture.setTexParameteri(gl,GL.GL_TEXTURE_MIN_FILTER,GL.GL_LINEAR);
 		texture.setTexParameteri(gl,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);		
-		setShaderProgram(loadShaderProgram(gl));
-		textureUniformLocation = gl.glGetUniformLocation(getShaderProgram(),"fontTextureSampler");		
+		setShaderProgram(loadShaderProgram(gl));				
 		super.performInitialize(gl);
 		
 		
@@ -104,8 +102,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		super.initializeAdditionalBufferObjects(gl);		
 		gl.glActiveTexture(GL3.GL_TEXTURE0);
 		texture.enable(gl);
-		texture.bind(gl);		
-	//	gl.glUniform1i(textureUniformLocation, 0);
+		texture.bind(gl);	
 	}
 	
 	/** (inheritDoc)
@@ -146,8 +143,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	private Point3d computeLowerLeftCorner() {
 		Point3d lowerLeft = new Point3d(position);
 		int length = StringUtils.length(text);
-		double textWidth = 0;
-		double textHeight = size;
+		double textWidth = 0;		
 		// Compute width
 		for (int i = 0; i < length; i++) {
 			char letter = text.charAt(i);

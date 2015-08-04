@@ -10,9 +10,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.log.GkLog;
 
 public abstract class PreferenceFieldEditor<C extends Control> extends Composite implements IPreferenceFieldEditor<C>{
-    /**
+    /** LOG */
+	private static final GkLog LOG = GkLog.getLogger(PreferenceFieldEditor.class);
+	/**
      * Property name constant (value <code>"field_editor_is_valid"</code>)
      * to signal a change in the validity of the value of this field editor.
      */
@@ -72,8 +75,7 @@ public abstract class PreferenceFieldEditor<C extends Control> extends Composite
     		try {
 				loadValue();
 			} catch (GkException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error(e);
 			}
     	}
     }

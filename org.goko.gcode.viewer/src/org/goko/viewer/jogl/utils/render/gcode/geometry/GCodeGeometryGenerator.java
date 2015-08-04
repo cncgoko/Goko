@@ -34,7 +34,7 @@ import org.goko.core.gcode.bean.commands.RawCommand;
 import org.goko.core.gcode.bean.commands.SettingCommand;
 import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 
-public class GCodePartitionCodeGenerator implements IGCodeCommandVisitor{
+public class GCodeGeometryGenerator implements IGCodeCommandVisitor{
 	private List<Point3d> vertices;
 
 	public List<Point3d> generateVertices(GCodeCommand command) throws GkException{

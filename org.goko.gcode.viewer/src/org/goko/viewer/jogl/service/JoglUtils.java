@@ -13,6 +13,7 @@ import javax.vecmath.Tuple4d;
 import javax.vecmath.Tuple4f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -32,6 +33,12 @@ import org.goko.core.viewer.renderer.IRendererProxy;
 public class JoglUtils {
 	/** Default Jogl unit (by convention)*/
 	public static final Unit<Length> JOGL_UNIT = SI.MILLIMETRE;
+	public static final String XY_GRID_ID = "GRID.XY";
+	public static final String XZ_GRID_ID = "GRID.XZ";
+	public static final String YZ_GRID_ID = "GRID.YZ";
+	public static final Vector4f X_AXIS = new Vector4f(1f,0f,0f,0f);
+	public static final Vector4f Y_AXIS = new Vector4f(0f,1f,0f,0f);
+	public static final Vector4f Z_AXIS = new Vector4f(0f,0f,1f,0f);
 	
 	
 

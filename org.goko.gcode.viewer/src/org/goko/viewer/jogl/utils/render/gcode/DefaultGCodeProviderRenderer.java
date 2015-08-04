@@ -39,9 +39,8 @@ import org.goko.viewer.jogl.service.JoglUtils;
 import org.goko.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.viewer.jogl.shaders.ShaderLoader;
 import org.goko.viewer.jogl.utils.render.gcode.colorizer.MotionModeGCodeColorizer;
-import org.goko.viewer.jogl.utils.render.gcode.geometry.GCodePartitionCodeGenerator;
+import org.goko.viewer.jogl.utils.render.gcode.geometry.GCodeGeometryGenerator;
 import org.goko.viewer.jogl.utils.render.internal.AbstractLineRenderer;
-import org.goko.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -55,10 +54,8 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 	private static final int STATE_LAYOUT = 2;
 	/** The GCodeProvider to render */
 	private IGCodeProvider gcodeProvider;
-	/** The list of vertices */
-	private List<Point3d> lstVertices;
 	/** The vertices generator */
-	GCodePartitionCodeGenerator generator;
+	private GCodeGeometryGenerator generator;
 	/** TEST : the map of vertices by ID */
 	private Map<Integer, Integer[]> mapVerticesPositionByIdCommand;
 	/** GCode colorizer */
@@ -75,7 +72,7 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 	public DefaultGCodeProviderRenderer(IGCodeProvider gcodeProvider) {
 		super(GL.GL_LINE_STRIP, COLORS | VERTICES);
 		this.gcodeProvider = gcodeProvider;
-		this.generator = new GCodePartitionCodeGenerator();
+		this.generator = new GCodeGeometryGenerator();
 		this.colorizer = new MotionModeGCodeColorizer();
 		setLineWidth(1f);
 	}
@@ -108,7 +105,7 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 				}
 				// Let's generate the colors
 				Color4f color = colorizer.getColor(command);
-				for (Point3d point3d : lstCmdVertices) {
+				for ( int i = 0; i < lstCmdVertices.size(); i++) {
 					lstColors.add(color);
 				}
 			}

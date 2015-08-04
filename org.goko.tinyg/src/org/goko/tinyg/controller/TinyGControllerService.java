@@ -17,10 +17,12 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.action.IGkControllerAction;
@@ -41,6 +43,7 @@ import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.goko.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.tinyg.controller.configuration.TinyGGroupSettings;
@@ -757,5 +760,61 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	public Unit<Length> getCurrentUnit(){
 		return tinygState.getCurrentUnit();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMaximalPosition()
+	 */
+	@Override
+	public Tuple6b getWorkVolumeMaximalPosition() throws GkException {
+		Tuple6b max = findWorkVolumeMaximalPosition();
+		if(max == null){
+			 throw new GkTechnicalException("No maximal position currently defined for the travel max position");
+		}	
+		return max;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMinimalPosition()
+	 */
+	@Override
+	public Tuple6b getWorkVolumeMinimalPosition() throws GkException {
+		Tuple6b min = findWorkVolumeMinimalPosition();
+		if(min == null){
+			 throw new GkTechnicalException("No minimal position currently defined for the travel max position");
+		}
+		return min;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMaximalPosition()
+	 */
+	@Override
+	public Tuple6b findWorkVolumeMaximalPosition() throws GkException {
+		TinyGConfiguration cfg = getConfiguration();
+		Tuple6b max = null;
+		if(cfg != null){
+			max = new Tuple6b(SI.MILLIMETRE, SI.DEGREE_ANGLE);
+			max.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), SI.MILLIMETRE));
+			max.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), SI.MILLIMETRE));
+			max.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), SI.MILLIMETRE));
+		}
+		return max;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMinimalPosition()
+	 */
+	@Override
+	public Tuple6b findWorkVolumeMinimalPosition() throws GkException {
+		TinyGConfiguration cfg = getConfiguration();
+		Tuple6b min = null;
+		if(cfg != null){
+			min = new Tuple6b(SI.MILLIMETRE, SI.DEGREE_ANGLE);
+			min.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
+			min.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
+			min.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
+		}
+		return min;
 	}
 }

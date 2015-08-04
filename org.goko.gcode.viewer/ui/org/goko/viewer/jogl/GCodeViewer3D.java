@@ -60,6 +60,7 @@ import org.goko.viewer.jogl.model.GCodeViewer3DModel;
 import org.goko.viewer.jogl.service.IJoglViewerService;
 
 import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.FPSAnimator;
 
 public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeViewer3DModel> {
 	@Inject
@@ -69,7 +70,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 	/** Widget that displays OpenGL content. */
 	private GokoJoglCanvas glcanvas;
-	private Animator animator;
+	private FPSAnimator animator;
 	private static final String VIEWER_ENABLED = "org.goko.gcode.viewer.enabled";
 	private static final String VIEWER_GRID_ENABLED = "org.goko.gcode.viewer.gridEnabled";
 	private static final String VIEWER_LOCK_CAMERA_ON_TOOL = "org.goko.gcode.viewer.lockCameraOnTool";
@@ -267,6 +268,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 				viewMenu.setVisible(true);
 			}
 		});
+		
 		ToolItem toolItem_1 = new ToolItem(toolBar, SWT.SEPARATOR);
 
 		final ToolItem btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
@@ -282,7 +284,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 		glcanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		animator = new Animator();
+		animator = new FPSAnimator(30);
 
 		animator.add(glcanvas);
 		animator.start();
@@ -313,32 +315,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			getController().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
 		}
 	}
-
-	// protected Menu initContextualMenu(Control composite) throws GkException{
-	// final Menu menu = new Menu(composite);
-	//
-	// MenuItem mntmNewSubmenu = new MenuItem(menu, SWT.CASCADE);
-	// mntmNewSubmenu.setText("Camera");
-	//
-	// Menu cameraSubmenu = new Menu(mntmNewSubmenu);
-	// mntmNewSubmenu.setMenu(cameraSubmenu);
-	// List<AbstractCamera> cameras = viewerService.getSupportedCamera();
-	// for (final AbstractCamera abstractCamera : cameras) {
-	// MenuItem cameraItem = new MenuItem(cameraSubmenu, SWT.NONE);
-	// cameraItem.setText(abstractCamera.getLabel());
-	// cameraItem.addSelectionListener(new SelectionAdapter() {
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// try {
-	// viewerService.setActiveCamera(abstractCamera.getId());
-	// } catch (GkException exception) {
-	// displayMessage(exception);
-	// }
-	// }
-	// });
-	// }
-	// return menu;
-	// }
 
 	@PreDestroy
 	public void dispose(MPart part) {

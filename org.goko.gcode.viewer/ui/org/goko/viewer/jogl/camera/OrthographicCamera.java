@@ -38,16 +38,16 @@ import org.goko.viewer.jogl.service.JoglUtils;
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
-public class OrthographicCamera extends AbstractCamera implements MouseMoveListener,MouseListener, Listener {
+public abstract class OrthographicCamera extends AbstractCamera implements MouseMoveListener,MouseListener, Listener {
 	public static final String ID = "org.goko.gcode.viewer.camera.OrthographicCamera";
 	protected Point2i last;
 	protected Point3f eye;
 	protected Vector3f up;
 	protected GLU glu;
-	private GLCanvas glCanvas;
-	private double zoomOffset;
-	private double spaceWidth;
-	private double spaceHeight;
+	protected GLCanvas glCanvas;
+	protected double zoomOffset;
+	protected double spaceWidth;
+	protected double spaceHeight;
 
 	public OrthographicCamera(final GLCanvas canvas) {
 		super();
@@ -78,7 +78,7 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 	 */
 	@Override
 	public void setup() {
-
+		
 	}
 
 
@@ -87,13 +87,13 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 	 */
 	@Override
 	public void updatePosition(){
-		GL2 gl = glCanvas.getGL().getGL2();
 		spaceWidth = width / zoomOffset;
 		spaceHeight = height/ zoomOffset;
 		// Set the view port (display area) to cover the entire window
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-        pmvMatrix.glLoadIdentity();
+        pmvMatrix.glLoadIdentity();        
         pmvMatrix.glOrthof( (float)(eye.x - spaceWidth), (float)(eye.x + spaceWidth), (float)(eye.y - spaceHeight), (float)(eye.y + spaceHeight), -5000 , 5000 );
+        
 	}
 
 
@@ -132,18 +132,14 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 			}
 		}
 	}
+	
 	protected void zoomMouse(MouseEvent e){
 		if(glCanvas.isFocusControl() && isActivated()){
 			zoomOffset = Math.max(0.1, zoomOffset+ (e.y-last.y) / 50.0);
 		}
 	}
-	protected void panMouse(MouseEvent e){
-		float dx = (float) (-(e.x-last.x) / zoomOffset);
-		float dy = (float) ((e.y-last.y) / zoomOffset);
-		Vector3f cameraRelativeMove = new Vector3f(2*dx, 2*dy, 0f);
-
-		eye.add(cameraRelativeMove);
-	}
+	
+	protected abstract void panMouse(MouseEvent e);
 
 
 	/** (inheritDoc)
@@ -171,16 +167,13 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 	 */
 	@Override
 	public void handleEvent(Event event) {
-		// Zoom on scroll
-		int xMouse = event.x;
-		int yMouse = event.y;
-		double xWorld = 2*((xMouse - (width / 2)) / zoomOffset) + eye.x;
-		double yWorld = -2*((yMouse - (height/ 2)) / zoomOffset) + eye.y;
-		zoomOffset = Math.max(0.1, zoomOffset * (1+event.count/30.0) );
-		eye.x = (float) (xWorld - 2*((xMouse - (width / 2)) / zoomOffset));
-		eye.y = (float) (yWorld + 2*((yMouse - (height/ 2)) / zoomOffset));
+		if(glCanvas.isFocusControl() && isActivated()){
+			mouseScroll(event);
+		}
 	}
-
+	
+	protected abstract void mouseScroll(Event event);
+	
 	/** (inheritDoc)
 	 * @see org.goko.viewer.jogl.camera.AbstractCamera#getLabel()
 	 */
@@ -209,16 +202,12 @@ public class OrthographicCamera extends AbstractCamera implements MouseMoveListe
 		if (height == 0) {
 			height = 1; // prevent divide by zero
 		}
-	//	gl.glMatrixMode(GL2.GL_PROJECTION);
-	//	gl.glLoadIdentity();
+
 		// Set the view port (display area) to cover the entire window
-	//	gl.glViewport(0, 0, width, height);
 		this.height = height;
 		this.width = width;
 		spaceWidth = width / zoomOffset;
 		spaceHeight = height/ zoomOffset;
-
-//		gl.glOrtho( eye.x - spaceWidth, eye.x + spaceWidth, eye.y - spaceHeight, eye.y + spaceHeight, 0 , 5000);
 
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
         pmvMatrix.glLoadIdentity();

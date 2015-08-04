@@ -26,21 +26,19 @@ import java.awt.geom.Rectangle2D;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
-import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
+import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.IGCodeProvider;
@@ -52,6 +50,8 @@ import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType
 import org.goko.core.workspace.service.IWorkspaceListener;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.viewer.jogl.GokoJoglCanvas;
+import org.goko.viewer.jogl.camera.orthographic.FrontCamera;
+import org.goko.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.viewer.jogl.utils.render.GridRenderer;
 import org.goko.viewer.jogl.utils.render.ToolRenderer;
@@ -85,13 +85,17 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private IGCodeExecutionMonitorService executionMonitorService;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
+	/** Work volume provider */
+	private IWorkVolumeProvider workVolumeProvider;
 	/** Bind camera on tool position ? */
 	private boolean lockCameraOnTool;
 
 	private IGCodeProviderRenderer gcodeRenderer;
 	private BoundsRenderer boundsRenderer;
 	private CoordinateSystemSetRenderer coordinateSystemRenderer;
-	private GridRenderer gridRenderer;
+	private GridRenderer xyGridRenderer;
+	private GridRenderer xzGridRenderer;
+	private GridRenderer yzGridRenderer;
 	private FourAxisOriginRenderer zeroRenderer;
 	private BoundingTuple6b bounds;
 	private KeyboardJogAdatper keyboardJogAdapter;
@@ -120,9 +124,18 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(zeroRenderer);
 		boundsRenderer = new BoundsRenderer(null);
 		addRenderer(boundsRenderer);	
-		this.gridRenderer = new GridRenderer();
-		updateGridRenderer();
-		addRenderer(gridRenderer);		
+		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);
+		this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID);
+		this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID);
+		this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
+		this.xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
+		this.yzGridRenderer.setNormal(JoglUtils.X_AXIS);
+		updateGridRenderer(xyGridRenderer);
+		updateGridRenderer(xzGridRenderer);
+		updateGridRenderer(yzGridRenderer);
+		addRenderer(xyGridRenderer);
+		addRenderer(xzGridRenderer);
+		addRenderer(yzGridRenderer);
 	}
 
 	/** (inheritDoc)
@@ -194,19 +207,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		matrix.update();
 	}
 	
-	private Point3d getToolPosition(){
-		Point3d p = new Point3d();
-		try{
-			Unit<Length> targetLengthUnit = GokoPreference.getInstance().getLengthUnit();
-			p.x = getControllerAdapter().getX().to(targetLengthUnit).doubleValue();
-			p.y = getControllerAdapter().getY().to(targetLengthUnit).doubleValue();
-			p.z = getControllerAdapter().getZ().to(targetLengthUnit).doubleValue();
-		}catch(GkException e){
-			LOG.error(e);
-		}
-		return p;
-	}
-
 	/** (inheritDoc)
 	 * @see javax.media.opengl.GLEventListener#dispose(javax.media.opengl.GLAutoDrawable)
 	 */
@@ -313,20 +313,28 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 			zeroRenderer.setDisplayRotaryAxis(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 			zeroRenderer.setRotationAxis(JoglViewerPreference.getInstance().getRotaryAxisDirection());
 			// Update the grid
-			if(StringUtils.equals(event.getProperty(), JoglViewerPreference.MAJOR_GRID_SPACING)
-					|| StringUtils.equals(event.getProperty(), JoglViewerPreference.MINOR_GRID_SPACING)
-					|| StringUtils.equals(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
-				this.gridRenderer.destroy();
-				this.gridRenderer = new GridRenderer();
-//				this.gridRenderer = new GridRenderer(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
-//													 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT), 
-//													 NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT), 
-//													 NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT),
-//													 JoglViewerPreference.getInstance().getMajorColor(),
-//													 JoglViewerPreference.getInstance().getMinorColor());
-				
-				updateGridRenderer();
-				addRenderer(this.gridRenderer);
+			if(StringUtils.startsWith(event.getProperty(), JoglViewerPreference.GROUP_GRID)){
+				boolean xyDisplay = xyGridRenderer.isEnabled();
+				boolean xzDisplay = xzGridRenderer.isEnabled();
+				boolean yzDisplay = yzGridRenderer.isEnabled();
+				this.xyGridRenderer.destroy();
+				this.xzGridRenderer.destroy();
+				this.yzGridRenderer.destroy();
+				this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);
+				this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
+				this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID);
+				this.xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
+				this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID);
+				this.yzGridRenderer.setNormal(JoglUtils.X_AXIS);
+				updateGridRenderer(xyGridRenderer);
+				updateGridRenderer(xzGridRenderer);
+				updateGridRenderer(yzGridRenderer);
+				xyGridRenderer.setEnabled(xyDisplay);
+				xzGridRenderer.setEnabled(xzDisplay);
+				yzGridRenderer.setEnabled(yzDisplay);
+				addRenderer(xyGridRenderer);
+				addRenderer(xzGridRenderer);
+				addRenderer(yzGridRenderer);
 			}
 			if(gcodeRenderer != null){
 				gcodeRenderer.update();
@@ -336,6 +344,29 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.JoglSceneManager#setActiveCamera(java.lang.String)
+	 */
+	@Override
+	public void setActiveCamera(String idCamera) throws GkException {		
+		super.setActiveCamera(idCamera);
+		if(xyGridRenderer != null){
+			setRendererEnabled(JoglUtils.XY_GRID_ID, false);
+			setRendererEnabled(JoglUtils.XZ_GRID_ID, false);
+			setRendererEnabled(JoglUtils.YZ_GRID_ID, false);
+			
+			if(StringUtils.equals(idCamera, FrontCamera.ID)){
+				setRendererEnabled(JoglUtils.XZ_GRID_ID, true);	
+			}else if(StringUtils.equals(idCamera, LeftCamera.ID)){
+				setRendererEnabled(JoglUtils.YZ_GRID_ID, true);	
+			}else{
+				setRendererEnabled(JoglUtils.XY_GRID_ID, true);	
+			}
+		}
+	}
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.IJoglViewerService#zoomToFit()
+	 */
 	@Override
 	public void zoomToFit() throws GkException {
 		if(bounds != null){
@@ -343,6 +374,9 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.viewer.jogl.service.JoglSceneManager#onCanvasCreated(org.goko.viewer.jogl.GokoJoglCanvas)
+	 */
 	@Override
 	protected void onCanvasCreated(GokoJoglCanvas canvas) {
 		if(continuousJogService != null){
@@ -384,16 +418,32 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}
 	}
 
-	private void updateGridRenderer() throws GkException{
-		
+	private void updateGridRenderer(GridRenderer gridRenderer) throws GkException{		
 		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
 		gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
+		
 		gridRenderer.setMajorIncrement(NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT));
 		gridRenderer.setMinorIncrement(NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
 		gridRenderer.setMajorUnitColor( JoglViewerPreference.getInstance().getMajorColor());
 		gridRenderer.setMinorUnitColor( JoglViewerPreference.getInstance().getMinorColor());
 		gridRenderer.setOpacity(JoglViewerPreference.getInstance().getGridOpacity());
 		
-		gridRenderer.update();
+		gridRenderer.update();		
 	}
+
+	/**
+	 * @return the workVolumeProvider
+	 */
+	public IWorkVolumeProvider getWorkVolumeProvider() {
+		return workVolumeProvider;
+	}
+
+	/**
+	 * @param workVolumeProvider the workVolumeProvider to set
+	 */
+	public void setWorkVolumeProvider(IWorkVolumeProvider workVolumeProvider) {
+		this.workVolumeProvider = workVolumeProvider;
+	}
+	
+	
 }
