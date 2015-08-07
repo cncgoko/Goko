@@ -4,8 +4,8 @@ Bundle-Name: Goko
 Bundle-SymbolicName: Goko;singleton:=true
 Bundle-Version: 0.0.2.qualifier
 Bundle-Activator: goko.Activator
-Require-Bundle: org.eclipse.equinox.p2.core;bundle-version="2.3.0",
- org.eclipse.equinox.p2.operations;bundle-version="2.4.0",
+Require-Bundle: org.eclipse.equinox.p2.core,
+ org.eclipse.equinox.p2.operations,
  org.eclipse.core.runtime,
  org.eclipse.e4.core.di,
  org.eclipse.e4.ui.di,
@@ -16,9 +16,10 @@ Require-Bundle: org.eclipse.equinox.p2.core;bundle-version="2.3.0",
  org.goko.core,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.services,
- org.eclipse.equinox.p2.metadata;bundle-version="2.2.0",
+ org.eclipse.equinox.p2.metadata,
  org.eclipse.equinox.p2.metadata.repository;bundle-version="1.2.100",
- org.eclipse.equinox.p2.repository
+ org.eclipse.equinox.p2.repository,
+ org.eclipse.equinox.p2.reconciler.dropins;bundle-version="1.1.300"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.e4.core.services.log

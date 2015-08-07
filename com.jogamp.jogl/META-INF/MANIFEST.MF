@@ -135,5 +135,4 @@ Export-Package: com.jogamp.common,
  jogamp.opengl.windows.wgl.awt,
  jogamp.opengl.x11.glx
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.eclipse.swt
-Require-Bundle: org.eclipse.swt;bundle-version="3.103.0"
+Require-Bundle: org.eclipse.swt;bundle-version="3.104.0"

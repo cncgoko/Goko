@@ -4,10 +4,29 @@
   <artifactId>org.goko.aggregator</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  
   <modules>
   	<module>../org.goko.parent</module>
-  	<module>../org.goko.core</module>
-  	<module>../org.goko.feature</module>
+  	<module>../org.goko.core</module>  	
+  	<module>../com.eclipsesource.json</module>
+  	<module>../com.jogamp.jogl</module>
+  	<module>../com.jogamp.jogl-windows-amd64</module>  	
+  	<module>../org.goko.base.commandpanel</module>
+  	<module>../org.goko.base.dro</module>
+  	<module>../org.goko.base.execution.time</module>
+  	<module>../org.goko.base.gcodeexecutionmonitor</module>
+  	<module>../org.goko.gcode.filesender</module>
+  	<module>../org.goko.gcode.rs274ngcv3</module>
+  	<module>../org.goko.gcode.viewer</module>
+  	<module>../org.goko.grbl.controller.v08</module>
+  	<module>../org.goko.log</module>
+  	<module>../org.goko.log.ui</module>
+  	<module>../org.goko.serial.jssc</module>
+  	<module>../org.goko.tinyg</module>
+  	<module>../org.goko.tools.centerfinder</module>
+  	<module>../org.goko.workspace</module>   	  	
+  	<module>../Goko</module>
+ 	<module>../GokoFeature</module>
   	<module>../org.goko.product</module>
 
   	
