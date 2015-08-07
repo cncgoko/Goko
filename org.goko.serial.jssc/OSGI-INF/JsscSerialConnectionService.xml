@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" deactivate="stop" name="org.goko.serial.jssc">
-   <implementation class="org.goko.serial.jssc.service.JsscSerialConnectionService"/>
-   <service>
-      <provide interface="org.goko.core.connection.IConnectionService"/>
-      <provide interface="org.goko.serial.jssc.service.IJsscSerialConnectionService"/>
-   </service>
-</scr:component>

@@ -778,14 +778,14 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.serial.jssc"
+         id="org.goko.tools.serial.jssc"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.goko.workspace"
+         id="org.goko.core.workspace"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -869,7 +869,7 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.tinyg"
+         id="org.goko.controller.tinyg"
          download-size="0"
          install-size="0"
          version="0.0.0"

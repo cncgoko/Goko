@@ -21,10 +21,10 @@
   	<module>../org.goko.grbl.controller.v08</module>
   	<module>../org.goko.log</module>
   	<module>../org.goko.log.ui</module>
-  	<module>../org.goko.serial.jssc</module>
-  	<module>../org.goko.tinyg</module>
+  	<module>../org.goko.tools.serial.jssc</module>
+  	<module>../org.goko.controller.tinyg</module>
   	<module>../org.goko.tools.centerfinder</module>
-  	<module>../org.goko.workspace</module>   	  	
+  	<module>../org.goko.core.workspace</module>   	  	
   	<module>../Goko</module>
  	<module>../GokoFeature</module>
   	<module>../org.goko.product</module>
