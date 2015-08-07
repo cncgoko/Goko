@@ -9,9 +9,9 @@
 
 	<parent>
 		<groupId>org.goko</groupId>
-		<artifactId>org.goko.parent</artifactId>
+		<artifactId>org.goko.build.parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../org.goko.parent</relativePath>
+		<relativePath>../org.goko.build.parent</relativePath>
 	</parent>
 	<dependencies>
 		<dependency>

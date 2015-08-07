@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.goko</groupId>
-    <artifactId>org.goko.parent</artifactId>
-    <relativePath>../org.goko.parent</relativePath>
+    <artifactId>org.goko.build.parent</artifactId>
+    <relativePath>../org.goko.build.parent</relativePath>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.goko</groupId>
-  <artifactId>org.goko.product</artifactId>
+  <artifactId>org.goko.build.product</artifactId>
   <packaging>eclipse-repository</packaging>
   <version>1.0.0-SNAPSHOT</version>
 
