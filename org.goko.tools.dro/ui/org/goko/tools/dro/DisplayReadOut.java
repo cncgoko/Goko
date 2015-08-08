@@ -1,4 +1,4 @@
-package org.goko.base.dro;
+package org.goko.tools.dro;
 
 
 import javax.annotation.PostConstruct;
@@ -9,7 +9,6 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -29,14 +28,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.goko.base.dro.controller.DisplayReadOutController;
-import org.goko.base.dro.controller.DisplayReadOutModel;
 import org.goko.common.GkUiComponent;
-import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.log.GkLog;
+import org.goko.tools.dro.controller.DisplayReadOutController;
+import org.goko.tools.dro.controller.DisplayReadOutModel;
 
 /**
  * DRO part
@@ -94,13 +92,13 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 
 		Button btnPreferences = new Button(composite, SWT.NONE);
 		btnPreferences.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-		btnPreferences.setImage(ResourceManager.getPluginImage("org.goko.base.dro", "icons/gear.png"));
+		btnPreferences.setImage(ResourceManager.getPluginImage("org.goko.tools.dro", "icons/gear.png"));
 		btnPreferences.setText("Preferences");
 		btnPreferences.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					Command cmd = commandService.getCommand("org.goko.base.dro.command.dropreferences");
+					Command cmd = commandService.getCommand("org.goko.tools.dro.command.dropreferences");
 					Parameterization param = new Parameterization(cmd.getParameter("goko.org.ui.page.id"), "org.goko.dro.displayPreferences");
 					ParameterizedCommand pCmd = new ParameterizedCommand(cmd, new Parameterization[]{param});
 					if (handlerService.canExecute(pCmd)) {

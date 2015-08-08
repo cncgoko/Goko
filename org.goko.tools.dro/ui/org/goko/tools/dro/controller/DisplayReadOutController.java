@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.base.dro.controller;
+package org.goko.tools.dro.controller;
 
 import javax.inject.Inject;
 
@@ -28,7 +28,6 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
-import org.goko.base.dro.IDROService;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -37,6 +36,7 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.log.GkLog;
+import org.goko.tools.dro.IDROService;
 
 /**
  * Controller for the DRO part

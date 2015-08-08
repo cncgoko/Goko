@@ -17,22 +17,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.base.dro;
+package org.goko.tools.dro;
 
-import java.util.List;
-
-import org.goko.core.common.event.IEventDispatcher;
-import org.goko.core.common.exception.GkException;
-import org.goko.core.common.service.IGokoService;
-import org.goko.core.controller.bean.MachineValueDefinition;
-
-public interface IDROService extends IGokoService {
-
-	/**
-	 * Return the list of displayed values
-	 * @return a list of {@link MachineValueDefinition}
-	 * @throws GkException GkException
-	 */
-	List<MachineValueDefinition> getDisplayedMachineValueDefinition() throws GkException;
+public interface IDROPreferencesConstants {
+	public static String KEY_VALUES_ID_LIST = "dro.displayedValues.count";
 
 }

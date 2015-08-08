@@ -10,16 +10,16 @@
    <extension
          point="Goko.org.goko.ui.gkPreferencePage">
       <page
-            class="org.goko.base.dro.preferences.DROPreferencesPage"
-            id="org.goko.dro.displayPreferences"
+            class="org.goko.tools.dro.preferences.DROPreferencesPage"
+            id="org.goko.tools.dro.displayPreferences"
             name="Digital read out">
       </page>
    </extension>
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
       <provider
-            class="org.goko.base.dro.preferences.DROPreferenceStoreProvider"
-            id="org.goko.base.dro.provider">
+            class="org.goko.tools.dro.preferences.DROPreferenceStoreProvider"
+            id="org.goko.tools.dro.provider">
       </provider>
    </extension>
 

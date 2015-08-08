@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.base.dro">
-   <implementation class="org.goko.base.dro.DROServiceImpl"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.tools.dro">
+   <implementation class="org.goko.tools.dro.DROServiceImpl"/>
    <service>
-      <provide interface="org.goko.base.dro.IDROService"/>
+      <provide interface="org.goko.tools.dro.IDROService"/>
    </service>
    <reference bind="setControllerService" cardinality="1..1" interface="org.goko.core.controller.IControllerService" name="IControllerService" policy="static"/>
 </scr:component>

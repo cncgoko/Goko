@@ -1,11 +1,10 @@
-package org.goko.base.dro.preferences;
+package org.goko.tools.dro.preferences;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -25,7 +24,7 @@ public class DROPreferencesPage extends GkFieldEditorPreferencesPage{
 	private IControllerService controller;
 	
 	public DROPreferencesPage() {
-		setImageDescriptor(ResourceManager.getPluginImageDescriptor("org.goko.base.dro", "icons/compass.png"));
+		setImageDescriptor(ResourceManager.getPluginImageDescriptor("org.goko.tools.dro", "icons/compass.png"));
 		setDescription("Configure the displayed values");
 		setTitle("Digital read out");	
 		setPreferenceStore(new DROPreferenceStoreProvider().getPreferenceStore());

@@ -17,13 +17,12 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.base.dro;
+package org.goko.tools.dro;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -35,7 +34,7 @@ import org.goko.core.log.GkLog;
 
 public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	private static final GkLog LOG = GkLog.getLogger(DROServiceImpl.class);
-	public static final String SERVICE_ID = "org.goko.base.droservice";
+	public static final String SERVICE_ID = "org.goko.tools.dro.service";
 	private IControllerService controllerService;
 	private ScopedPreferenceStore prefs;
 	private List<MachineValueDefinition> lstDefinition;
@@ -54,7 +53,7 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	@Override
 	public void start() throws GkException {	
 		lstDefinition = new ArrayList<MachineValueDefinition>();
-		prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE,"org.goko.base.droservice");		
+		prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, SERVICE_ID);		
 		prefs.addPropertyChangeListener(this);
 		updateValues();
 	}
@@ -68,7 +67,7 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.base.dro.IDROService#getDisplayedMachineValueDefinition()
+	 * @see org.goko.tools.dro.IDROService#getDisplayedMachineValueDefinition()
 	 */
 	@Override
 	public List<MachineValueDefinition> getDisplayedMachineValueDefinition() throws GkException{

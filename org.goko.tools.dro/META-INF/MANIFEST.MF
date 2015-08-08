@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Dro
-Bundle-SymbolicName: org.goko.base.dro;singleton:=true
+Bundle-SymbolicName: org.goko.tools.dro;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-ClassPath: .
 Require-Bundle: org.goko.core;bundle-version="0.0.1",
