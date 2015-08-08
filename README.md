@@ -5,7 +5,7 @@ Support for Grbl _(and probably others)_ will be available soon.
 
 Current version is ```0.0.2```
 
-![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)
+[![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)](https://travis-ci.org/cncgoko/Goko)
 
 Download
 --------
