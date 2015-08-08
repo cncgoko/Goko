@@ -1,0 +1,8 @@
+language: java
+jdk:
+  - oraclejdk7
+ 
+before_script:
+  - cd org.goko.build.parent
+ 
+script: mvn clean install -DskipTests
