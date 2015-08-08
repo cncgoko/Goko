@@ -24,7 +24,7 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.equinox.preferences,
- org.goko.gcode.viewer
+ org.goko.tools.viewer.jogl
 Import-Package: javax.annotation;version="1.2.0",
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,

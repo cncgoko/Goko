@@ -39,10 +39,10 @@ import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 import org.goko.tools.centerfinder.bean.Segment;
-import org.goko.viewer.jogl.service.ICoreJoglRenderer;
-import org.goko.viewer.jogl.service.IJoglViewerService;
-import org.goko.viewer.jogl.utils.render.basic.PointRenderer;
-import org.goko.viewer.jogl.utils.render.coordinate.measurement.DiameterRenderer;
+import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;
+import org.goko.tools.viewer.jogl.service.IJoglViewerService;
+import org.goko.tools.viewer.jogl.utils.render.basic.PointRenderer;
+import org.goko.tools.viewer.jogl.utils.render.coordinate.measurement.DiameterRenderer;
 
 
 public class CenterFinderServiceImpl implements ICenterFinderService{

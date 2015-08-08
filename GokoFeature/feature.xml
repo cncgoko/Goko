@@ -743,14 +743,14 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.base.execution.time"
+         id="org.goko.tools.execution.time"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.goko.base.gcodeexecutionmonitor"
+         id="org.goko.core.execution.monitor"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -771,7 +771,7 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.gcode.viewer"
+         id="org.goko.tools.viewer"
          download-size="0"
          install-size="0"
          version="0.0.0"
