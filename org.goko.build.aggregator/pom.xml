@@ -17,7 +17,7 @@
   	<module>../org.goko.tools.execution.time</module>
   	  	 	
   	<module>../org.goko.gcode.filesender</module>
-  	<module>../org.goko.gcode.rs274ngcv3</module>
+  	<module>../org.goko.core.rs274ngcv3</module>
   	<module>../org.goko.tools.viewer</module>
   	
   	<module>../org.goko.controller.tinyg</module>
