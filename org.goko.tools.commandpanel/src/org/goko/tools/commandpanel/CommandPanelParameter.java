@@ -17,10 +17,10 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.base.commandpanel;
+package org.goko.tools.commandpanel;
 
 public class CommandPanelParameter {
-	public static final String JOG_FEEDRATE = "org.goko.base.commandpanel.jog.feedrate";
-	public static final String JOG_INCREMENTAL = "org.goko.base.commandpanel.jog.incremental";
-	public static final String JOG_STEP_SIZE = "org.goko.base.commandpanel.jog.stepsize";
+	public static final String JOG_FEEDRATE = "org.goko.tools.commandpanel.jog.feedrate";
+	public static final String JOG_INCREMENTAL = "org.goko.tools.commandpanel.jog.incremental";
+	public static final String JOG_STEP_SIZE = "org.goko.tools.commandpanel.jog.stepsize";
 }

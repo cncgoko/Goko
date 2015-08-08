@@ -11,7 +11,7 @@
   	<module>../com.eclipsesource.json</module>
   	<module>../com.jogamp.jogl</module>
   	<module>../com.jogamp.jogl-windows-amd64</module>  	
-  	<module>../org.goko.base.commandpanel</module>
+  	<module>../org.goko.tools.commandpanel</module>
   	<module>../org.goko.base.dro</module>
   	<module>../org.goko.base.execution.time</module>
   	<module>../org.goko.base.gcodeexecutionmonitor</module>
@@ -27,7 +27,7 @@
   	<module>../org.goko.core.workspace</module>   	  	
   	<module>../Goko</module>
  	<module>../GokoFeature</module>
-  	<module>../org.goko.product</module>
+  	<module>../org.goko.build.product</module>
 
   	
   </modules>

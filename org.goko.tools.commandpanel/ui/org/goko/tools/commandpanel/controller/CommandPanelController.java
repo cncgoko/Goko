@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.base.commandpanel.controller;
+package org.goko.tools.commandpanel.controller;
 
 import java.math.BigDecimal;
 
@@ -35,8 +35,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.goko.base.commandpanel.Activator;
-import org.goko.base.commandpanel.CommandPanelParameter;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -53,6 +51,8 @@ import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.log.GkLog;
+import org.goko.tools.commandpanel.Activator;
+import org.goko.tools.commandpanel.CommandPanelParameter;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**

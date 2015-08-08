@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_nqKJkC60EeOmU_SY2Ov9KA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-_Cv4C61EeOmU_SY2Ov9KA" featurename="children" parentElementId="goko.application.partstack">
-    <elements xsi:type="basic:Part" xmi:id="_AVJAIC62EeOmU_SY2Ov9KA" elementId="goko.application.parts.base.commandpanel" contributionURI="bundleclass://org.goko.base.commandpanel/org.goko.base.commandpanel.CommandPanelPart" label="Command panel" iconURI="platform:/plugin/org.goko.base.commandpanel/icons/joystick.png" closeable="true">
-      <persistedState key="org.goko.base.commandpanel.jog.feedrate" value="1000"/>
+    <elements xsi:type="basic:Part" xmi:id="_AVJAIC62EeOmU_SY2Ov9KA" elementId="goko.application.parts.base.commandpanel" contributionURI="bundleclass://org.goko.tools.commandpanel/org.goko.tools.commandpanel.CommandPanelPart" label="Command panel" iconURI="platform:/plugin/org.goko.tools.commandpanel/icons/joystick.png" closeable="true">
+      <persistedState key="org.goko.tools.commandpanel.jog.feedrate" value="1000"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ySVFAKe8EeO5kOF6XMJyEQ" featurename="handlers" parentElementId="goko.application">
-    <elements xsi:type="commands:Handler" xmi:id="_0lyVYKe8EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.toggle.handler" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_FSCQQKe9EeO5kOF6XMJyEQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_0lyVYKe8EeO5kOF6XMJyEQ" elementId="org.goko.tools.commandpanel.toggle.handler" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ToggleViewHandler" command="_FSCQQKe9EeO5kOF6XMJyEQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8CpvkKe8EeO5kOF6XMJyEQ" featurename="children" parentElementId="goko.menu.window.view">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9rCpsKe8EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.handledmenuitem.0" label="Command panel" iconURI="platform:/plugin/org.goko.base.commandpanel/icons/joystick.png" command="_FSCQQKe9EeO5kOF6XMJyEQ">
-      <parameters xmi:id="_ftFywKe9EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.parameter.0" name="org.goko.commands.toggleView.viewName" value="goko.application.parts.base.commandpanel"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9rCpsKe8EeO5kOF6XMJyEQ" elementId="org.goko.tools.commandpanel.handledmenuitem.0" label="Command panel" iconURI="platform:/plugin/org.goko.tools.commandpanel/icons/joystick.png" command="_FSCQQKe9EeO5kOF6XMJyEQ">
+      <parameters xmi:id="_ftFywKe9EeO5kOF6XMJyEQ" elementId="org.goko.tools.commandpanel.parameter.0" name="org.goko.commands.toggleView.viewName" value="goko.application.parts.base.commandpanel"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_D5Lm8Ke9EeO5kOF6XMJyEQ" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_FSCQQKe9EeO5kOF6XMJyEQ" elementId="org.goko.base.commandpanel.toggle.command" commandName="ToggleCommandPanel">
+    <elements xsi:type="commands:Command" xmi:id="_FSCQQKe9EeO5kOF6XMJyEQ" elementId="org.goko.tools.commandpanel.toggle.command" commandName="ToggleCommandPanel">
       <parameters xmi:id="_Hw44UKe9EeO5kOF6XMJyEQ" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName"/>
     </elements>
   </fragments>

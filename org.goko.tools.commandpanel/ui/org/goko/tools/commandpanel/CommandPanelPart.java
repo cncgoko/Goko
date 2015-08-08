@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.base.commandpanel;
+package org.goko.tools.commandpanel;
 
 import java.math.BigDecimal;
 
@@ -53,8 +53,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.goko.base.commandpanel.controller.CommandPanelController;
-import org.goko.base.commandpanel.controller.CommandPanelModel;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
@@ -63,6 +61,8 @@ import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.log.GkLog;
+import org.goko.tools.commandpanel.controller.CommandPanelController;
+import org.goko.tools.commandpanel.controller.CommandPanelModel;
 
 public class CommandPanelPart extends GkUiComponent<CommandPanelController, CommandPanelModel> implements IPropertyChangeListener {
 	private static GkLog LOG = GkLog.getLogger(CommandPanelPart.class);
@@ -570,7 +570,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnPause.setText("Pause");
 
 		btnStop = new Button(grpControls, SWT.NONE);
-		btnStop.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/stop.png"));
+		btnStop.setImage(ResourceManager.getPluginImage("org.goko.tools.commandpanel", "icons/stop.png"));
 		btnStop.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		GridData gd_btnStop = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_btnStop.heightHint = 35;
@@ -579,7 +579,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnStop.setText("Stop");
 
 		btnKillAlarm = new Button(grpControls, SWT.NONE);
-		btnKillAlarm.setImage(ResourceManager.getPluginImage("org.goko.base.commandpanel", "icons/bell--minus.png"));
+		btnKillAlarm.setImage(ResourceManager.getPluginImage("org.goko.tools.commandpanel", "icons/bell--minus.png"));
 		GridData gd_btnKillAlarm = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnKillAlarm.heightHint = 35;
 		btnKillAlarm.setLayoutData(gd_btnKillAlarm);

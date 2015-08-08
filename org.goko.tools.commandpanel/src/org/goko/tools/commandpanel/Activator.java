@@ -1,7 +1,6 @@
-package org.goko.base.commandpanel;
+package org.goko.tools.commandpanel;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -15,7 +14,7 @@ public class Activator implements BundleActivator {
 	private static IEclipsePreferences preferences;
 
 	public static final IScopeContext SCOPE_CONTEXT = InstanceScope.INSTANCE;
-    public static final String PREFERENCE_NODE 		= "org.goko.base.commandpanel";
+    public static final String PREFERENCE_NODE 		= "org.goko.tools.commandpanel";
 
 	static BundleContext getContext() {
 		return context;

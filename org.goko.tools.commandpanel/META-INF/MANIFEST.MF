@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commandpanel
-Bundle-SymbolicName: org.goko.base.commandpanel;singleton:=true
+Bundle-SymbolicName: org.goko.tools.commandpanel;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Bundle-Activator: org.goko.base.commandpanel.Activator
+Bundle-Activator: org.goko.tools.commandpanel.Activator
 Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.di;bundle-version="1.1.0",
  org.eclipse.e4.ui.workbench.renderers.swt;bundle-version="0.10.2",
