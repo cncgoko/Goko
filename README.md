@@ -3,7 +3,9 @@
 Goko is a Java based GCode sender and CNC control software. It can be used to control a board based CNC machine. Currently, only ```TinyG v0.97``` *([doc](https://github.com/synthetos/TinyG/wiki))* is supported.
 Support for Grbl _(and probably others)_ will be available soon.
 
-Current version is ```0.0.1```
+Current version is ```0.0.2```
+
+[![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)]
 
 Download
 --------
