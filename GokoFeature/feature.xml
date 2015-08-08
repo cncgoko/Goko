@@ -876,7 +876,7 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.grbl.controller.v08"
+         id="org.goko.controller.grbl.v08"
          download-size="0"
          install-size="0"
          version="0.0.0"
