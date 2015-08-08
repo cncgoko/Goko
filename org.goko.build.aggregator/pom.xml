@@ -31,7 +31,10 @@
   	<module>../Goko</module>
  	<module>../GokoFeature</module>
   	<module>../org.goko.build.product</module>
-
+  	
+  	<module>../org.goko.junit.tools</module>
+  	<module>../org.goko.controller.tinyg.junit</module>
+  	
   	
   </modules>
 </project>
