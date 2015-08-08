@@ -18,7 +18,7 @@
   	  	 	
   	<module>../org.goko.gcode.filesender</module>
   	<module>../org.goko.core.rs274ngcv3</module>
-  	<module>../org.goko.tools.viewer</module>
+  	<module>../org.goko.tools.viewer.jogl</module>
   	
   	<module>../org.goko.controller.tinyg</module>
   	<module>../org.goko.controller.grbl.v08</module>  	  	

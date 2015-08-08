@@ -771,13 +771,6 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.tools.viewer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.goko.tools.serial.jssc"
          download-size="0"
          install-size="0"
@@ -877,6 +870,13 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="org.goko.controller.grbl.v08"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.goko.tools.viewer.jogl"
          download-size="0"
          install-size="0"
          version="0.0.0"
