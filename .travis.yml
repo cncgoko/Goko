@@ -5,5 +5,4 @@ jdk:
 before_script:
   - cd org.goko.build.parent
  
-install: mvn clean install -DskipTests=true
-script: mvn test
+script: mvn clean install
