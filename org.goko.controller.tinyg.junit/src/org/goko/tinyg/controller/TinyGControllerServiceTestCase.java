@@ -5,15 +5,16 @@ package org.goko.tinyg.controller;
 
 import java.math.BigDecimal;
 
-import junit.framework.TestCase;
-
+import org.goko.controller.tinyg.controller.TinyGControllerService;
+import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.gcode.rs274ngcv3.RS274GCodeService;
+import org.goko.core.rs274ngcv3.RS274GCodeService;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
 import org.goko.junit.tools.connection.AssertSerialEmulator;
 import org.goko.junit.tools.connection.SerialConnectionEmulator;
-import org.goko.tinyg.controller.configuration.TinyGConfiguration;
+
+import junit.framework.TestCase;
 
 /*
  
