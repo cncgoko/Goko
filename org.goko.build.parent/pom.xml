@@ -44,6 +44,16 @@
                     </environments>
                 </configuration>
             </plugin>
+            
+            <plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<useuiharness>false</useuiharness>
+					<useuithread>false</useuithread>					
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>
