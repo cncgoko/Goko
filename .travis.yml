@@ -9,4 +9,4 @@ script:
   - mvn clean verify -e
 
 after_failure:
-  - cat ../org.goko.controller.tinyg.junit/target/surefire-reports/*.txt
+  - cat ../org.goko.build.parent/target/surefire-reports/*.txt
