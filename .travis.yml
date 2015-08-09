@@ -5,4 +5,4 @@ jdk:
 before_script:
   - cd org.goko.build.aggregator
  
-script: mvn clean test
+script: mvn clean install test
