@@ -7,6 +7,3 @@ before_script:
  
 script: 
   - mvn clean verify -e
-
-after_failure:
-  - cat /home/travis/build/cncgoko/Goko/org.goko.controller.tinyg.junit/target/surefire-reports/*.txt
