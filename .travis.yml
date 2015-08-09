@@ -3,6 +3,6 @@ jdk:
   - oraclejdk7
  
 before_script:
-  - cd org.goko.build.parent
+  - cd org.goko.build.aggregator
  
-script: mvn clean install
+script: mvn clean test
