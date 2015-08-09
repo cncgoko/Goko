@@ -53,7 +53,7 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	@Override
 	public void start() throws GkException {	
 		lstDefinition = new ArrayList<MachineValueDefinition>();
-		prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, SERVICE_ID);		
+		prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.goko.tools.droservice");		
 		prefs.addPropertyChangeListener(this);
 		updateValues();
 	}

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Require-Bundle: org.goko.core;bundle-version="0.0.1"
 Export-Package: org.goko.junit.tools.assertion,org.goko.junit.tools.co
  nnection
-Bundle-Version: 0.0.1.201508090756
+Bundle-Version: 0.0.1.201508091052
 Bundle-Name: Tools
 Bundle-ManifestVersion: 2
 Import-Package: org.junit;version="4.11.0"

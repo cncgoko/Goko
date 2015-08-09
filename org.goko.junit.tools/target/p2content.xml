@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <units size='1'>
-  <unit id='org.goko.junit.tools' version='0.0.1.201508090756' singleton='false'>
-    <update id='org.goko.junit.tools' range='[0.0.0,0.0.1.201508090756)' severity='0'/>
+  <unit id='org.goko.junit.tools' version='0.0.1.201508091052' singleton='false'>
+    <update id='org.goko.junit.tools' range='[0.0.0,0.0.1.201508091052)' severity='0'/>
     <properties size='4'>
       <property name='org.eclipse.equinox.p2.name' value='Tools'/>
       <property name='maven-groupId' value='org.goko'/>
@@ -9,8 +9,8 @@
       <property name='maven-version' value='0.0.1-SNAPSHOT'/>
     </properties>
     <provides size='5'>
-      <provided namespace='org.eclipse.equinox.p2.iu' name='org.goko.junit.tools' version='0.0.1.201508090756'/>
-      <provided namespace='osgi.bundle' name='org.goko.junit.tools' version='0.0.1.201508090756'/>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='org.goko.junit.tools' version='0.0.1.201508091052'/>
+      <provided namespace='osgi.bundle' name='org.goko.junit.tools' version='0.0.1.201508091052'/>
       <provided namespace='java.package' name='org.goko.junit.tools.assertion' version='0.0.0'/>
       <provided namespace='java.package' name='org.goko.junit.tools.connection' version='0.0.0'/>
       <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
@@ -20,13 +20,13 @@
       <required namespace='java.package' name='org.junit' range='4.11.0'/>
     </requires>
     <artifacts size='1'>
-      <artifact classifier='osgi.bundle' id='org.goko.junit.tools' version='0.0.1.201508090756'/>
+      <artifact classifier='osgi.bundle' id='org.goko.junit.tools' version='0.0.1.201508091052'/>
     </artifacts>
     <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
     <touchpointData size='1'>
       <instructions size='1'>
         <instruction key='manifest'>
-          Bundle-SymbolicName: org.goko.junit.tools&#xA;Bundle-Version: 0.0.1.201508090756&#xA;
+          Bundle-SymbolicName: org.goko.junit.tools&#xA;Bundle-Version: 0.0.1.201508091052&#xA;
         </instruction>
       </instructions>
     </touchpointData>
