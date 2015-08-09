@@ -124,8 +124,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 	 * Result  : TinyG performs the motion 
 	 * @throws Exception
 	 */
-	public void testMoveToAbsolutePosition() throws Exception{	
-		
+	public void testMoveToAbsolutePosition() throws Exception{			
 		// Emulate the reception of the GCode context
 		serialEmulator.clearOutputBuffer();
 		serialEmulator.clearSentBuffer();
@@ -134,7 +133,8 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"qv\":2},\"f\":[1,0,0,0]}");
 		
 		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());		
-		tinyg.executeGCode(motionCode);	
+		tinyg.executeGCode(motionCode);
+		Thread.sleep(100); // Do some better check than thread.sleep...
 		AssertSerialEmulator.assertMessagePresent(serialEmulator, "{\"gc\":\"n1 g90 x10 y10\"}"+'\n');				
 	}
 	
