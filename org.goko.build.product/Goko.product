@@ -20,7 +20,7 @@
    <launcher name="Goko">
       <solaris/>
       <win useIco="true">
-         <ico path="/Goko/icons/launch/goko.ico"/>
+         <ico path="../Goko/icons/launch/goko.ico"/>
          <bmp/>
       </win>
    </launcher>
