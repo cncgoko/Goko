@@ -103,4 +103,21 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 	}
 
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#abs()
+	 */
+	@Override
+	public DoubleQuantity<Q> abs() {		
+		return NumberQuantity.of(Math.abs(value), getUnit());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#negate()
+	 */
+	@Override
+	public Quantity<Q> negate() {
+		return NumberQuantity.of(-value, getUnit());
+	}
+
+
 }

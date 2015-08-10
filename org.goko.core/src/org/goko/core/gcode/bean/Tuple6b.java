@@ -104,6 +104,13 @@ public class Tuple6b {
 		this.c = NumberQuantity.of(c, angleUnit);
 	}
 
+	public Tuple6b(Unit<Length> unit, BigDecimalQuantity<Length> qx, BigDecimalQuantity<Length> qy, BigDecimalQuantity<Length> qz) {
+		super();
+		this.x = qx.to(unit);
+		this.y = qy.to(unit);
+		this.z = qz.to(unit);
+	}
+
 	public void updateRelative(Tuple6b position){
 		this.x = atomUpdateRelative(x, position.x);
 		this.y = atomUpdateRelative(y, position.y);

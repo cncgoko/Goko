@@ -27,4 +27,7 @@ public interface Quantity<Q extends Quantity<Q>> {
 	
 	Number divide(Quantity<Q> q);
 	
+	Quantity<Q> abs();
+	
+	Quantity<Q> negate();
 }

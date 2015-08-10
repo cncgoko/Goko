@@ -160,6 +160,23 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 			return false;
 		return true;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#abs()
+	 */
+	@Override
+	public BigDecimalQuantity<Q> abs() {		
+		return NumberQuantity.of(value.abs(), getUnit());
+	}
+	
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#negate()
+	 */
+	@Override
+	public BigDecimalQuantity<Q> negate() {
+		return NumberQuantity.of(value.negate(), getUnit());
+	}
 	
 	
 	
