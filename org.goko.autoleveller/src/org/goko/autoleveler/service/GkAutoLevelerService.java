@@ -92,6 +92,9 @@ public class GkAutoLevelerService implements IAutoLevelerService{
 
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.autoleveler.service.IAutoLevelerService#probe(org.goko.autoleveler.bean.GridElevationMap)
+	 */
 	@Override
 	public void probe(GridElevationMap pattern) throws GkException{
 		if(pattern == null){
@@ -108,6 +111,9 @@ public class GkAutoLevelerService implements IAutoLevelerService{
 		t.start();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.autoleveler.service.IAutoLevelerService#apply(org.goko.core.gcode.bean.IGCodeProvider)
+	 */
 	@Override
 	public IGCodeProvider apply(IGCodeProvider gcodeProvider) throws GkException{
 		List<GCodeCommand> lstCommands = gcodeProvider.getGCodeCommands();
@@ -129,7 +135,7 @@ public class GkAutoLevelerService implements IAutoLevelerService{
 
 	private void applyOnCommand(LinearMotionCommand motionCommand)throws GkException{
 		Tuple6b start = map.getCorrectedElevation(motionCommand.getAbsoluteStartCoordinate());
-		Tuple6b end = map.getCorrectedElevation(motionCommand.getAbsoluteEndCoordinate());
+		Tuple6b end   = map.getCorrectedElevation(motionCommand.getAbsoluteEndCoordinate());
 		if(start != null){
 			motionCommand.setAbsoluteStartCoordinate(start);
 		}
@@ -143,9 +149,11 @@ public class GkAutoLevelerService implements IAutoLevelerService{
 			}
 		}
 	}
+	
 	private void applyOnCommand(ArcMotionCommand motionCommand)throws GkException{
 
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.autoleveler.service.IAutoLevelerService#previewPattern(org.goko.autoleveler.bean.IAxisElevationPattern)
 	 */
@@ -210,6 +218,20 @@ public class GkAutoLevelerService implements IAutoLevelerService{
 	 */
 	public void setProbingService(IProbingService probingService) {
 		this.probingService = probingService;
+	}
+
+	/**
+	 * @return the map
+	 */
+	public IAxisElevationMap getMap() {
+		return map;
+	}
+
+	/**
+	 * @param map the map to set
+	 */
+	public void setMap(IAxisElevationMap map) {
+		this.map = map;
 	}
 
 }

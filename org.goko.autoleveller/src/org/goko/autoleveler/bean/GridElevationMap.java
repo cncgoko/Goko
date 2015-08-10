@@ -27,6 +27,8 @@ import javax.vecmath.Vector3d;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.bean.Tuple6b;
 
 public class GridElevationMap implements IAxisElevationMap, IAxisElevationPattern {
@@ -35,40 +37,37 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	private Tuple6b start;
 	private Tuple6b end;
 	private Vector3d Z_AXIS = new Vector3d(0,0,1);
-	private double xAxisStep;
-	private double yAxisStep;
+	private BigDecimalQuantity<Length> xAxisStep;
+	private BigDecimalQuantity<Length> yAxisStep;
 	private double xAxisDivisionCount;
 	private double yAxisDivisionCount;
-	private double zSafeHeight;
-	private double startProbeZ;
-	private double expectedZ;
-	private double maximalProbeZ;
+	private BigDecimalQuantity<Length> zSafeHeight;
+	private BigDecimalQuantity<Length> startProbeZ;
+	private BigDecimalQuantity<Length> expectedZ;
+	private BigDecimalQuantity<Length> maximalProbeZ;
 	private int[][] vertices;
 	private int xVerts;
 	private int yVerts;
 
-	public GridElevationMap(Tuple6b tStart, Tuple6b tEnd, int xAxisDivisionCount, int yAxisDivisionCount, double safeHeight, double expectedHeight) {
+	public GridElevationMap(Tuple6b tStart, Tuple6b tEnd, int xAxisDivisionCount, int yAxisDivisionCount, BigDecimalQuantity<Length> safeHeight, BigDecimalQuantity<Length> expectedHeight) {
 		super();
 		this.start = new Tuple6b();
-		start.setX(tStart.getX().min(tEnd.getX()));
-		start.setY(tStart.getY().min(tEnd.getY()));
-		start.setZ(tStart.getZ().min(tEnd.getZ()));
+		this.start.min(tStart, tEnd);
 		this.end = new Tuple6b();
-		end.setX(tStart.getX().max(tEnd.getX()));
-		end.setY(tStart.getY().max(tEnd.getY()));
-		end.setZ(tStart.getZ().max(tEnd.getZ()));
+		this.end.max(tStart, tEnd);
+		
 		this.xAxisDivisionCount = xAxisDivisionCount;
 		this.yAxisDivisionCount = yAxisDivisionCount;
-		double dx = end.getX().subtract(start.getX()).doubleValue();
-		double dy = end.getY().subtract(start.getY()).doubleValue();
-		this.xAxisStep = dx / Math.abs(xAxisDivisionCount);
-		this.yAxisStep = dy / Math.abs(yAxisDivisionCount);
-		this.xVerts = xAxisDivisionCount + 1;//(int) Math.floor((Math.abs(dx)/Math.abs(xAxisStep))) + 1;
-		this.yVerts = yAxisDivisionCount + 1;//(int) Math.floor((Math.abs(dy)/Math.abs(yAxisStep))) + 1;
-		this.vertices = new int[xVerts][yVerts];
+		BigDecimalQuantity<Length> dx = end.getX().subtract(start.getX());
+		BigDecimalQuantity<Length> dy = end.getY().subtract(start.getY());
+		this.xAxisStep = dx.divide(Math.abs(xAxisDivisionCount));
+		this.yAxisStep = dy.divide(Math.abs(yAxisDivisionCount));
+		this.xVerts 	= xAxisDivisionCount + 1;
+		this.yVerts 	= yAxisDivisionCount + 1;
+		this.vertices 	= new int[xVerts][yVerts];
 
-		this.zSafeHeight = safeHeight;
-		this.expectedZ = expectedHeight;
+		this.zSafeHeight 	= safeHeight;
+		this.expectedZ 		= expectedHeight;
 		this.probedPositions = new ArrayList<Tuple6b>();
 		generatePatternPositions();
 	}
@@ -78,35 +77,19 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	 */
 	private void generatePatternPositions(){
 		positions = new ArrayList<Tuple6b>();
-
-		double x = start.getX().doubleValue();
-		for(int xi = 0; xi <= xAxisDivisionCount; xi++){
-			double y = start.getY().doubleValue();
-			for(int yi = 0; yi <= yAxisDivisionCount; yi++){
-				Tuple6b pos = new Tuple6b(start);
-				pos.setX(BigDecimal.valueOf(x));
-				pos.setY(BigDecimal.valueOf(y));
-				pos.setZ(BigDecimal.valueOf(zSafeHeight));
+				
+		Tuple6b currentPosition = new Tuple6b(start);
+		
+		for(int xi = 0; xi <= xAxisDivisionCount; xi++){			
+			for(int yi = 0; yi <= yAxisDivisionCount; yi++){				
+				currentPosition.setZ(zSafeHeight);
 				vertices[xi][yi] = CollectionUtils.size(positions);
-				positions.add( pos );
-				y += yAxisStep;
+				positions.add( new Tuple6b(currentPosition) );
+				currentPosition.setY(currentPosition.getY().add(yAxisStep));
 			}
-			x+= xAxisStep;
+			currentPosition.setX(currentPosition.getX().add(xAxisStep));
+			currentPosition.setY(start.getY());
 		}
-//		for(double x = start.getX().doubleValue(); x <= end.getX().doubleValue(); x+= xAxisStep){
-//			yi = 0;
-//			for(double y = start.getY().doubleValue(); y <= end.getY().doubleValue(); y+= yAxisStep){
-//				Tuple6b pos = new Tuple6b(start);
-//				pos.setX(BigDecimal.valueOf(x));
-//				pos.setY(BigDecimal.valueOf(y));
-//				pos.setZ(BigDecimal.valueOf(zSafeHeight));
-//				vertices[xi][yi] = CollectionUtils.size(positions);
-//				positions.add( pos );
-//				yi += 1;
-//			}
-//			xi += 1;
-//		}
-
 	}
 
 	/** (inheritDoc)
@@ -122,7 +105,12 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	 */
 	@Override
 	public Tuple6b getCorrectedElevation(Tuple6b position) throws GkException {
-		Tuple6b clippedPosition  = clipPointInsideArea(position);
+		BigDecimalQuantity<Length> theoricalHeight = position.getZ();
+		Tuple6b clippedPosition  = new Tuple6b(position);		
+		clippedPosition = clippedPosition.min(end);
+		clippedPosition = clippedPosition.max(start);
+		clippedPosition.setZ(theoricalHeight); // Z remains unchanged
+		
 		int[] xs = getXBounds(clippedPosition);
 		int[] ys = getYBounds(clippedPosition);
 
@@ -131,32 +119,15 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 		Tuple6b pC = probedPositions.get( vertices[xs[1]][ys[0]] );
 		Tuple6b pD = probedPositions.get( vertices[xs[1]][ys[1]] );
 
-		BigDecimal h = findHeightBilinear(clippedPosition, pA, pB, pC, pD);
-		if(h != null){
-			double delta = h.doubleValue() - expectedZ;
+		BigDecimalQuantity<Length> computedHeight = findHeightBilinear(clippedPosition, pA, pB, pC, pD);
+		if(computedHeight != null){
+			BigDecimalQuantity<Length> delta = computedHeight.subtract(expectedZ);
 			Tuple6b fixed = new Tuple6b(clippedPosition);
-			fixed.setZ( BigDecimal.valueOf(clippedPosition.getZ().doubleValue() + delta));
+			fixed.setZ( clippedPosition.getZ().add(delta));
 			return fixed;
 		}
 		System.err.println("height null");
-
 		return null;
-	}
-
-	private Tuple6b clipPointInsideArea(Tuple6b position){
-		Tuple6b clippedPosition = new Tuple6b(position);
-		if(position.getX().compareTo(end.getX()) > 0){
-			clippedPosition.setX( end.getX());
-		}else if(position.getX().compareTo(start.getX()) < 0){
-			clippedPosition.setX( start.getX());
-		}
-
-		if(position.getY().compareTo(end.getY()) > 0){
-			clippedPosition.setY( end.getY());
-		}else if(position.getY().compareTo(start.getY()) < 0){
-			clippedPosition.setY( start.getY());
-		}
-		return clippedPosition;
 	}
 
 	/**
@@ -172,21 +143,37 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	 * @param v4 area corner 1
 	 * @return
 	 */
-	private BigDecimal findHeightBilinear(Tuple6b position,Tuple6b v1,Tuple6b v2,Tuple6b v3,Tuple6b v4){
+	private BigDecimalQuantity<Length> findHeightBilinear(Tuple6b position,Tuple6b v1,Tuple6b v2,Tuple6b v3,Tuple6b v4){
 
-		double x1 = Math.abs(position.getY().doubleValue() - v1.getY().doubleValue());
-		double dx1 = Math.abs(v2.getY().doubleValue() - v1.getY().doubleValue());
-		double a1z = v2.getZ().doubleValue() * (x1 / dx1) + v1.getZ().doubleValue() * (1- (x1/dx1));
+		BigDecimalQuantity<Length> x1 =  position.getY().subtract(v1.getY()).abs();
+		BigDecimalQuantity<Length> dx1 = v2.getY().subtract(v1.getY()).abs();		
+		BigDecimalQuantity<Length> a1z = v2.getZ().multiply(x1.divide(dx1)).add(v1.getZ().multiply( 1 - (x1.divide(dx1).doubleValue())));
+		
+		BigDecimalQuantity<Length> x2 =  position.getY().subtract(v3.getY()).abs();
+		BigDecimalQuantity<Length> dx2 = v4.getY().subtract(v3.getY()).abs();
+		BigDecimalQuantity<Length> a2z = v4.getZ().multiply(x2.divide(dx2)).add(v3.getZ().multiply( 1 - (x2.divide(dx2).doubleValue())));
 
-		double x2 = Math.abs(position.getY().doubleValue() - v3.getY().doubleValue());
-		double dx2 = Math.abs(v4.getY().doubleValue() - v3.getY().doubleValue());
-		double a2z = v4.getZ().doubleValue() * (x2 / dx2) + v3.getZ().doubleValue() * (1- (x2/dx2));
 
-		double y1 = Math.abs(position.getX().doubleValue() - v1.getX().doubleValue());;
-		double dy1 = Math.abs(v3.getX().doubleValue() - v1.getX().doubleValue());;
-		double zFinal = a2z * (y1/dy1) + a1z * (1 - (y1/dy1));
+		BigDecimalQuantity<Length> y1  = position.getX().subtract(v1.getX()).abs();
+		BigDecimalQuantity<Length> dy1 = v3.getX().subtract(v1.getX()).abs();
+		BigDecimalQuantity<Length> zFinal = a2z.multiply(y1.divide(dy1)).add(a1z.multiply(1 - (y1.divide(dy1).doubleValue() )));
 
-		return BigDecimal.valueOf(zFinal);
+		return zFinal;
+		
+
+//		double x1 =  Math.abs(position.getY().doubleValue() - v1.getY().doubleValue());
+//		double dx1 = Math.abs(v2.getY().doubleValue() - v1.getY().doubleValue());
+//		double a1z = v2.getZ().doubleValue() * (x1 / dx1) + v1.getZ().doubleValue() * (1- (x1/dx1));
+//
+//		double x2 = Math.abs(position.getY().doubleValue() - v3.getY().doubleValue());
+//		double dx2 = Math.abs(v4.getY().doubleValue() - v3.getY().doubleValue());
+//		double a2z = v4.getZ() * (x2 / dx2) + v3.getZ()  * (1- (x2/dx2));
+//
+//		double y1 = Math.abs(position.getX().doubleValue() - v1.getX().doubleValue());;
+//		double dy1 = Math.abs(v3.getX().doubleValue() - v1.getX().doubleValue());;
+//		double zFinal = a2z * (y1/dy1) + a1z * (1 - (y1/dy1));
+//
+//		return BigDecimal.valueOf(zFinal);
 	}
 
 
@@ -264,24 +251,24 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	 * @see org.goko.autoleveler.bean.IAxisElevationPattern#getStartProbePosition()
 	 */
 	@Override
-	public BigDecimal getStartProbePosition() throws GkException {
-		return BigDecimal.valueOf(startProbeZ);
+	public BigDecimalQuantity<Length> getStartProbePosition() throws GkException {
+		return startProbeZ;
 	}
 
-	public void setStartProbePosition(BigDecimal start) {
-		startProbeZ = start.doubleValue();
+	public void setStartProbePosition(BigDecimalQuantity<Length> start) {
+		startProbeZ = start;
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.autoleveler.bean.IAxisElevationPattern#getEndProbePosition()
 	 */
 	@Override
-	public BigDecimal getEndProbePosition() throws GkException {
-		return BigDecimal.valueOf(maximalProbeZ);
+	public BigDecimalQuantity<Length> getEndProbePosition() throws GkException {
+		return maximalProbeZ;
 	}
 
-	public void setEndProbePosition(BigDecimal end) {
-		maximalProbeZ = end.doubleValue();
+	public void setEndProbePosition(BigDecimalQuantity<Length> end) {
+		maximalProbeZ = end;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.autoleveler.bean.IAxisElevationMap#getProbedPositions()

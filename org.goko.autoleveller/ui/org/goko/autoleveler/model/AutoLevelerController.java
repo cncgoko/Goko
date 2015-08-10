@@ -20,16 +20,19 @@
 package org.goko.autoleveler.model;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.inject.Inject;
-import javax.vecmath.Point3d;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.autoleveler.bean.GridElevationMap;
 import org.goko.autoleveler.bean.IAxisElevationPattern;
+import org.goko.autoleveler.service.GkAutoLevelerService;
 import org.goko.autoleveler.service.IAutoLevelerService;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.IGCodeProvider;
@@ -56,11 +59,19 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 	}
 
 	public void probe() throws GkException {
-		GridElevationMap map = getPattern();
+		GridElevationMap map = getPattern();		
 		service.probe(map);
 		getDataModel().setMap(map);
 	}
 
+	private GridElevationMap testMap(GridElevationMap map) throws GkException{
+		for (Tuple6b probePosition : map.getPatternPositions()) {
+			Tuple6b realPosition = new Tuple6b(probePosition);
+			realPosition.setZ(NumberQuantity.of( new BigDecimal(Math.random()*10), probePosition.getX().getUnit()));
+			map.addProbedPosition(probePosition, realPosition);
+		}
+		return map;
+	}
 	public void previewPattern() throws GkException{
 		GridElevationMap map = getPattern();
 		//service.probe(map);
@@ -73,12 +84,11 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 	 * @return {@link IAxisElevationPattern} the generated pattern
 	 */
 	private GridElevationMap getPattern(){
-		Tuple6b start = new Tuple6b(getDataModel().getStartx(),getDataModel().getStarty(),getDataModel().getSafeZ());
-		Tuple6b end = new Tuple6b(getDataModel().getEndx(),getDataModel().getEndy(),getDataModel().getSafeZ());
+		Tuple6b start = new Tuple6b(SI.MILLIMETRE, getDataModel().getStartx(), getDataModel().getStarty(), getDataModel().getSafeZ());
+		Tuple6b end = new Tuple6b(SI.MILLIMETRE, getDataModel().getEndx(),getDataModel().getEndy(),getDataModel().getSafeZ());
 		int stepX = getDataModel().getStepX().intValue();
-		int stepY = getDataModel().getStepY().intValue();
-		double safeZ = getDataModel().getSafeZ().doubleValue();
-		GridElevationMap pattern = new GridElevationMap(start, end, stepX,stepY, safeZ, getDataModel().getExpectedZ().doubleValue());
+		int stepY = getDataModel().getStepY().intValue();		
+		GridElevationMap pattern = new GridElevationMap(start, end, stepX,stepY, getDataModel().getSafeZ(), getDataModel().getExpectedZ());
 		pattern.setStartProbePosition(getDataModel().getStartProbe());
 		pattern.setEndProbePosition(getDataModel().getMaxZProbe());
 
@@ -89,24 +99,25 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 	 * @throws GkException Exception
 	 */
 	public void grabStartPointFromPosition() throws GkException{
-		Point3d position = controllerService.getPosition();
-		this.getDataModel().setStartx(BigDecimal.valueOf(position.x));
-		this.getDataModel().setStarty(BigDecimal.valueOf(position.y));
+		Tuple6b position = controllerService.getPosition();
+		this.getDataModel().setStartx(position.getX());
+		this.getDataModel().setStarty(position.getY());
 	}
 	/**
 	 * Grab the current position of the machine, and use it as end point
 	 * @throws GkException Exception
 	 */
 	public void grabEndPointFromPosition() throws GkException{
-		Point3d position = controllerService.getPosition();
-		this.getDataModel().setEndx(BigDecimal.valueOf(position.x));
-		this.getDataModel().setEndy(BigDecimal.valueOf(position.y));
+		Tuple6b position = controllerService.getPosition();
+		this.getDataModel().setEndx(position.getX());
+		this.getDataModel().setEndy(position.getY());
 	}
 
 	public void debugCurrentPosition() throws GkException {
-		Point3d position = controllerService.getPosition();
-		getDataModel().getMap().getCorrectedElevation(new Tuple6b(position.x,position.y,position.z));
-		service.apply(getDataModel().getGcodeProvider());
+//		Tuple6b position = controllerService.getPosition();
+		((GkAutoLevelerService)service).setMap(testMap(getPattern()));		
+		IGCodeProvider provider = service.apply(getDataModel().getGcodeProvider());				
+		workspaceService.setCurrentGCodeProvider(provider.getId());
 	}
 
 	public void setGCodeFile(IGCodeProvider file) {

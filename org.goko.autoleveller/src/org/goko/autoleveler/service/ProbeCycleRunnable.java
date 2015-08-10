@@ -50,19 +50,25 @@ public class ProbeCycleRunnable implements Runnable {
 			}
 			if(CollectionUtils.isNotEmpty(pattern.getPatternPositions())){
 				List<Tuple6b> lst = pattern.getPatternPositions();
-				for (Tuple6b tuple : lst) {
-					LOG.info("Probing at "+tuple.getX()+", "+tuple.getY());
-					controllerService.moveToAbsolutePosition(tuple);
-					Tuple6b p = new Tuple6b(tuple);
-					p.setZ(pattern.getStartProbePosition());
-					controllerService.moveToAbsolutePosition(p);
+				for (Tuple6b probePositionSafe : lst) {
+					LOG.info("Probing at "+probePositionSafe.getX()+", "+probePositionSafe.getY());
+					// Moving to X/Y probing position 
+					controllerService.moveToAbsolutePosition(probePositionSafe);
+					
+					// Moving to Z Safe low position 
+					Tuple6b probePositionLow = new Tuple6b();
+					probePositionLow.setZ(pattern.getStartProbePosition());
+					controllerService.moveToAbsolutePosition(probePositionLow);
+					
+					// Perform probe
 					Future<ProbeResult> result = probingService.probe(EnumControllerAxis.Z_POSITIVE, 10, pattern.getEndProbePosition().doubleValue());
 					ProbeResult probeResult = result.get();
+					
 					if(probeResult.isProbed()){
 						LOG.info("    Result "+probeResult.getProbedPosition().getZ());
-						elevationMap.addProbedPosition(tuple, probeResult.getProbedPosition());
+						elevationMap.addProbedPosition(probePositionSafe, probeResult.getProbedPosition());
 					}
-					controllerService.moveToAbsolutePosition(tuple);
+					controllerService.moveToAbsolutePosition(probePositionSafe);
 				}
 			}
 		}catch(GkException e){

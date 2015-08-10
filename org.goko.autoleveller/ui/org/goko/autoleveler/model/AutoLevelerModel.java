@@ -23,147 +23,171 @@ import java.math.BigDecimal;
 
 import org.goko.autoleveler.bean.GridElevationMap;
 import org.goko.common.bindings.AbstractModelObject;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.bean.IGCodeProvider;
 
 public class AutoLevelerModel extends AbstractModelObject{
-	private BigDecimal startx;
-	private BigDecimal starty;
-	private BigDecimal endx;
-	private BigDecimal endy;
-	private BigDecimal safeZ;
-	private BigDecimal maxZProbe;
-	private BigDecimal startProbe;
-	private BigDecimal expectedZ;
+	private BigDecimalQuantity<Length> startx;
+	private BigDecimalQuantity<Length> starty;
+	private BigDecimalQuantity<Length> endx;
+	private BigDecimalQuantity<Length> endy;
+	private BigDecimalQuantity<Length> safeZ;
+	private BigDecimalQuantity<Length> maxZProbe;
+	private BigDecimalQuantity<Length> startProbe;
+	private BigDecimalQuantity<Length> expectedZ;
 	private BigDecimal stepX;
 	private BigDecimal stepY;
 	private GridElevationMap map;
 	private IGCodeProvider gcodeProvider;
+	
 	/**
 	 * @return the startx
 	 */
-	public BigDecimal getStartx() {
+	public BigDecimalQuantity<Length> getStartx() {
 		return startx;
 	}
+	
 	/**
 	 * @param startx the startx to set
 	 */
-	public void setStartx(BigDecimal startx) {
+	public void setStartx(BigDecimalQuantity<Length> startx) {
 		firePropertyChange("startx", this.startx, this.startx = startx);
 	}
+	
 	/**
 	 * @return the starty
 	 */
-	public BigDecimal getStarty() {
+	public BigDecimalQuantity<Length> getStarty() {
 		return starty;
 	}
+	
 	/**
 	 * @param starty the starty to set
 	 */
-	public void setStarty(BigDecimal starty) {
+	public void setStarty(BigDecimalQuantity<Length> starty) {
 		firePropertyChange("starty", this.starty, this.starty = starty);
 	}
+	
 	/**
 	 * @return the endx
 	 */
-	public BigDecimal getEndx() {
+	public BigDecimalQuantity<Length> getEndx() {
 		return endx;
 	}
+	
 	/**
 	 * @param endx the endx to set
 	 */
-	public void setEndx(BigDecimal endx) {
+	public void setEndx(BigDecimalQuantity<Length> endx) {
 		firePropertyChange("endx", this.endx, this.endx = endx);
 	}
+	
 	/**
 	 * @return the endy
 	 */
-	public BigDecimal getEndy() {
+	public BigDecimalQuantity<Length> getEndy() {
 		return endy;
 	}
+	
 	/**
 	 * @param endy the endy to set
 	 */
-	public void setEndy(BigDecimal endy) {
+	public void setEndy(BigDecimalQuantity<Length> endy) {
 		firePropertyChange("endy", this.endy, this.endy = endy);
 	}
+	
 	/**
 	 * @return the safeZ
 	 */
-	public BigDecimal getSafeZ() {
+	public BigDecimalQuantity<Length> getSafeZ() {
 		return safeZ;
 	}
+	
 	/**
 	 * @param safeZ the safeZ to set
 	 */
-	public void setSafeZ(BigDecimal safeZ) {
+	public void setSafeZ(BigDecimalQuantity<Length> safeZ) {
 		firePropertyChange("safeZ", this.safeZ, this.safeZ = safeZ);
 	}
+	
 	/**
 	 * @return the maxZProbe
 	 */
-	public BigDecimal getMaxZProbe() {
+	public BigDecimalQuantity<Length> getMaxZProbe() {
 		return maxZProbe;
 	}
+	
 	/**
 	 * @param maxZProbe the maxZProbe to set
 	 */
-	public void setMaxZProbe(BigDecimal maxZProbe) {
+	public void setMaxZProbe(BigDecimalQuantity<Length> maxZProbe) {
 		firePropertyChange("maxZProbe", this.maxZProbe, this.maxZProbe = maxZProbe);
 	}
+	
 	/**
 	 * @return the startProbe
 	 */
-	public BigDecimal getStartProbe() {
+	public BigDecimalQuantity<Length> getStartProbe() {
 		return startProbe;
 	}
+	
 	/**
 	 * @param startProbe the startProbe to set
 	 */
-	public void setStartProbe(BigDecimal startProbe) {
+	public void setStartProbe(BigDecimalQuantity<Length> startProbe) {
 		firePropertyChange("startProbe", this.startProbe, this.startProbe = startProbe);
 	}
+	
 	/**
 	 * @return the expectedZ
 	 */
-	public BigDecimal getExpectedZ() {
+	public BigDecimalQuantity<Length> getExpectedZ() {
 		return expectedZ;
 	}
+	
 	/**
 	 * @param expectedZ the expectedZ to set
 	 */
-	public void setExpectedZ(BigDecimal expectedZ) {
+	public void setExpectedZ(BigDecimalQuantity<Length> expectedZ) {
 		firePropertyChange("expectedZ", this.expectedZ, this.expectedZ = expectedZ);
 	}
+	
 	/**
 	 * @return the stepX
 	 */
 	public BigDecimal getStepX() {
 		return stepX;
 	}
+	
 	/**
 	 * @param stepX the stepX to set
 	 */
 	public void setStepX(BigDecimal stepX) {
 		firePropertyChange("stepX", this.stepX, this.stepX = stepX);
 	}
+	
 	/**
 	 * @return the stepY
 	 */
 	public BigDecimal getStepY() {
 		return stepY;
 	}
+
 	/**
 	 * @param stepY the stepY to set
 	 */
 	public void setStepY(BigDecimal stepY) {
 		firePropertyChange("stepY", this.stepY, this.stepY = stepY);
 	}
+	
 	/**
 	 * @return the map
 	 */
 	public GridElevationMap getMap() {
 		return map;
 	}
+	
 	/**
 	 * @param map the map to set
 	 */
@@ -177,6 +201,7 @@ public class AutoLevelerModel extends AbstractModelObject{
 	public IGCodeProvider getGcodeProvider() {
 		return gcodeProvider;
 	}
+	
 	/**
 	 * @param gcodeProvider the gcodeProvider to set
 	 */

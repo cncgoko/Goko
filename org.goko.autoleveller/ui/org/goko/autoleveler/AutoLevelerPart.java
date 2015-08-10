@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -48,30 +49,42 @@ import org.goko.autoleveler.model.AutoLevelerModel;
 import org.goko.autoleveler.service.IAutoLevelerService;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
+import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
+import org.goko.common.preferences.fieldeditor.ui.UiIntegerFieldEditor;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLevelerModel> {
 	private static final String PERSITED_EXPECTED_Z = "org.goko.autoleveler.persisted.expectedz";
-	private static final String PERSITED_SAFE_Z 	= "org.goko.autoleveler.persisted.safez";
-	private static final String PERSITED_MAX_Z 		= "org.goko.autoleveler.persisted.maxz";
-	private static final String PERSITED_START_Z 	= "org.goko.autoleveler.persisted.startz";
-	private static final String PERSITED_STEP_X 	= "org.goko.autoleveler.persisted.stepx";
-	private static final String PERSITED_STEP_Y 	= "org.goko.autoleveler.persisted.stepy";
-	private Text txtStartX;
-	private Text txtStartY;
-	private Text txtEndX;
-	private Text txtEndY;
-	private Text txtExpectedZ;
-	private Text txtSafeZ;
-	private Text txtMaxProbe;
-	private Text txtStartProbe;
-	private Text txtStepX;
-	private Text txtStepY;
+	private static final String PERSITED_SAFE_Z = "org.goko.autoleveler.persisted.safez";
+	private static final String PERSITED_MAX_Z = "org.goko.autoleveler.persisted.maxz";
+	private static final String PERSITED_START_Z = "org.goko.autoleveler.persisted.startz";
+	private static final String PERSITED_STEP_X = "org.goko.autoleveler.persisted.stepx";
+	private static final String PERSITED_STEP_Y = "org.goko.autoleveler.persisted.stepy";
 
+	private UiQuantityFieldEditor<Length> startXEditor;	
+	private UiQuantityFieldEditor<Length> startYEditor;		
+	private UiQuantityFieldEditor<Length> endXEditor;		
+	private UiQuantityFieldEditor<Length> endYEditor;				
+	private UiQuantityFieldEditor<Length> expectedZEditor;	
+	private UiQuantityFieldEditor<Length> probeMaxZEditor;	
+	private UiQuantityFieldEditor<Length> safeZEditor;		
+	private UiQuantityFieldEditor<Length> probeStartZEditor;
+	private Unit<Length> lengthUnit;
+	private Composite parent;
 	@Inject
 	@Optional
 	IAutoLevelerService levelerService;
-
+	@Inject
+	@Optional
+	IWorkspaceService workspaceService;
+	
 	@Inject
 	public AutoLevelerPart(IEclipseContext context) throws GkException {
 		super(new AutoLevelerController());
@@ -81,18 +94,19 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 
 	@Inject
 	@Optional
-	private void getNotified(@UIEventTopic("gcodefile") IGCodeProvider file)
-			throws GkException {
+	private void getNotified(@UIEventTopic("gcodefile") IGCodeProvider file) throws GkException {
 		getController().setGCodeFile(file);
 	}
 
 	@PostConstruct
-	public void createControls(Composite parent, MPart part) {
+	public void createControls(Composite parent, MPart part) throws GkException {
+		lengthUnit = GokoPreference.getInstance().getLengthUnit();		
+		this.parent = parent;
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
 
-		if(!getController().isAutolevelerService()){
+		if (!getController().isAutolevelerService()) {
 			Label lblAutolevelerIsDeactivated = new Label(composite, SWT.NONE);
 			lblAutolevelerIsDeactivated.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 			lblAutolevelerIsDeactivated.setText("Autoleveler is deactivated because there is no probing support.");
@@ -100,19 +114,16 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 			return;
 		}
 
-
 		Group grpSettings = new Group(composite, SWT.NONE);
+		grpSettings.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		GridLayout gl_grpSettings = new GridLayout(1, false);
 		gl_grpSettings.verticalSpacing = 0;
 		grpSettings.setLayout(gl_grpSettings);
-		grpSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
-		grpSettings.setText("Settings");
-
+		grpSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		grpSettings.setText("Probe area");
 
 		Composite composite_3 = new Composite(grpSettings, SWT.NONE);
-		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		GridLayout gl_composite_3 = new GridLayout(2, false);
 		gl_composite_3.verticalSpacing = 0;
 		gl_composite_3.marginWidth = 0;
@@ -121,34 +132,27 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 		composite_3.setLayout(gl_composite_3);
 
 		Composite composite_4 = new Composite(composite_3, SWT.NONE);
-		composite_4.setLayout(new GridLayout(6, false));
+		composite_4.setLayout(new GridLayout(4, false));
 
 		Label lblStartPoint = new Label(composite_4, SWT.NONE);
 		lblStartPoint.setAlignment(SWT.RIGHT);
-		GridData gd_lblStartPoint = new GridData(SWT.LEFT, SWT.CENTER, false,
-				false, 1, 1);
+		GridData gd_lblStartPoint = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_lblStartPoint.widthHint = 60;
 		lblStartPoint.setLayoutData(gd_lblStartPoint);
 		lblStartPoint.setText("Start point");
 
-		Label lblX = new Label(composite_4, SWT.NONE);
-		lblX.setText("X");
-
-		txtStartX = new Text(composite_4, SWT.BORDER);
-		GridData gd_txtStartX = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtStartX.minimumWidth = 60;
-		gd_txtStartX.widthHint = 60;
-		txtStartX.setLayoutData(gd_txtStartX);
-
-		Label lblY = new Label(composite_4, SWT.NONE);
-		lblY.setText("Y");
-
-		txtStartY = new Text(composite_4, SWT.BORDER);
-		GridData gd_txtStartY = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtStartY.minimumWidth = 60;
-		gd_txtStartY.widthHint = 60;
-		txtStartY.setLayoutData(gd_txtStartY);
-
+		startXEditor = new UiQuantityFieldEditor<Length>(composite_4, SWT.NONE);
+		startXEditor.setPropertyName("startx");
+		startXEditor.setWidthInChars(8);
+		startXEditor.setLabel("X");
+		startXEditor.setUnit(lengthUnit);
+		
+		startYEditor = new UiQuantityFieldEditor<Length>(composite_4, SWT.NONE);
+		startYEditor.setPropertyName("starty");
+		startYEditor.setLabel("  Y");
+		startYEditor.setWidthInChars(8);
+		startYEditor.setUnit(lengthUnit);
+		
 		Button btnGrabStartPosition = new Button(composite_4, SWT.NONE);
 		btnGrabStartPosition.addMouseListener(new MouseAdapter() {
 			@Override
@@ -161,33 +165,25 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 			}
 		});
 		btnGrabStartPosition.setToolTipText("Grab point from current position");
-		btnGrabStartPosition.setImage(ResourceManager.getPluginImage(
-				"org.goko.autoleveller", "icons/grab-point.png"));
+		btnGrabStartPosition.setImage(ResourceManager.getPluginImage("org.goko.autoleveller", "icons/grab-point.png"));
 
 		Label lblEndPoint = new Label(composite_4, SWT.NONE);
-		lblEndPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 1, 1));
+		lblEndPoint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		lblEndPoint.setAlignment(SWT.RIGHT);
 		lblEndPoint.setText("End point");
 
-		Label lblNewLabel = new Label(composite_4, SWT.NONE);
-		lblNewLabel.setText("X");
+		endXEditor = new UiQuantityFieldEditor<Length>(composite_4, SWT.NONE);
+		endXEditor.setPropertyName("endx");
+		endXEditor.setLabel("X");
+		endXEditor.setWidthInChars(8);
+		endXEditor.setUnit(lengthUnit);
 
-		txtEndX = new Text(composite_4, SWT.BORDER);
-		GridData gd_txtEndX = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtEndX.minimumWidth = 60;
-		gd_txtEndX.widthHint = 60;
-		txtEndX.setLayoutData(gd_txtEndX);
-
-		Label lblNewLabel_1 = new Label(composite_4, SWT.NONE);
-		lblNewLabel_1.setText("Y");
-
-		txtEndY = new Text(composite_4, SWT.BORDER);
-		GridData gd_txtEndY = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_txtEndY.minimumWidth = 60;
-		gd_txtEndY.widthHint = 60;
-		txtEndY.setLayoutData(gd_txtEndY);
-
+		endYEditor = new UiQuantityFieldEditor<Length>(composite_4, SWT.NONE);
+		endYEditor.setPropertyName("endy");
+		endYEditor.setWidthInChars(8);
+		endYEditor.setLabel("  Y");
+		endYEditor.setUnit(lengthUnit);
+		
 		Button btnGrabEndPosition = new Button(composite_4, SWT.NONE);
 		btnGrabEndPosition.addMouseListener(new MouseAdapter() {
 			@Override
@@ -200,12 +196,26 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 			}
 		});
 		btnGrabEndPosition.setToolTipText("Grab point from current position");
-		btnGrabEndPosition.setImage(ResourceManager.getPluginImage(
-				"org.goko.autoleveller", "icons/grab-point.png"));
+		btnGrabEndPosition.setImage(ResourceManager.getPluginImage("org.goko.autoleveller", "icons/grab-point.png"));
+
+		Label lblXStep = new Label(composite_4, SWT.NONE);
+		lblXStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblXStep.setAlignment(SWT.RIGHT);
+		lblXStep.setText("Step");
+
+		UiIntegerFieldEditor stepXEditor = new UiIntegerFieldEditor(composite_4, SWT.NONE);
+		stepXEditor.setPropertyName("stepX");
+		stepXEditor.setWidthInChars(6);
+		stepXEditor.setLabel("X");
+
+		UiIntegerFieldEditor stepYEditor = new UiIntegerFieldEditor(composite_4, SWT.NONE);
+		stepYEditor.setPropertyName("stepY");
+		stepYEditor.setWidthInChars(6);
+		stepYEditor.setLabel("  Y");
+		new Label(composite_4, SWT.NONE);
 
 		Composite composite_5 = new Composite(composite_3, SWT.NONE);
-		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
+		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		composite_5.setLayout(new GridLayout(1, false));
 
 		Button btnNewButton = new Button(composite_5, SWT.NONE);
@@ -219,118 +229,53 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 				}
 			}
 		});
-		btnNewButton.setImage(ResourceManager.getPluginImage(
-				"org.goko.autoleveller", "icons/document-bounds-32.png"));
+		btnNewButton.setImage(ResourceManager.getPluginImage("org.goko.autoleveller", "icons/document-bounds-32.png"));
 		btnNewButton.setToolTipText("Get from GCode bounds");
-		btnNewButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				true, 1, 1));
+		btnNewButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 
-		Composite composite_1 = new Composite(grpSettings, SWT.NONE);
-		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-				false, 1, 1));
-		composite_1.setLayout(new GridLayout(6, false));
+		Group grpProbeSettings = new Group(composite, SWT.NONE);
+		grpProbeSettings.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		grpProbeSettings.setLayout(new GridLayout(2, false));
+		grpProbeSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		grpProbeSettings.setText("Probe settings");
 
-		Label lblXStep = new Label(composite_1, SWT.NONE);
-		lblXStep.setAlignment(SWT.RIGHT);
-		GridData gd_lblXStep = new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1);
-		gd_lblXStep.widthHint = 60;
-		lblXStep.setLayoutData(gd_lblXStep);
-		lblXStep.setText("Step");
+		expectedZEditor = new UiQuantityFieldEditor<Length>(grpProbeSettings, SWT.NONE);
+		expectedZEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		expectedZEditor.setPropertyName("expectedZ");
+		expectedZEditor.setLabelWidthInChar(9);
+		expectedZEditor.setLabel("Exepcted Z");
+		expectedZEditor.setWidthInChars(8);
+		expectedZEditor.setUnit(lengthUnit);
 
-		Label lblX_1 = new Label(composite_1, SWT.NONE);
-		lblX_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
-		lblX_1.setText("X");
-
-		txtStepX = new Text(composite_1, SWT.BORDER);
-		GridData gd_txtStepX = new GridData(SWT.LEFT, SWT.CENTER, false, false,
-				1, 1);
-		gd_txtStepX.minimumWidth = 60;
-		gd_txtStepX.widthHint = 60;
-		txtStepX.setLayoutData(gd_txtStepX);
-
-		Label lblY_1 = new Label(composite_1, SWT.NONE);
-		lblY_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
-		lblY_1.setText("Y");
-
-		txtStepY = new Text(composite_1, SWT.BORDER);
-		GridData gd_txtStepY = new GridData(SWT.LEFT, SWT.CENTER, false, false,
-				1, 1);
-		gd_txtStepY.widthHint = 60;
-		gd_txtStepY.minimumWidth = 60;
-		txtStepY.setLayoutData(gd_txtStepY);
-		new Label(composite_1, SWT.NONE);
-
-		Label lblSafeZ = new Label(composite_1, SWT.NONE);
-		lblSafeZ.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lblSafeZ.setText("Expected");
-
-		Label lblZ_1 = new Label(composite_1, SWT.NONE);
-		lblZ_1.setText("Z");
-		lblZ_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
-
-		txtExpectedZ = new Text(composite_1, SWT.BORDER);
-		GridData gd_txtExpectedZ = new GridData(SWT.LEFT, SWT.CENTER, false,
-				false, 1, 1);
-		gd_txtExpectedZ.minimumWidth = 60;
-		gd_txtExpectedZ.widthHint = 60;
-		txtExpectedZ.setLayoutData(gd_txtExpectedZ);
-		new Label(composite_1, SWT.NONE);
-
-		Label lblExpectedZ = new Label(composite_1, SWT.NONE);
-		lblExpectedZ.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lblExpectedZ.setText("Start probe");
-
-		txtStartProbe = new Text(composite_1, SWT.BORDER);
-		GridData gd_txtStartProbe = new GridData(SWT.LEFT, SWT.CENTER, true,
-				false, 1, 1);
-		gd_txtStartProbe.minimumWidth = 60;
-		gd_txtStartProbe.widthHint = 60;
-		txtStartProbe.setLayoutData(gd_txtStartProbe);
-
-		Label lblProbeZ = new Label(composite_1, SWT.NONE);
-		lblProbeZ.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lblProbeZ.setText("Safe");
-
-		Label lblZ = new Label(composite_1, SWT.NONE);
-		lblZ.setText("Z");
-		lblZ.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1,
-				1));
-
-		txtSafeZ = new Text(composite_1, SWT.BORDER);
-		GridData gd_txtSafeZ = new GridData(SWT.LEFT, SWT.CENTER, false, false,
-				1, 1);
-		gd_txtSafeZ.widthHint = 60;
-		gd_txtSafeZ.minimumWidth = 60;
-		txtSafeZ.setLayoutData(gd_txtSafeZ);
-		new Label(composite_1, SWT.NONE);
-
-		Label lblMaxProbeZ = new Label(composite_1, SWT.NONE);
-		lblMaxProbeZ.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lblMaxProbeZ.setText("Max Probe");
-
-		txtMaxProbe = new Text(composite_1, SWT.BORDER);
-		GridData gd_txtMaxProbe = new GridData(SWT.LEFT, SWT.CENTER, false,
-				false, 1, 1);
-		gd_txtMaxProbe.widthHint = 60;
-		gd_txtMaxProbe.minimumWidth = 60;
-		txtMaxProbe.setLayoutData(gd_txtMaxProbe);
-
-		Composite composite_2 = new Composite(grpSettings, SWT.NONE);
+		probeStartZEditor = new UiQuantityFieldEditor<Length>(grpProbeSettings, SWT.NONE);
+		probeStartZEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		probeStartZEditor.setPropertyName("startProbe");
+		probeStartZEditor.setLabel("  Probe start Z");
+		probeStartZEditor.setLabelWidthInChar(11);
+		probeStartZEditor.setWidthInChars(8);
+		probeStartZEditor.setUnit(lengthUnit);
+		
+		safeZEditor = new UiQuantityFieldEditor<Length>(grpProbeSettings, SWT.NONE);
+		safeZEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		safeZEditor.setPropertyName("safeZ");
+		safeZEditor.setWidthInChars(8);
+		safeZEditor.setLabelWidthInChar(9);
+		safeZEditor.setLabel("Safe Z");
+		safeZEditor.setUnit(lengthUnit);
+		
+		probeMaxZEditor = new UiQuantityFieldEditor<Length>(grpProbeSettings, SWT.NONE);
+		probeMaxZEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		probeMaxZEditor.setPropertyName("maxZProbe");
+		probeMaxZEditor.setWidthInChars(8);
+		probeMaxZEditor.setLabelWidthInChar(11);
+		probeMaxZEditor.setLabel("  Probe max Z");
+		probeMaxZEditor.setUnit(lengthUnit);
+		
+		Composite composite_2 = new Composite(composite, SWT.NONE);
 		composite_2.setLayout(new GridLayout(4, false));
-		composite_2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
-				false, 1, 1));
 
 		Button btnEnablePreview = new Button(composite_2, SWT.CHECK);
 		btnEnablePreview.setText("Enable preview");
-
 
 		Button btnPreviewProbePattern = new Button(composite_2, SWT.NONE);
 		btnPreviewProbePattern.addMouseListener(new MouseAdapter() {
@@ -348,22 +293,42 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 		Button btnStartAutolevel = new Button(composite_2, SWT.NONE);
 		btnStartAutolevel.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseUp(MouseEvent e) {
-				// ProgressMonitorDialog dialog = new
-				// ProgressMonitorDialog(null);
+			public void mouseUp(MouseEvent e) {				
 				try {
-					// dialog.run(true, false,
-					// getController().getProbeCycleRunnable());
 					getController().probe();
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}
 			}
 		});
-		btnStartAutolevel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1));
+		btnStartAutolevel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btnStartAutolevel.setText("Start autolevel");
-		try {
+		
+		Button btnDebug = new Button(composite_2, SWT.NONE);
+		btnDebug.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					getDataModel().setGcodeProvider(workspaceService.getCurrentGCodeProvider());
+					getController().debugCurrentPosition();
+				} catch (GkException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnDebug.setText("Debug");
+		try {			
+			getController().addFieldEditor(startXEditor);			
+			getController().addFieldEditor(startYEditor);			
+			getController().addFieldEditor(endXEditor);			
+			getController().addFieldEditor(endYEditor);			
+			getController().addFieldEditor(stepXEditor);			
+			getController().addFieldEditor(stepYEditor);			
+			getController().addFieldEditor(expectedZEditor);			
+			getController().addFieldEditor(probeMaxZEditor);			
+			getController().addFieldEditor(safeZEditor);			
+			getController().addFieldEditor(probeStartZEditor);			
 			initCustomBindings();
 		} catch (GkException e1) {
 			displayMessage(e1);
@@ -372,37 +337,27 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 	}
 
 	protected void initCustomBindings() throws GkException {
-		getController().addBigDecimalModifyBinding(txtStartX, "startx");
-		getController().addBigDecimalModifyBinding(txtStartY, "starty");
-		getController().addBigDecimalModifyBinding(txtEndX, "endx");
-		getController().addBigDecimalModifyBinding(txtEndY, "endy");
-		getController().addBigDecimalModifyBinding(txtSafeZ, "safeZ");
-		getController().addBigDecimalModifyBinding(txtStartProbe, "startProbe");
-		getController().addBigDecimalModifyBinding(txtExpectedZ, "expectedZ");
-		getController().addBigDecimalModifyBinding(txtMaxProbe, "maxZProbe");
-		getController().addBigDecimalModifyBinding(txtStepX, "stepX");
-		getController().addBigDecimalModifyBinding(txtStepY, "stepY");
-
-		getDataModel().setStartx(BigDecimal.ZERO);
-		getDataModel().setStarty(BigDecimal.ZERO);
-		getDataModel().setEndx(BigDecimal.ZERO);
-		getDataModel().setEndy(BigDecimal.ZERO);
-		getDataModel().setSafeZ(BigDecimal.ZERO);
-		getDataModel().setMaxZProbe(BigDecimal.ZERO);
-		getDataModel().setStartProbe(BigDecimal.ZERO);
-		getDataModel().setExpectedZ(BigDecimal.ZERO);
+		
+		getDataModel().setStartx(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setStarty(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setEndx(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setEndy(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setSafeZ(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setMaxZProbe(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setStartProbe(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setExpectedZ(NumberQuantity.of(BigDecimal.ZERO, GokoPreference.getInstance().getLengthUnit()));
 		getDataModel().setStepX(BigDecimal.ZERO);
 		getDataModel().setStepY(BigDecimal.ZERO);
 	}
 
-	public void retrievePersistedState(MPart part){
+	public void retrievePersistedState(MPart part) throws GkException {
 		Map<String, String> states = part.getPersistedState();
-		getDataModel().setExpectedZ( new BigDecimal( states.get(PERSITED_EXPECTED_Z)));
-		getDataModel().setMaxZProbe(new BigDecimal( states.get(PERSITED_MAX_Z)));
-		getDataModel().setSafeZ(new BigDecimal( states.get(PERSITED_SAFE_Z)));
-		getDataModel().setStartProbe(new BigDecimal( states.get(PERSITED_START_Z)));
-		getDataModel().setStepX(new BigDecimal( states.get(PERSITED_STEP_X)));
-		getDataModel().setStepY(new BigDecimal( states.get(PERSITED_STEP_Y)));
+		getDataModel().setExpectedZ(NumberQuantity.of(new BigDecimal(states.get(PERSITED_EXPECTED_Z)), GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setMaxZProbe(NumberQuantity.of(new BigDecimal(states.get(PERSITED_MAX_Z)), GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setSafeZ(NumberQuantity.of(new BigDecimal(states.get(PERSITED_SAFE_Z)), GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setStartProbe(NumberQuantity.of(new BigDecimal(states.get(PERSITED_START_Z)), GokoPreference.getInstance().getLengthUnit()));
+		getDataModel().setStepX(new BigDecimal(states.get(PERSITED_STEP_X)));
+		getDataModel().setStepY(new BigDecimal(states.get(PERSITED_STEP_Y)));
 	}
 
 	@Persist
@@ -414,5 +369,23 @@ public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLe
 		part.getPersistedState().put(PERSITED_START_Z, String.valueOf(getDataModel().getStartProbe()));
 		part.getPersistedState().put(PERSITED_STEP_X, String.valueOf(getDataModel().getStepX()));
 		part.getPersistedState().put(PERSITED_STEP_Y, String.valueOf(getDataModel().getStepY()));
+	}
+	
+	@Inject
+	@Optional	
+	protected void onGokoUnitChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_DISTANCE_UNIT) String distanceUnit) throws GkException{
+		lengthUnit = GokoPreference.getInstance().getLengthUnit();
+		if(startXEditor != null){
+			startXEditor.setUnit(lengthUnit);	
+			startYEditor.setUnit(lengthUnit);		
+			endXEditor.setUnit(lengthUnit);			
+			endYEditor.setUnit(lengthUnit);					
+			expectedZEditor.setUnit(lengthUnit);	
+			probeMaxZEditor.setUnit(lengthUnit);	
+			safeZEditor.setUnit(lengthUnit);		
+			probeStartZEditor.setUnit(lengthUnit);
+			this.parent.layout();
+			this.parent.redraw();
+		}		
 	}
 }

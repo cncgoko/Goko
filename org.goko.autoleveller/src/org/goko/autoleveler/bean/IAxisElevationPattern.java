@@ -19,10 +19,11 @@
  */
 package org.goko.autoleveler.bean;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.bean.Tuple6b;
 
 /**
@@ -35,7 +36,7 @@ public abstract interface IAxisElevationPattern {
 
 	public abstract List<Tuple6b> getPatternPositions() throws GkException;
 
-	public BigDecimal getStartProbePosition() throws GkException;
+	public BigDecimalQuantity<Length> getStartProbePosition() throws GkException;
 
-	public BigDecimal getEndProbePosition() throws GkException;
+	public BigDecimalQuantity<Length> getEndProbePosition() throws GkException;
 }
