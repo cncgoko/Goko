@@ -35,5 +35,11 @@
             uri="fragments/TinyGFragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.controller.tinyg.controller.prefs.TinyGPreferencesInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

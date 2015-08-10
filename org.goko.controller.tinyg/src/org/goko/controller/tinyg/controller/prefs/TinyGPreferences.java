@@ -89,8 +89,7 @@ public class TinyGPreferences extends GkPreference{
 	}
 	
 	public boolean isPlannerBufferSpaceCheck() {
-		String t = getPreferenceStore().getString(PLANNER_BUFFER_SPACE_CHECK);
-		return BooleanUtils.toBoolean(t);
+		return BooleanUtils.toBoolean(getPreferenceStore().getString(PLANNER_BUFFER_SPACE_CHECK));
 	}
 
 	public void setPlannerBufferSpaceCheck(boolean enabled) {
