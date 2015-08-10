@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.GkUtils;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.connection.IConnectionDataListener;
 import org.junit.Assert;
 
 public class AssertSerialEmulator {
@@ -20,5 +22,34 @@ public class AssertSerialEmulator {
 			}
 		}
 		Assert.fail("Message '"+message+"' not found in Serial emulator");
+	}
+	
+	/**
+	 * Check the next outgoing message. Error if no output after timeout, or if first outgoing is not expected message 
+	 * @param emulator the SerialConnectionEmulator
+	 * @param message the expected message
+	 * @param timeout the timeout
+	 * @throws Exception Exception
+	 */
+	public static final void assertOutputMessagePresent(final SerialConnectionEmulator emulator, final String message, long timeout) throws Exception{
+		final Object obj = new Object();
+		
+		emulator.addOutputDataListener(new IConnectionDataListener() {			
+			@Override
+			public void onDataSent(List<Byte> data) throws GkException {				
+				synchronized (obj) {
+					obj.notify();					
+				}				
+			}			
+			@Override
+			public void onDataReceived(List<Byte> data) throws GkException {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		synchronized (obj) {
+			obj.wait(timeout);	
+		}		
+		assertMessagePresent(emulator, message);
 	}
 }

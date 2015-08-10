@@ -134,7 +134,8 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		
 		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());		
 		tinyg.executeGCode(motionCode);
-		AssertSerialEmulator.assertMessagePresent(serialEmulator, "{\"gc\":\"n1 g90 x10 y10\"}"+'\n');				
+		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"gc\":\"n1 g90 x10 y10\"}"+'\n', 10000);				
 	}
 	
 	/**
