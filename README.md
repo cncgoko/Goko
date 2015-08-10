@@ -1,12 +1,15 @@
-# Goko
+# Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)](https://travis-ci.org/cncgoko/Goko)
 
-Goko is a Java based GCode sender and CNC control software. It can be used to control a board based CNC machine. Currently, only ```TinyG v0.97``` *([doc](https://github.com/synthetos/TinyG/wiki))* is supported.
-Support for Grbl _(and probably others)_ will be available soon.
+Dev version  : ```0.0.2```
 
-Current version is ```0.0.2```
+**This is the *dev* branch.**  This branch is a work in progress and includes latest developments, but some of them might be untested, incomplete, or malfunctioning.
 
-[![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)](https://travis-ci.org/cncgoko/Goko)
+Goko is a Java based GCode sender and CNC control software. It can be used to control a controller board based CNC machine. 
 
+Supported controllers :
+ - ```TinyG v0.97``` - *[doc](https://github.com/synthetos/TinyG/wiki)* 
+ - ```Grbl v0.8c``` - *[doc](https://github.com/synthetos/TinyG/wiki)* - *(in progress in 0.0.2)*
+  
 Download
 --------
 Latest releases of Goko can be found on the [Github repository](https://github.com/cncgoko/Goko/releases) 
@@ -14,16 +17,6 @@ Latest releases of Goko can be found on the [Github repository](https://github.c
 Installation
 ------------
 To install Goko, simply extract the content of the downloaded archive to the target location. And that's it !
-
-Features
---------
-- TinyG v0.97 control and configuration helper,
-- Continuous Jog support,
-- GCode 3D preview (up to 4 axis)
-- Real time execution visualization,
-- Software Digital Read Out,
-- Execution time computation,
-- UI Customisation (position, size, shown elements, etc...) 
 
 Requirements
 ------------
@@ -35,7 +28,7 @@ Technical details
 Goko is based on :
 - Eclipse e4 Platform - *https://eclipse.org/e4/*
 - JSSC for serial communication - *http://code.google.com/p/java-simple-serial-connector/*
-- JOGL for 3D visualization
+- JOGL for 3D visualization - *https://jogamp.org/*
 
 Bug report
 ----------
@@ -46,4 +39,3 @@ Links
 Goko uses icons from the following pages :
 - Fugue icons  - http://p.yusukekamiyamane.com/
 - Silk icons - http://www.famfamfam.com/
-
