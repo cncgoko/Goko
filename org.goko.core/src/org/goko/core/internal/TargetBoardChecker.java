@@ -12,12 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.feature.IFeatureSetManager;
@@ -42,7 +38,6 @@ public class TargetBoardChecker {
 			List<TargetBoard> lstSupportedBoard = featureSetManager.getSupportedBoards();
 			if(CollectionUtils.size(lstSupportedBoard) == 1){
 				featureSetManager.setTargetBoard(lstSupportedBoard.get(0).getId());
-				//GokoPreference.getInstance().setTargetBoard(lstSupportedBoard.get(0).getId());
 			}else{
 				openTargetBoardSelection(context);	
 			}	
@@ -51,20 +46,14 @@ public class TargetBoardChecker {
 	}
 
 	private void openTargetBoardSelection(IEclipseContext context) throws GkException {
-		final Shell shell = new Shell(SWT.INHERIT_NONE);
-
-		final TargetBoardSelectionDialog dialog = new TargetBoardSelectionDialog(shell);
+		final TargetBoardSelectionDialog dialog = new TargetBoardSelectionDialog();
 		dialog.setLstTargetBoard(featureSetManager.getSupportedBoards());
 		dialog.create();
-		
-		PartRenderingEngine.initializeStyling(shell.getDisplay(), context);
-
-		
+				
 		if (dialog.open() != Window.OK) {
 			System.exit(0);
 		}else{
-			featureSetManager.setTargetBoard(dialog.getTargetBoard());			
-			//GokoPreference.getInstance().setTargetBoard(dialog.getTargetBoard());
+			featureSetManager.setTargetBoard(dialog.getTargetBoard());		
 		}
 	}
 	

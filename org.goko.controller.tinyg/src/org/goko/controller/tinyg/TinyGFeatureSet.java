@@ -3,6 +3,7 @@ package org.goko.controller.tinyg;
 import org.goko.controller.tinyg.controller.ITinygControllerService;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
@@ -11,7 +12,10 @@ import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
+import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
+import org.goko.core.gcode.service.IGCodeService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * TinyG V0.97 feature set 
@@ -44,11 +48,22 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IFourAxisControllerAdapter.class, service, null);
 		context.registerService(ICoordinateSystemAdapter.class, service, null);
 		context.registerService(IContinuousJogService.class, service, null);
-		context.registerService(IWorkVolumeProvider.class, service, null);
+		context.registerService(IWorkVolumeProvider.class, service, null);		
+				
+		service.setGCodeService(findService(context, IGCodeService.class));
+		service.setConnectionService(findService(context, IConnectionService.class));
+		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
 		
 		service.start();
 	}
 
+	protected <S> S findService( BundleContext context, Class<S> clazz){
+		ServiceReference<S> ref = context.getServiceReference(clazz);
+		if(ref != null){
+			return context.getService(ref);
+		}
+		return null;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#stop()
 	 */

@@ -92,7 +92,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private TinyGCommunicator communicator;
 
 	public TinyGControllerService() {
-		communicator = new TinyGCommunicator(this);		
+		communicator = new TinyGCommunicator(this);	
+		tinygState = new TinyGState();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -109,7 +110,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public void start() throws GkException {
 		configuration 			= new TinyGConfiguration();
 		actionFactory 			= new TinyGActionFactory(this);
-		tinygState = new TinyGState();
+		
 		tinygState.addListener(this);
 
 		TinyGPreferences.getInstance();

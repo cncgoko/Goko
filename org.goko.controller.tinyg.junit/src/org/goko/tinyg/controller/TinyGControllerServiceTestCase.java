@@ -57,7 +57,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		tinyg.setGCodeService(gcodeService);
 		tinyg.start(); 				  // Start the TinyG service
 		serialEmulator.connect(null); // Make sure the service is connected
-		tinyg.setPlannerBufferSpaceCheck(false);
+		tinyg.setPlannerBufferSpaceCheck(false);		
 	}
 	
 	/**
@@ -134,7 +134,6 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		
 		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());		
 		tinyg.executeGCode(motionCode);
-		Thread.sleep(100); // Do some better check than thread.sleep...
 		AssertSerialEmulator.assertMessagePresent(serialEmulator, "{\"gc\":\"n1 g90 x10 y10\"}"+'\n');				
 	}
 	

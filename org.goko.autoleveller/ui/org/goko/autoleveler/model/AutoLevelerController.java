@@ -20,7 +20,6 @@
 package org.goko.autoleveler.model;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import javax.inject.Inject;
 

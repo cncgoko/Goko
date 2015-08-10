@@ -9,13 +9,16 @@ import java.util.List;
 import org.goko.controller.grbl.v08.GrblControllerService;
 import org.goko.controller.grbl.v08.IGrblControllerService;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IStepJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
+import org.goko.core.gcode.service.IGCodeService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -50,11 +53,21 @@ public class GrblFeatureSet implements IFeatureSet {
 		lstServiceregistration.add(context.registerService(IStepJogService.class, 			service, null));
 		lstServiceregistration.add(context.registerService(IThreeAxisControllerAdapter.class, service, null));
 		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, service, null));
-				
+	
+		service.setConnectionService(findService(context, IConnectionService.class));
+		service.setGCodeService(findService(context, IGCodeService.class));
 		service.start();
 		
 	}
 
+	protected <S> S findService( BundleContext context, Class<S> clazz){
+		ServiceReference<S> ref = context.getServiceReference(clazz);
+		if(ref != null){
+			return context.getService(ref);
+		}
+		return null;
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#stop()
 	 */

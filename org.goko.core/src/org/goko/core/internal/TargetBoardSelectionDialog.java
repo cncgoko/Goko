@@ -32,9 +32,11 @@ public class TargetBoardSelectionDialog extends Dialog {
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	public TargetBoardSelectionDialog(Shell parentShell) {
-		super(parentShell);	
-		setShellStyle(SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);		
+	public TargetBoardSelectionDialog() {
+		super((Shell)null);
+		setShellStyle(SWT.CLOSE | SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
+		
+		
 	}
 
 	/**
@@ -43,6 +45,8 @@ public class TargetBoardSelectionDialog extends Dialog {
 	 */
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		getShell().setText("Select your machine controller");		
+		getShell().setImage(ResourceManager.getPluginImage("Goko", "icons/launch/goko.ico"));
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gl_container = new GridLayout(1, false);
 		gl_container.verticalSpacing = 0;
@@ -65,7 +69,7 @@ public class TargetBoardSelectionDialog extends Dialog {
 		gl_composite_1.marginWidth = 8;
 		composite_1.setLayout(gl_composite_1);
 		
-		Label lblSelectYourOperating = new Label(composite_1, SWT.NONE);
+		Label lblSelectYourOperating = new Label(composite_1, SWT.NONE);		
 		lblSelectYourOperating.setText("Select your machine controller :");
 		
 		Composite composite = new Composite(container, SWT.NONE);
