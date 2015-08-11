@@ -12,7 +12,7 @@ Supported controllers :
   
 Download
 --------
-Latest releases of Goko can be found on the [Github repository](https://github.com/cncgoko/Goko/releases) 
+No release available for version ```0.0.2``` yet
 
 Installation
 ------------
