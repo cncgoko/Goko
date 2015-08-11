@@ -1,5 +1,7 @@
 # Goko
 
+[![Join the chat at https://gitter.im/cncgoko/Goko](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Goko is a Java based GCode sender and CNC control software. It can be used to control a board based CNC machine. Currently, only ```TinyG v0.97``` *([doc](https://github.com/synthetos/TinyG/wiki))* is supported.
 Support for Grbl _(and probably others)_ will be available soon.
 
