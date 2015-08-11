@@ -17,9 +17,16 @@
 
 package org.goko.core.common.measure.converter;
 
-
+/**
+ * Unit converter used to concatenate 2 converters
+ * 
+ * @author PsyKo
+ *
+ */
 public class ConcatenatedConverter extends AbstractUnitConverter {
+	/** Left operand */
 	private UnitConverter left;
+	/** Right operand*/
 	private UnitConverter right;
 
 
@@ -29,17 +36,17 @@ public class ConcatenatedConverter extends AbstractUnitConverter {
 		this.right = right;
 	}
 
-	/**
-	 * @return
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.converter.UnitConverter#inverse()
 	 */
 	@Override
 	public UnitConverter inverse() {
 		return new ConcatenatedConverter(right.inverse(), left.inverse());
 	}
 
-	/**
-	 * @param value
-	 * @return
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.converter.UnitConverter#convert(double)
 	 */
 	@Override
 	public double convert(double value) {

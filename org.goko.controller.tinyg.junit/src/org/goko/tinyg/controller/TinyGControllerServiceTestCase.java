@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.US;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.rs274ngcv3.RS274GCodeService;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
@@ -138,6 +140,21 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"gc\":\"n1 g90 x10 y10\"}"+'\n', 10000);				
 	}
 	
+	/**
+	 * Context : We receive notification about the modification of the units in the GCode context
+	 * Result  : TinyG controller updates it's internal units
+	 * @throws Exception
+	 */
+	public void testGCodeContextUnitChange() throws Exception{			
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"unit\":0}},\"f\":[1,0,0,0]}");		
+		assertEquals(US.INCH, tinyg.getCurrentUnit());
+		
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"unit\":1}},\"f\":[1,0,0,0]}");		
+		assertEquals(SI.MILLIMETRE, tinyg.getCurrentUnit());
+	}
 	/**
 	 * 
 	 * @throws Exception

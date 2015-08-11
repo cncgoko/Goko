@@ -19,16 +19,25 @@ package org.goko.core.common.measure.converter;
 
 public class IdentityConverter extends AbstractUnitConverter{
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.converter.UnitConverter#inverse()
+	 */
 	@Override
 	public UnitConverter inverse() {
 		return this;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.converter.UnitConverter#convert(double)
+	 */
 	@Override
 	public double convert(double value) {
 		return value;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.converter.AbstractUnitConverter#isIdentity()
+	 */
 	@Override
 	public final boolean isIdentity() {
 		return true;

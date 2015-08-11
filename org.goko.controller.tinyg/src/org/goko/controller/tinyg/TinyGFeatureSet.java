@@ -2,6 +2,7 @@ package org.goko.controller.tinyg;
 
 import org.goko.controller.tinyg.controller.ITinygControllerService;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IContinuousJogService;
@@ -53,6 +54,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		service.setGCodeService(findService(context, IGCodeService.class));
 		service.setConnectionService(findService(context, IConnectionService.class));
 		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
+		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
 		
 		service.start();
 	}

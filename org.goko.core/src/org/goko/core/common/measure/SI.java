@@ -46,8 +46,8 @@ public class SI {
 	public static final BaseUnit<Angle> RADIAN = new BaseUnit<Angle>("rad", QuantityDimension.ANGLE);
 	
 	/**
-	 * Degrees (angular degrees, symbol ° ) 
+	 * Degrees (angular degrees, symbol ï¿½ ) 
 	 */
-	public static final TransformedUnit<Angle> DEGREE_ANGLE = new TransformedUnit<Angle>("°", RADIAN, new MultiplyConverter(180.0/Math.PI));
+	public static final TransformedUnit<Angle> DEGREE_ANGLE = new TransformedUnit<Angle>("Â°", RADIAN, new MultiplyConverter(180.0/Math.PI));
 
 }

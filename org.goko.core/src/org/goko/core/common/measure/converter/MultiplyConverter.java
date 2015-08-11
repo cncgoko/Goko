@@ -17,12 +17,18 @@
 
 package org.goko.core.common.measure.converter;
 
-
+/**
+ * Simple converter performing multiplication 
+ * 
+ * @author PsyKo
+ *
+ */
 public class MultiplyConverter extends AbstractUnitConverter {
+	/** Scale factor */
 	private double factor;
 
 	/**
-	 * Construcor
+	 * Constructor
 	 * @param factor the multiplying factor
 	 */
 	public MultiplyConverter(double factor) {

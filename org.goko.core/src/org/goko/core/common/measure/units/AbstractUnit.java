@@ -56,7 +56,6 @@ public abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q> {
 	 */
 	@Override
 	public Unit<Q> transform(UnitConverter converter) {
-		//UnitConverter finalConverter = getConverterToReferenceUnit().then(converter);
 		return new TransformedUnit<Q>(this, converter);
 	}
 
@@ -66,7 +65,6 @@ public abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q> {
 	 */
 	@Override
 	public Unit<Q> transform(UnitConverter converter, String symbol) {
-		//UnitConverter finalConverter = getConverterToReferenceUnit().then(converter);
 		return new TransformedUnit<Q>(symbol, this, converter);
 	}
 
@@ -85,4 +83,43 @@ public abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q> {
 	public Dimension getDimension() {
 		return dimension;
 	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dimension == null) ? 0 : dimension.hashCode());
+		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractUnit other = (AbstractUnit) obj;
+		if (dimension == null) {
+			if (other.dimension != null)
+				return false;
+		} else if (!dimension.equals(other.dimension))
+			return false;
+		if (symbol == null) {
+			if (other.symbol != null)
+				return false;
+		} else if (!symbol.equals(other.symbol))
+			return false;
+		return true;
+	}
+	
+	
 }

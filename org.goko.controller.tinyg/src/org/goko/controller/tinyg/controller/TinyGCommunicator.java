@@ -21,8 +21,6 @@ package org.goko.controller.tinyg.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
@@ -68,7 +66,6 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	private IApplicativeLogService applicativeLogService;
 	/** GCode service */
 	private IGCodeService gcodeService;
-	private ExecutorService executor;
 
 	/**
 	 * Constructor
@@ -77,8 +74,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	public TinyGCommunicator(TinyGControllerService tinyg) {
 		this.tinyg = tinyg;
 		endLineCharDelimiter = '\n';
-		incomingBuffer 		 = new ByteCommandBuffer((byte) endLineCharDelimiter);
-		executor = Executors.newSingleThreadExecutor();
+		incomingBuffer 		 = new ByteCommandBuffer((byte) endLineCharDelimiter);		
 	}
 
 	/** (inheritDoc)
