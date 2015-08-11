@@ -9,8 +9,7 @@
   <modules>
   	<module>../org.goko.build.parent</module>  	  	
   	<module>../com.eclipsesource.json</module>
-  	<module>../com.jogamp.jogl</module>
-  	<module>../com.jogamp.jogl-windows-amd64</module>  	
+  	<module>../com.jogamp.jogl</module>  	
   	<module>../org.goko.tools.commandpanel</module>
   	<module>../org.goko.tools.dro</module>
   	<module>../org.goko.tools.serial.jssc</module>

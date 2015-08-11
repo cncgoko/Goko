@@ -4,4 +4,6 @@
    <service>
       <provide interface="org.goko.core.feature.IFeatureSet"/>
    </service>
+   <reference cardinality="1..1" interface="org.goko.core.connection.IConnectionService" name="IConnectionService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
 </scr:component>

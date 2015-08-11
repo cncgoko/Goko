@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository version='1.1.0'?>
+<artifacts size='1'>
+  <artifact classifier='osgi.bundle' id='com.jogamp.jogl' version='2.2.4'>
+    <properties size='5'>
+      <property name='artifact.size' value='4266652'/>
+      <property name='download.size' value='4266652'/>
+      <property name='maven-groupId' value='org.goko'/>
+      <property name='maven-artifactId' value='com.jogamp.jogl'/>
+      <property name='maven-version' value='2.2.4'/>
+    </properties>
+  </artifact>
+</artifacts>
