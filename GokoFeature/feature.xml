@@ -700,6 +700,10 @@ Public License instead of this License.  But first, please read
          id="org.eclipse.emf.common"
          version="0.0.0"/>
 
+   <includes
+         id="jogl.eclipse.feature"
+         version="0.0.0"/>
+
    <plugin
          id="Goko"
          download-size="0"
@@ -796,7 +800,7 @@ Public License instead of this License.  But first, please read
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-  
+
    <plugin
          id="org.junit"
          download-size="0"

@@ -11,7 +11,11 @@
 		<tycho.version>0.23.1</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mars-repo.url>http://download.eclipse.org/releases/mars</mars-repo.url>
+<<<<<<< Upstream, based on origin/dev
 		<jogl-eclipse-plugin-repo.url>http://download.goko.fr/p2/jogl-eclipse-plugin/</jogl-eclipse-plugin-repo.url>
+=======
+		<goko.repo>http://p2.goko.fr/</goko.repo>
+>>>>>>> 0ec1037 Externalizing Jogl
 	</properties>
 
 	<repositories>
@@ -24,9 +28,15 @@
 			<id>jog-eclipse-plugin</id>
 			<url>${jogl-eclipse-plugin-repo.url}</url>
 			<layout>p2</layout>
+		</repository>	
+		<repository>
+			<id>goko</id>
+			<url>${goko.repo}</url>
+			<layout>p2</layout>
 		</repository>		
 	</repositories>
 
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -35,7 +45,7 @@
 				<version>${tycho.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-		          <outputDirectory>${basedir}/target/newsite</outputDirectory>
+		          <outputDirectory>${basedir}/target/newsite</outputDirectory>		         
 		        </configuration>
 			</plugin>
 
@@ -49,12 +59,27 @@
 							<os>win32</os>
 							<ws>win32</ws>
 							<arch>x86_64</arch>
-						</environment>
+						</environment>	
 						<environment>
 							<os>win32</os>
 							<ws>win32</ws>
 							<arch>x86</arch>
 						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>	
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>						
 					</environments>
 				</configuration>
 			</plugin>
@@ -68,5 +93,10 @@
 		        </configuration>		
 			</plugin>			
 		</plugins>
+<<<<<<< Upstream, based on origin/dev
 	</build>
 </project>
+=======
+	</build>	
+</project>
+>>>>>>> 0ec1037 Externalizing Jogl

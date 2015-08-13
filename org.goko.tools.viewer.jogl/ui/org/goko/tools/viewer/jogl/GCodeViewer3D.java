@@ -91,6 +91,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 	@PostConstruct
 	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {
+		
 		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
 		GLData gldata = new GLData();
 		gldata.doubleBuffer = true;
