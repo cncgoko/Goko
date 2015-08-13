@@ -11,11 +11,7 @@
 		<tycho.version>0.23.1</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mars-repo.url>http://download.eclipse.org/releases/mars</mars-repo.url>
-<<<<<<< Upstream, based on origin/dev
-		<jogl-eclipse-plugin-repo.url>http://download.goko.fr/p2/jogl-eclipse-plugin/</jogl-eclipse-plugin-repo.url>
-=======
 		<goko.repo>http://p2.goko.fr/</goko.repo>
->>>>>>> 0ec1037 Externalizing Jogl
 	</properties>
 
 	<repositories>
@@ -24,11 +20,6 @@
 			<url>${mars-repo.url}</url>
 			<layout>p2</layout>
 		</repository>		
-		<repository>
-			<id>jog-eclipse-plugin</id>
-			<url>${jogl-eclipse-plugin-repo.url}</url>
-			<layout>p2</layout>
-		</repository>	
 		<repository>
 			<id>goko</id>
 			<url>${goko.repo}</url>
@@ -93,10 +84,5 @@
 		        </configuration>		
 			</plugin>			
 		</plugins>
-<<<<<<< Upstream, based on origin/dev
 	</build>
 </project>
-=======
-	</build>	
-</project>
->>>>>>> 0ec1037 Externalizing Jogl

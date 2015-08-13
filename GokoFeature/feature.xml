@@ -701,7 +701,7 @@ Public License instead of this License.  But first, please read
          version="0.0.0"/>
 
    <includes
-         id="jogl.eclipse.feature"
+         id="org.jogamp.jogl.feature"
          version="0.0.0"/>
 
    <plugin
