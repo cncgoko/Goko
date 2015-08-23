@@ -4,5 +4,5 @@
    <service>
       <provide interface="org.goko.tools.centerfinder.ICenterFinderService"/>
    </service>
-   <reference bind="setRendererService" cardinality="0..1" interface="org.goko.viewer.jogl.service.IJoglViewerService" name="IJoglViewerService" policy="dynamic"/>
+   <reference bind="setRendererService" cardinality="0..1" interface="org.goko.tools.viewer.jogl.service.IJoglViewerService" name="IJoglViewerService" policy="dynamic"/>
 </scr:component>

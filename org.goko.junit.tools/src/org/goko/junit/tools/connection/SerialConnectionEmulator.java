@@ -2,15 +2,14 @@ package org.goko.junit.tools.connection;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
-import org.goko.core.connection.IConnectionService;
+import org.goko.core.connection.serial.ISerialConnectionService;
 
-public class SerialConnectionEmulator extends ConnectionServiceAdapter implements IConnectionService {
+public class SerialConnectionEmulator extends ConnectionServiceAdapter implements ISerialConnectionService {
 	/** Connected state */
 	private boolean connected;
 	/** Output buffer */
@@ -50,22 +49,22 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 		// nothing to do
 	}
 
-	/** {@inheritDoc}
-	 * @see org.goko.core.connection.IConnectionService#connect(java.util.Map)
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#connect(java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer)
 	 */
 	@Override
-	public void connect(Map<String, Object> parameters) throws GkException {
+	public void connect(String portName, Integer baudrate, Integer databits, Integer stopBits, Integer parity, Integer flowControl) throws GkException {
 		connected = true;
 		notifyConnectionListeners(EnumConnectionEvent.CONNECTED);
-	}
+	}	
 
-	/** {@inheritDoc}
-	 * @see org.goko.core.connection.IConnectionService#disconnect(java.util.Map)
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#disconnect()
 	 */
 	@Override
-	public void disconnect(Map<String, Object> parameters) throws GkException {
+	public void disconnect() throws GkException {
 		connected = false;
-		notifyConnectionListeners(EnumConnectionEvent.DISCONNECTED);
+		notifyConnectionListeners(EnumConnectionEvent.DISCONNECTED);	
 	}
 
 	/** {@inheritDoc}
@@ -159,6 +158,14 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	 */
 	protected void setSentBuffer(List<List<Byte>> sentBuffer) {
 		this.sentBuffer = sentBuffer;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#getAvailableSerialPort()
+	 */
+	@Override
+	public List<String> getAvailableSerialPort() throws GkException {		
+		return new ArrayList<String>();
 	}
 
 }

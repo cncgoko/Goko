@@ -1,6 +1,5 @@
 package org.goko.tools.serial.jssc.internal;
 
-import org.goko.tools.serial.jssc.preferences.connection.SerialConnectionPreference;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

@@ -29,6 +29,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -205,6 +206,13 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 //		BigDecimal c = ( x3-x2) / (y3-y2);
 //		BigDecimal d = ( x2-x1) / (y2-y1);
 
+
+		if( y3.subtract(y2).multiply(BigDecimal.valueOf(2)).abs().doubleValue() < 0.0001 ){
+			throw new GkFunctionalException("Invalid points. Cannot compute center"); // Use translatable messages
+		}
+		if( y2.subtract(y1).multiply(BigDecimal.valueOf(2)).abs().doubleValue() < 0.0001 ){
+			throw new GkFunctionalException("Invalid points. Cannot compute center");
+		}
 		BigDecimal a = ( x3.pow(2).subtract(x2.pow(2)).add(y3.pow(2)).subtract(y2.pow(2)).divide( y3.subtract(y2).multiply(BigDecimal.valueOf(2)), RoundingMode.HALF_UP  ));
 		BigDecimal b = ( x2.pow(2).subtract(x1.pow(2)).add(y2.pow(2)).subtract(y1.pow(2)).divide( y2.subtract(y1).multiply(BigDecimal.valueOf(2)), RoundingMode.HALF_UP  ));
 		BigDecimal c = ( x3.subtract(x2).divide(y3.subtract(y2), RoundingMode.HALF_UP ));

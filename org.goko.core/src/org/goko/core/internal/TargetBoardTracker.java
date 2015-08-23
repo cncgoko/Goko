@@ -10,9 +10,9 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.jface.window.Window;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
@@ -21,17 +21,25 @@ import org.goko.core.feature.TargetBoard;
 import org.goko.core.log.GkLog;
 
 /**
+ * Tracks the changes in the defined target board
+ * 
  * @author PsyKo
  *
  */
-public class TargetBoardChecker {
-	private static final GkLog LOG = GkLog.getLogger(TargetBoardChecker.class);
+@Creatable
+public class TargetBoardTracker {
+	private static final GkLog LOG = GkLog.getLogger(TargetBoardTracker.class);
 	@Inject
 	IFeatureSetManager featureSetManager;
 
 	
-	@PostContextCreate
-	public void startup(IEclipseContext context) throws GkException {
+	/**
+	 * Checks if a target board is defined at startup. If not, a Dialog opens and ask the user to chose a board
+	 * @param context the context 
+	 * @throws GkException GkException
+	 */
+	public void checkTargetBoardDefined(IEclipseContext context) throws GkException {
+		LOG.info("Checking for target board...");
 		String targetBoard = GokoPreference.getInstance().getTargetBoard();
 		if (StringUtils.isEmpty(targetBoard)
 				|| !featureSetManager.existTargetBoard(targetBoard)) {
@@ -42,9 +50,15 @@ public class TargetBoardChecker {
 				openTargetBoardSelection(context);	
 			}	
 			featureSetManager.startFeatureSet();
-		}		
+		}
+		LOG.info("Active target board is ["+ GokoPreference.getInstance().getTargetBoard()+"]");
 	}
 
+	/**
+	 * Opens the board selection dialog
+	 * @param context the context 
+	 * @throws GkException GkException
+	 */
 	private void openTargetBoardSelection(IEclipseContext context) throws GkException {
 		final TargetBoardSelectionDialog dialog = new TargetBoardSelectionDialog();
 		dialog.setLstTargetBoard(featureSetManager.getSupportedBoards());
@@ -56,7 +70,7 @@ public class TargetBoardChecker {
 			featureSetManager.setTargetBoard(dialog.getTargetBoard());		
 		}
 	}
-	
+
 	/**
 	 * Tracks the current target board 
 	 * @param targetBoard the target board 

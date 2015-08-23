@@ -5,7 +5,6 @@ package org.goko.core.feature;
 
 import java.util.List;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.goko.core.common.exception.GkException;
 
 /**

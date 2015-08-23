@@ -26,6 +26,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
@@ -83,9 +84,14 @@ public class TinyGConfigurationOpenHandler {
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.c.zaxis" , 		new TinyGConfigurationAxisPage(cfg, "Z Axis", TinyGConfiguration.Z_AXIS_SETTINGS)));
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.d.aaxis" , 		new TinyGConfigurationAxisPage(cfg, "A Axis", TinyGConfiguration.A_AXIS_SETTINGS)));
 		
-		PreferenceDialog dialog = new PreferenceDialog(shell, manager);
-
-		dialog.open();
+		PreferenceDialog dialog = new PreferenceDialog(shell, manager);		
+		int result = dialog.open();
+		
+		if(result == Dialog.OK){
+			//le apply n'est pas géré. Voir comment il est géré dans les GkFieldEditorPreferencePage
+			service.updateConfiguration(cfg);
+		}
+		
 	}
 
 }

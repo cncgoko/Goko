@@ -2,14 +2,11 @@ package org.goko.tools.serial.jssc.preferences.connection;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
+import org.goko.core.connection.serial.SerialParameter;
 import org.goko.tools.serial.jssc.service.JsscParameter;
-
-import jssc.SerialPort;
 
 /**
  * Serial connection preference page
@@ -29,8 +26,6 @@ public class SerialConnectionPreferencesPage extends GkFieldEditorPreferencesPag
 	 */
 	@Override
 	protected void createPreferencePage(Composite parent) {
-		GridLayout gridLayout = (GridLayout) parent.getLayout();
-		
 		ComboFieldEditor baudrateField = new ComboFieldEditor(parent, SWT.READ_ONLY);
 		((GridData) baudrateField.getControl().getLayoutData()).widthHint = 60;
 		baudrateField.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
@@ -62,84 +57,73 @@ public class SerialConnectionPreferencesPage extends GkFieldEditorPreferencesPag
 		stopbitField.setLabel("Stop bits");
 		initStopBitsChoices(stopbitField);
 		
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridData gd_composite = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_composite.widthHint = 100;
-		composite.setLayoutData(gd_composite);
-		composite.setLayout(new GridLayout(1, false));
 		
-		BooleanFieldEditor rtsCtsField = new BooleanFieldEditor(composite, SWT.NONE);
-		GridData gridData = (GridData) rtsCtsField.getControl().getLayoutData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = SWT.FILL;
-		rtsCtsField.setPreferenceName(JsscParameter.RCSCTS.toString());
-		GridData gd_rtsCtsField = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_rtsCtsField.horizontalIndent = 70;
-		rtsCtsField.setLayoutData(gd_rtsCtsField);
-		rtsCtsField.setSize(109, 20);
-		rtsCtsField.setLabel("Enable RTS/CTS");
+		ComboFieldEditor flowControlFieldEditor = new ComboFieldEditor(parent, SWT.READ_ONLY);
+		((GridData) flowControlFieldEditor.getControl().getLayoutData()).widthHint = 60;
+		flowControlFieldEditor.setLabel("Flow control");
+		flowControlFieldEditor.setLabelWidthInChar(10);
+		flowControlFieldEditor.setPreferenceName(JsscParameter.FLOWCONTROL.toString());
+		initFlowControlChoices(flowControlFieldEditor);
 		
-		BooleanFieldEditor xonXoffField = new BooleanFieldEditor(composite, SWT.NONE);
-		((GridData) xonXoffField.getControl().getLayoutData()).grabExcessHorizontalSpace = true;
-		GridData gd_xonXoffField = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_xonXoffField.horizontalIndent = 70;
-		xonXoffField.setLayoutData(gd_xonXoffField);
-		xonXoffField.setSize(121, 20);
-		xonXoffField.setLabel("Enable XON/XOFF");
-		xonXoffField.setPreferenceName(JsscParameter.XONXOFF.toString());
-		// TODO Auto-generated method stub
-		
-		addField(xonXoffField);
-		addField(rtsCtsField);
 		addField(stopbitField);
 		addField(parityField);
 		addField(databitsField);
 		addField(baudrateField);
+		addField(flowControlFieldEditor);
+
 	}
 	
 	private void initBaudrateChoices(ComboFieldEditor field){
 		String[][] baudrateItems = new String[][]{
-				{String.valueOf(SerialPort.BAUDRATE_110)	,"5"},
-			    {String.valueOf(SerialPort.BAUDRATE_110) 	,"110"},
-			    {String.valueOf(SerialPort.BAUDRATE_300) 	,"300"},
-			    {String.valueOf(SerialPort.BAUDRATE_600) 	,"600"},
-			    {String.valueOf(SerialPort.BAUDRATE_1200) 	,"1200"},
-			    {String.valueOf(SerialPort.BAUDRATE_4800) 	,"4800"},
-			    {String.valueOf(SerialPort.BAUDRATE_9600) 	,"9600"},
-			    {String.valueOf(SerialPort.BAUDRATE_14400) 	,"14400"},
-			    {String.valueOf(SerialPort.BAUDRATE_19200) 	,"19200"},
-			    {String.valueOf(SerialPort.BAUDRATE_38400) 	,"38400"},
-			    {String.valueOf(SerialPort.BAUDRATE_57600) 	,"57600"},
-			    {String.valueOf(SerialPort.BAUDRATE_115200) ,"115200"},
-			    {String.valueOf(SerialPort.BAUDRATE_128000) ,"128000"},
-			    {String.valueOf(230400)  ,"230400"},
-			    {String.valueOf(SerialPort.BAUDRATE_256000) ,"256000"}};
+				{String.valueOf(SerialParameter.BAUDRATE_110)	,"5"},
+			    {String.valueOf(SerialParameter.BAUDRATE_110) 	,"110"},
+			    {String.valueOf(SerialParameter.BAUDRATE_300) 	,"300"},
+			    {String.valueOf(SerialParameter.BAUDRATE_600) 	,"600"},
+			    {String.valueOf(SerialParameter.BAUDRATE_1200) 	,"1200"},
+			    {String.valueOf(SerialParameter.BAUDRATE_4800) 	,"4800"},
+			    {String.valueOf(SerialParameter.BAUDRATE_9600) 	,"9600"},
+			    {String.valueOf(SerialParameter.BAUDRATE_14400) 	,"14400"},
+			    {String.valueOf(SerialParameter.BAUDRATE_19200) 	,"19200"},
+			    {String.valueOf(SerialParameter.BAUDRATE_38400) 	,"38400"},
+			    {String.valueOf(SerialParameter.BAUDRATE_57600) 	,"57600"},
+			    {String.valueOf(SerialParameter.BAUDRATE_115200) ,"115200"},
+			    {String.valueOf(SerialParameter.BAUDRATE_128000) ,"128000"},
+			    {String.valueOf(SerialParameter.BAUDRATE_230400) ,"230400"},			    
+			    {String.valueOf(SerialParameter.BAUDRATE_256000) ,"256000"}};
 		field.setEntry(baudrateItems);
 	}
 
+	private void initFlowControlChoices(ComboFieldEditor field){
+		String[][] baudrateItems = new String[][]{
+				{"RTS/CTS", String.valueOf(SerialParameter.FLOWCONTROL_RTSCTS)},			   
+				{"Xon/Xoff", String.valueOf(SerialParameter.FLOWCONTROL_XONXOFF)}};	   
+
+		field.setEntry(baudrateItems);
+	}
+	
 	private void initDataBitsChoices(ComboFieldEditor field){		
 		String[][] databitsItems = new String[][]{
-				{"5", String.valueOf(SerialPort.DATABITS_5)},
-				{"6", String.valueOf(SerialPort.DATABITS_6)},
-				{"7", String.valueOf(SerialPort.DATABITS_7)},
-				{"8", String.valueOf(SerialPort.DATABITS_8)},
+				{"5", String.valueOf(SerialParameter.DATABITS_5)},
+				{"6", String.valueOf(SerialParameter.DATABITS_6)},
+				{"7", String.valueOf(SerialParameter.DATABITS_7)},
+				{"8", String.valueOf(SerialParameter.DATABITS_8)},
 		};	
 		field.setEntry(databitsItems);
 	}
 
 	private void initParityChoices(ComboFieldEditor field){
 		String[][] parityItems = new String[][]{
-				{"None", String.valueOf(SerialPort.PARITY_NONE)},
-				{"Even", String.valueOf(SerialPort.PARITY_EVEN)},
-				{"Odd" , String.valueOf(SerialPort.PARITY_ODD)}};
+				{"None", String.valueOf(SerialParameter.PARITY_NONE)},
+				{"Even", String.valueOf(SerialParameter.PARITY_EVEN)},
+				{"Odd" , String.valueOf(SerialParameter.PARITY_ODD)}};
 		field.setEntry(parityItems);
 	}
 
 	private void initStopBitsChoices(ComboFieldEditor field){
 		String[][] stopBitItems = new String[][]{		
-				{"1",String.valueOf(SerialPort.STOPBITS_1)},
-				{"1.5",String.valueOf(SerialPort.STOPBITS_1_5)},
-				{"2",String.valueOf(SerialPort.STOPBITS_2)}};
+				{"1",String.valueOf(SerialParameter.STOPBITS_1)},
+				{"1.5",String.valueOf(SerialParameter.STOPBITS_1_5)},
+				{"2",String.valueOf(SerialParameter.STOPBITS_2)}};
 		field.setEntry(stopBitItems);
 	}
 

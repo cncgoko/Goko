@@ -1,9 +1,7 @@
 package org.goko.tools.dro.preferences;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.goko.common.preferences.IPreferenceStoreProvider;
-import org.goko.common.preferences.ScopedPreferenceStore;
 
 public class DROPreferenceStoreProvider implements IPreferenceStoreProvider {
 
@@ -12,7 +10,7 @@ public class DROPreferenceStoreProvider implements IPreferenceStoreProvider {
 	 */
 	@Override
 	public IPreferenceStore getPreferenceStore() {
-		return new ScopedPreferenceStore(InstanceScope.INSTANCE,"org.goko.tools.droservice");
+		return DROPreferences.getInstance();//new ScopedPreferenceStore(InstanceScope.INSTANCE,"org.goko.tools.droservice");
 	}
 
 }

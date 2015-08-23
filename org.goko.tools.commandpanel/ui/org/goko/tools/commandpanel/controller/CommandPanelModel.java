@@ -121,5 +121,4 @@ public class CommandPanelModel extends AbstractModelObject{
 	public Unit<Length> getLengthUnit() {
 		return lengthUnit;
 	}
-
 }

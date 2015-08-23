@@ -23,20 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.log.GkLog;
+import org.goko.tools.dro.preferences.DROPreferences;
 
 public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	private static final GkLog LOG = GkLog.getLogger(DROServiceImpl.class);
 	public static final String SERVICE_ID = "org.goko.tools.dro.service";
 	private IControllerService controllerService;
-	private ScopedPreferenceStore prefs;
 	private List<MachineValueDefinition> lstDefinition;
 	
 	/** (inheritDoc)
@@ -52,9 +50,8 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	 */
 	@Override
 	public void start() throws GkException {	
-		lstDefinition = new ArrayList<MachineValueDefinition>();
-		prefs = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.goko.tools.droservice");		
-		prefs.addPropertyChangeListener(this);
+		lstDefinition = new ArrayList<MachineValueDefinition>();		
+		DROPreferences.getInstance().addPropertyChangeListener(this);
 		updateValues();
 	}
 
@@ -83,7 +80,7 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	}
 
 	private void updateValues() {
-		String[] token = StringUtils.split(prefs.getString("dro.displayedValues.list"), ";");
+		String[] token = StringUtils.split(DROPreferences.getInstance().getString("dro.displayedValues.list"), ";");
 		lstDefinition.clear();
 		if(token != null && token.length > 0){
 			for (String string : token) {

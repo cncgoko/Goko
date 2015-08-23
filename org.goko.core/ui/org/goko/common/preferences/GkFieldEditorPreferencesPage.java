@@ -20,7 +20,7 @@ import org.goko.core.log.GkLog;
 public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 	private static final GkLog LOG = GkLog.getLogger(GkPreferencesPage.class);
 	/** List of field editors*/
-	private List<IPreferenceFieldEditor<?>> fields;
+	protected List<IPreferenceFieldEditor<?>> fields;
 	/** The parent composite of all editors */
 	private Composite fieldEditorParent;
 	/** The invalid field editor*/
@@ -140,10 +140,13 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 				fieldEditor.setDefault();
 			}
 		}catch(GkException e){
-			e.printStackTrace();
+			LOG.error(e);
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
+	 */
 	@Override
 	public boolean performOk() {
 		try{

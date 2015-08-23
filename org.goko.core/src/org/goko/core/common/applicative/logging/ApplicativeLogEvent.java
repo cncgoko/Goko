@@ -35,6 +35,10 @@ public class ApplicativeLogEvent {
 	 * A debugging message (Value 4).
 	 */
 	public static final int	LOG_DEBUG	= 4;
+	/**
+	 * A message to be displayed to the user
+	 */
+	public static final int	USER_ERROR	= 5;
 
 	/**
 	 * The severity of the message

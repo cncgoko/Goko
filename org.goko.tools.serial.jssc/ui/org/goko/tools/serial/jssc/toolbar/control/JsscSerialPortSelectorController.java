@@ -33,12 +33,13 @@ import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionListener;
-import org.goko.tools.serial.jssc.internal.JsscSerialActivator;
+import org.goko.core.log.GkLog;
 import org.goko.tools.serial.jssc.preferences.connection.SerialConnectionPreference;
 import org.goko.tools.serial.jssc.service.IJsscSerialConnectionService;
 import org.goko.tools.serial.jssc.service.JsscParameter;
 
 public class JsscSerialPortSelectorController extends AbstractController<JsscSerialPortSelectorModel> implements IConnectionListener {
+	private static final GkLog LOG = GkLog.getLogger(JsscSerialPortSelectorController.class);
 	@Inject
 	private IJsscSerialConnectionService jsscService;
 	@Inject
@@ -70,7 +71,7 @@ public class JsscSerialPortSelectorController extends AbstractController<JsscSer
 	}
 
 	public void refreshSerialPortList() {
-		try {
+		try {			
 			List<LabeledValue<String>> lstPorts = createInput();
 			getDataModel().setAvailableSerialPorts(lstPorts);
 			if(lstPorts.size() == 1){
@@ -78,7 +79,7 @@ public class JsscSerialPortSelectorController extends AbstractController<JsscSer
 			}
 			onSerialPortChange();
 		} catch (GkException e) {
-			notifyException(e);
+			LOG.error(e);
 		}
 	}
 

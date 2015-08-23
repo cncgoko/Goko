@@ -27,7 +27,7 @@
          </property>
          <property
                name="lifeCycleURI"
-               value="bundleclass://org.goko.core/org.goko.core.internal.TargetBoardChecker">
+               value="bundleclass://Goko/goko.GokoLifeCycleManager">
          </property>
       </product>
    </extension>   

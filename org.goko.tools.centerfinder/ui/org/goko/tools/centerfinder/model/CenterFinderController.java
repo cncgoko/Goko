@@ -23,11 +23,9 @@ package org.goko.tools.centerfinder.model;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.vecmath.Point3d;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.service.IGCodeService;

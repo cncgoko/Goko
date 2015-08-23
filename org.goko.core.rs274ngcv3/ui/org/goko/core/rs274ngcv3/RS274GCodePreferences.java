@@ -6,7 +6,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.common.GkUiUtils;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.IPreferenceStoreProvider;
 import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.IntegerFieldEditor;
 import org.goko.core.common.exception.GkException;

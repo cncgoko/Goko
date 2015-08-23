@@ -3,6 +3,8 @@ package goko.handlers;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
@@ -40,19 +42,16 @@ public class UpdateHandler {
 	@Execute
 	public void execute(final IProvisioningAgent agent, final UISynchronize sync, final IWorkbench workbench) {
 		final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
-		// update using a progress monitor
-        IRunnableWithProgress runnable = new IRunnableWithProgress() {            
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {                
-                updateCheck.update(agent, monitor, sync, workbench, false);
-            }
+		
+        Job updateJob = new Job("Checking for updates"){
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {				 
+				return updateCheck.update(agent, monitor, sync, workbench, false);
+			}        	
         };
-        
-        try {
-            new ProgressMonitorDialog(null).run(true, true, runnable);
-        } catch (InvocationTargetException | InterruptedException e) {
-            LOG.error(e);
-        }
+        updateJob.setUser(true);
+        updateJob.schedule();
+
 	}
     
 }

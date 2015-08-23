@@ -22,9 +22,9 @@ package org.goko.tools.serial.jssc.service;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.connection.IConnectionService;
+import org.goko.core.connection.serial.ISerialConnectionService;
 
-public interface IJsscSerialConnectionService extends IConnectionService {
+public interface IJsscSerialConnectionService extends ISerialConnectionService {
 
 	/**
 	 * Returns a list of available serial ports

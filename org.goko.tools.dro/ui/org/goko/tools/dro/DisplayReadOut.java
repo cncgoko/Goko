@@ -13,7 +13,6 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -35,6 +34,7 @@ import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.log.GkLog;
 import org.goko.tools.dro.controller.DisplayReadOutController;
 import org.goko.tools.dro.controller.DisplayReadOutModel;
+import org.goko.tools.dro.preferences.DROPreferences;
 
 /**
  * DRO part
@@ -76,6 +76,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 		}else{
 			createFields(parentComposite);
 		}
+		DROPreferences.getInstance().addPropertyChangeListener(this);
 	}
 
 	private void createEmptyPanel(Composite parent){
@@ -99,7 +100,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			public void mouseUp(MouseEvent e) {
 				try {
 					Command cmd = commandService.getCommand("org.goko.tools.dro.command.dropreferences");
-					Parameterization param = new Parameterization(cmd.getParameter("goko.org.ui.page.id"), "org.goko.dro.displayPreferences");
+					Parameterization param = new Parameterization(cmd.getParameter("goko.org.ui.page.id"), "org.goko.tools.dro.displayPreferences");
 					ParameterizedCommand pCmd = new ParameterizedCommand(cmd, new Parameterization[]{param});
 					if (handlerService.canExecute(pCmd)) {
 						handlerService.executeHandler(pCmd);
@@ -130,12 +131,6 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			valueTxt.setLayoutData(gridData );
 			getController().enableTextBindingOnValue(valueTxt, definition.getId());			
 		}
-	}
-
-
-	@Focus
-	public void onFocus() {
-		//TODO Your code here
 	}
 
 	/** (inheritDoc)

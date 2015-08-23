@@ -58,7 +58,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		gcodeService = new RS274GCodeService();
 		tinyg.setGCodeService(gcodeService);
 		tinyg.start(); 				  // Start the TinyG service
-		serialEmulator.connect(null); // Make sure the service is connected
+		serialEmulator.connect(null, null, null, null, null, null); // Make sure the service is connected
 		tinyg.setPlannerBufferSpaceCheck(false);		
 	}
 	

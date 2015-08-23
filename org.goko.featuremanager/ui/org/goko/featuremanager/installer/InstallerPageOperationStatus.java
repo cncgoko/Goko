@@ -2,7 +2,6 @@ package org.goko.featuremanager.installer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

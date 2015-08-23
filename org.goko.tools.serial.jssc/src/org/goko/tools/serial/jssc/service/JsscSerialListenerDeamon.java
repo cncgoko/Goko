@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
-
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
+
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
 
 public class JsscSerialListenerDeamon implements Runnable, SerialPortEventListener{
 	/** LOG */
@@ -66,7 +66,7 @@ public class JsscSerialListenerDeamon implements Runnable, SerialPortEventListen
 		}else if(serialPortEvent.isERR()){
 			LOG.error(serialPortEvent.toString() + " error : " +serialPortEvent.getEventValue());
 			try {
-				jsscService.disconnect(null);
+				jsscService.disconnect();
 			} catch (GkException e) {
 				LOG.error(e);
 			}

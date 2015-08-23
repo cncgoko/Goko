@@ -24,13 +24,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.featuremanager.service.IFeatureManager;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.wb.swt.ResourceManager;
 
 public class InstallerPageFeatureSelection extends WizardPage {
 	private static final GkLog LOG = GkLog.getLogger(InstallerPageFeatureSelection.class);

@@ -23,7 +23,6 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 public class GokoGeneralPreferences extends PreferencePage{
 
@@ -31,9 +30,11 @@ public class GokoGeneralPreferences extends PreferencePage{
 		setMessage("General preferences");
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+	 */
 	@Override
 	protected Control createContents(Composite parent) {
-
 		Composite composite = new Composite(parent, SWT.NONE);
 		return composite;
 	}

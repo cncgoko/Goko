@@ -88,6 +88,7 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		}else if(event == EnumConnectionEvent.DISCONNECTED){
 			getConnectionService().removeInputDataListener(this);
 			grbl.stopStatusPolling();
+			grbl.setState(GrblMachineState.UNDEFINED);
 			incomingBuffer.clear();
 		}
 	}

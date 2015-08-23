@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.controller.grbl.v08.GrblControllerService;
+import org.goko.controller.grbl.v08.GrblMachineState;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -30,7 +31,6 @@ import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
-import org.goko.core.controller.bean.MachineState;
 
 /**
  * Feed hold action for Grbl
@@ -52,8 +52,8 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 	 * @see org.goko.core.controller.action.IGkControllerAction#canExecute()
 	 */
 	@Override
-	public boolean canExecute() throws GkException {
-		return !ObjectUtils.equals(MachineState.UNDEFINED, getControllerService().getState()) && !ObjectUtils.equals(MachineState.ALARM, getControllerService().getState());
+	public boolean canExecute() throws GkException {		
+		return ObjectUtils.equals(GrblMachineState.READY, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

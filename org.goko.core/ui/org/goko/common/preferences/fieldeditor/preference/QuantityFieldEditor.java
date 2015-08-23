@@ -5,7 +5,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.units.Unit;
 

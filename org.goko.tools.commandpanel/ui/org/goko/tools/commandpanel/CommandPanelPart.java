@@ -592,11 +592,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		grpSpindle.setLayout(new FillLayout(SWT.HORIZONTAL));
 		grpSpindle.setText("Spindle");
 		
-		
-
 		Composite composite_3 = new Composite(grpSpindle, SWT.NONE);
-		
-		
+				
 		GridLayout gl_composite_3 = new GridLayout(2, true);
 		gl_composite_3.marginWidth = 2;
 		gl_composite_3.horizontalSpacing = 2;
@@ -650,8 +647,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	protected void initCustomBindings(MPart part) throws GkException {
 		getController().addTextDisplayBinding(lblUnit, "lengthUnitSymbol");
-		
-		
+				
 		getController().bindEnableControlWithAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindButtonToExecuteAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindEnableControlWithAction(btnStart, DefaultControllerAction.START);
@@ -680,10 +676,16 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 		getController().addEnableBinding(btnIncrementalJog, "stepModeChoiceEnabled");
 		getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
-		getController().addEnableBinding(jogStepSpinner, "incrementalJog");
+		//getController().addEnableBinding(jogStepSpinner, "stepSpinnerEnabled");		
 		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
-		getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);
-
+		//getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);
+		
+		if(getDataModel().isIncrementalJog()){
+			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
+		}else{
+			getController().addEnableBinding(btnIncrementalJog, "incrementalJog");
+		}
+		
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogYNeg, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogXPos, DefaultControllerAction.JOG_START);

@@ -27,13 +27,13 @@ public class E4PreferencesHandler{
 	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,  E4PreferenceRegistry prefReg, @Named(PAGE_ID) @Optional String pageId)
 	{
 		PreferenceManager pm = prefReg.getPreferenceManager();
-		PreferenceDialog dialog = new PreferenceDialog(shell, pm);
+		PreferenceDialog dialog = new PreferenceDialog(shell, pm);		
 		if(StringUtils.isNotBlank(pageId)){
 			dialog.setSelectedNode(pageId);
 		}
-		dialog.create();
+		dialog.create();		
 		dialog.getTreeViewer().setComparator(new ViewerComparator());
-		dialog.getTreeViewer().expandAll();		
+		dialog.getTreeViewer().expandAll();
 		dialog.open();
 		
 	}

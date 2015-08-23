@@ -1,13 +1,13 @@
 package org.goko.core.rs274ngcv3.junits;
 
-import junit.framework.TestCase;
-
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.rs274ngcv3.RS274GCodeService;
 import org.goko.core.rs274ngcv3.assertion.AssertGCode;
 import org.goko.core.rs274ngcv3.config.RS274Preference;
+
+import junit.framework.TestCase;
 
 public class RS274GCodeServiceTestCase extends TestCase{
 	private IGCodeService gcodeService;

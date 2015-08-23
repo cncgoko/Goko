@@ -46,7 +46,7 @@ public class GrblJogStopAction extends AbstractGrblControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return !ObjectUtils.equals(GrblMachineState.UNDEFINED, getControllerService().getState());
+		return ObjectUtils.equals(GrblMachineState.READY, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

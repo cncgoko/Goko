@@ -20,6 +20,7 @@ import org.goko.core.gcode.service.IGCodeService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.event.EventAdmin;
 
 /**
  * @author PsyKo
@@ -56,6 +57,8 @@ public class GrblFeatureSet implements IFeatureSet {
 	
 		service.setConnectionService(findService(context, IConnectionService.class));
 		service.setGCodeService(findService(context, IGCodeService.class));
+		service.setEventAdmin(findService(context, EventAdmin.class));
+		
 		service.start();
 		
 	}

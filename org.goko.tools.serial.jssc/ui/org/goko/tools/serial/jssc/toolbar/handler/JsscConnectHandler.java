@@ -19,9 +19,6 @@
  */
 package org.goko.tools.serial.jssc.toolbar.handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -30,9 +27,8 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.goko.core.common.exception.GkException;
-import org.goko.tools.serial.jssc.internal.JsscSerialActivator;
+import org.goko.core.connection.serial.ISerialConnectionService;
 import org.goko.tools.serial.jssc.preferences.connection.SerialConnectionPreference;
-import org.goko.tools.serial.jssc.service.IJsscSerialConnectionService;
 import org.goko.tools.serial.jssc.service.JsscParameter;
 
 /**
@@ -44,8 +40,8 @@ import org.goko.tools.serial.jssc.service.JsscParameter;
 public class JsscConnectHandler {
 	/** In place connection service */
 	@Inject
-	IJsscSerialConnectionService connectionService;
-	/** Internal - In place connection service */
+	ISerialConnectionService connectionService;
+	/** Event broker */
 	@Inject
 	IEventBroker eventBroker;
 
@@ -54,17 +50,13 @@ public class JsscConnectHandler {
 	 * @throws GkException GkException
 	 */
 	@Execute
-	public void execute() throws GkException{
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(JsscParameter.PORTNAME.name(), SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name()));
-		params.put(JsscParameter.BAUDRATE.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.BAUDRATE.name()));//SerialPort.BAUDRATE_115200);
-		params.put(JsscParameter.PARITY.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.PARITY.name()));//SerialPort.PARITY_NONE);
-		params.put(JsscParameter.STOPBITS.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.STOPBITS.name()));//SerialPort.STOPBITS_1);
-		params.put(JsscParameter.DATABITS.name(), SerialConnectionPreference.getInstance().getInt(JsscParameter.DATABITS.name()));//SerialPort.DATABITS_8);
-		params.put(JsscParameter.RCSCTS.name(), SerialConnectionPreference.getInstance().getString(JsscParameter.RCSCTS.name()));//SerialPort.DATABITS_8);
-		params.put(JsscParameter.XONXOFF.name(), SerialConnectionPreference.getInstance().getString(JsscParameter.XONXOFF.name()));//SerialPort.DATABITS_8);
-
-		connectionService.connect(params);
+	public void execute() throws GkException{		
+		connectionService.connect(SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name()),
+								  SerialConnectionPreference.getInstance().getInt(JsscParameter.BAUDRATE.name()),
+								  SerialConnectionPreference.getInstance().getInt(JsscParameter.DATABITS.name()), 
+								  SerialConnectionPreference.getInstance().getInt(JsscParameter.STOPBITS.name()),
+								  SerialConnectionPreference.getInstance().getInt(JsscParameter.PARITY.name()), 								  
+								  SerialConnectionPreference.getInstance().getInt(JsscParameter.FLOWCONTROL.name()));
 
 		eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 	}

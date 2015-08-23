@@ -22,6 +22,7 @@ package org.goko.tools.serial.jssc.toolbar.control;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -33,6 +34,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.goko.common.GkUiComponent;
 import org.goko.common.elements.combo.GkCombo;
 import org.goko.common.elements.combo.LabeledValue;
@@ -68,7 +70,7 @@ public class JsscSerialPortSelectorCombo extends GkUiComponent<JsscSerialPortSel
 	 * @param parent the parent composite
 	 */
 	@PostConstruct
-	public void createGui(Composite parent) {
+	public void createGui(final Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginWidth = 3;
@@ -100,16 +102,31 @@ public class JsscSerialPortSelectorCombo extends GkUiComponent<JsscSerialPortSel
 		});
 
 		getController().refreshSerialPortList();
+		
+		autoRefreshSerialPort(parent.getDisplay());
 	}
 
+	private void autoRefreshSerialPort(final Display display){
+		// Refresh periodically
+		display.timerExec(500, new Runnable() {			
+			@Override
+			public void run() {
+				getController().refreshSerialPortList();				
+				if(CollectionUtils.isEmpty(getController().getDataModel().getAvailableSerialPorts())){					
+					display.timerExec(1000, this);
+				}
+			}
+		});
+	}
 	/**
 	 * Refresh the list of available ports when requested
 	 * @param event
 	 */
 	@Inject
 	@Optional
-	public void getNotifiedRefresh(@UIEventTopic(JsscUiEvent.JSSC_REFRESH_COM_PORT_LIST) boolean event){
+	public void getNotifiedRefresh(@UIEventTopic(JsscUiEvent.JSSC_REFRESH_COM_PORT_LIST) boolean event, Display display){		
 		getController().refreshSerialPortList();
+		autoRefreshSerialPort(display);
 	}
 
 }

@@ -27,7 +27,6 @@ import org.goko.controller.grbl.v08.GrblControllerService;
 import org.goko.controller.grbl.v08.GrblMachineState;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.action.DefaultControllerAction;
-import org.goko.core.controller.bean.MachineState;
 
 /**
  * Implementation of the feed hold action for Grbl

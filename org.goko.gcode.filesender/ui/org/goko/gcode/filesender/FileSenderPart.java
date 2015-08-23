@@ -32,9 +32,12 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -69,13 +72,14 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.common.bindings.validator.FilepathValidator;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
-import org.goko.core.common.event.GokoTopic;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
+import org.goko.core.log.GkLog;
 import org.goko.gcode.filesender.controller.GCodeFileSenderBindings;
 import org.goko.gcode.filesender.controller.GCodeFileSenderController;
 
@@ -86,6 +90,7 @@ import org.goko.gcode.filesender.controller.GCodeFileSenderController;
  *
  */
 public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener, PropertyChangeListener {
+	private static final GkLog LOG = GkLog.getLogger(FileSenderPart.class);
 	@Inject
 	private IApplicativeLogService applicativeLogService;
 	@Inject
@@ -281,9 +286,18 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		btnSendFile = new Button(composite_3, SWT.NONE);
 		btnSendFile.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseUp(MouseEvent e) {
-				progressSentCommand.setState(SWT.NORMAL);
-				getController().startFileStreaming();
+			public void mouseUp(MouseEvent event) {
+				try {
+					progressSentCommand.setState(SWT.NORMAL);				
+					getController().startFileStreaming();
+				} catch (GkFunctionalException e) {
+					LOG.error(e);
+					IStatus status = new Status(IStatus.WARNING, "org.goko.gcode.filesender", e.getLocalizedMessage());      
+					ErrorDialog.openError(null, "Warning", null, status);
+				} catch (GkException e) {
+					IStatus status = new Status(IStatus.ERROR, "org.goko.gcode.filesender", e.getLocalizedMessage());      
+					ErrorDialog.openError(null, "Error", null, status);
+				}
 			}
 		});
 		btnSendFile.setBounds(0, 0, 75, 25);

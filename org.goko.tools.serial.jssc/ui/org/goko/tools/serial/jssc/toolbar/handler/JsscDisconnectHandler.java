@@ -19,9 +19,6 @@
  */
 package org.goko.tools.serial.jssc.toolbar.handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -29,7 +26,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.connection.IConnectionService;
+import org.goko.core.connection.serial.ISerialConnectionService;
 
 /**
  * Handler used to disconnect to the Serial port
@@ -40,7 +37,7 @@ import org.goko.core.connection.IConnectionService;
 public class JsscDisconnectHandler {
 	/** In place connection service */
 	@Inject
-	IConnectionService connectionService;
+	ISerialConnectionService connectionService;
 	/** Internal - In place connection service */
 	@Inject
 	IEventBroker eventBroker;
@@ -52,8 +49,7 @@ public class JsscDisconnectHandler {
 	 */
 	@Execute
 	public void execute() throws GkException{
-		Map<String, Object> params = new HashMap<String, Object>();
-		connectionService.disconnect(params);
+		connectionService.disconnect();
 
 		eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 	}

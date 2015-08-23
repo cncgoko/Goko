@@ -20,7 +20,6 @@
 package org.goko.controller.grbl.v08.bean;
 
 import org.goko.controller.grbl.v08.GrblMachineState;
-import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.bean.Tuple6b;
 
 public class StatusReport {

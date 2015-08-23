@@ -29,7 +29,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -198,7 +198,7 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		getController().addTextModifyBinding(commandTxt, "command");
 	}
 
-	@Persist
+	@PersistState
 	public void persistState(MPart part){
 		if(getDataModel() != null){
 			part.getPersistedState().put(CONSOLE_ENABLED, String.valueOf(getDataModel().isConsoleEnabled()));

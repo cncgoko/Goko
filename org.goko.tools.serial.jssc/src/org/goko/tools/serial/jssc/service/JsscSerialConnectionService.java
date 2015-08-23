@@ -23,11 +23,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
-import jssc.SerialPort;
-import jssc.SerialPortException;
-import jssc.SerialPortList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -38,6 +33,10 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.log.GkLog;
+
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
 
 /**
  * Jssc Serial Service implementation
@@ -99,27 +98,20 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionService#connect(java.util.Map)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#connect(java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer)
 	 */
 	@Override
-	public void connect(Map<String, Object> parameters) throws GkException {
-		String  portName  = JsscUtils.getParameterPortName(parameters);
-		Integer baudrate = JsscUtils.getParameterBaudrate(parameters);
-		Integer databits = JsscUtils.getParameterDatabits(parameters);
-		Integer stopbits = JsscUtils.getParameterStopbits(parameters);
-		Integer parity 	 = JsscUtils.getParameterParity(parameters);
-		Integer flowControl	 = JsscUtils.getParameterFlowControl(parameters);
-
+	public void connect(String portName, Integer baudrate, Integer databits, Integer stopBits, Integer parity, Integer flowControl) throws GkException {
 		this.serialPort = new SerialPort(portName);
 
 		try {
 			this.serialPort.openPort();
-			this.serialPort.setParams(baudrate, databits, stopbits, parity);
+			this.serialPort.setParams(baudrate, databits, stopBits, parity);
 			this.serialPort.setFlowControlMode(flowControl);
 			this.deamon = new JsscSerialListenerDeamon(this);
 			this.serialPort.addEventListener(deamon, getEventMask());
-			LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ databits +", parity: "+ parity +",stop bits: "+stopbits);
-			currentConnection = new JsscSerialConnection(portName, baudrate, databits, stopbits, parity);
+			LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ databits +", parity: "+ parity +",stop bits: "+stopBits);
+			currentConnection = new JsscSerialConnection(portName, baudrate, databits, stopBits, parity);
 			// Start the sender thread
 			jsscSender = new JsscSender(this);
 			deamonThread = new Thread(deamon);
@@ -131,14 +123,13 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 		} catch (SerialPortException e) {
 			throw new GkTechnicalException(e);
 		}
-
 	}
-
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionService#disconnect(java.util.Map)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#disconnect()
 	 */
 	@Override
-	public void disconnect(Map<String, Object> parameters) throws GkException {
+	public void disconnect() throws GkException {
 		try {
 			this.currentConnection = null;
 			if(serialPort != null){// && serialPort.isOpened()){
@@ -150,9 +141,8 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 		} catch (SerialPortException e) {
 			throw new GkTechnicalException(e);
 		}
-
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.connection.IConnectionService#isReady()
 	 */

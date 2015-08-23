@@ -13,9 +13,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.goko.common.GkUiUtils;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
-import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ColorFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.IntegerFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.QuantityFieldEditor;
@@ -25,7 +23,6 @@ import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.log.GkLog;
-import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 
 /**
  * @author PsyKo

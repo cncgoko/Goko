@@ -31,6 +31,5 @@ public enum JsscParameter {
 	DATABITS,
 	PARITY,
 	STOPBITS,
-	RCSCTS,
-	XONXOFF;
+	FLOWCONTROL;
 }

@@ -1,18 +1,17 @@
 package goko;
 
-import javax.inject.Inject;
+import java.util.Locale;
 
-import org.goko.core.connection.IConnectionService;
+import org.goko.core.log.GkLog;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
-
+	private static final GkLog LOG = GkLog.getLogger(Activator.class);
+	
 	private static BundleContext context;
 
-	@Inject
-	private IConnectionService service;
-
+	
 	static BundleContext getContext() {
 		return context;
 	}
@@ -24,7 +23,7 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-
+		LOG.info("Locale is "+Locale.getDefault().toString());
 	}
 
 	/*

@@ -21,7 +21,6 @@ package org.goko.tools.dro;
 
 import java.util.List;
 
-import org.goko.core.common.event.IEventDispatcher;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.controller.bean.MachineValueDefinition;

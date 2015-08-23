@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -422,6 +421,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		return grblState.getState();
 	}
 	
+	public void setState(GrblMachineState state) throws GkException{
+		grblState.setState(state);
+		eventAdmin.sendEvent(new Event(CONTROLLER_TOPIC_STATE_UPDATE, (Map<String, ?>)null));
+	}
+	
 	protected GrblMachineState getGrblStateFromString(String code){
 		switch(code){
 			case "Alarm": return GrblMachineState.ALARM;
@@ -747,13 +751,13 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/**
 	 * @return the eventAdmin
 	 */
-	protected EventAdmin getEventAdmin() {
+	public EventAdmin getEventAdmin() {
 		return eventAdmin;
 	}
 	/**
 	 * @param eventAdmin the eventAdmin to set
 	 */
-	protected void setEventAdmin(EventAdmin eventAdmin) {
+	public void setEventAdmin(EventAdmin eventAdmin) {
 		this.eventAdmin = eventAdmin;
 	}
 

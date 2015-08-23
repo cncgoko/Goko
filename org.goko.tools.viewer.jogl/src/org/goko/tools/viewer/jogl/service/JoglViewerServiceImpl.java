@@ -47,6 +47,8 @@ import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.GCodeProviderEvent;
 import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
+import org.goko.core.workspace.service.IWorkspaceListener;
+import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
@@ -59,8 +61,6 @@ import org.goko.tools.viewer.jogl.utils.render.gcode.BoundsRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.DefaultGCodeProviderRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.RotaryAxisAdapter;
-import org.goko.core.workspace.service.IWorkspaceListener;
-import org.goko.core.workspace.service.IWorkspaceService;
 
 import com.jogamp.opengl.util.PMVMatrix;
 

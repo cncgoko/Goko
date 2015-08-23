@@ -26,8 +26,6 @@ import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.goko.common.preferences.ScopedPreferenceStore;
-import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 
 public abstract class GkPreference implements IPreferenceStore, IPersistentPreferenceStore{
 	private ScopedPreferenceStore store;

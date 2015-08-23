@@ -4,5 +4,6 @@
    <service>
       <provide interface="org.goko.core.connection.IConnectionService"/>
       <provide interface="org.goko.tools.serial.jssc.service.IJsscSerialConnectionService"/>
+      <provide interface="org.goko.core.connection.serial.ISerialConnectionService"/>
    </service>
 </scr:component>

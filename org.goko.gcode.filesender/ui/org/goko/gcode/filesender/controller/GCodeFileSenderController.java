@@ -68,7 +68,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GCodeFileSenderController.class);
 	private static final String[] UNITS = {"bytes", "kB","mB","gB"};
-
+	
 	@Inject
 	private IGCodeService gCodeService;
 	@Inject
@@ -96,10 +96,6 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		Display.getCurrent().timerExec(400, elapsedTimeRunnable);		
 	}
 
-	@Inject
-	public void test(){
-		System.err.println("");
-	}
 	/**
 	 * Create the runnable used to display elapsed time
 	 */
@@ -132,7 +128,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @throws GkException GkException
 	 */
 	public void setGCodeFilepath(String filepath) throws GkException {
-		try{
+		try{						 
 			File file = new File(filepath);
 			getDataModel().setFileName(file.getName());
 			getDataModel().setFilePath(filepath);
@@ -227,24 +223,19 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		getBindings().add( getBindingContext().bindValue(widgetObserver, modelObserver,null,strategy) );
 	}
 
-	public void startFileStreaming(){
-		try{
-			GCodeExecutionToken token = controllerService.executeGCode(getDataModel().getGcodeProvider());
-			if(getDataModel().getGcodeProvider() != null){
-				workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
-			}
-
-			getDataModel().setSentCommandCount( 0 );
-			getDataModel().setTotalCommandCount( token.getCommandCount() );
-
-			token.addListener(this);
-			getDataModel().setGcodeProvider(token);
-			getDataModel().setStreamingInProgress(true);
-			startElapsedTimer();
-		}catch(GkException e){
-			log(e);
+	public void startFileStreaming() throws GkException{
+		GCodeExecutionToken token = controllerService.executeGCode(getDataModel().getGcodeProvider());
+		if(getDataModel().getGcodeProvider() != null){
+			workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 		}
 
+		getDataModel().setSentCommandCount( 0 );
+		getDataModel().setTotalCommandCount( token.getCommandCount() );
+
+		token.addListener(this);
+		getDataModel().setGcodeProvider(token);
+		getDataModel().setStreamingInProgress(true);
+		startElapsedTimer();
 	}
 
 	public void stopFileStreaming(){

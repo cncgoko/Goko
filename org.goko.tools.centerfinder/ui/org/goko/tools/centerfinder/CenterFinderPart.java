@@ -26,10 +26,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -48,6 +51,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.config.GokoPreference;
@@ -132,8 +136,14 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 			public void mouseUp(MouseEvent event) {
 				try{
 					getController().grabPoint();
+				}catch(GkFunctionalException e){
+					LOG.warn(e.getLocalizedMessage());
+					IStatus status = new Status(IStatus.WARNING, "org.goko.tools.centerfinder", e.getLocalizedMessage());      
+					ErrorDialog.openError(null, "Warning", null, status);
 				}catch(GkException e){
-					LOG.error(e);
+					LOG.error(e.getLocalizedMessage());
+					IStatus status = new Status(IStatus.ERROR, "org.goko.tools.centerfinder", e.getLocalizedMessage());      
+					ErrorDialog.openError(null, "Error", null, status);
 				}
 			}
 		});
@@ -142,16 +152,16 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		btnNewButton_1.setToolTipText("Remove selected point");
 		btnNewButton_1.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/eraser.png"));
 
-		goToCenterBtn = new Button(composite_1, SWT.NONE);
-		goToCenterBtn.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				getController().goToCalculatedCenter();
-			}
-		});
-		goToCenterBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-		goToCenterBtn.setToolTipText("Go to calculated center");
-		goToCenterBtn.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/arrow-step.png"));
+//		goToCenterBtn = new Button(composite_1, SWT.NONE);
+//		goToCenterBtn.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseUp(MouseEvent e) {
+//				getController().goToCalculatedCenter();
+//			}
+//		});
+//		goToCenterBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+//		goToCenterBtn.setToolTipText("Go to calculated center");
+//		goToCenterBtn.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/arrow-step.png"));
 		
 		btnNewButton_1.addMouseListener(new MouseAdapter() {
 			@Override

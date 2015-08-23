@@ -24,30 +24,25 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jssc.SerialPortException;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
+import jssc.SerialPortException;
+
 public class JsscSender implements Runnable {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JsscSender.class);
-	/** Outgoing queue */
-	//private ConcurrentLinkedDeque<List<Byte>> queue;
 	private BlockingQueue<List<Byte>> queue;
 	/** Important datas */
 	private BlockingQueue<List<Byte>> importantQueue;
-	/** Clear to send flag */
-	//private boolean clearToSend;
 	/** The service holding the serial port */
 	private JsscSerialConnectionService jsscService;
-	/** ock waiting for send permission */
+	/** Lock waiting for send permission */
 	private Object clearToSendLock;
-	private int importantBytes;
 	private boolean stopped;
-	private Long nbBytes = 0L;
+
 	/**
 	 * Constructor
 	 * @param serialPort the serial port to use
@@ -115,7 +110,7 @@ public class JsscSender implements Runnable {
 	 * @param bytes the list of {@link Byte} to add
 	 */
 	protected void sendBytesImmediately(List<Byte> bytes){
-		importantQueue.add( new ArrayList<Byte>(bytes));
+		importantQueue.add( new ArrayList<Byte>(bytes) );
 		synchronized (clearToSendLock) {
 			clearToSendLock.notify();
 		}

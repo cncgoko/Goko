@@ -23,7 +23,7 @@ public class GokoUpdateCheckRunnable {
 	private static final GkLog LOG = GkLog.getLogger(GokoUpdateCheckRunnable.class);
 	private boolean cancelled;
 	
-	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent) {
+	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		ProvisioningSession session = new ProvisioningSession(agent);
 		// update the whole running profile, otherwise specify IUs
 		UpdateOperation operation = new UpdateOperation(session);
@@ -50,58 +50,19 @@ public class GokoUpdateCheckRunnable {
         else {        
         	final ProvisioningJob provisioningJob = operation.getProvisioningJob(sub.newChild(100));        	
         	if (provisioningJob != null) {
-        		 
-        		sync.syncExec(new Runnable() {
-                    
-                    @Override
-                    public void run() {                    	
-                        boolean performUpdate = MessageDialog.openQuestion(null,
-                                "Updates available",
-                                "There are updates available. Do you want to install them now?");
-                        if (performUpdate) {
-                        	provisioningJob.addJobChangeListener(new JobChangeAdapter() {
-								@Override
-								public void done(IJobChangeEvent event) {
-									if (event.getResult().isOK()) {
-										sync.syncExec(new Runnable() {
-
-											@Override
-											public void run() {
-												boolean restart = MessageDialog.openQuestion(null,
-				                                        "Updates installed, restart?",
-				                                        "Updates have been installed successfully, do you want to restart?");
-				                                if (restart) {
-				                                	workbench.restart();
-				                                }
-											}
-										});
-									}else {
-										LOG.info( LogUtils.getMessage(event.getResult()));
-										showError(sync, event.getResult().getMessage());
-										cancelled = true;
-									}
-								}
-                        	});
-                        	
-                        	// since we switched to the UI thread for interacting with the user
-                        	// we need to schedule the provisioning thread, otherwise it would
-                        	// be executed also in the UI thread and not in a background thread
-                        	provisioningJob.schedule(); 
-                        	//provisioningJob.run(sub.newChild(100));
-                        }
-                        else {
-                        	cancelled = true;
-                        }
-                    }
-                });
+        		performUpdate(provisioningJob, monitor, sync, workbench);
         	} else {
                 if (operation.hasResolved()) {                	 
-                    showError(sync, "Couldn't get provisioning job: " + operation.getResolutionResult());
+                    if(!silent){
+                    	showError(sync, "Couldn't get provisioning job: " + operation.getResolutionResult());
+                    }
                     LOG.error( LogUtils.getMessage(operation.getResolutionResult()) );       
                    
                 }
                 else {
-                    showError(sync, "Couldn't resolve provisioning job");
+                	if(!silent){
+                		 showError(sync, "Couldn't resolve provisioning job");
+                	}
                 }
                 cancelled = true;
         	}
@@ -115,7 +76,60 @@ public class GokoUpdateCheckRunnable {
         return Status.OK_STATUS;
 	}
 	
+	public IStatus performUpdate(final ProvisioningJob provisioningJob, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench) {		 
+		
+		sync.syncExec(new Runnable() {            
+            @Override
+            public void run() {      
+            	
+                boolean performUpdate = MessageDialog.openQuestion(null,
+                        "Updates available",
+                        "There are updates available. Do you want to install them now?");
+                if (performUpdate) {
+                	provisioningJob.addJobChangeListener(new JobChangeAdapter() {
+						@Override
+						public void done(IJobChangeEvent event) {
+							if (event.getResult().isOK()) {
+								sync.syncExec(new Runnable() {
 
+									@Override
+									public void run() {
+										boolean restart = MessageDialog.openQuestion(null,
+		                                        "Updates installed, restart?",
+		                                        "Updates have been installed successfully, do you want to restart?");
+		                                if (restart) {
+		                                	workbench.restart();
+		                                }
+									}
+								});
+							}else {
+								LOG.info( LogUtils.getMessage(event.getResult()));
+								showError(sync, event.getResult().getMessage());
+								cancelled = true;
+							}
+						}
+                	});
+                	
+                	// since we switched to the UI thread for interacting with the user
+                	// we need to schedule the provisioning thread, otherwise it would
+                	// be executed also in the UI thread and not in a background thread
+                	provisioningJob.schedule(); 
+                	//provisioningJob.run(sub.newChild(100));
+                }
+                else {
+                	cancelled = true;
+                }
+            }
+        });
+		if (cancelled) {
+			// reset cancelled flag
+			cancelled = false;
+			return Status.CANCEL_STATUS;
+		}
+		return Status.OK_STATUS;
+	}
+	
+	
     private void showMessage(UISynchronize sync, final String message) {
         // as the provision needs to be executed in a background thread
         // we need to ensure that the message dialog is executed in 

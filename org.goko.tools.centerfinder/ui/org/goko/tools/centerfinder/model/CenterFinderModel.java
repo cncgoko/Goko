@@ -19,7 +19,6 @@
  */
 package org.goko.tools.centerfinder.model;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
