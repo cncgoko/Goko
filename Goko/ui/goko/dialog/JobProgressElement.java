@@ -85,10 +85,12 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 			
 			@Override
 			public void run() {
-				parentMonitor.requestShow();
-				jobProgressBar.setSelection(0);
-				jobProgressBar.setMaximum(totalWork);
-				lblTaskName.setText(name);
+				if(!isDisposed()){
+					parentMonitor.requestShow();
+					jobProgressBar.setSelection(0);
+					jobProgressBar.setMaximum(totalWork);
+					lblTaskName.setText(name);
+				}
 			}
 		});
 	}	
@@ -108,12 +110,14 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 		sync.asyncExec(new Runnable() {
 			
 			@Override
-			public void run() {				
-				jobProgressBar.setSelection((int) (jobProgressBar.getSelection()+work));				
+			public void run() {		
+				if(!isDisposed()){
+					jobProgressBar.setSelection((int) (jobProgressBar.getSelection()+work));
+				}
 			}
 		});
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.eclipse.core.runtime.IProgressMonitor#isCanceled()
 	 */
@@ -139,8 +143,10 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 		sync.asyncExec(new Runnable() {
 			
 			@Override
-			public void run() {				
-				lblTaskName.setText(name);
+			public void run() {
+				if(!isDisposed()){
+					lblTaskName.setText(name);
+				}
 			}
 		});
 	}
@@ -153,8 +159,10 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 		sync.asyncExec(new Runnable() {
 			
 			@Override
-			public void run() {				
-				lblTaskName.setText(name);
+			public void run() {		
+				if(!isDisposed()){
+					lblTaskName.setText(name);
+				}
 			}
 		});
 	}
@@ -200,11 +208,24 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 			
 			@Override
 			public void run() {
-				lblTaskName.setText("Complete " +job.getName());
+				if(!isDisposed()){
+					lblTaskName.setText("Complete " +job.getName());
+				}
 			}
 		});
 		event.getJob().removeJobChangeListener(this);		
 		parentMonitor.remove(this);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.widgets.Widget#dispose()
+	 */
+	@Override
+	public void dispose() {		
+		super.dispose();
+		if(job != null){
+			job.removeJobChangeListener(this);
+		}
 	}
 
 	/** (inheritDoc)
@@ -216,7 +237,9 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 			
 			@Override
 			public void run() {
-				lblTaskName.setText("Running " +job.getName());
+				if(!isDisposed()){
+					lblTaskName.setText("Running " +job.getName());
+				}
 			}
 		});
 	}

@@ -11,6 +11,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -38,8 +39,10 @@ public class AutomaticUpdateCheck implements EventHandler{
 	 */
 	@Override
 	public void handleEvent(Event event) {
-		LOG.info("Checking update at startup...");
-		final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
-		updateCheck.update(agent, monitor, sync, context.get(IWorkbench.class), true);		
+		if(GokoPreference.getInstance().isCheckUpdateAtStart()){
+			LOG.info("Checking update at startup...");
+			final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
+			updateCheck.update(agent, monitor, sync, context.get(IWorkbench.class), true);
+		}
 	}
 }

@@ -46,7 +46,7 @@ public class GokoProgressDialog extends Dialog {
 	 */
 	public GokoProgressDialog() {
 		super((Shell)null);
-		setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+		setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
 		setBlockOnOpen(false);	
 		mapProgressElement = new HashMap<Job, JobProgressElement>();
 	}
@@ -125,7 +125,9 @@ public class GokoProgressDialog extends Dialog {
 			@Override
 			public void run() {			
 				if(!mapProgressElement.isEmpty()){
-					GokoProgressDialog.this.getShell().setVisible(true);
+					if(!GokoProgressDialog.this.getShell().isDisposed()){
+						GokoProgressDialog.this.getShell().setVisible(true);
+					}
 				}
 			}
 		});
@@ -137,11 +139,13 @@ public class GokoProgressDialog extends Dialog {
 			sync.syncExec(new Runnable() {				
 				@Override
 				public void run() {
-					JobProgressElement progressElement = new JobProgressElement(composite, SWT.NONE, sync, job, GokoProgressDialog.this);					
-					mapProgressElement.put(job, progressElement);					
-					progressElement.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-					composite.pack();
-					requestShow();
+					if(!GokoProgressDialog.this.getShell().isDisposed()){
+						JobProgressElement progressElement = new JobProgressElement(composite, SWT.NONE, sync, job, GokoProgressDialog.this);					
+						mapProgressElement.put(job, progressElement);					
+						progressElement.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+						composite.pack();
+						requestShow();
+					}
 				}
 			});			
 		}		
@@ -155,7 +159,9 @@ public class GokoProgressDialog extends Dialog {
 			public void run() {				
 				elt.dispose();
 				if(mapProgressElement.isEmpty()){
-					GokoProgressDialog.this.getShell().setVisible(false);
+					if(!GokoProgressDialog.this.getShell().isDisposed()){
+						GokoProgressDialog.this.getShell().setVisible(false);
+					}
 				}
 			}
 		});		

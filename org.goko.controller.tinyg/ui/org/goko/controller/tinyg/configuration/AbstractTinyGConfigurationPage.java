@@ -2,10 +2,14 @@ package org.goko.controller.tinyg.configuration;
 
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.core.log.GkLog;
 
+/**
+ * Abstract page used to handle the TinyG configuration
+ * 
+ * @author PsyKo
+ *
+ */
 public abstract class AbstractTinyGConfigurationPage extends GkFieldEditorPreferencesPage{
-	private static GkLog LOG = GkLog.getLogger(AbstractTinyGConfigurationPage.class);
 	private TinyGConfiguration configuration;	
 	
 	public AbstractTinyGConfigurationPage(TinyGConfiguration configuration) {		

@@ -27,6 +27,7 @@ public class TinyGConfigurationMotorPage extends AbstractTinyGConfigurationPage{
 		stepAngleFieldEditor.setGroupIdentifier(groupIdentifier);
 		stepAngleFieldEditor.setPreferenceName(TinyGConfiguration.STEP_ANGLE);
 		
+		
 		TinyGBigDecimalSettingFieldEditor travelPerRevolutionFieldEditor = new TinyGBigDecimalSettingFieldEditor(parent, SWT.NONE);
 		travelPerRevolutionFieldEditor.setWidthInChars(11);
 		travelPerRevolutionFieldEditor.setLabelWidthInChar(16);

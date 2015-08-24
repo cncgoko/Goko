@@ -56,8 +56,13 @@ public class GokoPreference extends GkPreference{
 	public static final String DEFAULT_DISTANCE_UNIT = EnumGokoUnit.MILLIMETERS.getCode();
 	/** The precision to display after coma for distance values */
 	public static final String KEY_DISTANCE_DIGIT_COUNT = "distanceDigitCount";
+	/** Boolean defining if updates should be check at start */
+	public static final String KEY_CHECK_UPDATE_STARTUP = "checkUpdateStart";
+	/** Default update on start value */
+	public static final boolean DEFAULT_CHECK_UPDATE_STARTUP = true;
 	/** The default precision to display after coma for distance values  */
 	public static final int DEFAULT_DISTANCE_DIGIT_COUNT = 3;
+	
 	/** Used units */
 	private Map<Dimension, Unit> mapConfiguredUnits;
 
@@ -136,7 +141,9 @@ public class GokoPreference extends GkPreference{
 		getPreferenceStore().setValue(KEY_DISTANCE_DIGIT_COUNT, String.valueOf(digitCount));
 	}
 
-
+	public boolean isCheckUpdateAtStart(){
+		return getBoolean(KEY_CHECK_UPDATE_STARTUP);
+	}
 	public <Q extends Quantity<Q>> String format(BigDecimalQuantity<Q> quantity) throws GkException{
 		Unit<Q> targetUnit = getConfiguredUnit(quantity);
 		BigDecimal newValue = quantity.getValue().setScale(getDigitCount(), RoundingMode.HALF_DOWN);

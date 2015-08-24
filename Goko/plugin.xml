@@ -34,14 +34,21 @@
    <extension
          point="Goko.org.goko.ui.gkPreferencePage">
       <page
+            category="Goko.preferencePages.general"
             class="org.goko.preferences.units.GokoUnitsPreferences"
             id="Goko.preferencePages.general.units"
             name="Units">
       </page>
       <page
             class="org.goko.preferences.units.GokoGeneralPreferences"
-            id=".Goko.preferencePages.general"
+            id="Goko.preferencePages.general"
             name="General">
+      </page>
+      <page
+            category="Goko.preferencePages.general"
+            class="org.goko.preferences.units.GokoUpdatesPreferences"
+            id="Goko.preferencePages.general.updates"
+            name="Updates">
       </page>
    </extension>
    <extension

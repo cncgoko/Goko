@@ -20,6 +20,7 @@ public class GokoPreferenceInitializer extends GkPreferenceInitializer {
 		prefs.setDefault(GokoPreference.KEY_DISTANCE_UNIT, GokoPreference.DEFAULT_DISTANCE_UNIT);		
 		prefs.setDefault(GokoPreference.KEY_DISTANCE_DIGIT_COUNT, GokoPreference.DEFAULT_DISTANCE_DIGIT_COUNT);
 		prefs.setDefault(GokoPreference.KEY_TARGET_BOARD, GokoPreference.DEFAULT_TARGET_BOARD);
+		prefs.setDefault(GokoPreference.KEY_CHECK_UPDATE_STARTUP, GokoPreference.DEFAULT_CHECK_UPDATE_STARTUP);		
 	}
 
 }

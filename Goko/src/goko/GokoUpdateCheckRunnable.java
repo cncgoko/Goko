@@ -113,6 +113,7 @@ public class GokoUpdateCheckRunnable {
                 	// since we switched to the UI thread for interacting with the user
                 	// we need to schedule the provisioning thread, otherwise it would
                 	// be executed also in the UI thread and not in a background thread
+                	provisioningJob.setUser(true); 
                 	provisioningJob.schedule(); 
                 	//provisioningJob.run(sub.newChild(100));
                 }

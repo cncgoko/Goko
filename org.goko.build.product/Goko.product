@@ -827,7 +827,7 @@ Public License instead of this License.  But first, please read
 
    <repositories>
       <repository location="http://update.goko.fr/0.0.2" enabled="true" />
-      <repository location="file://C:/Users/PsyKo/git/Goko/org.goko.build.product/target/repository" enabled="true" />
+      <repository location="file://C:/Users/PsyKo/git/Goko/org.goko.build.product/target/repository" enabled="false" />
    </repositories>
 
 </product>
