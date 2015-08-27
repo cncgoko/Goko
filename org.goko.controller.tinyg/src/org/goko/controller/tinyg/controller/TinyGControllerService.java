@@ -1,5 +1,9 @@
 package org.goko.controller.tinyg.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +18,6 @@ import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
-import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
 import org.goko.controller.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.controller.tinyg.controller.probe.ProbeCallable;
 import org.goko.controller.tinyg.json.TinyGJsonUtils;
@@ -34,6 +37,9 @@ import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.IConnectionService;
+import org.goko.core.connection.serial.ISerialConnection;
+import org.goko.core.connection.serial.ISerialConnectionService;
+import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
@@ -71,7 +77,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
 	/** Connection service */
-	private IConnectionService connectionService;
+	private ISerialConnectionService connectionService;
 	/** GCode service */
 	private IGCodeService gcodeService;
 	/** applicative log service */
@@ -169,12 +175,28 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			throw new GkFunctionalException("TNG-001");				
 		}
 		
+		// Make sure the current connection use the same flow control
+		ISerialConnection connexion = getConnectionService().getCurrentConnection();
+		TinyGConfiguration cfg = getConfiguration();
+		BigDecimal configuredFlowControl = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
+		
+		if(configuredFlowControl.equals(TinyGConfigurationValue.FLOW_CONTROL_RTS_CTS)){ // TinyG expects RtsCts but the serial connection does not use it
+			if((connexion.getFlowControl() & SerialParameter.FLOWCONTROL_RTSCTS) != SerialParameter.FLOWCONTROL_RTSCTS){
+				throw new GkFunctionalException("TNG-005");
+			}
+		}else if(configuredFlowControl.equals(TinyGConfigurationValue.FLOW_CONTROL_XON_XOFF)){ // TinyG expects XonXoff but the serial connection does not use it
+			if((connexion.getFlowControl() & SerialParameter.FLOWCONTROL_XONXOFF) != SerialParameter.FLOWCONTROL_XONXOFF){
+				throw new GkFunctionalException("TNG-006");
+			}
+		}
+		
 		if(isPlannerBufferSpaceCheck()){
 			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
 				throw new GkFunctionalException("TNG-002");
 			}
 		}
 	}
+	
 	public void send(GCodeCommand gCodeCommand) throws GkException{
 		communicator.send(gCodeCommand);
 	}
@@ -185,6 +207,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#isReadyForFileStreaming()
+	 */
 	@Override
 	public boolean isReadyForFileStreaming() throws GkException {
 		return MachineState.READY.equals(getState())
@@ -268,7 +293,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * Returned the available {@link IConnectionService}
 	 * @return the connectionService
 	 */
-	public IConnectionService getConnectionService() {
+	public ISerialConnectionService getConnectionService() {
 		return connectionService;
 	}
 
@@ -276,7 +301,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param connectionService the connectionService to set
 	 * @throws GkException GkException
 	 */
-	public void setConnectionService(IConnectionService connectionService) throws GkException {
+	public void setConnectionService(ISerialConnectionService connectionService) throws GkException {
 		this.connectionService = connectionService;
 		communicator.setConnectionService(connectionService);
 	}
@@ -317,19 +342,19 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
 		// TODO : perform sending in communicator
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
-			if(StringUtils.equals(group.getGroupIdentifier(), TinyGConfiguration.SYSTEM_SETTINGS)){
-				for(TinyGSetting<?> setting : group.getSettings()){
-					JsonObject jsonSetting = TinyGJsonUtils.toJson(setting);
-					if(jsonSetting != null){
-						getConnectionService().send( GkUtils.toBytesList(jsonSetting.toString() + "\r\n") );
-					}
-				}
-			}else{
+//			if(StringUtils.equals(group.getGroupIdentifier(), TinyGConfiguration.SYSTEM_SETTINGS)){
+//				for(TinyGSetting<?> setting : group.getSettings()){
+//					JsonObject jsonSetting = TinyGJsonUtils.toJson(setting);
+//					if(jsonSetting != null){
+//						communicator.send( GkUtils.toBytesList(jsonSetting.toString()) );
+//					}
+//				}
+//			}else{
 				JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
 				if(jsonGroup != null){
-					getConnectionService().send( GkUtils.toBytesList(jsonGroup.toString() + "\r\n") );
+					communicator.send( GkUtils.toBytesList(jsonGroup.toString()) );
 				}
-			}
+			//}
 		}
 	}
 
@@ -817,5 +842,55 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			min.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
 		}
 		return min;
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()
+	 */
+	@Override
+	public String getFileExtension() {	
+		return "tinyg.cfg";
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#canExport()
+	 */
+	@Override
+	public boolean canExport() throws GkException {
+		return MachineState.READY.equals(getState());
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#exportTo(java.io.OutputStream)
+	 */
+	@Override
+	public void exportTo(OutputStream stream) throws GkException {
+		JsonObject json = TinyGJsonUtils.toJson(getConfiguration());
+		try {
+			stream.write(json.toString().getBytes());
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#canImport()
+	 */
+	@Override
+	public boolean canImport() throws GkException {
+		return canExport();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#importFrom(java.io.InputStream)
+	 */
+	@Override
+	public void importFrom(InputStream inputStream) throws GkException {
+		TinyGConfiguration backupCurrentConfiguration = getConfiguration();
+		TinyGConfiguration currentConfiguration = getConfiguration();
+		try {
+			JsonObject jsonCfg = JsonObject.readFrom(new InputStreamReader(inputStream));
+			TinyGControllerUtility.handleConfigurationModification(currentConfiguration, jsonCfg);
+			updateConfiguration(currentConfiguration);
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
 	}
 }

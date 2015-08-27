@@ -289,7 +289,6 @@ public class FeatureSetModelAssembler {
 		TreeIterator<EObject> it = EcoreUtil.getAllContents(addedElements);
 		List<Runnable> commands = new ArrayList<Runnable>();
 
-		// TODO Probably use EcoreUtil.UsageCrossReferencer
 		while (it.hasNext()) {
 			EObject o = it.next();
 

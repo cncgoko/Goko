@@ -4,8 +4,10 @@ import org.goko.controller.tinyg.controller.ITinygControllerService;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.connection.IConnectionService;
+import org.goko.core.connection.serial.ISerialConnectionService;
 import org.goko.core.controller.IContinuousJogService;
+import org.goko.core.controller.IControllerConfigurationFileExporter;
+import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
@@ -50,9 +52,11 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(ICoordinateSystemAdapter.class, service, null);
 		context.registerService(IContinuousJogService.class, service, null);
 		context.registerService(IWorkVolumeProvider.class, service, null);		
+		context.registerService(IControllerConfigurationFileExporter.class, service, null);		
+		context.registerService(IControllerConfigurationFileImporter.class, service, null);		
 				
 		service.setGCodeService(findService(context, IGCodeService.class));
-		service.setConnectionService(findService(context, IConnectionService.class));
+		service.setConnectionService(findService(context, ISerialConnectionService.class));
 		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
 		

@@ -29,18 +29,6 @@ import org.goko.core.common.service.IGokoService;
  * @author PsyKo
  */
 public interface IConnectionService extends IGokoService{
-//	/**
-//	 * Connect using the given parameters
-//	 * @param parameters the connection parameters
-//	 * @throws GkException GkException
-//	 */
-//	void connect(Map<String, Object> parameters) throws GkException;
-//	/**
-//	 * Disconnect using the given parameters
-//	 * @param parameters the connection parameters
-//	 * @throws GkException GkException
-//	 */
-//	void disconnect(Map<String, Object> parameters) throws GkException;
 	/**
 	 * Determines if the service is ready to send data
 	 * @return <code>true</code> if the service is ready, <code>false</code> otherwise

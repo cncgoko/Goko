@@ -46,7 +46,7 @@ public class TinyGBooleanFieldEditor extends BooleanFieldEditor implements ITiny
 	@Override
 	protected void storeValue() throws GkException {		
 		if(getControl().getSelection()){
-			cfg.setSetting(groupIdentifier, preferenceName, true);
+			cfg.setSetting(groupIdentifier, preferenceName, trueValue);
 		}else{
 			cfg.setSetting(groupIdentifier, preferenceName, falseValue);	
 		}

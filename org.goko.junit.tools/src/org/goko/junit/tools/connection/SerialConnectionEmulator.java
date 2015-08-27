@@ -7,6 +7,7 @@ import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
+import org.goko.core.connection.serial.ISerialConnection;
 import org.goko.core.connection.serial.ISerialConnectionService;
 
 public class SerialConnectionEmulator extends ConnectionServiceAdapter implements ISerialConnectionService {
@@ -166,6 +167,14 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	@Override
 	public List<String> getAvailableSerialPort() throws GkException {		
 		return new ArrayList<String>();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#getCurrentConnection()
+	 */
+	@Override
+	public ISerialConnection getCurrentConnection() throws GkException {
+		return null;
 	}
 
 }

@@ -28,6 +28,8 @@ public interface ISerialConnectionService extends IConnectionService {
 	 */
 	void connect(String portName, Integer baudrate, Integer databits, Integer stopBits, Integer parity, Integer flowControl) throws GkException;
 	
+	ISerialConnection getCurrentConnection() throws GkException;
+	
 	/**
 	 * Disconnect the current connection
 	 * @throws GkException GkException

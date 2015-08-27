@@ -23,6 +23,8 @@ import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.controller.IContinuousJogService;
+import org.goko.core.controller.IControllerConfigurationFileExporter;
+import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
@@ -30,7 +32,14 @@ import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
 
-public interface ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService, IWorkVolumeProvider {
+public interface ITinygControllerService extends IControllerService,
+												 IProbingService,
+												 IFourAxisControllerAdapter,
+												 ICoordinateSystemAdapter,
+												 IContinuousJogService,
+												 IWorkVolumeProvider,
+												 IControllerConfigurationFileExporter,
+												 IControllerConfigurationFileImporter{
 
 	/**
 	 * Returns the TinyG configuration

@@ -13,11 +13,19 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8sy2IALVEeWNAc6kezL54A" featurename="commands" parentElementId="goko.application">
     <elements xsi:type="commands:Command" xmi:id="_92VREALVEeWNAc6kezL54A" elementId="org.goko.core.open.menu.command" commandName="Open command"/>
     <elements xsi:type="commands:Command" xmi:id="_SLRO0A-YEeWArr9ccak6ZA" elementId="org.goko.core.command.preferences" commandName="Preferences"/>
+    <elements xsi:type="commands:Command" xmi:id="_FJ5pkEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.command.controller.configuration.export" commandName="Export controller configuration"/>
+    <elements xsi:type="commands:Command" xmi:id="_tXXzEEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.command.controller.configuration.import" commandName="Import controller configuration"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VC_p4A-YEeWArr9ccak6ZA" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_XWYo0A-YEeWArr9ccak6ZA" elementId="org.goko.core.handler.preferences" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_SLRO0A-YEeWArr9ccak6ZA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_KD0l4EtJEeWoH66P5Rv4Fg" elementId="org.goko.core.handler.controller.configuration.export" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ControllerConfigurationFileExporterHandler" command="_FJ5pkEtJEeWoH66P5Rv4Fg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_rRd2gEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.handler.controller.configuration.import" contributionURI="bundleclass://org.goko.core/org.goko.common.handlers.ControllerConfigurationFileImporterHandler" command="_tXXzEEtJEeWoH66P5Rv4Fg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_b2A10A-YEeWArr9ccak6ZA" featurename="children" parentElementId="goko.menu.window" positionInList="">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_tVjO0A-YEeWArr9ccak6ZA" elementId="org.goko.core.handledmenuitem.preferences" label="Preferences" command="_SLRO0A-YEeWArr9ccak6ZA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OX0KoEtJEeWoH66P5Rv4Fg" featurename="children" parentElementId="goko.menu.tools" positionInList="last">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_WGrTwEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.handledmenuitem.exportcontrollerconfiguration" label="Export controller configuration" command="_FJ5pkEtJEeWoH66P5Rv4Fg"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_oU4JkEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.handledmenuitem.importcontrollerconfiguration" label="Import controller configuration" command="_tXXzEEtJEeWoH66P5Rv4Fg"/>
   </fragments>
 </fragment:ModelFragments>

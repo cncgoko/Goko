@@ -71,7 +71,7 @@ public class JsscSerialListenerDeamon implements Runnable, SerialPortEventListen
 				LOG.error(e);
 			}
 		}
-
+		
 	}
 
 	/** (inheritDoc)

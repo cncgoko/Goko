@@ -26,7 +26,7 @@ import org.osgi.service.event.EventHandler;
 public class AutomaticUpdateCheck implements EventHandler{
 	private static GkLog LOG = GkLog.getLogger(AutomaticUpdateCheck.class);	
 	@Inject
-	IProvisioningAgent agent;
+	private IProvisioningAgent agent;
 	@Inject
 	private IProgressMonitor monitor;
 	@Inject

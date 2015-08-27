@@ -19,6 +19,8 @@
  */
 package org.goko.controller.tinyg.service;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -430,6 +432,46 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public Tuple6b findWorkVolumeMaximalPosition() throws GkException {
 		return getCurrentService().findWorkVolumeMaximalPosition();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()
+	 */
+	@Override
+	public String getFileExtension() {		
+		return getCurrentService().getFileExtension();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#canExport()
+	 */
+	@Override
+	public boolean canExport() throws GkException {	
+		return getCurrentService().canExport();		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#exportTo(java.io.OutputStream)
+	 */
+	@Override
+	public void exportTo(OutputStream stream) throws GkException {
+		getCurrentService().exportTo(stream);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#canImport()
+	 */
+	@Override
+	public boolean canImport() throws GkException {
+		return getCurrentService().canImport();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#importFrom(java.io.InputStream)
+	 */
+	@Override
+	public void importFrom(InputStream inputStream) throws GkException {
+		getCurrentService().importFrom(inputStream);		
 	}
 
 }

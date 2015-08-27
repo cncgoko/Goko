@@ -353,6 +353,23 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	 * @param property the name of the property
 	 * @throws GkException GkException
 	 */
+	public void addVisibleBinding(Widget source, String property) throws GkException{
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+
+
+		IObservableValue target = WidgetProperties.visible().observe(source);
+		IObservableValue model = BeansObservables.observeValue(dataModel, property);
+
+		Binding binding = bindingContext.bindValue(target, model);
+		bindings.add(binding);
+	}
+	/**
+	 * Enables/disable the source when the property is respectively true/false
+	 * @param source the UI object
+	 * @param property the name of the property
+	 * @throws GkException GkException
+	 */
 	public void addEnableBinding(ComboViewer source, String property) throws GkException{
 		addEnableBinding(source.getCombo(),  property);
 	}

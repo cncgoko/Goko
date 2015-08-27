@@ -104,6 +104,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	private Button btnCSG59;
 	private Button btnResetCsZero;
 	private Label lblUnit;
+	private Label lblJogStep;
 
 	@Inject
 	public CommandPanelPart(IEclipseContext context) throws GkException {
@@ -147,38 +148,37 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gl_grpManualJog.horizontalSpacing = 4;
 		grpManualJog.setLayout(gl_grpManualJog);
 
-		// /if(getDataModel().isIncrementalJogSupported()){
-		btnIncrementalJog = new Button(grpManualJog, SWT.CHECK);
-		btnIncrementalJog.setEnabled(false);
-		
-		btnIncrementalJog.setText("Incremental jog");
-		// }
+		if(getDataModel().isStepModeChoiceEnabled()){
+			btnIncrementalJog = new Button(grpManualJog, SWT.CHECK);
+			btnIncrementalJog.setEnabled(false);		
+			btnIncrementalJog.setText("Incremental jog");
+		}
 		Composite composite_5 = new Composite(grpManualJog, SWT.NONE);
 		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
 		
 		composite_5.setLayout(new GridLayout(3, false));
 
-		// if(getDataModel().isIncrementalJogSupported()){
-		Label lblJogStep = new Label(composite_5, SWT.NONE);
-		lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblJogStep.setText("Step :");
+		if(getDataModel().isIncrementalJog()){
+			lblJogStep = new Label(composite_5, SWT.NONE);
+			lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+			lblJogStep.setText("Step :");
+			
 		
-
-		jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
-		jogStepSpinner.setMaximum(100000);
-		jogStepSpinner.setMinimum(1);
-		jogStepSpinner.setDigits(GokoPreference.getInstance().getDigitCount());
-		GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpinner.widthHint = 40;
-		jogStepSpinner.setLayoutData(gd_jogSpinner);
-		
-		
-		
-		lblUnit = new Label(composite_5, SWT.NONE);
-		
-		lblUnit.setText("mm");
-		// }
+			jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
+			jogStepSpinner.setMaximum(100000);
+			jogStepSpinner.setMinimum(1);
+			jogStepSpinner.setDigits(GokoPreference.getInstance().getDigitCount());
+			GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+			gd_jogSpinner.widthHint = 40;
+			jogStepSpinner.setLayoutData(gd_jogSpinner);
+			
+			
+			
+			lblUnit = new Label(composite_5, SWT.NONE);
+			
+			lblUnit.setText("mm");
+		}
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
 		lblJogSpeed.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -613,27 +613,33 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnSpindleOff.setLayoutData(gd_btnSpindleOff);
 		
 		getController().initilizeValues();
+		if(getDataModel().getJogSpeed() != null){
+			jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue() * Math.pow(10, jogSpeedSpinner.getDigits())));
+		}
 		initCustomBindings(part);
 		enableAdaptiveSpinner();
 	}
 
 	protected void enableAdaptiveSpinner() {
-		jogStepSpinner.setSelection((int) (getDataModel().getJogIncrement().doubleValue() * Math.pow(10, jogStepSpinner.getDigits())));
-		jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue()  * Math.pow(10, jogSpeedSpinner.getDigits())));
-		jogStepSpinner.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int selection = jogStepSpinner.getSelection();								
-				if (selection < 100) {
-					jogStepSpinner.setIncrement(10);
-				} else if (selection < 1000) {
-					jogStepSpinner.setIncrement(100);
-				} else if (selection < 10000) {
-					jogStepSpinner.setIncrement(1000);
+		if(jogStepSpinner != null){
+			jogStepSpinner.setSelection((int) (getDataModel().getJogIncrement().doubleValue() * Math.pow(10, jogStepSpinner.getDigits())));
+			jogStepSpinner.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					int selection = jogStepSpinner.getSelection();								
+					if (selection < 100) {
+						jogStepSpinner.setIncrement(10);
+					} else if (selection < 1000) {
+						jogStepSpinner.setIncrement(100);
+					} else if (selection < 10000) {
+						jogStepSpinner.setIncrement(1000);
+					}
+					getDataModel().setJogIncrement(BigDecimal.valueOf(selection / Math.pow(10, jogStepSpinner.getDigits())));
 				}
-				getDataModel().setJogIncrement(BigDecimal.valueOf(selection / Math.pow(10, jogStepSpinner.getDigits())));
-			}
-		});
+			});
+		}
+		
+		jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue()  * Math.pow(10, jogSpeedSpinner.getDigits())));		
 		
 		jogSpeedSpinner.setIncrement(10);		
 		jogSpeedSpinner.addSelectionListener(new SelectionAdapter() {
@@ -673,19 +679,25 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
 		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);		
 		
+		if(getDataModel().isStepModeChoiceEnabled()){
+			getController().addEnableBinding(btnIncrementalJog, "stepModeChoiceEnabled");
+			getController().addVisibleBinding(btnIncrementalJog, "stepModeChoiceEnabled");
+			getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
 
-		getController().addEnableBinding(btnIncrementalJog, "stepModeChoiceEnabled");
-		getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
-		//getController().addEnableBinding(jogStepSpinner, "stepSpinnerEnabled");		
-		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
-		//getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);
-		
-		if(getDataModel().isIncrementalJog()){
-			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
-		}else{
-			getController().addEnableBinding(btnIncrementalJog, "incrementalJog");
+			getController().addVisibleBinding(jogStepSpinner, "stepModeChoiceEnabled");
+			getController().addVisibleBinding(lblUnit, "stepModeChoiceEnabled");
+			getController().addVisibleBinding(lblJogStep, "stepModeChoiceEnabled");
+			
+			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);		
+			
+		}else if(getDataModel().isIncrementalJog()){
+			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);		
+			
 		}
 		
+				
+		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
+				
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogYNeg, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogXPos, DefaultControllerAction.JOG_START);

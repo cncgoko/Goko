@@ -108,10 +108,11 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 			this.serialPort.openPort();
 			this.serialPort.setParams(baudrate, databits, stopBits, parity);
 			this.serialPort.setFlowControlMode(flowControl);
+			
 			this.deamon = new JsscSerialListenerDeamon(this);
 			this.serialPort.addEventListener(deamon, getEventMask());
 			LOG.info("Connection successfully established on "+ portName +", baudrate: "+baudrate+", data bits: "+ databits +", parity: "+ parity +",stop bits: "+stopBits);
-			currentConnection = new JsscSerialConnection(portName, baudrate, databits, stopBits, parity);
+			currentConnection = new JsscSerialConnection(portName, baudrate, databits, stopBits, parity, flowControl);
 			// Start the sender thread
 			jsscSender = new JsscSender(this);
 			deamonThread = new Thread(deamon);
@@ -281,7 +282,7 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	}
 
 	protected int getEventMask(){
-        return SerialPort.MASK_RXCHAR + SerialPort.MASK_DSR + SerialPort.MASK_CTS + SerialPort.MASK_ERR;
+        return SerialPort.MASK_RXCHAR + SerialPort.MASK_DSR + SerialPort.MASK_CTS + SerialPort.MASK_ERR + SerialPort.MASK_TXEMPTY;
     }
 
 	/**
@@ -296,12 +297,12 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	public List<String> getAvailableSerialPort() throws GkException {
 		return Arrays.asList(SerialPortList.getPortNames());
 	}
-	
+
 	/** (inheritDoc)
-	 * @see org.goko.tools.serial.jssc.service.IJsscSerialConnectionService#getCurrentConnectionInformation()
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#getCurrentConnection()
 	 */
 	@Override
-	public JsscSerialConnection getCurrentConnectionInformation() throws GkException {
+	public JsscSerialConnection getCurrentConnection() throws GkException {
 		if(!isConnected()){
 			throw new GkFunctionalException("Not connected to any serial device.");
 		}

@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.goko.core.common.GkUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
@@ -42,14 +42,13 @@ public class JsscSender implements Runnable {
 	/** Lock waiting for send permission */
 	private Object clearToSendLock;
 	private boolean stopped;
-
+	
 	/**
 	 * Constructor
 	 * @param serialPort the serial port to use
 	 */
-	public JsscSender(JsscSerialConnectionService jsscService) {
-
-		this.queue = new LinkedBlockingQueue<List<Byte>>();
+	public JsscSender(JsscSerialConnectionService jsscService) {		
+		this.queue = new LinkedBlockingQueue<List<Byte>>();		
 		this.importantQueue = new LinkedBlockingQueue<List<Byte>>();
 		this.jsscService = jsscService;
 
@@ -63,7 +62,7 @@ public class JsscSender implements Runnable {
 	@Override
 	public  void run() {
 
-		while(!stopped){
+		while(!stopped){			
 			if(jsscService.getSerialPort().isOpened()){
 				List<Byte> lst = null;
 				try {
@@ -77,8 +76,9 @@ public class JsscSender implements Runnable {
 				}
 
 				if(lst != null){
-					try {
-						jsscService.getSerialPort().writeString( GkUtils.toString(lst) );
+					try {						 
+						Byte[] bytes = lst.toArray(new Byte[lst.size()]);						
+						jsscService.getSerialPort().writeBytes( ArrayUtils.toPrimitive(bytes) );						
 						jsscService.notifyOutputListeners(lst);
 					} catch (SerialPortException e) {
 						LOG.error(e);
@@ -102,7 +102,7 @@ public class JsscSender implements Runnable {
 	 * @param bytes the list of {@link Byte} to add
 	 */
 	protected void sendBytes(List<Byte> bytes){
-		queue.add(new ArrayList<Byte>(bytes));
+		queue.offer(new ArrayList<Byte>(bytes));
 	}
 
 	/**

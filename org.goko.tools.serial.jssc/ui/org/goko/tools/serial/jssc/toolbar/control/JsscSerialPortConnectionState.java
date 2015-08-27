@@ -84,7 +84,7 @@ public class JsscSerialPortConnectionState implements IConnectionListener {
 			public void run() {
 				if(event == EnumConnectionEvent.CONNECTED){					
 					try {
-						JsscSerialConnection currentConnection = jsscService.getCurrentConnectionInformation();					
+						JsscSerialConnection currentConnection = jsscService.getCurrentConnection();					
 						lblConnection.setImage(ResourceManager.getPluginImage("org.goko.tools.serial.jssc", "resources/icons/network-status.png"));					
 						lblConnectionState.setText("Connected "+currentConnection.getPortName()+" @ "+currentConnection.getBaudrate()+" baud" );
 						lblConnectionState.pack();

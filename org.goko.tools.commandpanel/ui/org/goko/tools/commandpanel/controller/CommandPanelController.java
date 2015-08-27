@@ -102,6 +102,9 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	public void initialize() throws GkException {
 		controllerService.addListener(this);
 		getDataModel().setStepModeChoiceEnabled( continuousJogService != null && stepJogService != null);
+		if(!getDataModel().isStepModeChoiceEnabled()){
+			getDataModel().setIncrementalJog(stepJogService != null);
+		}
 	}
 
 	public void bindEnableControlWithAction(Control widget, String actionId) throws GkException{

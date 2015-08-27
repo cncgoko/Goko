@@ -33,9 +33,7 @@ public class ProblemTreeContentProvider implements ITreeContentProvider, Propert
 	Viewer viewer;
 
 	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
+	public void dispose() {		
 	}
 
 	@Override
@@ -70,8 +68,7 @@ public class ProblemTreeContentProvider implements ITreeContentProvider, Propert
 	}
 
 	@Override
-	public Object getParent(Object element) {
-		// TODO Auto-generated method stub
+	public Object getParent(Object element) {		
 		return null;
 	}
 

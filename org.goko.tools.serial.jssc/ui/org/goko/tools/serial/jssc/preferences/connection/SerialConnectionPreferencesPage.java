@@ -95,8 +95,9 @@ public class SerialConnectionPreferencesPage extends GkFieldEditorPreferencesPag
 
 	private void initFlowControlChoices(ComboFieldEditor field){
 		String[][] baudrateItems = new String[][]{
-				{"RTS/CTS", String.valueOf(SerialParameter.FLOWCONTROL_RTSCTS)},			   
-				{"Xon/Xoff", String.valueOf(SerialParameter.FLOWCONTROL_XONXOFF)}};	   
+				{"Off", String.valueOf(SerialParameter.FLOWCONTROL_NONE)},
+				{"Xon/Xoff", String.valueOf(SerialParameter.FLOWCONTROL_XONXOFF)},
+				{"RTS/CTS", String.valueOf(SerialParameter.FLOWCONTROL_RTSCTS)}};	   
 
 		field.setEntry(baudrateItems);
 	}

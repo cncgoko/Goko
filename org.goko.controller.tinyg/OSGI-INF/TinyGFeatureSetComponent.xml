@@ -4,7 +4,7 @@
    <service>
       <provide interface="org.goko.core.feature.IFeatureSet"/>
    </service>
-   <reference cardinality="1..1" interface="org.goko.core.connection.IConnectionService" name="IConnectionService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.connection.serial.ISerialConnectionService" name="ISerialConnectionService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>

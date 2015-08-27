@@ -1,20 +1,23 @@
 package org.goko.tools.serial.jssc.service;
 
-public class JsscSerialConnection {
+import org.goko.core.connection.serial.ISerialConnection;
+
+public class JsscSerialConnection implements ISerialConnection{
 	private String  portName;
-	private Integer baudrate;
-	private Integer databits;
-	private Integer stopbits;
-	private Integer parity 	;
+	private int baudrate;
+	private int databits;
+	private int stopbits;
+	private int parity;
+	private int flowControl;
 	
-	
-	public JsscSerialConnection(String portName, Integer baudrate, Integer databits, Integer stopbits, Integer parity) {
+	public JsscSerialConnection(String portName, int baudrate, int databits, int stopbits, int parity, int flowControl) {
 		super();
 		this.portName = portName;
 		this.baudrate = baudrate;
 		this.databits = databits;
 		this.stopbits = stopbits;
 		this.parity = parity;
+		this.flowControl = flowControl;
 	}
 	/**
 	 * @return the portName
@@ -31,51 +34,62 @@ public class JsscSerialConnection {
 	/**
 	 * @return the baudrate
 	 */
-	public Integer getBaudrate() {
+	public int getBaudrate() {
 		return baudrate;
 	}
 	/**
 	 * @param baudrate the baudrate to set
 	 */
-	public void setBaudrate(Integer baudrate) {
+	public void setBaudrate(int baudrate) {
 		this.baudrate = baudrate;
 	}
 	/**
 	 * @return the databits
 	 */
-	public Integer getDatabits() {
+	public int getDatabits() {
 		return databits;
 	}
 	/**
 	 * @param databits the databits to set
 	 */
-	public void setDatabits(Integer databits) {
+	public void setDatabits(int databits) {
 		this.databits = databits;
 	}
 	/**
 	 * @return the stopbits
 	 */
-	public Integer getStopbits() {
+	public int getStopbits() {
 		return stopbits;
 	}
 	/**
 	 * @param stopbits the stopbits to set
 	 */
-	public void setStopbits(Integer stopbits) {
+	public void setStopbits(int stopbits) {
 		this.stopbits = stopbits;
 	}
 	/**
 	 * @return the parity
 	 */
-	public Integer getParity() {
+	public int getParity() {
 		return parity;
 	}
 	/**
 	 * @param parity the parity to set
 	 */
-	public void setParity(Integer parity) {
+	public void setParity(int parity) {
 		this.parity = parity;
 	}
-	
+	/**
+	 * @return the flowControl
+	 */
+	public int getFlowControl() {
+		return flowControl;
+	}
+	/**
+	 * @param flowControl the flowControl to set
+	 */
+	public void setFlowControl(int flowControl) {
+		this.flowControl = flowControl;
+	}
 	
 }

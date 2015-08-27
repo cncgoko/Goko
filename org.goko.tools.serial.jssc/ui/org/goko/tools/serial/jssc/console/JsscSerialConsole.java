@@ -203,7 +203,7 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		if(getDataModel() != null){
 			part.getPersistedState().put(CONSOLE_ENABLED, String.valueOf(getDataModel().isConsoleEnabled()));
 			part.getPersistedState().put(CONSOLE_SCROLL_LOCKED, String.valueOf(getDataModel().isScrollLock()));
-			part.getPersistedState().put(CONSOLE_END_LINE_TOKEN, String.valueOf(getDataModel().getEndLineToken()));
+			part.getPersistedState().put(CONSOLE_END_LINE_TOKEN, String.valueOf(getDataModel().getEndLineToken().getValue()));
 		}
 	}
 

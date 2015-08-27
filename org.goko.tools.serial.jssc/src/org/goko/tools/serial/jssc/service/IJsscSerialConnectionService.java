@@ -33,5 +33,9 @@ public interface IJsscSerialConnectionService extends ISerialConnectionService {
 	 */
 	List<String> getAvailableSerialPort() throws GkException;
 	
-	JsscSerialConnection getCurrentConnectionInformation() throws GkException;
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.serial.ISerialConnectionService#getCurrentConnection()
+	 */
+	@Override
+	JsscSerialConnection getCurrentConnection() throws GkException;
 }
