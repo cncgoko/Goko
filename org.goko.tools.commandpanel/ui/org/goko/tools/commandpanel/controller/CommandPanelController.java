@@ -75,25 +75,6 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Optional
 	private IStepJogService stepJogService;
 
-	@Inject	
-	public void initServices(){
-		// tinyg
-//		try {
-//			Bundle bundle = FrameworkUtil.getBundle(this.getClass());
-//			BundleContext context = bundle.getBundleContext();
-//			List<ServiceReference<IControllerService>> serviceReferences = new ArrayList<ServiceReference<IControllerService>>();
-//			serviceReferences.addAll( context.getServiceReferences(IControllerService.class, "(targetBoard=tinyg)") );
-//			
-//			String filterString = "(targetBoard=tinyg)";
-//			
-//		   	context.getServiceReferences(IControllerService.class, filterString);
-//		   	controllerService = context.getService(serviceReferences.get(0));
-//			
-//		} catch (InvalidSyntaxException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	}
 	public CommandPanelController(CommandPanelModel binding) {
 		super(binding);
 	}

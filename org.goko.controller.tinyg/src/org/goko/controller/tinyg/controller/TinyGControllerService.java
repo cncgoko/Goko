@@ -154,10 +154,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
-		checkExecutionControl();
-		if(!getConnectionService().isConnected()){
-			throw new GkFunctionalException("TNG-002");
+		if(!isReadyForFileStreaming()){
+			throw new GkFunctionalException("TNG-003");
 		}
+		checkExecutionControl();		
 		updateQueueReport();
 		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
 		token.setMonitorService(getMonitorService());

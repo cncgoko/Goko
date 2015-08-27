@@ -7,7 +7,6 @@ import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
-import org.goko.core.connection.serial.ISerialConnection;
 import org.goko.core.connection.serial.ISerialConnectionService;
 
 public class SerialConnectionEmulator extends ConnectionServiceAdapter implements ISerialConnectionService {
@@ -17,12 +16,14 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	private List<List<Byte>> sentBuffer;
 	/** End line character */
 	private char endChararacter = '\n';
-	
+	private EmulatedSerialConnection currentConnection;
+	 
 	/**
 	 * Constructor 
 	 */
 	public SerialConnectionEmulator() {
 		sentBuffer = new ArrayList<List<Byte>>();
+		currentConnection = new EmulatedSerialConnection();
 	}
 	
 	/** {@inheritDoc}
@@ -173,8 +174,15 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	 * @see org.goko.core.connection.serial.ISerialConnectionService#getCurrentConnection()
 	 */
 	@Override
-	public ISerialConnection getCurrentConnection() throws GkException {
-		return null;
+	public EmulatedSerialConnection getCurrentConnection() throws GkException {
+		return currentConnection;
+	}
+
+	/**
+	 * @param currentConnection the currentConnection to set
+	 */
+	public void setCurrentConnection(EmulatedSerialConnection currentConnection) {
+		this.currentConnection = currentConnection;
 	}
 
 }

@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository version='1.1.0'?>
 <artifacts size='1'>
-  <artifact classifier='osgi.bundle' id='org.goko.junit.tools' version='0.0.1.201508171758'>
+  <artifact classifier='osgi.bundle' id='org.goko.junit.tools' version='0.0.1.201508241938'>
     <properties size='5'>
-      <property name='artifact.size' value='8860'/>
-      <property name='download.size' value='8860'/>
+      <property name='artifact.size' value='8862'/>
+      <property name='download.size' value='8862'/>
       <property name='maven-groupId' value='org.goko'/>
       <property name='maven-artifactId' value='org.goko.junit.tools'/>
       <property name='maven-version' value='0.0.1-SNAPSHOT'/>

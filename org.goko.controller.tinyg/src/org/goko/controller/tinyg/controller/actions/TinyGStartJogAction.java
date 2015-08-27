@@ -20,7 +20,6 @@
 package org.goko.controller.tinyg.controller.actions;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.goko.controller.tinyg.controller.EnumTinyGAxis;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.action.DefaultControllerAction;
@@ -50,11 +49,8 @@ public class TinyGStartJogAction extends AbstractTinyGControllerAction {
 	 * @see org.goko.core.controller.action.IGkControllerAction#execute(java.lang.String[])
 	 */
 	@Override
-	public void execute(Object... parameters) throws GkException {
-		String 			axis 	 = getStringParameter(parameters[0]);
-		EnumTinyGAxis 	enumAxis = EnumTinyGAxis.getEnum(axis);
-		String 			feed 	 = getStringParameter(parameters[1]);
-	//	getControllerService().startJog(enumAxis, feed);
+	public void execute(Object... parameters) throws GkException {		
+		// Nothing to execute here. The jog is done using the IContinuousJogService implementation in TinyG
 	}
 
 	/** (inheritDoc)

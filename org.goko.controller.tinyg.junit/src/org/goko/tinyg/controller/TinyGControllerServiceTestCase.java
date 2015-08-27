@@ -7,9 +7,11 @@ import java.math.BigDecimal;
 
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
+import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.US;
+import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.rs274ngcv3.RS274GCodeService;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
@@ -84,7 +86,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		// Emulate the reception of the GCode context
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2},\"f\":[1,0,0,0]}");
-		
+		serialEmulator.getCurrentConnection().setFlowControl(SerialParameter.FLOWCONTROL_RTSCTS);
 		tinyg.setPlannerBufferSpaceCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(new BigDecimal("2"), tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
@@ -122,6 +124,52 @@ public class TinyGControllerServiceTestCase extends TestCase {
 	}
 	
 	/**
+	 * Context : TinyG has a flow control enabled but it's not the same as the currently active serial connection
+	 * Result  : TinyG throws an exception. Flow control on TinyG and Serial connection have to match
+	 * @throws Exception
+	 */
+	public void testNonMatchingFlowControlRtsCts() throws Exception{
+		// Emulate the reception of the GCode context
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2},\"f\":[1,0,0,0]}");
+		
+		tinyg.setPlannerBufferSpaceCheck(true);
+		// Let's check that flow control is enabled
+		assertEquals(TinyGConfigurationValue.FLOW_CONTROL_RTS_CTS, tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
+		
+		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());
+		try{
+			tinyg.executeGCode(motionCode);
+			fail();
+		}catch(GkFunctionalException e){
+			AssertGkFunctionalException.assertException(e, "TNG-005");
+		}
+	}
+	
+	/**
+	 * Context : TinyG has a flow control enabled but it's not the same as the currently active serial connection
+	 * Result  : TinyG throws an exception. Flow control on TinyG and Serial connection have to match
+	 * @throws Exception
+	 */
+	public void testNonMatchingFlowControlXonXoff() throws Exception{
+		// Emulate the reception of the GCode context
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":1},\"f\":[1,0,0,0]}");
+		
+		tinyg.setPlannerBufferSpaceCheck(true);
+		// Let's check that flow control is enabled
+		assertEquals(TinyGConfigurationValue.FLOW_CONTROL_XON_XOFF, tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
+		
+		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());
+		try{
+			tinyg.executeGCode(motionCode);
+			fail();
+		}catch(GkFunctionalException e){
+			AssertGkFunctionalException.assertException(e, "TNG-006");
+		}
+	}
+	
+	/**
 	 * Context : We try to move to the given absolute position
 	 * Result  : TinyG performs the motion 
 	 * @throws Exception
@@ -133,7 +181,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2},\"f\":[1,0,0,0]}");		
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"qv\":2},\"f\":[1,0,0,0]}");
-		
+		serialEmulator.getCurrentConnection().setFlowControl(SerialParameter.FLOWCONTROL_RTSCTS);
 		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());		
 		tinyg.executeGCode(motionCode);
 		

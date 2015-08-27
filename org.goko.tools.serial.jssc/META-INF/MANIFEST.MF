@@ -30,3 +30,4 @@ Require-Bundle: org.goko.core,
  org.eclipse.jface;bundle-version="3.10.1"
 Service-Component: OSGI-INF/JsscSerialConnectionService.xml
 Bundle-Activator: org.goko.tools.serial.jssc.internal.JsscSerialActivator
+Export-Package: org.goko.tools.serial.jssc.service
