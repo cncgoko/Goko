@@ -85,7 +85,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 	public void testNoMotionControlEnabled() throws Exception{
 		// Emulate the reception of the GCode context
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
-		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2},\"f\":[1,0,0,0]}");
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2, \"jv\":5},\"f\":[1,0,0,0]}");
 		serialEmulator.getCurrentConnection().setFlowControl(SerialParameter.FLOWCONTROL_RTSCTS);
 		tinyg.setPlannerBufferSpaceCheck(true);
 		// Let's check that flow control is enabled
@@ -181,6 +181,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2},\"f\":[1,0,0,0]}");		
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"qv\":2},\"f\":[1,0,0,0]}");
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"jv\":5},\"f\":[1,0,0,0]}");
 		serialEmulator.getCurrentConnection().setFlowControl(SerialParameter.FLOWCONTROL_RTSCTS);
 		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());		
 		tinyg.executeGCode(motionCode);
