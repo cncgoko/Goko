@@ -26,6 +26,9 @@ public class TinyGConfigurationValue {
 	public static final BigDecimal QUEUE_REPORT_FILTERED	= new BigDecimal("1");
 	public static final BigDecimal QUEUE_REPORT_VERBOSE		= new BigDecimal("2");
 
+	public static final BigDecimal JSON_VERBOSITY_VERBOSE			= new BigDecimal("5");
+	
+	
 	public static final BigDecimal FLOW_CONTROL_OFF			= BigDecimal.ZERO;
 	public static final BigDecimal FLOW_CONTROL_XON_XOFF	= new BigDecimal("1");
 	public static final BigDecimal FLOW_CONTROL_RTS_CTS		= new BigDecimal("2");

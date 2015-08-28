@@ -3,14 +3,21 @@
  */
 package goko;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.ProgressProvider;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.internal.TargetBoardTracker;
 
@@ -48,5 +55,17 @@ public class GokoLifeCycleManager {
 		// Create auto update check
 		AutomaticUpdateCheck updater = ContextInjectionFactory.make(AutomaticUpdateCheck.class, context);		
 		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, updater);
+	}
+	
+	/**
+	 * Sets the JFace dialog default image to the icon of the main shell
+	 * @param shell the active shell
+	 */
+	@Inject
+	@Optional
+	public void updateIcons(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell){
+		if(shell != null){
+			Dialog.setDefaultImage(shell.getImage());
+		}
 	}
 }

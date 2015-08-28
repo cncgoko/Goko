@@ -31,6 +31,7 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.swt.widgets.Shell;
+import org.goko.common.dialog.GkWarningDialog;
 import org.goko.controller.tinyg.configuration.TinyGConfigurationAxisMainPage;
 import org.goko.controller.tinyg.configuration.TinyGConfigurationAxisPage;
 import org.goko.controller.tinyg.configuration.TinyGConfigurationCommunicationPage;
@@ -43,6 +44,7 @@ import org.goko.controller.tinyg.controller.ITinygControllerService;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.log.GkLog;
@@ -54,6 +56,7 @@ import org.goko.core.log.GkLog;
  */
 public class TinyGConfigurationOpenHandler {
 	private static final GkLog LOG = GkLog.getLogger(TinyGConfigurationOpenHandler.class);
+	
 	@CanExecute
 	public boolean canExecute(IControllerService controllerService, IConnectionService connectionService){
 		try {
@@ -66,7 +69,8 @@ public class TinyGConfigurationOpenHandler {
 	}
 	
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, ITinygControllerService service, IEclipseContext context) throws GkException {		
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) final Shell shell, ITinygControllerService service, IEclipseContext context) throws GkException {		
+				
 		PreferenceManager manager = new PreferenceManager('/');
 		TinyGConfiguration cfg = service.getConfiguration();		
 		manager.addToRoot(new PreferenceNode("org.goko.controller.tinyg.1.device", 		new TinyGConfigurationDevicePage(cfg)));
@@ -84,12 +88,19 @@ public class TinyGConfigurationOpenHandler {
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.c.zaxis" , 		new TinyGConfigurationAxisPage(cfg, "Z Axis", TinyGConfiguration.Z_AXIS_SETTINGS)));
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.d.aaxis" , 		new TinyGConfigurationAxisPage(cfg, "A Axis", TinyGConfiguration.A_AXIS_SETTINGS)));
 		
-		PreferenceDialog dialog = new PreferenceDialog(shell, manager);		
+		PreferenceDialog dialog = new PreferenceDialog(shell, manager);
+		
 		int result = dialog.open();
 		
 		if(result == Dialog.OK){
-			//le apply n'est pas géré. Voir comment il est géré dans les GkFieldEditorPreferencePage
-			service.updateConfiguration(cfg);
+			try{				
+				service.updateConfiguration(cfg);
+			}catch(GkFunctionalException e){
+//				Status status = new Status(IStatus.ERROR, "Goko", e.getLocalizedMessage());			      
+//				ErrorDialog.openError(shell, "Error", null, status);
+				LOG.log(e);
+				GkWarningDialog.openDialog(shell, e);				
+			}
 		}
 		
 	}

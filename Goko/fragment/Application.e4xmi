@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_wyBcoNwYEeKC274TynxXSA" elementId="goko.application" bindingContexts="_wyBcodwYEeKC274TynxXSA">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" iconURI="platform:/plugin/Goko/icons/launch/goko32.png" width="500" height="400">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" iconURI="platform:/plugin/Goko/icons/launch/goko16.png" width="500" height="400">
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_wyCDw9wYEeKC274TynxXSA" elementId="goko.perspectivestack.main">
       <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main" label="Test">
         <children xsi:type="basic:PartSashContainer" xmi:id="_wyCDxdwYEeKC274TynxXSA" elementId="goko.partsashcontainer.main">

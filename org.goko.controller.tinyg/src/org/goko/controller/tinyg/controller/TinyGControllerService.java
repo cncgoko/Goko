@@ -157,7 +157,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(!isReadyForFileStreaming()){
 			throw new GkFunctionalException("TNG-003");
 		}
-		checkExecutionControl();		
+		checkExecutionControl();
+		checkVerbosity(configuration);
 		updateQueueReport();
 		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
 		token.setMonitorService(getMonitorService());
@@ -166,8 +167,21 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return token;
 	}
 
+	private void checkVerbosity(TinyGConfiguration cfg) throws GkException{
+		BigDecimal jsonVerbosity = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.JSON_VERBOSITY, BigDecimal.class);
+		if(!ObjectUtils.equals(jsonVerbosity, TinyGConfigurationValue.JSON_VERBOSITY_VERBOSE)){
+			throw new GkFunctionalException("TNG-007");
+		}
+
+		BigDecimal qrVerbosity = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.QUEUE_REPORT_VERBOSITY, BigDecimal.class);
+		
+		if(isPlannerBufferSpaceCheck()){
+			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
+				throw new GkFunctionalException("TNG-002");
+			}
+		}
+	}
 	private void checkExecutionControl() throws GkException{
-		BigDecimal qrVerbosity = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.QUEUE_REPORT_VERBOSITY, BigDecimal.class);
 		BigDecimal flowControl = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
 
 		// We always need to use flow control
@@ -187,12 +201,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}else if(configuredFlowControl.equals(TinyGConfigurationValue.FLOW_CONTROL_XON_XOFF)){ // TinyG expects XonXoff but the serial connection does not use it
 			if((connexion.getFlowControl() & SerialParameter.FLOWCONTROL_XONXOFF) != SerialParameter.FLOWCONTROL_XONXOFF){
 				throw new GkFunctionalException("TNG-006");
-			}
-		}
-		
-		if(isPlannerBufferSpaceCheck()){
-			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
-				throw new GkFunctionalException("TNG-002");
 			}
 		}
 	}
@@ -337,6 +345,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void updateConfiguration(TinyGConfiguration cfg) throws GkException {
+		checkVerbosity(cfg);
 		// Let's only change the new values
 		// The new value will be applied directly to TinyG. The changes will be reported in the data model when TinyG sends them back for confirmation.
 		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
@@ -856,7 +865,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public boolean canExport() throws GkException {
-		return MachineState.READY.equals(getState());
+		return MachineState.READY.equals(getState())
+				|| MachineState.PROGRAM_STOP.equals(getState())
+				|| MachineState.PROGRAM_END.equals(getState());
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#exportTo(java.io.OutputStream)

@@ -287,7 +287,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		btnSendFile.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent event) {
-				try {
+				try {					
 					progressSentCommand.setState(SWT.NORMAL);				
 					getController().startFileStreaming();
 				} catch (GkFunctionalException e) {

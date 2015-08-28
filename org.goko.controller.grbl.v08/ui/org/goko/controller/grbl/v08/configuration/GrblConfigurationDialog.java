@@ -70,7 +70,7 @@ public class GrblConfigurationDialog extends GkUiDialogComponent<GrblConfigurati
 	private Button p17check;
 	
 	public GrblConfigurationDialog(Shell shell, IEclipseContext context) throws GkException {
-		super(shell, new GrblConfigurationController());
+		super(shell, new GrblConfigurationController());		
 		ContextInjectionFactory.inject(getController(), context);
 		getController().initialize();
 
@@ -79,7 +79,7 @@ public class GrblConfigurationDialog extends GkUiDialogComponent<GrblConfigurati
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Grbl Configuration");
+		newShell.setText("Grbl Configuration");		
 	}
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)

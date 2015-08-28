@@ -224,6 +224,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	}
 
 	public void startFileStreaming() throws GkException{
+		
 		GCodeExecutionToken token = controllerService.executeGCode(getDataModel().getGcodeProvider());
 		if(getDataModel().getGcodeProvider() != null){
 			workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
