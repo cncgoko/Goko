@@ -31,11 +31,13 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
+import org.goko.common.dialog.GkDialog;
 import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.event.GokoTopic;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
@@ -135,14 +137,14 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			getDataModel().setFileLastUpdate( sdf.format( file.lastModified() ) );
 			parseFile();
-			setFileSize(file.length());
-
+			setFileSize(file.length());			
 		}catch(GkException e){
+			LOG.error(e);
 			getDataModel().setFileName( StringUtils.EMPTY );
 			getDataModel().setFilePath( StringUtils.EMPTY);
 			getDataModel().setFileLastUpdate( StringUtils.EMPTY );
 			getDataModel().setFileSize( StringUtils.EMPTY );
-			getDataModel().setgCodeDocument(null);
+			getDataModel().setgCodeDocument(null);			
 			throw e;
 		}
 		updateStreamingAllowed();
@@ -382,9 +384,14 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void handleEvent(Event event) {
 		try {
 			String filepath = (String) event.getProperty(GokoTopic.File.PROPERTY_FILEPATH);
-			setGCodeFilepath(filepath);					
+			setGCodeFilepath(filepath);
+		} catch (GkFunctionalException e) {
+			LOG.log(e);
+			GkDialog.openDialog(e);
 		} catch (GkException e) {					
 			LOG.error(e);
+			GkDialog.openDialog(e);
+			
 		}
 	}
 }

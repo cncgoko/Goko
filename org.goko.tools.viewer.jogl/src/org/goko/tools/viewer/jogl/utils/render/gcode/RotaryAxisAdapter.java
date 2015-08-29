@@ -64,6 +64,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 		Vector3f rotationAxis = JoglViewerPreference.getInstance().getRotaryAxisDirectionVector();
 		modelViewMatrix.glRotatef(-angle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
 		backedRenderer.render(gl, modelViewMatrix);
+		modelViewMatrix.glRotatef(angle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
 	}
 
 	/** (inheritDoc)

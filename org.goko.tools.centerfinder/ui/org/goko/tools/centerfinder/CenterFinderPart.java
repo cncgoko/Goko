@@ -26,13 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -50,6 +47,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
+import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
@@ -138,12 +136,10 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 					getController().grabPoint();
 				}catch(GkFunctionalException e){
 					LOG.warn(e.getLocalizedMessage());
-					IStatus status = new Status(IStatus.WARNING, "org.goko.tools.centerfinder", e.getLocalizedMessage());      
-					ErrorDialog.openError(null, "Warning", null, status);
+					GkDialog.openDialog(e);		
 				}catch(GkException e){
 					LOG.error(e.getLocalizedMessage());
-					IStatus status = new Status(IStatus.ERROR, "org.goko.tools.centerfinder", e.getLocalizedMessage());      
-					ErrorDialog.openError(null, "Error", null, status);
+					GkDialog.openDialog(e);
 				}
 			}
 		});

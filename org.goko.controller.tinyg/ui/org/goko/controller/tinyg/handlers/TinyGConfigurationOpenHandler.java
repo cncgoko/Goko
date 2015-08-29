@@ -31,7 +31,7 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.swt.widgets.Shell;
-import org.goko.common.dialog.GkWarningDialog;
+import org.goko.common.dialog.GkDialog;
 import org.goko.controller.tinyg.configuration.TinyGConfigurationAxisMainPage;
 import org.goko.controller.tinyg.configuration.TinyGConfigurationAxisPage;
 import org.goko.controller.tinyg.configuration.TinyGConfigurationCommunicationPage;
@@ -96,10 +96,8 @@ public class TinyGConfigurationOpenHandler {
 			try{				
 				service.updateConfiguration(cfg);
 			}catch(GkFunctionalException e){
-//				Status status = new Status(IStatus.ERROR, "Goko", e.getLocalizedMessage());			      
-//				ErrorDialog.openError(shell, "Error", null, status);
 				LOG.log(e);
-				GkWarningDialog.openDialog(shell, e);				
+				GkDialog.openDialog(shell, e);				
 			}
 		}
 		

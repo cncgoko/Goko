@@ -137,6 +137,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	protected void postConstruct() throws GkException{
 		monitorService.addExecutionListener(this);		
 	}
+	
 	private void startFileParsingJob(final String filePath) {
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
 		try {
@@ -147,8 +148,10 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 					monitor.worked(30);
 					try {
 						getController().setGCodeFilepath(filePath);						
+					} catch (GkFunctionalException e) {
+						LOG.log(e);						
 					} catch (GkException e) {
-						displayError(e);
+						LOG.error(e);						
 					}
 					monitor.done();
 				}

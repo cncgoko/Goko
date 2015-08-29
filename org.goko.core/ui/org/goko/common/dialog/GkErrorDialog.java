@@ -14,30 +14,29 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.ResourceManager;
-import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.exception.GkException;
 
 /**
  * @author PsyKo
  *
  */
-public class GkWarningDialog extends Dialog {
-	private GkFunctionalException exception;
+public class GkErrorDialog extends Dialog {
+	private GkException exception;
 	
 	/**
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	GkWarningDialog(Shell parentShell, GkFunctionalException e) {
+	GkErrorDialog(Shell parentShell, GkException e) {
 		super(parentShell);
 		setShellStyle(SWT.TITLE);
 		this.exception = e;
 	}
 
 
-	static int openDialog(Shell parentShell, GkFunctionalException e){
-		return new GkWarningDialog(parentShell,e).open();
-	}
-	
+	public static int openDialog(Shell parentShell, GkException e){
+		return new GkErrorDialog(parentShell,e).open();
+	}	
 	/**
 	 * Create contents of the dialog.
 	 * @param parent
@@ -52,7 +51,7 @@ public class GkWarningDialog extends Dialog {
 		
 		Label label = new Label(container, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-		label.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/Warning.png"));
+		label.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/errorCross.png"));
 		
 		Label lblWarningMessage = new Label(container, SWT.WRAP);
 		lblWarningMessage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
