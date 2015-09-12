@@ -36,6 +36,7 @@ import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.connection.serial.ISerialConnection;
 import org.goko.core.connection.serial.ISerialConnectionService;
@@ -646,8 +647,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		executeGCode(command);
 	}
 
-	protected String getPositionAsString(BigDecimalQuantity<Length> q){
-		return String.valueOf(q.to(getCurrentUnit()).getValue());
+	protected String getPositionAsString(BigDecimalQuantity<Length> q) throws GkException{
+		return GokoPreference.getInstance().format(q.to(getCurrentUnit()), true, false);
 	}
 	/**
 	 * @param logListenerService the logListenerService to set

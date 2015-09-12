@@ -8,8 +8,10 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.serial.ISerialConnectionService;
+import org.goko.core.log.GkLog;
 
 public class SerialConnectionEmulator extends ConnectionServiceAdapter implements ISerialConnectionService {
+	private static final GkLog LOG = GkLog.getLogger(SerialConnectionEmulator.class);
 	/** Connected state */
 	private boolean connected;
 	/** Output buffer */
@@ -91,7 +93,8 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	@Override
 	public void send(List<Byte> data, DataPriority priority) throws GkException {
 		sentBuffer.add(data);
-		notifyOutputListeners(data);	
+		notifyOutputListeners(data);
+		
 	}
 
 	/** {@inheritDoc}
@@ -100,7 +103,8 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	@Override
 	public void send(List<Byte> data) throws GkException {
 		sentBuffer.add(data);
-		notifyOutputListeners(data);		
+		notifyOutputListeners(data);	
+		LOG.info("Out: ["+GkUtils.toString(data)+"]");
 	}
 
 	/** {@inheritDoc}

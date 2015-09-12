@@ -13,6 +13,7 @@ import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.US;
 import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.rs274ngcv3.RS274GCodeService;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
 import org.goko.junit.tools.connection.AssertSerialEmulator;
@@ -22,7 +23,7 @@ import junit.framework.TestCase;
 
 /*
  
-  {"r":{"fv":0.970,"fb":435.10,"hp":1,"hv":8,"id":"9H3583-PXN","msg":"SYSTEM READY"},"f":[1,0,0,3412]}
+{"r":{"fv":0.970,"fb":435.10,"hp":1,"hv":8,"id":"9H3583-PXN","msg":"SYSTEM READY"},"f":[1,0,0,3412]}
 {"qr":28,"qi":1,"qo":1}
 {"r":{"sr":{"line":0,"posx":0.000,"posy":0.000,"posz":0.000,"posa":0.000,"feed":0.00,"vel":0.00,"unit":1,"coor":1,"dist":0,"frmo":1,"momo":4,"stat":1}},"f":[1,0,10,8936]}
 {"sr":{"line":0,"posx":0.000,"posy":0.000,"posz":0.000,"posa":0.000,"feed":0.00,"vel":0.00,"unit":1,"coor":1,"dist":0,"frmo":1,"momo":4,"stat":1}}
@@ -211,9 +212,28 @@ public class TinyGControllerServiceTestCase extends TestCase {
 	public void testUnsupportedAction() throws Exception{	
 		try{
 			tinyg.getControllerAction("INCONNU");
+			fail();
 		}catch(GkFunctionalException e){
 			AssertGkFunctionalException.assertException(e, "TNG-004", "INCONNU", "TinyG Controller");
 		}
+	}
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void testResetCurrentCoordinateSystem() throws Exception{		
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();			
+
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"posx\":15.031,\"posy\":35.000,\"posz\":-16.031}},\"f\":[1,0,0,0]}");
+		// Enable G55 
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"coor\":2}},\"f\":[1,0,0,0]}"); 
+			
+		assertEquals(EnumCoordinateSystem.G55, tinyg.getCurrentCoordinateSystem());
+		tinyg.resetCurrentCoordinateSystem();		
+		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"G55\":{\"x\":15.031, \"y\":35.000, \"z\":-16.031}} "+'\n', 10000);
 	}
 	
 	/** (inheritDoc)
