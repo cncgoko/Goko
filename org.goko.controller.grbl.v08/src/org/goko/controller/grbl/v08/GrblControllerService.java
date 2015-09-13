@@ -517,7 +517,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal)
 	 */
 	@Override	
-	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {
+	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {		
 		String oldDistanceMode = "G90";
 		if(grblState.getDistanceMode() == EnumGCodeCommandDistanceMode.RELATIVE){
 			oldDistanceMode = "G91";
@@ -787,14 +787,14 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/**
 	 * @return the monitorService
 	 */
-	protected IGCodeExecutionMonitorService getMonitorService() {
+	public IGCodeExecutionMonitorService getMonitorService() {
 		return monitorService;
 	}
 
 	/**
 	 * @param monitorService the monitorService to set
 	 */
-	protected void setMonitorService(IGCodeExecutionMonitorService monitorService) {
+	public void setMonitorService(IGCodeExecutionMonitorService monitorService) {
 		this.monitorService = monitorService;
 	}
 
