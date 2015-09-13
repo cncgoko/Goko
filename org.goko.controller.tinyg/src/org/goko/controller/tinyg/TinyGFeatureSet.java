@@ -11,6 +11,7 @@ import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
+import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.feature.IFeatureSet;
@@ -50,6 +51,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IProbingService.class, service, null);
 		context.registerService(IFourAxisControllerAdapter.class, service, null);
 		context.registerService(ICoordinateSystemAdapter.class, service, null);
+		context.registerService(IJogService.class, service, null);
 		context.registerService(IContinuousJogService.class, service, null);
 		context.registerService(IWorkVolumeProvider.class, service, null);		
 		context.registerService(IControllerConfigurationFileExporter.class, service, null);		

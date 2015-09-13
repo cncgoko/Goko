@@ -26,8 +26,6 @@ import org.goko.controller.grbl.v08.GrblControllerService;
 import org.goko.controller.grbl.v08.GrblMachineState;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
@@ -65,8 +63,8 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 		EnumControllerAxis 	enumAxis = EnumControllerAxis.getEnum(axis);
 		BigDecimal 			feed 	 = new BigDecimal(getStringParameter(parameters[1]));
 		Unit<Length> unit = getControllerService().getCurrentGCodeContext().getUnit().getUnit();
-		BigDecimalQuantity<Length>	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
-		getControllerService().startJog(enumAxis, feed, step);
+		//BigDecimalQuantity<Length>	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
+		getControllerService().startJog(enumAxis, feed);
 	}
 
 	/** (inheritDoc)

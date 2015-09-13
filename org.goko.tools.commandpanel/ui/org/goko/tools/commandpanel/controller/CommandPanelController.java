@@ -19,6 +19,8 @@
  */
 package org.goko.tools.commandpanel.controller;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 
 import javax.inject.Inject;
@@ -28,7 +30,6 @@ import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -38,6 +39,7 @@ import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -61,7 +63,7 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author PsyKo
  *
  */
-public class CommandPanelController  extends AbstractController<CommandPanelModel> {
+public class CommandPanelController  extends AbstractController<CommandPanelModel> implements PropertyChangeListener {
 	private final static GkLog LOG = GkLog.getLogger(CommandPanelController.class);
 	@Inject
 	private IControllerService controllerService;
@@ -77,6 +79,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 
 	public CommandPanelController(CommandPanelModel binding) {
 		super(binding);
+		getDataModel().addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -141,12 +144,6 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			});
 		}
 	}
-	
-	@Inject
-	@Optional
-	public void settingChanged(@Preference(nodePath=Activator.PREFERENCE_NODE, value=CommandPanelParameter.JOG_FEEDRATE) String val){
-		System.err.println(val);
-	}
 
 	public void bindJogButton(Button widget, final EnumControllerAxis axis) throws GkException {
 
@@ -158,7 +155,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 						Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
 						getDataModel().setLengthUnit(unit);
 						BigDecimalQuantity<Length> step = NumberQuantity.of(getDataModel().getJogIncrement(), unit);
-						stepJogService.startJog(axis, getDataModel().getJogSpeed(), step);
+						stepJogService.startJog(axis, getDataModel().getJogSpeed());
 					}else{
 						continuousJogService.startJog(axis, getDataModel().getJogSpeed());
 					}
@@ -193,6 +190,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			getDataModel().setIncrementalJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_INCREMENTAL, "false")) );
 		}else if( stepJogService != null ){
 			getDataModel().setIncrementalJog( true );
+			stepJogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));
 		}else{
 			getDataModel().setIncrementalJog( false );
 		}
@@ -223,6 +221,20 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 
 	public void zeroCoordinateSystem() throws GkException {
 		coordinateSystemAdapter.resetCurrentCoordinateSystem();
+	}
+
+	/** (inheritDoc)
+	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		try {
+			if(stepJogService != null){
+				stepJogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));
+			}
+		} catch (GkException e) {			
+			LOG.error(e);
+		}		
 	}
 
 }

@@ -17,16 +17,19 @@
 
 package org.goko.core.controller;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.controller.bean.EnumControllerAxis;
 
-public interface IStepJogService {
+/**
+ * Interface defining a discrete jog service
+ *  
+ * @author PsyKo
+ *
+ */
+public interface IStepJogService extends IJogService{
 
-	public void startJog(EnumControllerAxis axis, BigDecimal feedrate,  BigDecimalQuantity<Length> step) throws GkException;
-
-	public void stopJog() throws GkException;
+	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException;
+	
+	public BigDecimalQuantity<Length> getJogStep() throws GkException;	
 }

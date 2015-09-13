@@ -17,14 +17,6 @@
 
 package org.goko.core.controller;
 
-import java.math.BigDecimal;
+public interface IContinuousJogService extends IJogService{
 
-import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.bean.EnumControllerAxis;
-
-public interface IContinuousJogService {
-
-	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException;
-
-	public void stopJog() throws GkException;
 }

@@ -102,6 +102,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		communicator = new TinyGCommunicator(this);	
 		tinygState = new TinyGState();
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */

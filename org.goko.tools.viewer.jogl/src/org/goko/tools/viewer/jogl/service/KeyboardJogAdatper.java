@@ -25,16 +25,16 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.IContinuousJogService;
+import org.goko.core.controller.IJogService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 
 public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
-	private IContinuousJogService jogService;
+	private IJogService jogService;
 	private GokoJoglCanvas canvas;
 	private Map<Integer, EnumControllerAxis> mapAxisByKey;
 
-	public KeyboardJogAdatper(GokoJoglCanvas canvas, IContinuousJogService jogService) {
+	public KeyboardJogAdatper(GokoJoglCanvas canvas, IJogService jogService) {
 		super();
 		this.jogService = jogService;
 		this.canvas = canvas;

@@ -34,9 +34,9 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
-import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
+import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
@@ -80,7 +80,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	/** The coordinate system adapter */
 	private ICoordinateSystemAdapter coordinateSystemAdapter;
 	/** Jog service */
-	private IContinuousJogService continuousJogService;
+	private IJogService jogService;
 	/** GCode execution monitor service */
 	private IGCodeExecutionMonitorService executionMonitorService;
 	/** The workspace service */
@@ -284,15 +284,15 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	/**
 	 * @return the continuousJogService
 	 */
-	public IContinuousJogService getContinuousJogService() {
-		return continuousJogService;
+	public IJogService getJogService() {
+		return jogService;
 	}
 
 	/**
 	 * @param continuousJogService the continuousJogService to set
 	 */
-	public void setContinuousJogService(IContinuousJogService continuousJogService) {
-		this.continuousJogService = continuousJogService;
+	public void setJogService(IJogService continuousJogService) {
+		this.jogService = continuousJogService;
 	}
 
 	/**
@@ -379,8 +379,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	@Override
 	protected void onCanvasCreated(GokoJoglCanvas canvas) {
-		if(continuousJogService != null){
-			this.keyboardJogAdapter = new KeyboardJogAdatper(getCanvas(), continuousJogService);
+		if(jogService != null){
+			this.keyboardJogAdapter = new KeyboardJogAdatper(getCanvas(), jogService);
 			canvas.addKeyListener( keyboardJogAdapter );
 		}
 	}

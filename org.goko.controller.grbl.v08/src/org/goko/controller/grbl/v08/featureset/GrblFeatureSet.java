@@ -8,10 +8,12 @@ import java.util.List;
 
 import org.goko.controller.grbl.v08.GrblControllerService;
 import org.goko.controller.grbl.v08.IGrblControllerService;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IStepJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.feature.IFeatureSet;
@@ -51,6 +53,7 @@ public class GrblFeatureSet implements IFeatureSet {
 		
 		lstServiceregistration.add( context.registerService(IControllerService.class,	 	service, null));
 		lstServiceregistration.add(context.registerService(IGrblControllerService.class, 	service, null));
+		lstServiceregistration.add(context.registerService(IJogService.class, 			service, null));
 		lstServiceregistration.add(context.registerService(IStepJogService.class, 			service, null));
 		lstServiceregistration.add(context.registerService(IThreeAxisControllerAdapter.class, service, null));
 		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, service, null));
@@ -58,6 +61,7 @@ public class GrblFeatureSet implements IFeatureSet {
 		service.setConnectionService(findService(context, IConnectionService.class));
 		service.setGCodeService(findService(context, IGCodeService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
+		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
 		
 		service.start();
 		
