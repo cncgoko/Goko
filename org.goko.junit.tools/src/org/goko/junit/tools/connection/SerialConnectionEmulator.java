@@ -19,7 +19,8 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	/** End line character */
 	private char endChararacter = '\n';
 	private EmulatedSerialConnection currentConnection;
-	 
+	private boolean debugOutputConsole;
+	
 	/**
 	 * Constructor 
 	 */
@@ -94,7 +95,9 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	public void send(List<Byte> data, DataPriority priority) throws GkException {
 		sentBuffer.add(data);
 		notifyOutputListeners(data);
-		
+		if(debugOutputConsole){
+			LOG.info("Out: ["+GkUtils.toString(data)+"]");
+		}
 	}
 
 	/** {@inheritDoc}
@@ -104,7 +107,9 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	public void send(List<Byte> data) throws GkException {
 		sentBuffer.add(data);
 		notifyOutputListeners(data);	
-		LOG.info("Out: ["+GkUtils.toString(data)+"]");
+		if(debugOutputConsole){
+			LOG.info("Out: ["+GkUtils.toString(data)+"]");
+		}
 	}
 
 	/** {@inheritDoc}
@@ -187,6 +192,20 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	 */
 	public void setCurrentConnection(EmulatedSerialConnection currentConnection) {
 		this.currentConnection = currentConnection;
+	}
+
+	/**
+	 * @return the debugOutputConsole
+	 */
+	public boolean isDebugOutputConsole() {
+		return debugOutputConsole;
+	}
+
+	/**
+	 * @param debugOutputConsole the debugOutputConsole to set
+	 */
+	public void setDebugOutputConsole(boolean debugOutputConsole) {
+		this.debugOutputConsole = debugOutputConsole;
 	}
 
 }
