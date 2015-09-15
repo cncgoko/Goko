@@ -34,6 +34,8 @@ Bug report
 ----------
 You can use the [issues tracker](https://github.com/cncgoko/Goko/issues) on the Github repository.  
 
+You can also discuss on [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
+
 Links
 -----
 Goko uses icons from the following pages :
