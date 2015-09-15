@@ -351,21 +351,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		// Let's only change the new values
 		// The new value will be applied directly to TinyG. The changes will be reported in the data model when TinyG sends them back for confirmation.
 		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
+		
 		// TODO : perform sending in communicator
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
-//			if(StringUtils.equals(group.getGroupIdentifier(), TinyGConfiguration.SYSTEM_SETTINGS)){
-//				for(TinyGSetting<?> setting : group.getSettings()){
-//					JsonObject jsonSetting = TinyGJsonUtils.toJson(setting);
-//					if(jsonSetting != null){
-//						communicator.send( GkUtils.toBytesList(jsonSetting.toString()) );
-//					}
-//				}
-//			}else{
-				JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
-				if(jsonGroup != null){
-					communicator.send( GkUtils.toBytesList(jsonGroup.toString()) );
-				}
-			//}
+			JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
+			if(jsonGroup != null){					
+				communicator.send( GkUtils.toBytesList(jsonGroup.toString()) );
+			}
 		}
 	}
 
