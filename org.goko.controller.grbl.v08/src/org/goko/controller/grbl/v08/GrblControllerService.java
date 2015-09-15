@@ -19,12 +19,16 @@
  */
 package org.goko.controller.grbl.v08;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +50,7 @@ import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
@@ -798,5 +803,66 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		this.monitorService = monitorService;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()
+	 */
+	@Override
+	public String getFileExtension() {
+		return "grbl.cfg";
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#canExport()
+	 */
+	@Override
+	public boolean canExport() throws GkException {
+		return GrblMachineState.READY.equals(getState());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#exportTo(java.io.OutputStream)
+	 */
+	@Override
+	public void exportTo(OutputStream stream) throws GkException {
+		GrblConfiguration config = getConfiguration();
+		StringBuffer buffer = new StringBuffer();
+		for (GrblSetting<?> setting : config.getLstGrblSetting()) {
+			buffer.append(setting.getIdentifier()+"="+setting.getValueAsString());
+			buffer.append(System.lineSeparator());
+		}
+		try {
+			stream.write(buffer.toString().getBytes());
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#canImport()
+	 */
+	@Override
+	public boolean canImport() throws GkException {	
+		return GrblMachineState.READY.equals(getState());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#importFrom(java.io.InputStream)
+	 */
+	@Override
+	public void importFrom(InputStream inputStream) throws GkException {
+		GrblConfiguration cfg = getConfiguration();
+		Scanner scanner = new Scanner(inputStream);
+		while(scanner.hasNextLine()){
+			String line = scanner.nextLine();
+			String[] tokens = line.split("=");
+			if(tokens != null && tokens.length == 2){
+				cfg.setValue(tokens[0], tokens[1]);
+			}else{
+				LOG.warn("Ignoring configuration line ["+line+"] because it's malformatted.");
+			}
+		}
+		scanner.close();
+		setConfiguration(cfg);
+	}
 	
 }

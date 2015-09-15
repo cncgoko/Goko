@@ -11,6 +11,8 @@ import org.goko.controller.grbl.v08.IGrblControllerService;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionService;
+import org.goko.core.controller.IControllerConfigurationFileExporter;
+import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IJogService;
@@ -31,12 +33,13 @@ import org.osgi.service.event.EventAdmin;
  */
 public class GrblFeatureSet implements IFeatureSet {
 	/** Target board definition for this feature set */
-	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v08", "Grbl v0.8");
+	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v08", "Grbl v0.8 (beta)");
 	public List<ServiceRegistration> lstServiceregistration;
 	
 	public GrblFeatureSet() {
 		lstServiceregistration = new ArrayList<ServiceRegistration>();
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#getTargetBoard()
 	 */
@@ -58,6 +61,8 @@ public class GrblFeatureSet implements IFeatureSet {
 		lstServiceregistration.add(context.registerService(IStepJogService.class, 			service, null));
 		lstServiceregistration.add(context.registerService(IThreeAxisControllerAdapter.class, service, null));
 		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, service, null));
+		lstServiceregistration.add(context.registerService(IControllerConfigurationFileExporter.class, service, null));
+		lstServiceregistration.add(context.registerService(IControllerConfigurationFileImporter.class, service, null));
 	
 		service.setConnectionService(findService(context, IConnectionService.class));
 		service.setGCodeService(findService(context, IGCodeService.class));

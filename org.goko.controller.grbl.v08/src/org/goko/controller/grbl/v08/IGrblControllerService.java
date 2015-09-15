@@ -21,6 +21,8 @@ package org.goko.controller.grbl.v08;
 
 import org.goko.controller.grbl.v08.configuration.GrblConfiguration;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.IControllerConfigurationFileExporter;
+import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.IStepJogService;
 
@@ -30,7 +32,7 @@ import org.goko.core.controller.IStepJogService;
  * @author PsyKo
  *
  */
-public interface IGrblControllerService extends IControllerService, IStepJogService{
+public interface IGrblControllerService extends IControllerService, IStepJogService, IControllerConfigurationFileExporter,IControllerConfigurationFileImporter{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 
