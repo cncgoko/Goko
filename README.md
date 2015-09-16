@@ -14,6 +14,7 @@ Supported controllers :
 Download
 --------
 [Download for Windows 32 bits](https://github.com/cncgoko/Goko/releases/download/v0.0.2/org.goko-win32.win32.x86.zip)
+
 [Download for Windows 64 bits](https://github.com/cncgoko/Goko/releases/download/v0.0.2/org.goko-win32.win32.x86_64.zip)
 
 *(Linux & OSX version are not available because they cannot be tested. If you want to test it, please request the download link by leaving a message on [Gitter]((https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)))*
