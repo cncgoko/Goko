@@ -3,6 +3,7 @@
 Current version  : ```0.0.2```
 
  This branch contains the latest release version. 
+ 
 **09/16/2015:** It still requires testing for the Grbl part
 
 Goko is a Java based GCode sender and CNC control software. It can be used to control a controller board based CNC machine. 
@@ -17,7 +18,7 @@ Download
 
 [Download for Windows 64 bits](https://github.com/cncgoko/Goko/releases/download/v0.0.2/org.goko-win32.win32.x86_64.zip)
 
-*(Linux & OSX version are not available because they cannot be tested. If you want to test it, please request the download link by leaving a message on [Gitter]((https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)))*
+*(Linux & OSX version are not available because I cannot test them. If you want to test it, please request the download link by leaving a message on [Gitter]((https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)))*
 
 Installation
 ------------
