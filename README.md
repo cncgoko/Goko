@@ -1,18 +1,24 @@
 # Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)](https://travis-ci.org/cncgoko/Goko)  [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 
-Dev version  : ```0.0.2```
+Current version  : ```0.0.2```
 
-**This is the *dev* branch.**  This branch is a work in progress and includes latest developments, but some of them might be untested, incomplete, or malfunctioning.
+ This branch contains the latest release version. 
+ 
+**09/16/2015:** It still requires testing for the Grbl part
 
 Goko is a Java based GCode sender and CNC control software. It can be used to control a controller board based CNC machine. 
 
 Supported controllers :
  - ```TinyG v0.97``` - *[doc](https://github.com/synthetos/TinyG/wiki)* 
- - ```Grbl v0.8c``` - *[doc](https://github.com/synthetos/TinyG/wiki)* - *(in progress in 0.0.2)*
+ - ```Grbl v0.8c``` - *[doc](https://github.com/grbl/grbl/wiki)* - *(beta)*
   
 Download
 --------
-No release available for version ```0.0.2``` yet
+[Download for Windows 32 bits](https://github.com/cncgoko/Goko/releases/download/v0.0.2/org.goko-win32.win32.x86.zip)
+
+[Download for Windows 64 bits](https://github.com/cncgoko/Goko/releases/download/v0.0.2/org.goko-win32.win32.x86_64.zip)
+
+*(Linux & OSX version are not available because I cannot test them. If you want to test it, please request the download link by leaving a message on [Gitter]((https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)))*
 
 Installation
 ------------
@@ -41,3 +47,4 @@ Links
 Goko uses icons from the following pages :
 - Fugue icons  - http://p.yusukekamiyamane.com/
 - Silk icons - http://www.famfamfam.com/
+
