@@ -79,7 +79,6 @@ public class TinyGFeatureSet implements IFeatureSet {
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
 		
 	}	
 }

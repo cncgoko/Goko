@@ -83,7 +83,6 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
 
 	}
 
