@@ -186,8 +186,8 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.getCurrentConnection().setFlowControl(SerialParameter.FLOWCONTROL_RTSCTS);
 		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10", tinyg.getCurrentGCodeContext());		
 		tinyg.executeGCode(motionCode);
-		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"gc\":\"n1 g90 x10 y10\"}"+'\n', 10000);				
+
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"gc\":\"g90 x10 y10 \"}"+'\n', 10000);				
 	}
 	
 	/**
