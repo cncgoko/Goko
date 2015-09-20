@@ -14,16 +14,20 @@ import java.util.concurrent.Future;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.controller.tinyg.controller.probe.ProbeCallable;
+import org.goko.controller.tinyg.controller.topic.TinyGExecutionErrorTopic;
 import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.controller.tinyg.service.ITinyGControllerFirmwareService;
 import org.goko.core.common.GkUtils;
+import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
+import org.goko.core.common.event.EventBrokerUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -59,6 +63,7 @@ import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.osgi.service.event.EventAdmin;
 
 import com.eclipsesource.json.JsonObject;
 
@@ -81,8 +86,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private ISerialConnectionService connectionService;
 	/** GCode service */
 	private IGCodeService gcodeService;
-	/** applicative log service */
-	private IApplicativeLogService applicativeLogService;
 	/** The sending thread	 */
 	private GCodeSendingRunnable currentSendingRunnable;
 	/** The current execution queue */
@@ -97,6 +100,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private ProbeCallable futureProbeResult;
 	/** Communicator */
 	private TinyGCommunicator communicator;
+	/** Applicative log service */
+	private IApplicativeLogService applicativeLogService;
+	/** Event admin service */
+	private EventAdmin eventAdmin;
 
 	public TinyGControllerService() {
 		communicator = new TinyGCommunicator(this);	
@@ -321,14 +328,50 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param jsonValue
 	 * @throws GkTechnicalException
 	 */
-	protected void handleGCodeResponse(String receivedCommand) throws GkException {
+	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
 		if(executionQueue.getCurrentToken() != null){
-			GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand, getCurrentGCodeContext());
-			executionQueue.getCurrentToken().markAsConfirmed(parsedCommand);
-			this.currentSendingRunnable.confirmCommand();
+			if(status == TinyGStatusCode.TG_OK){
+				GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand, getCurrentGCodeContext());
+				executionQueue.getCurrentToken().markAsConfirmed(parsedCommand);
+				this.currentSendingRunnable.confirmCommand();
+			}else{
+				handleError(status, receivedCommand);
+			}
 		}
 	}
 
+	protected void handleError(TinyGStatusCode status, String receivedCommand) throws GkException {
+		String message = StringUtils.EMPTY;
+		if(status == null){
+			message = " Unknown error status";
+		}else{
+			message = " Error status returned : "+status.getValue() +" - "+status.getLabel();
+		}
+		
+		if(executionQueue != null){
+			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
+			
+			if(currentToken != null && currentToken.getSentCommandCount() > 0){
+				 // Error occured during GCode programm execution, let's give the source command
+				GCodeCommand command = currentToken.markNextCommandAsError();
+				message += " on command ["+command.getStringCommand()+"]";
+			}
+			// Security pause
+			pauseMotion();
+			// Still confirm that the command was received
+			this.currentSendingRunnable.confirmCommand();
+			EventBrokerUtils.send(eventAdmin, new TinyGExecutionErrorTopic(), new TinyGExecutionError("Error reported durring execution", "Execution was paused after TinyG reported an error. You can resume, or stop the execution at your own risk.", message));			
+		}
+		
+		LOG.error(message);
+		applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG");		
+	}
+	
+	protected void error(String message){
+		LOG.error(message);
+		applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG Communicator");
+	}
+	
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onMachineValueUpdate(MachineValueUpdateEvent evt){
 		notifyListeners(evt);
@@ -477,7 +520,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	public void resumeMotion() throws GkException{
-		communicator.send(GkUtils.toBytesList(TinyG.CYCLE_START));
+		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
+		if(executionQueue != null){
+			executionQueue.setPaused(false);
+		}
 	}
 
 	public void stopMotion() throws GkException{
@@ -598,7 +644,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	@Override
 	public String getMaximalSupportedFirmwareVersion() throws GkException {
-		return "435.10";
+		return "440.18";
 	}
 
 	/** (inheritDoc)
@@ -644,11 +690,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return GokoPreference.getInstance().format(q.to(getCurrentUnit()), true, false);
 	}
 	/**
-	 * @param logListenerService the logListenerService to set
+	 * @param applicativeLogService the IApplicativeLogService to set
 	 */
-	public void setApplicativeLogService(IApplicativeLogService logListenerService) {
-		this.applicativeLogService = logListenerService;
-		this.communicator.setApplicativeLogService(logListenerService);
+	public void setApplicativeLogService(IApplicativeLogService applicativeLogService) {
+		this.applicativeLogService = applicativeLogService;
+		this.communicator.setApplicativeLogService(applicativeLogService);
 	}
 
 	/** (inheritDoc)
@@ -897,5 +943,18 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		} catch (IOException e) {
 			throw new GkTechnicalException(e);
 		}
+	}
+	
+	/**
+	 * @return the eventAdmin
+	 */
+	public EventAdmin getEventAdmin() {
+		return eventAdmin;
+	}
+	/**
+	 * @param eventAdmin the eventAdmin to set
+	 */
+	public void setEventAdmin(EventAdmin eventAdmin) {
+		this.eventAdmin = eventAdmin;
 	}
 }

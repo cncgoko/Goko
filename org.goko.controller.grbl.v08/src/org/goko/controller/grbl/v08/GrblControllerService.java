@@ -185,7 +185,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	public void sendCommand(GCodeCommand command) throws GkException{
-		List<Byte> byteCommand = GkUtils.toBytesList(getGCodeService().convert(command));
+		String cmd = command.getStringCommand();
+		if(StringUtils.isEmpty(cmd)){
+			cmd = new String(getGCodeService().convert(command));
+		}		
+		List<Byte> byteCommand = GkUtils.toBytesList(cmd);
 		int usedBufferCount = CollectionUtils.size(byteCommand);
 		communicator.send( byteCommand );
 		setUsedGrblBuffer(usedGrblBuffer + usedBufferCount);
@@ -382,13 +386,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			// If not in check mode, let's pause the execution (disabled in check mode because check mode can't handle paused state and buffer would be flooded with commands)
 			if(!ObjectUtils.equals(GrblMachineState.CHECK, getState())){	
 				pauseMotion();
-//				Map<String, String> mapArgs = new HashMap<String, String>();
-//				mapArgs.put(Grbl.Topic.GrblExecutionError.TITLE, "Error reported durring execution");
-//				mapArgs.put(Grbl.Topic.GrblExecutionError.MESSAGE, "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.");
-//				mapArgs.put(Grbl.Topic.GrblExecutionError.ERROR, formattedErrorMessage);
-//				eventAdmin.sendEvent(new Event(Grbl.Topic.GrblExecutionError.TOPIC, mapArgs));
 				EventBrokerUtils.send(eventAdmin, new GrblExecutionErrorTopic(), new GrblExecutionError("Error reported durring execution", "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.", formattedErrorMessage));
-			//	Verifier pourquoi l'erreur n'est pas affichée
 			}
 		}else{
 			LOG.error("Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: "));

@@ -100,11 +100,12 @@ public class GCodeSendingRunnable implements Runnable {
 			ArrayList<GCodeCommand> lstCommand = new ArrayList<GCodeCommand>();
 
 			while(token.hasMoreCommand() && nbCommandToSend > 0){
+				waitTokenUnpaused();
 				GCodeCommand currentCommand = token.takeNextCommand();
 				lstCommand.add(currentCommand);
 				nbCommandToSend--;
-				//token.setCommandState(currentCommand, GCodeCommandState.SENT);
 				token.markAsSent(currentCommand.getId());
+				
 				GokoEventBus.getInstance().post(new GCodeCommandSelectionEvent(currentCommand));
 				tinyGControllerService.send(currentCommand);
 				pendingCommands++;
@@ -115,14 +116,29 @@ public class GCodeSendingRunnable implements Runnable {
 	}
 
 	protected int computeNumberCommandToSend() throws GkException{
-		int nb = 10;
+		int nb = 1;
 		if(tinyGControllerService.isPlannerBufferSpaceCheck() && tinyGControllerService.getAvailableBuffer() > 4){
 			nb = Math.max(1, tinyGControllerService.getAvailableBuffer() - 4);
-		}
+		}	 
 		return nb;
 	}
 
-
+	/**
+	 * Wait while the current token is paused.
+	 * @throws GkException GkException
+	 */
+	private void waitTokenUnpaused() throws GkException {
+		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().isPaused()){
+			synchronized ( executionQueue.getCurrentToken() ) {
+				try {
+					executionQueue.getCurrentToken().wait(500);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
+			}
+		}
+	}
+	
 	protected void waitLastCommandAcknowledgement(){
 		if(!tinyGControllerService.isPlannerBufferSpaceCheck()){
 			return;

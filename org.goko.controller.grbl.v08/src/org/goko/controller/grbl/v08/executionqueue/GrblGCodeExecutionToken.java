@@ -56,19 +56,6 @@ public class GrblGCodeExecutionToken  extends GCodeStreamedExecutionToken{
 		return null;
 	}
 
-	/**
-	 * Mark th enext command as executed
-	 * @throws GkException GkException
-	 */
-	public GCodeCommand markNextCommandAsError() throws GkException{
-		if(MapUtils.isNotEmpty(mapSentCommandById)){
-			GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
-			markAsError(nextCommand.getId());
-			return nextCommand;
-		}
-		return null;
-	}
-
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken#markAsExecuted(java.lang.Integer)
 	 */

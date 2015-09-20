@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog -equinox.ds.debug=true -equinox.ds.print=true
+      <programArgs>-equinox.ds.debug=true -equinox.ds.print=true
       </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>

@@ -28,6 +28,8 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.PojoProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
@@ -129,14 +131,14 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @param filepath filepath
 	 * @throws GkException GkException
 	 */
-	public void setGCodeFilepath(String filepath) throws GkException {
+	public void setGCodeFilepath(String filepath, IProgressMonitor monitor) throws GkException {
 		try{						 
 			File file = new File(filepath);
 			getDataModel().setFileName(file.getName());
 			getDataModel().setFilePath(filepath);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			getDataModel().setFileLastUpdate( sdf.format( file.lastModified() ) );
-			parseFile();
+			parseFile(monitor);
 			setFileSize(file.length());			
 		}catch(GkException e){
 			LOG.error(e);
@@ -190,12 +192,12 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
-	protected void parseFile() throws GkException{
+	protected void parseFile(IProgressMonitor monitor) throws GkException{
 		if(getDataModel().getGcodeProvider() != null){
 			workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 		}
 		GCodeContext currentContext = controllerService.getCurrentGCodeContext();
-		IGCodeProvider gcodeFile = gCodeService.parseFile(getDataModel().getFilePath(), currentContext);
+		IGCodeProvider gcodeFile = gCodeService.parseFile(getDataModel().getFilePath(), currentContext, monitor);
 		getDataModel().setGcodeProvider(gcodeFile);
 		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
 
@@ -384,7 +386,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	public void handleEvent(Event event) {
 		try {
 			String filepath = (String) event.getProperty(GokoTopic.File.PROPERTY_FILEPATH);
-			setGCodeFilepath(filepath);
+			setGCodeFilepath(filepath, new NullProgressMonitor());
 		} catch (GkFunctionalException e) {
 			LOG.log(e);
 			GkDialog.openDialog(e);

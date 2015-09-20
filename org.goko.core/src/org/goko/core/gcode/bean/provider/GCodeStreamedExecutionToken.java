@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeCommandState;
@@ -116,6 +117,19 @@ public class GCodeStreamedExecutionToken  extends GCodeExecutionToken implements
 		this.mapSentCommandById.remove(command.getId());
 		updateCompleteState();
 		super.markAsError(idCommand);
+	}
+	
+	/**
+	 * Mark th enext command as executed
+	 * @throws GkException GkException
+	 */
+	public GCodeCommand markNextCommandAsError() throws GkException{
+		if(MapUtils.isNotEmpty(mapSentCommandById)){
+			GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
+			markAsError(nextCommand.getId());
+			return nextCommand;
+		}
+		return null;
 	}
 	
 	protected void updateCompleteState(){

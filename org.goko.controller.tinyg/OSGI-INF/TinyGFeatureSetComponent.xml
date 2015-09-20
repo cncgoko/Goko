@@ -8,4 +8,5 @@
    <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
+   <reference cardinality="1..1" interface="org.osgi.service.event.EventAdmin" name="EventAdmin" policy="static"/>
 </scr:component>

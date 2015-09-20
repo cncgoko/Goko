@@ -5,11 +5,13 @@
     <elements xsi:type="commands:Handler" xmi:id="_RH5FcAylEeOcDqoQnBHULw" contributionURI="bundleclass://org.goko.controller.tinyg/org.goko.controller.tinyg.handlers.TinyGConfigurationOpenHandler" command="_kVVVQAymEeOcDqoQnBHULw"/>
     <elements xsi:type="commands:Handler" xmi:id="___BiYAzYEeOTG-9JmiFUsg" contributionURI="bundleclass://org.goko.controller.tinyg/org.goko.controller.tinyg.handlers.TinyGConfigurationRefreshHandler" command="_9euI0AzYEeOTG-9JmiFUsg"/>
     <elements xsi:type="commands:Handler" xmi:id="_6lkEkIeqEeSwBuc_3mnfwA" elementId="" contributionURI="bundleclass://org.goko.controller.tinyg/org.goko.controller.tinyg.handlers.TinyGPlannerBufferControlHandler" command="_73dKQIeqEeSwBuc_3mnfwA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_SNjiwF71EeWEkYW2d9NzSQ" elementId="org.goko.controller.tinyg.handler.stateupdate" contributionURI="bundleclass://org.goko.controller.tinyg/org.goko.controller.tinyg.handlers.TinyGStateUpdateHandler" command="_nwF3IF71EeWEkYW2d9NzSQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ibiiEAymEeOcDqoQnBHULw" featurename="commands" parentElementId="goko.application">
     <elements xsi:type="commands:Command" xmi:id="_kVVVQAymEeOcDqoQnBHULw" elementId="goko.tinyg.command.configuration" commandName="TinyG Settings" description="TinyG"/>
     <elements xsi:type="commands:Command" xmi:id="_9euI0AzYEeOTG-9JmiFUsg" elementId="org.goko.controller.tinyg.commands.configuration.refresh" commandName="Refresh configuration"/>
     <elements xsi:type="commands:Command" xmi:id="_73dKQIeqEeSwBuc_3mnfwA" elementId="org.goko.controller.tinyg.command.enablePlannerBufferUse" commandName="Enable TinyG Planner Buffer control" description="TinyG Planner Buffer control"/>
+    <elements xsi:type="commands:Command" xmi:id="_nwF3IF71EeWEkYW2d9NzSQ" elementId="org.goko.controller.tinyg.command.stateWatcher" commandName="TinyG State watcher command"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iIuDkNVjEeOx56hryHQKyQ" featurename="children" parentElementId="goko.menu.tools" positionInList="">
     <elements xsi:type="menu:Menu" xmi:id="_lbeNwNVjEeOx56hryHQKyQ" elementId="org.goko.controller.tinyg.menu.0" label="TinyG">

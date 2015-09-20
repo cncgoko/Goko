@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
@@ -87,7 +89,8 @@ public class AdvancedGCodeAnalyser {
 		List<GCodeToken> 	lineTokens = new ArrayList<GCodeToken>();
 		List<GCodeCommand> 	lstCommmands = new ArrayList<GCodeCommand>();
 		// Let's detect the end token. We search the first NEW_LINE token, or the end of the list
-		for (GCodeToken gCodeToken : tokens) {
+		
+		for (GCodeToken gCodeToken : tokens) {			
 			if(gCodeToken.getType() == GCodeTokenType.NEW_LINE){
 				if(CollectionUtils.isNotEmpty(lineTokens)){
 					GCodeCommand command = createCommand(lineTokens, context);
@@ -97,6 +100,36 @@ public class AdvancedGCodeAnalyser {
 			}else{
 				lineTokens.add(gCodeToken);
 			}
+		}
+		// Let's compute the final GCodeCommand
+		if(CollectionUtils.isNotEmpty(lineTokens)){
+			GCodeCommand command = createCommand(lineTokens, context);
+			lstCommmands.add( command );
+			lineTokens.clear();
+		}
+
+		GCodeFile file = new GCodeFile(lstCommmands);
+		return file;
+	}
+	
+	public GCodeFile createFile(List<GCodeToken> tokens, GCodeContext intialContext, IProgressMonitor monitor) throws GkException{
+		GCodeContext 		context = new GCodeContext(intialContext);
+		List<GCodeToken> 	lineTokens = new ArrayList<GCodeToken>();
+		List<GCodeCommand> 	lstCommmands = new ArrayList<GCodeCommand>();
+		// Let's detect the end token. We search the first NEW_LINE token, or the end of the list
+		SubMonitor progress = SubMonitor.convert(monitor, tokens.size());
+        
+		for (GCodeToken gCodeToken : tokens) {			
+			if(gCodeToken.getType() == GCodeTokenType.NEW_LINE){
+				if(CollectionUtils.isNotEmpty(lineTokens)){
+					GCodeCommand command = createCommand(lineTokens, context);
+					lstCommmands.add( command );
+					lineTokens.clear();
+				}
+			}else{
+				lineTokens.add(gCodeToken);
+			}
+			progress.worked(1);
 		}
 		// Let's compute the final GCodeCommand
 		if(CollectionUtils.isNotEmpty(lineTokens)){

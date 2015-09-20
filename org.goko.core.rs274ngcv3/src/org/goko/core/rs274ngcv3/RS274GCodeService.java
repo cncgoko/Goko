@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
@@ -122,6 +124,31 @@ public class RS274GCodeService implements IGCodeService {
 		return gcodeFile;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#parseFile(java.lang.String, org.goko.core.gcode.bean.GCodeContext, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	@Override
+	public IGCodeProvider parseFile(String filepath, GCodeContext context, IProgressMonitor monitor) throws GkException {
+		File 				file = new File(filepath);		
+		SubMonitor subMonitor = SubMonitor.convert(monitor,"Reading file", 2);
+		if(!file.exists()){
+			throw new GkFunctionalException("File '"+filepath+"' does not exist...");
+		}
+		GCodeContext parserContext = context;
+		if(parserContext == null){
+			parserContext = new GCodeContext();
+		}
+		GCodeLexer 			gcodeLexer = new GCodeLexer();
+		subMonitor.subTask("Creating tokens...");
+		List<GCodeToken> 	lstTokens = gcodeLexer.createTokensFromFile(filepath);
+		subMonitor.worked(1);
+		LOG.info("End of token creation...");
+		subMonitor.subTask("Creating commands...");
+		GCodeFile		 	gcodeFile = new AdvancedGCodeAnalyser().createFile(lstTokens, parserContext, subMonitor.newChild(1));
+		subMonitor.done();
+		return gcodeFile;
+	};
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#parse(java.lang.String)
 	 */

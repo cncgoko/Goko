@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.goko.core.gcode.service;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.bean.GCodeCommand;
@@ -31,6 +32,15 @@ public interface IGCodeService extends IGokoService{
 	 * @throws GkException GkException
 	 */
 	IGCodeProvider parseFile(String filepath, GCodeContext context) throws GkException;
+	
+	/**
+	 * Parse a file as a GCodeFile
+	 * @param filepath the path to file
+	 * @param context the base parsing context
+	 * @return {@link IGCodeProvider}
+	 * @throws GkException GkException
+	 */
+	IGCodeProvider parseFile(String filepath, GCodeContext context, IProgressMonitor monitor) throws GkException;
 
 	/**
 	 * Parse a string ile as a GCodeFile

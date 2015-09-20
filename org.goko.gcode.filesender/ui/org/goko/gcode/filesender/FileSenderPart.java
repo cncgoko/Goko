@@ -18,7 +18,6 @@ package org.goko.gcode.filesender;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
@@ -34,13 +33,12 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -74,7 +72,6 @@ import org.goko.common.bindings.validator.FilepathValidator;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
@@ -138,29 +135,27 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		monitorService.addExecutionListener(this);		
 	}
 	
-	private void startFileParsingJob(final String filePath) {
-		ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
-		try {
-			dialog.run(true, false, new IRunnableWithProgress() {
-				@Override
-				public void run(IProgressMonitor monitor) {
-					monitor.beginTask("Opening " + filePath, 100);
-					monitor.worked(30);
-					try {
-						getController().setGCodeFilepath(filePath);						
-					} catch (GkFunctionalException e) {
-						LOG.log(e);						
-					} catch (GkException e) {
-						LOG.error(e);						
-					}
-					monitor.done();
+	private void startFileParsingJob(final String filePath) {		
+		Job j = new Job("Opening GCode...") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {				
+				try {
+					getController().setGCodeFilepath(filePath, monitor);						
+				} catch (GkFunctionalException e) {
+					LOG.log(e);						
+					return new Status(Status.ERROR, "unknown", e.getLocalizedMessage(), e);
+				} catch (GkException e) {
+					LOG.error(e);
+					return new Status(Status.ERROR, "unknown", "Critical error", e);
 				}
-			});
-		} catch (InvocationTargetException e) {
-			displayMessage(new GkTechnicalException(e));
-		} catch (InterruptedException e) {
-			displayMessage(new GkTechnicalException(e));
-		}
+				monitor.done();
+				return Status.OK_STATUS;
+			}
+		};
+		
+		j.setUser(true);
+		j.setPriority(Job.SHORT);		
+		j.schedule();
 	}
 
 	public Shell getShell(){
@@ -514,10 +509,8 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {	
-		System.err.println("FileSenderPart onExecutionComplete");
-		if(!shell.isDisposed()){
-			final int errorCount 	= token.getErrorCommandCount();
+	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {
+		if(!shell.isDisposed()){			
 			final int executedCount = token.getExecutedCommandCount();
 			final int totalCount 	= token.getCommandCount();
 			shell.getDisplay().asyncExec(new Runnable() {

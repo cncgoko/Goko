@@ -20,6 +20,7 @@ import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.event.EventAdmin;
 
 /**
  * TinyG V0.97 feature set 
@@ -58,6 +59,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IControllerConfigurationFileImporter.class, service, null);		
 				
 		service.setGCodeService(findService(context, IGCodeService.class));
+		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setConnectionService(findService(context, ISerialConnectionService.class));
 		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));

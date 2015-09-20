@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.core.common.GkUtils;
-import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
@@ -136,13 +135,15 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 				}
 
 				JsonValue footerBody = response.get(TinyGJsonUtils.FOOTER);
+				TinyGStatusCode status = null;				
+				
 				if(footerBody != null){
-					handleResponseFooter(footerBody);
+					status = getResponseFooter(footerBody);
 				}
 
 				JsonValue responseBody = response.get(TinyGJsonUtils.RESPONSE_ENVELOPE);
 				if(responseBody != null){
-					handleResponseEnvelope((JsonObject) responseBody);
+					handleResponseEnvelope((JsonObject) responseBody, status);
 				}
 				JsonValue statusReport = response.get(TinyGJsonUtils.STATUS_REPORT);
 				if(statusReport != null){
@@ -161,39 +162,26 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * @param jsonFooter the parsed response
 	 * @throws GkException GkException
 	 */
-	private void handleResponseFooter(JsonValue jsonFooter) throws GkException {
-
+	private TinyGStatusCode getResponseFooter(JsonValue jsonFooter) throws GkException {
 		JsonArray footerArray = jsonFooter.asArray();
 		int statusCodeIntValue = footerArray.get(TinyGJsonUtils.FOOTER_STATUS_CODE_INDEX).asInt();
 		TinyGStatusCode status = TinyGStatusCode.findEnum(statusCodeIntValue);
-
-		if(status == TinyGStatusCode.TG_OK){
-		}else{
-			if(status == null){
-				error(" Unknown error status "+statusCodeIntValue);
-			}else{
-				error(" Error status returned : "+status.getValue() +" - "+status.getLabel());
-			}
-
-		}
+		return status;
 	}
-
+	
 	/**
 	 * Handle a JSon response envelope
 	 * @param jsonValue
 	 */
-	private void handleResponseEnvelope(JsonObject responseEnvelope) throws GkException {
+	private void handleResponseEnvelope(JsonObject responseEnvelope, TinyGStatusCode status) throws GkException {
 		for(String name : responseEnvelope.names()){
 
-			if(StringUtils.equals(name, TinyGJsonUtils.GCODE_COMMAND)){
-				handleGCodeResponse(responseEnvelope.get(TinyGJsonUtils.GCODE_COMMAND));
+			if(StringUtils.equals(name, TinyGJsonUtils.GCODE_COMMAND)){				
+				handleGCodeResponse(responseEnvelope.get(TinyGJsonUtils.GCODE_COMMAND), status);
 
 			}else if(StringUtils.equals(name, TinyGJsonUtils.STATUS_REPORT)){
 				handleStatusReport(responseEnvelope.get(TinyGJsonUtils.STATUS_REPORT));
-
-			}else if(StringUtils.equals(name, TinyGJsonUtils.FOOTER)){
-				handleResponseFooter(responseEnvelope.get(TinyGJsonUtils.FOOTER));
-
+			
 			}else if(StringUtils.equals(name, TinyGJsonUtils.QUEUE_REPORT)){
 				handleQueueReport(responseEnvelope.get(TinyGJsonUtils.QUEUE_REPORT));
 
@@ -238,9 +226,9 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		tinyg.setConfiguration(cfg);
 	}
 
-	private void handleGCodeResponse(JsonValue jsonValue) throws GkException {
+	private void handleGCodeResponse(JsonValue jsonValue, TinyGStatusCode status) throws GkException {
 		String 	receivedCommand = jsonValue.asString();
-		tinyg.handleGCodeResponse(receivedCommand);
+		tinyg.handleGCodeResponse(receivedCommand, status);
 	}
 
 	private void handleQueueReport(JsonValue queueReport) throws GkException {
@@ -437,10 +425,6 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		connectionService.addConnectionListener(this);
 	}
 
-	protected void error(String message){
-		LOG.error(message);
-		applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG Communicator");
-	}
 	/**
 	 * @return the applicativeLogService
 	 */
@@ -464,8 +448,12 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		list.add(new Byte((byte) endLineCharDelimiter));
 	}
 
-	protected void send(GCodeCommand gCodeCommand) throws GkException{
-		JsonValue jsonStr = TinyGControllerUtility.toJson(new String(gcodeService.convert(gCodeCommand)));
+	protected void send(GCodeCommand gCodeCommand) throws GkException{	
+		String msg = gCodeCommand.getStringCommand();
+		if(StringUtils.isEmpty(msg)){
+			msg = new String(gcodeService.convert(gCodeCommand));
+		}
+		JsonValue jsonStr = TinyGControllerUtility.toJson(msg);
 		send(GkUtils.toBytesList(jsonStr.toString()));
 	}
 

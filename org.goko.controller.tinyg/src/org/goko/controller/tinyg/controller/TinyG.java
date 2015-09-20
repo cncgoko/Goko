@@ -35,4 +35,16 @@ public class TinyG implements DefaultControllerValues{
 	public static final CharSequence ON = "On";
 	public static final CharSequence OFF = "Off";
 
+	public class Topic{
+		public class TinyGExecutionError{
+			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			public static final String TOPIC		= "topic/tinyg/execution/error";
+			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			public static final String TITLE		= "prop/tinyg/execution/error/title";
+			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			public static final String MESSAGE		= "prop/tinyg/execution/error/message";
+			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			public static final String ERROR		= "prop/tinyg/execution/error/error";
+		}
+	}
 }

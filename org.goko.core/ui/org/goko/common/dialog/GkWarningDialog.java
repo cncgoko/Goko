@@ -3,6 +3,7 @@
  */
 package org.goko.common.dialog;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -21,21 +22,25 @@ import org.goko.core.common.exception.GkFunctionalException;
  *
  */
 public class GkWarningDialog extends Dialog {
-	private GkFunctionalException exception;
+	private String message;
 	
 	/**
 	 * Create the dialog.
 	 * @param parentShell
 	 */
-	GkWarningDialog(Shell parentShell, GkFunctionalException e) {
+	GkWarningDialog(Shell parentShell, String message) {
 		super(parentShell);
 		setShellStyle(SWT.TITLE);
-		this.exception = e;
+		this.message = message;
 	}
 
 
 	static int openDialog(Shell parentShell, GkFunctionalException e){
-		return new GkWarningDialog(parentShell,e).open();
+		return new GkWarningDialog(parentShell,e.getLocalizedMessage()).open();
+	}
+	
+	static int openDialog(Shell parentShell, IStatus status){
+		return new GkWarningDialog(parentShell,status.getMessage()).open();
 	}
 	
 	/**
@@ -56,7 +61,7 @@ public class GkWarningDialog extends Dialog {
 		
 		Label lblWarningMessage = new Label(container, SWT.WRAP);
 		lblWarningMessage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
-		lblWarningMessage.setText(exception.getLocalizedMessage());
+		lblWarningMessage.setText(message);
 		container.pack();	
 		getShell().setText("Warning");
 		return container;

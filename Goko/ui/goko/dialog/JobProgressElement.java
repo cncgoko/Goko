@@ -4,6 +4,7 @@
 package goko.dialog;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -15,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.goko.common.dialog.GkDialog;
 
 /**
  * @author PsyKo
@@ -203,13 +205,19 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	 * @see org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core.runtime.jobs.IJobChangeEvent)
 	 */
 	@Override
-	public void done(IJobChangeEvent event) {		
+	public void done(final IJobChangeEvent event) {		
 		sync.asyncExec(new Runnable() {
 			
 			@Override
 			public void run() {
 				if(!isDisposed()){
-					lblTaskName.setText("Complete " +job.getName());
+					if(event.getResult() != null && Status.OK_STATUS.equals(event.getResult())){
+						lblTaskName.setText("Complete " +job.getName());
+					}
+					if(event.getResult() != null && event.getResult().getSeverity() == Status.ERROR){
+						lblTaskName.setText("Error " +job.getName());
+						GkDialog.openDialog(null, event.getResult());						
+					}
 				}
 			}
 		});
