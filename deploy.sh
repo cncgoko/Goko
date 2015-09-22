@@ -8,7 +8,7 @@ deleteFolders(){
 	 curl -u $VAR1:$VAR2 $TARGET$1 -X "DELE $file"
 	done
 	echo "Removing folder www/download/$1"
-	curl -u $VAR1:$VAR2 $TARGET$1 -X "RMD $1"
+	curl -u $VAR1:$VAR2 $TARGET -X "RMD $1"
 	
 }
 
