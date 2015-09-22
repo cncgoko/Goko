@@ -1,8 +1,8 @@
 #!/bin/bash
+cd /home/travis/build/cncgoko/Goko/org.goko.build.product/target/repository/
+echo  find . -type f
 if $updateRepository then
   echo "Exporting repository..."
-  
-  cd /home/travis/build/cncgoko/Goko/org.goko.build.product/target/repository/
   
   find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/ \;
 else
