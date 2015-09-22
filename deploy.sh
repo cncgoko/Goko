@@ -5,7 +5,7 @@ deleteFolders(){
 	for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1); 
 	do
 	 echo "Removing www/download/$1$file"
-	 curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1 -Q "RM $file";
+	 curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1 -Q "DELE $file";
 	done
 	echo "Removing www/download/$1"
 	curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1 -Q "RMD $1";
