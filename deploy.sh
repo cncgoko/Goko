@@ -2,11 +2,14 @@
 
 #$1 is baseFolder, $2 is subfolders array
 deleteFolders(){
-	for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder); 
+	for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1); 
 	do
-	 curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder -Q "RM $file";
+	 echo "Removing www/download/$1/$file"
+	 curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RM $file";
 	done
-	curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RMD $folder";	
+	echo "Removing www/download/$1/"
+	curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RMD $1";
+	
 }
 
 # Clean the distant repository
