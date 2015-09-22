@@ -3,7 +3,7 @@
 # Clean the distant repository
 cleanRepository(){
   echo "Cleaning repository..."
-  curl -u $VAR1:$VAR2 $TARGET/ -Q "RMD $gokoVersion"
+  curl -u $VAR1:$VAR2 $TARGET/ -Q "RMD 0.0.2/"
 }
 
 # Clean the distant repository
