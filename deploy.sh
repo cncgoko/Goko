@@ -27,7 +27,7 @@ exportRepository(){
   # Switch to repository build location
   cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/repository/
   # TODO change target to remove hardcoded 'nightly'
-  #   find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/$gokoVersion/{} \;
+  find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/$gokoVersion/{} \;
 }
 
 # Let's do it
