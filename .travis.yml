@@ -11,7 +11,7 @@ env:
 
 cache:
   directories:
-    - '.m2/repository'
+    - '/home/travis/build/cncgoko/Goko/.m2/repository'
     
 before_script:
   - cd org.goko.build.aggregator
