@@ -18,7 +18,6 @@ cleanRepository(){
   deleteFolders update/$gokoVersion/binary/
   deleteFolders update/$gokoVersion/plugins/
   deleteFolders update/$gokoVersion/features/
-  deleteFolders update/$gokoVersion
 }
 
 # Clean the distant repository
