@@ -23,6 +23,7 @@ after_failure:
   - "cat ../org.goko.build.parent/target/surefire-reports/*.txt"
 
 after_success:
+ - chmod a+x ./../deploy.sh
  - ./../deploy.sh
 # - cd /home/travis/build/cncgoko/Goko/org.goko.build.product/target/repository
 # - "find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/"
