@@ -1,11 +1,10 @@
 #!/bin/bash
 cd /home/travis/build/cncgoko/Goko/org.goko.build.product/target/repository/
-find . -type f -exec echo {} {} \;
 
 if [ $updateRepository == 'true' ]
 then
-  cleanRepository();  
-  exportRepository();  
+  cleanRepository  
+  exportRepository  
 else
   echo "Skipped repository export..."
 fi
