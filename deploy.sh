@@ -15,7 +15,7 @@ deleteFolders(){
 # Clean the distant repository
 cleanRepository(){
   echo "Cleaning repository..."
-  deleteFolders update/nightly/binary/
+  deleteFolders update/nightly/0.0.2/binary/
   #curl -u $VAR1:$VAR2 $TARGET/ -X "rm -r 0.0.2"
   #curl -u $VAR1:$VAR2 $TARGET/ -X "RMD 0.0.2"
 }
