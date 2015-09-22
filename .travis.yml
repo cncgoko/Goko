@@ -18,9 +18,7 @@ before_script:
   - cd org.goko.build.aggregator
  
 script: 
- - chmod a+x ./../deploy.sh
- - ./../deploy.sh
- # - mvn clean verify
+  - mvn clean verify
 
 after_failure:
   - "cat ../org.goko.build.parent/target/surefire-reports/*.txt"
