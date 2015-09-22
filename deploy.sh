@@ -2,13 +2,16 @@
 
 #$1 is baseFolder, $2 is subfolders array
 deleteFolders(){
-	for folder in $2
+	subfolders=("${!2}")
+  
+	for folder in $(subfolders[@])
 	do
-		for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder); 
-		do
-		 curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder -Q "RM $file";
-		done
-		curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RMD $folder";
+	  echo "   Cleaning folder $folder"
+	  for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder); 
+	  do
+	      curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder -Q "RM $file";
+	  done
+	  curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RMD $folder";
 	done
 }
 
