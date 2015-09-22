@@ -3,7 +3,7 @@
 # Clean the distant repository
 cleanRepository(){
   echo "Cleaning repository..."
-  curl --ftp-create-dirs -u $VAR1:$VAR2 $TARGET/ -Q "DELE $gokoVersion" \;
+  curl -u $VAR1:$VAR2 $TARGET/ -Q "DELE $gokoVersion"
 }
 
 # Clean the distant repository
