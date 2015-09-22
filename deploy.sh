@@ -4,8 +4,8 @@ find . -type f -exec echo {} {} \;
 if [ $updateRepository == 'true' ]
 then
   echo "Exporting repository..."
-  
-  find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/{} \;
+  # TODO change target to remove hardcoded 'nightly'
+  find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/$gokoVersion/{} \;
 else
   echo "Skipped repository export..."
 fi
