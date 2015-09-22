@@ -2,24 +2,17 @@
 
 #$1 is baseFolder, $2 is subfolders array
 deleteFolders(){
-	subfolders=("${!2}")
-  
-	for folder in $(subfolders[@])
+	for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder); 
 	do
-	  echo "   Cleaning folder $folder"
-	  for file in $(curl -s -l -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder); 
-	  do
-	      curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder -Q "RM $file";
-	  done
-	  curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RMD $folder";
+	 curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/$folder -Q "RM $file";
 	done
+	curl -u $VAR1:$VAR2 ftp://ftp.goko.fr/www/download/$1/ -Q "RMD $folder";	
 }
 
 # Clean the distant repository
 cleanRepository(){
   echo "Cleaning repository..."
-  subfolders=(binary)
-  deleteFolders update/nightly/ subfolders[@]
+  deleteFolders update/nightly/ binary
   #curl -u $VAR1:$VAR2 $TARGET/ -X "rm -r 0.0.2"
   #curl -u $VAR1:$VAR2 $TARGET/ -X "RMD 0.0.2"
 }
