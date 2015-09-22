@@ -4,8 +4,8 @@
 cleanRepository(){
   echo "Cleaning repository..."
 #  curl -u $VAR1:$VAR2 $TARGET/ -Q "RMD 0.0.2/"
-  curl -u $VAR1:$VAR2 $TARGET/ -Q "MKD test"
-  curl -u $VAR1:$VAR2 $TARGET/ -Q "mkdir 0.0.4"
+  curl -u $VAR1:$VAR2 $TARGET/ -X "RMD 0.0.2"
+  curl -u $VAR1:$VAR2 $TARGET/ -X "MKD 0.0.4"
   curl -u $VAR1:$VAR2 $TARGET/ -Q "rmdir 0.0.3"
 }
 
