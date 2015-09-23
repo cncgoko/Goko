@@ -689,8 +689,7 @@ Public License instead of this License.  But first, please read
 
    <includes
          id="org.eclipse.e4.rcp"
-         version="0.0.0"
-         arch="x86,x86_64"/>
+         version="0.0.0"/>         
 
    <includes
          id="org.eclipse.emf.ecore"
