@@ -9,3 +9,4 @@ Todo :
 - [ ] Display restart warning/request when changing target board
 - [ ] Enable soft limite activation (```$sl``` parameter) [TinyG doc](https://github.com/synthetos/TinyG/wiki/Homing-and-Limits-Setup-and-Troubleshooting#soft-and-hard-limits---how-its-supposed-to-work)
 - [ ] Include alarm state ??
+- [ ] Add frequency for update check (Once a week, Once a month, etc...)
