@@ -10,3 +10,9 @@ Todo :
 - [ ] Enable soft limite activation (```$sl``` parameter) [TinyG doc](https://github.com/synthetos/TinyG/wiki/Homing-and-Limits-Setup-and-Troubleshooting#soft-and-hard-limits---how-its-supposed-to-work)
 - [ ] Include alarm state ??
 - [ ] Add frequency for update check (Once a week, Once a month, etc...)
+
+Possible improvements :
+- [ ] Use profiles for Serial connection (TinyG profile, Grbl profile allowing to save/switch connection settings)
+- [ ] Include web monitoring (local jetty ??)
+- [ ] GCode parser update  
+
