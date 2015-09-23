@@ -3,3 +3,6 @@
 Current version  : ```0.0.3```
 
  **The dev  branch is the work-in-process for the next release**
+
+Todo :
+- [ ] Improve keyboard jog functionality (jog available even when focus is not on 3d viewer)
