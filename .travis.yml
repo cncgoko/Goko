@@ -6,7 +6,7 @@ before_script:
   - cd org.goko.build.aggregator
  
 script: 
-  - mvn clean verify
+  - mvn clean verify -e
 
 after_failure:
   - "cat ../org.goko.build.parent/target/surefire-reports/*.txt"
