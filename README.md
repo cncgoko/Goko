@@ -15,4 +15,5 @@ Possible improvements :
 - [ ] Use profiles for Serial connection (TinyG profile, Grbl profile allowing to save/switch connection settings)
 - [ ] Include web monitoring (local jetty ??)
 - [ ] GCode parser update  
+- [ ] Configurable keys for jog
 
