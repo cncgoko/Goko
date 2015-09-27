@@ -9,6 +9,7 @@ env:
    - TARGET: ftp://ftp.goko.fr//www/download/
    - UPDATE_FOLDER: update
    - updateRepository: false
+   - updateBinaries: false
    - gokoVersion: 0.0.3
 
 cache:
@@ -23,6 +24,7 @@ script:
 
 after_failure:
   - "cat ../org.goko.build.parent/target/surefire-reports/*.txt"
+  #TODO add surefire report exports
 
 after_success:
  - chmod a+x ./../deploy.sh
