@@ -3,6 +3,8 @@
  */
 package goko;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,6 +13,8 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.config.EnumUpdateCheckFrequency;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.osgi.service.event.Event;
@@ -33,16 +37,39 @@ public class AutomaticUpdateCheck implements EventHandler{
 	private UISynchronize sync;
 	@Inject
 	private IEclipseContext context;
-
+	
 	/** (inheritDoc)
 	 * @see org.osgi.service.event.EventHandler#handleEvent(org.osgi.service.event.Event)
 	 */
 	@Override
 	public void handleEvent(Event event) {
-		if(GokoPreference.getInstance().isCheckUpdateAtStart()){
-			LOG.info("Checking update at startup...");
-			final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
-			updateCheck.update(agent, monitor, sync, context.get(IWorkbench.class), true);
+		try{
+			if(GokoPreference.getInstance().isCheckForUpdate()){
+				EnumUpdateCheckFrequency frequency = GokoPreference.getInstance().getUpdateCheckFrequency();
+				Date lastCheck = GokoPreference.getInstance().getLastUpdateCheckTimestamp();
+				boolean recheck = false;
+				final long msPerDay = 1000 * 60 * 60 * 24;
+				if(frequency == EnumUpdateCheckFrequency.EVERY_START){
+					recheck = true;
+				}else if(frequency == EnumUpdateCheckFrequency.ONCE_A_DAY){
+					if( (new Date().getTime() - lastCheck.getTime()) > msPerDay){
+						recheck = true;	
+					}					
+				}else if(frequency == EnumUpdateCheckFrequency.ONCE_A_WEEK){
+					if( (new Date().getTime() - lastCheck.getTime()) > 7 * msPerDay){
+						recheck = true;	
+					}
+				}
+				
+				if(recheck){
+					LOG.info("Checking update...");
+					GokoPreference.getInstance().setLastUpdateCheckTimestamp(new Date());
+					final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
+					updateCheck.update(agent, monitor, sync, context.get(IWorkbench.class), true);
+				}
+			}
+		}catch(GkException e){
+			LOG.error(e);
 		}
 	}
 }

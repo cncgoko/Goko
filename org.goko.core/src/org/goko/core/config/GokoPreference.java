@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -56,10 +57,16 @@ public class GokoPreference extends GkPreference{
 	public static final String DEFAULT_DISTANCE_UNIT = EnumGokoUnit.MILLIMETERS.getCode();
 	/** The precision to display after coma for distance values */
 	public static final String KEY_DISTANCE_DIGIT_COUNT = "distanceDigitCount";
-	/** Boolean defining if updates should be check at start */
-	public static final String KEY_CHECK_UPDATE_STARTUP = "checkUpdateStart";
-	/** Default update on start value */
-	public static final boolean DEFAULT_CHECK_UPDATE_STARTUP = true;
+	/** Automatic update check*/
+	public static final String KEY_CHECK_UPDATE = "checkAutomaticUpdate";
+	/** Automatic update check (0 = Each start, 1=Once a day, 2=Once a week)*/
+	public static final String KEY_CHECK_UPDATE_FREQUENCY = "checkAutomaticUpdateFrequency";
+	/** Time of last update check */
+	public static final String KEY_LAST_UPDATE_CHECK_TIMESTAMP = "lastUpdateCheckTimestamp";
+	/** Default check for update */
+	public static final boolean DEFAULT_CHECK_UPDATE = true;
+	/** Default update check frequency */
+	public static final String DEFAULT_CHECK_UPDATE_FREQUENCY  = EnumUpdateCheckFrequency.ONCE_A_DAY.getCode();
 	/** The default precision to display after coma for distance values  */
 	public static final int DEFAULT_DISTANCE_DIGIT_COUNT = 3;
 	
@@ -141,9 +148,10 @@ public class GokoPreference extends GkPreference{
 		getPreferenceStore().setValue(KEY_DISTANCE_DIGIT_COUNT, String.valueOf(digitCount));
 	}
 
-	public boolean isCheckUpdateAtStart(){
-		return getBoolean(KEY_CHECK_UPDATE_STARTUP);
+	public boolean isCheckForUpdate(){
+		return getBoolean(KEY_CHECK_UPDATE);
 	}
+	
 	public <Q extends Quantity<Q>> String format(BigDecimalQuantity<Q> quantity) throws GkException{
 		Unit<Q> targetUnit = getConfiguredUnit(quantity);
 		BigDecimal newValue = quantity.getValue().setScale(getDigitCount(), RoundingMode.HALF_DOWN);
@@ -184,4 +192,26 @@ public class GokoPreference extends GkPreference{
 		return quantity.getUnit();
 	}
 
+	public void setLastUpdateCheckTimestamp(Date date){
+		setValue(KEY_LAST_UPDATE_CHECK_TIMESTAMP, date.getTime());
+	}
+	
+	public Date getLastUpdateCheckTimestamp(){
+		return new Date(getLong(KEY_LAST_UPDATE_CHECK_TIMESTAMP));
+	}
+
+	/**
+	 * @return the updateCheckFrequency
+	 * @throws GkException GkException 
+	 */
+	public EnumUpdateCheckFrequency getUpdateCheckFrequency() throws GkException {
+		return EnumUpdateCheckFrequency.getValue(getString(KEY_CHECK_UPDATE_FREQUENCY));
+	}
+
+	/**
+	 * @param updateCheckFrequency the updateCheckFrequency to set
+	 */
+	public void setUpdateCheckFrequency(EnumUpdateCheckFrequency updateCheckFrequency) {
+		setValue(KEY_CHECK_UPDATE_FREQUENCY, updateCheckFrequency.getCode());
+	}
 }

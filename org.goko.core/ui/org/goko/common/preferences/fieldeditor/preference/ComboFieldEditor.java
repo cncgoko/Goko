@@ -28,10 +28,13 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
 		super(parent, style);		
 		createControls(parent, style);
 	}
-
+	
+	public void setInput(String[][] entry){
+		setEntry(entry);
+	}
 	/**
 	 * @param entry The names (labels) and underlying values to populate the combo widget.  These should be arranged as: { {name1, value1}, {name2, value2}, ...}
-	 */
+	 */	
 	public void setEntry(String[][] entry){
 		this.fEntryNamesAndValues = entry; 	
 		control.removeAll();
