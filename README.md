@@ -9,7 +9,7 @@ Todo :
 - [ ] Display restart warning/request when changing target board
 - [x] Enable soft limite activation (```$sl``` parameter) [TinyG doc](https://github.com/synthetos/TinyG/wiki/Homing-and-Limits-Setup-and-Troubleshooting#soft-and-hard-limits---how-its-supposed-to-work)
 - [x] Include alarm state ??
-- [ ] Add frequency for update check (Once a week, Once a month, etc...)
+- [x] Add frequency for update check (Once a week, Once a month, etc...)
 
 Possible improvements :
 - [ ] Use profiles for Serial connection (TinyG profile, Grbl profile allowing to save/switch connection settings)
