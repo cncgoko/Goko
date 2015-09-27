@@ -50,7 +50,7 @@ else
   echo "Skipped repository export..."
 fi
 
-if [ $updateBinaries == 'true']
+if [ $updateBinaries == 'true' ]
 then
 	exportBinaries
 else
