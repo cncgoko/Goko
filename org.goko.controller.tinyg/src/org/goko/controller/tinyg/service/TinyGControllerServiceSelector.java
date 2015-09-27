@@ -34,7 +34,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
@@ -321,7 +321,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public Quantity<Length> getX() throws GkException {
+	public BigDecimalQuantity getX() throws GkException {
 		return getCurrentService().getX();
 	}
 
@@ -329,7 +329,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public Quantity<Length> getY() throws GkException {
+	public BigDecimalQuantity<Length> getY() throws GkException {
 		return getCurrentService().getY();
 	}
 
@@ -337,12 +337,12 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public Quantity<Length> getZ() throws GkException {
+	public BigDecimalQuantity<Length> getZ() throws GkException {
 		return getCurrentService().getZ();
 	}
 
 	@Override
-	public Quantity<Angle> getA() throws GkException {
+	public BigDecimalQuantity<Angle> getA() throws GkException {
 		return getCurrentService().getA();
 	}
 
@@ -359,11 +359,6 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
 		return Arrays.asList(EnumCoordinateSystem.values());
-	}
-
-	@Override
-	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {
-		getCurrentService().startJog(axis, feedrate);
 	}
 
 	@Override
@@ -474,4 +469,91 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		getCurrentService().importFrom(inputStream);		
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#killAlarm()
+	 */
+	@Override
+	public void killAlarm() throws GkException {
+		getCurrentService().killAlarm();		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#getAvailableBuffer()
+	 */
+	@Override
+	public int getAvailableBuffer() throws GkException {
+		return getCurrentService().getAvailableBuffer();	
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#setAvailableBuffer(int)
+	 */
+	@Override
+	public void setAvailableBuffer(int availableBuffer) throws GkException {
+		getCurrentService().setAvailableBuffer(availableBuffer);	
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IStepJogService#getJogStep()
+	 */
+	@Override
+	public BigDecimalQuantity<Length> getJogStep() throws GkException {		
+		return getCurrentService().getJogStep();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
+	 */
+	@Override
+	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
+		getCurrentService().setJogStep(step);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
+	 */
+	@Override
+	public void setJogFeedrate(BigDecimal feed) throws GkException {
+		getCurrentService().setJogFeedrate(feed);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
+	 */
+	@Override
+	public BigDecimal getJogFeedrate() throws GkException {
+		return getCurrentService().getJogFeedrate();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
+	 */
+	@Override
+	public void setJogPrecise(boolean precise) throws GkException {
+		getCurrentService().setJogPrecise(precise);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#isJogPrecise()
+	 */
+	@Override
+	public boolean isJogPrecise() throws GkException {
+		return getCurrentService().isJogPrecise();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis)
+	 */
+	@Override
+	public void startJog(EnumControllerAxis axis) throws GkException {
+		getCurrentService().startJog(axis);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
+	 */
+	@Override
+	public boolean isJogPreciseForced() throws GkException {		
+		return getCurrentService().isJogPreciseForced();
+	}
 }

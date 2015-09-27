@@ -73,6 +73,7 @@ public class TinyGConfiguration {
 	public static final String ENABLE_CR_ON_TX 			= "ec";
 	public static final String ENABLE_CHARACTER_ECHO 	= "ee";
 	public static final String ENABLE_FLOW_CONTROL 		= "ex";
+	public static final String ENABLE_SOFT_LIMIT		= "sl";
 	public static final String BAUD_RATE 				= "baud";
 
 	public static final String DEFAULT_PLANE_SELECTION	= "gpl";
@@ -146,6 +147,7 @@ public class TinyGConfiguration {
 		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CHARACTER_ECHO 		,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_FLOW_CONTROL 			,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(BAUD_RATE 					,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_SOFT_LIMIT			,BigDecimal.ZERO));
 
 		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PLANE_SELECTION	,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_UNITS_MODE			,BigDecimal.ZERO));

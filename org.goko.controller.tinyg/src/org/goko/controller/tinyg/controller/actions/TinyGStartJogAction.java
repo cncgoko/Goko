@@ -50,7 +50,7 @@ public class TinyGStartJogAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public void execute(Object... parameters) throws GkException {		
-		// Nothing to execute here. The jog is done using the IContinuousJogService implementation in TinyG
+		// Nothing to execute here. The jog is done using the IJogService implementation in TinyG		
 	}
 
 	/** (inheritDoc)

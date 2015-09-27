@@ -18,7 +18,7 @@ package org.goko.core.controller;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 
 public interface IThreeAxisControllerAdapter {
 
@@ -26,15 +26,15 @@ public interface IThreeAxisControllerAdapter {
 	 * Returns the X position of the controller
 	 * @return the current X position
 	 */
-	Quantity<Length> getX() throws GkException;
+	BigDecimalQuantity<Length> getX() throws GkException;
 	/**
 	 * Returns the Y position of the controller
 	 * @return the current Y position
 	 */
-	Quantity<Length> getY() throws GkException;
+	BigDecimalQuantity<Length> getY() throws GkException;
 	/**
 	 * Returns the Z position of the controller
 	 * @return the current Z position
 	 */
-	Quantity<Length> getZ() throws GkException;
+	BigDecimalQuantity<Length> getZ() throws GkException;
 }

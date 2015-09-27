@@ -5,7 +5,6 @@ import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.serial.ISerialConnectionService;
-import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.IControllerConfigurationFileExporter;
 import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
@@ -53,7 +52,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IFourAxisControllerAdapter.class, service, null);
 		context.registerService(ICoordinateSystemAdapter.class, service, null);
 		context.registerService(IJogService.class, service, null);
-		context.registerService(IContinuousJogService.class, service, null);
+		context.registerService(IJogService.class, service, null);		
 		context.registerService(IWorkVolumeProvider.class, service, null);		
 		context.registerService(IControllerConfigurationFileExporter.class, service, null);		
 		context.registerService(IControllerConfigurationFileImporter.class, service, null);		

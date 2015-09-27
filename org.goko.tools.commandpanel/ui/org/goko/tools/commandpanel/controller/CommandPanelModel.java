@@ -36,10 +36,10 @@ public class CommandPanelModel extends AbstractModelObject{
 	private WritableMap actionState;
 	private BigDecimal jogSpeed;
 	private BigDecimal jogIncrement;
-	private boolean incrementalJog;
-	private boolean stepModeChoiceEnabled;
+	private boolean preciseJog;	
 	private Unit<Length> lengthUnit;
 	private String lengthUnitSymbol;
+	private boolean preciseJogForced;
 
 	public CommandPanelModel(){
 		actionState = new WritableMap(String.class, Boolean.class);
@@ -82,27 +82,14 @@ public class CommandPanelModel extends AbstractModelObject{
 	/**
 	 * @return the incrementalJog
 	 */
-	public boolean isIncrementalJog() {
-		return incrementalJog;
+	public boolean isPreciseJog() {
+		return preciseJog;
 	}
 	/**
 	 * @param incrementalJog the incrementalJog to set
 	 */
-	public void setIncrementalJog(boolean incrementalJog) {
-		firePropertyChange("incrementalJog", this.incrementalJog, this.incrementalJog = incrementalJog);
-	}
-
-	/**
-	 * @return the stepModeChoiceEnabled
-	 */
-	public boolean isStepModeChoiceEnabled() {
-		return stepModeChoiceEnabled;
-	}
-	/**
-	 * @param stepModeChoiceEnabled the stepModeChoiceEnabled to set
-	 */
-	public void setStepModeChoiceEnabled(boolean stepModeChoiceEnabled) {
-		firePropertyChange("stepModeChoiceEnabled", this.stepModeChoiceEnabled, this.stepModeChoiceEnabled = stepModeChoiceEnabled);
+	public void setPreciseJog(boolean preciseJog) {
+		firePropertyChange("preciseJog", this.preciseJog, this.preciseJog = preciseJog);
 	}
 
 	public void setLengthUnitSymbol(String symbol) {
@@ -120,5 +107,17 @@ public class CommandPanelModel extends AbstractModelObject{
 
 	public Unit<Length> getLengthUnit() {
 		return lengthUnit;
+	}
+	/**
+	 * @return the preciseJogForced
+	 */
+	public boolean isPreciseJogForced() {
+		return preciseJogForced;
+	}
+	/**
+	 * @param preciseJogForced the preciseJogForced to set
+	 */
+	public void setPreciseJogForced(boolean preciseJogForced) {
+		firePropertyChange("preciseJogForced", this.preciseJogForced, this.preciseJogForced = preciseJogForced);
 	}
 }

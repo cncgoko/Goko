@@ -22,7 +22,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 
 public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter {
@@ -36,7 +36,7 @@ public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public Quantity<Length> getX() throws GkException {
+	public BigDecimalQuantity<Length> getX() throws GkException {
 		return baseAdapter.getX();
 	}
 
@@ -44,7 +44,7 @@ public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public Quantity<Length> getY() throws GkException {
+	public BigDecimalQuantity<Length> getY() throws GkException {
 		return baseAdapter.getY();
 	}
 
@@ -52,7 +52,7 @@ public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public Quantity<Length> getZ() throws GkException {
+	public BigDecimalQuantity<Length> getZ() throws GkException {
 		return baseAdapter.getZ();
 	}
 
@@ -60,7 +60,7 @@ public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter
 	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
 	 */
 	@Override
-	public Quantity<Angle> getA() {
+	public BigDecimalQuantity<Angle> getA() {
 		return NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
 	}
 

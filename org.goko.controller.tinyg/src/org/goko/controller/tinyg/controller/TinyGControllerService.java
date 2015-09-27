@@ -36,7 +36,6 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
@@ -57,7 +56,6 @@ import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
@@ -77,7 +75,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
 	public static final String SERVICE_ID = "TinyG Controller";
-	private static final String JOG_SIMULATION_DISTANCE = "10000.0";
+//	private static final String JOG_SIMULATION_DISTANCE = "10000.0";
+	private static final String JOG_SIMULATION_DISTANCE = "1";
 	private static final double JOG_SIMULATION_DISTANCE_DOUBLE = 10000.0;
 
 	/** Stored configuration */
@@ -104,7 +103,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private IApplicativeLogService applicativeLogService;
 	/** Event admin service */
 	private EventAdmin eventAdmin;
-
+	private TinyGJoggingRunnable jogRunnable;
+	
 	public TinyGControllerService() {
 		communicator = new TinyGCommunicator(this);	
 		tinygState = new TinyGState();
@@ -132,10 +132,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		
 		// Initiate execution queue
 		executionQueue 				= new ExecutionQueue<TinyGExecutionToken>();
+		
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
-		currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);
+		currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);				
 		executor.execute(currentSendingRunnable);
 		
+		jogRunnable = new TinyGJoggingRunnable(this, communicator);
+		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
+		jogExecutor.execute(jogRunnable);
 		
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -553,58 +557,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 		communicator.send(lstBytes);
 	}
-
-	public void startJog(EnumTinyGAxis axis, BigDecimal feed) throws GkException{
-		String command = StringUtils.EMPTY;
-		if(getCurrentGCodeContext().getDistanceMode() == EnumGCodeCommandDistanceMode.ABSOLUTE){
-			command = startG90Jog(axis, feed);
-		}else{
-			command = startG91Jog(axis, feed);
-		}
-		if(feed != null){
-			command += "F"+feed;
-		}
-		communicator.send(GkUtils.toBytesList(command));
-	}
-
-	public String startG91Jog(EnumTinyGAxis axis, BigDecimal feed) throws GkException{
-		String command = "G1"+axis.getAxisCode();
-		double delta = JOG_SIMULATION_DISTANCE_DOUBLE;
-		double target = 0;
-		switch (axis) {
-		case X_NEGATIVE: target = getX().doubleValue() - delta;
-			break;
-		case X_POSITIVE: target = getX().doubleValue() + delta;
-			break;
-		case Y_NEGATIVE: target = getY().doubleValue() - delta;
-			break;
-		case Y_POSITIVE: target = getY().doubleValue() + delta;
-			break;
-		case Z_NEGATIVE: target = getZ().doubleValue() - delta;
-			break;
-		case Z_POSITIVE: target = getZ().doubleValue() + delta;
-			break;
-		case A_NEGATIVE: target = getA().doubleValue() - delta;
-			break;
-		case A_POSITIVE: target = getA().doubleValue() + delta;
-			break;
-		default:
-			break;
-		}
-		command += String.valueOf(target);
-		return command;
-	}
-	public String startG90Jog(EnumTinyGAxis axis, BigDecimal feed){
-		String command = "G1"+axis.getAxisCode();
-		if(axis.isNegative()){
-			command+="-";
-		}		
-		command += JOG_SIMULATION_DISTANCE;
-		return command;
-	}
+	
 	public void turnSpindleOn() throws GkException{
 		communicator.send(GkUtils.toBytesList("M3"));
 	}
+	
 	public void turnSpindleOff() throws GkException{
 		communicator.send(GkUtils.toBytesList("M5"));
 	}
@@ -712,28 +669,28 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public Quantity<Length> getX() throws GkException {
+	public BigDecimalQuantity<Length> getX() throws GkException {
 		return tinygState.getX();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public Quantity<Length> getY() throws GkException {
+	public BigDecimalQuantity<Length> getY() throws GkException {
 		return tinygState.getY();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public Quantity<Length> getZ() throws GkException {
+	public BigDecimalQuantity<Length> getZ() throws GkException {
 		return tinygState.getZ();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
 	 */
 	@Override
-	public Quantity<Angle> getA() throws GkException {
+	public BigDecimalQuantity<Angle> getA() throws GkException {
 		return tinygState.getA();
 	}
 
@@ -765,18 +722,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IContinuousJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, double)
-	 */
-	@Override
-	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {
-		startJog( EnumTinyGAxis.getEnum(axis.getCode()), feedrate);
-	}
-	/** (inheritDoc)
 	 * @see org.goko.core.controller.IContinuousJogService#stopJog()
 	 */
 	@Override
 	public void stopJog() throws GkException {
-		stopMotion();
+//		if(!MachineState.ALARM.equals(getState())){ // Only stop if not alarmed
+//			stopMotion();
+//		}
+		jogRunnable.disableJogging();
 	}
 
 	/** (inheritDoc)
@@ -956,5 +909,78 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setEventAdmin(EventAdmin eventAdmin) {
 		this.eventAdmin = eventAdmin;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#killAlarm()
+	 */
+	@Override
+	public void killAlarm() throws GkException {
+		communicator.send(GkUtils.toBytesList("{\"clear\":\"\"}"));
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
+	 */
+	@Override
+	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
+		jogRunnable.setStep(step);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IStepJogService#getJogStep()
+	 */
+	@Override
+	public BigDecimalQuantity<Length> getJogStep() throws GkException {
+		return jogRunnable.getStep();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
+	 */
+	@Override
+	public void setJogFeedrate(BigDecimal feed) throws GkException {
+		jogRunnable.setFeed(feed);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
+	 */
+	@Override
+	public BigDecimal getJogFeedrate() throws GkException {
+		return jogRunnable.getFeed();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
+	 */
+	@Override
+	public void setJogPrecise(boolean precise) throws GkException {
+		jogRunnable.setPrecise(precise);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#isJogPrecise()
+	 */
+	@Override
+	public boolean isJogPrecise() throws GkException {		
+		return jogRunnable.isPrecise();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
+	 */
+	@Override
+	public void startJog(EnumControllerAxis axis) throws GkException {
+		jogRunnable.setAxis(EnumTinyGAxis.getEnum(axis.getCode()));
+		jogRunnable.enableJogging();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
+	 */
+	@Override
+	public boolean isJogPreciseForced() throws GkException {		
+		return false;
 	}
 }

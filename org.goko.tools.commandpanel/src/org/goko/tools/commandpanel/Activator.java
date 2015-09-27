@@ -29,8 +29,8 @@ public class Activator implements BundleActivator {
     	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_FEEDRATE, null))){
     		preferences.put(CommandPanelParameter.JOG_FEEDRATE, "1000");
     	}
-    	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_INCREMENTAL, null))){
-    		preferences.put(CommandPanelParameter.JOG_INCREMENTAL, "false");
+    	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_PRECISE_MODE, null))){
+    		preferences.put(CommandPanelParameter.JOG_PRECISE_MODE, "false");
     	}
     	if(StringUtils.isBlank(preferences.get(CommandPanelParameter.JOG_STEP_SIZE, null))){
     		preferences.put(CommandPanelParameter.JOG_STEP_SIZE, "0.1");

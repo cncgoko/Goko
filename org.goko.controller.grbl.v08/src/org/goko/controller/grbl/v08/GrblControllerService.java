@@ -51,11 +51,8 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
@@ -111,9 +108,10 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private GrblCommunicator communicator;
 	private IGCodeExecutionMonitorService monitorService;
 	private EventAdmin eventAdmin;
-	/** Jog step in use */
-	private BigDecimalQuantity<Length> jogStep;
-
+	/** Jog related fields */
+	private EnumGrblAxis axis;
+	private BigDecimal feed;
+	private BigDecimalQuantity<Length> step;
 	/**
 	 * Constructor
 	 */
@@ -142,8 +140,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		executionQueue 				= new ExecutionQueue<GrblGCodeExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
 		grblStreamingRunnable 		= new GrblStreamingRunnable(executionQueue, this);
-		executor.execute(grblStreamingRunnable);
-		this.jogStep = NumberQuantity.of(BigDecimal.ZERO, SI.MILLIMETRE);
+		executor.execute(grblStreamingRunnable);		
 	}
 
 	protected void stopStatusPolling(){
@@ -208,7 +205,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public Quantity<Length> getX() throws GkException {
+	public BigDecimalQuantity<Length> getX() throws GkException {
 		BigDecimalQuantity<Length> xPos = grblState.getWorkPosition().getX();		
 		return xPos;
 	}
@@ -217,7 +214,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public Quantity<Length> getY() throws GkException {
+	public BigDecimalQuantity<Length> getY() throws GkException {
 		BigDecimalQuantity<Length> yPos = grblState.getWorkPosition().getY();		
 		return yPos;
 	}
@@ -227,7 +224,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public Quantity<Length> getZ() throws GkException {
+	public BigDecimalQuantity<Length> getZ() throws GkException {
 		BigDecimalQuantity<Length> zPos = grblState.getWorkPosition().getZ();
 		return zPos;
 	}
@@ -499,52 +496,36 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			executionQueue.setPaused(false);
 		}
 	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
-	 */
-	@Override
-	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
-		this.jogStep = step;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#getJogStep()
-	 */
-	@Override
-	public BigDecimalQuantity<Length> getJogStep() throws GkException {
-		return jogStep;
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal)
-	 */
-	@Override	
-	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {		
-		String oldDistanceMode = "G90";
-		if(grblState.getDistanceMode() == EnumGCodeCommandDistanceMode.RELATIVE){
-			oldDistanceMode = "G91";
-		}
-		String command = "G91G1"+axis.getAxisCode();
-		if(axis.isNegative()){
-			command+="-";
-		}
-		command += jogStep.to(getCurrentGCodeContext().getUnit().getUnit()).value();
-		if(feedrate != null){
-			command += "F"+feedrate;
-		}
-		List<Byte> lstBytes = GkUtils.toBytesList(command);
-		communicator.send(lstBytes);
-		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
-		communicator.send(distanceModeBackup);
-	}
+		
+//	/** (inheritDoc)
+//	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal)
+//	 */
+//	@Override	
+//	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {		
+//		String oldDistanceMode = "G90";
+//		if(grblState.getDistanceMode() == EnumGCodeCommandDistanceMode.RELATIVE){
+//			oldDistanceMode = "G91";
+//		}
+//		String command = "G91G1"+axis.getAxisCode();
+//		if(axis.isNegative()){
+//			command+="-";
+//		}
+//		command += jogStep.to(getCurrentGCodeContext().getUnit().getUnit()).value();
+//		if(feedrate != null){
+//			command += "F"+feedrate;
+//		}
+//		List<Byte> lstBytes = GkUtils.toBytesList(command);
+//		communicator.send(lstBytes);
+//		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
+//		communicator.send(distanceModeBackup);
+//	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IStepJogService#stopJog()
 	 */
 	@Override
 	public void stopJog() throws GkException {
-		// Nothing to do in stop jog since it's a step jog
+		// Nothing to stop since it's only precise jog
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
@@ -862,5 +843,86 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		scanner.close();
 		setConfiguration(cfg);
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
+	 */
+	@Override
+	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
+		this.step = step;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IStepJogService#getJogStep()
+	 */
+	@Override
+	public BigDecimalQuantity<Length> getJogStep() throws GkException {
+		return step;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
+	 */
+	@Override
+	public void setJogFeedrate(BigDecimal feed) throws GkException {
+		this.feed = feed;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
+	 */
+	@Override
+	public BigDecimal getJogFeedrate() throws GkException {
+		return feed;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
+	 */
+	@Override
+	public void setJogPrecise(boolean precise) throws GkException {
+		// Do nothing
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#isJogPrecise()
+	 */
+	@Override
+	public boolean isJogPrecise() throws GkException {		
+		return true;
+	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
+	 */
+	@Override
+	public void startJog(EnumControllerAxis axis) throws GkException {
+		if(!GrblMachineState.READY.equals(getState())){
+			return;
+		}
+		String oldDistanceMode = "G90";
+		if(grblState.getDistanceMode() == EnumGCodeCommandDistanceMode.RELATIVE){
+			oldDistanceMode = "G91";
+		}
+		String command = "G91G1"+axis.getAxisCode();
+		if(axis.isNegative()){
+			command+="-";
+		}
+		command += step.to(getCurrentGCodeContext().getUnit().getUnit()).value();
+		if(feed != null){
+			command += "F"+feed;
+		}
+		List<Byte> lstBytes = GkUtils.toBytesList(command);
+		communicator.send(lstBytes);
+		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
+		communicator.send(distanceModeBackup);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
+	 */
+	@Override
+	public boolean isJogPreciseForced() throws GkException {		
+		return true; // does not support continuous jog
+	}
 }

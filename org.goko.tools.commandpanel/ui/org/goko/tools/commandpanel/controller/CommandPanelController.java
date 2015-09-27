@@ -44,10 +44,9 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.controller.IContinuousJogService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.controller.IStepJogService;
+import org.goko.core.controller.IJogService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
@@ -69,13 +68,9 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	private IControllerService controllerService;
 	@Inject
 	@Optional
-	private ICoordinateSystemAdapter coordinateSystemAdapter;
-	@Inject
-	@Optional
-	private IContinuousJogService continuousJogService;
-	@Inject
-	@Optional
-	private IStepJogService stepJogService;
+	private ICoordinateSystemAdapter coordinateSystemAdapter;	
+	@Inject	
+	private IJogService jogService;
 
 	public CommandPanelController(CommandPanelModel binding) {
 		super(binding);
@@ -84,10 +79,10 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 
 	@Override
 	public void initialize() throws GkException {
-		controllerService.addListener(this);
-		getDataModel().setStepModeChoiceEnabled( continuousJogService != null && stepJogService != null);
-		if(!getDataModel().isStepModeChoiceEnabled()){
-			getDataModel().setIncrementalJog(stepJogService != null);
+		controllerService.addListener(this);	
+		getDataModel().setPreciseJogForced(jogService.isJogPreciseForced());
+		if(jogService.isJogPreciseForced()){
+			getDataModel().setPreciseJog(true);
 		}
 	}
 
@@ -150,15 +145,15 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		widget.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				try {
-					if(getDataModel().isIncrementalJog()){
-						Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
-						getDataModel().setLengthUnit(unit);
-						BigDecimalQuantity<Length> step = NumberQuantity.of(getDataModel().getJogIncrement(), unit);
-						stepJogService.startJog(axis, getDataModel().getJogSpeed());
-					}else{
-						continuousJogService.startJog(axis, getDataModel().getJogSpeed());
-					}
+				try {					
+					Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+					getDataModel().setLengthUnit(unit);
+					BigDecimalQuantity<Length> step = NumberQuantity.of(getDataModel().getJogIncrement(), unit);					
+					boolean isPrecise = getDataModel().isPreciseJog();
+					jogService.setJogStep(step);
+					jogService.setJogFeedrate(getDataModel().getJogSpeed());
+					jogService.setJogPrecise(isPrecise);
+					jogService.startJog(axis);					
 				} catch (GkException e1) {
 					LOG.error(e1);
 				}
@@ -168,12 +163,8 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			public void mouseUp(MouseEvent e) {
 				try {
 					Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
-					getDataModel().setLengthUnit(unit);
-					if(getDataModel().isIncrementalJog()){
-						stepJogService.stopJog();
-					}else{
-						continuousJogService.stopJog();
-					}
+					getDataModel().setLengthUnit(unit);					
+					jogService.stopJog();					
 				} catch (GkException e1) {
 					LOG.error(e1);
 				}
@@ -185,22 +176,18 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
 		getDataModel().setLengthUnit(unit);
 		getDataModel().setJogSpeed( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_FEEDRATE, StringUtils.EMPTY)) );
-		getDataModel().setJogIncrement( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_STEP_SIZE, StringUtils.EMPTY)) );
-		if(stepJogService != null && continuousJogService != null){
-			getDataModel().setIncrementalJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_INCREMENTAL, "false")) );
-		}else if( stepJogService != null ){
-			getDataModel().setIncrementalJog( true );
-			stepJogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));
-		}else{
-			getDataModel().setIncrementalJog( false );
+		getDataModel().setJogIncrement( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_STEP_SIZE, StringUtils.EMPTY)) );		
+		if(!jogService.isJogPreciseForced()){
+			getDataModel().setPreciseJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_PRECISE_MODE, "false")) );
 		}
+		
 	}
 
 	public void saveValues() {
 		//Cette facon d'utiliser les preferences est la bonne
 		if(getDataModel() != null){
 			getPreferences().put(CommandPanelParameter.JOG_FEEDRATE, getDataModel().getJogSpeed().toPlainString());
-			getPreferences().put(CommandPanelParameter.JOG_INCREMENTAL, Boolean.toString(getDataModel().isIncrementalJog()));
+			getPreferences().put(CommandPanelParameter.JOG_PRECISE_MODE, Boolean.toString(getDataModel().isPreciseJog()));
 			getPreferences().put(CommandPanelParameter.JOG_STEP_SIZE, getDataModel().getJogIncrement().toPlainString());
 
 			try {
@@ -228,10 +215,8 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		try {
-			if(stepJogService != null){
-				stepJogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));
-			}
+		try {			
+			jogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));			
 		} catch (GkException e) {			
 			LOG.error(e);
 		}		

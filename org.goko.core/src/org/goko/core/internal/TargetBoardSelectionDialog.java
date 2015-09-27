@@ -79,6 +79,7 @@ public class TargetBoardSelectionDialog extends Dialog {
 		composite.setLayoutData(gd_composite);
 		
 		targetBoardCombo = new ComboFieldEditor(composite, SWT.READ_ONLY);
+		((GridData) targetBoardCombo.getControl().getLayoutData()).widthHint = 100;
 		targetBoardCombo.setLabel("Controller");
 		targetBoardCombo.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 		initComboContent();

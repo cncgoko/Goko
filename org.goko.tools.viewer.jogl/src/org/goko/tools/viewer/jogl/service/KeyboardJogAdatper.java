@@ -33,28 +33,35 @@ public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
 	private IJogService jogService;
 	private GokoJoglCanvas canvas;
 	private Map<Integer, EnumControllerAxis> mapAxisByKey;
-
+	private long lastDebounce;
+	private long debounceTime;
+	
 	public KeyboardJogAdatper(GokoJoglCanvas canvas, IJogService jogService) {
 		super();
 		this.jogService = jogService;
 		this.canvas = canvas;
+		this.debounceTime = 100l; // 100ms
 		mapAxisByKey = new HashMap<Integer, EnumControllerAxis>();
 		mapAxisByKey.put(SWT.ARROW_LEFT, 	EnumControllerAxis.X_NEGATIVE);
 		mapAxisByKey.put(SWT.ARROW_RIGHT, 	EnumControllerAxis.X_POSITIVE);
 		mapAxisByKey.put(SWT.ARROW_DOWN, 	EnumControllerAxis.Y_NEGATIVE);
 		mapAxisByKey.put(SWT.ARROW_UP, 		EnumControllerAxis.Y_POSITIVE);
 		mapAxisByKey.put(SWT.PAGE_DOWN, 	EnumControllerAxis.Z_NEGATIVE);
-		mapAxisByKey.put(SWT.PAGE_UP, 	EnumControllerAxis.Z_POSITIVE);
+		mapAxisByKey.put(SWT.PAGE_UP, 		EnumControllerAxis.Z_POSITIVE);
 	}
 
-
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.events.KeyAdapter#keyPressed(org.eclipse.swt.events.KeyEvent)
+	 */
 	@Override
 	public void keyPressed(KeyEvent event) {
-		if(!canvas.isKeyboardJogEnabled()){
+		long requestTime = System.currentTimeMillis();
+		if( (requestTime - lastDebounce) < debounceTime || !canvas.isKeyboardJogEnabled()){
 			return;
 		}
+		lastDebounce = requestTime;				
 		if(mapAxisByKey.containsKey(event.keyCode)){
-			try {
+			try {				
 				triggerJog(mapAxisByKey.get(event.keyCode));
 			} catch (GkException e) {
 				e.printStackTrace();
@@ -62,6 +69,9 @@ public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.events.KeyAdapter#keyReleased(org.eclipse.swt.events.KeyEvent)
+	 */
 	@Override
 	public void keyReleased(KeyEvent event){
 		if(!canvas.isKeyboardJogEnabled()){
@@ -77,7 +87,7 @@ public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
 	}
 
 	public void triggerJog(EnumControllerAxis axis) throws GkException{
-		jogService.startJog(axis, null);
+		jogService.startJog(axis);
 	}
 
 	public void stopJog() throws GkException{

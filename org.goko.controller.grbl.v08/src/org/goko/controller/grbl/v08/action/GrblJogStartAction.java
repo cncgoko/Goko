@@ -19,16 +19,10 @@
  */
 package org.goko.controller.grbl.v08.action;
 
-import java.math.BigDecimal;
-
-import org.apache.commons.lang3.ObjectUtils;
 import org.goko.controller.grbl.v08.GrblControllerService;
 import org.goko.controller.grbl.v08.GrblMachineState;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.action.DefaultControllerAction;
-import org.goko.core.controller.bean.EnumControllerAxis;
 
 /**
  * Feed hold action for Grbl
@@ -51,7 +45,8 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 	 */
 	@Override
 	public boolean canExecute() throws GkException {		
-		return ObjectUtils.equals(GrblMachineState.READY, getControllerService().getState());
+		return !GrblMachineState.UNDEFINED.equals(getControllerService().getState()) 
+			&& !GrblMachineState.ALARM.equals(getControllerService().getState());
 	}
 
 	/** (inheritDoc)
@@ -59,12 +54,13 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 	 */
 	@Override
 	public void execute(Object... parameters) throws GkException {
-		String 			axis 	 = getStringParameter(parameters[0]);
-		EnumControllerAxis 	enumAxis = EnumControllerAxis.getEnum(axis);
-		BigDecimal 			feed 	 = new BigDecimal(getStringParameter(parameters[1]));
-		Unit<Length> unit = getControllerService().getCurrentGCodeContext().getUnit().getUnit();
-		//BigDecimalQuantity<Length>	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
-		getControllerService().startJog(enumAxis, feed);
+		// Nothing to execute here. The jog is done using the IJogService implementation in TinyGrbl
+//		String 			axis 	 = getStringParameter(parameters[0]);
+//		EnumControllerAxis 	enumAxis = EnumControllerAxis.getEnum(axis);
+//		BigDecimal 			feed 	 = new BigDecimal(getStringParameter(parameters[1]));
+//		Unit<Length> unit = getControllerService().getCurrentGCodeContext().getUnit().getUnit();
+//		//BigDecimalQuantity<Length>	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
+//		getControllerService().startJog(enumAxis, feed);
 	}
 
 	/** (inheritDoc)

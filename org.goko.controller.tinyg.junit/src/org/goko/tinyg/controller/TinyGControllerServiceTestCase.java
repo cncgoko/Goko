@@ -11,9 +11,13 @@ import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValu
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.US;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.connection.serial.SerialParameter;
+import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.rs274ngcv3.RS274GCodeService;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
 import org.goko.junit.tools.connection.AssertSerialEmulator;
@@ -236,6 +240,80 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"G55\":{\"x\":15.031, \"y\":35.000, \"z\":-16.031}} "+'\n', 10000);
 	}
 	
+	/* ************************************************
+	 *  Jogging tests
+	 * ************************************************/
+	
+	public void testJogStartAbsolute() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();			
+
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"posx\":15.031,\"posy\":35.000,\"posz\":-46.462, \"dist\":0}},\"f\":[1,0,0,0]}");
+		serialEmulator.receiveDataWithEndChar("{\"qr\":32,\"qi\":1,\"qo\":1}");
+		
+		GCodeContext context = tinyg.getCurrentGCodeContext();
+		assertEquals(EnumGCodeCommandDistanceMode.ABSOLUTE, context.getDistanceMode());
+		
+		tinyg.setJogStep(NumberQuantity.of(BigDecimal.ONE, SI.MILLIMETRE));
+		tinyg.setJogFeedrate(new BigDecimal("1000"));
+		tinyg.setJogPrecise(true);
+		
+		tinyg.startJog(EnumControllerAxis.X_POSITIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X16.031\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.X_NEGATIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X14.031\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.Y_POSITIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y36.000\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.Y_NEGATIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y34.000\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.Z_POSITIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-45.462\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.Z_NEGATIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-47.462\n",1000);
+		
+
+	}
+	
+	public void testJogStartRelative() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();			
+
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"posx\":15.031,\"posy\":35.000,\"posz\":-16.031, \"dist\":1}},\"f\":[1,0,0,0]}");
+		serialEmulator.receiveDataWithEndChar("{\"qr\":32,\"qi\":1,\"qo\":1}");
+				
+		GCodeContext context = tinyg.getCurrentGCodeContext();
+		assertEquals(EnumGCodeCommandDistanceMode.RELATIVE, context.getDistanceMode());
+		
+		tinyg.setJogStep(NumberQuantity.of(BigDecimal.ONE, SI.MILLIMETRE));
+		tinyg.setJogFeedrate(new BigDecimal("1000"));
+		tinyg.setJogPrecise(true);
+		
+		tinyg.startJog(EnumControllerAxis.X_POSITIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X1.000\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.X_NEGATIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X-1.000\n",1000);
+		
+		tinyg.setJogStep(NumberQuantity.of(new BigDecimal("0.01"), SI.MILLIMETRE));
+		tinyg.startJog(EnumControllerAxis.Y_POSITIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y0.010\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.Y_NEGATIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y-0.010\n",1000);
+		
+		tinyg.setJogStep(NumberQuantity.of(new BigDecimal("2.035"), SI.MILLIMETRE));
+		
+		tinyg.startJog(EnumControllerAxis.Z_POSITIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z2.035\n",1000);
+		
+		tinyg.startJog(EnumControllerAxis.Z_NEGATIVE);		
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-2.035\n",1000);		
+	}
 	/** (inheritDoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */

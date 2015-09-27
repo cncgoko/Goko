@@ -90,7 +90,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	@Inject
 	@Preference
 	IEclipsePreferences prefs;
-	private Button btnIncrementalJog;
+	private Button btnPreciseJog;
 	private Button btnKillAlarm;
 	private Spinner jogStepSpinner;
 	private Spinner jogSpeedSpinner;
@@ -148,37 +148,36 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gl_grpManualJog.horizontalSpacing = 4;
 		grpManualJog.setLayout(gl_grpManualJog);
 
-		if(getDataModel().isStepModeChoiceEnabled()){
-			btnIncrementalJog = new Button(grpManualJog, SWT.CHECK);
-			btnIncrementalJog.setEnabled(false);		
-			btnIncrementalJog.setText("Incremental jog");
-		}
+		
+		btnPreciseJog = new Button(grpManualJog, SWT.CHECK);
+		btnPreciseJog.setEnabled(false);		
+		btnPreciseJog.setText("Precise jog");
+		
 		Composite composite_5 = new Composite(grpManualJog, SWT.NONE);
 		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
 		
 		composite_5.setLayout(new GridLayout(3, false));
 
-		if(getDataModel().isIncrementalJog()){
-			lblJogStep = new Label(composite_5, SWT.NONE);
-			lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-			lblJogStep.setText("Step :");
-			
 		
-			jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
-			jogStepSpinner.setMaximum(100000);
-			jogStepSpinner.setMinimum(1);
-			jogStepSpinner.setDigits(GokoPreference.getInstance().getDigitCount());
-			GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-			gd_jogSpinner.widthHint = 40;
-			jogStepSpinner.setLayoutData(gd_jogSpinner);
-			
-			
-			
-			lblUnit = new Label(composite_5, SWT.NONE);
-			
-			lblUnit.setText("mm");
-		}
+		lblJogStep = new Label(composite_5, SWT.NONE);
+		lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblJogStep.setText("Step :");
+				
+		jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
+		jogStepSpinner.setMaximum(100000);
+		jogStepSpinner.setMinimum(1);
+		jogStepSpinner.setDigits(GokoPreference.getInstance().getDigitCount());
+		GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_jogSpinner.widthHint = 40;
+		jogStepSpinner.setLayoutData(gd_jogSpinner);
+		
+		
+		
+		lblUnit = new Label(composite_5, SWT.NONE);
+		
+		lblUnit.setText("mm");
+		
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
 		lblJogSpeed.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -678,24 +677,14 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindButtonToExecuteAction(btnSpindleOff, DefaultControllerAction.SPINDLE_OFF);
 		getController().bindEnableControlWithAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
 		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);		
-		
-		if(getDataModel().isStepModeChoiceEnabled()){
-			getController().addEnableBinding(btnIncrementalJog, "stepModeChoiceEnabled");
-			getController().addVisibleBinding(btnIncrementalJog, "stepModeChoiceEnabled");
-			getController().addSelectionBinding(btnIncrementalJog, "incrementalJog");
-
-			getController().addVisibleBinding(jogStepSpinner, "stepModeChoiceEnabled");
-			getController().addVisibleBinding(lblUnit, "stepModeChoiceEnabled");
-			getController().addVisibleBinding(lblJogStep, "stepModeChoiceEnabled");
-			
-			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);		
-			
-		}else if(getDataModel().isIncrementalJog()){
-			getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);		
-			
-		}
-		
 				
+		getController().addSelectionBinding(btnPreciseJog, "preciseJog");
+		if(getDataModel().isPreciseJogForced()){			
+			btnPreciseJog.setEnabled(false);
+		}else{
+			getController().bindEnableControlWithAction(btnPreciseJog, DefaultControllerAction.JOG_START);
+		}
+		getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
 		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
 				
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);

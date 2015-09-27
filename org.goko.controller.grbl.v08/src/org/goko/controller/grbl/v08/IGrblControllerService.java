@@ -24,7 +24,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerConfigurationFileExporter;
 import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.IStepJogService;
+import org.goko.core.controller.IJogService;
 
 /**
  * Definition of the Grbl service
@@ -32,7 +32,7 @@ import org.goko.core.controller.IStepJogService;
  * @author PsyKo
  *
  */
-public interface IGrblControllerService extends IControllerService, IStepJogService, IControllerConfigurationFileExporter,IControllerConfigurationFileImporter{
+public interface IGrblControllerService extends IControllerService, IJogService, IControllerConfigurationFileExporter,IControllerConfigurationFileImporter{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 
@@ -47,4 +47,6 @@ public interface IGrblControllerService extends IControllerService, IStepJogServ
 	GrblMachineState getState() throws GkException;
 	
 	void setCheckModeEnabled(boolean enabled) throws GkException;
+	
+	int getUsedGrblBuffer() throws GkException;
 }

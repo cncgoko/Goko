@@ -64,10 +64,8 @@ public class GrblStreamingRunnable  implements Runnable {
 				executionQueue.beginNextTokenExecution();
 				LOG.info("Begin execution token");
 				runExecutionToken();
-				// Let's wait until the execution token is complete
-				System.err.println("Let's wait until the execution token is complete");
-				waitTokenComplete();
-				System.err.println("Token complete");
+				// Let's wait until the execution token is complete				
+				waitTokenComplete();				
 				executionQueue.endCurrentTokenExecution();
 			}catch(GkException e){
 				LOG.error(e);
