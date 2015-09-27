@@ -35,8 +35,8 @@ exportBinaries(){
   
   cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/products/
   
-  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/oorg.goko-win32.win32.x86_64.zip
-  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/oorg.goko-win32.win32.x86.zip
+  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86_64.zip
+  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86.zip
   curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86_64.zip
   curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86.zip
   
