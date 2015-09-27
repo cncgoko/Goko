@@ -20,15 +20,27 @@ cleanRepository(){
   deleteFolders update/$gokoVersion/features/
 }
 
-# Clean the distant repository
+# Export the built repository to destination
 exportRepository(){
   echo "Exporting repository..."
   # Switch to repository build location
   cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/repository/
-  # TODO change target to remove hardcoded 'nightly'
+  
   find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/$UPDATE_FOLDER/$gokoVersion/{} \;
 }
 
+# Export the built binaries to destination
+exportBinaries(){
+  echo "Exporting binaries..."
+  
+  cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/products/
+  
+  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86_64.zip
+  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86.zip
+  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86_64.zip
+  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86.zip
+  
+}
 # Let's do it
 if [ $updateRepository == 'true' ]
 then
@@ -36,4 +48,11 @@ then
   exportRepository  
 else
   echo "Skipped repository export..."
+fi
+
+if [ $updateBinaries == 'true' ]
+then
+	exportBinaries
+else
+  echo "Skipped binaries export..."
 fi
