@@ -30,7 +30,7 @@ exportRepository(){
 }
 
 # Export the built binaries to destination
-exportRepository(){
+exportBinaries(){
   echo "Exporting binaries..."
   
   cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/products/
