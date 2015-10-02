@@ -21,7 +21,7 @@ public class TinyGComboFieldEditor extends ComboFieldEditor implements ITinyGFie
 	 */
 	@Override
 	protected void loadValue() throws GkException {
-		String value = String.valueOf(cfg.getSetting(groupIdentifier, preferenceName, BigDecimal.class));
+		String value = String.valueOf(cfg.findSetting(groupIdentifier, preferenceName, BigDecimal.class));
 		updateComboForValue(value);		
 	}
 
