@@ -18,10 +18,6 @@ public abstract class AbstractTinyGConfigurationPage extends GkFieldEditorPrefer
 		noDefaultAndApplyButton();
 	}
 	
-//	quand on modifie plusieurs parametres d'un seul coup, il y a comme un soucis de concurrences d'accès à la pile série.
-//	voir en pas à pas (ex modif du si à 150 + ex à 2 donne {si:150} {ex:150})
-//	+ certains parametres pas au bon format 
-	
 	public void addField(ITinyGFieldEditor<?> field) {
 		super.addField(field);
 		field.setConfiguration(configuration);

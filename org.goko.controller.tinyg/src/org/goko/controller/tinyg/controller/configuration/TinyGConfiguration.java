@@ -238,6 +238,24 @@ public class TinyGConfiguration {
 	public String getSetting(String groupIdentifier, String identifier) throws GkException{
 		return getSetting(groupIdentifier, identifier, String.class);
 	}
+	
+	/**
+	 * Returns the setting as the specified type or null if not found
+	 * @param groupIdentifier the identifier of the group
+	 * @param identifier the identifier
+	 * @param clazz the expected type
+	 * @return the value as clazz
+	 * @throws GkException GkException
+	 */
+	public <T> T findSetting(String groupIdentifier, String identifier, Class<T> clazz) throws GkException{
+		for(TinyGGroupSettings grpSetting : groups){
+			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
+				T setting = getSetting(identifier,grpSetting.getSettings(), clazz);				
+				return setting;
+			}
+		}
+		return null;
+	}
 	/**
 	 * Returns the setting as the specified type
 	 * @param groupIdentifier the identifier of the group
