@@ -2,6 +2,7 @@ package org.goko.controller.tinyg.configuration;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.goko.common.preferences.fieldeditor.preference.BigDecimalFieldEditor;
@@ -32,8 +33,12 @@ public class TinyGBigDecimalSettingFieldEditor extends BigDecimalFieldEditor imp
 	 */
 	@Override
 	protected void loadValue() throws GkException {
-		BigDecimal value = cfg.getSetting(groupIdentifier, preferenceName , BigDecimal.class);		
-		getControl().setText( BigDecimalUtils.toString(value));
+		BigDecimal value = cfg.findSetting(groupIdentifier, preferenceName , BigDecimal.class);		
+		if(value != null){
+			getControl().setText( BigDecimalUtils.toString(value));
+		}else{
+			getControl().setText( StringUtils.EMPTY );
+		}
 		refreshValidState();		
 	}
 

@@ -25,7 +25,7 @@ public class TinyGBooleanFieldEditor extends BooleanFieldEditor implements ITiny
 	@Override
 	protected void loadValue() throws GkException {				
 		boolean wasSelected = getControl().getSelection();
-		BigDecimal value = cfg.getSetting(groupIdentifier, preferenceName, BigDecimal.class);
+		BigDecimal value = cfg.findSetting(groupIdentifier, preferenceName, BigDecimal.class);
 		getControl().setSelection( ObjectUtils.equals(value, trueValue) );
 		fireStateChanged(VALUE, wasSelected, getControl().getSelection());
 	}

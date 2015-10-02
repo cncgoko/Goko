@@ -20,7 +20,7 @@ public class TinyGStringFieldEditor extends StringFieldEditor implements ITinyGF
 	 */
 	@Override
 	protected void loadValue() throws GkException {
-		String value = String.valueOf(cfg.getSetting(groupIdentifier, preferenceName, String.class));
+		String value = String.valueOf(cfg.findSetting(groupIdentifier, preferenceName, String.class));
 		getControl().setText(value);		
 	}
 
