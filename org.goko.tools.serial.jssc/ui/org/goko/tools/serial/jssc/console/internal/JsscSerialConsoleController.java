@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
@@ -133,7 +134,9 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 		setCurrentCommand();
 	}
 	protected void setCurrentCommand(){
-		getDataModel().setCommand(getDataModel().getCommandHistory().get(getDataModel().getCurrentHistoryIndex()));
+		if(CollectionUtils.isNotEmpty(getDataModel().getCommandHistory())){
+			getDataModel().setCommand(getDataModel().getCommandHistory().get(getDataModel().getCurrentHistoryIndex()));
+		}
 	}
 
 	protected void historizeCommand(String command){
