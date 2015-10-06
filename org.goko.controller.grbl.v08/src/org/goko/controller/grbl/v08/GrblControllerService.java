@@ -37,6 +37,8 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.controller.grbl.v08.bean.GrblExecutionError;
 import org.goko.controller.grbl.v08.bean.StatusReport;
 import org.goko.controller.grbl.v08.configuration.GrblConfiguration;
@@ -51,8 +53,10 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
@@ -88,6 +92,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public static final String SERVICE_ID = "Grbl v0.8 Controller";
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(GrblControllerService.class);
+	private static final String VALUE_STORE_ID = "org.goko.controller.grbl.v08.GrblControllerService";
+	private static final String PERSISTED_FEED = "org.goko.controller.grbl.v08.GrblControllerService.feed";
+	private static final String PERSISTED_STEP = "org.goko.controller.grbl.v08.GrblControllerService.step";
 	/** GCode service*/
 	private IGCodeService gcodeService;
 	/** The execution queue */
@@ -108,15 +115,17 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private GrblCommunicator communicator;
 	private IGCodeExecutionMonitorService monitorService;
 	private EventAdmin eventAdmin;
-	/** Jog related fields */
-	private EnumGrblAxis axis;
-	private BigDecimal feed;
+	/** Jog related fields */	
+	private BigDecimal feed; 
 	private BigDecimalQuantity<Length> step;
+	private ScopedPreferenceStore preferenceStore;
 	/**
 	 * Constructor
 	 */
 	public GrblControllerService() {
 		communicator		 = new GrblCommunicator(this);
+		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);		
+		initPersistedValues();
 	}
 	
 	/** (inheritDoc)
@@ -178,7 +187,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	@Override
 	public void stop() throws GkException {
 		// TODO Auto-generated method stub
-
+		persistValues();
 	}
 
 	public void sendCommand(GCodeCommand command) throws GkException{
@@ -236,7 +245,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
 		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider);
 		token.setMonitorService(monitorService);
-	//	quand on stoppe et relance un fichier, ca fait n'imp
 		executionQueue.add(token);
 		return token;
 	}
@@ -924,5 +932,27 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	@Override
 	public boolean isJogPreciseForced() throws GkException {		
 		return true; // does not support continuous jog
+	}
+	
+	private void initPersistedValues(){
+		String feedStr = preferenceStore.getString(PERSISTED_FEED);
+		if(StringUtils.isBlank(feedStr)){
+			feedStr = "600";
+		}
+		this.feed = new BigDecimal(feedStr); 
+		String stepStr = preferenceStore.getString(PERSISTED_STEP);
+		if(StringUtils.isBlank(stepStr)){
+			stepStr = "1";
+		}
+		this.step = NumberQuantity.of(new BigDecimal(stepStr), SI.MILLIMETRE);		
+	}
+	
+	private void persistValues(){
+		if(feed != null){
+			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
+		}		
+		if(step != null){
+			preferenceStore.putValue(PERSISTED_STEP, step.to(SI.MILLIMETRE).getValue().toPlainString());		
+		}
 	}
 }

@@ -30,7 +30,7 @@ import org.osgi.service.event.EventAdmin;
 public class TinyGFeatureSet implements IFeatureSet {
 	/** Target board definition for this feature set */
 	private static final TargetBoard TINYG_TARGET_BOARD = new TargetBoard("tinyg.v097", "TinyG v0.97");
-		
+				
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#getTargetBoard()
 	 */
@@ -43,7 +43,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 	 * @see org.goko.core.feature.IFeatureSet#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-	public void start(BundleContext context) throws GkException {
+	public void start(BundleContext context) throws GkException {		
 		TinyGControllerService service = new TinyGControllerService();
 		// ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService
 		context.registerService(IControllerService.class, service, null);

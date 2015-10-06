@@ -17,8 +17,7 @@ import org.goko.core.config.GokoPreference;
  */
 public class GokoUpdatesPreferences extends GkFieldEditorPreferencesPage {
 	
-	public GokoUpdatesPreferences() {
-		setDescription("");
+	public GokoUpdatesPreferences() {		
 		setTitle("Update");
 		setPreferenceStore(GokoPreference.getInstance());
 	}

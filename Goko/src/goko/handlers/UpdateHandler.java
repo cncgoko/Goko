@@ -23,6 +23,7 @@ public class UpdateHandler {
 	@PostContextCreate
 	public void checkUpdateOnStart(final IProvisioningAgent agent, final UISynchronize sync, final IWorkbench workbench) {
 		final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
+		
 		// update using a progress monitor
         IRunnableWithProgress runnable = new IRunnableWithProgress() {            
             @Override

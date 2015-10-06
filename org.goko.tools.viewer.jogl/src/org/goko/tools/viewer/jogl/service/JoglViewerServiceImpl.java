@@ -54,13 +54,14 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
-import org.goko.tools.viewer.jogl.utils.render.ToolRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.BoundsRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.DefaultGCodeProviderRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.RotaryAxisAdapter;
+import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
+import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -190,6 +191,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		this.controllerAdapter = controllerService;
 		if(toolRenderer == null){
 			toolRenderer = new ToolRenderer(getControllerAdapter());
+			addRenderer(new ToolLinePrintRenderer(getControllerAdapter()));
 			addRenderer(toolRenderer);
 		}
 	}
@@ -381,7 +383,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	protected void onCanvasCreated(GokoJoglCanvas canvas) {
 		if(jogService != null){
 			this.keyboardJogAdapter = new KeyboardJogAdatper(getCanvas(), jogService);
-			canvas.addKeyListener( keyboardJogAdapter );
+			canvas.addKeyListener( keyboardJogAdapter );			
 		}
 	}
 

@@ -21,14 +21,11 @@ package org.goko.tools.commandpanel.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.math.BigDecimal;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.events.MouseAdapter;
@@ -52,9 +49,6 @@ import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.log.GkLog;
-import org.goko.tools.commandpanel.Activator;
-import org.goko.tools.commandpanel.CommandPanelParameter;
-import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * Command panel controller
@@ -175,31 +169,9 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	public void initilizeValues() throws GkException {
 		Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
 		getDataModel().setLengthUnit(unit);
-		getDataModel().setJogSpeed( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_FEEDRATE, StringUtils.EMPTY)) );
-		getDataModel().setJogIncrement( new BigDecimal(getPreferences().get(CommandPanelParameter.JOG_STEP_SIZE, StringUtils.EMPTY)) );		
-		if(!jogService.isJogPreciseForced()){
-			getDataModel().setPreciseJog( Boolean.valueOf(getPreferences().get(CommandPanelParameter.JOG_PRECISE_MODE, "false")) );
-		}
-		
-	}
-
-	public void saveValues() {
-		//Cette facon d'utiliser les preferences est la bonne
-		if(getDataModel() != null){
-			getPreferences().put(CommandPanelParameter.JOG_FEEDRATE, getDataModel().getJogSpeed().toPlainString());
-			getPreferences().put(CommandPanelParameter.JOG_PRECISE_MODE, Boolean.toString(getDataModel().isPreciseJog()));
-			getPreferences().put(CommandPanelParameter.JOG_STEP_SIZE, getDataModel().getJogIncrement().toPlainString());
-
-			try {
-				getPreferences().flush();
-			} catch (BackingStoreException e) {
-				LOG.error(e);
-			}
-		}
-	}
-	
-	private IEclipsePreferences getPreferences(){
-		return Activator.getPreferences();
+		getDataModel().setJogSpeed(jogService.getJogFeedrate());
+		getDataModel().setPreciseJog( jogService.isJogPrecise() );		
+		getDataModel().setJogIncrement( jogService.getJogStep().to(unit).getValue() );
 	}
 
 	public void setCoordinateSystem(EnumCoordinateSystem enumCoordinateSystem) throws GkException {
@@ -216,11 +188,16 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		try {			
-			jogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));			
+			if(getDataModel().getJogIncrement() != null){
+				jogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));
+			}
+			if(getDataModel().getJogSpeed() != null){
+				jogService.setJogFeedrate( getDataModel().getJogSpeed() );
+			}
+			jogService.setJogPrecise( getDataModel().isPreciseJog() );
 		} catch (GkException e) {			
 			LOG.error(e);
 		}		
-	}
-
+	}	
 }
 

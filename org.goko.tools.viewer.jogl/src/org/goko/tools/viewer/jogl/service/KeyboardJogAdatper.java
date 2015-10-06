@@ -27,9 +27,11 @@ import org.eclipse.swt.events.KeyListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 
 public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
+	private static final GkLog LOG = GkLog.getLogger(KeyboardJogAdatper.class);
 	private IJogService jogService;
 	private GokoJoglCanvas canvas;
 	private Map<Integer, EnumControllerAxis> mapAxisByKey;
@@ -41,13 +43,14 @@ public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
 		this.jogService = jogService;
 		this.canvas = canvas;
 		this.debounceTime = 100l; // 100ms
-		mapAxisByKey = new HashMap<Integer, EnumControllerAxis>();
-		mapAxisByKey.put(SWT.ARROW_LEFT, 	EnumControllerAxis.X_NEGATIVE);
-		mapAxisByKey.put(SWT.ARROW_RIGHT, 	EnumControllerAxis.X_POSITIVE);
-		mapAxisByKey.put(SWT.ARROW_DOWN, 	EnumControllerAxis.Y_NEGATIVE);
-		mapAxisByKey.put(SWT.ARROW_UP, 		EnumControllerAxis.Y_POSITIVE);
-		mapAxisByKey.put(SWT.PAGE_DOWN, 	EnumControllerAxis.Z_NEGATIVE);
-		mapAxisByKey.put(SWT.PAGE_UP, 		EnumControllerAxis.Z_POSITIVE);
+		this.mapAxisByKey = new HashMap<Integer, EnumControllerAxis>();
+		this.mapAxisByKey.put(SWT.ARROW_LEFT, 	EnumControllerAxis.X_NEGATIVE);
+		this.mapAxisByKey.put(SWT.ARROW_RIGHT, 	EnumControllerAxis.X_POSITIVE);
+		this.mapAxisByKey.put(SWT.ARROW_DOWN, 	EnumControllerAxis.Y_NEGATIVE);
+		this.mapAxisByKey.put(SWT.ARROW_UP, 	EnumControllerAxis.Y_POSITIVE);
+		this.mapAxisByKey.put(SWT.PAGE_DOWN, 	EnumControllerAxis.Z_NEGATIVE);
+		this.mapAxisByKey.put(SWT.PAGE_UP, 		EnumControllerAxis.Z_POSITIVE);
+		
 	}
 
 	/** (inheritDoc)
@@ -59,14 +62,49 @@ public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
 		if( (requestTime - lastDebounce) < debounceTime || !canvas.isKeyboardJogEnabled()){
 			return;
 		}
-		lastDebounce = requestTime;				
-		if(mapAxisByKey.containsKey(event.keyCode)){
-			try {				
-				triggerJog(mapAxisByKey.get(event.keyCode));
-			} catch (GkException e) {
-				e.printStackTrace();
+		lastDebounce = requestTime;
+		try {			
+			if(mapAxisByKey.containsKey(event.keyCode)){				
+				triggerJog(mapAxisByKey.get(event.keyCode));			
+			}else{
+				processKeyPressed(event);
 			}
+		} catch (GkException e) {
+			LOG.error(e);
 		}
+	}
+
+	/**
+	 * Process any key event that is not a jog direction
+	 * @param event Keyevent
+	 * @throws GkException 
+	 */
+	private void processKeyPressed(KeyEvent event) throws GkException {
+		switch(event.keyCode){
+		case SWT.KEYPAD_MULTIPLY: multiplyJogStep();
+		break;
+		case SWT.KEYPAD_DIVIDE: divideJogStep();
+		break;
+			default: // do nothing
+		}
+	}
+
+	/**
+	 * Multiply the jog step by a 10 factor 
+	 * @throws GkException 
+	 */
+	private void multiplyJogStep() throws GkException {
+		jogService.setJogStep(jogService.getJogStep().multiply(10));
+		
+	}
+	
+	/**
+	 * Divide the jog step by a 10 factor 
+	 * @throws GkException 
+	 */
+	private void divideJogStep() throws GkException {
+		jogService.setJogStep(jogService.getJogStep().divide(10));
+		
 	}
 
 	/** (inheritDoc)
@@ -81,7 +119,7 @@ public class KeyboardJogAdatper extends KeyAdapter implements KeyListener{
 			try {
 				stopJog();
 			} catch (GkException e) {
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 	}

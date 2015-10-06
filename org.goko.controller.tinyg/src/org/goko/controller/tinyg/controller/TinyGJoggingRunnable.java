@@ -6,11 +6,16 @@ package org.goko.controller.tinyg.controller;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
+import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.log.GkLog;
 
@@ -20,6 +25,10 @@ import org.goko.core.log.GkLog;
  */
 public class TinyGJoggingRunnable implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(TinyGJoggingRunnable.class);
+	private static final String VALUE_STORE_ID = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable";
+	private static final String PERSISTED_FEED = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.feed";
+	private static final String PERSISTED_STEP = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.step";
+	private static final String PERSISTED_PRECISE = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.precise";
 	private boolean jogging;
 	private boolean stopped;
 	private ITinygControllerService tinygService;
@@ -29,15 +38,47 @@ public class TinyGJoggingRunnable implements Runnable {
 	private BigDecimal feed;
 	private BigDecimalQuantity<Length> step;
 	private boolean precise;
+	private ScopedPreferenceStore preferenceStore;
+	
 	/**
-	 * 
+	 * Constructor 
 	 */
 	public TinyGJoggingRunnable(ITinygControllerService tinygService, TinyGCommunicator tinygCommunicator) {
-		lock = new Object();
+		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);		
+		this.initPersistedValues();
+		this.lock = new Object();
 		this.tinygCommunicator = tinygCommunicator;
 		this.tinygService = tinygService;
 	}
 	
+	private void initPersistedValues(){
+		String feedStr = preferenceStore.getString(PERSISTED_FEED);
+		if(StringUtils.isBlank(feedStr)){
+			feedStr = "600";
+		}
+		this.feed = new BigDecimal(feedStr); 
+		String stepStr = preferenceStore.getString(PERSISTED_STEP);
+		if(StringUtils.isBlank(stepStr)){
+			stepStr = "1";
+		}
+		this.step = NumberQuantity.of(new BigDecimal(stepStr), SI.MILLIMETRE); // FIXME : store value between uses
+		String preciseStr = preferenceStore.getString(PERSISTED_PRECISE);
+		if(StringUtils.isBlank(preciseStr)){
+			preciseStr = "false";
+		}
+		this.precise = Boolean.valueOf(preciseStr);
+	}
+	
+	private void persistValues(){
+		if(feed != null){
+			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
+		}
+		preferenceStore.putValue(PERSISTED_PRECISE, String.valueOf(precise));		
+		
+		if(step != null){
+			preferenceStore.putValue(PERSISTED_STEP, step.to(SI.MILLIMETRE).getValue().toPlainString());		
+		}
+	}
 	/** (inheritDoc)
 	 * @see java.lang.Runnable#run()
 	 */
@@ -46,7 +87,7 @@ public class TinyGJoggingRunnable implements Runnable {
 		while(!stopped){
 			try{
 				waitJoggingActive();
-				if(tinygService.getAvailableBuffer() > 28){
+				if(isReadyToJog()){
 					if(axis != null && feed != null && step != null){
 						String command = "G1F"+feed.toPlainString();
 						EnumGCodeCommandDistanceMode distanceMode = tinygService.getCurrentGCodeContext().getDistanceMode();
@@ -56,7 +97,7 @@ public class TinyGJoggingRunnable implements Runnable {
 							command = startRelativeJog(command);
 						}
 						tinygCommunicator.send(GkUtils.toBytesList(command));
-												
+									
 						if(precise){
 							this.jogging = false;
 						}
@@ -66,6 +107,19 @@ public class TinyGJoggingRunnable implements Runnable {
 				LOG.error(e);
 			}
 		}
+	}
+	
+	/**
+	 * Determine if TinyG is ready to jog
+	 * @return <code>true</code> if TinyG is ready to receive another jog order, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
+	protected boolean isReadyToJog() throws GkException{
+		if(precise){
+			MachineState tinygState = tinygService.getState();
+			return MachineState.READY.equals(tinygState) || MachineState.PROGRAM_END.equals(tinygState) || MachineState.PROGRAM_STOP.equals(tinygState); 
+		}
+		return tinygService.getAvailableBuffer() > 28;
 	}
 	
 	/**
@@ -158,11 +212,8 @@ public class TinyGJoggingRunnable implements Runnable {
 		if(!precise){ // In precise mode, let TinyG finish the complete move
 			command += "!%";
 			tinygCommunicator.send(GkUtils.toBytesList(command));
-		}		
-		if(!precise){ // In precise mode, let TinyG finish the complete move
-			command += "!%";
-		}
-		tinygCommunicator.send(GkUtils.toBytesList(command));
+		}	
+		
 		this.jogging = false;
 	}
 
@@ -192,6 +243,7 @@ public class TinyGJoggingRunnable implements Runnable {
 	 */
 	public void setFeed(BigDecimal feed) {
 		this.feed = feed;
+		persistValues();
 	}
 
 	/**
@@ -206,6 +258,7 @@ public class TinyGJoggingRunnable implements Runnable {
 	 */
 	public void setStep(BigDecimalQuantity<Length> step) {
 		this.step = step;
+		persistValues();
 	}
 
 	/**
@@ -220,5 +273,6 @@ public class TinyGJoggingRunnable implements Runnable {
 	 */
 	public void setPrecise(boolean precise) {
 		this.precise = precise;
+		persistValues();
 	}
 }

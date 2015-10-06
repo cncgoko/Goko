@@ -11,7 +11,6 @@ import javax.vecmath.Vector4f;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
@@ -19,7 +18,6 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 import com.jogamp.opengl.util.texture.Texture;
 
 public class TextRenderer extends AbstractVboJoglRenderer {
-	private static GkLog LOG = GkLog.getLogger(TextRenderer.class);
 	public static final int LEFT 	= 0;
 	public static final int CENTER 	= 1 << 1;
 	public static final int RIGHT 	= 1 << 2;

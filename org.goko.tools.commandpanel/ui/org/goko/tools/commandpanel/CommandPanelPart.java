@@ -30,7 +30,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -678,7 +677,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
 		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);		
 				
-		getController().addSelectionBinding(btnPreciseJog, "preciseJog");
+		getController().addSelectionBinding(btnPreciseJog, "preciseJog");		
 		if(getDataModel().isPreciseJogForced()){			
 			btnPreciseJog.setEnabled(false);
 		}else{
@@ -719,15 +718,9 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	public void dispose() {
 	}
 
-	@PersistState
-	public void persist(MPart part) {
-		getController().saveValues();
-	}
-
 	@Focus
 	public void setFocus() throws GkException {
-		getController().refreshExecutableAction();
-		getController().saveValues();
+		getController().refreshExecutableAction();	
 	}
 
 	/**

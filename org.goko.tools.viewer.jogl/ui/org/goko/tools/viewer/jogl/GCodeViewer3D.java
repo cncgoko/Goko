@@ -29,11 +29,14 @@ import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -58,22 +61,27 @@ import org.goko.tools.viewer.jogl.camera.AbstractCamera;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DController;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DModel;
 import org.goko.tools.viewer.jogl.service.IJoglViewerService;
+import org.osgi.service.event.EventHandler;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
-public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeViewer3DModel> {
+public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeViewer3DModel> implements EventHandler {
 	@Inject
 	IGCodeService gcodeService;
 	@Inject
 	IJoglViewerService viewerService;
-
+	@Inject
+	private IEventBroker broker;
+	
 	/** Widget that displays OpenGL content. */
 	private GokoJoglCanvas glcanvas;
 	private FPSAnimator animator;
+	private ToolItem btnKeyboardJog;
 	private static final String VIEWER_ENABLED = "org.goko.tools.viewer.jogl.enabled";
 	private static final String VIEWER_GRID_ENABLED = "org.goko.tools.viewer.jogl.gridEnabled";
 	private static final String VIEWER_LOCK_CAMERA_ON_TOOL = "org.goko.tools.viewer.jogl.lockCameraOnTool";
 	private static final String VIEWER_COORDINATE_SYSTEM_ENABLED = "org.goko.tools.viewer.jogl.coordinateSystemEnabled";
+	public  static final String TOPIC_ENABLE_KEYBOARD_JOG = "topic/org/goko/tools/viewer/jogl/enableKeyboardJog";
 
 	/**
 	 * Part constructor
@@ -86,11 +94,11 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	public GCodeViewer3D(IEclipseContext context) throws GkException {
 		super(new GCodeViewer3DController(new GCodeViewer3DModel()));
 		ContextInjectionFactory.inject(getController(), context);
-		getController().initialize();
+		getController().initialize();		
 	}
 
 	@PostConstruct
-	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {
+	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {	
 		
 		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
 		GLData gldata = new GLData();
@@ -100,12 +108,12 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		gl_compositeParent.marginWidth = 0;
 		gl_compositeParent.marginHeight = 0;
 		compositeParent.setLayout(gl_compositeParent);
-
-
+		
 		final ToolBar toolBar = new ToolBar(compositeParent, SWT.FLAT | SWT.RIGHT);
-
+		
 		glcanvas = viewerService.createCanvas(compositeParent);
-
+		context.getParent().set(GokoJoglCanvas.class, glcanvas);
+		
 		final ToolItem btnEnableView = new ToolItem(toolBar, SWT.CHECK);
 		btnEnableView.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -271,13 +279,25 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		
 		ToolItem toolItem_1 = new ToolItem(toolBar, SWT.SEPARATOR);
 
-		final ToolItem btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
+		btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
 		btnKeyboardJog.addSelectionListener(new SelectionAdapter() {
 			@Override public void widgetSelected(SelectionEvent e) {
+				glcanvas.setFocus();
 				glcanvas.setKeyboardJogEnabled(btnKeyboardJog.getSelection());
 			}
 		});
-		btnKeyboardJog.setToolTipText("Enable/disable keyboard jogging");
+		glcanvas.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				btnKeyboardJog.setSelection(false);
+				glcanvas.setKeyboardJogEnabled(false);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {}
+		});
+		btnKeyboardJog.setToolTipText("Enable/disable keyboard jogging (Ctrl + J)");
 		btnKeyboardJog.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/keyboard--arrow.png"));
 
 
@@ -314,6 +334,8 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			getDataModel().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
 			getController().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
 		}
+		
+		broker.subscribe(TOPIC_ENABLE_KEYBOARD_JOG, this);		
 	}
 
 	@PreDestroy
@@ -336,5 +358,17 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	@Focus
 	public void setFocus() {
 		// TODO Set the focus to control
+	}
+
+	/** (inheritDoc)
+	 * @see org.osgi.service.event.EventHandler#handleEvent(org.osgi.service.event.Event)
+	 */
+	@Override
+	public void handleEvent(org.osgi.service.event.Event event) {
+		if(StringUtils.equals(event.getTopic(),TOPIC_ENABLE_KEYBOARD_JOG)){
+			glcanvas.setKeyboardJogEnabled(!glcanvas.isKeyboardJogEnabled());
+			btnKeyboardJog.setSelection(glcanvas.isKeyboardJogEnabled());
+			glcanvas.setFocus();			
+		}
 	}
 }

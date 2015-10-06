@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class AboutDialog extends Dialog {
 
@@ -61,6 +62,7 @@ public class AboutDialog extends Dialog {
 		lblGokoIsA.setText("Goko is an open source desktop application for CNC control and operation");
 		
 		Label lblAlphaVersion = new Label(composite_1, SWT.NONE);
+		lblAlphaVersion.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
 		lblAlphaVersion.setText("Alpha version 0.0.2");
 		new Label(composite_1, SWT.NONE);
 		
