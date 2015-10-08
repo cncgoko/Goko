@@ -68,10 +68,13 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	private void startIfRequired(IFeatureSet featureSet) throws GkException {
 		if (StringUtils.isNotBlank(getTargetBoard()) &&
 			StringUtils.equals(featureSet.getTargetBoard().getId(), getTargetBoard())) {
-			lstActiveFeatureSet.add(featureSet);			
-			BundleContext bundleContext = FrameworkUtil.getBundle(featureSet.getClass()).getBundleContext();
-			ContextInjectionFactory.inject(featureSet, EclipseContextFactory.getServiceContext(bundleContext));
-			featureSet.start(bundleContext);
+			// Starts only if not already active
+			if(!lstActiveFeatureSet.contains(featureSet)){
+				lstActiveFeatureSet.add(featureSet);			
+				BundleContext bundleContext = FrameworkUtil.getBundle(featureSet.getClass()).getBundleContext();
+				ContextInjectionFactory.inject(featureSet, EclipseContextFactory.getServiceContext(bundleContext));
+				featureSet.start(bundleContext);
+			}
 		}
 	}
 	/**
