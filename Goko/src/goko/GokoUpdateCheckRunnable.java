@@ -22,6 +22,8 @@ import org.goko.core.log.LogUtils;
 public class GokoUpdateCheckRunnable {
 	private static final GkLog LOG = GkLog.getLogger(GokoUpdateCheckRunnable.class);
 	private boolean cancelled;
+	/** Nothing to update status */
+	public static final IStatus NOTHING_TO_UPDATE = new Status(Status.OK, "Goko", 10000, "", null);
 	
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		ProvisioningSession session = new ProvisioningSession(agent);
@@ -42,10 +44,11 @@ public class GokoUpdateCheckRunnable {
         IStatus status = operation.resolveModal(sub.newChild(100));
         
         if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
+        	LOG.info("Nothing to update");
             if(!silent){
-            	showMessage(sync, "Nothing to update");
+            //	showMessage(sync, "Nothing to update");
             }
-            return Status.CANCEL_STATUS;
+            return NOTHING_TO_UPDATE;
         }
         else {        
         	final ProvisioningJob provisioningJob = operation.getProvisioningJob(sub.newChild(100));        	
@@ -129,21 +132,7 @@ public class GokoUpdateCheckRunnable {
 		}
 		return Status.OK_STATUS;
 	}
-	
-	
-    private void showMessage(UISynchronize sync, final String message) {
-        // as the provision needs to be executed in a background thread
-        // we need to ensure that the message dialog is executed in 
-        // the UI thread
-        sync.syncExec(new Runnable() {
-            
-            @Override
-            public void run() {
-                MessageDialog.openInformation(null, "Information", message);
-            }
-        });
-    }
-    
+	    
     private void showError(UISynchronize sync, final String message) {
         // as the provision needs to be executed in a background thread
         // we need to ensure that the message dialog is executed in 

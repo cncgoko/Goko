@@ -62,7 +62,7 @@ public class AutomaticUpdateCheck implements EventHandler{
 				}
 				
 				if(recheck){
-					LOG.info("Checking update...");
+					LOG.info("Checking for update...");
 					GokoPreference.getInstance().setLastUpdateCheckTimestamp(new Date());
 					final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
 					updateCheck.update(agent, monitor, sync, context.get(IWorkbench.class), true);
