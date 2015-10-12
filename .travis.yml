@@ -20,10 +20,11 @@ before_script:
   - cd org.goko.build.aggregator
  
 script: 
-  - mvn clean verify
+  - mvn clean verify surefire-report:report-only
 
 after_failure:
-  - "cat ../org.goko.build.parent/target/surefire-reports/*.txt"
+   - "curl --ftp-create-dirs -T ../org.goko.build.parent/target/site/surefire-report.html -u $VAR1:$VAR2 $TARGET/$gokoVersion/surefire.html"
+  #- "cat ../org.goko.build.parent/target/site/surefire-report.html"
   #TODO add surefire report exports
 
 after_success:
