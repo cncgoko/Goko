@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
@@ -57,8 +55,7 @@ public class WorkspaceService implements IWorkspaceService{
 	private Integer sequenceId;
 	/** The current provider */
 	private Integer currentProviderId;
-	@Inject
-	private int t;
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */

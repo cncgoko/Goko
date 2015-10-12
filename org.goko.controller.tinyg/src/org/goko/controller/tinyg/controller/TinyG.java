@@ -32,8 +32,8 @@ public class TinyG implements DefaultControllerValues{
 	public static final String CYCLE_START = "~";
 	public static final String QUEUE_FLUSH = "%";
 	protected static final String TINYG_BUFFER_COUNT = "tinyg.buffer.count";
-	public static final CharSequence ON = "On";
-	public static final CharSequence OFF = "Off";
+	public static final String ON = "On";
+	public static final String OFF = "Off";
 
 	public class Topic{
 		public class TinyGExecutionError{

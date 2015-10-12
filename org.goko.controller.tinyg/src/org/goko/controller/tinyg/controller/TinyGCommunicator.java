@@ -319,7 +319,13 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Update the current work position using the given status report
+	 * @param statusReport
+	 * @return
+	 * @throws GkException
+	 */
 	private Tuple6b findWorkPosition(JsonObject statusReport) throws GkException{
 		Tuple6b 	workPosition = tinyg.getCurrentGCodeContext().getPosition();
 		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport);

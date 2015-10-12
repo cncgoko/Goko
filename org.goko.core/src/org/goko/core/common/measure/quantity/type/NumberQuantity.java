@@ -31,5 +31,20 @@ public class NumberQuantity {
 	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> of(BigDecimal value, Unit<Q> unit){
 		return new BigDecimalQuantity<Q>(unit, value);
 	}
+	
+	/**
+	 * Addition of 2 BigDecimalQuantity with <code>null</code> handling
+	 * @param v1 value 1
+	 * @param v2 value 2
+	 * @return the sum of the 2 values. A <code>null</code> input is considered zero
+	 */
+	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> add(BigDecimalQuantity<Q> v1, BigDecimalQuantity<Q> v2){
+		if(v1 != null && v2 != null){
+			return v1.add(v2);
+		}else if(v1 != null){
+			return v1;
+		}
+		return v2;
+	}	
 
 }

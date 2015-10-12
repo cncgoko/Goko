@@ -50,9 +50,11 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	 */
 	@Override
 	public void start() throws GkException {	
+		LOG.info("Starting " + SERVICE_ID);
 		lstDefinition = new ArrayList<MachineValueDefinition>();		
 		DROPreferences.getInstance().addPropertyChangeListener(this);
 		updateValues();
+		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	/** (inheritDoc)

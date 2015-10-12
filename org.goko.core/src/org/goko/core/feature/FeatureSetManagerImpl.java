@@ -134,6 +134,7 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	public void start() throws GkException {		
 		LOG.info("Starting " + SERVICE_ID);	
 		startFeatureSet();
+		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	/**

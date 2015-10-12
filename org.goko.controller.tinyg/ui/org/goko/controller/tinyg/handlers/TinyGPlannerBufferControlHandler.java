@@ -24,7 +24,6 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.goko.controller.tinyg.controller.ITinygControllerService;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.controller.bean.MachineState;
 
 public class TinyGPlannerBufferControlHandler {
@@ -45,7 +44,7 @@ public class TinyGPlannerBufferControlHandler {
 	}
 
 	@Execute
-	public void execute( MHandledMenuItem menuItem, ITinygControllerService tinyg) throws GkTechnicalException {
+	public void execute( MHandledMenuItem menuItem, ITinygControllerService tinyg) throws GkException {
 		tinyg.setPlannerBufferSpaceCheck(menuItem.isSelected());
 	}
 }

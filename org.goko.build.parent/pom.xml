@@ -10,6 +10,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mars-repo.url>http://download.eclipse.org/releases/mars</mars-repo.url>
         <goko.repo>http://p2.goko.fr/</goko.repo>
+        <logback.repo>http://logback.qos.ch/p2/</logback.repo>
     </properties>
     <repositories>
         <repository>
@@ -22,6 +23,11 @@
             <url>${goko.repo}</url>
             <layout>p2</layout>
         </repository>
+        <repository>
+		      <id>logback</id>
+		      <url>${logback.repo}</url>
+		      <layout>p2</layout>
+	    </repository>
     </repositories>
     <build>
         <plugins>

@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Fragment-Host: ch.qos.logback.classic;bundle-version="1.0.7"
+Bundle-Version: 0.0.1.201510081755
+Bundle-Name: Logback
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.goko.log.logback
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+

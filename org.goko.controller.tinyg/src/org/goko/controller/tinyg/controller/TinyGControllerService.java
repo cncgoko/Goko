@@ -74,11 +74,7 @@ import com.eclipsesource.json.JsonObject;
 public class TinyGControllerService extends EventDispatcher implements ITinyGControllerFirmwareService, ITinygControllerService{
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
-	public static final String SERVICE_ID = "TinyG Controller";
-//	private static final String JOG_SIMULATION_DISTANCE = "10000.0";
-	private static final String JOG_SIMULATION_DISTANCE = "1";
-	private static final double JOG_SIMULATION_DISTANCE_DOUBLE = 10000.0;
-
+	public static final String SERVICE_ID = "Controller for TinyG v0.97";
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
 	/** Connection service */
@@ -105,9 +101,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private EventAdmin eventAdmin;
 	private TinyGJoggingRunnable jogRunnable;
 	
-	public TinyGControllerService() {
+	/**
+	 * Constructor
+	 * @throws GkException GkException
+	 */
+	public TinyGControllerService() throws GkException {
 		communicator = new TinyGCommunicator(this);	
-		tinygState = new TinyGState();
+		tinygState   = new TinyGState();
 	}
 	
 	/** (inheritDoc)
@@ -123,6 +123,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void start() throws GkException {
+		LOG.info("Starting "+getServiceId());
 		configuration 			= new TinyGConfiguration();
 		actionFactory 			= new TinyGActionFactory(this);
 		
@@ -267,8 +268,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * Update the current GCodeContext with the given one
 	 * @param updatedGCodeContext the updated GCodeContext
+	 * @throws GkException GkException 
 	 */
-	protected void updateCurrentGCodeContext(GCodeContext updatedGCodeContext){
+	protected void updateCurrentGCodeContext(GCodeContext updatedGCodeContext) throws GkException{
 		GCodeContext current = tinygState.getGCodeContext();
 		if(updatedGCodeContext.getPosition() != null){
 			current.setPosition(updatedGCodeContext.getPosition());
@@ -446,6 +448,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @throws GkException GkException
 	 */
 	public void startHomingSequence() throws GkException{
+		LOG.info("Homing...");
 		String 		homingCommand 		= "G28.2";
 		if(TinyGPreferences.getInstance().isHomingEnabledAxisX()){
 			homingCommand += " X0";
@@ -887,7 +890,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void importFrom(InputStream inputStream) throws GkException {
-		TinyGConfiguration backupCurrentConfiguration = getConfiguration();
 		TinyGConfiguration currentConfiguration = getConfiguration();
 		try {
 			JsonObject jsonCfg = JsonObject.readFrom(new InputStreamReader(inputStream));

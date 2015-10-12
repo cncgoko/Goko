@@ -77,11 +77,11 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 */
 	@Override
 	public void start() throws GkException {
+		LOG.info("Starting " + SERVICE_ID);
 		this.inputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
 		this.outputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
 		this.connectionListeners = new ArrayList<WeakReference<IConnectionListener>>();
-
-
+		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	/** (inheritDoc)

@@ -94,6 +94,7 @@ public class TinyGJsonUtils {
 		}
 		return result;
 	}
+	
 	/**
 	 * Write a group setting to Json object
 	 *
@@ -159,28 +160,49 @@ public class TinyGJsonUtils {
 		}
 		return jsonGroup;
 	}
-
-	public static void setConfiguration(TinyGConfiguration cfg, JsonObject jsonCfg, String identifierPrefix) throws GkException{
-		JsonObject jsonObj = jsonCfg;
+	/**
+	 * Build the given configuration using the JSon object as input
+	 * @param config the target configuration
+	 * @param json the JSon object to get values from
+	 * @throws GkException GkException
+	 */
+	public static void buildConfigurationFromJson(TinyGConfiguration config, JsonObject json) throws GkException{
+		buildConfigurationFromJsonRecursive(config, json, StringUtils.EMPTY);
+	}
+	
+	/**
+	 * Build the given configuration using the JSon object as input and support for recursive levels
+	 * @param config the target configuration
+	 * @param json the JSon object to get values from
+	 * @param identifierPrefix the current identifier prefix for JSon group handling
+	 * @throws GkException GkException
+	 */
+	public static void buildConfigurationFromJsonRecursive(TinyGConfiguration config, JsonObject json, String identifierPrefix) throws GkException{
+		JsonObject jsonObj = json;
 		for(String name : jsonObj.names()){
 			JsonValue subObj = jsonObj.get(name);
 			if(subObj.isObject()){
-				setConfiguration(cfg, (JsonObject)subObj, name);
+				buildConfigurationFromJsonRecursive(config, (JsonObject)subObj, name);
 			}else{
 				if(StringUtils.isNotEmpty( identifierPrefix )){
-					registerConfiguration(cfg, identifierPrefix, name, getValue(subObj));
+					registerConfiguration(config, identifierPrefix, name, getValue(subObj));
 				}else{
-					registerConfiguration(cfg, name, getValue(subObj));
+					registerConfiguration(config, name, getValue(subObj));
 				}
 			}
 		}
 	}
 
-	private static Object getValue(JsonValue subObj){
-		if(subObj.isNumber()){
-			return subObj.asBigDecimal();
-		}else if(subObj.isString()){
-			return subObj.asString();
+	/**
+	 * Returns the value of the given JsonValue
+	 * @param jsonValue the JsonValue to get value of 
+	 * @return Object
+	 */
+	private static Object getValue(JsonValue jsonValue){
+		if(jsonValue.isNumber()){
+			return jsonValue.asBigDecimal();
+		}else if(jsonValue.isString()){
+			return jsonValue.asString();
 		}
 		return null;
 
@@ -205,6 +227,7 @@ public class TinyGJsonUtils {
 		}
 		return result;
 	}
+	
 	/**
 	 * Compute the checksum of a command
 	 *

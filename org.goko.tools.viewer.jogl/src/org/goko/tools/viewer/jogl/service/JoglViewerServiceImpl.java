@@ -116,11 +116,12 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	@Override
 	public void start() throws GkException {
+		LOG.info("Starting "+getServiceId());
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);		
 		GokoPreference.getInstance().addPropertyChangeListener(this);
 		
 		jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
-		LOG.info("Starting "+this.getServiceId());
+		
 		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 		addRenderer(zeroRenderer);
 		boundsRenderer = new BoundsRenderer(null);
@@ -137,6 +138,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(xyGridRenderer);
 		addRenderer(xzGridRenderer);
 		addRenderer(yzGridRenderer);
+		LOG.info("Successfully started " + getServiceId());
 	}
 
 	/** (inheritDoc)

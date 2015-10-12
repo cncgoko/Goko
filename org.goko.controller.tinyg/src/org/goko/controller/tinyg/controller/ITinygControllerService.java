@@ -21,7 +21,6 @@ package org.goko.controller.tinyg.controller;
 
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.controller.IControllerConfigurationFileExporter;
 import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
@@ -68,7 +67,17 @@ public interface ITinygControllerService extends IControllerService,
 	 */
 	void refreshConfiguration() throws GkException;
 	
-	void setPlannerBufferSpaceCheck(boolean plannerBufferSpaceCheck) throws GkTechnicalException;
+	/**
+	 * Sets the check for planner buffer space.
+	 * @param plannerBufferSpaceCheck the state of planner buffer check
+	 * @throws GkException GkException
+	 */
+	void setPlannerBufferSpaceCheck(boolean plannerBufferSpaceCheck) throws GkException;
+	
+	/**
+	 * Returns the state of the planner buffer check 
+	 * @return <code>true</code> if the test is enabled, <code>false</code> otherwise
+	 */
 	boolean isPlannerBufferSpaceCheck();
 
 	/**

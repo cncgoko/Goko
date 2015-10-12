@@ -26,15 +26,18 @@ import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.log.GkLog;
 
+/**
+ * Runnable handling the streaming of a gcode file to TinyG
+ * 
+ * @author PsyKo
+ */
 public class GCodeSendingRunnable implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(GCodeSendingRunnable.class);
 	private static final int BUFFER_AVAILABLE_REQUIRED_COUNT = 5;
 	private ExecutionQueue<TinyGExecutionToken> executionQueue;
 	private TinyGControllerService tinyGControllerService;
-	private IGCodeExecutionMonitorService executionMonitorService;
 	private Object ackMutex = new Object();
 	private Object qrMutex = new Object();
 	private int pendingCommands;

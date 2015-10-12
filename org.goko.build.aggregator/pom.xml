@@ -26,6 +26,7 @@
   	<module>../org.goko.core.execution.monitor</module> 
   	<module>../org.goko.core.workspace</module>  	
   	<module>../org.goko.log</module>
+  	<module>../org.goko.log.logback</module>
   	<module>../org.goko.log.ui</module>  	
   	<module>../Goko</module>
  	<module>../GokoFeature</module>

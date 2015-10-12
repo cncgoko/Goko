@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.SIPrefix;
-import org.goko.core.common.measure.US;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -43,29 +42,37 @@ import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.log.GkLog;
 
+/**
+ * Storage of the internal state of the TinyG board
+ * 
+ * @author PsyKo
+ */
 public class TinyGState extends MachineValueStore{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(TinyGState.class);
 	/** The current GCode context */
 	private GCodeContext gcodeContext;
-	/** The position stored locally for spped reasons... */
+	/** The position stored locally for speed reasons... */
 	private Tuple6b position;
 	/** The offsets */
 	private Map<EnumCoordinateSystem, Tuple6b> offsets;
 	/** Unit in use by TinyG*/
 	private Unit<Length> currentUnit;
 
-	public TinyGState() {
-		super();
-		try {
-			initValues();
-		} catch (GkException e) {
-			LOG.error(e);
-		}
-
+	/** 
+	 * Constructor 
+	 * @throws GkException GkException 
+	 */
+	public TinyGState() throws GkException {
+		super();		
+		initializeDefaultValue();		
 	}
 
-	private void initValues() throws GkException{
+	/**
+	 * Initialize the defaults values 
+	 * @throws GkException GkException
+	 */
+	private void initializeDefaultValue() throws GkException{
 		gcodeContext = new GCodeContext();
 		position = new Tuple6b().setZero();
 		currentUnit = SIPrefix.MILLI(SI.METRE);
@@ -90,7 +97,6 @@ public class TinyGState extends MachineValueStore{
 		offsets.put(EnumCoordinateSystem.G55, new Tuple6b());
 		offsets.put(EnumCoordinateSystem.G56, new Tuple6b());
 		offsets.put(EnumCoordinateSystem.G57, new Tuple6b());
-
 	}
 
 	/**
@@ -129,11 +135,21 @@ public class TinyGState extends MachineValueStore{
 	public void setState(MachineState state) throws GkException {
 		updateValue(TinyG.STATE, state);
 	}
-
+	
+	/**
+	 * Determine if the spindle is ON
+	 * @return <code>true</code> if the spindle is ON, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
 	public boolean isSpindleOn() throws GkException{
 		return StringUtils.equals(getValue(TinyG.SPINDLE_STATE, String.class).getValue(), TinyG.ON);
 	}
 
+	/**
+	 * Determine if the spindle is OFF
+	 * @return <code>true</code> if the spindle is OFF, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
 	public boolean isSpindleOff() throws GkException{
 		return StringUtils.equals(getValue(TinyG.SPINDLE_STATE, String.class).getValue(), TinyG.OFF);
 	}
@@ -147,25 +163,18 @@ public class TinyGState extends MachineValueStore{
 
 	/**
 	 * @param gcodeContext the gcodeContext to set
+	 * @throws GkException GkException 
 	 */
-	public void setGCodeContext(GCodeContext gcodeContext) {
+	public void setGCodeContext(GCodeContext gcodeContext) throws GkException {
 		this.gcodeContext = gcodeContext;
-		try {
-			updateValue(TinyG.CONTEXT_UNIT, String.valueOf(gcodeContext.getUnit()));
-			switch(gcodeContext.getUnit()){
-			case INCHES: setCurrentUnit( US.INCH );
-			break;
-			case MILLIMETERS: setCurrentUnit( SIPrefix.MILLI(SI.METRE));
-			break;
-			}
-			setWorkPosition(gcodeContext.getPosition());
-			updateValue(TinyG.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
-			updateValue(TinyG.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
-			updateValue(TinyG.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));
-			updateValue(TinyG.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());
-		} catch (GkException e) {
-			LOG.error(e);
-		}
+		
+		updateValue(TinyG.CONTEXT_UNIT, String.valueOf(gcodeContext.getUnit()));
+		setCurrentUnit( gcodeContext.getUnit().getUnit());
+		setWorkPosition(gcodeContext.getPosition());
+		updateValue(TinyG.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
+		updateValue(TinyG.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
+		updateValue(TinyG.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));
+		updateValue(TinyG.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());		
 	}
 
 	/**
@@ -190,31 +199,48 @@ public class TinyGState extends MachineValueStore{
 	 */
 	public Tuple6b getWorkPosition() throws GkException {
 		return new Tuple6b(this.position);
-//		return new Tuple6b(getValue(TinyG.POSITION_X, BigDecimal.class).getValue(),
-//						   getValue(TinyG.POSITION_Y, BigDecimal.class).getValue(),
-//						   getValue(TinyG.POSITION_Z, BigDecimal.class).getValue(),
-//						   getValue(TinyG.POSITION_A, BigDecimal.class).getValue(),
-//						   null,null);
 	}
+	
+	/**
+	 * Access the X position 
+	 * @return {@link BigDecimalQuantity} the X position
+	 * @throws GkException GkException
+	 */
 	protected BigDecimalQuantity<Length> getX() throws GkException{
 		return position.getX();
-		//return getValue(TinyG.POSITION_X, BigDecimal.class).getValue();
 	}
+	
+	/**
+	 * Access the Y position 
+	 * @return {@link BigDecimalQuantity} the Y position
+	 * @throws GkException GkException
+	 */
 	protected BigDecimalQuantity<Length> getY() throws GkException{
 		return position.getY();
-		//return getValue(TinyG.POSITION_Y, BigDecimal.class).getValue();
 	}
+	
+	/**
+	 * Access the Z position 
+	 * @return {@link BigDecimalQuantity} the Z position
+	 * @throws GkException GkException
+	 */
 	protected BigDecimalQuantity<Length> getZ() throws GkException{
 		return position.getZ();
-		//return getValue(TinyG.POSITION_Z, BigDecimal.class).getValue();
 	}
+	
+	/**
+	 * Access the A position 
+	 * @return {@link BigDecimalQuantity} the A position
+	 * @throws GkException GkException
+	 */
 	protected BigDecimalQuantity<Angle> getA() throws GkException{
 		return position.getA();
-		//return getValue(TinyG.POSITION_A, BigDecimal.class).getValue();
 	}
+	
 	/**
+	 * Sets the work position
 	 * @param position the position to set
-	 * @throws GkException
+	 * @throws GkException GkException
 	 */
 	public void setWorkPosition(Tuple6b position) throws GkException {
 		this.position = new Tuple6b(position);

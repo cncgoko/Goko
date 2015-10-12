@@ -141,6 +141,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void start() throws GkException {
+		LOG.info("Starting " + SERVICE_ID);
 		grblActionFactory 	 = new GrblActionFactory(this);
 		configuration 		 = new GrblConfiguration();
 		grblState 			 = new GrblState();
@@ -149,7 +150,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		executionQueue 				= new ExecutionQueue<GrblGCodeExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
 		grblStreamingRunnable 		= new GrblStreamingRunnable(executionQueue, this);
-		executor.execute(grblStreamingRunnable);		
+		executor.execute(grblStreamingRunnable);	
+		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	protected void stopStatusPolling(){

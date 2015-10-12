@@ -31,7 +31,6 @@ import java.util.concurrent.Future;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -380,7 +379,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 
 	@Override
-	public void setPlannerBufferSpaceCheck(boolean plannerBufferSpaceCheck) throws GkTechnicalException {
+	public void setPlannerBufferSpaceCheck(boolean plannerBufferSpaceCheck) throws GkException {
 		getCurrentService().setPlannerBufferSpaceCheck(plannerBufferSpaceCheck);
 	}
 

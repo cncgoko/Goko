@@ -56,7 +56,7 @@ public class TinyGControllerUtility {
 	 * @return {@link JsonValue}
 	 */
 	protected static void handleConfigurationModification(TinyGConfiguration configuration, JsonObject responseEnvelope) throws GkException {
-		TinyGJsonUtils.setConfiguration(configuration, responseEnvelope, StringUtils.EMPTY);		
+		TinyGJsonUtils.buildConfigurationFromJson(configuration, responseEnvelope);		
 	}
 
 	/**
@@ -70,7 +70,12 @@ public class TinyGControllerUtility {
 		return value;
 	}
 
-
+	/**
+	 * Update the 
+	 * @param lastKnownPosition
+	 * @param statusReport
+	 * @return
+	 */
 	protected static Tuple6b updatePosition(Tuple6b lastKnownPosition, JsonObject statusReport){
 		Tuple6b newPosition = new Tuple6b(lastKnownPosition);
 		JsonValue newPositionX = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_X);
