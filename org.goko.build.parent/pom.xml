@@ -36,9 +36,6 @@
                 <artifactId>tycho-maven-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <outputDirectory>${basedir}/target/newsite</outputDirectory>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
@@ -78,11 +75,8 @@
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-surefire-plugin</artifactId>
                 <version>${tycho.version}</version>
-                <configuration>
-                    <reportsDirectory>../org.goko.build.parent/target/surefire-reports</reportsDirectory>
-                </configuration>
-            </plugin>
+            </plugin>            
         </plugins>
-    </build>
+    </build>   
 </project>
 
