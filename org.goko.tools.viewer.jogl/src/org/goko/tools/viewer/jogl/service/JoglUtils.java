@@ -21,7 +21,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
 
 /**

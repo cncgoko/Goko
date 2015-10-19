@@ -22,22 +22,23 @@ import javax.vecmath.Vector3f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IFourAxisControllerAdapter;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
-public class RotaryAxisAdapter implements IGCodeProviderRenderer{
+public class RotaryAxisAdapter implements IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>>{
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
-	private IGCodeProviderRenderer backedRenderer;
+	private IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>> backedRenderer;
 
 	/**
 	 * Constructor
 	 * @param fourAxisControllerAdapter the controller adapter to read the rotary position from
 	 * @param backedRenderer the gcode renderer
 	 */
-	public RotaryAxisAdapter(IFourAxisControllerAdapter fourAxisControllerAdapter, IGCodeProviderRenderer backedRenderer) {
+	public RotaryAxisAdapter(IFourAxisControllerAdapter fourAxisControllerAdapter, IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>> backedRenderer) {
 		super();
 		this.fourAxisControllerAdapter = fourAxisControllerAdapter;
 		this.backedRenderer = backedRenderer;
@@ -104,7 +105,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionStart(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionStart(ExecutionToken<ExecutionState> token) throws GkException {
 		backedRenderer.onExecutionStart(token);
 	}
 
@@ -113,7 +114,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionCanceled(ExecutionToken<ExecutionState> token) throws GkException {
 		backedRenderer.onExecutionCanceled(token);
 	}
 
@@ -122,7 +123,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionPause(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionPause(ExecutionToken<ExecutionState> token) throws GkException {
 		backedRenderer.onExecutionPause(token);
 	}
 
@@ -131,7 +132,7 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionComplete(ExecutionToken<ExecutionState> token) throws GkException {
 		backedRenderer.onExecutionComplete(token);
 	}
 
@@ -141,8 +142,8 @@ public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	 * @throws GkException
 	 */
 	@Override
-	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
-		backedRenderer.onCommandStateChanged(token, idCommand);
+	public void onLineStateChanged(ExecutionToken<ExecutionState> token, Integer idCommand) throws GkException {
+		backedRenderer.onLineStateChanged(token, idCommand);
 	}
 
 	@Override

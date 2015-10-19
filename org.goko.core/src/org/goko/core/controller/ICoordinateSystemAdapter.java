@@ -19,18 +19,18 @@ package org.goko.core.controller;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.element.ICoordinateSystem;
+import org.goko.core.math.Tuple6b;
 
-public interface ICoordinateSystemAdapter {
+public interface ICoordinateSystemAdapter< T extends ICoordinateSystem> {
 
-	Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException;
+	Tuple6b getCoordinateSystemOffset(T cs) throws GkException;
 
-	EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException;
+	T getCurrentCoordinateSystem() throws GkException;
 
-	List<EnumCoordinateSystem> getCoordinateSystem() throws GkException;
+	List<T> getCoordinateSystem() throws GkException;
 
-	void setCurrentCoordinateSystem(EnumCoordinateSystem cs) throws GkException;
+	void setCurrentCoordinateSystem(T cs) throws GkException;
 
 	void resetCurrentCoordinateSystem() throws GkException;
 }

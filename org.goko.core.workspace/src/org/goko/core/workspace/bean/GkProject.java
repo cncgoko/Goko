@@ -5,7 +5,8 @@ package org.goko.core.workspace.bean;
 
 import java.util.List;
 
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
+
 
 /**
  * Describes a Goko project

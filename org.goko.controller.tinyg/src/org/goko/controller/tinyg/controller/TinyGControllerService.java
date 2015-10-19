@@ -51,16 +51,18 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.execution.ExecutionQueue;
-import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
-import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.IExecutionQueue;
+import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.EventAdmin;
 
 import com.eclipsesource.json.JsonObject;
@@ -80,13 +82,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** Connection service */
 	private ISerialConnectionService connectionService;
 	/** GCode service */
-	private IGCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 	/** The sending thread	 */
 	private GCodeSendingRunnable currentSendingRunnable;
 	/** The current execution queue */
-	private ExecutionQueue<TinyGExecutionToken> executionQueue;
+	private IExecutionQueue<ExecutionState, TinyGExecutionToken> executionQueue;
 	/** The monitor service */
-	private IGCodeExecutionMonitorService monitorService;
+	private IExecutionMonitorService<ExecutionState> monitorService;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -132,7 +134,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGPreferences.getInstance();
 		
 		// Initiate execution queue
-		executionQueue 				= new ExecutionQueue<TinyGExecutionToken>();
+		executionQueue 				= new ExecutionQueue<ExecutionState, TinyGExecutionToken>();
 		
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
 		currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);				
@@ -163,11 +165,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return tinygState.getWorkPosition();
 	}
 
+
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
+	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
+	public IExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
 		if(!isReadyForFileStreaming()){
 			throw new GkFunctionalException("TNG-003");
 		}
@@ -219,13 +222,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 	}
 	
-	public void send(GCodeCommand gCodeCommand) throws GkException{
-		communicator.send(gCodeCommand);
+	public void send(GCodeLine gCodeLine) throws GkException{
+		communicator.send(gCodeLine);
 	}
 
-	public void sendTogether(List<GCodeCommand> commands) throws GkException{
-		for (GCodeCommand gCodeCommand : commands) {
-			communicator.send(gCodeCommand);
+	public void sendTogether(List<GCodeLine> gCodeLines) throws GkException{
+		for (GCodeLine gCodeLine : gCodeLines) {
+			communicator.send(gCodeLine);
 		}
 	}
 
@@ -272,18 +275,18 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	protected void updateCurrentGCodeContext(GCodeContext updatedGCodeContext) throws GkException{
 		GCodeContext current = tinygState.getGCodeContext();
-		if(updatedGCodeContext.getPosition() != null){
-			current.setPosition(updatedGCodeContext.getPosition());
-		}
+//		if(updatedGCodeContext.getPosition() != null){
+//			current.setPosition(updatedGCodeContext.getPosition());
+//		}
 		if(updatedGCodeContext.getCoordinateSystem() != null){
 			current.setCoordinateSystem(updatedGCodeContext.getCoordinateSystem());
 		}
 		if(updatedGCodeContext.getMotionMode() != null){
 			current.setMotionMode(updatedGCodeContext.getMotionMode());
 		}
-		if(updatedGCodeContext.getMotionType() != null){
-			current.setMotionType(updatedGCodeContext.getMotionType());
-		}
+//		if(updatedGCodeContext.getMotionType() != null){
+//			current.setMotionType(updatedGCodeContext.getMotionType());
+//		}
 		if(updatedGCodeContext.getFeedrate() != null){
 			current.setFeedrate(updatedGCodeContext.getFeedrate());
 		}
@@ -296,8 +299,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(updatedGCodeContext.getPlane() != null){
 			current.setPlane(updatedGCodeContext.getPlane());
 		}
-		if(updatedGCodeContext.getToolNumber() != null){
-			current.setToolNumber(updatedGCodeContext.getToolNumber());
+		if(updatedGCodeContext.getActiveToolNumber() != null){
+			current.setActiveToolNumber(updatedGCodeContext.getActiveToolNumber());
+		}
+		if(updatedGCodeContext.getSelectedToolNumber() != null){
+			current.setSelectedToolNumber(updatedGCodeContext.getSelectedToolNumber());
 		}
 		tinygState.setGCodeContext(current);
 	}
@@ -337,8 +343,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
 		if(executionQueue.getCurrentToken() != null){
 			if(status == TinyGStatusCode.TG_OK){
-				GCodeCommand 	parsedCommand 	= getGcodeService().parseCommand(receivedCommand, getCurrentGCodeContext());
-				executionQueue.getCurrentToken().markAsConfirmed(parsedCommand);
+				GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
+				executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
 				this.currentSendingRunnable.confirmCommand();
 			}else{
 				handleError(status, receivedCommand);
@@ -357,10 +363,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(executionQueue != null){
 			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
 			
-			if(currentToken != null && currentToken.getSentCommandCount() > 0){
-				 // Error occured during GCode programm execution, let's give the source command
-				GCodeCommand command = currentToken.markNextCommandAsError();
-				message += " on command ["+command.getStringCommand()+"]";
+			if(currentToken != null ){
+				List<GCodeLine> errorsCommand = currentToken.getLineByState(ExecutionState.ERROR);
+				if(CollectionUtils.isNotEmpty(errorsCommand)){
+					 // Error occurred during GCode program execution, let's give the source command
+					GCodeLine line = errorsCommand.get(0);
+					message += " on command ["+gcodeService.toString(line)+"]";
+				}
 			}
 			// Security pause
 			pauseMotion();
@@ -414,14 +423,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the gcodeService
 	 */
-	public IGCodeService getGcodeService() {
+	public IRS274NGCService getGcodeService() {
 		return gcodeService;
 	}
 
 	/**
 	 * @param gCodeService the gcodeService to set
 	 */
-	public void setGCodeService(IGCodeService gCodeService) {
+	public void setGCodeService(IRS274NGCService gCodeService) {
 		this.gcodeService = gCodeService;
 		this.communicator.setGcodeService(gCodeService);
 	}
@@ -614,7 +623,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public Future<ProbeResult> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
 		futureProbeResult = new ProbeCallable();
 		String strCommand = "G38.2 "+axis.getAxisCode()+String.valueOf(maximumPosition)+" F"+feedrate;
-		IGCodeProvider command = gcodeService.parse(strCommand, getCurrentGCodeContext());
+		IGCodeProvider command = gcodeService.parse(strCommand);
 		executeGCode(command);
 		return Executors.newSingleThreadExecutor().submit(futureProbeResult);
 	}
@@ -628,7 +637,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 	}
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.gcode.bean.Tuple6b)
+	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.math.Tuple6b)
 	 */
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
@@ -642,7 +651,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(position.getZ() != null){
 			cmd += "Z"+getPositionAsString(position.getZ());
 		}
-		IGCodeProvider command = gcodeService.parse(cmd, getCurrentGCodeContext());
+		IGCodeProvider command = gcodeService.parse(cmd);
 		executeGCode(command);
 	}
 
@@ -779,13 +788,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the monitorService
 	 */
-	public IGCodeExecutionMonitorService getMonitorService() {
+	public IExecutionMonitorService getMonitorService() {
 		return monitorService;
 	}
 	/**
 	 * @param monitorService the monitorService to set
 	 */
-	public void setMonitorService(IGCodeExecutionMonitorService monitorService) {
+	public void setMonitorService(IExecutionMonitorService monitorService) {
 		this.monitorService = monitorService;
 	}
 

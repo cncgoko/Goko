@@ -2,6 +2,6 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" immediate="true" name="org.goko.core.execution.monitor">
    <implementation class="org.goko.core.execution.monitor.service.GCodeExecutionMonitorServiceImpl"/>
    <service>
-      <provide interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService"/>
+      <provide interface="org.goko.core.gcode.service.IExecutionMonitorService"/>
    </service>
 </scr:component>

@@ -27,7 +27,7 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 public class CircleRenderer extends PolylineRenderer{

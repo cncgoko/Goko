@@ -32,8 +32,8 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeResult;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 
 public class ProbeCycleRunnable implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(ProbeCycleRunnable.class);

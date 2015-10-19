@@ -40,11 +40,12 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
-import org.goko.core.gcode.bean.BoundingTuple6b;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
+import org.goko.core.gcode.element.ICoordinateSystem;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.workspace.service.GCodeProviderEvent;
 import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
 import org.goko.core.workspace.service.IWorkspaceListener;
@@ -83,7 +84,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	/** Jog service */
 	private IJogService jogService;
 	/** GCode execution monitor service */
-	private IGCodeExecutionMonitorService executionMonitorService;
+	private IExecutionMonitorService executionMonitorService;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
 	/** Work volume provider */
@@ -276,7 +277,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 * @param coordinateSystemAdapter the coordinateSystemAdapter to set
 	 * @throws GkException
 	 */
-	public void setCoordinateSystemAdapter(ICoordinateSystemAdapter coordinateSystemAdapter) throws GkException {
+	public void setCoordinateSystemAdapter(ICoordinateSystemAdapter<ICoordinateSystem> coordinateSystemAdapter) throws GkException {
 		this.coordinateSystemAdapter = coordinateSystemAdapter;
 		if(this.coordinateSystemRenderer == null){
 			this.coordinateSystemRenderer = new CoordinateSystemSetRenderer();
@@ -302,7 +303,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	/**
 	 * @param executionMonitorService the executionMonitorService to set
 	 */
-	public void setGCodeExecutionMonitorService(IGCodeExecutionMonitorService executionMonitorService) {
+	public void setGCodeExecutionMonitorService(IExecutionMonitorService<ExecutionState> executionMonitorService) {
 		this.executionMonitorService = executionMonitorService;
 	}
 
@@ -416,7 +417,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 * @see org.goko.tools.viewer.jogl.service.IJoglViewerService#setCoordinateSystemEnabled(org.goko.core.gcode.bean.commands.EnumCoordinateSystem, boolean)
 	 */
 	@Override
-	public void setCoordinateSystemEnabled(EnumCoordinateSystem cs, boolean enabled) {
+	public void setCoordinateSystemEnabled(ICoordinateSystem cs, boolean enabled) {
 		if(coordinateSystemRenderer != null){
 			coordinateSystemRenderer.setCoordinateSystemEnabled(cs, enabled);
 		}

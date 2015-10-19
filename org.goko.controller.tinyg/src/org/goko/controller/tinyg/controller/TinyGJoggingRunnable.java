@@ -16,7 +16,7 @@ import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.log.GkLog;
 
 /**
@@ -90,8 +90,8 @@ public class TinyGJoggingRunnable implements Runnable {
 				if(isReadyToJog()){
 					if(axis != null && feed != null && step != null){
 						String command = "G1F"+feed.toPlainString();
-						EnumGCodeCommandDistanceMode distanceMode = tinygService.getCurrentGCodeContext().getDistanceMode();
-						if(distanceMode == EnumGCodeCommandDistanceMode.ABSOLUTE){
+						EnumDistanceMode distanceMode = tinygService.getCurrentGCodeContext().getDistanceMode();
+						if(distanceMode == EnumDistanceMode.ABSOLUTE){
 							command = startAbsoluteJog(command);
 						}else{
 							command = startRelativeJog(command);

@@ -18,11 +18,13 @@
 package org.goko.tools.viewer.jogl.utils.render.gcode;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;
 
-public interface IGCodeProviderRenderer extends ICoreJoglRenderer, IGCodeExecutionListener{
+public interface IGCodeProviderRenderer<S extends IExecutionState, T extends IExecutionToken<S>> extends ICoreJoglRenderer, IGCodeExecutionListener<S, T>{
 
 	void setGCodeProvider(IGCodeProvider provider) throws GkException;
 

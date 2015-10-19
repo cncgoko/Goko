@@ -30,7 +30,7 @@ import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;

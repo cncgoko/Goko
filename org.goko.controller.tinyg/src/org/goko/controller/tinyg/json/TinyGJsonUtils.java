@@ -27,7 +27,6 @@ import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.log.GkLog;
 
 import com.eclipsesource.json.JsonArray;
@@ -137,12 +136,12 @@ public class TinyGJsonUtils {
 	/**
 	 * Convert a GCode command to a JSON object
 	 *
-	 * @param command the command
+	 * @param commandStr the command
 	 * @return {@link JsonObject}
 	 */
-	public static JsonObject toJson(GCodeCommand command){
+	public static JsonObject wrapGCode(String commandStr){
 		JsonObject jsonGCode = new JsonObject();
-		jsonGCode.add(GCODE_COMMAND, command.toString());
+		jsonGCode.add(GCODE_COMMAND, commandStr);
 		return jsonGCode;
 	}
 	/**

@@ -24,7 +24,7 @@ import javax.vecmath.Point3f;
 import org.goko.autoleveler.bean.GridElevationMap;
 import org.goko.autoleveler.bean.IAxisElevationPattern;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.core.viewer.renderer.AbstractViewer3DRenderer;
 import org.goko.core.viewer.renderer.IRendererProxy;
 

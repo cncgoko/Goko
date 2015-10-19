@@ -35,8 +35,8 @@ import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.BoundingTuple6b;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.BoundingTuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
@@ -252,7 +252,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.camera.AbstractCamera#zoomToFit(org.goko.core.gcode.bean.BoundingTuple6b)
+	 * @see org.goko.tools.viewer.jogl.camera.AbstractCamera#zoomToFit(org.goko.core.math.BoundingTuple6b)
 	 */
 	@Override
 	public void zoomToFit(BoundingTuple6b bounds) throws GkException {

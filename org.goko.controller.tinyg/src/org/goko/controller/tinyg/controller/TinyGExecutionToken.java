@@ -19,51 +19,56 @@
  */
 package org.goko.controller.tinyg.controller;
 
-import org.apache.commons.collections.MapUtils;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 
 
-public class TinyGExecutionToken extends GCodeStreamedExecutionToken{
+public class TinyGExecutionToken extends ExecutionToken<ExecutionState>{
 	private Object lock;	
 	/**
 	 * Constructor
 	 * @param provider the provider to execute
 	 */
 	public TinyGExecutionToken(IGCodeProvider provider) {
-		super(provider);		
+		super(provider, ExecutionState.NONE);		
 		lock = new Object();
 	}
 
-	public void markAsConfirmed(GCodeCommand command) throws GkException{
+	public void markAsConfirmed(GCodeLine command) throws GkException{
 		synchronized (lock) {
-			if(MapUtils.isNotEmpty(mapSentCommandById)){
-				GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
-				//if(ObjectUtils.equals(command, nextCommand)){
-					markAsExecuted(nextCommand.getId());
-					updateCompleteState();
-				//}
-			}
+			List<GCodeLine> lstSentLine = getLineByState(ExecutionState.SENT);
+			GCodeLine gCodeLine = lstSentLine.get(0);
+			markAsExecuted(gCodeLine.getId());
 		}
 	}
 
-	@Override
 	public void markAsSent(Integer idCommand) throws GkException {
 		synchronized (lock) {
-			super.markAsSent(idCommand);
+			super.setLineState(idCommand, ExecutionState.SENT);
 		}
 	}
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken#markAsExecuted(java.lang.Integer)
-	 */
-	@Override
+
 	public void markAsExecuted(Integer idCommand) throws GkException {
 		synchronized (lock) {
-			super.markAsExecuted(idCommand);
-			mapSentCommandById.remove(idCommand);
+			super.setLineState(idCommand, ExecutionState.EXECUTED);
 			updateCompleteState();
+		}
+	}
+	
+	protected void updateCompleteState() throws GkException{
+		if(CollectionUtils.isNotEmpty(getLineByState(ExecutionState.NONE))){
+			int nbErrors 	= CollectionUtils.size(getLineByState(ExecutionState.ERROR));
+			int nbExecuted  = CollectionUtils.size(getLineByState(ExecutionState.EXECUTED));
+			
+			if(nbErrors + nbExecuted == getLineCount()){
+				setComplete(true);
+			}
 		}
 	}
 

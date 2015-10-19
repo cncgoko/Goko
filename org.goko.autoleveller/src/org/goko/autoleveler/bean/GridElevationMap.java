@@ -29,7 +29,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 public class GridElevationMap implements IAxisElevationMap, IAxisElevationPattern {
 	private List<Tuple6b> probedPositions;
@@ -93,7 +93,7 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.autoleveler.bean.IAxisElevationMap#addPosition(org.goko.core.gcode.bean.Tuple6b)
+	 * @see org.goko.autoleveler.bean.IAxisElevationMap#addPosition(org.goko.core.math.Tuple6b)
 	 */
 	@Override
 	public void addProbedPosition(Tuple6b patternPosition, Tuple6b realPosition) throws GkException {
@@ -101,7 +101,7 @@ public class GridElevationMap implements IAxisElevationMap, IAxisElevationPatter
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.autoleveler.bean.IAxisElevationMap#getCorrectedElevation(org.goko.core.gcode.bean.Tuple6b)
+	 * @see org.goko.autoleveler.bean.IAxisElevationMap#getCorrectedElevation(org.goko.core.math.Tuple6b)
 	 */
 	@Override
 	public Tuple6b getCorrectedElevation(Tuple6b position) throws GkException {

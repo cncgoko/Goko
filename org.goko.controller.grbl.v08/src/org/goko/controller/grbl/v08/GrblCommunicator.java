@@ -37,8 +37,8 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 
 public class GrblCommunicator implements IConnectionDataListener, IConnectionListener {
 	/** LOG */

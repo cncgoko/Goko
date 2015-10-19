@@ -15,8 +15,8 @@ import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
-import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.EventAdmin;
@@ -57,10 +57,10 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IControllerConfigurationFileExporter.class, service, null);		
 		context.registerService(IControllerConfigurationFileImporter.class, service, null);		
 				
-		service.setGCodeService(findService(context, IGCodeService.class));
+		service.setGCodeService(findService(context, IRS274NGCService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setConnectionService(findService(context, ISerialConnectionService.class));
-		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
+		service.setMonitorService(findService(context, IExecutionMonitorService.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
 		
 		service.start();

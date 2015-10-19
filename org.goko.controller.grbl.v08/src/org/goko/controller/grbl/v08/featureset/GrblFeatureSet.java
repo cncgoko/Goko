@@ -19,7 +19,7 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -67,7 +67,7 @@ public class GrblFeatureSet implements IFeatureSet {
 		service.setGCodeService(findService(context, IGCodeService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
-		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
+		service.setMonitorService(findService(context, IExecutionMonitorService.class));
 		
 		service.start();
 		

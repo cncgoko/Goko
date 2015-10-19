@@ -26,18 +26,18 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
-
+import org.goko.core.gcode.element.IGCodeContext;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.math.Tuple6b;
 /**
  * Interface definition for the controller.
  * The controller is in charge of
  * @author PsyKo
  *
  */
-public interface IControllerService extends IGokoService, IEventDispatcher{	
+public interface IControllerService<S extends IExecutionState, G extends IGCodeContext> extends IGokoService, IEventDispatcher{	
 	public static final String CONTROLLER_TOPIC				 = "ControllerEvent";
 	public static final String CONTROLLER_TOPIC_ALL			 = "ControllerEvent/*";
 	public static final String CONTROLLER_TOPIC_STATE_UPDATE = CONTROLLER_TOPIC+"/StateUpdate";
@@ -52,7 +52,7 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	 * @param gcodeProvider the {@link IGCodeProvider}
 	 * @throws GkException GkException
 	 */
-	GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException;
+	IExecutionToken<S> executeGCode(IGCodeProvider gcodeProvider) throws GkException;
 
 	/**
 	 * Determine if the controller is ready to stream a file
@@ -97,7 +97,7 @@ public interface IControllerService extends IGokoService, IEventDispatcher{
 	 * @return GCodeContext
 	 * @throws GkException exception
 	 */
-	GCodeContext getCurrentGCodeContext() throws GkException;
+	G getCurrentGCodeContext() throws GkException;
 
 	/**
 	 * Returns the list of available values

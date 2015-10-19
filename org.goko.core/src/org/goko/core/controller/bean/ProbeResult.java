@@ -17,7 +17,7 @@
 
 package org.goko.core.controller.bean;
 
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 public class ProbeResult {
 	/** Boolean indicating the success of the probing operation*/

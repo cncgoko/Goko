@@ -22,9 +22,9 @@ import java.util.Map;
 
 import org.eclipse.jface.text.Document;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.log.GkLog;
 
 public class GCodeDocumentProvider extends Document {
@@ -36,9 +36,9 @@ public class GCodeDocumentProvider extends Document {
 	private IGCodeProvider gcodeProvider;
 	private Map<Integer, Integer> gCodeCommandLine;
 
-	private IGCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 
-	public GCodeDocumentProvider(IGCodeProvider gcodeProvider, IGCodeService gcodeService){
+	public GCodeDocumentProvider(IGCodeProvider gcodeProvider, IRS274NGCService gcodeService){
 		this.gcodeProvider = gcodeProvider;
 		this.gcodeService = gcodeService;
 		this.gCodeCommandLine = new HashMap<Integer, Integer>();
@@ -50,13 +50,13 @@ public class GCodeDocumentProvider extends Document {
 	}
 
 	private void init() throws GkException {
-		List<GCodeCommand> lstCommands = gcodeProvider.getGCodeCommands();
+		List<GCodeLine> lstLines = gcodeProvider.getLines();
 		int line = 0;
 		StringBuffer buffer = new StringBuffer();
-		for (GCodeCommand gCodeCommand : lstCommands) {
-			buffer.append(new String(gcodeService.convert(gCodeCommand)));//GCodeFileTextRenderer.render(gCodeCommand) );
+		for (GCodeLine gCodeLine : lstLines) {
+			buffer.append(gcodeService.toString(gCodeLine));
 			buffer.append(EOL);
-			gCodeCommandLine.put(gCodeCommand.getId(), line++);
+			gCodeCommandLine.put(gCodeLine.getId(), line++);
 		}
 		set(buffer.toString());
 	}

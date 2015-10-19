@@ -31,13 +31,13 @@ import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandPlane;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 
 public class GrblState extends MachineValueStore{
 	/** LOG */

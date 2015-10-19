@@ -24,7 +24,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.viewer.service.IViewer3DService;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.AbstractCamera;
@@ -63,9 +63,9 @@ public interface IJoglViewerService extends IViewer3DService{
 
 	public void zoomToFit() throws GkException;
 
-	public ICoordinateSystemAdapter getCoordinateSystemAdapter() throws GkException;
+	public ICoordinateSystemAdapter<ICoordinateSystem> getCoordinateSystemAdapter() throws GkException;
 
-	public void setCoordinateSystemEnabled(EnumCoordinateSystem cs, boolean enabled);
+	public void setCoordinateSystemEnabled(ICoordinateSystem cs, boolean enabled);
 	
 	public void setLayerVisible(int layerId, boolean visible);
 	

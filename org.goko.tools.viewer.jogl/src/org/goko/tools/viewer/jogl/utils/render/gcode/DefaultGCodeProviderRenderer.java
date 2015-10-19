@@ -30,11 +30,9 @@ import javax.vecmath.Point3d;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeCommandState;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
-import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
@@ -49,7 +47,7 @@ import com.jogamp.common.nio.Buffers;
  * @author PsyKo
  *
  */
-public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implements IGCodeProviderRenderer, IGCodeExecutionListener {
+public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implements IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>> {
 	/** Command state layout */
 	private static final int STATE_LAYOUT = 2;
 	/** The GCodeProvider to render */
@@ -212,7 +210,7 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionStart(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionStart(ExecutionToken<ExecutionState> token) throws GkException {
 		if(stateBuffer != null){
 			int capacity = stateBuffer.capacity();
 			for (int i = 0; i < capacity; i++){
@@ -222,13 +220,13 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 		}
 	}
 
-
+	
 	/**
 	 * @param token
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionCanceled(ExecutionToken<ExecutionState> token) throws GkException {
 		// TODO Auto-generated method stub
 
 	}
@@ -239,7 +237,7 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionPause(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionPause(ExecutionToken<ExecutionState> token) throws GkException {
 		// TODO Auto-generated method stub
 
 	}
@@ -250,7 +248,7 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 	 * @throws GkException
 	 */
 	@Override
-	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionComplete(ExecutionToken<ExecutionState> token) throws GkException {
 		// TODO Auto-generated method stub
 
 	}
@@ -261,13 +259,13 @@ public class DefaultGCodeProviderRenderer extends AbstractLineRenderer implement
 	 * @throws GkException
 	 */
 	@Override
-	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+	public void onLineStateChanged(ExecutionToken<ExecutionState> token, Integer idCommand) throws GkException {
 
 		Integer[] verticesIndex = mapVerticesPositionByIdCommand.get(idCommand);
 		if(verticesIndex != null){
-			GCodeCommandState state = token.getCommandState(idCommand);
+			ExecutionState state = token.getLineState(idCommand);
 			for (int i = verticesIndex[0]; i < verticesIndex[0] + verticesIndex[1]; i++) {
-				stateBuffer.put(i, state.state);
+				stateBuffer.put(i, state.getState());
 			}
 			update();
 		}

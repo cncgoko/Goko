@@ -18,7 +18,7 @@ package org.goko.core.workspace.service;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
 
 public interface IWorkspaceService extends IGokoService{
 

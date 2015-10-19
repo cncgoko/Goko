@@ -37,14 +37,14 @@ import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
-import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -64,7 +64,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	/** The applicative log service */
 	private IApplicativeLogService applicativeLogService;
 	/** GCode service */
-	private IGCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 
 	/**
 	 * Constructor
@@ -281,14 +281,14 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 
 			Tuple6b 					 workPosition 	= findWorkPosition(statusReportObject);
 			MachineState 				 state 			= findState(statusReportObject);
-			EnumGCodeCommandDistanceMode distanceMode 	= findDistanceMode(statusReportObject);
-			EnumGCodeCommandUnit 		 units 			= findUnits(statusReportObject);
+			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);
+			EnumUnit 		 units 			= findUnits(statusReportObject);
 			BigDecimal 					 velocity 		= findVelocity(statusReportObject);
 			BigDecimal 					 feedrate 		= findFeedrate(statusReportObject);
 			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getCurrentGCodeContext());
 
-			gcodeContext.setPosition(workPosition);
+			gcodeContext.setPosition(workPosition);			
 			gcodeContext.setDistanceMode(distanceMode);
 			gcodeContext.setUnit(units);
 			gcodeContext.setCoordinateSystem(cs);
@@ -331,14 +331,15 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport);
 		return workPosition;
 	}
-	private EnumGCodeCommandDistanceMode findDistanceMode(JsonObject statusReport){
+	
+	private EnumDistanceMode findDistanceMode(JsonObject statusReport){
 		JsonValue distReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_DISTANCE_MODE);
 		if(distReport != null){
 			int dist = distReport.asInt();
 			if(dist == 0){
-				return EnumGCodeCommandDistanceMode.ABSOLUTE;
+				return EnumDistanceMode.ABSOLUTE;
 			}else{
-				return EnumGCodeCommandDistanceMode.RELATIVE;
+				return EnumDistanceMode.RELATIVE;
 			}
 		}
 		return null;
@@ -349,14 +350,14 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * @param statusReport the status report
 	 * @return {@link EnumGCodeCommandUnit}
 	 */
-	private EnumGCodeCommandUnit findUnits(JsonObject statusReport){
+	private EnumUnit findUnits(JsonObject statusReport){
 		JsonValue unitReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_UNITS);
 		if(unitReport != null){
 			int units = unitReport.asInt();
 			if(units == 1){
-				return EnumGCodeCommandUnit.MILLIMETERS;
+				return EnumUnit.MILLIMETERS;
 			}else{
-				return EnumGCodeCommandUnit.INCHES;
+				return EnumUnit.INCHES;
 			}
 		}
 		return null;
@@ -450,16 +451,12 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * @param list the list
 	 */
 	private void addEndLineCharacter(List<Byte> list){
-		//command.add(new Byte((byte) endLineCharDelimiter));
 		list.add(new Byte((byte) endLineCharDelimiter));
 	}
 
-	protected void send(GCodeCommand gCodeCommand) throws GkException{	
-		String msg = gCodeCommand.getStringCommand();
-		if(StringUtils.isEmpty(msg)){
-			msg = new String(gcodeService.convert(gCodeCommand));
-		}
-		JsonValue jsonStr = TinyGControllerUtility.toJson(msg);
+	protected void send(GCodeLine gCodeLine) throws GkException{	
+		String gcodeString = gcodeService.toString(gCodeLine);		
+		JsonValue jsonStr = TinyGControllerUtility.toJson(gcodeString);
 		send(GkUtils.toBytesList(jsonStr.toString()));
 	}
 
@@ -479,14 +476,14 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	/**
 	 * @return the gcodeService
 	 */
-	public IGCodeService getGcodeService() {
+	public IRS274NGCService getGcodeService() {
 		return gcodeService;
 	}
 
 	/**
 	 * @param gcodeService the gcodeService to set
 	 */
-	public void setGcodeService(IGCodeService gcodeService) {
+	public void setGcodeService(IRS274NGCService gcodeService) {
 		this.gcodeService = gcodeService;
 	}
 }

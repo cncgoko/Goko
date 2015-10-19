@@ -24,7 +24,7 @@ import javax.media.opengl.GL;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 public class PointRenderer extends PolylineRenderer{

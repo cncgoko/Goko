@@ -21,7 +21,7 @@ package org.goko.tools.centerfinder.bean;
 
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 public class CircleCenterFinderResult {
 	/** The center of the circle */

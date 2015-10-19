@@ -53,8 +53,8 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.config.GokoPreference;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.model.CenterFinderController;
 import org.goko.tools.centerfinder.model.CenterFinderModel;
 

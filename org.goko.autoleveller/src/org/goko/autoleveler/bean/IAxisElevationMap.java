@@ -22,7 +22,7 @@ package org.goko.autoleveler.bean;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 /**
  * Defines an abstract Elevation map used to retrieve a single axis position at given location

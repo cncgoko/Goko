@@ -58,7 +58,7 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.log.GkLog;
 import org.goko.tools.commandpanel.controller.CommandPanelController;
 import org.goko.tools.commandpanel.controller.CommandPanelModel;

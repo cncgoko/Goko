@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 
 public interface ICenterFinderService extends IGokoService{

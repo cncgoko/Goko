@@ -21,7 +21,7 @@ import javax.media.opengl.GLEventListener;
 import javax.vecmath.Point3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.BoundingTuple6b;
+import org.goko.core.math.BoundingTuple6b;
 
 import com.jogamp.opengl.util.PMVMatrix;
 import com.jogamp.opengl.util.awt.Overlay;

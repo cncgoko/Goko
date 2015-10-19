@@ -22,8 +22,8 @@ package org.goko.tools.execution.time.service.calculators;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
 import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.LinearMotionCommand;
+import org.goko.core.math.Tuple6b;
 
 /**
  * Computes the time required for a linear motion

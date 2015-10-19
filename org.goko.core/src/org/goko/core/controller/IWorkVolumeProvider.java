@@ -1,7 +1,7 @@
 package org.goko.core.controller;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 public interface IWorkVolumeProvider {
 	/**

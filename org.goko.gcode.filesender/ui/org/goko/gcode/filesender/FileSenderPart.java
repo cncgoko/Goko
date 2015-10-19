@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -72,10 +73,12 @@ import org.goko.common.bindings.validator.FilepathValidator;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.filesender.controller.GCodeFileSenderBindings;
 import org.goko.gcode.filesender.controller.GCodeFileSenderController;
@@ -86,12 +89,12 @@ import org.goko.gcode.filesender.controller.GCodeFileSenderController;
  * @author PsyKo
  *
  */
-public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener, PropertyChangeListener {
+public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState>, PropertyChangeListener {
 	private static final GkLog LOG = GkLog.getLogger(FileSenderPart.class);
 	@Inject
 	private IApplicativeLogService applicativeLogService;
 	@Inject
-	private IGCodeExecutionMonitorService monitorService;
+	private IExecutionMonitorService monitorService;
 	private Text txtFilepath;
 	private Label lblFilesize;
 	private Label lblName;
@@ -400,7 +403,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		tableViewerColumn.setLabelProvider(new StyledCellLabelProvider() {
 			@Override
 			public void update(ViewerCell cell) {
-				GCodeCommand p = (GCodeCommand) cell.getElement();
+				GCodeLine p = (GCodeLine) cell.getElement();
 				cell.setText(String.valueOf(p.getLineNumber()));
 				cell.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 				super.update(cell);
@@ -415,8 +418,8 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		tableViewerColumn_1.setLabelProvider(new ColumnLabelProvider() {
 	        @Override
 	        public String getText(Object element) {
-	        	GCodeCommand p = (GCodeCommand) element;
-	          return String.valueOf(p.getStringCommand());
+	        	GCodeLine p = (GCodeLine) element;
+	        	return String.valueOf(p.toString());
 	        }
 	      });
 		tableViewer.setContentProvider(new GCodeTableLazyContentProvider(tableViewer));
@@ -425,7 +428,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		tableViewer.setUseHashlookup(true);
 
 		// create the model and set it as input
-		tableViewer.setInput(new ArrayList<GCodeCommand>());
+		tableViewer.setInput(new ArrayList<GCodeLine>());
 		// you must explicitly set the items count
 		tableViewer.setItemCount(0);
 
@@ -476,43 +479,43 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	}
 	private void refreshCommandTable() {
 		if(getDataModel().getGcodeProvider() != null){
-			tableViewer.setInput(getDataModel().getGcodeProvider().getGCodeCommands());
-			tableViewer.setItemCount(getDataModel().getGcodeProvider().getGCodeCommands().size());
+			tableViewer.setInput(getDataModel().getGcodeProvider().getLines());
+			tableViewer.setItemCount(getDataModel().getGcodeProvider().getLines().size());
 		}
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionStart(IExecutionToken<IExecutionState> token) throws GkException {
 		getController().onExecutionStart(token);
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionCanceled(IExecutionToken<IExecutionState> token) throws GkException {
 		getController().onExecutionCanceled(token);
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(IGCodeExecutionToken token) throws GkException {		
+	public void onExecutionPause(IExecutionToken<IExecutionState> token) throws GkException {		
 		getController().onExecutionComplete(token);
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionComplete(IGCodeExecutionToken token) throws GkException {
+	public void onExecutionComplete(IExecutionToken<IExecutionState> token) throws GkException {
 		if(!shell.isDisposed()){			
-			final int executedCount = token.getExecutedCommandCount();
-			final int totalCount 	= token.getCommandCount();
+			final int executedCount = CollectionUtils.size(token.getLineByState(ExecutionState.EXECUTED));
+			final int totalCount 	= token.getLineCount();
 			shell.getDisplay().asyncExec(new Runnable() {
 		      @Override
 		      public void run() {
@@ -527,10 +530,10 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onCommandStateChanged(org.goko.core.gcode.bean.execution.IGCodeExecutionToken, java.lang.Integer)
+	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+	public void onCommandStateChanged(IExecutionToken token, Integer idCommand) throws GkException {
 		// TODO Auto-generated method stub
 		
 	}

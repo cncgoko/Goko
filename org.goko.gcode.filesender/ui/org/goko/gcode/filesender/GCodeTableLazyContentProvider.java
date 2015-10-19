@@ -5,11 +5,11 @@ import java.util.List;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.element.GCodeLine;
 
 public class GCodeTableLazyContentProvider implements ILazyContentProvider {
   private TableViewer viewer;
-  private List<GCodeCommand> elements;
+  private List<GCodeLine> elements;
 
   public GCodeTableLazyContentProvider(TableViewer viewer) {
     this.viewer = viewer;
@@ -21,7 +21,7 @@ public void dispose() {
 
   @Override
 public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-    this.elements = (List<GCodeCommand> ) newInput;
+    this.elements = (List<GCodeLine> ) newInput;
   }
 
   @Override

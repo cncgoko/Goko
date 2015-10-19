@@ -34,7 +34,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 import org.goko.tools.centerfinder.bean.Segment;
 import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;

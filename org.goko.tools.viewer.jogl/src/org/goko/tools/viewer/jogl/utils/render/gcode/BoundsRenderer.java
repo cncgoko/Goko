@@ -24,7 +24,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.BoundingTuple6b;
+import org.goko.core.math.BoundingTuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.service.Layer;

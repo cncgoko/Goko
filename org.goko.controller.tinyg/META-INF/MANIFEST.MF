@@ -24,7 +24,8 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.services,
  Goko;bundle-version="0.0.1",
  org.eclipse.e4.ui.model.workbench,
- org.eclipse.core.expressions;bundle-version="3.4.600"
+ org.eclipse.core.expressions;bundle-version="3.4.600",
+ org.goko.core.gcode.rs274ngcv3;bundle-version="0.0.1"
 Service-Component: OSGI-INF/TinyGFeatureSetComponent.xml
 Bundle-ClassPath: .,
  swing2swt.jar
@@ -34,4 +35,5 @@ Export-Package: org.goko.controller.tinyg.controller,
 Bundle-ActivationPolicy: lazy
 Goko-Feature: org.goko.controller
 Bundle-Activator: org.goko.controller.internal.TinyGActivator
-Import-Package: org.osgi.service.event
+Import-Package: org.goko.core.gcode.rs274ngcv3.context,
+ org.osgi.service.event

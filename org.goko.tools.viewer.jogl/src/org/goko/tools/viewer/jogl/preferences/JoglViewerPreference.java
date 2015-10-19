@@ -34,7 +34,7 @@ import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GkPreference;
 import org.goko.core.config.GokoPreference;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 /**
  * Jogl Viewer settings

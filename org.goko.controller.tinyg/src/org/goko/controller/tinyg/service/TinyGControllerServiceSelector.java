@@ -40,12 +40,12 @@ import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.bean.ProbeResult;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 
 /**
  * TinyG Controller service selector
@@ -53,6 +53,10 @@ import org.goko.core.log.GkLog;
  *
  * @author PsyKo
  *
+ */
+/**
+ * @author PsyKo
+ * @date 18 oct. 2015
  */
 public class TinyGControllerServiceSelector implements ITinyGControllerServiceSelector, ITinyGControllerFirmwareService{
 	private static final GkLog LOG = GkLog.getLogger(TinyGControllerServiceSelector.class);
@@ -146,11 +150,12 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 		return getCurrentService().getPosition();
 	}
 
+
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
+	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
+	public IExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
 		return getCurrentService().executeGCode(gcodeProvider);
 	}
 

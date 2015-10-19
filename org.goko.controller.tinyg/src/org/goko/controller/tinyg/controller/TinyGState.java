@@ -37,10 +37,14 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
+import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 
 /**
  * Storage of the internal state of the TinyG board
@@ -65,7 +69,26 @@ public class TinyGState extends MachineValueStore{
 	 */
 	public TinyGState() throws GkException {
 		super();		
-		initializeDefaultValue();		
+		initializeDefaultValue();
+		initializeDefaultContext();
+	}
+
+	/**
+	 * Initialize the default GCodeContext
+	 * @throws GkException GkException 
+	 */
+	private void initializeDefaultContext() throws GkException {		
+		gcodeContext = new GCodeContext();
+		gcodeContext.setPosition(new Tuple6b());
+		gcodeContext.setOriginOffset(new Tuple6b());
+		gcodeContext.setCoordinateSystem(EnumCoordinateSystem.G54);
+		gcodeContext.setSelectedToolNumber(0);
+		gcodeContext.setActiveToolNumber(0);
+		gcodeContext.setUnit(EnumUnit.MILLIMETERS);
+		gcodeContext.setMotionMode(EnumMotionMode.RAPID);
+		gcodeContext.setFeedrate(BigDecimal.ZERO);
+		gcodeContext.setDistanceMode(EnumDistanceMode.ABSOLUTE);
+		gcodeContext.setPlane(EnumPlane.XY_PLANE);
 	}
 
 	/**
@@ -73,7 +96,6 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	private void initializeDefaultValue() throws GkException{
-		gcodeContext = new GCodeContext();
 		position = new Tuple6b().setZero();
 		currentUnit = SIPrefix.MILLI(SI.METRE);
 		storeValue(TinyG.STATE, "State", "The state of TinyG controller board", MachineState.UNDEFINED);

@@ -7,6 +7,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.goko.core,
  org.goko.junit.tools,
  org.junit,
- org.goko.controller.tinyg;bundle-version="0.0.1",
- org.goko.core.rs274ngcv3;bundle-version="0.0.1"
+ org.goko.controller.tinyg;bundle-version="0.0.1"
 Import-Package: org.osgi.framework;version="1.8.0"

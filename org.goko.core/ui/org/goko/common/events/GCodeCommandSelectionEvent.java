@@ -18,7 +18,8 @@ package org.goko.common.events;
 
 import java.lang.ref.WeakReference;
 
-import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.element.GCodeLine;
+
 
 /**
  * Event for GCodeCommand selection event
@@ -28,21 +29,21 @@ import org.goko.core.gcode.bean.GCodeCommand;
  */
 public class GCodeCommandSelectionEvent {
 	/** Weak reference to the command */
-	private WeakReference<GCodeCommand> command;
+	private WeakReference<GCodeLine> command;
 
 	/**
 	 * @param command
 	 */
-	public GCodeCommandSelectionEvent(GCodeCommand command) {
+	public GCodeCommandSelectionEvent(GCodeLine command) {
 		super();
-		this.command = new WeakReference<GCodeCommand>(command);
+		this.command = new WeakReference<GCodeLine>(command);
 	}
 
 	public boolean isValid(){
 		return command != null && command.get() != null;
 	}
 
-	public GCodeCommand getGCodeCommand(){
+	public GCodeLine getGCodeLine(){
 		return command.get();
 	}
 

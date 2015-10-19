@@ -20,9 +20,11 @@ package org.goko.tools.viewer.jogl.utils.render.gcode;
 import javax.vecmath.Color4f;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
+import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.IExecutionState;
 
-public interface IGCodeColorizer {
+public interface IGCodeColorizer<S extends IExecutionState, T extends ExecutionToken<S>> {
 
-	public Color4f getColor(GCodeCommand command) throws GkException;
+	//public Color4f getColor(GCodeCommand command) throws GkException; // A supprimer
+	public Color4f getColor(T token, Integer idLine) throws GkException;
 }

@@ -18,10 +18,11 @@
 package org.goko.core.gcode.service;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionToken;
 
-public interface IGCodeCommandExecutionListener {
+public interface IGCodeCommandExecutionListener<S extends IExecutionState, T extends IExecutionToken<S>> {
 
-	void onCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException;
+	void onLineStateChanged(T token, Integer idCommand) throws GkException;
 
 }

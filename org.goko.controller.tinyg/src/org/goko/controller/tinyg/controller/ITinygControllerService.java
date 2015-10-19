@@ -30,11 +30,14 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 
-public interface ITinygControllerService extends IControllerService,
+public interface ITinygControllerService extends IControllerService<ExecutionState, GCodeContext>,
 												 IProbingService,
 												 IFourAxisControllerAdapter,
-												 ICoordinateSystemAdapter,
+												 ICoordinateSystemAdapter<EnumCoordinateSystem>,
 												 IJogService,												 
 												 IWorkVolumeProvider,
 												 IControllerConfigurationFileExporter,

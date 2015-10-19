@@ -19,7 +19,7 @@
  */
 package org.goko.tools.centerfinder.bean;
 
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.Tuple6b;
 
 public class Segment {
 	private Tuple6b start;

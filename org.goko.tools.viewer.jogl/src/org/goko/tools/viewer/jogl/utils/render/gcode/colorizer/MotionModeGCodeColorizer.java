@@ -20,31 +20,25 @@ package org.goko.tools.viewer.jogl.utils.render.gcode.colorizer;
 import javax.vecmath.Color4f;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeCommandVisitorAdapter;
-import org.goko.core.gcode.bean.commands.ArcMotionCommand;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
-import org.goko.core.gcode.bean.commands.LinearMotionCommand;
-import org.goko.core.gcode.bean.commands.MotionCommand;
-import org.goko.core.gcode.bean.commands.SettingCommand;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeColorizer;
 
-public class MotionModeGCodeColorizer extends GCodeCommandVisitorAdapter implements IGCodeColorizer {
+public class MotionModeGCodeColorizer implements IGCodeColorizer<ExecutionState, ExecutionToken<ExecutionState>> {
 	private static final Color4f DEFAULT_COLOR = new Color4f(0.58f,0.58f,0.58f,0.9f);
 	private static final Color4f RAPID_COLOR = new Color4f(0.854f,0.0f,0.0f,0.9f);
 	private static final Color4f FEEDRATE_COLOR = new Color4f(0.14f,0.33f,0.80f,0.9f);	
 	private static final Color4f ARC_COLOR = new Color4f(0,0.86f,0,0.9f);
-	private Color4f color;
 
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeColorizer#getColor(org.goko.core.gcode.bean.GCodeCommand)
+	 * @see org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeColorizer#getColor(org.goko.core.gcode.execution.ExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public Color4f getColor(GCodeCommand command) throws GkException {
-		command.accept(this);
-		return color;
+	public Color4f getColor(ExecutionToken<ExecutionState> token, Integer idLine) throws GkException {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
+	
 	private Color4f getColor(EnumGCodeCommandMotionMode motionMode){
 		Color4f color = DEFAULT_COLOR;
 		switch (motionMode) {
@@ -60,39 +54,5 @@ public class MotionModeGCodeColorizer extends GCodeCommandVisitorAdapter impleme
 		}
 		return color;
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.GCodeCommandVisitorAdapter#visit(org.goko.core.gcode.bean.commands.SettingCommand)
-	 */
-	@Override
-	public void visit(SettingCommand command) throws GkException {
-		this.color = getColor(command.getMotionMode());
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.GCodeCommandVisitorAdapter#visit(org.goko.core.gcode.bean.commands.MotionCommand)
-	 */
-	@Override
-	public void visit(MotionCommand command) throws GkException {
-		visit((SettingCommand)command);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.GCodeCommandVisitorAdapter#visit(org.goko.core.gcode.bean.commands.LinearMotionCommand)
-	 */
-	@Override
-	public void visit(LinearMotionCommand command) throws GkException {
-		visit((MotionCommand)command);
-
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.GCodeCommandVisitorAdapter#visit(org.goko.core.gcode.bean.commands.ArcMotionCommand)
-	 */
-	@Override
-	public void visit(ArcMotionCommand command) throws GkException {
-		visit((MotionCommand)command);
-	}
-
 
 }

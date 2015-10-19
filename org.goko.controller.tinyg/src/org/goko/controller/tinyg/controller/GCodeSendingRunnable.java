@@ -24,8 +24,9 @@ import java.util.ArrayList;
 import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.execution.ExecutionQueue;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.log.GkLog;
 
 /**
@@ -36,13 +37,13 @@ import org.goko.core.log.GkLog;
 public class GCodeSendingRunnable implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(GCodeSendingRunnable.class);
 	private static final int BUFFER_AVAILABLE_REQUIRED_COUNT = 5;
-	private ExecutionQueue<TinyGExecutionToken> executionQueue;
+	private IExecutionQueue<ExecutionState, TinyGExecutionToken> executionQueue;
 	private TinyGControllerService tinyGControllerService;
 	private Object ackMutex = new Object();
 	private Object qrMutex = new Object();
 	private int pendingCommands;
 
-	public GCodeSendingRunnable(ExecutionQueue<TinyGExecutionToken> queue, TinyGControllerService controllerService) {
+	public GCodeSendingRunnable(IExecutionQueue<ExecutionState, TinyGExecutionToken> queue, TinyGControllerService controllerService) {
 		this.executionQueue = queue;
 		this.tinyGControllerService = controllerService;
 		pendingCommands = 0;
@@ -96,15 +97,15 @@ public class GCodeSendingRunnable implements Runnable {
 	 * @throws GkException GkException
 	 */
 	protected void runExecutionToken() throws GkException{
-		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreCommand()){
+		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreLine()){
 			TinyGExecutionToken token = executionQueue.getCurrentToken();
 			int nbCommandToSend = computeNumberCommandToSend();
 
-			ArrayList<GCodeCommand> lstCommand = new ArrayList<GCodeCommand>();
+			ArrayList<GCodeLine> lstCommand = new ArrayList<GCodeLine>();
 
-			while(token.hasMoreCommand() && nbCommandToSend > 0){
+			while(token.hasMoreLine() && nbCommandToSend > 0){
 				waitTokenUnpaused();
-				GCodeCommand currentCommand = token.takeNextCommand();
+				GCodeLine currentCommand = token.takeNextLine();
 				lstCommand.add(currentCommand);
 				nbCommandToSend--;
 				token.markAsSent(currentCommand.getId());

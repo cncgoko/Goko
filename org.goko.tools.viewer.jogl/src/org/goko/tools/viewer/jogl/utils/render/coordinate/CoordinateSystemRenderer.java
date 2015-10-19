@@ -24,7 +24,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
 

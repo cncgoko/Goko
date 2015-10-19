@@ -19,13 +19,9 @@
  */
 package org.goko.tools.execution.time.service;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.execution.IGCodeCommandExecutionTimeCalculator;
 import org.goko.core.execution.IGCodeExecutionTimeService;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.service.IGCodeService;
 
 /**
@@ -73,37 +69,37 @@ public class GCodeExecutionTimeCalculator implements IGCodeExecutionTimeService 
 	@Override
 	public double evaluateExecutionTime(IGCodeProvider provider) throws GkException {
 		double result = 0;
-		if(factory == null){
-			factory = new TimeCalculatorFactory();
-		}
-		if(CollectionUtils.isNotEmpty(provider.getGCodeCommands())){
-			GCodeContext context = new GCodeContext();
-			for (GCodeCommand command : provider.getGCodeCommands()) {
-				//GCodeContext postContext = new GCodeContext(context);
-				//gcodeService.update(postContext, command);
-
-				result += evaluateExecutionTime(command, context);
-				//context = postContext;
-			}
-		}
+//		if(factory == null){
+//			factory = new TimeCalculatorFactory();
+//		}
+//		if(CollectionUtils.isNotEmpty(provider.getGCodeCommands())){
+//			GCodeContext context = new GCodeContext();
+//			for (GCodeCommand command : provider.getGCodeCommands()) {
+//				//GCodeContext postContext = new GCodeContext(context);
+//				//gcodeService.update(postContext, command);
+//
+//				result += evaluateExecutionTime(command, context);
+//				//context = postContext;
+//			}
+//		}
 		return result;
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.bean.GCodeCommand)
-	 */
-	@Override
-	public double evaluateExecutionTime(GCodeCommand command, GCodeContext context) throws GkException {
-
-
-		IGCodeCommandExecutionTimeCalculator<GCodeCommand> calculator = factory.getCalculator(context, command);
-
-
-		if(calculator != null){
-			return calculator.evaluateExecutionTime(command, context);
-		}
-		return 0;
-	}
+//
+//	/** (inheritDoc)
+//	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.bean.GCodeCommand)
+//	 */
+//	@Override
+//	public double evaluateExecutionTime(GCodeCommand command, GCodeContext context) throws GkException {
+//
+//
+//		IGCodeCommandExecutionTimeCalculator<GCodeCommand> calculator = factory.getCalculator(context, command);
+//
+//
+//		if(calculator != null){
+//			return calculator.evaluateExecutionTime(command, context);
+//		}
+//		return 0;
+//	}
 
 	/**
 	 * @return the gcodeService

@@ -23,9 +23,9 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.log.GkLog;
 
 /**
@@ -34,7 +34,7 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorService, IGokoService {
+public class GCodeExecutionMonitorServiceImpl implements IExecutionMonitorService, IGokoService {
 	/** Service ID */
 	public static final String SERVICE_ID = "org.goko.core.execution.monitor.service.GCodeExecutionMonitorServiceImpl";
 	/** LOG */
@@ -75,7 +75,7 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#addExecutionListener(org.goko.core.gcode.service.IGCodeExecutionListener)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#addExecutionListener(org.goko.core.gcode.service.IGCodeExecutionListener)
 	 */
 	@Override
 	public void addExecutionListener(IGCodeExecutionListener listener) throws GkException {
@@ -86,7 +86,7 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#removeExecutionListener(org.goko.core.gcode.service.IGCodeExecutionListener)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#removeExecutionListener(org.goko.core.gcode.service.IGCodeExecutionListener)
 	 */
 	@Override
 	public void removeExecutionListener(IGCodeExecutionListener listener) throws GkException {
@@ -96,10 +96,10 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#notifyExecutionStart(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#notifyExecutionStart(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionStart(IGCodeExecutionToken token) throws GkException {
+	public void notifyExecutionStart(IExecutionToken token) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener executionListener : listenerList) {
 				executionListener.onExecutionStart(token);
@@ -108,10 +108,10 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#notifyCommandStateChanged(org.goko.core.gcode.bean.execution.IGCodeExecutionToken, java.lang.Integer)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#notifyCommandStateChanged(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void notifyCommandStateChanged(IGCodeExecutionToken token, Integer idCommand) throws GkException {
+	public void notifyCommandStateChanged(IExecutionToken token, Integer idCommand) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener executionListener : listenerList) {
 				executionListener.onCommandStateChanged(token, idCommand);
@@ -120,10 +120,10 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#notifyExecutionCanceled(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#notifyExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionCanceled(IGCodeExecutionToken token) throws GkException {
+	public void notifyExecutionCanceled(IExecutionToken token) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener executionListener : listenerList) {
 				executionListener.onExecutionCanceled(token);
@@ -132,10 +132,10 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#notifyExecutionPause(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#notifyExecutionPause(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionPause(IGCodeExecutionToken token) throws GkException {
+	public void notifyExecutionPause(IExecutionToken token) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener executionListener : listenerList) {
 				executionListener.onExecutionPause(token);
@@ -144,10 +144,10 @@ public class GCodeExecutionMonitorServiceImpl implements IGCodeExecutionMonitorS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeExecutionMonitorService#notifyExecutionComplete(org.goko.core.gcode.bean.execution.IGCodeExecutionToken)
+	 * @see org.goko.core.gcode.service.IExecutionMonitorService#notifyExecutionComplete(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionComplete(IGCodeExecutionToken token) throws GkException {
+	public void notifyExecutionComplete(IExecutionToken token) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener executionListener : listenerList) {
 				executionListener.onExecutionComplete(token);

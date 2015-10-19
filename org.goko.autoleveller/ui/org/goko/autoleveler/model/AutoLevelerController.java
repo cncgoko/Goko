@@ -33,9 +33,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.gcode.bean.BoundingTuple6b;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.math.BoundingTuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.core.workspace.service.IWorkspaceService;
 
 public class AutoLevelerController extends AbstractController<AutoLevelerModel>{

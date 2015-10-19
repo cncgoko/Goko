@@ -30,7 +30,6 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.ArcMotionCommand;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionType;
@@ -39,6 +38,7 @@ import org.goko.core.gcode.bean.commands.LinearMotionCommand;
 import org.goko.core.gcode.bean.commands.MotionCommand;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 import org.goko.core.viewer.service.IViewer3DService;
 /**
  * Auto leveler service

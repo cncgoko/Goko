@@ -20,7 +20,8 @@ import java.util.Date;
 
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
+
 
 public class GCodeFileSenderBindings extends AbstractModelObject {
 	/** The absolute file to the GCode file */

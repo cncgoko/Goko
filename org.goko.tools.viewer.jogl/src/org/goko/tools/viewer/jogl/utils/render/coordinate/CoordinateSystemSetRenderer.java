@@ -27,8 +27,8 @@ import javax.vecmath.Color3f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.gcode.bean.Tuple6b;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer;
 
@@ -42,7 +42,7 @@ import com.jogamp.opengl.util.PMVMatrix;
  */
 public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRenderer{
 	public static final String ID = "org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer";
-	private ICoordinateSystemAdapter adapter;
+	private ICoordinateSystemAdapter<EnumCoordinateSystem> adapter;
 	private Map<EnumCoordinateSystem, AbstractCoreJoglRenderer> coordinateSystemRenderer;
 
 	public CoordinateSystemSetRenderer() {

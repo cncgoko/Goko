@@ -18,9 +18,8 @@ package org.goko.core.execution;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
+
 
 /**
  * Interface definition for execution time service.
@@ -36,13 +35,4 @@ public interface IGCodeExecutionTimeService extends IGokoService{
 	 * @throws GkException GkException
 	 */
 	double evaluateExecutionTime(IGCodeProvider provider) throws GkException;
-
-	/**
-	 * Evaluate the execution time of the given command
-	 * @param command the command
-	 * @param context the GCode context
-	 * @return a long giving the seconds required to execute the command
-	 * @throws GkException GkException
-	 */
-	double evaluateExecutionTime(GCodeCommand command, GCodeContext postContext) throws GkException;
 }

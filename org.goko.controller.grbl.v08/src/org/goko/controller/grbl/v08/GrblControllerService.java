@@ -70,14 +70,14 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.bean.GCodeCommand;
 import org.goko.core.gcode.bean.GCodeContext;
 import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
 import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
 import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
 import org.goko.core.gcode.bean.execution.ExecutionQueue;
 import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
-import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -113,7 +113,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private IApplicativeLogService applicativeLogService;
 	private GrblState grblState;
 	private GrblCommunicator communicator;
-	private IGCodeExecutionMonitorService monitorService;
+	private IExecutionMonitorService monitorService;
 	private EventAdmin eventAdmin;
 	/** Jog related fields */	
 	private BigDecimal feed; 
@@ -599,7 +599,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.gcode.bean.Tuple6b)
+	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.math.Tuple6b)
 	 */
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
@@ -781,14 +781,14 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/**
 	 * @return the monitorService
 	 */
-	public IGCodeExecutionMonitorService getMonitorService() {
+	public IExecutionMonitorService getMonitorService() {
 		return monitorService;
 	}
 
 	/**
 	 * @param monitorService the monitorService to set
 	 */
-	public void setMonitorService(IGCodeExecutionMonitorService monitorService) {
+	public void setMonitorService(IExecutionMonitorService monitorService) {
 		this.monitorService = monitorService;
 	}
 

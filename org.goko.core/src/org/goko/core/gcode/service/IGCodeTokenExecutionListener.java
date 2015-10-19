@@ -18,15 +18,16 @@
 package org.goko.core.gcode.service;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.execution.IGCodeExecutionToken;
+import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionToken;
 
-public interface IGCodeTokenExecutionListener {
+public interface IGCodeTokenExecutionListener<S extends IExecutionState, T extends IExecutionToken<S>> {
 
-	void onExecutionStart(IGCodeExecutionToken token) throws GkException;
+	void onExecutionStart(T token) throws GkException;
 
-	void onExecutionCanceled(IGCodeExecutionToken token) throws GkException;
+	void onExecutionCanceled(T token) throws GkException;
 
-	void onExecutionPause(IGCodeExecutionToken token) throws GkException;
+	void onExecutionPause(T token) throws GkException;
 
-	void onExecutionComplete(IGCodeExecutionToken token) throws GkException;
+	void onExecutionComplete(T token) throws GkException;
 }

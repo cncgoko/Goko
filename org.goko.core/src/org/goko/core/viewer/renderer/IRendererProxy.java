@@ -20,8 +20,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.Tuple6b;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.math.Tuple6b;
 
 public interface IRendererProxy {
 	public static final int ARC_CLOCKWISE = 0x01;
