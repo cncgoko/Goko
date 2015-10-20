@@ -9,5 +9,6 @@
    <reference bind="setControllerAdapter" cardinality="0..n" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
    <reference bind="setCoordinateSystemAdapter" cardinality="0..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="dynamic"/>
    <reference bind="setJogService" cardinality="0..1" interface="org.goko.core.controller.IJogService" name="IJogService" policy="dynamic"/>
-   <reference bind="setGCodeExecutionMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="dynamic"/>
+   <reference bind="setGCodeExecutionMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionMonitorService" name="IGCodeExecutionMonitorService" policy="dynamic"/>
+   <reference bind="setGCodeService" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
 </scr:component>

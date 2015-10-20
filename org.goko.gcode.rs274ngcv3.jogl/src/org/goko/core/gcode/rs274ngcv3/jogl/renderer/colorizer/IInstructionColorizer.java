@@ -15,16 +15,15 @@
  *  along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.goko.tools.viewer.jogl.utils.render.gcode;
+package org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer;
 
-import org.goko.core.gcode.element.IInstructionSet;
-import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;
+import javax.vecmath.Color4f;
 
-public interface IGCodeProviderRenderer extends ICoreJoglRenderer{
-	
-	void setInstructionSet(IInstructionSet instructionSet);
-	
-	IInstructionSet getInstructionSet();
-	
-	void update();
- }
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.IGCodeContext;
+import org.goko.core.gcode.element.IInstruction;
+
+public interface IInstructionColorizer<G extends IGCodeContext, T extends IInstruction> {
+
+	public Color4f getColor(G token, T instruction) throws GkException;
+}

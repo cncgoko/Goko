@@ -60,8 +60,11 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 		this(-1);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.ICoreJoglRenderer#getCode()
+	 */
 	@Override
-	public String getId(){
+	public String getCode(){
 		return this.toString();
 	}
 

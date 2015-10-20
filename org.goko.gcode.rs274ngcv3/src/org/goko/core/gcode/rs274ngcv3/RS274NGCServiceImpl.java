@@ -14,10 +14,13 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.element.IInstructionSet;
+import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
+import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
@@ -26,11 +29,19 @@ import org.goko.core.gcode.rs274ngcv3.parser.ModalGroup;
 import org.goko.core.gcode.rs274ngcv3.utils.GCodeTokenUtils;
 import org.goko.core.log.GkLog;
 
+/**
+ * @author Psyko
+ *
+ */
+/**
+ * @author Psyko
+ *
+ */
 public class RS274NGCServiceImpl implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
-
+	
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
@@ -40,7 +51,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IGCodeService#parse(java.io.InputStream)
 	 */
 	@Override
-	public IGCodeProvider parse(InputStream inputStream) throws GkException {
+	public GCodeProvider parse(InputStream inputStream) throws GkException {
 		GCodeProvider provider = new GCodeProvider(); 
 		GCodeLexer lexer = new GCodeLexer();
 		List<List<GCodeToken>> tokens = lexer.tokenize(inputStream);
@@ -57,7 +68,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#parse(java.lang.String)
 	 */
 	@Override
-	public IGCodeProvider parse(String inputString) throws GkException {
+	public GCodeProvider parse(String inputString) throws GkException {
 		return parse(new ByteArrayInputStream(inputString.getBytes()));
 	}
 	
@@ -95,7 +106,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IGCodeService#getInstructions(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public IInstructionProvider getInstructions(final GCodeContext context, IGCodeProvider gcodeProvider) throws GkException {
+	public InstructionProvider getInstructions(final GCodeContext context, IGCodeProvider gcodeProvider) throws GkException {
 		GCodeContext localContext = null;
 		if(context != null){
 			localContext = new GCodeContext(context);
@@ -111,7 +122,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			List<GCodeWord> localWords = new ArrayList<GCodeWord>(gCodeLine.getWords());
 			// A line can contain multiple instructions
 			while(CollectionUtils.isNotEmpty(localWords)){
-				IInstruction instruction = factory.build(localContext, localWords);
+				AbstractInstruction instruction = factory.build(localContext, localWords);
 				if(instruction == null){
 					// We have words is the list, but we can't build any instruction from them. End while loop
 					traceUnusedWords(localWords);
@@ -175,20 +186,21 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		this.modalGroups.add( new ModalGroup("M48", "M49"));
 	}	
 	
-	public GCodeContext update(GCodeContext baseContext, IInstruction instruction) throws GkException {
+	public GCodeContext update(GCodeContext baseContext, AbstractInstruction instruction) throws GkException {
 		// FIXME a faire
 		return null;
 	};
+	
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#update(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IInstructionSet)
 	 */
 	@Override
-	public GCodeContext update(GCodeContext baseContext, IInstructionSet instructionSet) throws GkException {
+	public GCodeContext update(GCodeContext baseContext, InstructionSet instructionSet) throws GkException {
 		GCodeContext result = baseContext;
-		List<IInstruction> instructions = instructionSet.getInstructions();
+		List<AbstractInstruction> instructions = instructionSet.getInstructions();
 		if(CollectionUtils.isNotEmpty(instructions)){
-			for (IInstruction instruction : instructions) {
+			for (AbstractInstruction instruction : instructions) {
 				result = update(result, instruction);
 			}
 		}
@@ -210,5 +222,13 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			}
 		}
 		return buffer.toString();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#getIterator(org.goko.core.gcode.element.IInstructionProvider, org.goko.core.gcode.element.IGCodeContext)
+	 */
+	@Override
+	public IInstructionSetIterator<GCodeContext, AbstractInstruction> getIterator(IInstructionProvider<AbstractInstruction, InstructionSet> instructionProvider, GCodeContext baseContext) throws GkException {		
+		return new InstructionIterator(instructionProvider, baseContext, this);
 	}
 }

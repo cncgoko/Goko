@@ -2,7 +2,11 @@ package org.goko.core.gcode.element;
 
 import java.util.List;
 
-public interface IInstructionSet {
+public interface IInstructionSet<I extends IInstruction> {
 
-	List<IInstruction> getInstructions();
+	List<I> getInstructions();
+	
+	int size();
+	
+	I get(int index);
 }

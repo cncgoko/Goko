@@ -3,23 +3,24 @@ package org.goko.core.gcode.rs274ngcv3.element;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.goko.core.gcode.element.IInstruction;
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.gcode.element.IInstructionSet;
+import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 
-public class InstructionSet implements IInstructionSet {
+public class InstructionSet implements IInstructionSet<AbstractInstruction> {
 	/** The list of instructions */
-	private List<IInstruction> lstInstructions;
+	private List<AbstractInstruction> lstInstructions;
 
 	/** Constructor */
 	public InstructionSet() {
-		lstInstructions = new ArrayList<IInstruction>();
+		lstInstructions = new ArrayList<AbstractInstruction>();
 	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstructionSet#getInstructions()
 	 */
 	@Override
-	public List<IInstruction> getInstructions() {		
+	public List<AbstractInstruction> getInstructions() {		
 		return lstInstructions;
 	}
 	
@@ -27,8 +28,24 @@ public class InstructionSet implements IInstructionSet {
 	 * Add the given instruction
 	 * @param instruction the instruction to add
 	 */
-	public void addInstruction(IInstruction instruction){
+	public void addInstruction(AbstractInstruction instruction){
 		lstInstructions.add(instruction);	
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IInstructionSet#size()
+	 */
+	@Override
+	public int size() {
+		return CollectionUtils.size(lstInstructions);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IInstructionSet#get(int)
+	 */
+	@Override
+	public AbstractInstruction get(int index) {
+		return lstInstructions.get(index);
 	}
 
 }

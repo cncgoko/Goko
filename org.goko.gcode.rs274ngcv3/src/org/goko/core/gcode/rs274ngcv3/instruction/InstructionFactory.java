@@ -42,11 +42,11 @@ import org.goko.core.gcode.rs274ngcv3.instruction.builder.UserLengthUnitsBuilder
  */
 public class InstructionFactory {
 	/** The list of known builders*/
-	public List<IInstructionBuilder<? extends IInstruction>> builders;
+	public List<IInstructionBuilder<? extends AbstractInstruction>> builders;
 	
 	/** Constructor */
 	public InstructionFactory() {
-		builders = new ArrayList<IInstructionBuilder<? extends IInstruction>>();
+		builders = new ArrayList<IInstructionBuilder<? extends AbstractInstruction>>();
 		builders.add(new CommentBuilder());		
 		builders.add(new SetFeedRateBuilder());
 		builders.add(new SetSpindleSpeedBuilder());
@@ -97,10 +97,10 @@ public class InstructionFactory {
 	 * @return IInstruction
 	 * @throws GkException GkException
 	 */
-	public IInstruction build(GCodeContext context, List<GCodeWord> words) throws GkException{
-		IInstruction result = null;
+	public AbstractInstruction build(GCodeContext context, List<GCodeWord> words) throws GkException{
+		AbstractInstruction result = null;
 				
-		for (IInstructionBuilder<? extends IInstruction> builder : builders) {
+		for (IInstructionBuilder<? extends AbstractInstruction> builder : builders) {
 			if(builder.match(context, words)){
 				result = builder.toInstruction(context, words);
 				break;

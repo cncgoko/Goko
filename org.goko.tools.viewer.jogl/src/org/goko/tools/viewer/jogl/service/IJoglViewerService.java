@@ -59,6 +59,8 @@ public interface IJoglViewerService extends IViewer3DService{
 
 	void addRenderer(ICoreJoglRenderer renderer) throws GkException;
 
+	void removeRenderer(ICoreJoglRenderer renderer) throws GkException;
+
 	void setRendererEnabled(String idRenderer, boolean enabled) throws GkException;
 
 	public void zoomToFit() throws GkException;

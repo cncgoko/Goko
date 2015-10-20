@@ -55,6 +55,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -88,7 +89,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** The current execution queue */
 	private IExecutionQueue<ExecutionState, TinyGExecutionToken> executionQueue;
 	/** The monitor service */
-	private IExecutionMonitorService<ExecutionState> monitorService;
+	private IExecutionMonitorService<ExecutionState, IExecutionToken<ExecutionState>> monitorService;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -788,13 +789,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionMonitorService getMonitorService() {
+	public IExecutionMonitorService<ExecutionState, IExecutionToken<ExecutionState>> getMonitorService() {
 		return monitorService;
 	}
 	/**
 	 * @param monitorService the monitorService to set
 	 */
-	public void setMonitorService(IExecutionMonitorService monitorService) {
+	public void setMonitorService(IExecutionMonitorService<ExecutionState, IExecutionToken<ExecutionState>> monitorService) {
 		this.monitorService = monitorService;
 	}
 

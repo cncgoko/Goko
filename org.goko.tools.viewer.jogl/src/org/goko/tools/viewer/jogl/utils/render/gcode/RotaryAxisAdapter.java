@@ -29,7 +29,7 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
-public class RotaryAxisAdapter implements IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>>{
+public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
 	private IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>> backedRenderer;
 

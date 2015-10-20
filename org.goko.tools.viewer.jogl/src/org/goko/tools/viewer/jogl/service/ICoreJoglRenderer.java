@@ -25,7 +25,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 
 public interface ICoreJoglRenderer {
 
-	public String getId();
+	public String getCode();
 
 	public int getLayerId();
 	

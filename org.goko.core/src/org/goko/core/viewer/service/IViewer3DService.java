@@ -33,6 +33,5 @@ public interface IViewer3DService extends IGokoService{
 
 	void removeRenderer(IViewer3DRenderer renderer) throws GkException;
 
-	void renderGCode(IGCodeProvider provider) throws GkException;
 
 }

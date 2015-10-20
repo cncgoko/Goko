@@ -43,6 +43,8 @@ import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
 import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
@@ -104,6 +106,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private ToolRenderer toolRenderer;
 	private Font jogWarnFont;
 
+	private IRS274NGCService gcodeService; // FIXME : remove an set a rs274ngcv3 plugin 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -150,22 +153,21 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 
 	}
 
-	@Override
 	public void renderGCode(IGCodeProvider provider) throws GkException {
-		if(gcodeRenderer != null){
-			removeRenderer(gcodeRenderer);
-			executionMonitorService.removeExecutionListener(gcodeRenderer);
-			gcodeRenderer.destroy();
-		}
-		gcodeRenderer = new RotaryAxisAdapter(this.controllerAdapter, new DefaultGCodeProviderRenderer(provider));
-		executionMonitorService.addExecutionListener(gcodeRenderer);
-		bounds = provider.getBounds();
-		if(boundsRenderer != null){
-			removeRenderer(boundsRenderer);
-		}
-		boundsRenderer = new BoundsRenderer(provider.getBounds());
-		addRenderer(boundsRenderer);
-		addRenderer(gcodeRenderer);
+//		if(gcodeRenderer != null){
+//			removeRenderer(gcodeRenderer);
+//			executionMonitorService.removeExecutionListener(gcodeRenderer);
+//			gcodeRenderer.destroy();
+//		}
+//		gcodeRenderer = new RotaryAxisAdapter(this.controllerAdapter, new DefaultGCodeRenderer(provider,));
+//		executionMonitorService.addExecutionListener(gcodeRenderer);
+//		bounds = provider.getBounds();
+//		if(boundsRenderer != null){
+//			removeRenderer(boundsRenderer);
+//		}
+//		boundsRenderer = new BoundsRenderer(provider.getBounds());
+//		addRenderer(boundsRenderer);
+//		addRenderer(gcodeRenderer);
 
 	}
 
@@ -448,6 +450,20 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	public void setWorkVolumeProvider(IWorkVolumeProvider workVolumeProvider) {
 		this.workVolumeProvider = workVolumeProvider;
+	}
+
+	/**
+	 * @return the gcodeService
+	 */
+	public IRS274NGCService getGcodeService() {
+		return gcodeService;
+	}
+
+	/**
+	 * @param gcodeService the gcodeService to set
+	 */
+	public void setGcodeService(IRS274NGCService gcodeService) {
+		this.gcodeService = gcodeService;
 	}
 	
 	

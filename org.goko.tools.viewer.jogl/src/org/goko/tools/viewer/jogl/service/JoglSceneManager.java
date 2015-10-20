@@ -401,7 +401,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	public ICoreJoglRenderer getJoglRenderer(String idRenderer) throws GkException {
 		if(CollectionUtils.isNotEmpty(renderers)){
 			for (ICoreJoglRenderer renderer : renderers) {
-				if(StringUtils.equals(renderer.getId(), idRenderer)){
+				if(StringUtils.equals(renderer.getCode(), idRenderer)){
 					return renderer;
 				}
 			}

@@ -20,8 +20,10 @@ package org.goko.tools.viewer.jogl.utils.render.gcode.colorizer;
 import javax.vecmath.Color4f;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeColorizer;
 
 public class MotionModeGCodeColorizer implements IGCodeColorizer<ExecutionState, ExecutionToken<ExecutionState>> {
@@ -36,10 +38,11 @@ public class MotionModeGCodeColorizer implements IGCodeColorizer<ExecutionState,
 	@Override
 	public Color4f getColor(ExecutionToken<ExecutionState> token, Integer idLine) throws GkException {
 		// TODO Auto-generated method stub
-		return null;
+		
+		return getColo;
 	}
 	
-	private Color4f getColor(EnumGCodeCommandMotionMode motionMode){
+	private Color4f getColor(EnumMotionMode motionMode){
 		Color4f color = DEFAULT_COLOR;
 		switch (motionMode) {
 		case ARC_CLOCKWISE:
