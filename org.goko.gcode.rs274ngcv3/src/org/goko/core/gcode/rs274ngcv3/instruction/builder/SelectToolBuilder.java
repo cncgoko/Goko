@@ -28,7 +28,7 @@ public class SelectToolBuilder extends  AbstractInstructionBuilder<SelectToolIns
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(java.util.List)
 	 */
 	@Override
-	public SelectToolInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SelectToolInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWord word = GCodeWordUtils.getAndRemoveWordByLetter("T", words);
 		Integer toolNumber = GCodeWordUtils.intValue(word);
 		return new SelectToolInstruction(toolNumber);

@@ -24,7 +24,7 @@ public class StartSpindleCounterClockwiseBuilder extends AbstractInstructionBuil
 	}
 
 	@Override
-	public StartSpindleCounterClockwiseInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected StartSpindleCounterClockwiseInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("M4", words);
 		return new StartSpindleCounterClockwiseInstruction();
 	}

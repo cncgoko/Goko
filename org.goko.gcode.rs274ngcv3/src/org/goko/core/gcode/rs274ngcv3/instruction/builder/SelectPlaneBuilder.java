@@ -28,7 +28,7 @@ public class SelectPlaneBuilder extends AbstractInstructionBuilder<SelectPlaneIn
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public SelectPlaneInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SelectPlaneInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		EnumPlane plane = null;
 		
 		GCodeWord word = GCodeWordUtils.findAndRemoveWord("G17", words);

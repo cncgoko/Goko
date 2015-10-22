@@ -6,7 +6,7 @@ import java.util.List;
 public class GCodeLine {
 	/** Internal identifier of this line */
 	private Integer id;
-	private int lineNumber;
+	private Integer lineNumber;
 	private List<GCodeWord> words;
 	private List<GCodeParameter> parameters;
 	
@@ -17,13 +17,13 @@ public class GCodeLine {
 	/**
 	 * @return the lineNumber
 	 */
-	public int getLineNumber() {
+	public Integer getLineNumber() {
 		return lineNumber;
 	}
 	/**
 	 * @param lineNumber the lineNumber to set
 	 */
-	public void setLineNumber(int lineNumber) {
+	public void setLineNumber(Integer lineNumber) {
 		this.lineNumber = lineNumber;
 	}
 	/**

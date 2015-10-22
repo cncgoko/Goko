@@ -25,7 +25,7 @@ public class SetFeedRateBuilder extends AbstractInstructionBuilder<SetFeedRateIn
 	}
 
 	@Override
-	public SetFeedRateInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SetFeedRateInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWord fWord = GCodeWordUtils.getAndRemoveWordByLetter("F", words);
 		return new SetFeedRateInstruction(BigDecimalUtils.parse(fWord.getValue()));
 	}

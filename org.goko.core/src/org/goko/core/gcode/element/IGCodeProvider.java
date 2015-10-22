@@ -2,20 +2,11 @@ package org.goko.core.gcode.element;
 
 import java.util.List;
 
+import org.goko.core.common.utils.IIdBean;
 
-public interface IGCodeProvider {
-	/** 
-	 * Sets the internal identifier of this provider  
-	 * @param id the internal identifier
-	 */
-	void setId(Integer id);
-	
-	/**
-	 * Returns the internal identifier of this provider
-	 * @return the internal identifier of this provider
-	 */
-	Integer getId();
-	
+
+public interface IGCodeProvider extends IIdBean{
+		
 	/**
 	 * Returns all the lines in this provider 
 	 * @return the list of GCodeLine

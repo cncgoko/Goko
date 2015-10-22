@@ -1,6 +1,7 @@
 package org.goko.core.gcode.rs274ngcv3.element;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -26,6 +27,7 @@ public class InstructionIterator implements IInstructionSetIterator<GCodeContext
 		this.instructionSetCurrentIndex = 0;
 		this.initialize(context);
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstructionSetIterator#initialize(org.goko.core.gcode.element.IGCodeContext)
 	 */
@@ -39,7 +41,7 @@ public class InstructionIterator implements IInstructionSetIterator<GCodeContext
 	 */
 	@Override
 	public boolean hasNext() {		
-		return internalHasNext(providerCurrentIndex, instructionSetCurrentIndex + 1);
+		return internalHasNext(providerCurrentIndex, instructionSetCurrentIndex);
 	}
 
 	/**
@@ -64,22 +66,41 @@ public class InstructionIterator implements IInstructionSetIterator<GCodeContext
 	 */
 	@Override
 	public AbstractInstruction next() throws GkException {
+		if(!hasNext()){
+			throw new GkTechnicalException("Out of bound exception. Iterator reached the end of the instruction list");
+		}
 		AbstractInstruction instruction = null; 
-		instructionSetCurrentIndex = instructionSetCurrentIndex + 1;
 		
-		if(providerCurrentIndex < provider.size()){
-			if(instructionSetCurrentIndex > provider.get(providerCurrentIndex).size()){				
-				providerCurrentIndex = providerCurrentIndex + 1;
-				instructionSetCurrentIndex = 0;
-			}
-		}
-		if(providerCurrentIndex < provider.size()){
-			instruction = provider.get(providerCurrentIndex).get(instructionSetCurrentIndex);		
-			context = service.update(context, instruction);
-		}
+		instruction = provider.get(providerCurrentIndex).get(instructionSetCurrentIndex);		
+		context = service.update(context, instruction);
+		// Update pointers
+		incrementInstructionPointer();
+		
 		return instruction;
 	}
-
+	
+	/**
+	 * Increment the pointer on the current instruction
+	 */
+	private void incrementInstructionPointer(){	
+		if(providerCurrentIndex < provider.size()){
+			if(instructionSetCurrentIndex >= provider.get(providerCurrentIndex).size() - 1){
+				incrementProviderPointer();
+			}else{
+				instructionSetCurrentIndex = instructionSetCurrentIndex + 1;
+			}
+		}
+	}
+	
+	/**
+	 * Increment the pointer on the current instruction set
+	 */
+	private void incrementProviderPointer(){
+		providerCurrentIndex = providerCurrentIndex + 1;
+		instructionSetCurrentIndex = -1;
+		incrementInstructionPointer();
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstructionSetIterator#getContext()
 	 */

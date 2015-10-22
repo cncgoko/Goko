@@ -27,7 +27,7 @@ public class CommentBuilder extends AbstractInstructionBuilder<CommentInstructio
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public CommentInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected CommentInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWord commentword = GCodeWordUtils.getAndRemoveWordByLetter(";", words);
 		return new CommentInstruction(commentword.getValue());
 	}

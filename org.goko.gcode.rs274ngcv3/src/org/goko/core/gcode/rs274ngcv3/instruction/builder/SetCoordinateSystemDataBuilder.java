@@ -35,7 +35,7 @@ public class SetCoordinateSystemDataBuilder extends AbstractInstructionBuilder<S
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public SetCoordinateSystemDataInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SetCoordinateSystemDataInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("G10", words);
 		GCodeWordUtils.getAndRemoveWord("L2", words);
 		GCodeWord pWord = GCodeWordUtils.getAndRemoveWordByLetter("P", words);

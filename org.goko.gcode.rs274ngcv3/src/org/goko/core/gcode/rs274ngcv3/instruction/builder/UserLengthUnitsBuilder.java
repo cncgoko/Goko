@@ -29,7 +29,7 @@ public class UserLengthUnitsBuilder extends AbstractInstructionBuilder<UserLengt
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public UserLengthUnitsInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected UserLengthUnitsInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		if(GCodeWordUtils.containsWord("G20", words)){
 			GCodeWordUtils.getAndRemoveWord("G20", words);
 			return new UserLengthUnitsInstruction(EnumUnit.INCHES);

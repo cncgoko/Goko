@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.camera.OrthographicCamera;
 import org.goko.tools.viewer.jogl.camera.PerspectiveCamera;
@@ -72,7 +72,7 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 	}
 
 	public void setShowCoordinateSystem(boolean selection) throws GkException {
-		viewerService.setRendererEnabled(CoordinateSystemSetRenderer.ID, selection);
+		viewerService.setRendererEnabled(CoordinateSystemSetRenderer.CODE, selection);
 	}
 
 	public void setDisplayBounds(boolean selection) throws GkException {		

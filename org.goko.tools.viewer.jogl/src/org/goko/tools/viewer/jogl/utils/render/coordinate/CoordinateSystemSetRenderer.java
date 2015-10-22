@@ -41,7 +41,7 @@ import com.jogamp.opengl.util.PMVMatrix;
  *
  */
 public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRenderer{
-	public static final String ID = "org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer";
+	public static final String CODE = "org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer";
 	private ICoordinateSystemAdapter<EnumCoordinateSystem> adapter;
 	private Map<EnumCoordinateSystem, AbstractCoreJoglRenderer> coordinateSystemRenderer;
 
@@ -53,11 +53,11 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 	/**
 	 * (inheritDoc)
 	 *
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
+	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getCode()
 	 */
 	@Override
-	public String getId() {
-		return ID;
+	public String getCode() {
+		return CODE;
 	}
 
 	/** (inheritDoc)

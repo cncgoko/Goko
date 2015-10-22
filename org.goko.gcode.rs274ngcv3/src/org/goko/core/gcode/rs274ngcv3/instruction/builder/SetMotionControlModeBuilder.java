@@ -30,7 +30,7 @@ public class SetMotionControlModeBuilder extends AbstractInstructionBuilder<SetM
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public SetMotionControlModeInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SetMotionControlModeInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		EnumMotionControl controlMode = EnumMotionControl.CONTINUOUS;
 		
 		if(GCodeWordUtils.findAndRemoveWord("G61", words) != null){

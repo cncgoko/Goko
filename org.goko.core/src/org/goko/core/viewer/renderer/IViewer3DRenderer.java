@@ -25,7 +25,7 @@ import org.goko.core.common.exception.GkException;
  *
  */
 public interface IViewer3DRenderer {
-	String getId();
+	String getCode();
 
 	void render(IRendererProxy proxy) throws GkException;
 

@@ -34,18 +34,13 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
-import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
-import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
-import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.workspace.service.GCodeProviderEvent;
@@ -57,12 +52,8 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
-import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
 import org.goko.tools.viewer.jogl.utils.render.gcode.BoundsRenderer;
-import org.goko.tools.viewer.jogl.utils.render.gcode.DefaultGCodeProviderRenderer;
-import org.goko.tools.viewer.jogl.utils.render.gcode.IGCodeProviderRenderer;
-import org.goko.tools.viewer.jogl.utils.render.gcode.RotaryAxisAdapter;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
 
@@ -81,22 +72,17 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private static final String SERVICE_ID = "org.goko.viewer.jogl";
 	/** The current controller service*/
 	private IFourAxisControllerAdapter controllerAdapter;
-	/** The coordinate system adapter */
-	private ICoordinateSystemAdapter coordinateSystemAdapter;
 	/** Jog service */
 	private IJogService jogService;
-	/** GCode execution monitor service */
-	private IExecutionMonitorService executionMonitorService;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
 	/** Work volume provider */
 	private IWorkVolumeProvider workVolumeProvider;
 	/** Bind camera on tool position ? */
 	private boolean lockCameraOnTool;
-
-	private IGCodeProviderRenderer gcodeRenderer;
+	
 	private BoundsRenderer boundsRenderer;
-	private CoordinateSystemSetRenderer coordinateSystemRenderer;
+	
 	private GridRenderer xyGridRenderer;
 	private GridRenderer xzGridRenderer;
 	private GridRenderer yzGridRenderer;
@@ -105,8 +91,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private KeyboardJogAdatper keyboardJogAdapter;
 	private ToolRenderer toolRenderer;
 	private Font jogWarnFont;
-
-	private IRS274NGCService gcodeService; // FIXME : remove an set a rs274ngcv3 plugin 
+ 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -267,26 +252,26 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}
 	}
 
-	/**
-	 * @return the coordinateSystemAdapter
-	 */
-	@Override
-	public ICoordinateSystemAdapter getCoordinateSystemAdapter() {
-		return coordinateSystemAdapter;
-	}
+//	/**
+//	 * @return the coordinateSystemAdapter
+//	 */
+//	@Override
+//	public ICoordinateSystemAdapter getCoordinateSystemAdapter() {
+//		return coordinateSystemAdapter;
+//	}
 
-	/**
-	 * @param coordinateSystemAdapter the coordinateSystemAdapter to set
-	 * @throws GkException
-	 */
-	public void setCoordinateSystemAdapter(ICoordinateSystemAdapter<ICoordinateSystem> coordinateSystemAdapter) throws GkException {
-		this.coordinateSystemAdapter = coordinateSystemAdapter;
-		if(this.coordinateSystemRenderer == null){
-			this.coordinateSystemRenderer = new CoordinateSystemSetRenderer();
-			addRenderer(coordinateSystemRenderer);
-		}
-		this.coordinateSystemRenderer.setAdapter(coordinateSystemAdapter);
-	}
+//	/**
+//	 * @param coordinateSystemAdapter the coordinateSystemAdapter to set
+//	 * @throws GkException
+//	 */
+//	public void setCoordinateSystemAdapter(ICoordinateSystemAdapter<ICoordinateSystem> coordinateSystemAdapter) throws GkException {
+//		this.coordinateSystemAdapter = coordinateSystemAdapter;
+//		if(this.coordinateSystemRenderer == null){
+//			this.coordinateSystemRenderer = new CoordinateSystemSetRenderer();
+//			addRenderer(coordinateSystemRenderer);
+//		}
+//		this.coordinateSystemRenderer.setAdapter(coordinateSystemAdapter);
+//	}
 
 	/**
 	 * @return the continuousJogService
@@ -302,12 +287,12 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		this.jogService = continuousJogService;
 	}
 
-	/**
-	 * @param executionMonitorService the executionMonitorService to set
-	 */
-	public void setGCodeExecutionMonitorService(IExecutionMonitorService<ExecutionState> executionMonitorService) {
-		this.executionMonitorService = executionMonitorService;
-	}
+//	/**
+//	 * @param executionMonitorService the executionMonitorService to set
+//	 */
+//	public void setGCodeExecutionMonitorService(IExecutionMonitorService<ExecutionState> executionMonitorService) {
+//		this.executionMonitorService = executionMonitorService;
+//	}
 
 
 	/** (inheritDoc)
@@ -342,9 +327,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 				addRenderer(xyGridRenderer);
 				addRenderer(xzGridRenderer);
 				addRenderer(yzGridRenderer);
-			}
-			if(gcodeRenderer != null){
-				gcodeRenderer.update();
 			}
 		} catch (GkException e) {
 			LOG.error(e);
@@ -412,18 +394,17 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		    g2d.setColor(Color.WHITE);
 		    g2d.drawString(warn ,x, y);
 		}
-
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.service.IJoglViewerService#setCoordinateSystemEnabled(org.goko.core.gcode.bean.commands.EnumCoordinateSystem, boolean)
-	 */
-	@Override
-	public void setCoordinateSystemEnabled(ICoordinateSystem cs, boolean enabled) {
-		if(coordinateSystemRenderer != null){
-			coordinateSystemRenderer.setCoordinateSystemEnabled(cs, enabled);
-		}
-	}
+//	/** (inheritDoc)
+//	 * @see org.goko.tools.viewer.jogl.service.IJoglViewerService#setCoordinateSystemEnabled(org.goko.core.gcode.bean.commands.EnumCoordinateSystem, boolean)
+//	 */
+//	@Override
+//	public void setCoordinateSystemEnabled(ICoordinateSystem cs, boolean enabled) {
+//		if(coordinateSystemRenderer != null){
+//			coordinateSystemRenderer.setCoordinateSystemEnabled(cs, enabled);
+//		}
+//	}
 
 	private void updateGridRenderer(GridRenderer gridRenderer) throws GkException{		
 		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
@@ -451,20 +432,5 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	public void setWorkVolumeProvider(IWorkVolumeProvider workVolumeProvider) {
 		this.workVolumeProvider = workVolumeProvider;
 	}
-
-	/**
-	 * @return the gcodeService
-	 */
-	public IRS274NGCService getGcodeService() {
-		return gcodeService;
-	}
-
-	/**
-	 * @param gcodeService the gcodeService to set
-	 */
-	public void setGcodeService(IRS274NGCService gcodeService) {
-		this.gcodeService = gcodeService;
-	}
-	
 	
 }

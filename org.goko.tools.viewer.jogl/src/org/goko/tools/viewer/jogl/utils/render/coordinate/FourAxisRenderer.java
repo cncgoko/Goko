@@ -43,7 +43,7 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
  *
  */
 class FourAxisRenderer extends AbstractLineRenderer {
-	protected static final String ID = "org.goko.viewer.jogl.utils.render.AxisRenderer";
+	protected static final String CODE = "org.goko.viewer.jogl.utils.render.AxisRenderer";
 	public static final int ROTATION_AROUND_X = 1;
 	public static final int ROTATION_AROUND_Y = 2;
 	public static final int ROTATION_AROUND_Z = 4;
@@ -73,11 +73,11 @@ class FourAxisRenderer extends AbstractLineRenderer {
 	/**
 	 * (inheritDoc)
 	 *
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
+	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getCode()
 	 */
 	@Override
-	public String getId() {
-		return ID;
+	public String getCode() {
+		return CODE;
 	}
 
 	/** (inheritDoc)

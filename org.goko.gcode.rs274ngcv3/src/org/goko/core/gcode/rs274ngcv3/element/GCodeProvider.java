@@ -1,7 +1,7 @@
 package org.goko.core.gcode.rs274ngcv3.element;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +10,8 @@ import org.goko.core.gcode.element.IGCodeProvider;
 
 
 public class GCodeProvider implements IGCodeProvider {
+	/**  Internal identifier sequence */
+	private Integer idSequence;
 	/**  Internal identifier */
 	private Integer id;
 	/** The lines in this provider */
@@ -17,7 +19,8 @@ public class GCodeProvider implements IGCodeProvider {
 	
 	/** Constructor */
 	public GCodeProvider() {
-		this.lines = new HashMap<Integer, GCodeLine>();
+		this.lines = new LinkedHashMap<Integer, GCodeLine>();
+		this.idSequence = 0;
 	}
 	
 	/** (inheritDoc)
@@ -33,6 +36,7 @@ public class GCodeProvider implements IGCodeProvider {
 	 * @param line the line to add
 	 */
 	public void addLine(GCodeLine line){
+		line.setId(++idSequence);
 		lines.put(line.getId(), line);		
 	}
 

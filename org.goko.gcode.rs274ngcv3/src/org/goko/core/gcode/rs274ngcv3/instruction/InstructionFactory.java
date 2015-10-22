@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeWord;
-import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.ArcFeedBuilder;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.ChangeToolBuilder;

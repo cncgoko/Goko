@@ -11,9 +11,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.element.IInstructionProvider;
-import org.goko.core.gcode.element.IInstructionSet;
 import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -41,6 +39,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
+	private int idSequence = 0; // FIXME remove 
 	
 	/** Constructor */
 	public RS274NGCServiceImpl() {
@@ -52,7 +51,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public GCodeProvider parse(InputStream inputStream) throws GkException {
-		GCodeProvider provider = new GCodeProvider(); 
+		GCodeProvider provider = new GCodeProvider();
+		provider.setId(++idSequence);
 		GCodeLexer lexer = new GCodeLexer();
 		List<List<GCodeToken>> tokens = lexer.tokenize(inputStream);
 		
@@ -90,7 +90,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		GCodeLine line = new GCodeLine();
 		for (GCodeToken token : lstToken) {
 			if(token.getType() == GCodeTokenType.LINE_NUMBER){
-				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));
+				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));				
 			}else if(token.getType() == GCodeTokenType.WORD){
 				line.addWord(new GCodeWord(StringUtils.substring(token.getValue(), 0, 1), StringUtils.substring(token.getValue(), 1)));
 			}else if(token.getType() == GCodeTokenType.SIMPLE_COMMENT
@@ -128,6 +128,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 					traceUnusedWords(localWords);
 					break;
 				}
+				
+				instruction.setIdGCodeLine(gCodeLine.getId());
 				iSet.addInstruction(instruction);
 				// Update context for further instructions
 				update(localContext, instruction);
@@ -187,8 +189,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	}	
 	
 	public GCodeContext update(GCodeContext baseContext, AbstractInstruction instruction) throws GkException {
-		// FIXME a faire
-		return null;
+		instruction.apply(baseContext);
+		return baseContext; 
 	};
 	
 	

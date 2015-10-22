@@ -29,7 +29,7 @@ public class DwellBuilder extends AbstractInstructionBuilder<DwellInstruction> {
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public DwellInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected DwellInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("G4", words);
 		GCodeWord pWord = GCodeWordUtils.getAndRemoveWordByLetter("P", words);		
 		int seconds = GCodeWordUtils.intValue(pWord);

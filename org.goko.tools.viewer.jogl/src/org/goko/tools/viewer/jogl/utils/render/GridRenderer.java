@@ -100,7 +100,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
 	 */
 	@Override
-	public String getId() {
+	public String getCode() {
 		return id;
 	}
 
@@ -119,11 +119,11 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		lclCenter6b = lclCenter6b.max(lclStart6b).min(lclEnd6b);
 				
 		
-		Point3f lclStart = lclStart6b.toPoint3f();
+		Point3f lclStart = lclStart6b.toPoint3f(JoglUtils.JOGL_UNIT);
 		axisTransformMatrix.transform(lclStart);
-		Point3f lclEnd   = lclEnd6b.toPoint3f();
+		Point3f lclEnd   = lclEnd6b.toPoint3f(JoglUtils.JOGL_UNIT);
 		axisTransformMatrix.transform(lclEnd);
-		Point3f lclCenter   = lclCenter6b.toPoint3f();
+		Point3f lclCenter   = lclCenter6b.toPoint3f(JoglUtils.JOGL_UNIT);
 		axisTransformMatrix.transform(lclCenter);
 		Matrix4d invAxisTransformMatrix = new Matrix4d(axisTransformMatrix);
 		invAxisTransformMatrix.invert();

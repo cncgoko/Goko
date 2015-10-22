@@ -37,7 +37,7 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
  *
  */
 public class ThreeAxisRenderer extends AbstractLineRenderer {
-	protected static final String ID = "org.goko.viewer.jogl.utils.render.AxisRenderer";
+	protected static final String CODE= "org.goko.viewer.jogl.utils.render.AxisRenderer";
 	private float scale;
 	private Color3f xColor;
 	private Color3f yColor;
@@ -57,11 +57,11 @@ public class ThreeAxisRenderer extends AbstractLineRenderer {
 	/**
 	 * (inheritDoc)
 	 *
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
+	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getCode()
 	 */
 	@Override
-	public String getId() {
-		return ID;
+	public String getCode() {
+		return CODE;
 	}
 
 	/** (inheritDoc)

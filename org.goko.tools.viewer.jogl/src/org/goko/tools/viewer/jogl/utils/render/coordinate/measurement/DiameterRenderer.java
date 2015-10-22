@@ -80,7 +80,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		b.cross(normal, a);
 		a.cross(b, normal);
 		Vector3d direction = new Vector3d();
-		Point3d pos = center.to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d pos = center.toPoint3d(JoglUtils.JOGL_UNIT);
 		direction.add(a, b);
 		direction.normalize();
 		direction.scale((float) radius.doubleValue());
@@ -89,7 +89,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		base.sub(a,b);
 
 		// Points on the circle
-		Point3d p1 = center.to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d p1 = center.toPoint3d(JoglUtils.JOGL_UNIT);
 		Point3d p2 = new Point3d(p1);
 		direction.normalize();
 		direction.scale((float) radius.doubleValue());

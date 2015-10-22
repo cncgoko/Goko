@@ -93,10 +93,12 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new MotionModeColorizer();
 		
 		while(iterator.hasNext()){
+			GCodeContext preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();
-			List<Point3d> vertices = InstructionGeometryFactory.build(instruction);
+			List<Point3d> vertices = InstructionGeometryFactory.build(preContext, instruction);
+			lstVertices.addAll(vertices);
 			// Let's generate the colors
-			Color4f color = colorizer.getColor(iterator.getContext(), instruction);
+			Color4f color = colorizer.getColor(preContext, instruction);
 			for ( int i = 0; i < vertices.size(); i++) {
 				lstColors.add(color);
 			}

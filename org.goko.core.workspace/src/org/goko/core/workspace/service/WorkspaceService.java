@@ -28,6 +28,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.utils.CacheById;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
@@ -48,11 +49,9 @@ public class WorkspaceService implements IWorkspaceService{
 	/** Service ID */
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceService";
 	/** Map of the provider for the corresponding Ids*/
-	private Map<Integer, IGCodeProvider> cacheProviderById;
+	private CacheById<IGCodeProvider> cacheProviderById;
 	/** The list of listener */
 	private List<IWorkspaceListener> listenerList;
-	/** The id generator */
-	private Integer sequenceId;
 	/** The current provider */
 	private Integer currentProviderId;
 
@@ -69,9 +68,8 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void start() throws GkException {
-		cacheProviderById = new HashMap<Integer, IGCodeProvider>();
-		listenerList = new ArrayList<IWorkspaceListener>();
-		sequenceId = 0;
+		cacheProviderById = new CacheById<IGCodeProvider>();
+		listenerList = new ArrayList<IWorkspaceListener>();		
 		LOG.info("Successfully started : "+getServiceId());
 	}
 
@@ -87,26 +85,17 @@ public class WorkspaceService implements IWorkspaceService{
 	 * @see org.goko.core.workspace.service.IWorkspaceService#addGCodeProvider(org.goko.core.gcode.bean.IGCodeProvider)
 	 */
 	@Override
-	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
-		Integer newProviderId = sequenceId++;
-		provider.setId(newProviderId);
-		cacheProviderById.put(newProviderId, provider);
-		if(currentProviderId == null){
-			setCurrentGCodeProvider(newProviderId);
-		}
-		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.INSERT, newProviderId));
+	public void addGCodeProvider(IGCodeProvider provider) throws GkException {		
+		cacheProviderById.add(provider);		
+		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.INSERT, provider.getId()));
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#getGCodeProvider(java.lang.Integer)
 	 */
 	@Override
-	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
-		IGCodeProvider provider = cacheProviderById.get(id);
-		if(provider == null){
-			throw new GkTechnicalException("Provider with internal id "+id+" does not exist.");
-		}
-		return provider;
+	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {		
+		return cacheProviderById.get(id);
 	}
 
 	/** (inheritDoc)

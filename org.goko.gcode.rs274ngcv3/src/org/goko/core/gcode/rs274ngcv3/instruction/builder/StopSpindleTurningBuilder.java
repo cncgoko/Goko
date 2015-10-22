@@ -27,7 +27,7 @@ public class StopSpindleTurningBuilder extends AbstractInstructionBuilder<StopSp
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public StopSpindleTurningInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected StopSpindleTurningInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("M5", words);
 		return new StopSpindleTurningInstruction();
 	}

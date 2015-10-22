@@ -32,7 +32,7 @@ public class SetOriginOffsetsBuilder extends AbstractInstructionBuilder<SetOrigi
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public SetOriginOffsetInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SetOriginOffsetInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("G92", words);
 		
 		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());

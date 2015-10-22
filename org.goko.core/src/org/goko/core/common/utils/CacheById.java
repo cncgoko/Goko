@@ -42,6 +42,7 @@ public class CacheById<T extends IIdBean> {
 		if(exist(element.getId())){
 			throw new GkTechnicalException("Duplicate entry : an object with id ["+String.valueOf(element.getId())+"] already exists");
 		}
+		cacheById.put(element.getId(), element);
 	}
 	
 	public void remove(Integer id){

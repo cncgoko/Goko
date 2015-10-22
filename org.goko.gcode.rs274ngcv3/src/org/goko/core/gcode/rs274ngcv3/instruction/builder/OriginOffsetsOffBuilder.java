@@ -27,7 +27,7 @@ public class OriginOffsetsOffBuilder extends AbstractInstructionBuilder<OriginOf
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public OriginOffsetsOffInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {		
+	protected OriginOffsetsOffInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {		
 		GCodeWordUtils.getAndRemoveWord("G92.2", words);
 		return new OriginOffsetsOffInstruction();
 	}

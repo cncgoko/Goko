@@ -29,7 +29,7 @@ public class ChangeToolBuilder extends AbstractInstructionBuilder<ChangeToolInst
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(java.util.List)
 	 */
 	@Override
-	public ChangeToolInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected ChangeToolInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		// Make sure the word exists
 		GCodeWordUtils.getAndRemoveWord("M6", words);
 		return new ChangeToolInstruction();

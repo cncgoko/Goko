@@ -1,8 +1,11 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 /**
  * 
@@ -56,6 +59,8 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	private BigDecimalQuantity<Angle> b;
 	/** C coordinate */
 	private BigDecimalQuantity<Angle> c;
+	/** Rotation direction */
+	private boolean clockwise;
 	
 	/** Constructor */
 	public ArcFeedInstruction() {
@@ -63,7 +68,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	}
 
 	/** Constructor */	
-	public ArcFeedInstruction(BigDecimalQuantity<Length> firstEnd, BigDecimalQuantity<Length> secondEnd, BigDecimalQuantity<Length> firstAxis, BigDecimalQuantity<Length> secondAxis, BigDecimalQuantity<Length> axisEndPoint, Integer rotation, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {
+	public ArcFeedInstruction(BigDecimalQuantity<Length> firstEnd, BigDecimalQuantity<Length> secondEnd, BigDecimalQuantity<Length> firstAxis, BigDecimalQuantity<Length> secondAxis, BigDecimalQuantity<Length> axisEndPoint, Integer rotation, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c, boolean clockwise) {
 		super(InstructionType.ARC_FEED);
 		this.firstEnd = firstEnd;
 		this.secondEnd = secondEnd;
@@ -74,6 +79,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		this.a = a;
 		this.b = b;
 		this.c = c;
+		this.clockwise = clockwise;
 	}
 
 
@@ -81,24 +87,24 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
 	 */
-//	@Override
-//	public void apply(GCodeContext context) throws GkException {
-//		if(rotation < 0){
-//			context.setMotionMode(EnumMotionMode.ARC_CLOCKWISE);
-//		}else{
-//			context.setMotionMode(EnumMotionMode.ARC_COUNTERCLOCKWISE);
-//		}
-//		switch (context.getPlane()) {
-//		case XY_PLANE: context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
-//			break;
-//		case XZ_PLANE: context.setPosition(firstEnd, axisEndPoint, secondEnd, a, b, c);			
-//			break;
-//		case YZ_PLANE: context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
-//			break;
-//		default:
-//			break;
-//		}		
-//	}
+	@Override
+	public void apply(GCodeContext context) throws GkException {
+		if(rotation < 0){
+			context.setMotionMode(EnumMotionMode.ARC_CLOCKWISE);
+		}else{
+			context.setMotionMode(EnumMotionMode.ARC_COUNTERCLOCKWISE);
+		}
+		switch (context.getPlane()) {
+		case XY_PLANE: context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
+			break;
+		case XZ_PLANE: context.setPosition(firstEnd, axisEndPoint, secondEnd, a, b, c);			
+			break;
+		case YZ_PLANE: context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
+			break;
+		default:
+			break;
+		}		
+	}
 
 	/**
 	 * @return the firstEnd
@@ -205,6 +211,19 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		return c;
 	}
 
+	/**
+	 * @return the clockwise
+	 */
+	public boolean isClockwise() {
+		return clockwise;
+	}
+
+	/**
+	 * @param clockwise the clockwise to set
+	 */
+	public void setClockwise(boolean clockwise) {
+		this.clockwise = clockwise;
+	}
 
 	
 }

@@ -1,6 +1,8 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IInstruction;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
 public abstract class AbstractInstruction implements IInstruction {
@@ -57,4 +59,11 @@ public abstract class AbstractInstruction implements IInstruction {
 	public void setId(Integer id) {
 		this.id = id;
 	}	
+	
+	/**
+	 * Apply this instruction to the given GCodeContext 
+	 * @param context the context 
+	 * @throws GkException GkException
+	 */
+	public abstract void apply(GCodeContext context) throws GkException;
 }

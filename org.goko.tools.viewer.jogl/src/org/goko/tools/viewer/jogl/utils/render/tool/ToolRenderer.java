@@ -21,7 +21,7 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 import com.jogamp.opengl.util.PMVMatrix;
 
 public class ToolRenderer extends AbstractLineRenderer {
-	protected static final String ID = "org.goko.viewer.jogl.utils.render.ToolRenderer";
+	protected static final String CODE = "org.goko.viewer.jogl.utils.render.ToolRenderer";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ToolRenderer.class);
 	/** the controller service used to retrieve the tool position */
@@ -39,11 +39,11 @@ public class ToolRenderer extends AbstractLineRenderer {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
+	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getCode()
 	 */
 	@Override
-	public String getId() {
-		return ID;
+	public String getCode() {
+		return CODE;
 	}
 
 

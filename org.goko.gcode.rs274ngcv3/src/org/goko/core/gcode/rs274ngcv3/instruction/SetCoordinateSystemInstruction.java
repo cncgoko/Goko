@@ -1,6 +1,8 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
 public class SetCoordinateSystemInstruction extends AbstractInstruction {
@@ -16,13 +18,13 @@ public class SetCoordinateSystemInstruction extends AbstractInstruction {
 		this.targetCoordinateSystem = targetCoordinateSystem;
 	}
 
-//	/** (inheritDoc)
-//	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
-//	 */
-//	@Override
-//	public void apply(GCodeContext context) throws GkException {
-//		context.setCoordinateSystem(targetCoordinateSystem);
-//	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
+	 */
+	@Override
+	public void apply(GCodeContext context) throws GkException {
+		context.setCoordinateSystem(targetCoordinateSystem);
+	}
 
 	/**
 	 * @return the targetCoordinateSystem

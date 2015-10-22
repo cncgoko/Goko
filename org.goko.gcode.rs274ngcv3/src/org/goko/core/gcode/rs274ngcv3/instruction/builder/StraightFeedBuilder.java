@@ -53,7 +53,7 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public StraightFeedInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected StraightFeedInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());

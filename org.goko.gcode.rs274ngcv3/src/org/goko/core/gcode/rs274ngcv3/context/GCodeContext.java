@@ -9,6 +9,7 @@ import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.math.Tuple6b;
 
@@ -101,6 +102,22 @@ public class GCodeContext implements IGCodeContext{
 		this.originOffset = new Tuple6b().setZero();
 		this.coordinateSystemData = new HashMap<EnumCoordinateSystem, Tuple6b>();
 		this.originOffsetActive = true;
+		this.motionMode = EnumMotionMode.RAPID;
+		this.distanceMode = EnumDistanceMode.ABSOLUTE;
+		this.plane = EnumPlane.XY_PLANE;
+		this.unit = EnumUnit.MILLIMETERS;
+		this.activeToolNumber = 0;
+		this.selectedToolNumber = 0;
+		this.coordinateSystem = EnumCoordinateSystem.G54;
+		this.spindleMode = EnumSpindleMode.OFF;
+		this.spindleSpeed = BigDecimal.ZERO;
+		this.feedrate = BigDecimal.ZERO;		
+		this.x = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
+		this.y = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
+		this.z = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
+		this.a = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		this.b = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		this.c = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
 	}
 	
 	/**

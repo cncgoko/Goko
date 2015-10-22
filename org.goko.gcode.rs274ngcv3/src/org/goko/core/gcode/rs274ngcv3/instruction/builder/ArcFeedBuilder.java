@@ -55,7 +55,7 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public ArcFeedInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected ArcFeedInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		EnumPlane plane = context.getPlane();
 		
 		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());
@@ -71,10 +71,22 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		BigDecimalQuantity<Length> k = findWordValue("K", words, null, context.getUnit().getUnit());
 		
 		Integer r = 1;
+		
+		Boolean clockwise = null;
+		if(context.getMotionMode() == EnumMotionMode.ARC_CLOCKWISE){
+			clockwise = true;
+		}else if(context.getMotionMode() == EnumMotionMode.ARC_COUNTERCLOCKWISE){
+			clockwise = false;
+		}
 
 		GCodeWord gWord = GCodeWordUtils.findAndRemoveWord("G2", words);
-		if(gWord == null){
+		if(gWord == null){			
 			gWord = GCodeWordUtils.findAndRemoveWord("G3", words);
+			if(gWord != null){
+				clockwise = false;
+			}
+		}else{
+			clockwise = true;
 		}
 		
 		GCodeWord rWord = GCodeWordUtils.findAndRemoveWordByLetter("R", words);
@@ -134,11 +146,11 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		k = NumberQuantity.add(k, context.getZ());
 		
 		switch (plane) {
-		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c);
+		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
 			break;
-		case YZ_PLANE:	instruction	= new ArcFeedInstruction(y, z, j, k, x, r, a, b, c);
+		case YZ_PLANE:	instruction	= new ArcFeedInstruction(y, z, j, k, x, r, a, b, c, clockwise);
 			break;
-		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c);
+		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);
 			break;
 		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
 		}

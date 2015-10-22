@@ -1,6 +1,8 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
 public class SelectPlaneInstruction extends AbstractInstruction {
@@ -36,12 +38,12 @@ public class SelectPlaneInstruction extends AbstractInstruction {
 		this.plane = plane;
 	}
 
-//	/** (inheritDoc)
-//	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
-//	 */
-//	@Override
-//	public void apply(GCodeContext context) throws GkException {
-//		context.setPlane(plane);
-//	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
+	 */
+	@Override
+	public void apply(GCodeContext context) throws GkException {
+		context.setPlane(plane);
+	}
 
 }

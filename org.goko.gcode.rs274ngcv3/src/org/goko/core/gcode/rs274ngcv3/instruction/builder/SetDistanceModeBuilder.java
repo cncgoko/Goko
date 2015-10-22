@@ -29,7 +29,7 @@ public class SetDistanceModeBuilder extends AbstractInstructionBuilder<SetDistan
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public SetDistanceModeInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SetDistanceModeInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		if(GCodeWordUtils.containsWord("G90", words)){
 			GCodeWordUtils.findAndRemoveWord("G90", words);		
 			return new SetDistanceModeInstruction(EnumDistanceMode.ABSOLUTE);

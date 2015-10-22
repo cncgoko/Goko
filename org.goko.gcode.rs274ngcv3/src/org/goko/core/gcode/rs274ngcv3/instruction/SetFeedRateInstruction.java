@@ -2,6 +2,8 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 
 import java.math.BigDecimal;
 
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
 public class SetFeedRateInstruction extends AbstractInstruction {
@@ -14,13 +16,13 @@ public class SetFeedRateInstruction extends AbstractInstruction {
 		this.feedrate = feedrate;
 	}
 
-//	/** (inheritDoc)
-//	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
-//	 */
-//	@Override
-//	public void apply(GCodeContext context) throws GkException {
-//		context.setFeedrate(feedrate);
-//	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
+	 */
+	@Override
+	public void apply(GCodeContext context) throws GkException {
+		context.setFeedrate(feedrate);
+	}
 
 	/**
 	 * @return the feedrate

@@ -6,25 +6,37 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
-import org.goko.core.math.Tuple6b;
 
-public class SetOriginOffsetInstruction extends AbstractInstruction {
-	/** Target X coordinate in the current coordinate system */
+/**
+ * Abstract class for a straight instruction 
+ * 
+ * @author Psyko
+ */
+public abstract class AbstractStraightInstruction extends AbstractInstruction {
+	/** X coordinate in the current coordinate system */
 	private BigDecimalQuantity<Length> x;
-	/** Target Y coordinate in the current coordinate system */
+	/** Y coordinate in the current coordinate system */
 	private BigDecimalQuantity<Length> y;
-	/** Target Z coordinate in the current coordinate system */
+	/** Z coordinate in the current coordinate system */
 	private BigDecimalQuantity<Length> z;
-	/** Target A coordinate in the current coordinate system */
+	/** A coordinate in the current coordinate system */
 	private BigDecimalQuantity<Angle> a;
-	/** Target B coordinate in the current coordinate system */
+	/** B coordinate in the current coordinate system */
 	private BigDecimalQuantity<Angle> b;
-	/** Target C coordinate in the current coordinate system  */
+	/** C coordinate in the current coordinate system  */
 	private BigDecimalQuantity<Angle> c;
 
-	/** Constructor */
-	public SetOriginOffsetInstruction(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {
-		super(InstructionType.SET_ORIGIN_OFFSETS);
+	/**
+	 * Constructor 
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @param z Z coordinate
+	 * @param a A coordinate
+	 * @param b B coordinate
+	 * @param c C coordinate
+	 */
+	public AbstractStraightInstruction(InstructionType type, BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {		
+		super(type);
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -33,34 +45,12 @@ public class SetOriginOffsetInstruction extends AbstractInstruction {
 		this.c = c;
 	}
 
-
-
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
 	 */
 	@Override
-	public void apply(GCodeContext context) throws GkException {
-		Tuple6b offset = context.getOriginOffset();
-		if(x != null){
-			offset.setX( offset.getX().subtract(x) );
-		}
-		if(y != null){
-			offset.setY( offset.getX().subtract(y) );
-		}
-		if(z != null){
-			offset.setZ( offset.getX().subtract(z) );
-		}
-		if(a != null){
-			offset.setA( offset.getA().subtract(a) );
-		}
-		if(b != null){
-			offset.setB( offset.getB().subtract(b) );
-		}
-		if(c != null){
-			offset.setC( offset.getC().subtract(c) );
-		}
-		context.setOriginOffset(offset);
-		context.setOriginOffsetActive(true);
+	public void apply(GCodeContext context) throws GkException {		
+		context.setPosition(x, y, z, a, b, c);
 	}
 
 	/**
@@ -104,5 +94,6 @@ public class SetOriginOffsetInstruction extends AbstractInstruction {
 	public BigDecimalQuantity<Angle> getC() {
 		return c;
 	}
+
 
 }

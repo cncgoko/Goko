@@ -27,7 +27,7 @@ public class ResetOriginOffsetsBuilder extends AbstractInstructionBuilder<ResetO
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public ResetOriginOffsetInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected ResetOriginOffsetInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("G92.1", words);
 		return new ResetOriginOffsetInstruction();
 	}

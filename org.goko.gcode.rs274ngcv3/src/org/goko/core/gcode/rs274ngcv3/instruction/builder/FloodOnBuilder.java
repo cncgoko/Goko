@@ -28,7 +28,7 @@ public class FloodOnBuilder extends AbstractInstructionBuilder<FloodOnInstructio
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public FloodOnInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {		
+	protected FloodOnInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {		
 		return new FloodOnInstruction();
 	}
 

@@ -1,25 +1,20 @@
 package org.goko.core.gcode.rs274ngcv3.jogl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
-import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
-import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.GCodeProviderEvent;
 import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
 import org.goko.core.workspace.service.IWorkspaceListener;
+import org.goko.core.workspace.service.IWorkspaceService;
 
 public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	/** LOG */
@@ -28,7 +23,8 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	private static final String SERVICE_ID = "org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService";
 	/** The list of managed renderer */
 	private CacheById<RS274GCodeRenderer> lstRenderer;
-	
+	/** The workspace service */
+	private IWorkspaceService workspaceService;
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -77,9 +73,10 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 * @throws GkException GkException
 	 */
 	public void createRenderer(Integer idGCodeProvider) throws GkException{
-		IGCodeProvider provider = Activator.getWorkspaceService().getGCodeProvider(idGCodeProvider);
+		IGCodeProvider provider = getWorkspaceService().getGCodeProvider(idGCodeProvider);
 		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(instructionSet);
+		renderer.setIdGCodeProvider(idGCodeProvider);
 		this.lstRenderer.add(renderer);
 		Activator.getJoglViewerService().addRenderer(renderer);
 	}
@@ -90,7 +87,6 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 * @throws GkException GkException
 	 */
 	public void removeRenderer(Integer idGCodeProvider) throws GkException{
-		Activator.getWorkspaceService().getGCodeProvider(idGCodeProvider);
 		RS274GCodeRenderer renderer = getRendererByGCodeProvider(idGCodeProvider);
 		this.lstRenderer.remove(renderer.getId());
 		Activator.getJoglViewerService().removeRenderer(renderer);
@@ -103,5 +99,26 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 			}
 		}
 		throw new GkTechnicalException("Renderer for GCodeProvider with internal id ["+idGCodeProvider+"] does not exist");
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 * @throws GkException GkException 
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) throws GkException {
+		if(this.workspaceService != null){
+			this.workspaceService.removeWorkspaceListener(this);
+		}
+		this.workspaceService = workspaceService;
+		if(this.workspaceService != null){
+			this.workspaceService.addWorkspaceListener(this);
+		}
 	}
 }

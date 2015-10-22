@@ -303,12 +303,26 @@ public class Tuple6b {
 		this.c = c;
 	}
 
-	public Point3d toPoint3d(){
-		return new Point3d(getX().doubleValue(), getY().doubleValue(), getZ().doubleValue());
+	public Point3d toPoint3d(Unit<Length> unit){
+		return new Point3d(getX().to(unit).doubleValue(), getY().to(unit).doubleValue(), getZ().to(unit).doubleValue());
 	}
 
-	public Point3f toPoint3f(){
-		return new Point3f((float)getX().doubleValue(), (float)getY().doubleValue(), (float)getZ().doubleValue());
+	public Point3d angleToPoint3d(Unit<Angle> unit){
+		Point3d angle = new Point3d();
+		if(a != null){
+			angle.x = a.to(unit).doubleValue();
+		}
+		if(b != null){
+			angle.y = b.to(unit).doubleValue();
+		}
+		if(c != null){
+			angle.z = c.to(unit).doubleValue();
+		}
+		return angle;
+	}
+	
+	public Point3f toPoint3f(Unit<Length> unit){
+		return new Point3f((float)getX().to(unit).doubleValue(), (float)getY().to(unit).doubleValue(), (float)getZ().to(unit).doubleValue());
 	}
 	
 	public Tuple6b setNull() {

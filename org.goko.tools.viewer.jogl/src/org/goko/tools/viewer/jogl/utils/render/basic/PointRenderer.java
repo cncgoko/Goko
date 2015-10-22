@@ -43,7 +43,7 @@ public class PointRenderer extends PolylineRenderer{
 
 	private void generatePoints() {
 		double hSize = size / 2;
-		Point3d tmpPos = position.to(JoglUtils.JOGL_UNIT).toPoint3d();
+		Point3d tmpPos = position.toPoint3d(JoglUtils.JOGL_UNIT);
 		List<Point3d> lstPoints = new ArrayList<Point3d>();
 		lstPoints.add( new Point3d(tmpPos.x + hSize, tmpPos.y, tmpPos.z) );
 		lstPoints.add( new Point3d(tmpPos.x - hSize, tmpPos.y, tmpPos.z) );

@@ -24,16 +24,12 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.observable.Observables;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -54,8 +50,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.tools.viewer.jogl.camera.AbstractCamera;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DController;
@@ -67,7 +62,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeViewer3DModel> implements EventHandler {
 	@Inject
-	IGCodeService gcodeService;
+	IRS274NGCService gcodeService;
 	@Inject
 	IJoglViewerService viewerService;
 	@Inject
@@ -155,73 +150,73 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		getController().addSelectionBinding(btnEnableBounds, "enabled");
 
 		getController().addSelectionBinding(btnEnableView, "enabled");
-		final ICoordinateSystemAdapter csAdapter = viewerService.getCoordinateSystemAdapter();
-		if(csAdapter != null){
-			final Menu coordinateSystemMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
-			final MenuItem csItemAll = new MenuItem(coordinateSystemMenu, SWT.PUSH);
-			csItemAll.setText("Show all");
-			csItemAll.addSelectionListener(new SelectionAdapter() {
-			  @Override public void widgetSelected(SelectionEvent e) {
-				  try {
-					for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
-						  viewerService.setCoordinateSystemEnabled(cs, true);
-						  getDataModel().getCoordinateSystemEnabled().put(cs.name(), true);
-					  }
-				} catch (GkException e1) {
-					displayError(e1);
-				}
-			  };
-			});
-			MenuItem csItemNone = new MenuItem(coordinateSystemMenu, SWT.PUSH);
-			csItemNone.setText("Hide all");
-			csItemNone.addSelectionListener(new SelectionAdapter() {
-				  @Override public void widgetSelected(SelectionEvent e) {
-					  try {
-						for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
-							  viewerService.setCoordinateSystemEnabled(cs, false);
-							  getDataModel().getCoordinateSystemEnabled().put(cs.name(), false);
-						  }
-					} catch (GkException e1) {
-						displayError(e1);
-					}
-				  };
-				});
-			MenuItem csItemSeparator = new MenuItem(coordinateSystemMenu, SWT.SEPARATOR);
-			// Create the menu for CS display
-			for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
-		      final MenuItem item = new MenuItem(coordinateSystemMenu, SWT.CHECK);
-		      item.setText(cs.name());
-		      viewerService.setCoordinateSystemEnabled(cs, true);
-    		  getDataModel().getCoordinateSystemEnabled().put(cs.name(), true);
-		      item.addSelectionListener(new SelectionAdapter() {
-		    	  @Override public void widgetSelected(SelectionEvent e) {
-		    		  viewerService.setCoordinateSystemEnabled(cs, item.getSelection());
-		    		  getDataModel().getCoordinateSystemEnabled().put(cs.name(), item.getSelection());
-		    	  };
-		      });
-		      {
-		    	  IObservableValue 	modelObservable 	= Observables.observeMapEntry(getDataModel().getCoordinateSystemEnabled(), cs.name());
-		    	  IObservableValue  controlObservable 	= WidgetProperties.selection().observe(item);
-
-		    	  UpdateValueStrategy policy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
-		    	  getController().getBindingContext().bindValue(controlObservable, modelObservable,null, policy);
-		      }
-		    }
-
-			final ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
-			tltmDropdownItem.setToolTipText("Show/hide coordinates systems");
-			tltmDropdownItem.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/show-cs.png"));
-			tltmDropdownItem.addListener(SWT.Selection, new Listener() {
-				@Override
-				public void handleEvent(Event event) {
-					Rectangle rect = tltmDropdownItem.getBounds();
-					Point pt = new Point(rect.x, rect.y + rect.height);
-					pt = toolBar.toDisplay(pt);
-					coordinateSystemMenu.setLocation(pt.x, pt.y);
-					coordinateSystemMenu.setVisible(true);
-				}
-			});
-		}
+//		final ICoordinateSystemAdapter csAdapter = viewerService.getCoordinateSystemAdapter();
+//		if(csAdapter != null){
+//			final Menu coordinateSystemMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
+//			final MenuItem csItemAll = new MenuItem(coordinateSystemMenu, SWT.PUSH);
+//			csItemAll.setText("Show all");
+//			csItemAll.addSelectionListener(new SelectionAdapter() {
+//			  @Override public void widgetSelected(SelectionEvent e) {
+//				  try {
+//					for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
+//						  viewerService.setCoordinateSystemEnabled(cs, true);
+//						  getDataModel().getCoordinateSystemEnabled().put(cs.name(), true);
+//					  }
+//				} catch (GkException e1) {
+//					displayError(e1);
+//				}
+//			  };
+//			});
+//			MenuItem csItemNone = new MenuItem(coordinateSystemMenu, SWT.PUSH);
+//			csItemNone.setText("Hide all");
+//			csItemNone.addSelectionListener(new SelectionAdapter() {
+//				  @Override public void widgetSelected(SelectionEvent e) {
+//					  try {
+//						for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
+//							  viewerService.setCoordinateSystemEnabled(cs, false);
+//							  getDataModel().getCoordinateSystemEnabled().put(cs.name(), false);
+//						  }
+//					} catch (GkException e1) {
+//						displayError(e1);
+//					}
+//				  };
+//				});
+//			MenuItem csItemSeparator = new MenuItem(coordinateSystemMenu, SWT.SEPARATOR);
+//			// Create the menu for CS display
+//			for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
+//		      final MenuItem item = new MenuItem(coordinateSystemMenu, SWT.CHECK);
+//		      item.setText(cs.name());
+//		      viewerService.setCoordinateSystemEnabled(cs, true);
+//    		  getDataModel().getCoordinateSystemEnabled().put(cs.name(), true);
+//		      item.addSelectionListener(new SelectionAdapter() {
+//		    	  @Override public void widgetSelected(SelectionEvent e) {
+//		    		  viewerService.setCoordinateSystemEnabled(cs, item.getSelection());
+//		    		  getDataModel().getCoordinateSystemEnabled().put(cs.name(), item.getSelection());
+//		    	  };
+//		      });
+//		      {
+//		    	  IObservableValue 	modelObservable 	= Observables.observeMapEntry(getDataModel().getCoordinateSystemEnabled(), cs.name());
+//		    	  IObservableValue  controlObservable 	= WidgetProperties.selection().observe(item);
+//
+//		    	  UpdateValueStrategy policy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
+//		    	  getController().getBindingContext().bindValue(controlObservable, modelObservable,null, policy);
+//		      }
+//		    }
+//
+//			final ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
+//			tltmDropdownItem.setToolTipText("Show/hide coordinates systems");
+//			tltmDropdownItem.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/show-cs.png"));
+//			tltmDropdownItem.addListener(SWT.Selection, new Listener() {
+//				@Override
+//				public void handleEvent(Event event) {
+//					Rectangle rect = tltmDropdownItem.getBounds();
+//					Point pt = new Point(rect.x, rect.y + rect.height);
+//					pt = toolBar.toDisplay(pt);
+//					coordinateSystemMenu.setLocation(pt.x, pt.y);
+//					coordinateSystemMenu.setVisible(true);
+//				}
+//			});
+//		}
 
 
 

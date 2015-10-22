@@ -68,13 +68,13 @@ import org.osgi.service.event.EventHandler;
  * @author PsyKo
  *
  */
-public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState>, EventHandler{
+public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState, IExecutionToken<IExecutionState>>, EventHandler{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GCodeFileSenderController.class);
 	private static final String[] UNITS = {"bytes", "kB","mB","gB"};
 	
 	@Inject
-	private IGCodeService<IGCodeContext> gCodeService;
+	private IGCodeService gCodeService;
 	@Inject
 	private IEventBroker eventBroker;
 	@Inject
@@ -84,7 +84,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Inject
 	private IWorkspaceService workspaceService;
 	@Inject
-	private IExecutionMonitorService<IExecutionState> monitorService;
+	private IExecutionMonitorService<IExecutionState, IExecutionToken<IExecutionState>> monitorService;
 
 	private Runnable elapsedTimeRunnable;
 
@@ -349,7 +349,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(IExecutionToken token) throws GkException {
+	public void onExecutionCanceled(IExecutionToken<IExecutionState> token) throws GkException {
 		onExecutionComplete();
 	}
 
@@ -357,21 +357,22 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(IExecutionToken token) throws GkException {
+	public void onExecutionPause(IExecutionToken<IExecutionState> token) throws GkException {
 		
 	}
 
 	@Override
-	public void onExecutionComplete(IExecutionToken token) throws GkException {
+	public void onExecutionComplete(IExecutionToken<IExecutionState> token) throws GkException {
 		onExecutionComplete();
 	}
 
 	@Override
-	public void onCommandStateChanged(IExecutionToken<IExecutionState> token, Integer idCommand) throws GkException {
+	public void onLineStateChanged(IExecutionToken<IExecutionState> token, Integer idCommand) throws GkException {
 		//getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
 		getDataModel().setSentCommandCount( CollectionUtils.size(token.getLineByState(ExecutionState.EXECUTED)) + CollectionUtils.size(token.getLineByState(ExecutionState.ERROR)) );
-		getDataModel().setTotalCommandCount( token.getLineCount() );		
+		getDataModel().setTotalCommandCount( token.getLineCount() );
 	}
+	
 	
 	@Override
 	public void handleEvent(Event event) {

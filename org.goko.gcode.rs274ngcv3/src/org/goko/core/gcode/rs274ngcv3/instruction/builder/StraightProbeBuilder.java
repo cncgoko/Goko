@@ -3,6 +3,8 @@ package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.element.GCodeWord;
@@ -30,12 +32,16 @@ public class StraightProbeBuilder extends AbstractInstructionBuilder<StraightPro
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public StraightProbeInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected StraightProbeInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
-		// A, B and C are not used 			
-		return new StraightProbeInstruction(x, y, z);
+		
+		BigDecimalQuantity<Angle> a = findWordValue("Z", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> b = findWordValue("Z", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> c = findWordValue("Z", words, null, SI.DEGREE_ANGLE);
+ 			
+		return new StraightProbeInstruction(x, y, z, a, b, c);
 	}
 	
 	/** (inheritDoc)

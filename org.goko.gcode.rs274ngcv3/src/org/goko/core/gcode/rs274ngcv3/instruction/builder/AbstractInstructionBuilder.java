@@ -10,12 +10,13 @@ import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.element.GCodeWord;
-import org.goko.core.gcode.element.IInstruction;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder;
 import org.goko.core.gcode.rs274ngcv3.utils.GCodeWordUtils;
 
-public abstract class AbstractInstructionBuilder<I extends IInstruction> implements IInstructionBuilder<I> {
+public abstract class AbstractInstructionBuilder<I extends AbstractInstruction> implements IInstructionBuilder<I> {
 	/** The type of the instruction */
 	private InstructionType type;
 	
@@ -41,7 +42,17 @@ public abstract class AbstractInstructionBuilder<I extends IInstruction> impleme
 		return lst;
 	}
 	
-
+	@Override
+	public final I toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+		I instruction = getInstruction(context, words);
+		GCodeWord word = GCodeWordUtils.findWordByLetter("N", words);
+		if(word != null){
+			instruction.setIdGCodeLine( Integer.valueOf(word.getValue()));
+		}
+		return instruction;
+	}
+	
+	protected abstract I getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException;
 	/**
 	 * Extract the length value of the word designated by the given letter in the list of word
 	 * @param letter the letter of the word

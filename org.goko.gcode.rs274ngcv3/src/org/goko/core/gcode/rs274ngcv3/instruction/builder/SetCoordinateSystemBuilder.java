@@ -37,7 +37,7 @@ public class SetCoordinateSystemBuilder extends AbstractInstructionBuilder<SetCo
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public SetCoordinateSystemInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected SetCoordinateSystemInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		EnumCoordinateSystem targetCoordinateSystem = null;
 		if(GCodeWordUtils.findAndRemoveWord("G54", words) != null){
 			targetCoordinateSystem = EnumCoordinateSystem.G54;

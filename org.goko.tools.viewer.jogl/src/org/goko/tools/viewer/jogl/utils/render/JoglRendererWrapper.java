@@ -47,11 +47,11 @@ public class JoglRendererWrapper extends AbstractCoreJoglRenderer {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#getId()
+	 * @see org.goko.viewer.jogl.utils.render.IJoglRenderer#getCode()
 	 */
 	@Override
-	public String getId() {
-		return baseRenderer.getId();
+	public String getCode() {
+		return baseRenderer.getCode();
 	}
 
 	@Override

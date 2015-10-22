@@ -32,7 +32,7 @@ import org.goko.tools.viewer.jogl.utils.render.coordinate.measurement.DistanceRe
 import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
 
 public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
-	public static final String ID = "org.goko.viewer.jogl.boundsRenderer";
+	public static final String CODE = "org.goko.viewer.jogl.boundsRenderer";
 	private BoundingTuple6b bounds;
 
 	/**
@@ -44,9 +44,12 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 		this.setLayerId(Layer.LAYER_BOUNDS);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#getCode()
+	 */
 	@Override
-	public String getId() {
-		return ID;
+	public String getCode() {
+		return CODE;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#performInitialize(javax.media.opengl.GL3)
@@ -54,8 +57,8 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	@Override
 	protected void performInitialize(GL3 gl) throws GkException {
 		if(bounds != null && bounds.getMin() != null && bounds.getMax() != null){
-			Point3d ptMin = bounds.getMin().to(JoglUtils.JOGL_UNIT).toPoint3d();
-			Point3d ptMax = bounds.getMax().to(JoglUtils.JOGL_UNIT).toPoint3d();
+			Point3d ptMin = bounds.getMin().toPoint3d(JoglUtils.JOGL_UNIT);
+			Point3d ptMax = bounds.getMax().toPoint3d(JoglUtils.JOGL_UNIT);
 
 			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMax.x,(float)ptMin.y-1,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
 			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMax.y,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );

@@ -27,7 +27,7 @@ public class ProgramEndBuilder extends AbstractInstructionBuilder<ProgramEndInst
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public ProgramEndInstruction toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+	protected ProgramEndInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		GCodeWordUtils.getAndRemoveWord("M30", words);
 		return new ProgramEndInstruction();
 	}

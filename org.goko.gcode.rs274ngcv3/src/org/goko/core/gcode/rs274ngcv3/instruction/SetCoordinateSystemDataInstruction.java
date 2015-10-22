@@ -1,10 +1,13 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
+import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.math.Tuple6b;
 
 public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	/** The target coordinate system */
@@ -43,20 +46,20 @@ public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 		this.c = c;
 	}
 
-//	/** (inheritDoc)
-//	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
-//	 */
-//	@Override
-//	public void apply(GCodeContext context) throws GkException {
-//		Tuple6b offset = context.getCoordinateSystemData(targetCoordinateSystem);
-//		if(x != null) offset.setX(x);
-//		if(y != null) offset.setY(y);
-//		if(z != null) offset.setZ(z);
-//		if(a != null) offset.setA(a);
-//		if(b != null) offset.setB(b);
-//		if(c != null) offset.setC(c);
-//		context.setCoordinateSystemData(targetCoordinateSystem, offset);
-//	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
+	 */
+	@Override
+	public void apply(GCodeContext context) throws GkException {
+		Tuple6b offset = context.getCoordinateSystemData(targetCoordinateSystem);
+		if(x != null) offset.setX(x);
+		if(y != null) offset.setY(y);
+		if(z != null) offset.setZ(z);
+		if(a != null) offset.setA(a);
+		if(b != null) offset.setB(b);
+		if(c != null) offset.setC(c);
+		context.setCoordinateSystemData(targetCoordinateSystem, offset);
+	}
 
 	/**
 	 * @return the x

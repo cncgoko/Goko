@@ -21,7 +21,7 @@ import javax.vecmath.Point3d;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.goko.common.bindings.AbstractModelObject;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
 
 /**
  * GCode 3D viewer model class

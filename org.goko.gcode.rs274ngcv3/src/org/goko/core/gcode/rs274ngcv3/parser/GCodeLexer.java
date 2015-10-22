@@ -118,16 +118,18 @@ public class GCodeLexer {
 		// Remove all white spaces ( comments already removed )
 		stringCommand = stringCommand.replaceAll("\\s", StringUtils.EMPTY);
 		
-		Matcher wordMatcher    = wordPattern.matcher(stringCommand);
-		if(wordMatcher.find()){
-			String remainingString = extractToken(wordMatcher, tokens, GCodeTokenType.WORD);
-			return createTokens(remainingString,tokens);
-		}
 		Matcher lineNumberMatcher    = lineNumberPattern.matcher(stringCommand);
 		if(lineNumberMatcher.find()){
 			String remainingString = extractToken(lineNumberMatcher, tokens, GCodeTokenType.LINE_NUMBER);
 			return createTokens(remainingString,tokens);
 		}
+		
+		Matcher wordMatcher    = wordPattern.matcher(stringCommand);
+		if(wordMatcher.find()){
+			String remainingString = extractToken(wordMatcher, tokens, GCodeTokenType.WORD);
+			return createTokens(remainingString,tokens);
+		}
+
 
 		throw new GkFunctionalException("GCO-101",stringCommand);
 	}

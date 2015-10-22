@@ -89,7 +89,7 @@ import org.goko.gcode.filesender.controller.GCodeFileSenderController;
  * @author PsyKo
  *
  */
-public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState>, PropertyChangeListener {
+public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState, IExecutionToken<IExecutionState>>, PropertyChangeListener {
 	private static final GkLog LOG = GkLog.getLogger(FileSenderPart.class);
 	@Inject
 	private IApplicativeLogService applicativeLogService;
@@ -528,15 +528,16 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		    });
 		}
 	}
-
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken, java.lang.Integer)
+	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onCommandStateChanged(IExecutionToken token, Integer idCommand) throws GkException {
+	public void onLineStateChanged(IExecutionToken<IExecutionState> token, Integer idCommand) throws GkException {
 		// TODO Auto-generated method stub
 		
 	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent changeEvent) {
 		if(StringUtils.equals(changeEvent.getPropertyName(), "gcodeProvider")){
