@@ -3,6 +3,7 @@ package org.goko.core.gcode.rs274ngcv3;
 import java.io.InputStream;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -11,7 +12,8 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.service.IGCodeService;
 
-public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCodeContext, InstructionSet> {
+public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCodeContext, InstructionSet>,
+										  IGCodeExecutionTimeService<GCodeContext>{
 
 	IGCodeProvider parse(InputStream inputStream) throws GkException;
 	

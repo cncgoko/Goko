@@ -448,16 +448,4 @@ public class Tuple6b {
 		return true;
 	}
 
-	public Tuple6f toTuple6f() {
-		return new Tuple6f( x == null ? 0: 1/*getX().floatValue()*/,
-							y == null ? 0: 1/*getY().floatValue()*/,
-							z == null ? 0: 1/*getZ().floatValue()*/,
-							a == null ? 0: 1/*getA().floatValue()*/,
-							b == null ? 0: 1/*getB().floatValue()*/,
-							c == null ? 0: 1/*getC().floatValue()*/
-				);
-	}
-
-	
-
 }

@@ -20,6 +20,8 @@ package org.goko.core.common.measure.quantity.type;
 import java.math.BigDecimal;
 
 import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.common.measure.units.BaseUnit;
 import org.goko.core.common.measure.units.Unit;
 
 public class NumberQuantity {
@@ -45,6 +47,10 @@ public class NumberQuantity {
 			return v1;
 		}
 		return v2;
+	}
+
+	public static <Q extends Quantity<Q>> Quantity<Q> zero(Unit<Q> unit) {
+		return NumberQuantity.of(0, unit);
 	}	
 
 }

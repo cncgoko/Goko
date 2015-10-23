@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.tools.viewer.jogl.utils.render.gcode;
+package org.goko.tools.viewer.jogl.utils.render.basic;
 
 import javax.media.opengl.GL3;
 import javax.vecmath.Point3d;

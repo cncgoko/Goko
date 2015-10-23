@@ -42,6 +42,9 @@ import org.goko.core.common.event.GokoTopic;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
@@ -53,6 +56,7 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeService;
@@ -204,10 +208,10 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 			throw new GkTechnicalException(e);
 		}
 		getDataModel().setGcodeProvider(gcodeFile);
-		long seconds = (long) timeService.evaluateExecutionTime(gcodeFile);
+		Quantity<Time> time = timeService.evaluateExecutionTime(gcodeFile, new GCodeContext());
 
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getLines()));
-		getDataModel().setRemainingTime(getDurationAsString(seconds*1000));		
+		getDataModel().setRemainingTime(getDurationAsString(time));		
 		workspaceService.addGCodeProvider(gcodeFile);
 
 	}
@@ -281,6 +285,10 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 	}
 
+	protected String getDurationAsString(Quantity<Time> time){
+		return getDurationAsString((long)time.doubleValue(SI.MILLISECOND));
+	}
+	
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onControllerStatusUpdate(MachineValueUpdateEvent updateEvt) throws GkException{
 		updateStreamingAllowed();

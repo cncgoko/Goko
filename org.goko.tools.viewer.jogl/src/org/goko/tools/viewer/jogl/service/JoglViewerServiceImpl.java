@@ -40,7 +40,6 @@ import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.workspace.service.GCodeProviderEvent;
@@ -52,8 +51,8 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
+import org.goko.tools.viewer.jogl.utils.render.basic.BoundsRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
-import org.goko.tools.viewer.jogl.utils.render.gcode.BoundsRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
 
@@ -80,9 +79,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private IWorkVolumeProvider workVolumeProvider;
 	/** Bind camera on tool position ? */
 	private boolean lockCameraOnTool;
-	
-	private BoundsRenderer boundsRenderer;
-	
+		
 	private GridRenderer xyGridRenderer;
 	private GridRenderer xzGridRenderer;
 	private GridRenderer yzGridRenderer;
@@ -112,9 +109,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
 		
 		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
-		addRenderer(zeroRenderer);
-		boundsRenderer = new BoundsRenderer(null);
-		addRenderer(boundsRenderer);	
+		addRenderer(zeroRenderer);			
 		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);
 		this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID);
 		this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID);

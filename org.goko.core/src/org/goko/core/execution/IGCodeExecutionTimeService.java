@@ -17,7 +17,10 @@
 package org.goko.core.execution;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
 
 
@@ -27,12 +30,13 @@ import org.goko.core.gcode.element.IGCodeProvider;
  * @author PsyKo
  *
  */
-public interface IGCodeExecutionTimeService extends IGokoService{
+public interface IGCodeExecutionTimeService<G extends IGCodeContext> extends IGokoService{
 	/**
 	 * Evaluate the execution time of the given provider
 	 * @param provider the provider
+	 * @param context  the gcode context
 	 * @return a long giving the seconds required to execute the code
 	 * @throws GkException GkException
 	 */
-	double evaluateExecutionTime(IGCodeProvider provider) throws GkException;
+	Quantity<Time> evaluateExecutionTime(IGCodeProvider provider, G context) throws GkException;
 }

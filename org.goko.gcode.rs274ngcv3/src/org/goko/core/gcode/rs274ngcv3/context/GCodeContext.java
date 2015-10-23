@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Angle;
@@ -125,7 +126,7 @@ public class GCodeContext implements IGCodeContext{
 	 * @param context the context to copy
 	 */
 	public GCodeContext(GCodeContext context) {
-		super();
+		this();
 		this.motionMode = context.motionMode;
 		this.distanceMode = context.distanceMode;
 		this.plane = context.plane;
@@ -145,9 +146,11 @@ public class GCodeContext implements IGCodeContext{
 		this.b = context.b;
 		this.c = context.c;
 		
-		// Copy coordinate systems data
-		for (EnumCoordinateSystem enumCs : context.coordinateSystemData.keySet()) {
-			coordinateSystemData.put(enumCs, new Tuple6b(context.getCoordinateSystemData(enumCs)));
+		// Copy coordinate systems data		
+		if(!context.coordinateSystemData.isEmpty()){
+			for (EnumCoordinateSystem enumCs : context.coordinateSystemData.keySet()) {
+				coordinateSystemData.put(enumCs, new Tuple6b(context.getCoordinateSystemData(enumCs)));
+			}
 		}
 	}
 	

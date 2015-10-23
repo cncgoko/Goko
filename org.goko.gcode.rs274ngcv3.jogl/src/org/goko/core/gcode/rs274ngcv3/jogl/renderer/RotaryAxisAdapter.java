@@ -15,7 +15,7 @@
  *  along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.goko.tools.viewer.jogl.utils.render.gcode;
+package org.goko.core.gcode.rs274ngcv3.jogl.renderer;
 
 import javax.media.opengl.GL3;
 import javax.vecmath.Vector3f;
@@ -31,7 +31,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 
 public class RotaryAxisAdapter implements IGCodeProviderRenderer{
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
-	private IGCodeProviderRenderer<ExecutionState, ExecutionToken<ExecutionState>> backedRenderer;
+	
 
 	/**
 	 * Constructor

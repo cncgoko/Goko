@@ -143,9 +143,9 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		Tuple6b t1 = lstPoints.get(0).to(resultUnit);
 		Tuple6b t2 = lstPoints.get(1).to(resultUnit);
 		Tuple6b t3 = lstPoints.get(2).to(resultUnit);
-		Point3d p1 = t1.to(resultUnit).toPoint3d();
-		Point3d p2 = t2.to(resultUnit).toPoint3d();
-		Point3d p3 = t3.to(resultUnit).toPoint3d();
+		Point3d p1 = t1.toPoint3d(resultUnit);
+		Point3d p2 = t2.toPoint3d(resultUnit);
+		Point3d p3 = t3.toPoint3d(resultUnit);
 		
 		lstSegment.add(new Segment(t1, t2));
 		lstSegment.add(new Segment(t2, t3));

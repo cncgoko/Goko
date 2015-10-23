@@ -21,6 +21,10 @@ import org.goko.core.common.measure.converter.MultiplyConverter;
 import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.common.measure.quantity.type.DoubleQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.BaseUnit;
 import org.goko.core.common.measure.units.TransformedUnit;
 import org.goko.core.common.measure.units.Unit;
@@ -48,6 +52,36 @@ public class SI {
 	/**
 	 * Degrees (angular degrees, symbol ï¿½ ) 
 	 */
-	public static final TransformedUnit<Angle> DEGREE_ANGLE = new TransformedUnit<Angle>("Â°", RADIAN, new MultiplyConverter(180.0/Math.PI));
+	public static final TransformedUnit<Angle> DEGREE_ANGLE = new TransformedUnit<Angle>("°", RADIAN, new MultiplyConverter(180.0/Math.PI));
 
+	 /**
+     * The SI base unit for time quantities (standard name <code>s</code>).
+     * The second is the duration of 9192631770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium 133 atom.
+     */
+	public static final BaseUnit<Time> SECOND = new BaseUnit<Time>("s", QuantityDimension.TIME);
+	
+	/**
+	 * Derived from SECONDS
+	 * One millisecond = 1/1000 seconds
+	 */
+	public static final TransformedUnit<Time> MILLISECOND = new TransformedUnit<Time>("ms", SECOND, new MultiplyConverter(1.0/1000.0));
+	
+	/**
+	 * Derived from SECONDS
+	 * One minute = 60 seconds
+	 */
+	public static final TransformedUnit<Time> MINUTE = new TransformedUnit<Time>("min", SECOND, new MultiplyConverter(60));
+	
+	/**
+	 * Derived from MINUTE
+	 * One hour = 60 minutes
+	 */
+	public static final TransformedUnit<Time> HOUR = new TransformedUnit<Time>("h", MINUTE, new MultiplyConverter(60));
+	
+	/**
+	 * Derived from HOUR
+	 * One day = 24 hours
+	 */
+	public static final TransformedUnit<Time> DAY  = new TransformedUnit<Time>("d", HOUR, new MultiplyConverter(24));
+	
 }

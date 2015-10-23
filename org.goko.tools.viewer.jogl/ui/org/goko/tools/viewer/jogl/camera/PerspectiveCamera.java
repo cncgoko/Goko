@@ -264,7 +264,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		update();
 		updatePMVMatrix();
 
-		Point3d pa = bounds.getMin().toPoint3d();
+		Point3d pa = bounds.getMin().toPoint3d(JoglUtils.JOGL_UNIT);
 		BoundingTuple6b projectedBound = getProjectedBound(bounds);
 		for(int i =0; i < 2; i++){
 			double[] screenCenter = new double[]{ (projectedBound.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) + projectedBound.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT)) / 2,

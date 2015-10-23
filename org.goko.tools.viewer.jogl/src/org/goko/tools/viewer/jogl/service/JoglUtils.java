@@ -57,7 +57,7 @@ public class JoglUtils {
 	public static void drawPoint(GL2 gl,Tuple6b point, Point3f color, int style) throws GkException {
 		gl.glPushAttrib(GL2.GL_LINE_BIT);
 		gl.glColor3d(color.x, color.y, color.z);
-		Point3d startPoint 	= point.toPoint3d();
+		Point3d startPoint 	= point.toPoint3d(JOGL_UNIT);
 		gl.glLineWidth(1f);
 		gl.glBegin(GL2.GL_LINES);
 		gl.glVertex3d(startPoint.x-0.5, startPoint.y, startPoint.z);
@@ -82,8 +82,8 @@ public class JoglUtils {
 
 	public static void drawSegment(GL2 gl, Tuple6b start, Tuple6b end, Point3f color, int style) throws GkException {
 		gl.glPushAttrib(GL2.GL_LINE_BIT);
-		Point3d startPoint 	= start.toPoint3d();
-		Point3d endPoint 	= end.toPoint3d();
+		Point3d startPoint 	= start.toPoint3d(JOGL_UNIT);
+		Point3d endPoint 	= end.toPoint3d(JOGL_UNIT);
 		gl.glLineWidth(1f);
 		gl.glBegin(GL2.GL_LINES);
 		gl.glColor3d(color.x, color.y, color.z);
@@ -94,7 +94,7 @@ public class JoglUtils {
 	}
 
 	public static void drawCircle(GL2 gl, Tuple6b center, double radius, Vector3f plane, Point3f color) throws GkException {
-		Point3d c 	= center.toPoint3d();
+		Point3d c 	= center.toPoint3d(JOGL_UNIT);
 		gl.glLineWidth(1f);
 		gl.glPushAttrib(GL2.GL_LINE_BIT);
 		gl.glColor3f(color.x, color.y, color.z);
@@ -123,9 +123,9 @@ public class JoglUtils {
 		boolean clockwise = direction == IRendererProxy.ARC_CLOCKWISE;
 		plane.normalize();
 		gl.glBegin(GL2.GL_LINE_STRIP);
-		Point3d start 	= startPoint.toPoint3d();
-		Point3d center 	= centerPoint.toPoint3d();
-		Point3d end 	= endPoint.toPoint3d();
+		Point3d start 	= startPoint.toPoint3d(JOGL_UNIT);
+		Point3d center 	= centerPoint.toPoint3d(JOGL_UNIT);
+		Point3d end 	= endPoint.toPoint3d(JOGL_UNIT);
 
 		Vector3d v1 = new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z);
 		Vector3d v2 = new Vector3d(end.x - center.x, end.y - center.y, end.z - center.z);

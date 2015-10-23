@@ -8,6 +8,10 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -20,6 +24,7 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
+import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeTokenType;
@@ -29,11 +34,6 @@ import org.goko.core.log.GkLog;
 
 /**
  * @author Psyko
- *
- */
-/**
- * @author Psyko
- *
  */
 public class RS274NGCServiceImpl implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
@@ -46,6 +46,33 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		initializeModalGroups();
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#getServiceId()
+	 */
+	@Override
+	public String getServiceId() throws GkException {		
+		return "org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl";
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#start()
+	 */
+	@Override
+	public void start() throws GkException {
+		LOG.info("Starting " + getServiceId());	
+		
+		LOG.info("Successfully started " + getServiceId());
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#stop()
+	 */
+	@Override
+	public void stop() throws GkException {
+		LOG.info("Stopping " + getServiceId());	
+		
+		LOG.info("Successfully stopped " + getServiceId());
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IGCodeService#parse(java.io.InputStream)
 	 */
@@ -230,7 +257,30 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.service.IGCodeService#getIterator(org.goko.core.gcode.element.IInstructionProvider, org.goko.core.gcode.element.IGCodeContext)
 	 */
 	@Override
-	public IInstructionSetIterator<GCodeContext, AbstractInstruction> getIterator(IInstructionProvider<AbstractInstruction, InstructionSet> instructionProvider, GCodeContext baseContext) throws GkException {		
-		return new InstructionIterator(instructionProvider, baseContext, this);
+	public InstructionIterator getIterator(IInstructionProvider<AbstractInstruction, InstructionSet> instructionProvider, GCodeContext baseContext) throws GkException {		
+		return new InstructionIterator(instructionProvider, new GCodeContext(baseContext), this);
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public Quantity<Time> evaluateExecutionTime(IGCodeProvider provider, GCodeContext baseContext) throws GkException {
+		Quantity<Time> result = NumberQuantity.zero(SI.SECOND);
+		
+		InstructionTimeCalculatorFactory timeFactory = new InstructionTimeCalculatorFactory();		
+		InstructionProvider instructions = getInstructions(baseContext, provider);
+		
+		InstructionIterator iterator = getIterator(instructions, baseContext);
+		
+		GCodeContext preContext = null;	 
+		
+		while(iterator.hasNext()){
+			preContext = new GCodeContext(iterator.getContext());
+			result = result.add( timeFactory.getExecutionTime(preContext, iterator.next()) );
+		}
+		
+		return result;
+	}
+
 }
