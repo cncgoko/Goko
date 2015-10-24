@@ -39,6 +39,7 @@ public class SelectPlaneBuilder extends AbstractInstructionBuilder<SelectPlaneIn
 			if(word != null){
 				plane = EnumPlane.XZ_PLANE;	
 			}else{
+				word = GCodeWordUtils.findAndRemoveWord("G19", words);
 				plane = EnumPlane.YZ_PLANE;
 			}
 		}

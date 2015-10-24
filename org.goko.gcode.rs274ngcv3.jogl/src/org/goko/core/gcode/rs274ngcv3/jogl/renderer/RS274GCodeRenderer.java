@@ -89,6 +89,8 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		// FIXME : don't use new gcode context
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, new GCodeContext());
 		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new MotionModeColorizer();
+//		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new SelectedPlaneColorizer();
+		//IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new ArcAngleColorizer(); 
 		
 		while(iterator.hasNext()){
 			GCodeContext preContext = new GCodeContext(iterator.getContext());

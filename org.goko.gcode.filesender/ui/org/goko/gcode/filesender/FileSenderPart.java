@@ -79,6 +79,7 @@ import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.filesender.controller.GCodeFileSenderBindings;
 import org.goko.gcode.filesender.controller.GCodeFileSenderController;
@@ -95,6 +96,8 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	private IApplicativeLogService applicativeLogService;
 	@Inject
 	private IExecutionMonitorService monitorService;
+	@Inject
+	private IGCodeService gcodeService;
 	private Text txtFilepath;
 	private Label lblFilesize;
 	private Label lblName;
@@ -403,7 +406,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 		tableViewerColumn.setLabelProvider(new StyledCellLabelProvider() {
 			@Override
 			public void update(ViewerCell cell) {
-				GCodeLine p = (GCodeLine) cell.getElement();
+				GCodeLine p = (GCodeLine) cell.getElement();				
 				cell.setText(String.valueOf(p.getLineNumber()));
 				cell.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 				super.update(cell);
@@ -419,7 +422,12 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	        @Override
 	        public String getText(Object element) {
 	        	GCodeLine p = (GCodeLine) element;
-	        	return String.valueOf(p.toString());
+	        	try {
+					return gcodeService.render(p);
+				} catch (GkException e) {
+					LOG.error(e);
+				}
+	        	return "ERROR";
 	        }
 	      });
 		tableViewer.setContentProvider(new GCodeTableLazyContentProvider(tableViewer));

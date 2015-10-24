@@ -9,39 +9,45 @@ import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 
 public class Arc3b {
 	private Tuple6b start;
 	private Tuple6b center;
-	private Tuple6b end;	
+	private Tuple6b end;
+	private Point3d pStart;
+	private Point3d pCenter;
+	private Point3d pEnd;
+	
 	private Vector3d axis;
 	private Quantity<Angle> angle;
 	private Quantity<Length> radius;
+	private Unit<Length> unit;
 	
 	public Arc3b(Tuple6b start, Tuple6b center, Tuple6b end, Vector3d axis, boolean clockwise) {
 		super();
 		this.start = start;
 		this.center = center;
-		this.end = end;
+		this.end = end;		
 		this.axis = axis;
 		this.radius = start.distance(end);//new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z).length();
+		// Internal fields
+		this.unit = start.getX().getUnit();
+		this.pStart = start.toPoint3d(unit);
+		this.pCenter= center.toPoint3d(unit);
+		this.pEnd 	= end.toPoint3d(unit);
 		build(clockwise);
 	}
 
 	private Matrix3d getBaseChangeMatrix(){
-		Tuple6b v1 = new Tuple6b(start.getX().subtract(center.getX()),
-								 start.getY().subtract(center.getY()),
-								 start.getZ().subtract(center.getZ()),null,null,null);
+		Vector3d v1 = new Vector3d();
+		v1.sub(pStart, pCenter);
 		Vector3d v3 = new Vector3d(axis);		
 		v1.normalize();		
 		v3.normalize();
 		Vector3d v2 = new Vector3d();
 		v2.cross(v3, v1);
-		
-//		Matrix3d m = new Matrix3d(	v1.x, v2.x, v3.x,
-//									v1.y, v2.y, v3.y,
-//									v1.z, v2.z, v3.z);
-		
+				
 		Matrix3d m = new Matrix3d(	v1.x, v1.y, v1.z,
 									v2.x, v2.y, v2.z,
 									v3.x, v3.y, v3.z);
@@ -54,9 +60,9 @@ public class Arc3b {
 		Matrix3d invMatrix = new Matrix3d();
 		invMatrix.invert(matrix);		
 		
-		Point3d lStart 	= new Point3d(start);
-		Point3d lCenter = new Point3d(center);
-		Point3d lEnd 	= new Point3d(end);
+		Point3d lStart 	= new Point3d(pStart);
+		Point3d lCenter = new Point3d(pCenter);
+		Point3d lEnd 	= new Point3d(pEnd);
 		
 		matrix.transform(lStart);
 		matrix.transform(lCenter);
@@ -74,20 +80,20 @@ public class Arc3b {
 			}else{
 				angle = Math.abs(smallestAngle); // In OpenGl when rotating, CCW rotation = positive angle
 			}
-		}else{
+		}else{			
 			if(clockwise){ // The angle is CW and we have a CW command
 				angle = - Math.abs(smallestAngle); // In OpenGl when rotating, CW rotation = negative angle
 			}else{ // The angle is CW but we want the CCW command
-				angle =  2*Math.PI - smallestAngle;
+				angle =  smallestAngle;//2*Math.PI - smallestAngle;
 			}
 		}	
-		this.angle = NumberQuantity.of(angle, SI.DEGREE_ANGLE);
+		this.angle = NumberQuantity.of(angle, SI.RADIAN);
 	}
 	
-	public Matrix3d getRotationMatrix(double rAngle) {
+	public Matrix3d getRotationMatrix(Quantity<Angle> rAngle) {
 		Matrix3d m = new Matrix3d();
-		double c = Math.cos(rAngle);
-		double s = Math.sin(rAngle);
+		double c = Math.cos(rAngle.doubleValue(SI.RADIAN));
+		double s = Math.sin(rAngle.doubleValue(SI.RADIAN));
 		double t = 1.0 - c;
 		// if axis is not already normalised then uncomment this
 		// double magnitude = Math.sqrt(a1.x*a1.x + a1.y*a1.y + a1.z*a1.z);
@@ -115,24 +121,66 @@ public class Arc3b {
 		return m;
 	}
 
-	public double getLength(){
-		return Math.abs(angle)*radius;
+	public Quantity<Length> getLength(){
+		return radius.multiply(angle.to(SI.RADIAN).abs().value());
 	}
 	
-	public Point3d point(double i){
-		Matrix3d rMat = getRotationMatrix(i * angle);
-		Point3d res = new Point3d(start);
-		res.sub(center);
+	public Tuple6b point(double i){
+		Matrix3d rMat = getRotationMatrix(angle.multiply(i));
+		Point3d res = new Point3d(pStart);
+		res.sub(pCenter);
 		rMat.transform(res);
-		res.add(center);
+		res.add(pCenter);
 		// along axis motion
-		Vector3d delta = new Vector3d(end.x - start.x, end.y - start.y, end.z - start.z);
+		Vector3d delta = new Vector3d(pEnd.x - pStart.x, pEnd.y - pStart.y, pEnd.z - pStart.z);
 		double scale = delta.dot(axis) * i;
 		delta.x = scale*axis.x;
 		delta.y = scale*axis.y;
 		delta.z = scale*axis.z;		
 		res.add(delta);
-		return res;
+		return new Tuple6b(res.x, res.y, res.z, unit);
+	}
+
+	/**
+	 * @return the start
+	 */
+	public Tuple6b getStart() {
+		return start;
+	}
+
+	/**
+	 * @return the center
+	 */
+	public Tuple6b getCenter() {
+		return center;
+	}
+
+	/**
+	 * @return the end
+	 */
+	public Tuple6b getEnd() {
+		return end;
+	}
+
+	/**
+	 * @return the axis
+	 */
+	public Vector3d getAxis() {
+		return axis;
+	}
+
+	/**
+	 * @return the angle
+	 */
+	public Quantity<Angle> getAngle() {
+		return angle;
+	}
+
+	/**
+	 * @return the radius
+	 */
+	public Quantity<Length> getRadius() {
+		return radius;
 	}
 	
 	

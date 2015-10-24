@@ -11,6 +11,8 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.utils.InstructionUtils;
 import org.goko.core.math.Arc3b;
+import org.goko.core.math.Tuple6b;
+import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 public class ArcFeedGeometryBuilder extends AbstractInstructionGeometryBuilder<ArcFeedInstruction>{
 	
@@ -31,12 +33,12 @@ public class ArcFeedGeometryBuilder extends AbstractInstructionGeometryBuilder<A
 		
 		int nbPoints = 8;
 		// Adaptive points count
-		double arcLength = arc.getLength();
+		double arcLength = arc.getLength().doubleValue(JoglUtils.JOGL_UNIT);
 		nbPoints =  2 + (int) (arcLength * 8 ); // At least 2 points
 
 		for(float i = 0; i <= nbPoints; i++){
-			Point3d p = arc.point( i/nbPoints);
-			vertices.add(p);			
+			Tuple6b p = arc.point( i/nbPoints);
+			vertices.add(p.toPoint3d(JoglUtils.JOGL_UNIT));			
 		}
 		
 		return vertices;

@@ -16,12 +16,11 @@ public class InstructionUtils {
 		boolean clockwise = instruction.isClockwise();
 		
 		Tuple6b startTuple = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
+				
+		Tuple6b center 	= getCenterPoint(context, instruction);
+		Tuple6b end 	= getEndPoint(context, instruction);
 		
-		Point3d start 	= startTuple.toPoint3d(context.getUnit().getUnit());
-		Point3d center 	= getCenterPoint(context, instruction);
-		Point3d end 	= getEndPoint(context, instruction);
-		
-		return new Arc3b(start, center, end, getNormalVector(context.getPlane()), clockwise);
+		return new Arc3b(startTuple, center, end, getNormalVector(context.getPlane()), clockwise);
 	}
 	
 	private static Vector3d getNormalVector(EnumPlane enumGCodeCommandPlane){
@@ -43,28 +42,35 @@ public class InstructionUtils {
 						     0, 1, 0,
 						     0, 0, 1);
 		}else if(EnumPlane.XZ_PLANE == enumGCodeCommandPlane){
-			m = new Matrix3d(1, 0, 0,
-						     0, 0, -1,
-						     0, 1, 0);
-		}else if(EnumPlane.YZ_PLANE == enumGCodeCommandPlane){
+//			m = new Matrix3d(1, 0, 0,
+//						     0, 0, -1,
+//						     0, 1, 0);
 			m = new Matrix3d(0, 1, 0,
 						     0, 0, 1,
 						     1, 0, 0);
+		}else if(EnumPlane.YZ_PLANE == enumGCodeCommandPlane){
+			m = new Matrix3d(0, 0, 1,
+						     1, 0, 0,
+						     0, 1, 0);
 		}
 		return m;		
 	}
 	
-	private static Point3d getEndPoint(GCodeContext context, ArcFeedInstruction instruction){
+	private static Tuple6b getEndPoint(GCodeContext context, ArcFeedInstruction instruction){
+		System.out.println("");
 		Tuple6b startTuple = new Tuple6b(instruction.getFirstEnd(), instruction.getSecondEnd(), instruction.getAxisEndPoint(), instruction.getA(), instruction.getB(), instruction.getC());
 		Point3d result = startTuple.toPoint3d(context.getUnit().getUnit());
 		getOrientationMatrix(context.getPlane()).transform(result);
-		return result; 
+		Tuple6b resultTuple = new Tuple6b(result.x, result.y, result.z,context.getUnit().getUnit());
+		return resultTuple; 
 	}
 	
-	private static Point3d getCenterPoint(GCodeContext context, ArcFeedInstruction instruction){
+	private static Tuple6b getCenterPoint(GCodeContext context, ArcFeedInstruction instruction){		
+		System.out.println("");
 		Tuple6b startTuple = new Tuple6b(instruction.getFirstAxis(), instruction.getSecondAxis(), instruction.getAxisEndPoint(), instruction.getA(), instruction.getB(), instruction.getC());
 		Point3d result = startTuple.toPoint3d(context.getUnit().getUnit());
 		getOrientationMatrix(context.getPlane()).transform(result);
-		return result; 
+		Tuple6b resultTuple = new Tuple6b(result.x, result.y, result.z,context.getUnit().getUnit());
+		return resultTuple; 
 	}
 }

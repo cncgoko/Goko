@@ -28,7 +28,8 @@ public class MistOnBuilder extends AbstractInstructionBuilder<MistOnInstruction>
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	protected MistOnInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {		
+	protected MistOnInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
+		GCodeWordUtils.findAndRemoveWord("M7", words);
 		return new MistOnInstruction();
 	}
 

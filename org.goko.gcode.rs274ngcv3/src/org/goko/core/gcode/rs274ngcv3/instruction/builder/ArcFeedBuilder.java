@@ -147,10 +147,10 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		
 		switch (plane) {
 		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
+			break;		
+		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);
 			break;
 		case YZ_PLANE:	instruction	= new ArcFeedInstruction(y, z, j, k, x, r, a, b, c, clockwise);
-			break;
-		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);
 			break;
 		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
 		}

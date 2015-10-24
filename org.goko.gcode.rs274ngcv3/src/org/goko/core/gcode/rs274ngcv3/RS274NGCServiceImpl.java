@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
@@ -16,7 +17,6 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionProvider;
-import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
@@ -149,11 +149,17 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			List<GCodeWord> localWords = new ArrayList<GCodeWord>(gCodeLine.getWords());
 			// A line can contain multiple instructions
 			while(CollectionUtils.isNotEmpty(localWords)){
-				AbstractInstruction instruction = factory.build(localContext, localWords);
+				int wordCountBefore = localWords.size();
+				AbstractInstruction instruction = factory.build(localContext, localWords);	
 				if(instruction == null){
 					// We have words is the list, but we can't build any instruction from them. End while loop
 					traceUnusedWords(localWords);
 					break;
+				}else{
+					// Make sure we consummed at least one word
+					if(localWords.size() == wordCountBefore){
+						throw new GkTechnicalException("An instruction was created but no word was removed. Instruction created : "+instruction.getClass());
+					}
 				}
 				
 				instruction.setIdGCodeLine(gCodeLine.getId());
@@ -281,6 +287,22 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		}
 		
 		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#render(org.goko.core.gcode.element.GCodeLine)
+	 */
+	@Override
+	public String render(GCodeLine line) throws GkException {
+		StringBuffer buffer = new StringBuffer();
+		for (GCodeWord word : line.getWords()) {
+			if(buffer.length() > 0){
+				buffer.append(" ");
+			}
+			buffer.append(word.getLetter());
+			buffer.append(word.getValue());
+		}
+		return buffer.toString();
 	}
 
 }

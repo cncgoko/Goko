@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstruction;
@@ -22,4 +23,6 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 	T update(T baseContext, S instructionSet) throws GkException;
 	
 	IInstructionSetIterator<T, I> getIterator(IInstructionProvider<I, S> instructionProvider, T baseContext) throws GkException;
+	
+	String render(GCodeLine line) throws GkException;
 }

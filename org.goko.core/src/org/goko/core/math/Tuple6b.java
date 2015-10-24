@@ -361,6 +361,29 @@ public class Tuple6b {
 		return this;
 	}
 
+	public Tuple6b normalize(){
+		Unit<Length> unit = x.getUnit();
+		BigDecimalQuantity<Length> pX = this.x.to(unit);
+		BigDecimalQuantity<Length> pY = this.y.to(unit);
+		BigDecimalQuantity<Length> pZ = this.z.to(unit);		
+		BigDecimal length = length().value(unit);
+		pX.divide(length);
+		pY.divide(length);
+		pZ.divide(length);
+		return new Tuple6b(pX, pY, pZ, a, b, c);
+	}
+	
+	public BigDecimalQuantity<Length> length(){
+		BigDecimal bdX = this.x.value(this.x.getUnit());		
+		BigDecimal bdY = this.y.value(this.x.getUnit());		
+		BigDecimal bdZ = this.z.value(this.x.getUnit());
+		
+		BigDecimal bdx2 = bdX.multiply(bdX);
+		BigDecimal bdy2 = bdX.multiply(bdY);
+		BigDecimal bdz2 = bdX.multiply(bdZ);
+		return NumberQuantity.of(BigDecimalUtils.sqrt(bdx2.add(bdy2).add(bdz2),5), this.x.getUnit());
+	}
+	
 	public BigDecimalQuantity<Length> distance(Tuple6b target){		
 		BigDecimalQuantity<Length> dx = target.getX().subtract(x); 
 		BigDecimalQuantity<Length> dy = target.getY().subtract(y); 

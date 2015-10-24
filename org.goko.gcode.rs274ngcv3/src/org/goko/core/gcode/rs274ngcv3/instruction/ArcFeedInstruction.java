@@ -97,7 +97,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		switch (context.getPlane()) {
 		case XY_PLANE: context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
 			break;
-		case XZ_PLANE: context.setPosition(firstEnd, axisEndPoint, secondEnd, a, b, c);			
+		case XZ_PLANE: context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);			
 			break;
 		case YZ_PLANE: context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
 			break;
