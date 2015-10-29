@@ -25,7 +25,5 @@ public interface IInstructionBuilder<I extends IInstruction> {
 	 */  
 	I toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException;
 	
-	InstructionType getInstructionType();
-	
-	List<GCodeWord> toGCodeWord(GCodeContext context, I instruction) throws GkException;
+	InstructionType getInstructionType();	
 }

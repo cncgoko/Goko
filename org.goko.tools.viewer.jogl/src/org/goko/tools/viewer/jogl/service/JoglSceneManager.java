@@ -48,7 +48,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.utils.CacheById;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.AbstractCamera;
@@ -61,6 +63,7 @@ import org.goko.tools.viewer.jogl.service.utils.CoreJoglRendererAlphaComparator;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.light.Light;
+import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 import org.goko.tools.viewer.jogl.utils.render.JoglRendererWrapper;
 
 import com.jogamp.opengl.util.PMVMatrix;
@@ -75,7 +78,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private Font overlayFont;
 	private int x;
 	private int y;
-	private int width;
+	private int width;	
 	private int height;
 	private int frame;
 	private long lastFrameReset;
@@ -89,9 +92,12 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/** Rendering proxy */
 	private JoglRendererProxy proxy;
 	/** The list of renderer */
-	private List<ICoreJoglRenderer> renderers;
+	private List<ICoreJoglRenderer> renderers;	
 	/** The list of renderer to remove */
-	private List<ICoreJoglRenderer> renderersToRemove;	
+	private List<ICoreJoglRenderer> renderersToRemove;
+	/** The list of overlay renderer */
+	private CacheById<IOverlayRenderer> overlayRenderers;
+	
 	private GLCapabilities canvasCapabilities;
 	private Map<Integer, Boolean> layerVisibility;
 	private Light light0;
@@ -101,6 +107,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		getRenderers();
 		initLayers();		
 		this.renderersToRemove 	= new ArrayList<ICoreJoglRenderer>();
+		this.overlayRenderers = new CacheById<IOverlayRenderer>();
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
 	}
 
@@ -122,7 +129,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	    canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 	    canvasCapabilities.setHardwareAccelerated(true);
 	    canvasCapabilities.setDoubleBuffered(true);
-	   // caps.se
+
 		canvas 		= new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);
 		canvas.addGLEventListener(this);
 		proxy 		= new JoglRendererProxy(null);
@@ -220,17 +227,17 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
-		synchronized (renderers) {
-			getRenderers().add(renderer);
-			// Make sure that renderer using alpha get rendered last
-			Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());
-		}
+		renderers.add(renderer);
+		//synchronized (renderers) {			
+		// Make sure that renderer using alpha get rendered last
+		Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());
+		//}
 	}
 	
 	public void removeRenderer(ICoreJoglRenderer renderer) throws GkException {
-		synchronized (renderers) {
+		//synchronized (renderers) {
 			getRenderers().remove(renderer);
-		}
+		//}
 	}
 	public void removeRenderer(IViewer3DRenderer renderer) throws GkException {
 		synchronized (renderers) {
@@ -249,7 +256,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/**
 	 * @return the renderers
 	 */
-	private List<ICoreJoglRenderer> getRenderers() {
+	protected List<ICoreJoglRenderer> getRenderers() {
 		if(renderers == null){
 			renderers = Collections.synchronizedList(new ArrayList<ICoreJoglRenderer>());
 		}
@@ -384,7 +391,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			    }
 			    g2d.setColor(new Color(0.55f,0.45f,0.28f));
 			    g2d.drawString(String.valueOf(this.fps*2)+"fps",x,y+bounds.height+4);
-			    drawOverlayData(g2d);
+			    drawOverlayRenderer(g2d);
 				overlay.markDirty(0, 0, getWidth(), height);
 				overlay.drawAll();
 
@@ -396,7 +403,27 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		overlay.endRendering();
 	}
 
-	protected abstract void drawOverlayData(Graphics2D g2d) throws GkException;
+	/**
+	 * Registers the given overlay renderer 
+	 * @param overlayRenderer the renderer to register
+	 * @throws GkException GkException
+	 */
+	public void addOverlayRenderer(IOverlayRenderer overlayRenderer) throws GkException{
+		overlayRenderers.add(overlayRenderer);
+	}
+	/**
+	 * Draws the registered overlays
+	 * @param g2d the target graphic
+	 * @throws GkException GkException
+	 */
+	protected void drawOverlayRenderer(Graphics2D g2d) throws GkException{
+		List<IOverlayRenderer> lstRenderers = overlayRenderers.get();
+		for (IOverlayRenderer overlayRenderer : lstRenderers) {
+			if(overlayRenderer.isOverlayEnabled()){
+				overlayRenderer.drawOverlayData(g2d);
+			}
+		}
+	}
 
 	public ICoreJoglRenderer getJoglRenderer(String idRenderer) throws GkException {
 		if(CollectionUtils.isNotEmpty(renderers)){
@@ -472,8 +499,29 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		this.width = width;
 	}
 	
-	public void setLayerVisible(int  layerId, boolean visible){
+	public void setLayerVisible(int layerId, boolean visible){
 		this.layerVisibility.put(layerId, visible);
 	}
-		
+
+	public void zoomToFit() throws GkException {		
+		BoundingTuple6b contentBounds = getContentBounds();
+		getCamera().zoomToFit(contentBounds);		
+	}
+
+	public BoundingTuple6b getContentBounds(){
+		BoundingTuple6b result = null;
+		if(CollectionUtils.isNotEmpty(renderers)){
+			for (ICoreJoglRenderer joglRenderer : renderers) {
+				BoundingTuple6b bound = joglRenderer.getBounds();
+				if(bound != null){
+					if(result == null){
+						result = new BoundingTuple6b(bound.getMin(), bound.getMax());
+					}else{
+						result.add(bound);
+					}
+				}
+			}
+		}
+		return result;
+	}
 }

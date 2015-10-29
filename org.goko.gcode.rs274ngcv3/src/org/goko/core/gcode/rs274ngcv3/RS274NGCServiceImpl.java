@@ -13,24 +13,31 @@ import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.utils.CacheById;
+import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.element.GCodeProviderWithModifier;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
+import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
+import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
+import org.goko.core.gcode.rs274ngcv3.modifier.TestModifier;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeTokenType;
 import org.goko.core.gcode.rs274ngcv3.parser.ModalGroup;
-import org.goko.core.gcode.rs274ngcv3.utils.GCodeTokenUtils;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.BoundingTuple6b;
+import org.goko.core.math.Tuple6b;
 
 /**
  * @author Psyko
@@ -38,12 +45,14 @@ import org.goko.core.log.GkLog;
 public class RS274NGCServiceImpl implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
 	/** The list of modal groups */
-	private List<ModalGroup> modalGroups;
-	private int idSequence = 0; // FIXME remove 
+	private List<ModalGroup> modalGroups;	
+	/** The cache of providers */
+	private CacheById<IGCodeProvider> cacheProviders;
 	
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
+		this.cacheProviders = new CacheById<IGCodeProvider>(new SequentialIdGenerator());		
 	}
 	
 	/** (inheritDoc)
@@ -77,17 +86,21 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IGCodeService#parse(java.io.InputStream)
 	 */
 	@Override
-	public GCodeProvider parse(InputStream inputStream) throws GkException {
-		GCodeProvider provider = new GCodeProvider();
-		provider.setId(++idSequence);
+	public IGCodeProvider parse(InputStream inputStream) throws GkException {
+		GCodeProviderWithModifier provider = new GCodeProviderWithModifier();		
 		GCodeLexer lexer = new GCodeLexer();
 		List<List<GCodeToken>> tokens = lexer.tokenize(inputStream);
+		int lineNumber = 1;
 		
 		for (List<GCodeToken> lstToken : tokens) {
 			verifyModality(lstToken);
-			provider.addLine(buildLine(lstToken));
+			GCodeLine line = buildLine(lstToken);
+			line.setLineNumber(lineNumber);
+			provider.addLine(line);
+			lineNumber = lineNumber + 1;
 		}
-		
+		provider.addModifier(new TestModifier());
+		cacheProviders.add(provider);
 		return provider;
 	}
 	
@@ -95,7 +108,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#parse(java.lang.String)
 	 */
 	@Override
-	public GCodeProvider parse(String inputString) throws GkException {
+	public IGCodeProvider parse(String inputString) throws GkException {
 		return parse(new ByteArrayInputStream(inputString.getBytes()));
 	}
 	
@@ -107,6 +120,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		IGCodeProvider provider = parse(new ByteArrayInputStream(inputString.getBytes()));
 		return provider.getLines().get(0);
 	}
+	
 	/**
 	 * Build a GCodeLine using a list of tokens 
 	 * @param lstToken the list of tokens to use
@@ -115,10 +129,12 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	private GCodeLine buildLine(List<GCodeToken> lstToken) throws GkException {
 		GCodeLine line = new GCodeLine();
-		for (GCodeToken token : lstToken) {
-			if(token.getType() == GCodeTokenType.LINE_NUMBER){
-				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));				
-			}else if(token.getType() == GCodeTokenType.WORD){
+		
+		for (GCodeToken token : lstToken) {			
+//			if(token.getType() == GCodeTokenType.LINE_NUMBER){
+//				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));				
+//			}else 
+			if(token.getType() == GCodeTokenType.WORD || token.getType() == GCodeTokenType.LINE_NUMBER){
 				line.addWord(new GCodeWord(StringUtils.substring(token.getValue(), 0, 1), StringUtils.substring(token.getValue(), 1)));
 			}else if(token.getType() == GCodeTokenType.SIMPLE_COMMENT
 					|| token.getType() == GCodeTokenType.MULTILINE_COMMENT){
@@ -173,6 +189,24 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		return instructionProvider;
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#getGCodeProvider(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.InstructionProvider)
+	 */
+	@Override
+	public GCodeProvider getGCodeProvider(GCodeContext context, InstructionProvider instructionProvider) throws GkException {
+		InstructionFactory factory = new InstructionFactory();
+		GCodeProvider provider = new GCodeProvider();
+		
+		List<InstructionSet> sets = instructionProvider.getInstructionSets();				
+		for (InstructionSet instructionSet : sets) {
+			GCodeLine line = factory.getLine(context, instructionSet);
+			
+			provider.addLine(line);
+		}
+		
+		return provider;
+	}
+	
 	/**
 	 * Trace the unused words in a line 
 	 * @param unusedWords the list of unused words
@@ -201,7 +235,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	protected void initializeModalGroups(){
 		this.modalGroups = new ArrayList<ModalGroup>();
-		this.modalGroups.add( new ModalGroup("G0", "G1", "G2", "G3", "G38.2", "G80", "G81", "G82", "G83", "G84", "G85", "G86", "G87", "G88", "G89" ));
+		this.modalGroups.add( new ModalGroup("G0", "G00", "G1", "G01", "G2", "G02", "G3", "G03", "G38.2", "G80", "G81", "G82", "G83", "G84", "G85", "G86", "G87", "G88", "G89" ));
 
 		this.modalGroups.add( new ModalGroup("G17", "G18", "G19"  ));
 		this.modalGroups.add( new ModalGroup("G90", "G91"));
@@ -215,9 +249,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 
 		this.modalGroups.add( new ModalGroup("M0", "M1", "M2", "M30", "M60"));
 		this.modalGroups.add( new ModalGroup("M6"));
-		this.modalGroups.add( new ModalGroup("M3","M4","M5"));
-		this.modalGroups.add( new ModalGroup("M7","M9"));
-		this.modalGroups.add( new ModalGroup("M8","M9"));
+		this.modalGroups.add( new ModalGroup("M3", "M03","M4", "M04", "M5", "M05"));
+		this.modalGroups.add( new ModalGroup("M7", "M07", "M9", "M09"));
+		this.modalGroups.add( new ModalGroup("M8", "M08", "M9", "M09"));
 		this.modalGroups.add( new ModalGroup("M48", "M49"));
 	}	
 	
@@ -240,23 +274,6 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			}
 		}
 		return result;
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#toString(org.goko.core.gcode.element.GCodeLine)
-	 */
-	@Override
-	public String toString(GCodeLine line) throws GkException {
-		StringBuffer buffer = new StringBuffer();
-		List<GCodeWord> lstWords = line.getWords();
-		// FIXME : add line number support
-		// FIXME : add parameters support
-		if(CollectionUtils.isNotEmpty(lstWords)){
-			for (GCodeWord gCodeWord : lstWords) {
-				buffer.append(gCodeWord);
-			}
-		}
-		return buffer.toString();
 	}
 
 	/** (inheritDoc)
@@ -295,14 +312,70 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public String render(GCodeLine line) throws GkException {
 		StringBuffer buffer = new StringBuffer();
+		// FIXME find a better way to classify GCode words or describe a GCodeLine within the rs274 service
+		GCodeWord commentWord = null;
+		
+		// Add words
 		for (GCodeWord word : line.getWords()) {
+			if(StringUtils.equals(word.getLetter(), "N")){				
+				buffer.insert(0, word.getValue());
+				buffer.insert(0, word.getLetter());
+				continue;
+			}
+			
+			if(StringUtils.equals(word.getLetter(), ";")){				
+				commentWord = word;
+				continue;
+			}
+			
 			if(buffer.length() > 0){
 				buffer.append(" ");
 			}
 			buffer.append(word.getLetter());
-			buffer.append(word.getValue());
+			buffer.append(word.getValue());			
+		}
+		// Add comment
+		if(commentWord != null){
+			if(buffer.length() > 0){
+				buffer.append(" ");
+			}
+			buffer.append(commentWord.getValue());
 		}
 		return buffer.toString();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#getBounds(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.InstructionProvider)
+	 */
+	@Override
+	public BoundingTuple6b getBounds(GCodeContext context, InstructionProvider instructionProvider) throws GkException {
+		Tuple6b min = new Tuple6b();
+		Tuple6b max = new Tuple6b();
+		
+		GCodeContext preContext = new GCodeContext(context);
+		InstructionIterator iterator = getIterator(instructionProvider, preContext);
+		
+		while (iterator.hasNext()) {
+			preContext = new GCodeContext(iterator.getContext());			
+			AbstractInstruction instruction = iterator.next();
+			
+			if(instruction.getType() == InstructionType.STRAIGHT_TRAVERSE 
+			|| instruction.getType() == InstructionType.STRAIGHT_FEED){
+				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instruction;
+				Tuple6b endpoint = new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
+				min = min.min(endpoint);
+				max = max.max(endpoint);						
+			}
+		}
+		
+		return new BoundingTuple6b(min, max);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#getGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
+		return cacheProviders.get(id);
+	}
 }

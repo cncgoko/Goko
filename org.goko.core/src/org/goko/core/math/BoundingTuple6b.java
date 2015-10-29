@@ -25,6 +25,7 @@ package org.goko.core.math;
 public class BoundingTuple6b {
 	private Tuple6b min;
 	private Tuple6b max;
+	
 	/**
 	 * @param min
 	 * @param max

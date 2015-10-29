@@ -40,19 +40,4 @@ public class UserLengthUnitsBuilder extends AbstractInstructionBuilder<UserLengt
 		}
 		throw new GkTechnicalException("No valid word for unit selection");
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, UserLengthUnitsInstruction instruction) throws GkException {
-		GCodeWord word = null;
-		if(instruction.getUnit() == EnumUnit.INCHES){
-			word = new GCodeWord("G", "20");
-		}else{
-			word = new GCodeWord("G", "21");
-		}
-		return wrap(word);
-	}
-
 }

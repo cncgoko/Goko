@@ -39,14 +39,4 @@ public class DwellBuilder extends AbstractInstructionBuilder<DwellInstruction> {
 		return new DwellInstruction(seconds);
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, DwellInstruction instruction) throws GkException {
-		List<GCodeWord> lst = wrap(new GCodeWord("G", "4"));
-		lst.add( new GCodeWord("P", String.valueOf(instruction.getSeconds())));
-		return lst;
-	}
-
 }

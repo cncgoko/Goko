@@ -5,17 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 
 public class CacheById<T extends IIdBean> {
 	private Map<Integer, T> cacheById;
+	private IIdGenerator idGenerator;
 	
 	/**
 	 * Constructor
 	 */
 	public CacheById() {
+		this(null);
+	}
+	
+	public CacheById(IIdGenerator idGenerator) {
 		this.cacheById = new HashMap<Integer, T>();
+		this.idGenerator = idGenerator;
 	}
 	
 	public List<T> get() throws GkException{
@@ -30,6 +37,15 @@ public class CacheById<T extends IIdBean> {
 		return result;
 	}
 	
+	public List<T> get(List<Integer> lstId) throws GkException{
+		List<T> result = new ArrayList<T>();
+		if(CollectionUtils.isNotEmpty(lstId)){
+			for (Integer id : lstId) {
+				result.add(get(id));
+			}
+		}
+		return result;
+	}
 	public T find(Integer id) throws GkException{
 		return cacheById.get(id);
 	}
@@ -38,11 +54,20 @@ public class CacheById<T extends IIdBean> {
 		return find(id) != null;
 	}
 	
-	public void add(T element) throws GkException{
+	public void add(T element) throws GkException{	
+		if(idGenerator != null){
+			element.setId(idGenerator.getNextValue());
+		}
 		if(exist(element.getId())){
 			throw new GkTechnicalException("Duplicate entry : an object with id ["+String.valueOf(element.getId())+"] already exists");
 		}
 		cacheById.put(element.getId(), element);
+	}
+	
+	public void add(List<T> lstElement) throws GkException{	
+		for (T element : lstElement) {
+			add(element);
+		}
 	}
 	
 	public void remove(Integer id){

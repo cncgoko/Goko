@@ -40,13 +40,4 @@ public class SetDistanceModeBuilder extends AbstractInstructionBuilder<SetDistan
 		}
 		throw new GkTechnicalException("No valid word for distane mode");
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, SetDistanceModeInstruction instruction) throws GkException {
-		return null;
-	}
-
 }

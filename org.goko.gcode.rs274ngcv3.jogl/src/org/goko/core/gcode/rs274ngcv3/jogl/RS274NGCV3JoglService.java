@@ -1,20 +1,26 @@
 package org.goko.core.gcode.rs274ngcv3.jogl;
 
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
+import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.workspace.service.GCodeProviderEvent;
 import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
 import org.goko.core.workspace.service.IWorkspaceListener;
 import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.tools.viewer.jogl.utils.render.basic.BoundsRenderer;
 
 public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	/** LOG */
@@ -22,9 +28,13 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	/** ID of the service */
 	private static final String SERVICE_ID = "org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService";
 	/** The list of managed renderer */
-	private CacheById<RS274GCodeRenderer> lstRenderer;
+	private CacheById<RS274GCodeRenderer> cacheRenderer;
+	/** The ID generator for the renderers */
+	private SequentialIdGenerator rendererIdSequence;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
+	/** The bounds of all the loaded gcode */
+	private BoundsRenderer contentBoundsRenderer;
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -41,8 +51,8 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	public void start() throws GkException {
 		LOG.info("Starting "+getServiceId());
 		
-		this.lstRenderer = new CacheById<RS274GCodeRenderer>();
-		
+		this.cacheRenderer = new CacheById<RS274GCodeRenderer>();
+		this.rendererIdSequence = new SequentialIdGenerator();
 		LOG.info("Successfully started " + getServiceId());
 	}
 
@@ -60,10 +70,37 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	@Override
 	public void onGCodeProviderEvent(GCodeProviderEvent event) throws GkException {
+		System.out.println();
 		if(event.getType() == GCodeProviderEventType.INSERT){
 			createRenderer(event.getTargetId());
+			updateContentBounds();
 		}else if(event.getType() == GCodeProviderEventType.DELETE){
 			removeRenderer(event.getTargetId());
+			updateContentBounds();
+		}
+	}
+
+	private void updateContentBounds() throws GkException {
+		List<RS274GCodeRenderer> lstRenderer = cacheRenderer.get();
+		
+		if(CollectionUtils.isNotEmpty(lstRenderer)){
+			BoundingTuple6b result = null;
+			for (RS274GCodeRenderer renderer : lstRenderer) {
+				IGCodeProvider provider = Activator.getWorkspaceService().getGCodeProvider(renderer.getIdGCodeProvider());
+				InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
+				BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(new GCodeContext(), instructionProvider);
+				renderer.setBounds(bounds);
+				if(result == null){
+					result = bounds;
+				}else{
+					result.add(bounds);
+				}
+			}
+			if(contentBoundsRenderer != null){
+				Activator.getJoglViewerService().removeRenderer(contentBoundsRenderer);
+			}
+			contentBoundsRenderer = new BoundsRenderer(result);			
+			Activator.getJoglViewerService().addRenderer(contentBoundsRenderer);
 		}
 	}
 
@@ -73,12 +110,12 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 * @throws GkException GkException
 	 */
 	public void createRenderer(Integer idGCodeProvider) throws GkException{
-		IGCodeProvider provider = getWorkspaceService().getGCodeProvider(idGCodeProvider);
-		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(instructionSet);
+		getWorkspaceService().getGCodeProvider(idGCodeProvider);
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);
 		renderer.setIdGCodeProvider(idGCodeProvider);
-		this.lstRenderer.add(renderer);
-		Activator.getJoglViewerService().addRenderer(renderer);
+		renderer.setId(rendererIdSequence.getNextValue());
+		this.cacheRenderer.add(renderer);
+		Activator.getJoglViewerService().addRenderer(renderer);		
 	}
 	
 	/**
@@ -88,12 +125,18 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	public void removeRenderer(Integer idGCodeProvider) throws GkException{
 		RS274GCodeRenderer renderer = getRendererByGCodeProvider(idGCodeProvider);
-		this.lstRenderer.remove(renderer.getId());
+		this.cacheRenderer.remove(renderer.getId());
 		Activator.getJoglViewerService().removeRenderer(renderer);
 	}
 	
+	/**
+	 * Returns the renderer for the given gcodeProvider
+	 * @param idGCodeProvider the id of the gcode provider
+	 * @return an RS274GCodeRenderer
+	 * @throws GkException GkException
+	 */
 	public RS274GCodeRenderer getRendererByGCodeProvider(Integer idGCodeProvider) throws GkException{
-		for (RS274GCodeRenderer renderer : lstRenderer.get()) {
+		for (RS274GCodeRenderer renderer : cacheRenderer.get()) {
 			if(ObjectUtils.equals(idGCodeProvider, renderer.getIdGCodeProvider())){
 				return renderer;
 			}
@@ -104,7 +147,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	/**
 	 * @return the workspaceService
 	 */
-	public IWorkspaceService getWorkspaceService() {
+	public IWorkspaceService getWorkspaceService() {		
 		return workspaceService;
 	}
 

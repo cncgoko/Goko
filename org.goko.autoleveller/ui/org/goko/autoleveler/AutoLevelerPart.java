@@ -42,23 +42,21 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.ResourceManager;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.autoleveler.model.AutoLevelerController;
 import org.goko.autoleveler.model.AutoLevelerModel;
 import org.goko.autoleveler.service.IAutoLevelerService;
 import org.goko.common.GkUiComponent;
+import org.goko.common.preferences.fieldeditor.ui.UiIntegerFieldEditor;
+import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.workspace.service.IWorkspaceService;
-import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
-import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
-import org.goko.common.preferences.fieldeditor.ui.UiIntegerFieldEditor;
-import org.eclipse.wb.swt.SWTResourceManager;
 
 public class AutoLevelerPart extends GkUiComponent<AutoLevelerController, AutoLevelerModel> {
 	private static final String PERSITED_EXPECTED_Z = "org.goko.autoleveler.persisted.expectedz";

@@ -55,14 +55,4 @@ public class SetOriginOffsetsBuilder extends AbstractInstructionBuilder<SetOrigi
 		
 		return new SetOriginOffsetInstruction(x, y, z, a, b, c);
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, SetOriginOffsetInstruction instruction) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

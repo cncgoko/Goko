@@ -33,7 +33,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.math.Tuple6b;
 import org.goko.core.workspace.service.IWorkspaceService;
@@ -46,6 +47,8 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 	IControllerService controllerService;
 	@Inject
 	IWorkspaceService workspaceService;
+	@Inject
+	IRS274NGCService gcodeService;
 
 	public AutoLevelerController() {
 		super(new AutoLevelerModel());
@@ -126,7 +129,7 @@ public class AutoLevelerController extends AbstractController<AutoLevelerModel>{
 	public void setBoundsFromGCodeFile() throws GkException {
 		if(workspaceService != null){
 			IGCodeProvider currentGCode = workspaceService.getCurrentGCodeProvider();
-			if(currentGCode != null){
+			if(currentGCode != null){				
 				BoundingTuple6b bounds = currentGCode.getBounds();
 				this.getDataModel().setStartx(bounds.getMin().getX());
 				this.getDataModel().setStarty(bounds.getMin().getY());

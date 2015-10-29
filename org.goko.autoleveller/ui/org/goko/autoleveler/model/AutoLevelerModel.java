@@ -25,7 +25,7 @@ import org.goko.autoleveler.bean.GridElevationMap;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.gcode.bean.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProvider;
 
 public class AutoLevelerModel extends AbstractModelObject{
 	private BigDecimalQuantity<Length> startx;

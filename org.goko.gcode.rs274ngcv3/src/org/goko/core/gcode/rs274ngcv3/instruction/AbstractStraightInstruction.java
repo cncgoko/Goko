@@ -95,5 +95,46 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 		return c;
 	}
 
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(BigDecimalQuantity<Length> x) {
+		this.x = x;
+	}
 
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(BigDecimalQuantity<Length> y) {
+		this.y = y;
+	}
+
+	/**
+	 * @param z the z to set
+	 */
+	public void setZ(BigDecimalQuantity<Length> z) {
+		this.z = z;
+	}
+
+	/**
+	 * @param a the a to set
+	 */
+	public void setA(BigDecimalQuantity<Angle> a) {
+		this.a = a;
+	}
+
+	/**
+	 * @param b the b to set
+	 */
+	public void setB(BigDecimalQuantity<Angle> b) {
+		this.b = b;
+	}
+
+	/**
+	 * @param c the c to set
+	 */
+	public void setC(BigDecimalQuantity<Angle> c) {
+		this.c = c;
+	}
+	
 }

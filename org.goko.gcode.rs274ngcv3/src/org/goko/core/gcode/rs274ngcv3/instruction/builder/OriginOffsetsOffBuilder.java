@@ -31,13 +31,4 @@ public class OriginOffsetsOffBuilder extends AbstractInstructionBuilder<OriginOf
 		GCodeWordUtils.getAndRemoveWord("G92.2", words);
 		return new OriginOffsetsOffInstruction();
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, OriginOffsetsOffInstruction instruction) throws GkException {
-		return wrap(new GCodeWord("G", "92.2"));
-	}
-
 }

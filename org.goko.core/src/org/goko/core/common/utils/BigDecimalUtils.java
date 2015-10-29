@@ -1,7 +1,7 @@
 package org.goko.core.common.utils;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -12,42 +12,34 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 
 public class BigDecimalUtils {
+		
+	private static final BigDecimal SQRT_DIG = new BigDecimal(10);
+	private static final BigDecimal SQRT_PRE = new BigDecimal(10).pow(SQRT_DIG.intValue());
 	/**
-	 * Compute the square root of x to a given scale, x >= 0. Use Newton's
-	 * algorithm.
+	 * Uses Newton Raphson to compute the square root of a BigDecimal.
 	 * 
-	 * @param x
-	 *            the value of x
-	 * @param scale
-	 *            the desired scale of the result
-	 * @return the result value
+	 * @author Luciano Culacciatti 
+	 * @url http://www.codeproject.com/Tips/257031/Implementing-SqrtRoot-in-BigDecimal
 	 */
-	public static BigDecimal sqrt(BigDecimal x, int scale) {
-		// Check that x >= 0.
-		if (x.signum() < 0) {
-			throw new IllegalArgumentException("x < 0");
-		}
+	
+	private static BigDecimal sqrtNewtonRaphson  (BigDecimal c, BigDecimal xn, BigDecimal precision){
+	    BigDecimal fx = xn.pow(2).add(c.negate());
+	    BigDecimal fpx = xn.multiply(new BigDecimal(2));
+	    BigDecimal xn1 = fx.divide(fpx,2*SQRT_DIG.intValue(),RoundingMode.HALF_DOWN);
+	    xn1 = xn.add(xn1.negate());
+	    BigDecimal currentSquare = xn1.pow(2);
+	    BigDecimal currentPrecision = currentSquare.subtract(c);
+	    currentPrecision = currentPrecision.abs();
+	    if (currentPrecision.compareTo(precision) <= -1){
+	        return xn1;
+	    }
+	    return sqrtNewtonRaphson(c, xn1, precision);
+	}
 
-		// n = x*(10^(2*scale))
-		BigInteger n = x.movePointRight(scale << 1).toBigInteger();
-
-		// The first approximation is the upper half of n.
-		int bits = (n.bitLength() + 1) >> 1;
-		BigInteger ix = n.shiftRight(bits);
-		BigInteger ixPrev;
-
-		// Loop until the approximations converge
-		// (two successive approximations are equal after rounding).
-		do {
-			ixPrev = ix;
-
-			// x = (x + n/x)/2
-			ix = ix.add(n.divide(ix)).shiftRight(1);
-
-			Thread.yield();
-		} while (ix.compareTo(ixPrev) != 0);
-
-		return new BigDecimal(ix, scale);
+	
+	public static BigDecimal sqrt(BigDecimal c, int scale){
+	 //   return sqrtNewtonRaphson(c,new BigDecimal(1),new BigDecimal(1).divide(SQRT_PRE));
+		 return new BigDecimal( Math.sqrt(c.doubleValue())).setScale(scale, RoundingMode.HALF_DOWN);
 	}
 	
 	public static String toString(BigDecimal value){

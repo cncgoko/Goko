@@ -20,25 +20,27 @@ package org.goko.tools.viewer.jogl.service;
 import javax.media.opengl.GL3;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.math.BoundingTuple6b;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
 public interface ICoreJoglRenderer {
 
-	public String getCode();
+	String getCode();
 
-	public int getLayerId();
+	int getLayerId();
 	
-	public void render(GL3 gl, PMVMatrix modelViewMatrix) throws GkException;
+	void render(GL3 gl, PMVMatrix modelViewMatrix) throws GkException;
 
-	public void setEnabled(boolean enabled);
+	void setEnabled(boolean enabled);
 
-	public void destroy() throws GkException;
+	void destroy() throws GkException;
 
-	public boolean shouldDestroy() throws GkException;
+	boolean shouldDestroy() throws GkException;
 
-	public void performDestroy(GL3 gl) throws GkException;
+	void performDestroy(GL3 gl) throws GkException;
 	
-	public boolean useAlpha();
+	boolean useAlpha();	
 	
+	BoundingTuple6b getBounds();
 }

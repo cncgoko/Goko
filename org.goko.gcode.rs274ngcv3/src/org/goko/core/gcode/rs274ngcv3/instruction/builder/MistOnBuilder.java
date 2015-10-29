@@ -32,13 +32,4 @@ public class MistOnBuilder extends AbstractInstructionBuilder<MistOnInstruction>
 		GCodeWordUtils.findAndRemoveWord("M7", words);
 		return new MistOnInstruction();
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, MistOnInstruction instruction) throws GkException {
-		return wrap(new GCodeWord("M", "7"));
-	}
-
 }

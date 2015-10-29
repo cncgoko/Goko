@@ -1,7 +1,6 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -35,13 +34,11 @@ public abstract class AbstractInstructionBuilder<I extends AbstractInstruction> 
 	public InstructionType getInstructionType() {		
 		return type; 
 	}
+
 	
-	protected List<GCodeWord> wrap(GCodeWord word){
-		List<GCodeWord> lst = new ArrayList<GCodeWord>();
-		lst.add(word);
-		return lst;
-	}
-	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toInstruction(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
+	 */
 	@Override
 	public final I toInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		I instruction = getInstruction(context, words);
@@ -51,8 +48,9 @@ public abstract class AbstractInstructionBuilder<I extends AbstractInstruction> 
 		}
 		return instruction;
 	}
-	
+		
 	protected abstract I getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException;
+
 	/**
 	 * Extract the length value of the word designated by the given letter in the list of word
 	 * @param letter the letter of the word

@@ -20,7 +20,7 @@ package org.goko.core.gcode.service;
 import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
 
-public interface IGCodeExecutionListener<S extends IExecutionState, T extends IExecutionToken<S>> extends IGCodeTokenExecutionListener<S,T>, IGCodeCommandExecutionListener<S, T>{
+public interface IGCodeExecutionListener<S extends IExecutionState, T extends IExecutionToken<S>> extends IGCodeTokenExecutionListener<S,T>, IGCodeLineExecutionListener<S, T>{
 
 
 }

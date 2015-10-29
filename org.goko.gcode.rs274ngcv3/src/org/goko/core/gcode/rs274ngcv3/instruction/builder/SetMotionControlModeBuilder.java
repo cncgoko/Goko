@@ -1,6 +1,5 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -45,24 +44,4 @@ public class SetMotionControlModeBuilder extends AbstractInstructionBuilder<SetM
 		
 		return new SetMotionControlModeInstruction(controlMode);
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, SetMotionControlModeInstruction instruction) throws GkException {
-		List<GCodeWord> words = new ArrayList<GCodeWord>();
-		switch (instruction.getControlMode()) {
-		case EXACT_PATH: words = wrap(new GCodeWord("G", "61"));			
-			break;
-		case EXACT_STOP: words = wrap(new GCodeWord("G", "61.1"));			
-			break;
-		case CONTINUOUS: words = wrap(new GCodeWord("G", "64"));
-			break;
-		default:
-			break;
-		}
-		return words;
-	}
-
 }

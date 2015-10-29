@@ -33,14 +33,14 @@ import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
 
 public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	public static final String CODE = "org.goko.viewer.jogl.boundsRenderer";
-	private BoundingTuple6b bounds;
+	private BoundingTuple6b renderedBounds;
 
 	/**
 	 * Constructor
 	 * @param bounds the bound to display
 	 */
 	public BoundsRenderer(BoundingTuple6b bounds) {
-		this.setBounds(bounds);
+		this.setRenderedBounds(bounds);
 		this.setLayerId(Layer.LAYER_BOUNDS);
 	}
 
@@ -56,9 +56,9 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	 */
 	@Override
 	protected void performInitialize(GL3 gl) throws GkException {
-		if(bounds != null && bounds.getMin() != null && bounds.getMax() != null){
-			Point3d ptMin = bounds.getMin().toPoint3d(JoglUtils.JOGL_UNIT);
-			Point3d ptMax = bounds.getMax().toPoint3d(JoglUtils.JOGL_UNIT);
+		if(renderedBounds != null && renderedBounds.getMin() != null && renderedBounds.getMax() != null){
+			Point3d ptMin = renderedBounds.getMin().toPoint3d(JoglUtils.JOGL_UNIT);
+			Point3d ptMax = renderedBounds.getMax().toPoint3d(JoglUtils.JOGL_UNIT);
 
 			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMax.x,(float)ptMin.y-1,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
 			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMax.y,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
@@ -67,18 +67,17 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	}
 
 	/**
-	 * @return the bounds
+	 * @return the renderedBounds
 	 */
-	protected BoundingTuple6b getBounds() {
-		return bounds;
+	public BoundingTuple6b getRenderedBounds() {
+		return renderedBounds;
 	}
 
 	/**
-	 * @param bounds the bounds to set
+	 * @param renderedBounds the renderedBounds to set
 	 */
-	protected void setBounds(BoundingTuple6b bounds) {
-		this.bounds = bounds;
+	public void setRenderedBounds(BoundingTuple6b renderedBounds) {
+		this.renderedBounds = renderedBounds;
 	}
-
 
 }

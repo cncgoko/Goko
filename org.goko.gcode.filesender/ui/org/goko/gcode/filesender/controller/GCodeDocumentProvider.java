@@ -54,7 +54,7 @@ public class GCodeDocumentProvider extends Document {
 		int line = 0;
 		StringBuffer buffer = new StringBuffer();
 		for (GCodeLine gCodeLine : lstLines) {
-			buffer.append(gcodeService.toString(gCodeLine));
+			buffer.append(gcodeService.render(gCodeLine));
 			buffer.append(EOL);
 			gCodeCommandLine.put(gCodeLine.getId(), line++);
 		}

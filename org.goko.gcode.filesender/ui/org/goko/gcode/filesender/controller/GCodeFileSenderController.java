@@ -198,7 +198,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 	protected void parseFile(IProgressMonitor monitor) throws GkException{
 		if(getDataModel().getGcodeProvider() != null){
-			workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
+		//	workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 		}
 		File gcodeFileInput = new File(getDataModel().getFilePath());		
 		IGCodeProvider gcodeFile = null;

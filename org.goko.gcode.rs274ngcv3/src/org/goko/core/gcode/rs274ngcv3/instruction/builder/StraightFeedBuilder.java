@@ -82,15 +82,4 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 		}
 		return new StraightFeedInstruction(x, y, z, a, b, c);
 	}
-
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

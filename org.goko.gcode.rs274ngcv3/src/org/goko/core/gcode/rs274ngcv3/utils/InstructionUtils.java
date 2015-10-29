@@ -56,8 +56,7 @@ public class InstructionUtils {
 		return m;		
 	}
 	
-	private static Tuple6b getEndPoint(GCodeContext context, ArcFeedInstruction instruction){
-		System.out.println("");
+	private static Tuple6b getEndPoint(GCodeContext context, ArcFeedInstruction instruction){		
 		Tuple6b startTuple = new Tuple6b(instruction.getFirstEnd(), instruction.getSecondEnd(), instruction.getAxisEndPoint(), instruction.getA(), instruction.getB(), instruction.getC());
 		Point3d result = startTuple.toPoint3d(context.getUnit().getUnit());
 		getOrientationMatrix(context.getPlane()).transform(result);
@@ -66,7 +65,6 @@ public class InstructionUtils {
 	}
 	
 	private static Tuple6b getCenterPoint(GCodeContext context, ArcFeedInstruction instruction){		
-		System.out.println("");
 		Tuple6b startTuple = new Tuple6b(instruction.getFirstAxis(), instruction.getSecondAxis(), instruction.getAxisEndPoint(), instruction.getA(), instruction.getB(), instruction.getC());
 		Point3d result = startTuple.toPoint3d(context.getUnit().getUnit());
 		getOrientationMatrix(context.getPlane()).transform(result);

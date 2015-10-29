@@ -11,6 +11,7 @@ public class Activator implements BundleActivator {
 	private static Activator instance;
 	private IRS274NGCService rs274ngcService;
 	private IJoglViewerService joglViewerService;
+	private IWorkspaceService workspaceService;
 	
 	public Activator() {
 		instance = this;
@@ -26,6 +27,9 @@ public class Activator implements BundleActivator {
 		
 		ServiceReference<IJoglViewerService> joglServicereference = context.getServiceReference(IJoglViewerService.class);
 		joglViewerService = context.getService(joglServicereference);
+		
+		ServiceReference<IWorkspaceService> workspaceServicereference = context.getServiceReference(IWorkspaceService.class);
+		workspaceService = context.getService(workspaceServicereference);
 	}
 
 	/** (inheritDoc)
@@ -43,6 +47,10 @@ public class Activator implements BundleActivator {
 	
 	public static IJoglViewerService getJoglViewerService(){
 		return getInstance().joglViewerService;
+	}
+	
+	public static IWorkspaceService getWorkspaceService(){
+		return getInstance().workspaceService;
 	}
 
 	/**

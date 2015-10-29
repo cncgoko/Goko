@@ -83,15 +83,4 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 		
 		return new StraightTraverseInstruction(x, y, z, a, b, c);
 	}
-
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, StraightTraverseInstruction instruction) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

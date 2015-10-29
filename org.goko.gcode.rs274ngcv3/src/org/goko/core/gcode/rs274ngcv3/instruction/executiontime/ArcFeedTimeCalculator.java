@@ -1,8 +1,5 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -29,7 +26,6 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 	 */
 	@Override
 	protected Quantity<Time> calculateExecutionTime(GCodeContext context, ArcFeedInstruction instruction) throws GkException {
-		List<Point3d> vertices = new ArrayList<Point3d>();
 		boolean clockwise = instruction.isClockwise();
 
 		Matrix3d matrix = getOrientationMatrix(context.getPlane());

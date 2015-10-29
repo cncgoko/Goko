@@ -27,17 +27,25 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
 import org.goko.core.common.utils.IIdBean;
+import org.goko.core.controller.IFourAxisControllerAdapter;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.IInstructionColorizer;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.MotionModeColorizer;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
@@ -45,38 +53,60 @@ import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.util.PMVMatrix;
 
 /**
  * Default GCode provider renderer
  * @author PsyKo
  *
  */
-public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJoglRenderer, IIdBean {
+public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJoglRenderer, IIdBean, IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> {
 	/** Internal ID */
 	private Integer id;
 	/** Id of the generating GCodeProvider*/
 	private Integer idGCodeProvider;
 	/** Command state layout */
 	private static final int STATE_LAYOUT = 2;
-	/** The GCodeProvider to render */
-	private InstructionProvider instructionSet;	
 	/** TEST : the map of vertices by ID */
-	private Map<Integer, Integer[]> mapVerticesPositionByIdCommand;	
+	private Map<Integer, VerticesGroupByLine> mapVerticesGroupByIdLine;	
 	/** Float buffer for command state */
 	private IntBuffer stateBuffer;
 	/** The id of the state buffer object*/
 	private Integer stateBufferObject;
-	
+	/** The 4 axis controller adapter that provides angle of the current stock*/
+	private IFourAxisControllerAdapter fourAxisControllerAdapter;
+
 	/**
 	 * Constructor
 	 * @param gcodeProvider the GCodeProvider to render
 	 */
-	public RS274GCodeRenderer(InstructionProvider instructionSet) {
+	public RS274GCodeRenderer(Integer idGCodeProvider) {
 		super(GL.GL_LINE_STRIP, COLORS | VERTICES);
-		this.instructionSet = instructionSet;
+		this.idGCodeProvider = idGCodeProvider;
 		setLineWidth(1f);
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#render(javax.media.opengl.GL3, com.jogamp.opengl.util.PMVMatrix)
+	 */
+	@Override
+	public void render(GL3 gl, PMVMatrix modelViewMatrix) throws GkException {
+		if(fourAxisControllerAdapter == null){
+			super.render(gl, modelViewMatrix);
+		}else{
+			// We have to render using the 4th axis
+			float angle = 0;
+			Double realAngle = fourAxisControllerAdapter.getA().doubleValue(SI.DEGREE_ANGLE);
+			if(realAngle != null){
+				 angle = realAngle.floatValue();
+			}
+			Vector3f rotationAxis = JoglViewerPreference.getInstance().getRotaryAxisDirectionVector();
+			modelViewMatrix.glRotatef(-angle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
+			super.render(gl, modelViewMatrix);
+			modelViewMatrix.glRotatef(angle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
+		}
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#buildGeometry()
 	 */
@@ -84,10 +114,15 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	protected void buildGeometry() throws GkException {		
 		ArrayList<Point3d> lstVertices 	= new ArrayList<Point3d>();
 		ArrayList<Color4f> lstColors 	= new ArrayList<Color4f>();
-		mapVerticesPositionByIdCommand 	= new HashMap<Integer, Integer[]>();
+		mapVerticesGroupByIdLine 	= new HashMap<Integer, VerticesGroupByLine>();
 			
 		// FIXME : don't use new gcode context
-		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, new GCodeContext());
+		GCodeContext context = new GCodeContext();
+		
+		IGCodeProvider provider = Activator.getWorkspaceService().getGCodeProvider(idGCodeProvider);		
+		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, provider);
+		
+		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, context);		
 		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new MotionModeColorizer();
 //		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new SelectedPlaneColorizer();
 		//IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new ArcAngleColorizer(); 
@@ -95,37 +130,18 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		while(iterator.hasNext()){
 			GCodeContext preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();
-			List<Point3d> vertices = InstructionGeometryFactory.build(preContext, instruction);
+			List<Point3d> 		vertices 	= InstructionGeometryFactory.build(preContext, instruction);
+			
+			addVerticesGroup(instruction.getIdGCodeLine(), lstVertices.size(), vertices);
 			lstVertices.addAll(vertices);
-			// Let's generate the colors
+			
+			// Let's generate the colors and update the bounds as well
 			Color4f color = colorizer.getColor(preContext, instruction);
 			for ( int i = 0; i < vertices.size(); i++) {
-				lstColors.add(color);
-			}
-			// FIXME : add instruction id to position mapping
+				lstColors.add(color);				
+			}			
 		}
 		
-//		for (IInstruction instruction : lstInstructions) {
-//			List<Point3d> lstCmdVertices = InstructionGeometryFactory.build(instruction);
-//			if(CollectionUtils.isNotEmpty(lstCmdVertices)){
-//				if(firstCommand){
-//					firstCommand = false;
-//				}else{
-//					lstCmdVertices.remove(0);
-//				}
-//				// First index is the position of the first vertices that belong to the command
-//				// Second index is the number of vertices that belongs to this command
-//				if(CollectionUtils.isNotEmpty(lstCmdVertices)){
-//					mapVerticesPositionByIdCommand.put( instruction.getId(), new Integer[]{lstVertices.size(), lstCmdVertices.size()});
-//					lstVertices.addAll(lstCmdVertices);
-//				}
-//				// Let's generate the colors
-//				Color4f color = colorizer.getColor(command);
-//				for ( int i = 0; i < lstCmdVertices.size(); i++) {
-//					lstColors.add(color);
-//				}
-//			}
-//		}
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		stateBuffer = IntBuffer.allocate(getVerticesCount());
 		stateBuffer.rewind();
@@ -134,6 +150,19 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		setVerticesBuffer(JoglUtils.buildFloatBuffer3d(lstVertices));
 	}
 
+	/**
+	 * Add the given vertices to the group of vertices for this command 
+	 * @param idGCodeLine the id of the generating GCodeLine
+	 * @param startIndex the start index 
+	 * @param vertices the vertices array
+	 */
+	private void addVerticesGroup(Integer idGCodeLine, int startIndex, List<Point3d> vertices) {
+		if(!mapVerticesGroupByIdLine.containsKey(idGCodeLine)){
+			mapVerticesGroupByIdLine.put(idGCodeLine, new VerticesGroupByLine(startIndex));
+		}
+		VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idGCodeLine);
+		group.setLength( group.getLength() + vertices.size());
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#loadShaderProgram(javax.media.opengl.GL3)
@@ -218,4 +247,95 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	public void setIdGCodeProvider(Integer idGCodeProvider) {
 		this.idGCodeProvider = idGCodeProvider;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(ExecutionToken<ExecutionState> token) throws GkException {
+		if(stateBuffer != null){
+			int capacity = stateBuffer.capacity();
+			for (int i = 0; i < capacity; i++){
+				stateBuffer.put(i, ExecutionState.NONE_STATE);
+			}
+			update();
+		}		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(ExecutionToken<ExecutionState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(ExecutionToken<ExecutionState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(ExecutionToken<ExecutionState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onLineStateChanged(ExecutionToken<ExecutionState> token, Integer idLine) throws GkException {
+		if(mapVerticesGroupByIdLine.containsKey(idLine)){
+			VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
+			ExecutionState state = token.getLineState(idLine);
+			if(stateBuffer != null){				
+				for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
+					stateBuffer.put(i, state.getState());
+				}
+				update();
+			}
+		}		
+	}
+
+}
+
+/**
+ * Inner class describing a position and a number of vertices referring to the samed GCodeLine
+ * 
+ * @author Psyko
+ */
+class VerticesGroupByLine{
+	private int startIndex;
+	private int length;
+	
+	public VerticesGroupByLine(int startIndex) {
+		super();
+		this.startIndex = startIndex;
+	}
+	/**
+	 * @return the startIndex
+	 */
+	public int getStartIndex() {
+		return startIndex;
+	}
+	/**
+	 * @param startIndex the startIndex to set
+	 */
+	public void setStartIndex(int startIndex) {
+		this.startIndex = startIndex;
+	}
+	/**
+	 * @return the length
+	 */
+	public int getLength() {
+		return length;
+	}
+	/**
+	 * @param length the length to set
+	 */
+	public void setLength(int length) {
+		this.length = length;
+	}
+	
+	
 }

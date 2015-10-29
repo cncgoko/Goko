@@ -57,8 +57,10 @@ public class ExecutionToken<T extends IExecutionState> implements IExecutionToke
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
+	 * @throws GkException GkException 
 	 */
-	public ExecutionToken(IGCodeProvider provider, T initState) {		
+	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
+		// FIXME : put creation of this token in ExecutionService
 		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
 		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
 		this.mapLineByExecutionState.put(initState, new ArrayList<Integer>());
@@ -300,6 +302,12 @@ public class ExecutionToken<T extends IExecutionState> implements IExecutionToke
 	public GCodeLine getLine(Integer idLine) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addLine(GCodeLine line) throws GkException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

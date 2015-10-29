@@ -31,13 +31,4 @@ public class ProgramEndBuilder extends AbstractInstructionBuilder<ProgramEndInst
 		GCodeWordUtils.getAndRemoveWord("M30", words);
 		return new ProgramEndInstruction();
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, ProgramEndInstruction instruction) throws GkException {		
-		return wrap(new GCodeWord("M", "30"));
-	}
-
 }

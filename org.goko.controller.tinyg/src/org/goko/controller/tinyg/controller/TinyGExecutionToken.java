@@ -34,8 +34,9 @@ public class TinyGExecutionToken extends ExecutionToken<ExecutionState>{
 	/**
 	 * Constructor
 	 * @param provider the provider to execute
+	 * @throws GkException 
 	 */
-	public TinyGExecutionToken(IGCodeProvider provider) {
+	public TinyGExecutionToken(IGCodeProvider provider) throws GkException {
 		super(provider, ExecutionState.NONE);		
 		lock = new Object();
 	}

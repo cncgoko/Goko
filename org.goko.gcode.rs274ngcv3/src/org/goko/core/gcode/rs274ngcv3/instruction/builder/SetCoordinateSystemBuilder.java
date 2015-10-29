@@ -71,14 +71,4 @@ public class SetCoordinateSystemBuilder extends AbstractInstructionBuilder<SetCo
 		
 		return new SetCoordinateSystemInstruction(targetCoordinateSystem);
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, SetCoordinateSystemInstruction instruction) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

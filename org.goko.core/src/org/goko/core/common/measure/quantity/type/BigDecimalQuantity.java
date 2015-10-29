@@ -102,6 +102,7 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() - q.to(getUnit()).doubleValue()));
 	}
 
+
 	public BigDecimalQuantity<Q> subtract(BigDecimalQuantity<Q> q) {		
 		return new BigDecimalQuantity<Q>(getUnit(), value.subtract( new BigDecimal(q.to(getUnit()).doubleValue()) ));
 	}

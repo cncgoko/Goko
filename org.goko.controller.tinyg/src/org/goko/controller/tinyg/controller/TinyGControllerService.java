@@ -369,7 +369,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				if(CollectionUtils.isNotEmpty(errorsCommand)){
 					 // Error occurred during GCode program execution, let's give the source command
 					GCodeLine line = errorsCommand.get(0);
-					message += " on command ["+gcodeService.toString(line)+"]";
+					message += " on command ["+gcodeService.render(line)+"]";
 				}
 			}
 			// Security pause

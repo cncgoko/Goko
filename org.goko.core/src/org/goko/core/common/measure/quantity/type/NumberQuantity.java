@@ -34,6 +34,10 @@ public class NumberQuantity {
 		return new BigDecimalQuantity<Q>(unit, value);
 	}
 	
+	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> of(String value, Unit<Q> unit){
+		return new BigDecimalQuantity<Q>(unit, new BigDecimal(value));
+	}
+	
 	/**
 	 * Addition of 2 BigDecimalQuantity with <code>null</code> handling
 	 * @param v1 value 1

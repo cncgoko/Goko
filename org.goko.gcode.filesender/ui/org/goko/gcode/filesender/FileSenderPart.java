@@ -487,8 +487,12 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	}
 	private void refreshCommandTable() {
 		if(getDataModel().getGcodeProvider() != null){
-			tableViewer.setInput(getDataModel().getGcodeProvider().getLines());
-			tableViewer.setItemCount(getDataModel().getGcodeProvider().getLines().size());
+			try {
+				tableViewer.setInput(getDataModel().getGcodeProvider().getLines());			
+				tableViewer.setItemCount(getDataModel().getGcodeProvider().getLines().size());
+			} catch (GkException e) {
+				LOG.error(e);
+			}
 		}
 	}
 
@@ -538,7 +542,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeCommandExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
 	public void onLineStateChanged(IExecutionToken<IExecutionState> token, Integer idCommand) throws GkException {

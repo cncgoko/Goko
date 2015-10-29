@@ -31,14 +31,4 @@ public class CommentBuilder extends AbstractInstructionBuilder<CommentInstructio
 		GCodeWord commentword = GCodeWordUtils.getAndRemoveWordByLetter(";", words);
 		return new CommentInstruction(commentword.getValue());
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, CommentInstruction instruction) throws GkException {
-		
-		return null;
-	}
-
 }

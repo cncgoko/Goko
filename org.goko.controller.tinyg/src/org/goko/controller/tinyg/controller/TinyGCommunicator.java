@@ -455,7 +455,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	}
 
 	protected void send(GCodeLine gCodeLine) throws GkException{	
-		String gcodeString = gcodeService.toString(gCodeLine);		
+		String gcodeString = gcodeService.render(gCodeLine);		
 		JsonValue jsonStr = TinyGControllerUtility.toJson(gcodeString);
 		send(GkUtils.toBytesList(jsonStr.toString()));
 	}

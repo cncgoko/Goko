@@ -29,13 +29,4 @@ public class SetFeedRateBuilder extends AbstractInstructionBuilder<SetFeedRateIn
 		GCodeWord fWord = GCodeWordUtils.getAndRemoveWordByLetter("F", words);
 		return new SetFeedRateInstruction(BigDecimalUtils.parse(fWord.getValue()));
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, SetFeedRateInstruction instruction) throws GkException {		
-		return wrap(new GCodeWord("F", instruction.getFeedrate().toPlainString()));
-	}
-
 }

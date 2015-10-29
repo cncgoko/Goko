@@ -21,9 +21,14 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.math.BoundingTuple6b;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
+/**
+ * @author Psyko
+ *
+ */
 public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	private static final String SHADER_MODEL_VIEW_MATRIX_NAME = "modelViewMatrix";	
 	/** The model matrix of this renderer */
@@ -42,6 +47,8 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	private int layerId;
 	/** Indicate that this renderer uses alpha layer */
 	private boolean useAlpha;
+	/** The bounds of this renderer */
+	private BoundingTuple6b bounds;
 	
 	/**
 	 * Constructor
@@ -217,4 +224,18 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 		this.useAlpha = useAlpha;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.ICoreJoglRenderer#getBounds()
+	 */
+	@Override
+	public BoundingTuple6b getBounds() {
+		return bounds;
+	}
+
+	/**
+	 * @param bounds the bounds to set
+	 */
+	public void setBounds(BoundingTuple6b bounds) {
+		this.bounds = bounds;
+	}
 }

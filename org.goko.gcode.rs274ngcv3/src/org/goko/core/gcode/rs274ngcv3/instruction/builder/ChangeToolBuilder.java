@@ -1,6 +1,5 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -34,15 +33,4 @@ public class ChangeToolBuilder extends AbstractInstructionBuilder<ChangeToolInst
 		GCodeWordUtils.getAndRemoveWord("M6", words);
 		return new ChangeToolInstruction();
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, ChangeToolInstruction instruction) throws GkException {
-		List<GCodeWord> result = new ArrayList<GCodeWord>();
-		result.add(new GCodeWord("M","6"));
-		return result;
-	}
-
 }

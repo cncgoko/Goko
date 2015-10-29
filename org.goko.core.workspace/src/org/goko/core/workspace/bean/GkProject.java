@@ -3,9 +3,10 @@
  */
 package org.goko.core.workspace.bean;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.common.exception.GkException;
 
 
 /**
@@ -20,7 +21,11 @@ public class GkProject {
 	/** The path to the project file */
 	private String filepath;
 	/** The list of loaded gcode file */
-	private List<IGCodeProvider> gcodeProviders;
+	private Map<INodeType<?>, IProjectNode<?>> projectNodes;
+	
+	public GkProject() {
+		this.projectNodes = new HashMap<INodeType<?>, IProjectNode<?>>();
+	}
 	/**
 	 * @return the name
 	 */
@@ -45,17 +50,12 @@ public class GkProject {
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
-	/**
-	 * @return the gcodeProviders
-	 */
-	public List<IGCodeProvider> getGcodeProviders() {
-		return gcodeProviders;
+
+	public <T extends IProjectNode<?>> T getNode(INodeType<T> nodeType) throws GkException{
+		return (T) projectNodes.get(nodeType);
 	}
-	/**
-	 * @param gcodeProviders the gcodeProviders to set
-	 */
-	public void setGcodeProviders(List<IGCodeProvider> gcodeProviders) {
-		this.gcodeProviders = gcodeProviders;
+	
+	public <T> void addNode(IProjectNode<T> node){
+		projectNodes.put(node.getType(), node);		
 	}
-		
 }

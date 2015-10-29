@@ -14,6 +14,8 @@ import org.goko.core.gcode.element.IInstructionSetIterator;
 
 public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, S extends IInstructionSet<I>> extends IGokoService{
 
+	IGCodeProvider getGCodeProvider(Integer id) throws GkException;
+	
 	IGCodeProvider parse(InputStream inputStream) throws GkException;	
 	
 	IInstructionProvider<I, S> getInstructions(T context, IGCodeProvider gcodeProvider) throws GkException;

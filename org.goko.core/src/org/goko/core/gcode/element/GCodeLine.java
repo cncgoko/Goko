@@ -3,12 +3,14 @@ package org.goko.core.gcode.element;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GCodeLine {
+import org.goko.core.common.utils.IIdBean;
+
+public class GCodeLine implements IIdBean{
 	/** Internal identifier of this line */
 	private Integer id;
 	private Integer lineNumber;
 	private List<GCodeWord> words;
-	private List<GCodeParameter> parameters;
+	private List<GCodeParameter> parameters;	
 	
 	public GCodeLine() {
 		this.words 		= new ArrayList<GCodeWord>();
@@ -41,6 +43,10 @@ public class GCodeLine {
 	
 	public void addWord(GCodeWord word){
 		words.add(word);
+	}
+	
+	public void addWords(List<GCodeWord> lstWord){
+		words.addAll(lstWord);
 	}
 	/**
 	 * @return the parameters

@@ -33,14 +33,4 @@ public class SetSpindleSpeedBuilder extends AbstractInstructionBuilder<SetSpindl
 		GCodeWord word = GCodeWordUtils.getAndRemoveWordByLetter("S", words);		
 		return new SetSpindleSpeedInstruction(new BigDecimal(word.getValue()));
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, SetSpindleSpeedInstruction instruction) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

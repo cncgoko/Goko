@@ -32,13 +32,4 @@ public class FloodOnBuilder extends AbstractInstructionBuilder<FloodOnInstructio
 		GCodeWordUtils.findAndRemoveWord("M8", words);
 		return new FloodOnInstruction();
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, FloodOnInstruction instruction) throws GkException {
-		return wrap(new GCodeWord("M", "8"));
-	}
-
 }

@@ -28,13 +28,4 @@ public class StartSpindleCounterClockwiseBuilder extends AbstractInstructionBuil
 		GCodeWordUtils.getAndRemoveWord("M4", words);
 		return new StartSpindleCounterClockwiseInstruction();
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionBuilder#toGCodeWord(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.element.IInstruction)
-	 */
-	@Override
-	public List<GCodeWord> toGCodeWord(GCodeContext context, StartSpindleCounterClockwiseInstruction instruction) throws GkException {
-		return wrap(new GCodeWord("M","4"));
-	}
-
 }
