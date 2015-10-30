@@ -7,7 +7,9 @@ import org.goko.core.common.utils.IIdBean;
 
 
 public interface IGCodeProvider extends IIdBean{
-		
+	
+	String getCode();
+	
 	/**
 	 * Returns all the lines in this provider 
 	 * @return the list of GCodeLine
@@ -21,5 +23,11 @@ public interface IGCodeProvider extends IIdBean{
 	 */
 	GCodeLine getLine(Integer idLine) throws GkException;	
 	
-	void addLine(GCodeLine line) throws GkException;
+	/**
+	 * Returns the line at the given position 
+	 * @param indexLine the index of the line
+	 * @return GCodeLine the GCodeLine
+	 */
+	GCodeLine getLineAtIndex(Integer indexLine) throws GkException;	
+	
 }

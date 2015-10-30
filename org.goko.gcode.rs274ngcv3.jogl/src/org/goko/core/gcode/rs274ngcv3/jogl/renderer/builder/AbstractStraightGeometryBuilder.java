@@ -38,7 +38,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 				double deltaAngle = 0;
 				// FIXME Use a setting to define the 4th axis and then do a dynamic angle detection around the axe A,B or C
 				if( instruction.getA() != null){
-					deltaAngle = instruction.getA().doubleValue() - instruction.getA().doubleValue();
+					deltaAngle = context.getA().doubleValue(SI.DEGREE_ANGLE) - instruction.getA().doubleValue(SI.DEGREE_ANGLE);
 				}
 
 				if(Math.abs(deltaAngle) <= 0.0001){

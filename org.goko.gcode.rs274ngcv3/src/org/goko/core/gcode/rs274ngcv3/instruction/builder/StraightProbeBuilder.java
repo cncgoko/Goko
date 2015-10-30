@@ -37,9 +37,9 @@ public class StraightProbeBuilder extends AbstractInstructionBuilder<StraightPro
 		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
 		
-		BigDecimalQuantity<Angle> a = findWordValue("Z", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> b = findWordValue("Z", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> c = findWordValue("Z", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> a = findWordValue("A", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> b = findWordValue("B", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, SI.DEGREE_ANGLE);
  			
 		return new StraightProbeInstruction(x, y, z, a, b, c);
 	}

@@ -35,15 +35,15 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 		|| GCodeWordUtils.containsWordByLetter("C", words)){
 			if(context.getMotionMode() == EnumMotionMode.FEEDRATE){
 				// Make sure there is no other motion mode word
-				if(!GCodeWordUtils.containsWord("G0", words) 
-				&& !GCodeWordUtils.containsWord("G2", words)
-				&& !GCodeWordUtils.containsWord("G3", words)
+				if(!GCodeWordUtils.containsWordRegex("G(0?)0", words)
+				&& !GCodeWordUtils.containsWordRegex("G(0?)2", words)
+				&& !GCodeWordUtils.containsWordRegex("G(0?)3", words)
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
 			}else{
 				//Context motion mode is not FEEDRATE, we need an explicit G1
-				return GCodeWordUtils.containsWord("G1", words);
+				return GCodeWordUtils.containsWordRegex("G(0?)1", words);				
 			}
 		}
 		return false;
@@ -63,7 +63,7 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, SI.DEGREE_ANGLE);
 
 		// Consume the word
-		GCodeWordUtils.findAndRemoveWord("G1", words);
+		GCodeWordUtils.findAndRemoveWordRegex("G(0?)1", words);
 		
 		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
 			x = NumberQuantity.add(x, context.getX());

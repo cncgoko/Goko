@@ -19,7 +19,7 @@ import org.goko.core.gcode.rs274ngcv3.utils.GCodeWordUtils;
 public class StraightTraverseBuilder extends AbstractInstructionBuilder<StraightTraverseInstruction> {
 
 	public StraightTraverseBuilder() {
-		super(InstructionType.STRAIGHT_FEED);
+		super(InstructionType.STRAIGHT_TRAVERSE);
 	}
 
 	/** (inheritDoc)
@@ -35,15 +35,15 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 		|| GCodeWordUtils.containsWordByLetter("C", words)){
 			if(context.getMotionMode() == EnumMotionMode.RAPID){
 				// Make sure there is no other motion mode word
-				if(!GCodeWordUtils.containsWord("G1", words) 
-				&& !GCodeWordUtils.containsWord("G2", words)
-				&& !GCodeWordUtils.containsWord("G3", words)
+				if(!GCodeWordUtils.containsWordRegex("G(0?)1", words)
+				&& !GCodeWordUtils.containsWordRegex("G(0?)2", words)
+				&& !GCodeWordUtils.containsWordRegex("G(0?)3", words)
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
 			}else{
 				//Context motion mode is not FEEDRATE, we need an explicit G0
-				return GCodeWordUtils.containsWord("G0", words);
+				return GCodeWordUtils.containsWordRegex("G(0?)0", words);
 			}
 		}
 		return false;
@@ -63,7 +63,7 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, SI.DEGREE_ANGLE);
 		
 		// Consume g0 if present
-		GCodeWordUtils.findAndRemoveWord("G0", words);
+		GCodeWordUtils.findAndRemoveWordRegex("G(0?)0", words);
 		
 		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
 			x = NumberQuantity.add(x, context.getX());

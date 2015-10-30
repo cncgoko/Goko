@@ -22,7 +22,7 @@ public class DwellBuilder extends AbstractInstructionBuilder<DwellInstruction> {
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWord("G4", words);
+		return GCodeWordUtils.containsWordRegex("G(0?)4", words);
 	}
 
 	/** (inheritDoc)
@@ -30,7 +30,7 @@ public class DwellBuilder extends AbstractInstructionBuilder<DwellInstruction> {
 	 */
 	@Override
 	protected DwellInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.getAndRemoveWord("G4", words);
+		GCodeWordUtils.getAndRemoveWordRegex("G(0?)4", words);
 		GCodeWord pWord = GCodeWordUtils.getAndRemoveWordByLetter("P", words);		
 		int seconds = GCodeWordUtils.intValue(pWord);
 		if(seconds < 0){

@@ -20,12 +20,12 @@ public class StartSpindleCounterClockwiseBuilder extends AbstractInstructionBuil
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWord("M4", words);
+		return GCodeWordUtils.containsWordRegex("M(0?)4", words);
 	}
 
 	@Override
 	protected StartSpindleCounterClockwiseInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.getAndRemoveWord("M4", words);
+		GCodeWordUtils.getAndRemoveWordRegex("M(0?)4", words);
 		return new StartSpindleCounterClockwiseInstruction();
 	}
 }

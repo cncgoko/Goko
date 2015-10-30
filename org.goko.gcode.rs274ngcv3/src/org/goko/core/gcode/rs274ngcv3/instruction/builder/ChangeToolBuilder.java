@@ -21,7 +21,7 @@ public class ChangeToolBuilder extends AbstractInstructionBuilder<ChangeToolInst
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.findWord("M6", words) != null;
+		return GCodeWordUtils.findWordRegex("M(0?)6", words, false) != null;
 	}
 
 	/** (inheritDoc)
@@ -30,7 +30,7 @@ public class ChangeToolBuilder extends AbstractInstructionBuilder<ChangeToolInst
 	@Override
 	protected ChangeToolInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		// Make sure the word exists
-		GCodeWordUtils.getAndRemoveWord("M6", words);
+		GCodeWordUtils.getAndRemoveWordRegex("M(0?)6", words);
 		return new ChangeToolInstruction();
 	}
 }

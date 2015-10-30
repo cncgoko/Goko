@@ -87,19 +87,16 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public IGCodeProvider parse(InputStream inputStream) throws GkException {
-		GCodeProviderWithModifier provider = new GCodeProviderWithModifier();		
+		GCodeProvider provider = new GCodeProvider();		
 		GCodeLexer lexer = new GCodeLexer();
 		List<List<GCodeToken>> tokens = lexer.tokenize(inputStream);
-		int lineNumber = 1;
 		
 		for (List<GCodeToken> lstToken : tokens) {
 			verifyModality(lstToken);
-			GCodeLine line = buildLine(lstToken);
-			line.setLineNumber(lineNumber);
-			provider.addLine(line);
-			lineNumber = lineNumber + 1;
+			GCodeLine line = buildLine(lstToken);			
+			provider.addLine(line);			
 		}
-		provider.addModifier(new TestModifier());
+		//provider.addModifier(new TestModifier());
 		cacheProviders.add(provider);
 		return provider;
 	}

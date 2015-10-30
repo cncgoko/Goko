@@ -21,7 +21,7 @@ public class FloodOffBuilder extends AbstractInstructionBuilder<FloodOffInstruct
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWord("M9", words);
+		return GCodeWordUtils.containsWordRegex("M(0?)9", words);
 	}
 
 	/** (inheritDoc)
@@ -29,7 +29,7 @@ public class FloodOffBuilder extends AbstractInstructionBuilder<FloodOffInstruct
 	 */
 	@Override
 	protected FloodOffInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.findAndRemoveWord("M9", words);
+		GCodeWordUtils.findAndRemoveWordRegex("M(0?)9", words);
 		return new FloodOffInstruction();
 	}
 }

@@ -43,12 +43,12 @@ public abstract class AbstractStraightInstructionExporter<T extends AbstractStra
 		Unit<Length> targetUnit = context.getUnit().getUnit();
 		
 		List<GCodeWord> result = new ArrayList<GCodeWord>();
-		if(x != null) result.add(new GCodeWord("X", x.to(targetUnit).getValue().toPlainString() ));
-		if(y != null) result.add(new GCodeWord("Y", y.to(targetUnit).getValue().toPlainString() ));
-		if(z != null) result.add(new GCodeWord("Z", z.to(targetUnit).getValue().toPlainString() ));
-		if(a != null) result.add(new GCodeWord("A", a.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
-		if(b != null) result.add(new GCodeWord("B", b.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
-		if(c != null) result.add(new GCodeWord("C", c.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
+		if(x != null && !x.equals(context.getX())) result.add(new GCodeWord("X", x.to(targetUnit).getValue().toPlainString() ));
+		if(y != null && !y.equals(context.getY())) result.add(new GCodeWord("Y", y.to(targetUnit).getValue().toPlainString() ));
+		if(z != null && !z.equals(context.getZ())) result.add(new GCodeWord("Z", z.to(targetUnit).getValue().toPlainString() ));
+		if(a != null && !a.equals(context.getA())) result.add(new GCodeWord("A", a.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
+		if(b != null && !b.equals(context.getB())) result.add(new GCodeWord("B", b.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
+		if(c != null && !c.equals(context.getC())) result.add(new GCodeWord("C", c.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
 		
 		return result;
 	}

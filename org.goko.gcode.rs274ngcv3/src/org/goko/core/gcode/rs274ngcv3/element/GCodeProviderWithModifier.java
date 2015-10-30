@@ -20,6 +20,8 @@ public class GCodeProviderWithModifier implements IGCodeProvider{
 	private CacheById<IModifier> cacheModifiers;
 	/** The id of the modifiers in the order of use */
 	private List<Integer> modifiersSequence;
+	/** The code of this provider*/
+	private String code;
 	
 	public GCodeProviderWithModifier() {	
 		this.baseProvider = new GCodeProvider();
@@ -68,12 +70,28 @@ public class GCodeProviderWithModifier implements IGCodeProvider{
 		this.resultProvider = source;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#getLine(java.lang.Integer)
+	 */
 	@Override
 	public GCodeLine getLine(Integer idLine) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
+		if(resultProvider == null){
+			applyModifiers();
+		}
+		return resultProvider.getLine(idLine);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#getLineAtIndex(java.lang.Integer)
+	 */
+	@Override
+	public GCodeLine getLineAtIndex(Integer indexLine) throws GkException {
+		if(resultProvider == null){
+			applyModifiers();
+		}
+		return resultProvider.getLineAtIndex(indexLine);
+	}
+	
 	/**
 	 * @return the baseProvider
 	 */
@@ -112,8 +130,11 @@ public class GCodeProviderWithModifier implements IGCodeProvider{
 		this.modifiersSequence.remove(idModifier);
 	}
 
-	@Override
-	public void addLine(GCodeLine line) throws GkException {
-		baseProvider.addLine(line);
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 }

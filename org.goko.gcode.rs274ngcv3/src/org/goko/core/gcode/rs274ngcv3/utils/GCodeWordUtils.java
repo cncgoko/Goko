@@ -59,6 +59,12 @@ public class GCodeWordUtils {
 		return word;		
 	}
 
+	public static GCodeWord getAndRemoveWordRegex(String wordStr, List<GCodeWord> words) throws GkException{
+		GCodeWord word = getWordRegex(wordStr, words, false);
+		words.remove(word);
+		return word;
+	}
+	
 	public static GCodeWord getAndRemoveWord(String wordStr, List<GCodeWord> words) throws GkException{
 		GCodeWord word = getWord(wordStr, words, false);
 		words.remove(word);
@@ -73,12 +79,48 @@ public class GCodeWordUtils {
 		return word;
 	}
 	
+	public static GCodeWord findAndRemoveWordRegex(String wordRegexStr, List<GCodeWord> words) throws GkException{
+		GCodeWord word = findWordRegex(wordRegexStr, words, false);
+		if(word != null){
+			words.remove(word);
+		}
+		return word;
+	}
+	
 	public static GCodeWord getWord(String wordStr, List<GCodeWord> words) throws GkException{
 		return getWord(wordStr, words, false);
 	}
 	
 	public static GCodeWord getWord(String wordStr, List<GCodeWord> words, boolean greedy) throws GkException{
 		GCodeWord word = findWord(wordStr, words, greedy);
+		if(word == null){
+			throw new GkTechnicalException("Could not find word ["+wordStr+"]");
+		}
+		return word;
+	}
+	
+	public static boolean containsWordRegex(String wordStr, List<GCodeWord> words){
+		return findWordRegex(wordStr, words, false) != null;
+	}
+	
+	public static GCodeWord findWordRegex(String wordStr, List<GCodeWord> words, boolean greedy){
+		String pattern = "^"+wordStr+"$";
+		GCodeWord word = null;
+		if(CollectionUtils.isNotEmpty(words)){
+			for (GCodeWord gCodeWord : words) {
+				if(gCodeWord.completeString().matches(pattern)){
+					word = gCodeWord;
+					if(!greedy){
+						break;
+					}
+				}
+			}
+		}
+		return word;		
+	}
+	
+	public static GCodeWord getWordRegex(String wordStr, List<GCodeWord> words, boolean greedy) throws GkException{
+		GCodeWord word = findWordRegex(wordStr, words, greedy);
 		if(word == null){
 			throw new GkTechnicalException("Could not find word ["+wordStr+"]");
 		}

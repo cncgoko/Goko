@@ -19,21 +19,22 @@ package org.goko.core.gcode.execution;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.utils.IIdBean;
 import org.goko.core.gcode.element.GCodeLine;
-import org.goko.core.gcode.element.IGCodeProvider;
 
 /**
  * A standard execution pattern
  * @author PsyKo
  *
  */
-public interface IExecutionToken<T extends IExecutionState> extends IGCodeProvider {
+public interface IExecutionToken<T extends IExecutionState> extends IIdBean {	
 	/**
 	 * Check if this execution token has more command
 	 * @return <code>true</code> if there is more command, <code>false</code> otherwise
 	 * @throws GkException GkException
 	 */
 	public boolean hasMoreLine() throws GkException;
+	
 	/**
 	 * Returns the total number of command
 	 * @return the total number of command
@@ -56,7 +57,6 @@ public interface IExecutionToken<T extends IExecutionState> extends IGCodeProvid
 	 */
 	public List<GCodeLine> getLineByState(T state) throws GkException;
 	
-	
 	/**
 	 * Sets the state of the given command 
 	 * @param idCommand id of the command 
@@ -64,12 +64,14 @@ public interface IExecutionToken<T extends IExecutionState> extends IGCodeProvid
 	 * @throws GkException GkException
 	 */
 	public void setLineState(Integer idLine, T state) throws GkException;
+	
 	/**
 	 * Returns (but does not remove) the next command to execute in this execution token
 	 * @return a GCodeCommand
 	 * @throws GkException GkException
 	 */
 	public GCodeLine getNextLine() throws GkException;
+	
 	/**
 	 * Returns (and remove) the next line to execute in this execution token
 	 * @return a GCodeCommand
@@ -89,6 +91,7 @@ public interface IExecutionToken<T extends IExecutionState> extends IGCodeProvid
 	 * @throws GkException GkException
 	 */
 	public void setExecutionPaused(boolean paused) throws GkException;
+	
 	/**
 	 * Returns the pause state of this token
 	 * @return <code>true</code> if the token is paused, <code>false</code> otherwise

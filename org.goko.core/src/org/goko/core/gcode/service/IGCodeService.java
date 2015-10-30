@@ -27,4 +27,6 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 	IInstructionSetIterator<T, I> getIterator(IInstructionProvider<I, S> instructionProvider, T baseContext) throws GkException;
 	
 	String render(GCodeLine line) throws GkException;
+	
+	//String render(GCodeLine line, GCodeRenderingOptions options) throws GkException;
 }

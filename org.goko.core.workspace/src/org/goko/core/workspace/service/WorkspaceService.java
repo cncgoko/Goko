@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.utils.IIdBean;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.GkProject;
@@ -157,10 +158,11 @@ public class WorkspaceService implements IWorkspaceService{
 		}
 	}
 
-	public NodeGCodeProviderContainer getNodeGCodeProviderContainer() throws GkException{
+	public IProjectNode<IGCodeProvider> getNodeGCodeProviderContainer() throws GkException{
 		return getNode(NodeGCodeProviderContainer.NODE_TYPE);
 	}
-	public <T extends IProjectNode<?>> T getNode(INodeType<T> nodeType) throws GkException{		
+	
+	public <T extends IIdBean> IProjectNode<T> getNode(INodeType<T> nodeType) throws GkException{		
 		return project.getNode(nodeType);		
 	}
 }

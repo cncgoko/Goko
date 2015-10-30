@@ -104,7 +104,7 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 
 
 	public BigDecimalQuantity<Q> subtract(BigDecimalQuantity<Q> q) {		
-		return new BigDecimalQuantity<Q>(getUnit(), value.subtract( new BigDecimal(q.to(getUnit()).doubleValue()) ));
+		return new BigDecimalQuantity<Q>(getUnit(), value.subtract( q.to(getUnit()).getValue()));
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#multiply(java.lang.Number)

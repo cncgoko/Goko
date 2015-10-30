@@ -24,6 +24,8 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.utils.AbstractIdBean;
+import org.goko.core.common.utils.CacheById;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.service.IExecutionMonitorService;
@@ -34,17 +36,11 @@ import org.goko.core.gcode.service.IExecutionMonitorService;
  * @author PsyKo
  *
  */
-public class ExecutionToken<T extends IExecutionState> implements IExecutionToken<T> {
-	/** Id of the GCodeProvider */
-	private Integer id;
-	/** the list of commands */
-	protected Map<Integer, GCodeLine> lstGCodeLine;
+public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean implements IExecutionToken<T> {	
 	/** The map of state by line Id */
 	protected Map<Integer, T> mapExecutionStateById;
 	/** The map of lines id by state */
 	protected Map<T, List<Integer>> mapLineByExecutionState;
-	/** The ordered list of commands */
-	protected List<Integer> commands;
 	/** The current command index */
 	protected int currentIndex;
 	/** Completed state  */
@@ -63,35 +59,14 @@ public class ExecutionToken<T extends IExecutionState> implements IExecutionToke
 		// FIXME : put creation of this token in ExecutionService
 		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
 		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
-		this.mapLineByExecutionState.put(initState, new ArrayList<Integer>());
-		
+		this.mapLineByExecutionState.put(initState, new ArrayList<Integer>());		
 		this.currentIndex = -1;
-		this.lstGCodeLine = new HashMap<Integer, GCodeLine>();
-		this.commands = new ArrayList<Integer>();
-
 		if(CollectionUtils.isNotEmpty(provider.getLines())){
 			for (GCodeLine gCodeLine : provider.getLines()) {
-				this.lstGCodeLine.put(gCodeLine.getId(), gCodeLine);
-				this.commands.add(gCodeLine.getId());
 				this.mapLineByExecutionState.get(initState).add(gCodeLine.getId());
 				this.mapExecutionStateById.put(gCodeLine.getId(), initState);
 			}
 		}
-	}
-
-	/**
-	 * @return the id
-	 */
-	@Override
-	public Integer getId() {
-		return id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	/** (inheritDoc)
@@ -267,14 +242,6 @@ public class ExecutionToken<T extends IExecutionState> implements IExecutionToke
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.IGCodeProvider#getLines()
-	 */
-	@Override
-	public List<GCodeLine> getLines() {		
-		return new ArrayList<GCodeLine>(lstGCodeLine.values());
-	}
-
-	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionToken#isExecutionPaused()
 	 */
 	@Override
@@ -294,20 +261,4 @@ public class ExecutionToken<T extends IExecutionState> implements IExecutionToke
 		}
 		return result;
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.IGCodeProvider#getLine(java.lang.Integer)
-	 */
-	@Override
-	public GCodeLine getLine(Integer idLine) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addLine(GCodeLine line) throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

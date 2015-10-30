@@ -3,10 +3,13 @@
  */
 package org.goko.core.workspace.bean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.utils.IIdBean;
 
 
 /**
@@ -51,11 +54,16 @@ public class GkProject {
 		this.filepath = filepath;
 	}
 
-	public <T extends IProjectNode<?>> T getNode(INodeType<T> nodeType) throws GkException{
-		return (T) projectNodes.get(nodeType);
+	@SuppressWarnings("unchecked")
+	public <T extends IIdBean> IProjectNode<T> getNode(INodeType<T> nodeType) throws GkException{
+		return (IProjectNode<T>) projectNodes.get(nodeType);
 	}
 	
-	public <T> void addNode(IProjectNode<T> node){
+	public <T extends IIdBean> void addNode(IProjectNode<T> node){
 		projectNodes.put(node.getType(), node);		
+	}
+	
+	public List<IProjectNode<? extends IIdBean>> getNodes(){
+		return new ArrayList<IProjectNode<? extends IIdBean>>(projectNodes.values());
 	}
 }
