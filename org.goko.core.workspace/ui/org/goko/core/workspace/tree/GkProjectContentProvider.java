@@ -2,6 +2,7 @@ package org.goko.core.workspace.tree;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.goko.core.common.exception.GkException;
@@ -23,18 +24,7 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	 */
 	@Override
 	public void dispose() {
-		try{
-			List<ProjectContainerUiProvider> uiProviders = Activator.getWorkspaceUIService().getProjectContainerUiProvider();
-			for (ProjectContainerUiProvider uiProvider : uiProviders) {			
-				try {
-					uiProvider.getContentProvider().dispose();					
-				} catch (GkException e) {
-					LOG.error(e);
-				}
-			}
-		}catch(GkException e){
-			LOG.error(e);
-		}
+		
 	}
 
 	/** (inheritDoc)
@@ -60,18 +50,32 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	 */
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		if(parentElement instanceof ProjectContainer){
-			try {
-				ProjectContainer container = (ProjectContainer) parentElement;
-				ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
-				if(uiProvider != null){
-					return uiProvider.getContentProvider().getChildren(parentElement);				
-				}
-			} catch (GkException e) {					
-				LOG.error(e);
-			}
+		try {
+			return getChildrenIntern(parentElement);
+		} catch (GkException e) {					
+			LOG.error(e);
 		}
 		return null;
+	}
+	
+	private Object[] getChildrenIntern(Object parentElement) throws GkException{
+		if(parentElement instanceof ProjectContainer){			
+			ProjectContainer container = (ProjectContainer) parentElement;
+			ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+			if(uiProvider != null){
+				return uiProvider.getChildren(parentElement);				
+			}
+		}else{
+			List<ProjectContainerUiProvider> uiProvider = Activator.getWorkspaceUIService().getProjectContainerUiProvider();
+			if(CollectionUtils.isNotEmpty(uiProvider)){
+				for (ProjectContainerUiProvider projectContainerUiProvider : uiProvider) {
+					if(projectContainerUiProvider.providesContentFor(parentElement)){
+						return projectContainerUiProvider.getChildren(parentElement);
+					}
+				}
+			}
+		}
+		return new Object[0];
 	}
 
 	/** (inheritDoc)
@@ -84,7 +88,7 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 				ProjectContainer container = (ProjectContainer) element;
 				ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
 				if(uiProvider != null){
-					return uiProvider.getContentProvider().getParent(element);				
+					return uiProvider.getParent(element);				
 				}
 			} catch (GkException e) {					
 				LOG.error(e);
@@ -98,18 +102,33 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	 */
 	@Override
 	public boolean hasChildren(Object element) {
-		if(element instanceof ProjectContainer){
-			try {
-				ProjectContainer container = (ProjectContainer) element;
-				ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
-				if(uiProvider != null){
-					return uiProvider.getContentProvider().hasChildren(element);				
-				}
-			} catch (GkException e) {					
-				LOG.error(e);
-			}
-		}	
+		try {
+			return hasChildrenIntern(element);
+		} catch (GkException e) {					
+			LOG.error(e);
+		}
+		
 		return false;
 	}
 
+	private boolean hasChildrenIntern(Object element) throws GkException {
+		if (element instanceof ProjectContainer) {
+			ProjectContainer container = (ProjectContainer) element;
+			ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+			if (uiProvider != null) {
+				return uiProvider.hasChildren(element);
+			}
+
+		} else {
+			List<ProjectContainerUiProvider> uiProvider = Activator.getWorkspaceUIService().getProjectContainerUiProvider();
+			if (CollectionUtils.isNotEmpty(uiProvider)) {
+				for (ProjectContainerUiProvider projectContainerUiProvider : uiProvider) {
+					if (projectContainerUiProvider.providesContentFor(element)) {
+						return projectContainerUiProvider.hasChildren(element);
+					}
+				}
+			}
+		}
+		return false;
+	}
 }
