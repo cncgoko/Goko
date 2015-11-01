@@ -21,7 +21,6 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
-import org.goko.core.gcode.rs274ngcv3.element.GCodeProviderWithModifier;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
@@ -30,7 +29,6 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
-import org.goko.core.gcode.rs274ngcv3.modifier.TestModifier;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeTokenType;
@@ -374,5 +372,13 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
 		return cacheProviders.get(id);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#getGCodeProvider()
+	 */
+	@Override
+	public List<IGCodeProvider> getGCodeProvider() throws GkException {		
+		return cacheProviders.get();
 	}
 }

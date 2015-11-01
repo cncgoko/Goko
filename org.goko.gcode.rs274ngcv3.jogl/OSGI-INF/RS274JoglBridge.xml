@@ -2,4 +2,5 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" deactivate="stop" name="org.goko.gcode.rs274ngcv3.jogl">
    <implementation class="org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService"/>
    <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceUIService" name="IWorkspaceUIService" policy="static"/>
 </scr:component>

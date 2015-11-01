@@ -25,13 +25,10 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.utils.IIdBean;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.GkProject;
-import org.goko.core.workspace.bean.INodeType;
-import org.goko.core.workspace.bean.IProjectNode;
-import org.goko.core.workspace.bean.NodeGCodeProviderContainer;
+import org.goko.core.workspace.bean.ProjectContainer;
 import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
 
 /**
@@ -71,7 +68,7 @@ public class WorkspaceService implements IWorkspaceService{
 	public void start() throws GkException {		
 		this.listenerList = new ArrayList<IWorkspaceListener>();		
 		this.project = new GkProject();
-		this.project.addNode(new NodeGCodeProviderContainer());
+		this.project.addProjectContainer(new ProjectContainer("TEST"));
 		LOG.info("Successfully started : "+getServiceId());
 	}
 
@@ -88,7 +85,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void addGCodeProvider(IGCodeProvider provider) throws GkException {		
-		getNodeGCodeProviderContainer().add(provider);		
+		//getNodeGCodeProviderContainer().add(provider);		
 		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.INSERT, provider.getId()));
 	}
 
@@ -97,7 +94,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {		
-		return getNodeGCodeProviderContainer().get(id);
+		return null;// getNodeGCodeProviderContainer().get(id);
 	}
 
 	/** (inheritDoc)
@@ -114,7 +111,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public IGCodeProvider getCurrentGCodeProvider() throws GkException {
-		return getNodeGCodeProviderContainer().get(currentProviderId);
+		return null;//getNodeGCodeProviderContainer().get(currentProviderId);
 	}
 
 	/** (inheritDoc)
@@ -122,7 +119,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void deleteGCodeProvider(Integer id) throws GkException {
-		getNodeGCodeProviderContainer().remove(id);
+		//getNodeGCodeProviderContainer().remove(id);
 		if(ObjectUtils.equals(currentProviderId, id)){
 			setCurrentGCodeProvider(null);
 		}
@@ -158,11 +155,17 @@ public class WorkspaceService implements IWorkspaceService{
 		}
 	}
 
-	public IProjectNode<IGCodeProvider> getNodeGCodeProviderContainer() throws GkException{
-		return getNode(NodeGCodeProviderContainer.NODE_TYPE);
+	/**
+	 * @return the project
+	 */
+	public GkProject getProject() {
+		return project;
 	}
-	
-	public <T extends IIdBean> IProjectNode<T> getNode(INodeType<T> nodeType) throws GkException{		
-		return project.getNode(nodeType);		
+
+	/**
+	 * @param project the project to set
+	 */
+	public void setProject(GkProject project) {
+		this.project = project;
 	}
 }

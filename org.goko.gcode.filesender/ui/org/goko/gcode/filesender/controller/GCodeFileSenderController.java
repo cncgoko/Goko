@@ -204,6 +204,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		IGCodeProvider gcodeFile = null;
 		try {
 			gcodeFile = gCodeService.parse(new FileInputStream(gcodeFileInput));
+			gcodeFile.setCode(gcodeFileInput.getName());
+			
 		} catch (FileNotFoundException e) {
 			throw new GkTechnicalException(e);
 		}
@@ -246,7 +248,10 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		getDataModel().setSentCommandCount( 0 );
 		getDataModel().setTotalCommandCount( token.getLineCount() );
 
-		getDataModel().setGcodeProvider(token);
+		//getDataModel().setGcodeProvider(token);
+		if(true){
+			throw new GkTechnicalException("A reactiver");
+		}
 		getDataModel().setStreamingInProgress(true);
 		startElapsedTimer();
 	}

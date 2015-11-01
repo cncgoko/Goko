@@ -119,7 +119,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		// FIXME : don't use new gcode context
 		GCodeContext context = new GCodeContext();
 		
-		IGCodeProvider provider = Activator.getWorkspaceService().getGCodeProvider(idGCodeProvider);		
+		IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(idGCodeProvider);		
 		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, provider);
 		
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, context);		

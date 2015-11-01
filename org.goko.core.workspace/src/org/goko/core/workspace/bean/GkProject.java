@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.goko.core.common.exception.GkException;
-import org.goko.core.common.utils.IIdBean;
-
 
 /**
  * Describes a Goko project
@@ -18,16 +15,16 @@ import org.goko.core.common.utils.IIdBean;
  * @author PsyKo
  * @date 10 oct. 2015
  */
-public class GkProject {
+public class GkProject {	
 	/** The name of the project */
 	private String name;
 	/** The path to the project file */
 	private String filepath;
 	/** The list of loaded gcode file */
-	private Map<INodeType<?>, IProjectNode<?>> projectNodes;
+	private Map<String, ProjectContainer> projectContainers;
 	
 	public GkProject() {
-		this.projectNodes = new HashMap<INodeType<?>, IProjectNode<?>>();
+		this.projectContainers = new HashMap<String, ProjectContainer>();
 	}
 	/**
 	 * @return the name
@@ -53,17 +50,16 @@ public class GkProject {
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends IIdBean> IProjectNode<T> getNode(INodeType<T> nodeType) throws GkException{
-		return (IProjectNode<T>) projectNodes.get(nodeType);
+	
+	public ProjectContainer getProjectContainer(String type){
+		return projectContainers.get(type);
 	}
 	
-	public <T extends IIdBean> void addNode(IProjectNode<T> node){
-		projectNodes.put(node.getType(), node);		
+	public List<ProjectContainer> getProjectContainer(){
+		return new ArrayList<ProjectContainer>(projectContainers.values());
 	}
 	
-	public List<IProjectNode<? extends IIdBean>> getNodes(){
-		return new ArrayList<IProjectNode<? extends IIdBean>>(projectNodes.values());
+	public void addProjectContainer(ProjectContainer container){
+		projectContainers.put(container.getType(), container);
 	}
 }

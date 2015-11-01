@@ -35,5 +35,5 @@ public interface IWorkspaceService extends IGokoService{
 	void addWorkspaceListener(IWorkspaceListener listener) throws GkException;
 
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
-
+	
 }

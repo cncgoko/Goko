@@ -86,7 +86,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 		if(CollectionUtils.isNotEmpty(lstRenderer)){
 			BoundingTuple6b result = null;
 			for (RS274GCodeRenderer renderer : lstRenderer) {
-				IGCodeProvider provider = Activator.getWorkspaceService().getGCodeProvider(renderer.getIdGCodeProvider());
+				IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(renderer.getIdGCodeProvider());
 				InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
 				BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(new GCodeContext(), instructionProvider);
 				renderer.setBounds(bounds);

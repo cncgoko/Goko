@@ -10,6 +10,8 @@ public interface IGCodeProvider extends IIdBean{
 	
 	String getCode();
 	
+	void setCode(String code);
+	
 	/**
 	 * Returns all the lines in this provider 
 	 * @return the list of GCodeLine
