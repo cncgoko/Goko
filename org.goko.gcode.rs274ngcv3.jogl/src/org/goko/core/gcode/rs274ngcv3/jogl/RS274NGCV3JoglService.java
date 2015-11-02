@@ -10,14 +10,15 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
+import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
-import org.goko.core.workspace.service.GCodeProviderEvent;
-import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
+import org.goko.core.workspace.service.IWorkspaceEvent;
 import org.goko.core.workspace.service.IWorkspaceListener;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.tools.viewer.jogl.utils.render.basic.BoundsRenderer;
@@ -33,6 +34,8 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	private SequentialIdGenerator rendererIdSequence;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
+	/** The RS274 GCode service */
+	private IRS274NGCService rs274Service;
 	/** The bounds of all the loaded gcode */
 	private BoundsRenderer contentBoundsRenderer;
 	
@@ -66,19 +69,21 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceListener#onGCodeProviderEvent(org.goko.core.workspace.service.GCodeProviderEvent)
+	 * @see org.goko.core.workspace.service.IWorkspaceListener#onWorkspaceEvent(org.goko.core.workspace.service.IWorkspaceEvent)
 	 */
 	@Override
-	public void onGCodeProviderEvent(GCodeProviderEvent event) throws GkException {
-		System.out.println();
-		if(event.getType() == GCodeProviderEventType.INSERT){
-			createRenderer(event.getTargetId());
-			updateContentBounds();
-		}else if(event.getType() == GCodeProviderEventType.DELETE){
-			removeRenderer(event.getTargetId());
-			updateContentBounds();
+	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {		
+		if(event.isType(RS274WorkspaceEvent.TYPE)){
+			if(event.isAction(IWorkspaceEvent.ACTION_CREATE)){
+				createRenderer(event.getIdElement());
+				updateContentBounds();
+				
+			}else if(event.isAction(IWorkspaceEvent.ACTION_DELETE)){
+				removeRenderer(event.getIdElement());
+				updateContentBounds();
+			}
 		}
-	}
+	}	
 
 	private void updateContentBounds() throws GkException {
 		List<RS274GCodeRenderer> lstRenderer = cacheRenderer.get();
@@ -110,7 +115,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 * @throws GkException GkException
 	 */
 	public void createRenderer(Integer idGCodeProvider) throws GkException{
-		getWorkspaceService().getGCodeProvider(idGCodeProvider);
+		getRS274NGCService().getGCodeProvider(idGCodeProvider);
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);
 		renderer.setIdGCodeProvider(idGCodeProvider);
 		renderer.setId(rendererIdSequence.getNextValue());
@@ -163,5 +168,20 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 		if(this.workspaceService != null){
 			this.workspaceService.addWorkspaceListener(this);
 		}
+	}
+	
+	/**
+	 * @param service the IRS274NGCService to set
+	 */
+	public void setRS274NGCService(IRS274NGCService service){
+		this.rs274Service = service;
+	}
+	
+	/**
+	 * Returns the current IRS274NGCService
+	 * @return IRS274NGCService
+	 */
+	public IRS274NGCService getRS274NGCService(){
+		return this.rs274Service;
 	}
 }

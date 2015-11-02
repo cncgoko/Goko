@@ -61,7 +61,9 @@ import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.service.IWorkspaceEvent;
 import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.core.workspace.service.WorkspaceEvent;
 import org.goko.gcode.filesender.editor.GCodeEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -214,8 +216,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getLines()));
 		getDataModel().setRemainingTime(getDurationAsString(time));		
-		workspaceService.addGCodeProvider(gcodeFile);
-
+		//workspaceService.addGCodeProvider(gcodeFile);
+		workspaceService.notifyWorkspaceEvent(new WorkspaceEvent("workspace.event.RS274WorkspaceEvent", IWorkspaceEvent.ACTION_CREATE, gcodeFile.getId()));
 	}
 
 	public void addGCodeViewerBinding(GCodeEditor gCodeTextDisplay) {
@@ -242,7 +244,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		
 		IExecutionToken<IExecutionState> token = controllerService.executeGCode(getDataModel().getGcodeProvider());
 		if(getDataModel().getGcodeProvider() != null){
-			workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
+			//workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 		}
 
 		getDataModel().setSentCommandCount( 0 );

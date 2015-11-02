@@ -5,10 +5,17 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -131,5 +138,77 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	@Override
 	public Object getParent(Object content) throws GkException {		
 		return null;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#providesMenuFor(java.lang.Object)
+	 */
+	@Override
+	public boolean providesMenuFor(ISelection selection) throws GkException {
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		if(content instanceof ProjectContainer){
+			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
+		}
+		return (content instanceof GCodeProvider)
+			|| (content instanceof IModifier);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#createMenuFor(org.eclipse.jface.action.IMenuManager, java.lang.Object)
+	 */
+	@Override
+	public void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException {
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		if(content instanceof GCodeProvider){
+			createMenuForGCodeProvider(contextMenu, (GCodeProvider)content);
+		}
+	}
+	
+	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {		
+		contextMenu.add(new Action("Delete") {
+	        /** (inheritDoc)
+	         * @see org.eclipse.jface.action.Action#run()
+	         */
+	        @Override
+	        public void run() {
+	            try {
+					rs274Service.deleteGCodeProvider(content.getId());					
+				} catch (GkException e) {
+					LOG.error(e);
+				}
+	        }
+	        /** (inheritDoc)
+	         * @see org.eclipse.jface.action.Action#getImageDescriptor()
+	         */
+	        @Override
+	        public ImageDescriptor getImageDescriptor() {
+	        	Image image = ResourceManager.getPluginImage("org.goko.core.workspace", "icons/menu/cross.png");	        	
+	        	return ImageDescriptor.createFromImage(image);
+	        }
+	    });
+		
+		// submenu for a specific user
+        MenuManager subMenu = new MenuManager("Modifier", null);
+        
+        
+        // Actions for the sub menu
+        subMenu.add(new Action("Auto leveler") {
+	        /** (inheritDoc)
+	         * @see org.eclipse.jface.action.Action#run()
+	         */
+	        @Override
+	        public void run() {
+	            try {
+					rs274Service.deleteGCodeProvider(content.getId());					
+				} catch (GkException e) {
+					LOG.error(e);
+				}
+	        }	       
+	    });
+a completer avec un referentiel des modifiers		
+		// add the action to the submenu
+        contextMenu.add(subMenu);
 	}
 }

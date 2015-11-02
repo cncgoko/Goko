@@ -8,4 +8,5 @@ public interface IModifier extends IIdBean {
 	
 	public void apply(GCodeContext initialContext, GCodeProvider source, GCodeProvider target) throws GkException;
 
+	
 }

@@ -19,12 +19,14 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionProvider;
+import org.goko.core.gcode.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
@@ -36,6 +38,7 @@ import org.goko.core.gcode.rs274ngcv3.parser.ModalGroup;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.math.Tuple6b;
+import org.goko.core.workspace.service.IWorkspaceService;
 
 /**
  * @author Psyko
@@ -46,11 +49,16 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	private List<ModalGroup> modalGroups;	
 	/** The cache of providers */
 	private CacheById<IGCodeProvider> cacheProviders;
+	/** The cache of modifiers */
+	private CacheById<IModifier<IGCodeProvider, GCodeContext>> cacheModifiers;
+	/** The workspace service */
+	private IWorkspaceService workspaceService;
 	
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
 		this.cacheProviders = new CacheById<IGCodeProvider>(new SequentialIdGenerator());		
+		this.cacheModifiers = new CacheById<IModifier<IGCodeProvider, GCodeContext>>(new SequentialIdGenerator());		
 	}
 	
 	/** (inheritDoc)
@@ -380,5 +388,37 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public List<IGCodeProvider> getGCodeProvider() throws GkException {		
 		return cacheProviders.get();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#deleteGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public void deleteGCodeProvider(Integer id) throws GkException {
+		IGCodeProvider provider = cacheProviders.get(id);
+		cacheProviders.remove(id);		
+		workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(provider));
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) {
+		this.workspaceService = workspaceService;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#addModifier(org.goko.core.gcode.element.IModifier)
+	 */
+	@Override
+	public void addModifier(IModifier<IGCodeProvider, GCodeContext> modifier) throws GkException {
+		this.cacheModifiers.add(modifier);
 	}
 }

@@ -3,6 +3,8 @@
  */
 package org.goko.core.workspace.bean;
 
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.goko.core.common.exception.GkException;
@@ -69,4 +71,8 @@ public abstract class ProjectContainerUiProvider {
 	public abstract Object[] getChildren(Object content) throws GkException;
 
 	public abstract Object getParent(Object content) throws GkException;
+	
+	public abstract boolean providesMenuFor(ISelection selection) throws GkException;
+	
+	public abstract void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException;
 }

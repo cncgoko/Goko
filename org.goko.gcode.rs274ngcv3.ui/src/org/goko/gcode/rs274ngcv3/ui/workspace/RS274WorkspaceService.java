@@ -23,8 +23,6 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	private IWorkspaceUIService workspaceUIService;
 	/** Workspace UI service */
 	private IRS274NGCService gcodeService;
-	/** Ui provider */
-	private ProjectContainerUiProvider gcodeContainerUiProvider;
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()

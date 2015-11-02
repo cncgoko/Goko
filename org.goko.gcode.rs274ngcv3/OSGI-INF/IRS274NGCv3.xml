@@ -6,4 +6,5 @@
       <provide interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService"/>
       <provide interface="org.goko.core.execution.IGCodeExecutionTimeService"/>
    </service>
+   <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
 </scr:component>

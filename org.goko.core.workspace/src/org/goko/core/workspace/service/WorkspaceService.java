@@ -23,13 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.GkProject;
 import org.goko.core.workspace.bean.ProjectContainer;
-import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
 
 /**
  * Default implementation of the workspace service
@@ -81,52 +78,6 @@ public class WorkspaceService implements IWorkspaceService{
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#addGCodeProvider(org.goko.core.gcode.bean.IGCodeProvider)
-	 */
-	@Override
-	public void addGCodeProvider(IGCodeProvider provider) throws GkException {		
-		//getNodeGCodeProviderContainer().add(provider);		
-		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.INSERT, provider.getId()));
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#getGCodeProvider(java.lang.Integer)
-	 */
-	@Override
-	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {		
-		return null;// getNodeGCodeProviderContainer().get(id);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#setCurrentGCodeProvider(java.lang.Integer)
-	 */
-	@Override
-	public void setCurrentGCodeProvider(Integer id) throws GkException {
-		currentProviderId = id;
-		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.CURRENT_UPDATE, id));
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#getCurrentGCodeProvider()
-	 */
-	@Override
-	public IGCodeProvider getCurrentGCodeProvider() throws GkException {
-		return null;//getNodeGCodeProviderContainer().get(currentProviderId);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#deleteGCodeProvider(java.lang.Integer)
-	 */
-	@Override
-	public void deleteGCodeProvider(Integer id) throws GkException {
-		//getNodeGCodeProviderContainer().remove(id);
-		if(ObjectUtils.equals(currentProviderId, id)){
-			setCurrentGCodeProvider(null);
-		}
-		notifyListeners(new GCodeProviderEvent(GCodeProviderEventType.DELETE, id));
-	}
-
-	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#addWorkspaceListener(IWorkspaceListener)
 	 */
 	@Override
@@ -142,15 +93,18 @@ public class WorkspaceService implements IWorkspaceService{
 		this.listenerList.remove(listener);
 	}
 
+	public void notifyWorkspaceEvent(IWorkspaceEvent event) throws GkException{
+		notifyListeners(event);
+	}
 	/**
 	 * Notify the registered listeners with the given event
 	 * @param event the event
 	 * @throws GkException GkException
 	 */
-	private void notifyListeners(GCodeProviderEvent event) throws GkException {
+	private void notifyListeners(IWorkspaceEvent event) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IWorkspaceListener workspaceListener : listenerList) {
-				workspaceListener.onGCodeProviderEvent(event);
+				workspaceListener.onWorkspaceEvent(event);
 			}
 		}
 	}

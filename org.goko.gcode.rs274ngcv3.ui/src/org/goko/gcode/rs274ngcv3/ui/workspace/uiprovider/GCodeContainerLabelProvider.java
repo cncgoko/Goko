@@ -32,7 +32,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 			return styleString;
 		}else if(element instanceof IModifier){
 			StyledString styleString = new StyledString();			
-			styleString.append("Modifier");			
+			styleString.append("Modifier ");			
 			return styleString;
 		}
 		return null;
@@ -45,7 +45,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 	@Override
 	public Image getImage(Object element) {
 		if(element instanceof ProjectContainer){
-			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/folder-horizontal.png");
+			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/resource_persp.gif");
 		}else if(element instanceof IGCodeProvider){
 			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/gcode-provider-icon.png");
 		}else if(element instanceof IModifier){

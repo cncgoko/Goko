@@ -13,20 +13,27 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 
 /**
  * @author PsyKo
  * @date 30 oct. 2015
  */
-public class WorkspaceUIService implements IGokoService, IWorkspaceUIService {
+public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IWorkspaceListener {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(WorkspaceService.class);
 	/** Service ID */
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceUIService";
+	/** The map of registered UI providers */
 	private Map<String, ProjectContainerUiProvider> mapProjectContainerUiProvider;
+	/** Event admin for notification to the UI */
+	private EventAdmin eventAdmin;
+	/** The workspace service */
+	private IWorkspaceService workspaceService;
 	
 	/**
-	 * 
+	 * Constructor 
 	 */
 	public WorkspaceUIService() {
 		
@@ -100,4 +107,63 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService {
 	public List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException {		
 		return new ArrayList<ProjectContainerUiProvider>(mapProjectContainerUiProvider.values());
 	}
+	
+	public void refreshWorkspaceUi(){
+		eventAdmin.postEvent(new Event(WorkspaceUIEvent.TOPIC_WORKSPACE_REFRESH, new HashMap<String, String>()));
+	}
+	/**
+	 * @return the eventAdmin
+	 */
+	public EventAdmin getEventAdmin() {
+		return eventAdmin;
+	}
+	/**
+	 * @param eventAdmin the eventAdmin to set
+	 */
+	public void setEventAdmin(EventAdmin eventAdmin) {
+		this.eventAdmin = eventAdmin;
+	}
+	
+	/**
+	 * @param eventAdmin the eventAdmin to set
+	 */
+	public void unsetEventAdmin() {
+		this.eventAdmin = null;
+	}
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+	/**
+	 * @param workspaceService the workspaceService to set
+	 * @throws GkException GkException 
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) throws GkException {
+		this.workspaceService = workspaceService;
+		if(this.workspaceService != null){
+			this.workspaceService.addWorkspaceListener(this);
+		}
+	}
+	
+	/**
+	 * @param workspaceService the workspaceService to remove
+	 * @throws GkException GkException 
+	 */
+	public void unsetWorkspaceService(IWorkspaceService workspaceService) throws GkException {		
+		if(this.workspaceService != null){
+			this.workspaceService.removeWorkspaceListener(this);
+		}
+		this.workspaceService = null;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceListener#onWorkspaceEvent(org.goko.core.workspace.service.IWorkspaceEvent)
+	 */
+	@Override
+	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
+		refreshWorkspaceUi();
+	}
+	
 }

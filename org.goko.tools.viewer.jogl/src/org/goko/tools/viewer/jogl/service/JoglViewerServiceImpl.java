@@ -25,8 +25,6 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.vecmath.Vector3d;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -41,11 +39,6 @@ import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
-import org.goko.core.math.BoundingTuple6b;
-import org.goko.core.workspace.service.GCodeProviderEvent;
-import org.goko.core.workspace.service.GCodeProviderEvent.GCodeProviderEventType;
-import org.goko.core.workspace.service.IWorkspaceListener;
-import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
@@ -53,10 +46,7 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
-import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
-
-import com.jogamp.opengl.util.PMVMatrix;
 
 /**
  * Jogl implementation of the viewer service

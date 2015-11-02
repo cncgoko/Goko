@@ -3,4 +3,5 @@
    <implementation class="org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService"/>
    <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceUIService" name="IWorkspaceUIService" policy="static"/>
+   <reference bind="setRS274NGCService" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
 </scr:component>

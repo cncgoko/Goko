@@ -4,4 +4,6 @@
    <service>
       <provide interface="org.goko.core.workspace.service.IWorkspaceUIService"/>
    </service>
+   <reference bind="setEventAdmin" cardinality="1..1" interface="org.osgi.service.event.EventAdmin" name="EventAdmin" policy="static" unbind="unsetEventAdmin"/>
+   <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="dynamic"/>
 </scr:component>

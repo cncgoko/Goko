@@ -18,20 +18,11 @@ package org.goko.core.workspace.service;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.element.IGCodeProvider;
 
 public interface IWorkspaceService extends IGokoService{
 
-	void addGCodeProvider(IGCodeProvider provider) throws GkException;
-
-	IGCodeProvider getGCodeProvider(Integer id) throws GkException;
-
-	void setCurrentGCodeProvider(Integer id) throws GkException;
-
-	IGCodeProvider getCurrentGCodeProvider() throws GkException;
-
-	void deleteGCodeProvider(Integer id) throws GkException;
-
+	void notifyWorkspaceEvent(IWorkspaceEvent event) throws GkException;
+	
 	void addWorkspaceListener(IWorkspaceListener listener) throws GkException;
 
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
