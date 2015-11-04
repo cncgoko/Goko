@@ -56,7 +56,9 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.modifier.TestModifier;
 import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeService;
@@ -217,7 +219,8 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		getDataModel().setTotalCommandCount(CollectionUtils.size(gcodeFile.getLines()));
 		getDataModel().setRemainingTime(getDurationAsString(time));		
 		//workspaceService.addGCodeProvider(gcodeFile);
-		workspaceService.notifyWorkspaceEvent(new WorkspaceEvent("workspace.event.RS274WorkspaceEvent", IWorkspaceEvent.ACTION_CREATE, gcodeFile.getId()));
+				
+		((IRS274NGCService)gCodeService).addGCodeProvider(gcodeFile);		
 	}
 
 	public void addGCodeViewerBinding(GCodeEditor gCodeTextDisplay) {

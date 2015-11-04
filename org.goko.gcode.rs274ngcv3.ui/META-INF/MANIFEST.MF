@@ -10,7 +10,8 @@ Require-Bundle: org.goko.core,
  org.eclipse.swt,
  org.eclipse.jface,
  org.goko.gcode.rs274ngcv3
-Import-Package: org.eclipse.jface.viewers,
+Import-Package: org.eclipse.core.runtime;version="3.5.0",
+ org.eclipse.jface.viewers,
  org.goko.core.gcode.rs274ngcv3,
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy

@@ -32,7 +32,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 			return styleString;
 		}else if(element instanceof IModifier){
 			StyledString styleString = new StyledString();			
-			styleString.append("Modifier ");			
+			styleString.append(((IModifier<?>) element).getModifierName());			
 			return styleString;
 		}
 		return null;
@@ -49,7 +49,11 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 		}else if(element instanceof IGCodeProvider){
 			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/gcode-provider-icon.png");
 		}else if(element instanceof IModifier){
-			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/modifier-on.png");
+			if(((IModifier<?>) element).isEnabled()){
+				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/modifier-on.png");
+			}else{
+				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/modifier-off.png");
+			}
 		}
 		return super.getImage(element);
 	}

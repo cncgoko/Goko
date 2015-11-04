@@ -14,14 +14,14 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 
-public class TestModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
+public class TranslateModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
 		
 	/**
 	 * Constructor
 	 * @param idGCodeProvider target provider id
 	 */
-	public TestModifier(Integer idGCodeProvider) {
-		super(idGCodeProvider, "Test modifier");
+	public TranslateModifier(Integer idGCodeProvider) {
+		super(idGCodeProvider, "Translate");
 	}
 
 	/** (inheritDoc)
@@ -35,10 +35,8 @@ public class TestModifier extends AbstractModifier<GCodeProvider> implements IMo
 		while(iterator.hasNext()){
 			AbstractInstruction instr = iterator.next();
 			if(instr.getType() == InstructionType.STRAIGHT_FEED){
-				StraightFeedInstruction sfi = (StraightFeedInstruction) instr;
-				double nb = Math.ceil(Math.random()*(Math.PI*100))/100;
-				String strNumber = String.valueOf(nb);
-				sfi.setZ(sfi.getZ().add(NumberQuantity.of(strNumber, SI.MILLIMETRE)));
+				StraightFeedInstruction sfi = (StraightFeedInstruction) instr;				
+				sfi.setX(sfi.getX().add(NumberQuantity.of("5", SI.MILLIMETRE)));
 			}
 		}
 		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);

@@ -12,13 +12,14 @@ import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.element.IInstructionSet;
 import org.goko.core.gcode.element.IInstructionSetIterator;
-import org.goko.core.gcode.element.IModifier;
 
 public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, S extends IInstructionSet<I>> extends IGokoService{
 
 	List<IGCodeProvider> getGCodeProvider() throws GkException;
 	
 	IGCodeProvider getGCodeProvider(Integer id) throws GkException;
+	
+	void addGCodeProvider(IGCodeProvider provider) throws GkException; 
 	
 	void deleteGCodeProvider(Integer id) throws GkException;
 		
@@ -32,7 +33,5 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 	
 	IInstructionSetIterator<T, I> getIterator(IInstructionProvider<I, S> instructionProvider, T baseContext) throws GkException;
 	
-	String render(GCodeLine line) throws GkException;
-	
-	void addModifier(IModifier<IGCodeProvider, T> modifier) throws GkException;
+	String render(GCodeLine line) throws GkException;	
 }

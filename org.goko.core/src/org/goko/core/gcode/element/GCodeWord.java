@@ -28,6 +28,11 @@ public class GCodeWord {
 		this.letter = letter;
 		this.value = value;
 	}
+	
+	public GCodeWord(GCodeWord word) {
+		this(word.getLetter(), word.getValue());
+	}
+	
 	/**
 	 * @return the letter
 	 */

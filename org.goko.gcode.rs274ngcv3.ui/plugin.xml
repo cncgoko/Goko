@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="org.goko.gcode.rs274ngcv3.ui.modifier.factory" name="modifierFactory" schema="schema/org.goko.gcode.rs274ngcv3.ui.modifier.factory.exsd"/>
+   <extension
+         point="org.goko.gcode.rs274ngcv3.ui.modifier.factory">
+      <modifierUiBuilder
+            class="org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TestModifierBuilder">
+      </modifierUiBuilder>
+      <modifierUiBuilder
+            class="org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder">
+      </modifierUiBuilder>
+   </extension>
+
+</plugin>

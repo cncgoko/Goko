@@ -10,14 +10,13 @@ import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 
 public class GCodeProviderWithModifier implements IGCodeProvider{
 	/** The original provider */
 	private GCodeProvider baseProvider;
 	/** The result provider */
 	private GCodeProvider resultProvider;	
-	/** The lines in this provider */
-	private CacheById<IModifier> cacheModifiers;
 	/** The id of the modifiers in the order of use */
 	private List<Integer> modifiersSequence;
 	/** The code of this provider*/
@@ -25,7 +24,6 @@ public class GCodeProviderWithModifier implements IGCodeProvider{
 	
 	public GCodeProviderWithModifier() {	
 		this.baseProvider = new GCodeProvider();
-		this.cacheModifiers 	= new CacheById<IModifier>(new SequentialIdGenerator());
 		this.modifiersSequence = new ArrayList<Integer>();
 	}
 	
@@ -56,20 +54,7 @@ public class GCodeProviderWithModifier implements IGCodeProvider{
 		return resultProvider.getLines();
 	}
 
-	private void applyModifiers() throws GkException {
-		List<IModifier> lstModifiers = cacheModifiers.get(modifiersSequence);
-		GCodeProvider source = baseProvider;
-		GCodeProvider target = null;
-		if(CollectionUtils.isNotEmpty(lstModifiers)){
-			for (IModifier modifier : lstModifiers) {
-				target = new GCodeProvider();
-				modifier.apply(new GCodeContext(), source, target);
-				source = target;
-			}
-		}
-		this.resultProvider = source;
-	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IGCodeProvider#getLine(java.lang.Integer)
 	 */

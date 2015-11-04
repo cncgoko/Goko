@@ -12,6 +12,8 @@ import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
@@ -54,7 +56,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	public void start() throws GkException {
 		LOG.info("Starting "+getServiceId());
 		
-		this.cacheRenderer = new CacheById<RS274GCodeRenderer>();
+		this.cacheRenderer = new CacheById<RS274GCodeRenderer>(new SequentialIdGenerator());
 		this.rendererIdSequence = new SequentialIdGenerator();
 		LOG.info("Successfully started " + getServiceId());
 	}
@@ -74,17 +76,34 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	@Override
 	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {		
 		if(event.isType(RS274WorkspaceEvent.TYPE)){
-			if(event.isAction(IWorkspaceEvent.ACTION_CREATE)){
-				createRenderer(event.getIdElement());
-				updateContentBounds();
-				
-			}else if(event.isAction(IWorkspaceEvent.ACTION_DELETE)){
-				removeRenderer(event.getIdElement());
-				updateContentBounds();
+			RS274WorkspaceEvent rsEvent = (RS274WorkspaceEvent) event;
+			if(rsEvent.getContentType() == RS274WorkspaceEvent.GCODE_MODIFIER_EVENT){
+				onModifierEvent(event);
+			}else if(rsEvent.getContentType() == RS274WorkspaceEvent.GCODE_PROVIDER_EVENT){
+				onProviderEvent(event);
 			}
 		}
 	}	
 
+	protected void onModifierEvent(IWorkspaceEvent event) throws GkException {		
+		IModifier<GCodeProvider> modifier = rs274Service.getModifier(event.getIdElement());					
+		updateRenderer(modifier.getIdGCodeProvider());
+		updateContentBounds();
+		
+	}
+	protected void onProviderEvent(IWorkspaceEvent event) throws GkException {		
+		if(event.isAction(IWorkspaceEvent.ACTION_CREATE)){
+			createRenderer(event.getIdElement());
+			updateContentBounds();			
+		}else if(event.isAction(IWorkspaceEvent.ACTION_DELETE)){
+			removeRenderer(event.getIdElement());
+			updateContentBounds();
+		}else if(event.isAction(IWorkspaceEvent.ACTION_UPDATE)){
+			updateRenderer(event.getIdElement());
+			updateContentBounds();
+			
+		}
+	}
 	private void updateContentBounds() throws GkException {
 		List<RS274GCodeRenderer> lstRenderer = cacheRenderer.get();
 		
@@ -114,13 +133,19 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 * @param idGCodeProvider the id of the GCodeProvider
 	 * @throws GkException GkException
 	 */
-	public void createRenderer(Integer idGCodeProvider) throws GkException{
+	public void createRenderer(Integer idGCodeProvider) throws GkException{		
 		getRS274NGCService().getGCodeProvider(idGCodeProvider);
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);
-		renderer.setIdGCodeProvider(idGCodeProvider);
-		renderer.setId(rendererIdSequence.getNextValue());
+		renderer.setIdGCodeProvider(idGCodeProvider);		
 		this.cacheRenderer.add(renderer);
 		Activator.getJoglViewerService().addRenderer(renderer);		
+	}
+	
+	public void updateRenderer(Integer idGCodeProvider) throws GkException{		
+		RS274GCodeRenderer renderer = getRendererByGCodeProvider(idGCodeProvider);				
+		createRenderer(idGCodeProvider);
+		cacheRenderer.remove(renderer);
+		renderer.destroy();		
 	}
 	
 	/**
@@ -130,8 +155,8 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	public void removeRenderer(Integer idGCodeProvider) throws GkException{
 		RS274GCodeRenderer renderer = getRendererByGCodeProvider(idGCodeProvider);
-		this.cacheRenderer.remove(renderer.getId());
-		Activator.getJoglViewerService().removeRenderer(renderer);
+		cacheRenderer.remove(renderer);
+		renderer.destroy();
 	}
 	
 	/**

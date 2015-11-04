@@ -4,7 +4,6 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.workspace.service.IWorkspaceEvent;
-import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.WorkspaceEvent;
 
 public class RS274WorkspaceEvent extends WorkspaceEvent {
@@ -45,5 +44,17 @@ public class RS274WorkspaceEvent extends WorkspaceEvent {
 	
 	public static IWorkspaceEvent getDeleteEvent(IGCodeProvider gcodeProvider){
 		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_DELETE, gcodeProvider.getId(), GCODE_PROVIDER_EVENT);
+	}
+	
+	public static IWorkspaceEvent getCreateEvent(IModifier<?> gcodeProvider){
+		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_CREATE, gcodeProvider.getId(), GCODE_MODIFIER_EVENT);
+	}
+	
+	public static IWorkspaceEvent getUpdateEvent(IModifier<?> gcodeProvider){
+		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_UPDATE, gcodeProvider.getId(), GCODE_MODIFIER_EVENT);
+	}
+	
+	public static IWorkspaceEvent getDeleteEvent(IModifier<?> gcodeProvider){
+		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_DELETE, gcodeProvider.getId(), GCODE_MODIFIER_EVENT);
 	}
 }
