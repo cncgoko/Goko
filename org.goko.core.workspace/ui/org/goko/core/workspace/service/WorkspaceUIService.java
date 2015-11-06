@@ -127,7 +127,7 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	/**
 	 * @param eventAdmin the eventAdmin to set
 	 */
-	public void unsetEventAdmin() {
+	public void unsetEventAdmin(EventAdmin eventAdmin) {
 		this.eventAdmin = null;
 	}
 	/**

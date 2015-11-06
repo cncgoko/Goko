@@ -55,7 +55,6 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
-import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -178,7 +177,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		checkExecutionControl();
 		checkVerbosity(configuration);
 		updateQueueReport();
-		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
+		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider, gcodeService);
 		token.setMonitorService(getMonitorService());
 		executionQueue.add(token);
 
@@ -276,9 +275,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	protected void updateCurrentGCodeContext(GCodeContext updatedGCodeContext) throws GkException{
 		GCodeContext current = tinygState.getGCodeContext();
-//		if(updatedGCodeContext.getPosition() != null){
-//			current.setPosition(updatedGCodeContext.getPosition());
-//		}
+		if(updatedGCodeContext.getPosition() != null){
+			current.setPosition(updatedGCodeContext.getPosition());
+		}
 		if(updatedGCodeContext.getCoordinateSystem() != null){
 			current.setCoordinateSystem(updatedGCodeContext.getCoordinateSystem());
 		}
@@ -344,9 +343,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
 		if(executionQueue.getCurrentToken() != null){
 			if(status == TinyGStatusCode.TG_OK){
-				GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
-				executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
-				this.currentSendingRunnable.confirmCommand();
+				if(StringUtils.isNotEmpty(receivedCommand)){
+					GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
+					executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
+					this.currentSendingRunnable.confirmCommand();
+				}
 			}else{
 				handleError(status, receivedCommand);
 			}

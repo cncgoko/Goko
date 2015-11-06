@@ -25,10 +25,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.utils.AbstractIdBean;
-import org.goko.core.common.utils.CacheById;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IInstruction;
+import org.goko.core.gcode.element.IInstructionSet;
 import org.goko.core.gcode.service.IExecutionMonitorService;
+import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.log.GkLog;
 
 /**
  * Implementation of a {@link IExecutionToken} for execution planner
@@ -37,6 +41,7 @@ import org.goko.core.gcode.service.IExecutionMonitorService;
  *
  */
 public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean implements IExecutionToken<T> {	
+	private static final GkLog LOG = GkLog.getLogger(ExecutionToken.class);
 	/** The map of state by line Id */
 	protected Map<Integer, T> mapExecutionStateById;
 	/** The map of lines id by state */
@@ -45,8 +50,11 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	protected int currentIndex;
 	/** Completed state  */
 	protected boolean complete;
+	/** d of the executed GCodeProvider */
+	protected Integer idGCodeProvider;
 	/** The monitor service */
 	protected IExecutionMonitorService<T, IExecutionToken<T>> monitorService;
+	protected IGCodeService<IInstruction, IGCodeContext, IInstructionSet<IInstruction>> gcodeService;
 	/** Paused state */
 	protected boolean paused;
 	
@@ -55,8 +63,10 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 * @param provider the provider to build this execution token from
 	 * @throws GkException GkException 
 	 */
-	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
+	public ExecutionToken(IGCodeProvider provider, IGCodeService service, T initState) throws GkException {
 		// FIXME : put creation of this token in ExecutionService
+		this.idGCodeProvider = provider.getId();
+		this.gcodeService = service;
 		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
 		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
 		this.mapLineByExecutionState.put(initState, new ArrayList<Integer>());		
@@ -121,7 +131,8 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 */
 	@Override
 	public GCodeLine getNextLine() throws GkException {
-		return lstGCodeLine.get(commands.get(currentIndex + 1));
+		return gcodeService.getGCodeProvider(idGCodeProvider).getLineAtIndex(currentIndex + 1);
+		//return lstGCodeLine.get(commands.get(currentIndex + 1));
 	}
 
 	/** (inheritDoc)
@@ -130,8 +141,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	@Override
 	public GCodeLine takeNextLine() throws GkException {
 		currentIndex = currentIndex + 1;
-		Integer nextId = commands.get(currentIndex);
-		return lstGCodeLine.get(nextId);
+		return gcodeService.getGCodeProvider(idGCodeProvider).getLineAtIndex(currentIndex);
 	}
 
 	/** (inheritDoc)
@@ -147,7 +157,12 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 * @return the number of lines
 	 */
 	public int getLineCount() {		
-		return CollectionUtils.size(lstGCodeLine);
+		try {
+			return gcodeService.getGCodeProvider(idGCodeProvider).getLines().size();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return 0;
 	}
 
 	/** (inheritDoc)
@@ -256,8 +271,10 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	public List<GCodeLine> getLineByState(T state) throws GkException {
 		List<GCodeLine> result = new ArrayList<GCodeLine>();
 		List<Integer> lstId = mapLineByExecutionState.get(state);
-		for (Integer idLine : lstId) {
-			result.add(getLine(idLine));
+		if(CollectionUtils.isNotEmpty(lstId)){
+			for (Integer idLine : lstId) {
+				result.add(gcodeService.getGCodeProvider(idGCodeProvider).getLine(idLine));
+			}
 		}
 		return result;
 	}

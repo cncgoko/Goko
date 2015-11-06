@@ -25,7 +25,8 @@ public abstract class UiLabeledFieldEditor<C extends Control> extends UiFieldEdi
 	 * @param style style
 	 */
 	public UiLabeledFieldEditor(Composite parent, int style) {
-		super(parent, style);		
+		super(parent, style);	
+		createControls(parent, style);
 	}
 
 	/** (inheritDoc)

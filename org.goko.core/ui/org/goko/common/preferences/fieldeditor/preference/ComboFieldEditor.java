@@ -62,6 +62,7 @@ public class ComboFieldEditor extends LabeledFieldEditor<Combo> {
     	control.pack();
     	this.pack();
 	}
+
 	
 	/** (inheritDoc)
 	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#loadValue()

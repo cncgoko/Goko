@@ -63,7 +63,7 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
 	
 	public UiStringFieldEditor(Composite parent, int style) {
 		super(parent, style);
-		createControls(parent, style);
+		//createControls(parent, style);
 		
 	}
 

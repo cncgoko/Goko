@@ -58,14 +58,11 @@ import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
-import org.goko.core.gcode.rs274ngcv3.modifier.TestModifier;
 import org.goko.core.gcode.service.IExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.service.IWorkspaceEvent;
 import org.goko.core.workspace.service.IWorkspaceService;
-import org.goko.core.workspace.service.WorkspaceEvent;
 import org.goko.gcode.filesender.editor.GCodeEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -254,9 +251,9 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 		getDataModel().setTotalCommandCount( token.getLineCount() );
 
 		//getDataModel().setGcodeProvider(token);
-		if(true){
-			throw new GkTechnicalException("A reactiver");
-		}
+//		if(true){
+//			throw new GkTechnicalException("A reactiver");
+//		}
 		getDataModel().setStreamingInProgress(true);
 		startElapsedTimer();
 	}

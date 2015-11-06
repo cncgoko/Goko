@@ -27,6 +27,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.service.IGCodeService;
 
 
 public class TinyGExecutionToken extends ExecutionToken<ExecutionState>{
@@ -36,8 +37,8 @@ public class TinyGExecutionToken extends ExecutionToken<ExecutionState>{
 	 * @param provider the provider to execute
 	 * @throws GkException 
 	 */
-	public TinyGExecutionToken(IGCodeProvider provider) throws GkException {
-		super(provider, ExecutionState.NONE);		
+	public TinyGExecutionToken(IGCodeProvider provider, IGCodeService gcodeService) throws GkException {
+		super(provider, gcodeService, ExecutionState.NONE);		
 		lock = new Object();
 	}
 
