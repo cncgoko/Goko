@@ -16,11 +16,11 @@ import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 public interface IWorkspaceUIService extends IGokoService {
 
 	ProjectContainerUiProvider findProjectContainerUiProvider(String type) throws GkTechnicalException;
-
-	List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException;
 	
 	ProjectContainerUiProvider getProjectContainerUiProvider(String type) throws GkTechnicalException;
-
+	
+	List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException;
+	
 	boolean existProjectContainerUiProvider(String type) throws GkTechnicalException;
 
 	void addProjectContainerUiProvider(ProjectContainerUiProvider provider) throws GkTechnicalException;

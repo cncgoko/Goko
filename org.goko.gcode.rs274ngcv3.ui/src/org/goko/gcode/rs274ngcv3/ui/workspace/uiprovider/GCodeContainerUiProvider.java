@@ -10,12 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -27,6 +29,7 @@ import org.goko.core.workspace.bean.ProjectContainer;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.DeleteModifierAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDisableAction;
 
@@ -156,37 +159,64 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	
 	private void createMenuForGCodeModifier(IMenuManager contextMenu, IModifier<?> modifier) {
 		contextMenu.add(new EnableDisableAction(rs274Service, modifier.getId()));
+		contextMenu.add(new Separator());
 		contextMenu.add(new DeleteModifierAction(rs274Service, modifier.getId()));		
 	}
 
-	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {		
-		contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));
+	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {
+		// Submenu for a specific user
+        MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
+        contextMenu.add(subMenu); 
+       
+        contextMenu.add(new Separator());
+        contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));		
+	}
+	
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#providesConfigurationPanelFor(java.lang.Object)
+	 */
+	@Override
+	public boolean providesConfigurationPanelFor(ISelection selection) throws GkException {
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
 		
-		// submenu for a specific user
-        MenuManager subMenu = new MenuManager("Modifier", null);
-        
-        List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
-        for (final IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
-			// Actions for the sub menu
-			subMenu.add(new Action(iModifierUiProvider.getModifierName()) {
-				/**
-				 * (inheritDoc)
-				 * 
-				 * @see org.eclipse.jface.action.Action#run()
-				 */
-				@Override
-				public void run() {
-					try {
-						rs274Service.addModifier(iModifierUiProvider.createDefaultModifier(content.getId()));
-					} catch (GkException e) {
-						LOG.error(e);
+		if(content instanceof IModifier<?>){
+			IModifier<?> iModifier = (IModifier<?>) content;
+			
+			List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
+			if(CollectionUtils.isNotEmpty(lstBuilders)){
+				for (IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
+					if(iModifierUiProvider.providesConfigurationPanelFor(iModifier)){
+						return true;
 					}
 				}
-			});
+			}
 		}
-       
-//a completer avec un referentiel des modifiers		
-		// add the action to the submenu
-        contextMenu.add(subMenu);
+		return false;
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#createConfigurationPanelFor(org.eclipse.swt.widgets.Composite, java.lang.Object)
+	 */
+	@Override
+	public void createConfigurationPanelFor(Composite parent, ISelection selection) throws GkException {
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		
+		if(content instanceof IModifier<?>){
+			IModifier<?> iModifier = (IModifier<?>) content;
+			
+			List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
+			if(CollectionUtils.isNotEmpty(lstBuilders)){
+				for (IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
+					if(iModifierUiProvider.providesConfigurationPanelFor(iModifier)){
+						iModifierUiProvider.createConfigurationPanelFor(parent, iModifier);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
 }

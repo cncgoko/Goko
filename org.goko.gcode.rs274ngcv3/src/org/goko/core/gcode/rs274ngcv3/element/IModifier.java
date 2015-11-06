@@ -15,6 +15,8 @@ public interface IModifier<T extends GCodeProvider> extends IIdBean {
 	
 	public void apply(T source, T target) throws GkException;
 
+	int getOrder();
 	
+	void setOrder(int order);
 }
 

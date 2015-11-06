@@ -12,6 +12,8 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 	private String modifierName;
 	/** The modifier state */
 	private boolean enabled;
+	/** The order of this modifier in the target modifier stack */
+	private int order;
 	
 	/**
 	 * Constructor
@@ -76,4 +78,18 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 	}
 	
 	protected abstract void applyModifier(T source, T target) throws GkException;
+
+	/**
+	 * @return the order
+	 */
+	public int getOrder() {
+		return order;
+	}
+
+	/**
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
 }

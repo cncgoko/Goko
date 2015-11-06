@@ -43,18 +43,18 @@ public class RS274WorkspaceEvent extends WorkspaceEvent {
 	}
 	
 	public static IWorkspaceEvent getDeleteEvent(IGCodeProvider gcodeProvider){
-		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_DELETE, gcodeProvider.getId(), GCODE_PROVIDER_EVENT);
+		return new RS274WorkspaceDeleteEvent(IWorkspaceEvent.ACTION_DELETE, gcodeProvider.getId(), GCODE_PROVIDER_EVENT, gcodeProvider);
 	}
 	
-	public static IWorkspaceEvent getCreateEvent(IModifier<?> gcodeProvider){
-		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_CREATE, gcodeProvider.getId(), GCODE_MODIFIER_EVENT);
+	public static IWorkspaceEvent getCreateEvent(IModifier<?> modifier){
+		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_CREATE, modifier.getId(), GCODE_MODIFIER_EVENT);
 	}
 	
-	public static IWorkspaceEvent getUpdateEvent(IModifier<?> gcodeProvider){
-		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_UPDATE, gcodeProvider.getId(), GCODE_MODIFIER_EVENT);
+	public static IWorkspaceEvent getUpdateEvent(IModifier<?> modifier){
+		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_UPDATE, modifier.getId(), GCODE_MODIFIER_EVENT);
 	}
 	
-	public static IWorkspaceEvent getDeleteEvent(IModifier<?> gcodeProvider){
-		return new RS274WorkspaceEvent(IWorkspaceEvent.ACTION_DELETE, gcodeProvider.getId(), GCODE_MODIFIER_EVENT);
+	public static IWorkspaceEvent getDeleteEvent(IModifier<?> modifier){
+		return new RS274WorkspaceDeleteEvent(IWorkspaceEvent.ACTION_DELETE, modifier.getId(), GCODE_MODIFIER_EVENT, modifier);
 	}
 }

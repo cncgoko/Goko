@@ -3,6 +3,7 @@ package org.goko.core.gcode.rs274ngcv3;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -32,6 +33,8 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
+import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter;
+import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter.EnumModifierSortType;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeTokenType;
@@ -89,6 +92,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		
 		LOG.info("Successfully stopped " + getServiceId());
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IGCodeService#parse(java.io.InputStream)
 	 */
@@ -403,6 +407,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public void deleteGCodeProvider(Integer id) throws GkException {
 		IGCodeProvider provider = cacheProviders.get(id);
+		performDeleteByIdGCodeProvider(id);
 		cacheProviders.remove(id);		
 		workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(provider));
 	}
@@ -427,6 +432,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void addModifier(IModifier<GCodeProvider> modifier) throws GkException {
+		// Assign the order of the modifier on the target GCodeProvider
+		List<IModifier<GCodeProvider>> lstModifier = getModifierByGCodeProvider(modifier.getIdGCodeProvider());
+		modifier.setOrder(lstModifier.size());
 		this.cacheModifiers.add(modifier);
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(modifier));
 	}
@@ -446,9 +454,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void deleteModifier(IModifier<GCodeProvider> modifier) throws GkException {
-		this.cacheModifiers.remove(modifier);
-		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(modifier));
-		la suppression empeche de faire un get derriere..de. logique
+		deleteModifier(modifier.getId());
 	}
 	
 	/** (inheritDoc)
@@ -488,7 +494,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 				}
 			}
 		}
-		
+		Collections.sort(lstProviderModifiers, new ModifierSorter(EnumModifierSortType.ORDER));
 		return lstProviderModifiers;
 	}
 	
@@ -508,4 +514,10 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		return source;
 	}
 
+	protected void performDeleteByIdGCodeProvider(Integer id) throws GkException{
+		List<IModifier<GCodeProvider>> lstModifiers = getModifierByGCodeProvider(id);
+		for (IModifier<GCodeProvider> iModifier : lstModifiers) {
+			cacheModifiers.remove(iModifier);
+		}
+	}
 }

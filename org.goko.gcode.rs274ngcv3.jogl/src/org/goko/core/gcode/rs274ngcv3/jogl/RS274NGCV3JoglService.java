@@ -15,6 +15,7 @@ import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
+import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceDeleteEvent;
 import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
@@ -86,8 +87,14 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	}	
 
 	protected void onModifierEvent(IWorkspaceEvent event) throws GkException {		
-		IModifier<GCodeProvider> modifier = rs274Service.getModifier(event.getIdElement());					
-		updateRenderer(modifier.getIdGCodeProvider());
+		if(event.isAction(IWorkspaceEvent.ACTION_DELETE)){
+			RS274WorkspaceDeleteEvent deleteEvent = (RS274WorkspaceDeleteEvent) event;
+			IModifier<?> modifier = (IModifier<?>) deleteEvent.getDeletedObject();
+			updateRenderer(modifier.getIdGCodeProvider());
+		}else{
+			IModifier<GCodeProvider> modifier = rs274Service.getModifier(event.getIdElement());					
+			updateRenderer(modifier.getIdGCodeProvider());
+		}
 		updateContentBounds();
 		
 	}
@@ -107,6 +114,10 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	private void updateContentBounds() throws GkException {
 		List<RS274GCodeRenderer> lstRenderer = cacheRenderer.get();
 		
+		if(contentBoundsRenderer != null){
+			Activator.getJoglViewerService().removeRenderer(contentBoundsRenderer);
+		}
+		
 		if(CollectionUtils.isNotEmpty(lstRenderer)){
 			BoundingTuple6b result = null;
 			for (RS274GCodeRenderer renderer : lstRenderer) {
@@ -120,9 +131,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 					result.add(bounds);
 				}
 			}
-			if(contentBoundsRenderer != null){
-				Activator.getJoglViewerService().removeRenderer(contentBoundsRenderer);
-			}
+			
 			contentBoundsRenderer = new BoundsRenderer(result);			
 			Activator.getJoglViewerService().addRenderer(contentBoundsRenderer);
 		}

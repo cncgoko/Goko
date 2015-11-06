@@ -33,6 +33,7 @@ public interface IWorkspaceEvent {
 	 * @return <code>true</code> if the action of the event equals the given parameter, <code>false</code> otherwise
 	 */
 	public boolean isAction(String action);
+	
 	/**
 	 * The id of the target element
 	 * @return an id

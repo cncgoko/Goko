@@ -14,11 +14,15 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.goko.core.common.exception.GkException;
@@ -29,6 +33,10 @@ import org.goko.core.workspace.service.WorkspaceService;
 import org.goko.core.workspace.service.WorkspaceUIEvent;
 import org.goko.core.workspace.tree.GkProjectContentProvider;
 import org.goko.core.workspace.tree.GkProjectLabelProvider;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.custom.SashForm;
 
 public class WorkspacePart {
 	private static final GkLog LOG = GkLog.getLogger(WorkspacePart.class);
@@ -37,7 +45,9 @@ public class WorkspacePart {
 	@Inject
 	private IWorkspaceUIService workspaceUiService;
 	/** The workspace tree viewer */
-	private TreeViewer workspaceTreeViewer; 
+	private TreeViewer workspaceTreeViewer;
+	/** Composite containing the configuration panel */
+	private Composite configurationComposite; 
 	
 	@Inject
 	public WorkspacePart() {
@@ -47,18 +57,64 @@ public class WorkspacePart {
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
+		new Label(parent, SWT.NONE);
 		
-		workspaceTreeViewer = new TreeViewer(parent, SWT.BORDER);
+		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		Composite composite = new Composite(sashForm, SWT.NONE);
+		GridLayout gl_composite = new GridLayout(1, false);
+		gl_composite.marginWidth = 0;
+		gl_composite.marginHeight = 0;
+		gl_composite.horizontalSpacing = 0;
+		composite.setLayout(gl_composite);
+		
+		workspaceTreeViewer = new TreeViewer(composite, SWT.BORDER);
 		Tree tree = workspaceTreeViewer.getTree();
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		workspaceTreeViewer.setContentProvider(new GkProjectContentProvider());
 		workspaceTreeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new GkProjectLabelProvider()));
 		workspaceTreeViewer.setInput(workspaceService.getProject());
 		
+		configurationComposite = new Composite(sashForm, SWT.NONE);
+		configurationComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		
+		sashForm.setWeights(new int[] {1, 1});
+		
 		createWorkspaceTreeContextMenu();
+		
+		createSelectionListener();
 	}
 	
+	private void createSelectionListener() {
+		workspaceTreeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				for (Control control : configurationComposite.getChildren()) {
+					control.dispose();
+				}
+				try{
+		        	List<ProjectContainerUiProvider> uiProviders = workspaceUiService.getProjectContainerUiProvider();
+		            if(CollectionUtils.isNotEmpty(uiProviders)){
+		            	for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {	            		
+		            		if(projectContainerUiProvider.providesConfigurationPanelFor(workspaceTreeViewer.getSelection())){
+		            			projectContainerUiProvider.createConfigurationPanelFor(configurationComposite, workspaceTreeViewer.getSelection());
+		            		}
+						}
+		            }
+		            configurationComposite.getParent().layout();
+	        	}catch(GkException e){
+	        		LOG.error(e);
+	        	}
+			}
+		});
+	}
+
 	public void createWorkspaceTreeContextMenu(){
 		MenuManager contextMenu = new MenuManager("#ViewerMenu"); //$NON-NLS-1$
 	    contextMenu.setRemoveAllWhenShown(true);

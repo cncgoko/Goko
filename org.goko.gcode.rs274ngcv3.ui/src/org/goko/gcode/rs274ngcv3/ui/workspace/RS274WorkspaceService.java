@@ -101,6 +101,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService#getModifierBuilder()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<IModifierUiProvider<GCodeProvider, ?>> getModifierBuilder() throws GkException{
 		List<IModifierUiProvider<GCodeProvider, ?>> result = new ArrayList<IModifierUiProvider<GCodeProvider, ?>>();
