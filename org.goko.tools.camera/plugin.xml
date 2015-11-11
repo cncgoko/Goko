@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="org.goko.tools.camera.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="initial"
+            uri="fragments/cameraFragment.e4xmi">
+      </fragment>
+   </extension>
+
+</plugin>
