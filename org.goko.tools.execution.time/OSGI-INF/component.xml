@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.tools.execution.time.service">
-   <implementation class="org.goko.tools.execution.time.service.GCodeExecutionTimeCalculator"/>
-   <service>
-      <provide interface="org.goko.core.execution.IGCodeExecutionTimeService"/>
-   </service>
-   <reference bind="setGcodeService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
-</scr:component>
