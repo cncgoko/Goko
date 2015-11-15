@@ -13,6 +13,9 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.workbench.IWorkbench;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
@@ -78,7 +81,26 @@ public class TargetBoardTracker {
 	 */
 	@Inject
 	@Optional
-	public void onTargetBoardChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_TARGET_BOARD) String targetBoard, IEclipseContext context) {				    
+	public void onTargetBoardChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_TARGET_BOARD) String targetBoard, IEclipseContext context, final UISynchronize uiSync, final IWorkbench workbench) {				    
+		boolean restartRequired = false;
+		if(StringUtils.isNotBlank(String.valueOf(context.get("org.goko.targetBoard")))){
+			restartRequired = StringUtils.equals(targetBoard, String.valueOf(context.get("org.goko.targetBoard")));
+		}
 		context.set("org.goko.targetBoard",  targetBoard);
+		// Restart is required for proper behavior 
+		if(restartRequired && uiSync != null && workbench != null){
+			uiSync.syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					boolean restart = MessageDialog.openQuestion(null,
+                            "Restart required",
+                            "A restart is required when changing the target board. Would you like to restart now ?");
+                    if (restart) {
+                    	workbench.restart();
+                    }
+				}
+			});			
+		}
 	}	
 }

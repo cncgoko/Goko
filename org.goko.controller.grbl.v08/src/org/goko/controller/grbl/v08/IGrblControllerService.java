@@ -24,7 +24,12 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerConfigurationFileExporter;
 import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
+import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IJogService;
+import org.goko.core.controller.IThreeAxisControllerAdapter;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 
 /**
  * Definition of the Grbl service
@@ -32,7 +37,12 @@ import org.goko.core.controller.IJogService;
  * @author PsyKo
  *
  */
-public interface IGrblControllerService extends IControllerService, IJogService, IControllerConfigurationFileExporter,IControllerConfigurationFileImporter{
+public interface IGrblControllerService extends IControllerService<ExecutionState, GCodeContext>,
+												IJogService,
+												IThreeAxisControllerAdapter,
+												ICoordinateSystemAdapter<EnumCoordinateSystem>,
+												IControllerConfigurationFileExporter,
+												IControllerConfigurationFileImporter{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 

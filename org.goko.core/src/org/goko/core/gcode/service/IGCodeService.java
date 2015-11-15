@@ -22,7 +22,9 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 	void addGCodeProvider(IGCodeProvider provider) throws GkException; 
 	
 	void deleteGCodeProvider(Integer id) throws GkException;
-		
+	
+	GCodeLine parseLine(String inputString) throws GkException;
+	
 	IGCodeProvider parse(InputStream inputStream) throws GkException;	
 	
 	IInstructionProvider<I, S> getInstructions(T context, IGCodeProvider gcodeProvider) throws GkException;
@@ -30,6 +32,8 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 	T update(T baseContext, I instruction) throws GkException;
 	
 	T update(T baseContext, S instructionSet) throws GkException;
+	
+	T update(T baseContext, IInstructionProvider<I, S> instructionProvider) throws GkException;
 	
 	IInstructionSetIterator<T, I> getIterator(IInstructionProvider<I, S> instructionProvider, T baseContext) throws GkException;
 	

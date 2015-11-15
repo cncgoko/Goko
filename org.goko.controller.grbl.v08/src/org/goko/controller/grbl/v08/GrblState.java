@@ -30,12 +30,12 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandMotionMode;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandPlane;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandUnit;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
+import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -78,10 +78,10 @@ public class GrblState extends MachineValueStore{
 		storeValue(Grbl.MACHINE_POSITION_Z, "Machine Z", "The Z position of the machine", "0");
 		storeValue(Grbl.GRBL_USED_BUFFER, "Grbl Buffer", "The space used in Grbl buffer", 0);
 		storeValue(Grbl.CONTEXT_FEEDRATE, "Feedrate", "The current feedrate", new BigDecimal("0.000"));
-		storeValue(Grbl.CONTEXT_PLANE, "Plane", "The current plane", EnumGCodeCommandPlane.XY_PLANE);
-		storeValue(Grbl.CONTEXT_MOTION_MODE, "Motion mode", "The current motion mode", EnumGCodeCommandMotionMode.RAPID);
-		storeValue(Grbl.CONTEXT_UNIT, "Units", "The current units", EnumGCodeCommandUnit.MILLIMETERS);
-		storeValue(Grbl.CONTEXT_DISTANCE_MODE, "Distance mode", "The current distance mode", EnumGCodeCommandDistanceMode.ABSOLUTE);
+		storeValue(Grbl.CONTEXT_PLANE, "Plane", "The current plane", EnumPlane.XY_PLANE);
+		storeValue(Grbl.CONTEXT_MOTION_MODE, "Motion mode", "The current motion mode", EnumMotionMode.RAPID);
+		storeValue(Grbl.CONTEXT_UNIT, "Units", "The current units", EnumUnit.MILLIMETERS);
+		storeValue(Grbl.CONTEXT_DISTANCE_MODE, "Distance mode", "The current distance mode", EnumDistanceMode.ABSOLUTE);
 		storeValue(Grbl.CONTEXT_COORD_SYSTEM, "Coordinate system", "The current coordinate system", EnumCoordinateSystem.G53);
 
 		// TODO REMOVE OFFSETS FROM VALUE STORE
@@ -253,7 +253,7 @@ public class GrblState extends MachineValueStore{
 		return getValue(Grbl.GRBL_USED_BUFFER, Integer.class).getValue();
 	}
 
-	public EnumGCodeCommandUnit getContextUnit(){
+	public EnumUnit getContextUnit(){
 		return currentContext.getUnit();
 		//return getValue(Grbl.CONTEXT_UNIT, EnumGCodeCommandUnit.class).getValue();
 	}
@@ -282,11 +282,11 @@ public class GrblState extends MachineValueStore{
 		}
 	}
 	
-	public EnumGCodeCommandDistanceMode getDistanceMode() throws GkException {
-		return getValue(Grbl.CONTEXT_DISTANCE_MODE, EnumGCodeCommandDistanceMode.class).getValue();
+	public EnumDistanceMode getDistanceMode() throws GkException {
+		return getValue(Grbl.CONTEXT_DISTANCE_MODE, EnumDistanceMode.class).getValue();
 	}
 
-	public void setDistanceMode(EnumGCodeCommandDistanceMode distanceMode) throws GkException {
+	public void setDistanceMode(EnumDistanceMode distanceMode) throws GkException {
 		updateValue(Grbl.CONTEXT_DISTANCE_MODE, distanceMode);
 	}
 }

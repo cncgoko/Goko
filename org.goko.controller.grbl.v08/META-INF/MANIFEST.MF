@@ -26,7 +26,8 @@ Require-Bundle: org.goko.core,
  org.eclipse.jface;bundle-version="3.10.1",
  org.eclipse.core.expressions;bundle-version="3.4.600",
  javax.annotation,
- org.eclipse.e4.core.di.extensions
+ org.eclipse.e4.core.di.extensions,
+ org.goko.gcode.rs274ngcv3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/GrblFeatureSetComponent.xml
 Import-Package: javax.annotation;version="1.2.0",

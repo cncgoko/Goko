@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeExecutionTimeService;
-import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -22,9 +21,7 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 	IGCodeProvider parse(InputStream inputStream) throws GkException;
 	
 	IGCodeProvider parse(String inputString) throws GkException;
-	
-	GCodeLine parseLine(String inputString) throws GkException;
-		
+			
 	InstructionProvider getInstructions(GCodeContext context, IGCodeProvider gcodeProvider) throws GkException;
 	
 	GCodeProvider getGCodeProvider(GCodeContext context, InstructionProvider instructionProvider) throws GkException;

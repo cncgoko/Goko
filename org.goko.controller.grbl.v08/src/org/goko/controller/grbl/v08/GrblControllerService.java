@@ -60,22 +60,22 @@ import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
-import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
-import org.goko.core.gcode.bean.execution.ExecutionQueue;
-import org.goko.core.gcode.bean.provider.GCodeExecutionToken;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.service.IExecutionMonitorService;
-import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.Event;
@@ -87,7 +87,7 @@ import org.osgi.service.event.EventAdmin;
  * @author PsyKo
  *
  */
-public class GrblControllerService extends EventDispatcher implements IGrblControllerService, IThreeAxisControllerAdapter, ICoordinateSystemAdapter {
+public class GrblControllerService extends EventDispatcher implements IGrblControllerService {
 	/**  Service ID */
 	public static final String SERVICE_ID = "Grbl v0.8 Controller";
 	/** Log */
@@ -96,9 +96,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private static final String PERSISTED_FEED = "org.goko.controller.grbl.v08.GrblControllerService.feed";
 	private static final String PERSISTED_STEP = "org.goko.controller.grbl.v08.GrblControllerService.step";
 	/** GCode service*/
-	private IGCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 	/** The execution queue */
-	private ExecutionQueue<GrblGCodeExecutionToken> executionQueue;
+	private ExecutionQueue<ExecutionState, GrblGCodeExecutionToken> executionQueue;
 	/** Sending runnable */
 	private GrblStreamingRunnable grblStreamingRunnable;
 	/** Status polling */
@@ -147,7 +147,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		grblState 			 = new GrblState();
 		grblState.addListener(this);
 		// Initiate execution queue
-		executionQueue 				= new ExecutionQueue<GrblGCodeExecutionToken>();
+		executionQueue 				= new ExecutionQueue<ExecutionState, GrblGCodeExecutionToken>();
 		ExecutorService executor 	= Executors.newSingleThreadExecutor();
 		grblStreamingRunnable 		= new GrblStreamingRunnable(executionQueue, this);
 		executor.execute(grblStreamingRunnable);	
@@ -192,11 +192,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		persistValues();
 	}
 
-	public void sendCommand(GCodeCommand command) throws GkException{
-		String cmd = command.getStringCommand();
-		if(StringUtils.isEmpty(cmd)){
-			cmd = new String(getGCodeService().convert(command));
-		}		
+	public void sendCommand(GCodeLine gCodeLine) throws GkException{
+		String cmd = gcodeService.render(gCodeLine);			
 		List<Byte> byteCommand = GkUtils.toBytesList(cmd);
 		int usedBufferCount = CollectionUtils.size(byteCommand);
 		communicator.send( byteCommand );
@@ -244,8 +241,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
 	 */
 	@Override
-	public GCodeExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
-		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider);
+	public ExecutionToken<ExecutionState> executeGCode(IGCodeProvider gcodeProvider) throws GkException {
+		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider, gcodeService);
 		token.setMonitorService(monitorService);
 		executionQueue.add(token);
 		return token;
@@ -369,8 +366,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		GCodeContext context = new GCodeContext();
 		if(commands != null){
 			for (String strCommand : commands) {
-				GCodeCommand command = gcodeService.parseCommand(strCommand, context);
-				gcodeService.update(context, command);
+				IGCodeProvider provider = gcodeService.parse(strCommand);
+				InstructionProvider instructions = gcodeService.getInstructions(context, provider);
+				context = gcodeService.update(context, instructions);
 			}
 		}
 		grblState.setCurrentContext(context);
@@ -381,9 +379,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(executionQueue != null){
 			GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
 			String formattedErrorMessage = StringUtils.EMPTY;
-			if(currentToken != null && currentToken.getSentCommandCount() > 0){
+			if(currentToken != null && currentToken.getLineByState(ExecutionState.SENT).size() > 0){
 				 // Error occured during GCode programm execution, let's give the source command
-				GCodeCommand command = currentToken.markNextCommandAsError();
+				GCodeLine command = currentToken.markNextCommandAsError();
 				formattedErrorMessage = "Error with command '"+command.toString()+"' : "+ StringUtils.substringAfter(errorMessage, "error: ");				
 			}else{
 				formattedErrorMessage = "Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: ");
@@ -405,9 +403,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	protected void handleOkResponse() throws GkException{
 		GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
 		if(currentToken != null){
-			GCodeCommand command = currentToken.markNextCommandAsConfirmed();
+			GCodeLine command = currentToken.markNextCommandAsConfirmed();
 			if(command != null ){
-				String strCommand = new String(getGCodeService().convert(command));
+				String strCommand = getGCodeService().render(command);
 				setUsedGrblBuffer(usedGrblBuffer - StringUtils.length(strCommand));
 			}
 			grblStreamingRunnable.releaseBufferSpaceMutex();
@@ -610,14 +608,14 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/**
 	 * @return the gcodeService
 	 */
-	public IGCodeService getGCodeService() {
+	public IRS274NGCService getGCodeService() {
 		return gcodeService;
 	}
 
 	/**
 	 * @param gcodeService the gcodeService to set
 	 */
-	public void setGCodeService(IGCodeService gcodeService) {
+	public void setGCodeService(IRS274NGCService gcodeService) {
 		this.gcodeService = gcodeService;
 	}
 
@@ -911,7 +909,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			return;
 		}
 		String oldDistanceMode = "G90";
-		if(grblState.getDistanceMode() == EnumGCodeCommandDistanceMode.RELATIVE){
+		if(grblState.getDistanceMode() == EnumDistanceMode.RELATIVE){
 			oldDistanceMode = "G91";
 		}
 		String command = "G91G1"+axis.getAxisCode();

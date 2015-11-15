@@ -19,11 +19,15 @@
  */
 package org.goko.controller.grbl.v08.executionqueue;
 
-import org.apache.commons.collections.MapUtils;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.service.IGCodeService;
 
 /**
  * Streamed queue designed to work with Grbl
@@ -31,15 +35,17 @@ import org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken;
  * @author PsyKo
  *
  */
-public class GrblGCodeExecutionToken  extends GCodeStreamedExecutionToken{
-
+public class GrblGCodeExecutionToken  extends ExecutionToken<ExecutionState>{
+	private Object lock;
 
 	/**
 	 * Constructor
 	 * @param provider the provider to execute
+	 * @throws GkException GkException 
 	 */
-	public GrblGCodeExecutionToken(IGCodeProvider provider) {
-		super(provider);
+	public GrblGCodeExecutionToken(IGCodeProvider provider, IGCodeService gcodeService) throws GkException {
+		super(provider, gcodeService, ExecutionState.NONE);
+		lock = new Object();
 	}
 
 	/**
@@ -47,30 +53,45 @@ public class GrblGCodeExecutionToken  extends GCodeStreamedExecutionToken{
 	 * @return
 	 * @throws GkException GkException
 	 */
-	public GCodeCommand markNextCommandAsConfirmed() throws GkException{
-		if(MapUtils.isNotEmpty(mapSentCommandById)){
-			GCodeCommand nextCommand = mapSentCommandById.get(mapSentCommandById.keySet().toArray()[0]);
-			markAsExecuted(nextCommand.getId());
-			return nextCommand;
+	public GCodeLine markNextCommandAsConfirmed() throws GkException{
+		synchronized (lock) {
+			List<GCodeLine> lstSentLine = getLineByState(ExecutionState.SENT);
+			if(CollectionUtils.isNotEmpty(lstSentLine)){
+				GCodeLine gCodeLine = lstSentLine.get(0);
+				markAsExecuted(gCodeLine.getId());
+				return gCodeLine;
+			}
 		}
 		return null;
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.bean.provider.GCodeStreamedExecutionToken#markAsExecuted(java.lang.Integer)
-	 */
-	@Override
 	public void markAsExecuted(Integer idCommand) throws GkException {
-		super.markAsExecuted(idCommand);
-		mapSentCommandById.remove(idCommand);
-		updateCompleteState();
+		synchronized (lock) {
+			super.setLineState(idCommand, ExecutionState.EXECUTED);
+			updateCompleteState();
+		}
 	}
 
-	@Override
-	public void markAsError(Integer idCommand) throws GkException {
-		super.markAsError(idCommand);
-		mapSentCommandById.remove(idCommand);
+	protected void updateCompleteState() throws GkException{
+		if(CollectionUtils.isNotEmpty(getLineByState(ExecutionState.NONE))){
+			int nbErrors 	= CollectionUtils.size(getLineByState(ExecutionState.ERROR));
+			int nbExecuted  = CollectionUtils.size(getLineByState(ExecutionState.EXECUTED));
+			
+			if(nbErrors + nbExecuted == getLineCount()){
+				setComplete(true);
+			}
+		}
 	}
-
 	
+	public GCodeLine markNextCommandAsError() throws GkException {
+		synchronized (lock) {
+			List<GCodeLine> lstSentLine = getLineByState(ExecutionState.SENT);
+			if(CollectionUtils.isNotEmpty(lstSentLine)){
+				GCodeLine gCodeLine = lstSentLine.get(0);
+				setLineState(gCodeLine.getId(), ExecutionState.ERROR);
+				return gCodeLine;
+			}
+		}
+		return null;
+	}
 }

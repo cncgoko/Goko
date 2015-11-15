@@ -24,9 +24,9 @@ import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.controller.grbl.v08.executionqueue.GrblGCodeExecutionToken;
 import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.bean.GCodeCommand;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandType;
-import org.goko.core.gcode.bean.execution.ExecutionQueue;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.log.GkLog;
 
 /**
@@ -37,7 +37,7 @@ import org.goko.core.log.GkLog;
 public class GrblStreamingRunnable  implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(GrblStreamingRunnable.class);
 	/** The execution queue */
-	private ExecutionQueue<GrblGCodeExecutionToken> executionQueue;
+	private ExecutionQueue<ExecutionState, GrblGCodeExecutionToken> executionQueue;
 	/** The GrblService running */
 	private GrblControllerService grblService;
 
@@ -47,7 +47,7 @@ public class GrblStreamingRunnable  implements Runnable {
 	 * @param queue
 	 * @param grblService
 	 */
-	GrblStreamingRunnable(ExecutionQueue<GrblGCodeExecutionToken> queue, GrblControllerService grblService) {
+	GrblStreamingRunnable(ExecutionQueue<ExecutionState, GrblGCodeExecutionToken> queue, GrblControllerService grblService) {
 		super();
 		this.executionQueue = queue;
 		this.grblService = grblService;
@@ -76,13 +76,13 @@ public class GrblStreamingRunnable  implements Runnable {
 
 	protected void runExecutionToken() throws GkException{
 		try{
-			while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreCommand()){
+			while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreLine()){
 				GrblGCodeExecutionToken token = executionQueue.getCurrentToken();
 				waitTokenUnpaused();
-				if(token.hasMoreCommand()){
-					GCodeCommand command = token.getNextCommand();
+				if(token.hasMoreLine()){
+					GCodeLine command = token.getNextLine();
 					waitBufferSpace(StringUtils.length(command.getStringCommand()));
-					command = token.takeNextCommand();
+					command = token.takeNextLine();
 					if(command.getType() == EnumGCodeCommandType.COMMENT){
 						// Skip comments
 						token.markAsExecuted(command.getId());

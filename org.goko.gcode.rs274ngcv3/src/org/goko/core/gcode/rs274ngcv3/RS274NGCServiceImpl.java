@@ -283,6 +283,21 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#update(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IInstructionSet)
+	 */
+	@Override
+	public GCodeContext update(GCodeContext baseContext, IInstructionProvider<AbstractInstruction, InstructionSet> instructionProvider) throws GkException {
+		GCodeContext result = baseContext;
+		List<InstructionSet> instructionSets = instructionProvider.getInstructionSets();
+		if(CollectionUtils.isNotEmpty(instructionSets)){
+			for (InstructionSet instructionSet : instructionSets) {
+				result = update(result, instructionSet);
+			}
+		}
+		return result;
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#getIterator(org.goko.core.gcode.element.IInstructionProvider, org.goko.core.gcode.element.IGCodeContext)
 	 */
 	@Override
