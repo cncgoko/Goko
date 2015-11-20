@@ -226,14 +226,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		this.jogService = continuousJogService;
 	}
 
-//	/**
-//	 * @param executionMonitorService the executionMonitorService to set
-//	 */
-//	public void setGCodeExecutionMonitorService(IExecutionMonitorService<ExecutionState> executionMonitorService) {
-//		this.executionMonitorService = executionMonitorService;
-//	}
-
-
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
 	 */

@@ -30,7 +30,7 @@ import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.element.IInstructionSet;
-import org.goko.core.gcode.service.IExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 
@@ -53,7 +53,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	/** d of the executed GCodeProvider */
 	protected Integer idGCodeProvider;
 	/** The monitor service */
-	protected IExecutionMonitorService<T, IExecutionToken<T>> monitorService;
+	protected IExecutionService<T, IExecutionToken<T>> monitorService;
 	protected IGCodeService<IInstruction, IGCodeContext, IInstructionSet<IInstruction>> gcodeService;
 	/** Paused state */
 	protected boolean paused;
@@ -195,6 +195,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 */
 	protected void pauseExecution() throws GkException {
 		if(isMonitorService()){			
+			// FIXME : Probably not necessary anymore
 			getMonitorService().notifyExecutionPause(this);			
 		}
 	}
@@ -212,24 +213,24 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	public void setComplete(boolean complete) {
 		this.complete = complete;
 		synchronized (this) {
-			notify();
+			notify(); // FIXME : Probably not necessary anymore because synchronisation of executor 
 		}
 	}
-
+	
 	public boolean isMonitorService() {
 		return monitorService != null;
 	}
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionMonitorService<T, IExecutionToken<T>> getMonitorService() {
+	public IExecutionService<T, IExecutionToken<T>> getMonitorService() {
 		return monitorService;
 	}
 
 	/**
 	 * @param monitorService the monitorService to set
 	 */
-	public void setMonitorService(IExecutionMonitorService<T, IExecutionToken<T>> monitorService) {
+	public void setMonitorService(IExecutionService<T, IExecutionToken<T>> monitorService) {
 		this.monitorService = monitorService;
 	}
 

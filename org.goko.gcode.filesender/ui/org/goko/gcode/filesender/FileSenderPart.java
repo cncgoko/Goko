@@ -77,7 +77,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
-import org.goko.core.gcode.service.IExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
@@ -95,7 +95,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	@Inject
 	private IApplicativeLogService applicativeLogService;
 	@Inject
-	private IExecutionMonitorService monitorService;
+	private IExecutionService monitorService;
 	@Inject
 	private IGCodeService gcodeService;
 	private Text txtFilepath;

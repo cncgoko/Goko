@@ -18,11 +18,21 @@
 package org.goko.core.gcode.service;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutor;
 
-public interface IExecutionMonitorService<S extends IExecutionState, T extends IExecutionToken<S>> {
+public interface IExecutionService<S extends IExecutionState, T extends IExecutionToken<S>> {
 
+	void setExecutor(IExecutor<S, T> executor) throws GkException;
+	
+	T addToExecutionQueue(IGCodeProvider gcodeProvider) throws GkException;
+	
+	void addToExecutionQueue(T executionToken) throws GkException;	
+	
+	void removeFromExecutionQueue(T executionToken) throws GkException;
+	
 	void addExecutionListener(IGCodeExecutionListener<S,T> listener) throws GkException;
 
 	void removeExecutionListener(IGCodeExecutionListener<S,T> listener) throws GkException;
@@ -36,4 +46,13 @@ public interface IExecutionMonitorService<S extends IExecutionState, T extends I
 	void notifyExecutionPause(T token) throws GkException;
 
 	void notifyExecutionComplete(T token) throws GkException;
+	
+	// Controls over the execution queue
+	
+	void beginQueueExecution() throws GkException;
+	
+	void pauseQueueExecution() throws GkException;
+	
+	void stopQueueExecution() throws GkException;
+	
 }

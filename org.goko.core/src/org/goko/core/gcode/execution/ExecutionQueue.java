@@ -19,6 +19,7 @@ package org.goko.core.gcode.execution;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 
@@ -27,9 +28,16 @@ import org.goko.core.common.exception.GkTechnicalException;
  * @date 18 oct. 2015
  */
 public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken<S>> implements IExecutionQueue<S, T> {
+	/** The list of execution tokens */
 	private LinkedBlockingQueue<T> executionTokens;
+	/** The current token */
 	private T currentToken;
-
+	/** The running state of this queue */
+	private boolean running;
+	
+	/**
+	 * Constructor
+	 */
 	public ExecutionQueue() {
 		executionTokens = new LinkedBlockingQueue<T>();
 	}
@@ -112,5 +120,33 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 		} catch (InterruptedException e) {
 			throw new GkTechnicalException(e);
 		}
+	}
+	
+	public void delete(Integer idExecutionToken) throws GkException{
+		if(CollectionUtils.isNotEmpty(executionTokens)){
+			T tokenToRemove = null;
+			for (T token : executionTokens) {
+				if(ObjectUtils.equals(token.getId(), idExecutionToken)){
+					tokenToRemove = token;
+				}
+			}
+			if(tokenToRemove != null){
+				executionTokens.remove(tokenToRemove);
+			}
+		}
+	}
+
+	/**
+	 * @return the running
+	 */
+	public boolean isRunning() {
+		return running;
+	}
+
+	/**
+	 * @param running the running to set
+	 */
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 }

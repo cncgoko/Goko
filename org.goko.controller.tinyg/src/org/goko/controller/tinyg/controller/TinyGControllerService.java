@@ -60,7 +60,7 @@ import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
-import org.goko.core.gcode.service.IExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.EventAdmin;
@@ -88,7 +88,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** The current execution queue */
 	private IExecutionQueue<ExecutionState, TinyGExecutionToken> executionQueue;
 	/** The monitor service */
-	private IExecutionMonitorService<ExecutionState, IExecutionToken<ExecutionState>> monitorService;
+	private IExecutionService<ExecutionState, IExecutionToken<ExecutionState>> monitorService;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -790,13 +790,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionMonitorService<ExecutionState, IExecutionToken<ExecutionState>> getMonitorService() {
+	public IExecutionService<ExecutionState, IExecutionToken<ExecutionState>> getMonitorService() {
 		return monitorService;
 	}
 	/**
 	 * @param monitorService the monitorService to set
 	 */
-	public void setMonitorService(IExecutionMonitorService<ExecutionState, IExecutionToken<ExecutionState>> monitorService) {
+	public void setMonitorService(IExecutionService<ExecutionState, IExecutionToken<ExecutionState>> monitorService) {
 		this.monitorService = monitorService;
 	}
 

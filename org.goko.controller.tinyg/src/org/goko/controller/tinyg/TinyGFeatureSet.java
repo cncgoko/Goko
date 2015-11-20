@@ -16,7 +16,7 @@ import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.service.IExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.EventAdmin;
@@ -60,7 +60,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		service.setGCodeService(findService(context, IRS274NGCService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setConnectionService(findService(context, ISerialConnectionService.class));
-		service.setMonitorService(findService(context, IExecutionMonitorService.class));
+		service.setMonitorService(findService(context, IExecutionService.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
 		
 		service.start();

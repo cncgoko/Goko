@@ -5,5 +5,5 @@
       <provide interface="org.goko.tools.viewer.jogl.service.IJoglViewerService"/>
    </service>
    <reference bind="setJogService" cardinality="0..1" interface="org.goko.core.controller.IJogService" name="IJogService" policy="dynamic"/>
-   <reference bind="setGCodeExecutionMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionMonitorService" name="IExecutionMonitorService" policy="dynamic"/>
+   <reference bind="setGCodeExecutionMonitorService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="dynamic"/>
 </scr:component>

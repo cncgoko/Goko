@@ -4,8 +4,11 @@ Bundle-Name: Gcodeexecutionmonitor
 Bundle-SymbolicName: org.goko.core.execution.monitor
 Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: org.goko.core.execution.monitor.Activator
+Require-Bundle: org.goko.core;bundle-version="0.0.1",
+ org.eclipse.swt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.osgi.framework;version="1.3.0"
-Bundle-ActivationPolicy: lazy
-Require-Bundle: org.goko.core;bundle-version="0.0.1"
 Service-Component: OSGI-INF/GCodeExecutionMonitorServiceImplComponant.xml
+Import-Package: javax.annotation;version="1.0.0";resolution:=optional,
+ javax.inject;version="1.0.0",
+ org.osgi.framework;version="1.3.0"
+Bundle-ActivationPolicy: lazy
