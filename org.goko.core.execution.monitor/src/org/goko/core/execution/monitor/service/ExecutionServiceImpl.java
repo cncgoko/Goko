@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -57,7 +56,8 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	private ExecutionQueueRunnable<ExecutionState, ExecutionToken<ExecutionState>> executionQueueRunnable;
 	/** The executor service used to run the execution queue runnable */
 	private ExecutorService executorService;
-	
+	/** The state of the execution queue */
+	private ExecutionState state;
 	/**
 	 * Constructor
 	 */
@@ -215,9 +215,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	@Override
 	public void beginQueueExecution() throws GkException {
 		if(executionQueue != null){
-			if(executionQueue.isRunning()){
+			if(state == ExecutionState.RUNNING){
 				throw new GkTechnicalException("Queue is already running");
 			}
+			state = ExecutionState.RUNNING;
 			executionQueueRunnable = new ExecutionQueueRunnable<>();
 			executionQueueRunnable.setExecutor(executor);
 			executionQueueRunnable.setExecutionQueue(executionQueue);
@@ -235,6 +236,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 */
 	@Override
 	public void pauseQueueExecution() throws GkException {
+		state = ExecutionState.PAUSED;
 		if(executionQueueRunnable != null){
 			executionQueueRunnable.getExecutionQueue().setPaused(true);
 		}
@@ -245,7 +247,26 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 */
 	@Override
 	public void stopQueueExecution() throws GkException {
-		// TODO Auto-generated method stub
-		a implementer + debrancher la synchro par le token ?
+		state = ExecutionState.STOPPED;
+		//a implementer + debrancher la synchro par le token ?
+	}
+	
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#resumeQueueExecution()
+	 */
+	@Override
+	public void resumeQueueExecution() throws GkException {
+		state = ExecutionState.RUNNING;
+		if(executionQueueRunnable != null){
+			executionQueueRunnable.getExecutionQueue().setPaused(false);
+		}
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#getExecutionState()
+	 */
+	@Override
+	public ExecutionState getExecutionState() throws GkException {
+		return state;
 	}
 }

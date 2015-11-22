@@ -26,6 +26,15 @@ public class ExecutionState implements IExecutionState{
 	/** Object value of ERROR state  */
 	public static final ExecutionState ERROR = new ExecutionState(ERROR_STATE);
 	
+	/** Object value of RUNNING state  */
+	public static final ExecutionState RUNNING = new ExecutionState(RUNNING_STATE);
+	
+	/** Object value of STOPPED state  */
+	public static final ExecutionState STOPPED = new ExecutionState(STOPPED_STATE);
+	
+	/** Object value of PAUSED state  */
+	public static final ExecutionState PAUSED = new ExecutionState(PAUSED_STATE);
+	
 	/** Execution state */
 	private int state;
 

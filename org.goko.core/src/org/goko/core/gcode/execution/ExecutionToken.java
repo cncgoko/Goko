@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.goko.core.gcode.execution;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +27,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.gcode.element.GCodeLine;
-import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.element.IInstruction;
-import org.goko.core.gcode.element.IInstructionSet;
 import org.goko.core.gcode.service.IExecutionService;
-import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 
 /**
@@ -51,10 +48,9 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	/** Completed state  */
 	protected boolean complete;
 	/** d of the executed GCodeProvider */
-	protected Integer idGCodeProvider;
+	protected WeakReference<IGCodeProvider> gcodeProviderReference;
 	/** The monitor service */
 	protected IExecutionService<T, IExecutionToken<T>> monitorService;
-	protected IGCodeService<IInstruction, IGCodeContext, IInstructionSet<IInstruction>> gcodeService;
 	/** Paused state */
 	protected boolean paused;
 	
@@ -63,10 +59,8 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 * @param provider the provider to build this execution token from
 	 * @throws GkException GkException 
 	 */
-	public ExecutionToken(IGCodeProvider provider, IGCodeService service, T initState) throws GkException {
-		// FIXME : put creation of this token in ExecutionService
-		this.idGCodeProvider = provider.getId();
-		this.gcodeService = service;
+	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
+		this.gcodeProviderReference = new WeakReference<IGCodeProvider>(provider);
 		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
 		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
 		this.mapLineByExecutionState.put(initState, new ArrayList<Integer>());		
@@ -131,8 +125,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 */
 	@Override
 	public GCodeLine getNextLine() throws GkException {
-		return gcodeService.getGCodeProvider(idGCodeProvider).getLineAtIndex(currentIndex + 1);
-		//return lstGCodeLine.get(commands.get(currentIndex + 1));
+		return getGCodeProvider().getLineAtIndex(currentIndex + 1);
 	}
 
 	/** (inheritDoc)
@@ -141,7 +134,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	@Override
 	public GCodeLine takeNextLine() throws GkException {
 		currentIndex = currentIndex + 1;
-		return gcodeService.getGCodeProvider(idGCodeProvider).getLineAtIndex(currentIndex);
+		return getGCodeProvider().getLineAtIndex(currentIndex);
 	}
 
 	/** (inheritDoc)
@@ -158,7 +151,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 */
 	public int getLineCount() {		
 		try {
-			return gcodeService.getGCodeProvider(idGCodeProvider).getLines().size();
+			return getGCodeProvider().getLines().size();
 		} catch (GkException e) {
 			LOG.error(e);
 		}
@@ -274,9 +267,16 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 		List<Integer> lstId = mapLineByExecutionState.get(state);
 		if(CollectionUtils.isNotEmpty(lstId)){
 			for (Integer idLine : lstId) {
-				result.add(gcodeService.getGCodeProvider(idGCodeProvider).getLine(idLine));
+				result.add(getGCodeProvider().getLine(idLine));
 			}
 		}
 		return result;
+	}
+	/**
+	 * Return the wrapped IGCodeProvider
+	 * @return the IGCodeProvider
+	 */
+	public IGCodeProvider getGCodeProvider(){
+		return gcodeProviderReference.get();
 	}
 }

@@ -53,6 +53,9 @@ public interface IExecutionService<S extends IExecutionState, T extends IExecuti
 	
 	void pauseQueueExecution() throws GkException;
 	
-	void stopQueueExecution() throws GkException;
+	void resumeQueueExecution() throws GkException;
 	
+	void stopQueueExecution() throws GkException;
+
+	S getExecutionState() throws GkException;
 }

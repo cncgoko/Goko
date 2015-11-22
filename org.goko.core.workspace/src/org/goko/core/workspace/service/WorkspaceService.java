@@ -45,8 +45,6 @@ public class WorkspaceService implements IWorkspaceService{
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceService";
 	/** The list of listener */
 	private List<IWorkspaceListener> listenerList;
-	/** The current provider */
-	private Integer currentProviderId;
 	// Temporary project storage
 	private GkProject project;
 	

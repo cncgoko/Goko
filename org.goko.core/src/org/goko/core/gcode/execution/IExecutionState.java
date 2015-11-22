@@ -25,4 +25,13 @@ public interface IExecutionState {
 	
 	/** Integer value of ERROR state  */
 	public static final int ERROR_STATE = 5;
+	
+	/** Integer value of RUNNING state  */
+	public static final int RUNNING_STATE = 100;
+	
+	/** Integer value of STOPPED state  */
+	public static final int STOPPED_STATE = 101;
+	
+	/** Integer value of PAUSED state  */
+	public static final int PAUSED_STATE = 102;
 }

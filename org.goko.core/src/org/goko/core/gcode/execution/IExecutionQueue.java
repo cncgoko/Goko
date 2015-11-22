@@ -28,7 +28,4 @@ public interface IExecutionQueue<S extends IExecutionState, T extends IExecution
 	void clear() throws GkException;
 
 	T waitNext() throws GkException;
-	
-	boolean isRunning() throws GkException;
-
 }

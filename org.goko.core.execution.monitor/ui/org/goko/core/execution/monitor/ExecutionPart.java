@@ -1,14 +1,22 @@
 package org.goko.core.execution.monitor;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.service.IExecutionService;
+import org.goko.core.workspace.service.IWorkspaceService;
 
 /**
  * The part for execution control
@@ -17,7 +25,11 @@ import org.eclipse.swt.widgets.ProgressBar;
  *
  */
 public class ExecutionPart {
-		
+	/** The execution service */
+	@Inject
+	private IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> executionService;
+	private IWorkspaceService workspaceService;
+	
 	/**
 	 * Construct the part
 	 * @param parent the parent composite
@@ -42,6 +54,20 @@ public class ExecutionPart {
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnStart = new Button(composite_1, SWT.NONE);
+		btnStart.addMouseListener(new MouseAdapter() {
+			/** (inheritDoc)
+			 * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
+			 */
+			@Override
+			public void mouseUp(MouseEvent e) {
+				
+				try {					
+					executionService.beginQueueExecution();					
+				} catch (GkException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnStart.heightHint = 32;
 		btnStart.setLayoutData(gd_btnStart);

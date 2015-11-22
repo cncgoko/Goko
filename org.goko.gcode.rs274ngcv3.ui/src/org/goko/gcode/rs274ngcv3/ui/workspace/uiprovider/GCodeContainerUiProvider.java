@@ -7,27 +7,26 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainer;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.DeleteModifierAction;
@@ -43,17 +42,19 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	/** GCode service */
 	private IRS274NGCService rs274Service;
 	private IRS274WorkspaceService rs274WorkspaceService;
+	private IExecutionService<?, ?> executionService;
 	private IStyledLabelProvider labelProvider;
 
 	/**
 	 * @param rs274Service 
 	 * @param type
 	 */
-	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService) {
+	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService, IExecutionService<?, ?> executionService) {
 		super("TEST");
 		this.rs274Service = rs274Service;
 		this.rs274WorkspaceService = rs274WorkspaceService;
 		this.labelProvider = new GCodeContainerLabelProvider();
+		this.executionService = executionService;
 	}
 
 	/** (inheritDoc)
@@ -168,6 +169,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
         contextMenu.add(subMenu); 
        
+        contextMenu.add(new Separator());
+        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
         contextMenu.add(new Separator());
         contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));		
 	}

@@ -1,5 +1,6 @@
 package org.goko.core.execution.monitor.executor;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -26,7 +27,8 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionState, T ext
 	private Object tokenPausedLock;
 	/** Time to wait for pause check in milliseconds */
 	private int tokenPauseTimeout = 500;
-	
+	/** Weak reference to the use token */
+	private WeakReference<T> tokenWeakReference;
 	/** The lock indicating that the executor is waiting to be able to execute the next line */
 	final Lock readyForNextLineLock = new ReentrantLock();
 	/** The condition indicating that the executor is waiting to be able to execute the next line */
@@ -42,6 +44,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionState, T ext
 	 */
 	@Override
 	public void executeToken(T token) throws GkException {
+		tokenWeakReference = new WeakReference<T>(token);
 		while(token.hasMoreLine()){
 			waitReadyForNextLine();
 			waitTokenUnpaused(token);
@@ -124,13 +127,20 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionState, T ext
 	/**
 	 * Notify this object that the it's ready for the execution of the next line
 	 */
-	protected final void notifyReadyForNextLine(){
+	protected final void notifyReadyForNextLine(){		
 		readyForNextLineLock.lock();
 		try{
 			readyForNextLineCondition.signal();		
 		}finally{
 			readyForNextLineLock.unlock();
-		}
+		}		
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutor#getToken()
+	 */
+	@Override
+	public T getToken() throws GkException {		
+		return tokenWeakReference.get();
+	}
 }

@@ -40,6 +40,7 @@ import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
@@ -559,5 +560,13 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public boolean isJogPreciseForced() throws GkException {		
 		return getCurrentService().isJogPreciseForced();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#send(org.goko.core.gcode.element.GCodeLine)
+	 */
+	@Override
+	public void send(GCodeLine gCodeLine) throws GkException {
+		getCurrentService().send(gCodeLine);
 	}
 }

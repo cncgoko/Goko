@@ -30,6 +30,7 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
+import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -95,4 +96,6 @@ public interface ITinygControllerService extends IControllerService<ExecutionSta
 	public int getAvailableBuffer() throws GkException;
 	
 	public void setAvailableBuffer(int availableBuffer) throws GkException;
+	
+	void send(GCodeLine gCodeLine) throws GkException;
 }

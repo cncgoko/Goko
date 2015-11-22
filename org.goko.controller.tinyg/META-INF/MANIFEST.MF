@@ -34,4 +34,5 @@ Export-Package: org.goko.controller.tinyg.controller,
 Bundle-ActivationPolicy: lazy
 Goko-Feature: org.goko.controller
 Bundle-Activator: org.goko.controller.internal.TinyGActivator
-Import-Package: org.osgi.service.event
+Import-Package: org.goko.core.execution.monitor.executor,
+ org.osgi.service.event

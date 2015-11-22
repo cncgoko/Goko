@@ -32,8 +32,6 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	private LinkedBlockingQueue<T> executionTokens;
 	/** The current token */
 	private T currentToken;
-	/** The running state of this queue */
-	private boolean running;
 	
 	/**
 	 * Constructor
@@ -136,17 +134,4 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 		}
 	}
 
-	/**
-	 * @return the running
-	 */
-	public boolean isRunning() {
-		return running;
-	}
-
-	/**
-	 * @param running the running to set
-	 */
-	public void setRunning(boolean running) {
-		this.running = running;
-	}
 }

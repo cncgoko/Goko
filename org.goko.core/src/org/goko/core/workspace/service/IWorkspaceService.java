@@ -20,7 +20,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 
 public interface IWorkspaceService extends IGokoService{
-
+		
 	void notifyWorkspaceEvent(IWorkspaceEvent event) throws GkException;
 	
 	void addWorkspaceListener(IWorkspaceListener listener) throws GkException;

@@ -13,6 +13,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
@@ -33,6 +34,8 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	/** Workspace UI service */
 	private IWorkspaceUIService workspaceUIService;
 	/** Workspace UI service */
+	private IExecutionService<?,?> executionService;
+	/** Workspace UI service */
 	private IRS274NGCService gcodeService;
 	/** Extension registry */
 	private IExtensionRegistry extensionRegistry;
@@ -51,7 +54,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	@Override
 	public void start() throws GkException {		
 		LOG.info("Starting  "+getServiceId());
-		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this));
+		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -117,6 +120,20 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 		}
 		
 		return result;
+	}
+
+	/**
+	 * @return the executionService
+	 */
+	public IExecutionService<?, ?> getExecutionService() {
+		return executionService;
+	}
+
+	/**
+	 * @param executionService the executionService to set
+	 */
+	public void setExecutionService(IExecutionService<?, ?> executionService) {
+		this.executionService = executionService;
 	}
 	
 }

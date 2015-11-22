@@ -14,20 +14,17 @@ import java.util.concurrent.Future;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.controller.tinyg.controller.probe.ProbeCallable;
-import org.goko.controller.tinyg.controller.topic.TinyGExecutionErrorTopic;
 import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.controller.tinyg.service.ITinyGControllerFirmwareService;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
-import org.goko.core.common.event.EventBrokerUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -53,10 +50,9 @@ import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.IExecutionQueue;
-import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -84,11 +80,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** GCode service */
 	private IRS274NGCService gcodeService;
 	/** The sending thread	 */
-	private GCodeSendingRunnable currentSendingRunnable;
+	private GCodeSendingRunnable csurrentSendingRunnable;
 	/** The current execution queue */
-	private IExecutionQueue<ExecutionState, TinyGExecutionToken> executionQueue;
+	private IExecutionQueue<ExecutionState, TinyGExecutionToken> sexecutionQueue;
 	/** The monitor service */
-	private IExecutionService<ExecutionState, IExecutionToken<ExecutionState>> monitorService;
+	private IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> executionService;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -102,7 +98,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** Event admin service */
 	private EventAdmin eventAdmin;
 	private TinyGJoggingRunnable jogRunnable;
-	
+	private TinyGExecutor tinygExecutor;
 	/**
 	 * Constructor
 	 * @throws GkException GkException
@@ -110,6 +106,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public TinyGControllerService() throws GkException {
 		communicator = new TinyGCommunicator(this);	
 		tinygState   = new TinyGState();
+		tinygExecutor = new TinyGExecutor(this);		
 	}
 	
 	/** (inheritDoc)
@@ -134,11 +131,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGPreferences.getInstance();
 		
 		// Initiate execution queue
-		executionQueue 				= new ExecutionQueue<ExecutionState, TinyGExecutionToken>();
+	//	executionQueue 				= new ExecutionQueue<ExecutionState, TinyGExecutionToken>();
 		
-		ExecutorService executor 	= Executors.newSingleThreadExecutor();
-		currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);				
-		executor.execute(currentSendingRunnable);
+	//	ExecutorService executor 	= Executors.newSingleThreadExecutor();
+	//	currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);				
+	//	executor.execute(currentSendingRunnable);
 		
 		jogRunnable = new TinyGJoggingRunnable(this, communicator);
 		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
@@ -152,9 +149,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void stop() throws GkException {
-		if(currentSendingRunnable != null){
-			currentSendingRunnable.stop();
-		}
+//		if(currentSendingRunnable != null){
+//			currentSendingRunnable.stop();
+//		}		
 	}
 
 	/** (inheritDoc)
@@ -170,16 +167,16 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public IExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
+	public TinyGExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
 		if(!isReadyForFileStreaming()){
 			throw new GkFunctionalException("TNG-003");
 		}
 		checkExecutionControl();
 		checkVerbosity(configuration);
 		updateQueueReport();
-		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider, gcodeService);
-		token.setMonitorService(getMonitorService());
-		executionQueue.add(token);
+		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
+		//token.setMonitorService(getMonitorService());
+		//executionQueue.add(token);
 
 		return token;
 	}
@@ -222,6 +219,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#send(org.goko.core.gcode.element.GCodeLine)
+	 */
+	@Override
 	public void send(GCodeLine gCodeLine) throws GkException{
 		communicator.send(gCodeLine);
 	}
@@ -341,17 +342,24 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @throws GkTechnicalException
 	 */
 	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
-		if(executionQueue.getCurrentToken() != null){
+		if(executionService.getExecutionState() == ExecutionState.RUNNING){
 			if(status == TinyGStatusCode.TG_OK){
-				if(StringUtils.isNotEmpty(receivedCommand)){
-					GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
-					executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
-					this.currentSendingRunnable.confirmCommand();
-				}
+				tinygExecutor.onLineConfirmed();
 			}else{
-				handleError(status, receivedCommand);
+				// FIXME : Handle error
 			}
 		}
+//		if(executionQueue.getCurrentToken() != null){
+//			if(status == TinyGStatusCode.TG_OK){
+//				if(StringUtils.isNotEmpty(receivedCommand)){					
+//					GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
+//					executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
+//					this.currentSendingRunnable.confirmCommand();
+//				}
+//			}else{
+//				handleError(status, receivedCommand);
+//			}
+//		}
 	}
 
 	protected void handleError(TinyGStatusCode status, String receivedCommand) throws GkException {
@@ -362,23 +370,23 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			message = " Error status returned : "+status.getValue() +" - "+status.getLabel();
 		}
 		
-		if(executionQueue != null){
-			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
-			
-			if(currentToken != null ){
-				List<GCodeLine> errorsCommand = currentToken.getLineByState(ExecutionState.ERROR);
-				if(CollectionUtils.isNotEmpty(errorsCommand)){
-					 // Error occurred during GCode program execution, let's give the source command
-					GCodeLine line = errorsCommand.get(0);
-					message += " on command ["+gcodeService.render(line)+"]";
-				}
-			}
-			// Security pause
-			pauseMotion();
-			// Still confirm that the command was received
-			this.currentSendingRunnable.confirmCommand();
-			EventBrokerUtils.send(eventAdmin, new TinyGExecutionErrorTopic(), new TinyGExecutionError("Error reported durring execution", "Execution was paused after TinyG reported an error. You can resume, or stop the execution at your own risk.", message));			
-		}
+//		if(executionQueue != null){
+//			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
+//			
+//			if(currentToken != null ){
+//				List<GCodeLine> errorsCommand = currentToken.getLineByState(ExecutionState.ERROR);
+//				if(CollectionUtils.isNotEmpty(errorsCommand)){
+//					 // Error occurred during GCode program execution, let's give the source command
+//					GCodeLine line = errorsCommand.get(0);
+//					message += " on command ["+gcodeService.render(line)+"]";
+//				}
+//			}
+//			// Security pause
+//			pauseMotion();
+//			// Still confirm that the command was received
+//			this.currentSendingRunnable.confirmCommand();
+//			EventBrokerUtils.send(eventAdmin, new TinyGExecutionErrorTopic(), new TinyGExecutionError("Error reported durring execution", "Execution was paused after TinyG reported an error. You can resume, or stop the execution at your own risk.", message));			
+//		}
 		
 		LOG.error(message);
 		applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG");		
@@ -532,29 +540,19 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	public void pauseMotion() throws GkException{
 		communicator.send(GkUtils.toBytesList(TinyG.FEED_HOLD));
-		if(executionQueue != null){
-			executionQueue.setPaused(true);
-		}
+		executionService.pauseQueueExecution();
+		
 	}
 
 	public void resumeMotion() throws GkException{
 		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
-		if(executionQueue != null){
-			executionQueue.setPaused(false);
-		}
+		executionService.resumeQueueExecution();
 	}
 
 	public void stopMotion() throws GkException{
 		getConnectionService().clearOutputBuffer();
 		communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
-
-
-		if(executionQueue != null){
-			executionQueue.clear();
-		}
-		if(currentSendingRunnable != null){
-			currentSendingRunnable.stop();
-		}
+		executionService.stopQueueExecution();
 		// Force a queue report update
 		//	updateQueueReport();
 		//	this.resetAvailableBuffer();
@@ -593,9 +591,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setAvailableBuffer(int availableBuffer) throws GkException {
 		tinygState.updateValue(TinyG.TINYG_BUFFER_COUNT, availableBuffer);
-		if(currentSendingRunnable != null){
-			currentSendingRunnable.notifyBufferSpace();
-		}
+		tinygExecutor.onBufferSpaceAvailableChange(availableBuffer);
 	}
 
 	public void resetAvailableBuffer() throws GkException {
@@ -790,14 +786,16 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionService<ExecutionState, IExecutionToken<ExecutionState>> getMonitorService() {
-		return monitorService;
+	public IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> getMonitorService() {
+		return executionService;
 	}
 	/**
 	 * @param monitorService the monitorService to set
+	 * @throws GkException GkException 
 	 */
-	public void setMonitorService(IExecutionService<ExecutionState, IExecutionToken<ExecutionState>> monitorService) {
-		this.monitorService = monitorService;
+	public void setMonitorService(IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> monitorService) throws GkException {
+		this.executionService = monitorService;
+		executionService.setExecutor(tinygExecutor);
 	}
 
 	public Unit<Length> getCurrentUnit(){

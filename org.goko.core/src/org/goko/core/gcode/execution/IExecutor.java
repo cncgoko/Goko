@@ -14,6 +14,13 @@ import org.goko.core.gcode.element.IGCodeProvider;
 public interface IExecutor<S extends IExecutionState, T extends IExecutionToken<S>> {
 	
 	/**
+	 * Allow to implement controls before execution of the complete queue by this executor
+	 * @return <code>true</code> if the executor is ready for execution, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
+	boolean isReadyForQueueExecution() throws GkException;
+		
+	/**
 	 * Executes the given token
 	 * 
 	 * @param token the IExecutionToken to run
@@ -31,4 +38,11 @@ public interface IExecutor<S extends IExecutionState, T extends IExecutionToken<
 	
 	
 	void waitTokenComplete() throws GkException;
+	
+	/**
+	 * Return the target token 
+	 * @return the execution token
+	 * @throws GkException GkException
+	 */
+	T getToken() throws GkException;
 }
