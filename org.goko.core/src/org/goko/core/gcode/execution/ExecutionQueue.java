@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.core.gcode.execution;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -27,16 +29,19 @@ import org.goko.core.common.exception.GkTechnicalException;
  * @author PsyKo
  * @date 18 oct. 2015
  */
-public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken<S>> implements IExecutionQueue<S, T> {
+public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecutionToken<S>> implements IExecutionQueue<S, T> {
+	/** The list of execution tokens */
+	private LinkedBlockingQueue<T> remainingExecutionTokens;
 	/** The list of execution tokens */
 	private LinkedBlockingQueue<T> executionTokens;
 	/** The current token */
 	private T currentToken;
-	
+		
 	/**
 	 * Constructor
 	 */
 	public ExecutionQueue() {
+		remainingExecutionTokens = new LinkedBlockingQueue<T>();
 		executionTokens = new LinkedBlockingQueue<T>();
 	}
 
@@ -45,7 +50,7 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	 */
 	@Override
 	public boolean hasNext(){
-		return CollectionUtils.isNotEmpty(executionTokens);
+		return CollectionUtils.isNotEmpty(remainingExecutionTokens);
 	}
 
 	/** (inheritDoc)
@@ -53,6 +58,7 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	 */
 	@Override
 	public void add(T token){
+		remainingExecutionTokens.offer(token);
 		executionTokens.offer(token);
 	}
 
@@ -62,8 +68,7 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	@Override
 	public void beginNextTokenExecution() throws GkException{
 		try {
-			currentToken = executionTokens.take();
-			currentToken.beginExecution();
+			currentToken = remainingExecutionTokens.take();			
 		} catch (InterruptedException e) {
 			throw new GkTechnicalException(e);
 		}
@@ -74,19 +79,8 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	 */
 	@Override
 	public void endCurrentTokenExecution() throws GkException{
-		if(currentToken != null){
-		//	throw new GkFunctionalException("ExecutionQueue : no execution token currently started.");
-			currentToken.endExecution();
+		if(currentToken != null){			
 			currentToken = null;
-		}
-	}
-	/** (inheritDoc)
-	 * @see oldorg.goko.core.gcode.bean.execution.IExecutionQueue#setPaused(boolean)
-	 */
-	@Override
-	public void setPaused(boolean paused) throws GkException{
-		if(currentToken != null){
-			currentToken.setExecutionPaused(paused);
 		}
 	}
 
@@ -104,7 +98,7 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	@Override
 	public void clear() throws GkException{
 		endCurrentTokenExecution();
-		executionTokens.clear();
+		remainingExecutionTokens.clear();
 	}
 
 
@@ -114,24 +108,44 @@ public class ExecutionQueue<S extends IExecutionState, T extends IExecutionToken
 	@Override
 	public T waitNext() throws GkException {
 		try {
-			return executionTokens.take();
+			return remainingExecutionTokens.take();
 		} catch (InterruptedException e) {
 			throw new GkTechnicalException(e);
 		}
 	}
 	
 	public void delete(Integer idExecutionToken) throws GkException{
-		if(CollectionUtils.isNotEmpty(executionTokens)){
+		if(CollectionUtils.isNotEmpty(remainingExecutionTokens)){
 			T tokenToRemove = null;
-			for (T token : executionTokens) {
+			for (T token : remainingExecutionTokens) {
 				if(ObjectUtils.equals(token.getId(), idExecutionToken)){
 					tokenToRemove = token;
 				}
 			}
 			if(tokenToRemove != null){
-				executionTokens.remove(tokenToRemove);
+				remainingExecutionTokens.remove(tokenToRemove);
+				executionTokens.remove(tokenToRemove);				
 			}
 		}
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionQueue#getExecutionToken()
+	 */
+	@Override
+	public List<T> getExecutionToken() throws GkException {		
+		return new ArrayList<T>(executionTokens);
+	}
+	
+	/**
+	 * Reset the execution queue for execution
+	 * @throws GkException GkException 
+	 */
+	public void reset() throws GkException{
+		remainingExecutionTokens = new LinkedBlockingQueue<T>();
+		remainingExecutionTokens.addAll(executionTokens);
+		for (T token : executionTokens) {
+			token.reset();
+		}
+	}
 }

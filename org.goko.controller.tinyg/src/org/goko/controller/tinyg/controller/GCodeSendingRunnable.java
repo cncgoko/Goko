@@ -25,7 +25,7 @@ import org.goko.common.events.GCodeCommandSelectionEvent;
 import org.goko.core.common.event.GokoEventBus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
-import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.log.GkLog;
 
@@ -37,13 +37,13 @@ import org.goko.core.log.GkLog;
 public class GCodeSendingRunnable implements Runnable {
 	private static final GkLog LOG = GkLog.getLogger(GCodeSendingRunnable.class);
 	private static final int BUFFER_AVAILABLE_REQUIRED_COUNT = 5;
-	private IExecutionQueue<ExecutionState, TinyGExecutionToken> executionQueue;
+	private IExecutionQueue<ExecutionTokenState, TinyGExecutionToken> executionQueue;
 	private TinyGControllerService tinyGControllerService;
 	private Object ackMutex = new Object();
 	private Object qrMutex = new Object();
 	private int pendingCommands;
 
-	public GCodeSendingRunnable(IExecutionQueue<ExecutionState, TinyGExecutionToken> queue, TinyGControllerService controllerService) {
+	public GCodeSendingRunnable(IExecutionQueue<ExecutionTokenState, TinyGExecutionToken> queue, TinyGControllerService controllerService) {
 		this.executionQueue = queue;
 		this.tinyGControllerService = controllerService;
 		pendingCommands = 0;

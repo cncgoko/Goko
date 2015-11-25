@@ -74,8 +74,8 @@ import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.gcode.element.GCodeLine;
-import org.goko.core.gcode.execution.ExecutionState;
-import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
@@ -90,7 +90,7 @@ import org.goko.gcode.filesender.controller.GCodeFileSenderController;
  * @author PsyKo
  *
  */
-public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState, IExecutionToken<IExecutionState>>, PropertyChangeListener {
+public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionTokenState, IExecutionToken<IExecutionTokenState>>, PropertyChangeListener {
 	private static final GkLog LOG = GkLog.getLogger(FileSenderPart.class);
 	@Inject
 	private IApplicativeLogService applicativeLogService;
@@ -500,7 +500,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionStart(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		getController().onExecutionStart(token);
 	}
 
@@ -508,7 +508,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionCanceled(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		getController().onExecutionCanceled(token);
 	}
 
@@ -516,7 +516,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(IExecutionToken<IExecutionState> token) throws GkException {		
+	public void onExecutionPause(IExecutionToken<IExecutionTokenState> token) throws GkException {		
 		getController().onExecutionComplete(token);
 	}
 
@@ -524,9 +524,9 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionComplete(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionComplete(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		if(!shell.isDisposed()){			
-			final int executedCount = CollectionUtils.size(token.getLineByState(ExecutionState.EXECUTED));
+			final int executedCount = CollectionUtils.size(token.getLineByState(ExecutionTokenState.EXECUTED));
 			final int totalCount 	= token.getLineCount();
 			shell.getDisplay().asyncExec(new Runnable() {
 		      @Override
@@ -545,7 +545,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onLineStateChanged(IExecutionToken<IExecutionState> token, Integer idCommand) throws GkException {
+	public void onLineStateChanged(IExecutionToken<IExecutionTokenState> token, Integer idCommand) throws GkException {
 		// TODO Auto-generated method stub
 		
 	}

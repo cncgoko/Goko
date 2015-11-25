@@ -24,8 +24,6 @@ public class GkProject {
 	private String name;
 	/** The path to the project file */
 	private String filepath;
-	/** The IGCodeProviders */
-	private CacheById<IGCodeProvider> cacheGCodeProvider;
 	/** The list of loaded gcode file */
 	private Map<String, ProjectContainer> projectContainers;
 	
@@ -67,24 +65,5 @@ public class GkProject {
 	
 	public void addProjectContainer(ProjectContainer container){
 		projectContainers.put(container.getType(), container);
-	}
-	
-
-	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
-		return cacheGCodeProvider.get(id);
-	}
-
-	public List<IGCodeProvider> getGCodeProvider() throws GkException {		
-		return cacheGCodeProvider.get();
-	}
-	
-
-	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
-		cacheGCodeProvider.add(provider);
-	}
-	
-	public void deleteGCodeProvider(Integer id) throws GkException {
-		IGCodeProvider provider = cacheGCodeProvider.get(id);		
-		cacheGCodeProvider.remove(id);		
 	}
 }

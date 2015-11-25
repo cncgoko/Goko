@@ -47,7 +47,7 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
-import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
@@ -61,7 +61,7 @@ import org.goko.core.log.GkLog;
 public class CommandPanelController  extends AbstractController<CommandPanelModel> implements PropertyChangeListener {
 	private final static GkLog LOG = GkLog.getLogger(CommandPanelController.class);
 	@Inject
-	private IControllerService<IExecutionState, GCodeContext> controllerService;
+	private IControllerService<IExecutionTokenState, GCodeContext> controllerService;
 	@Inject
 	@Optional
 	private ICoordinateSystemAdapter<EnumCoordinateSystem> coordinateSystemAdapter;	

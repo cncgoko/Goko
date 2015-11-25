@@ -50,6 +50,7 @@ import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.IExecutionQueue;
@@ -82,9 +83,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** The sending thread	 */
 	private GCodeSendingRunnable csurrentSendingRunnable;
 	/** The current execution queue */
-	private IExecutionQueue<ExecutionState, TinyGExecutionToken> sexecutionQueue;
+	private IExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> sexecutionQueue;
 	/** The monitor service */
-	private IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> executionService;
+	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -167,14 +168,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public TinyGExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException{
+	public ExecutionToken<ExecutionTokenState> executeGCode(IGCodeProvider gcodeProvider) throws GkException{
 		if(!isReadyForFileStreaming()){
 			throw new GkFunctionalException("TNG-003");
 		}
 		checkExecutionControl();
 		checkVerbosity(configuration);
 		updateQueueReport();
-		TinyGExecutionToken token = new TinyGExecutionToken(gcodeProvider);
+		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeProvider, ExecutionTokenState.NONE);
 		//token.setMonitorService(getMonitorService());
 		//executionQueue.add(token);
 
@@ -786,16 +787,17 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> getMonitorService() {
+	public IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getMonitorService() {
 		return executionService;
 	}
 	/**
 	 * @param monitorService the monitorService to set
 	 * @throws GkException GkException 
 	 */
-	public void setMonitorService(IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> monitorService) throws GkException {
+	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
-		executionService.setExecutor(tinygExecutor);
+//		executionService.setExecutor(tinygExecutor);
+		executionService.setExecutor(new DebugExecutor());
 	}
 
 	public Unit<Length> getCurrentUnit(){

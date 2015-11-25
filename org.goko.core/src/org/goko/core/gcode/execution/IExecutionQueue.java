@@ -3,6 +3,8 @@
  */
 package org.goko.core.gcode.execution;
 
+import java.util.List;
+
 import org.goko.core.common.exception.GkException;
 
 /**
@@ -11,7 +13,7 @@ import org.goko.core.common.exception.GkException;
  * @author PsyKo
  * @date 17 oct. 2015
  */
-public interface IExecutionQueue<S extends IExecutionState, T extends IExecutionToken<S>> {
+public interface IExecutionQueue<S extends IExecutionTokenState, T extends IExecutionToken<S>> {
 
 	boolean hasNext();
 
@@ -21,11 +23,11 @@ public interface IExecutionQueue<S extends IExecutionState, T extends IExecution
 
 	void endCurrentTokenExecution() throws GkException;
 
-	void setPaused(boolean paused) throws GkException;
-
 	T getCurrentToken();
 
 	void clear() throws GkException;
 
 	T waitNext() throws GkException;
+	
+	List<T> getExecutionToken() throws GkException;
 }

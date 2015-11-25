@@ -5,13 +5,14 @@ package org.goko.core.gcode.execution;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.service.IExecutionService;
 
 /**
  * Interface for a token execution mechanism
  * 
  * @author PsyKo
  */
-public interface IExecutor<S extends IExecutionState, T extends IExecutionToken<S>> {
+public interface IExecutor<S extends IExecutionTokenState, T extends IExecutionToken<S>> extends IExecutionControl {
 	
 	/**
 	 * Allow to implement controls before execution of the complete queue by this executor
@@ -37,6 +38,8 @@ public interface IExecutor<S extends IExecutionState, T extends IExecutionToken<
 	T createToken(IGCodeProvider provider) throws GkException;
 	
 	
+	boolean isTokenComplete() throws GkException;
+	
 	void waitTokenComplete() throws GkException;
 	
 	/**
@@ -45,4 +48,19 @@ public interface IExecutor<S extends IExecutionState, T extends IExecutionToken<
 	 * @throws GkException GkException
 	 */
 	T getToken() throws GkException;
+	
+	/**
+	 * Setter for the running IExecutionService
+	 * @param executionService the IExecutionService running this executor
+	 * @throws GkException GkException
+	 */
+	void setExecutionService(IExecutionService<S, T> executionService) throws GkException;
+
+	/**
+	 * Getter for the running Setter for the running IExecutionService
+	 * @return the IExecutionService
+	 * @throws GkException GkException
+	 */
+	IExecutionService<S, T> getExecutionService() throws GkException;
+
 }

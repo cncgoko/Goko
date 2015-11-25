@@ -28,7 +28,6 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 
 /**
@@ -37,7 +36,7 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean implements IExecutionToken<T> {	
+public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBean implements IExecutionToken<T> {	
 	private static final GkLog LOG = GkLog.getLogger(ExecutionToken.class);
 	/** The map of state by line Id */
 	protected Map<Integer, T> mapExecutionStateById;
@@ -45,15 +44,12 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	protected Map<T, List<Integer>> mapLineByExecutionState;
 	/** The current command index */
 	protected int currentIndex;
-	/** Completed state  */
-	protected boolean complete;
-	/** d of the executed GCodeProvider */
-	protected WeakReference<IGCodeProvider> gcodeProviderReference;
-	/** The monitor service */
-	protected IExecutionService<T, IExecutionToken<T>> monitorService;
-	/** Paused state */
-	protected boolean paused;
-	
+	/** Id of the executed GCodeProvider */
+	protected WeakReference<IGCodeProvider> gcodeProviderReference;	
+	/** Initial state of the lines */
+	protected T initialState;
+	/** State of the token */
+	protected ExecutionState state;
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
@@ -61,20 +57,12 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 */
 	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
 		this.gcodeProviderReference = new WeakReference<IGCodeProvider>(provider);
-		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
-		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
-		this.mapLineByExecutionState.put(initState, new ArrayList<Integer>());		
-		this.currentIndex = -1;
-		if(CollectionUtils.isNotEmpty(provider.getLines())){
-			for (GCodeLine gCodeLine : provider.getLines()) {
-				this.mapLineByExecutionState.get(initState).add(gCodeLine.getId());
-				this.mapExecutionStateById.put(gCodeLine.getId(), initState);
-			}
-		}
+		this.initialState = initState;
+		reset();
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.execution.IExecutionToken#setLineState(java.lang.Integer, org.goko.core.gcode.execution.IExecutionState)
+	 * @see org.goko.core.gcode.execution.IExecutionToken#setLineState(java.lang.Integer, org.goko.core.gcode.execution.IExecutionTokenState)
 	 */
 	@Override
 	public void setLineState(Integer idLine, T state) throws GkException {
@@ -92,8 +80,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 		}
 		// Add to new state list
 		mapLineByExecutionState.get(state).add(idLine);
-		mapExecutionStateById.put(idLine, state);
-		monitorService.notifyCommandStateChanged(this, idLine);
+		mapExecutionStateById.put(idLine, state);		
 	}
 	
 	/** (inheritDoc)
@@ -159,107 +146,7 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken#beginExecution()
-	 */
-	@Override
-	public void beginExecution() throws GkException {
-		if(isMonitorService()){
-			getMonitorService().notifyExecutionStart(this);
-		}
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken#endExecution()
-	 */
-	@Override
-	public void endExecution() throws GkException {
-		if(isMonitorService()){
-			if(isComplete()){
-				getMonitorService().notifyExecutionComplete(this);				
-			}else{
-				getMonitorService().notifyExecutionCanceled(this);
-			}
-		}
-	}
-		
-	/**
-	 * Notify the execution's pause of this token
-	 * @throws GkException GkException
-	 */
-	protected void pauseExecution() throws GkException {
-		if(isMonitorService()){			
-			// FIXME : Probably not necessary anymore
-			getMonitorService().notifyExecutionPause(this);			
-		}
-	}
-
-	/**
-	 * @return the complete
-	 */
-	public boolean isComplete() {
-		return complete;
-	}
-
-	/**
-	 * @param complete the complete to set
-	 */
-	public void setComplete(boolean complete) {
-		this.complete = complete;
-		synchronized (this) {
-			notify(); // FIXME : Probably not necessary anymore because synchronisation of executor 
-		}
-	}
-	
-	public boolean isMonitorService() {
-		return monitorService != null;
-	}
-	/**
-	 * @return the monitorService
-	 */
-	public IExecutionService<T, IExecutionToken<T>> getMonitorService() {
-		return monitorService;
-	}
-
-	/**
-	 * @param monitorService the monitorService to set
-	 */
-	public void setMonitorService(IExecutionService<T, IExecutionToken<T>> monitorService) {
-		this.monitorService = monitorService;
-	}
-
-	/**
-	 * @return the paused
-	 */
-	public boolean isPaused() {
-		return paused;
-	}
-
-	/**
-	 * (inheritDoc)
-	 * 
-	 * @see org.goko.core.gcode.execution.IExecutionToken#setExecutionPaused(boolean)
-	 */
-	@Override
-	public void setExecutionPaused(boolean paused) throws GkException {
-		this.paused = paused;
-		if (paused) {
-			pauseExecution();
-		}
-		synchronized (this) {
-			notify();
-		}
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.execution.IExecutionToken#isExecutionPaused()
-	 */
-	@Override
-	public boolean isExecutionPaused() throws GkException {		
-		return paused;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.execution.IExecutionToken#getLineByState(org.goko.core.gcode.execution.IExecutionState)
+	 * @see org.goko.core.gcode.execution.IExecutionToken#getLineByState(org.goko.core.gcode.execution.IExecutionTokenState)
 	 */
 	@Override
 	public List<GCodeLine> getLineByState(T state) throws GkException {
@@ -278,5 +165,37 @@ public class ExecutionToken<T extends IExecutionState> extends AbstractIdBean im
 	 */
 	public IGCodeProvider getGCodeProvider(){
 		return gcodeProviderReference.get();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionToken#reset()
+	 */
+	@Override
+	public void reset() throws GkException {
+		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
+		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
+		this.mapLineByExecutionState.put(initialState, new ArrayList<Integer>());		
+		this.currentIndex = -1;
+		this.setState(ExecutionState.IDLE);
+		if(CollectionUtils.isNotEmpty(getGCodeProvider().getLines())){
+			for (GCodeLine gCodeLine : getGCodeProvider().getLines()) {
+				this.mapLineByExecutionState.get(initialState).add(gCodeLine.getId());
+				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);
+			}
+		}
+	}
+
+	/**
+	 * @return the state
+	 */
+	public ExecutionState getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(ExecutionState state) {
+		this.state = state;
 	}
 }

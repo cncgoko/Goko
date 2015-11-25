@@ -3,6 +3,12 @@ package org.goko.core.execution.monitor;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -12,11 +18,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.execution.ExecutionState;
-import org.goko.core.gcode.execution.ExecutionToken;
-import org.goko.core.gcode.service.IExecutionService;
-import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.core.execution.monitor.executionpart.ExecutionPartController;
+import org.goko.core.execution.monitor.executionpart.ExecutionPartModel;
+import org.goko.core.log.GkLog;
 
 /**
  * The part for execution control
@@ -24,11 +30,23 @@ import org.goko.core.workspace.service.IWorkspaceService;
  * @author Psyko
  *
  */
-public class ExecutionPart {
-	/** The execution service */
+public class ExecutionPart extends GkUiComponent<ExecutionPartController, ExecutionPartModel>{
+	/** Logger */
+	private static final GkLog LOG = GkLog.getLogger(ExecutionPart.class);
+	
+	/**
+	 * Constructor
+	 */
 	@Inject
-	private IExecutionService<ExecutionState, ExecutionToken<ExecutionState>> executionService;
-	private IWorkspaceService workspaceService;
+	public ExecutionPart(IEclipseContext context) {
+		super(new ExecutionPartController());
+		ContextInjectionFactory.inject(getController(), context);
+		try {
+			getController().initialize();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+	}
 	
 	/**
 	 * Construct the part
@@ -60,11 +78,10 @@ public class ExecutionPart {
 			 */
 			@Override
 			public void mouseUp(MouseEvent e) {
-				
 				try {					
-					executionService.beginQueueExecution();					
+					getController().beginQueueExecution();					
 				} catch (GkException e1) {
-					e1.printStackTrace();
+					LOG.error(e1);
 				}
 			}
 		});
@@ -73,13 +90,33 @@ public class ExecutionPart {
 		btnStart.setLayoutData(gd_btnStart);
 		btnStart.setText("Start queue");
 		
-		Button btnNewButton = new Button(composite_1, SWT.NONE);
-		btnNewButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnNewButton.setText("Pause queue");
+		Button btnPause = new Button(composite_1, SWT.NONE);
+		btnPause.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					getController().pauseResumeQueueExecution();
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+		});
+		btnPause.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		btnPause.setText("Pause/Resume queue");
 		
-		Button btnNewButton_1 = new Button(composite_1, SWT.NONE);
-		btnNewButton_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnNewButton_1.setText("Stop queue");
+		Button btnStop = new Button(composite_1, SWT.NONE);
+		btnStop.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					getController().stopQueueExecution();
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+		});
+		btnStop.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		btnStop.setText("Stop queue");
 		
 		Label label_1 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gd_label_1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -97,14 +134,15 @@ public class ExecutionPart {
 		lblTotal.setLayoutData(gd_lblTotal);
 		lblTotal.setText("Total");
 		
-		ProgressBar progressBar = new ProgressBar(composite_2, SWT.NONE);
-		progressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		ProgressBar tokenProgressBar = new ProgressBar(composite_2, SWT.NONE);
+		tokenProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
-		Label label_2 = new Label(composite_2, SWT.NONE);
-		GridData gd_label_2 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_label_2.widthHint = 100;
-		label_2.setLayoutData(gd_label_2);
-		label_2.setText("1/5");
+		Label lblTokenProgress = new Label(composite_2, SWT.NONE);
+		lblTokenProgress.setAlignment(SWT.RIGHT);
+		GridData gd_lblTokenProgress = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gd_lblTokenProgress.widthHint = 100;
+		lblTokenProgress.setLayoutData(gd_lblTokenProgress);
+		lblTokenProgress.setText("1/5");
 		
 		Composite composite_3 = new Composite(composite, SWT.NONE);
 		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -116,14 +154,15 @@ public class ExecutionPart {
 		lblCurrent.setLayoutData(gd_lblCurrent);
 		lblCurrent.setText("Current token");
 		
-		ProgressBar progressBar_1 = new ProgressBar(composite_3, SWT.NONE);
-		progressBar_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		ProgressBar lineProgressBar = new ProgressBar(composite_3, SWT.NONE);
+		lineProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
-		Label label_3 = new Label(composite_3, SWT.NONE);
-		GridData gd_label_3 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_label_3.widthHint = 100;
-		label_3.setLayoutData(gd_label_3);
-		label_3.setText("262123/305263");
+		Label lblLineProgress = new Label(composite_3, SWT.NONE);
+		lblLineProgress.setAlignment(SWT.RIGHT);
+		GridData gd_lblLineProgress = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_lblLineProgress.widthHint = 100;
+		lblLineProgress.setLayoutData(gd_lblLineProgress);
+		lblLineProgress.setText("262123/305263");
 		
 		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gd_label = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -144,6 +183,39 @@ public class ExecutionPart {
 		Label lblRemainingTime = new Label(composite_4, SWT.NONE);
 		lblRemainingTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblRemainingTime.setText("Remaining time :");
+		try {
+			this.getController().addTextDisplayBinding(lblLineProgress, ExecutionPartModel.PROPERTY_COMPLETED_LINE_COUNT);
+			this.getController().addTextDisplayBinding(lblTokenProgress, ExecutionPartModel.PROPERTY_COMPLETED_TOKEN_COUNT);
+			
+			this.getController().addEnableBinding(btnStart, ExecutionPartModel.PROPERTY_START_BUTTON_ENABLED);
+			this.getController().addEnableBinding(btnPause, ExecutionPartModel.PROPERTY_PAUSE_BUTTON_ENABLED);
+			this.getController().addEnableBinding(btnStop , ExecutionPartModel.PROPERTY_STOP_BUTTON_ENABLED);
+		} catch (GkException e1) {
+			LOG.error(e1);
+		}
+		{
+			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "maximum");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_LINE_COUNT).observe(getDataModel());
 	
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}
+		{
+			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "selection");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_COMPLETED_LINE_COUNT).observe(getDataModel());
+	
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}
+		{
+			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "maximum");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_TOKEN_COUNT).observe(getDataModel());
+	
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}
+		{
+			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "selection");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_COMPLETED_TOKEN_COUNT).observe(getDataModel());
+	
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}
 	}
 }

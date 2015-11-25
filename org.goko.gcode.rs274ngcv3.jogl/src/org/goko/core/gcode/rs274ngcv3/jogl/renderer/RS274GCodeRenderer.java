@@ -36,7 +36,7 @@ import org.goko.core.common.utils.IIdBean;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
-import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
@@ -60,7 +60,7 @@ import com.jogamp.opengl.util.PMVMatrix;
  * @author PsyKo
  *
  */
-public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJoglRenderer, IIdBean, IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> {
+public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJoglRenderer, IIdBean, IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> {
 	/** Internal ID */
 	private Integer id;
 	/** Id of the generating GCodeProvider*/
@@ -252,42 +252,54 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(ExecutionToken<ExecutionState> token) throws GkException {
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
 		if(stateBuffer != null){
 			int capacity = stateBuffer.capacity();
 			for (int i = 0; i < capacity; i++){
-				stateBuffer.put(i, ExecutionState.NONE_STATE);
+				stateBuffer.put(i, ExecutionTokenState.NONE_STATE);
 			}
 			update();
 		}		
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
+	 */
+	@Override
+	public void onQueueExecutionStart() throws GkException {}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(ExecutionToken<ExecutionState> token) throws GkException {}
+	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(ExecutionToken<ExecutionState> token) throws GkException {}
+	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionComplete(ExecutionToken<ExecutionState> token) throws GkException {}
+	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onLineStateChanged(ExecutionToken<ExecutionState> token, Integer idLine) throws GkException {
+	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		if(mapVerticesGroupByIdLine.containsKey(idLine)){
 			VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
-			ExecutionState state = token.getLineState(idLine);
+			ExecutionTokenState state = token.getLineState(idLine);
 			if(stateBuffer != null){				
 				for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
 					stateBuffer.put(i, state.getState());

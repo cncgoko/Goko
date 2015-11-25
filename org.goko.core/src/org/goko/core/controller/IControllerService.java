@@ -28,7 +28,7 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.math.Tuple6b;
 /**
@@ -37,7 +37,7 @@ import org.goko.core.math.Tuple6b;
  * @author PsyKo
  *
  */
-public interface IControllerService<S extends IExecutionState, G extends IGCodeContext> extends IGokoService, IEventDispatcher{	
+public interface IControllerService<S extends IExecutionTokenState, G extends IGCodeContext> extends IGokoService, IEventDispatcher{	
 	public static final String CONTROLLER_TOPIC				 = "ControllerEvent";
 	public static final String CONTROLLER_TOPIC_ALL			 = "ControllerEvent/*";
 	public static final String CONTROLLER_TOPIC_STATE_UPDATE = CONTROLLER_TOPIC+"/StateUpdate";

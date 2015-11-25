@@ -10,7 +10,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.IExecutor;
 
@@ -20,7 +20,7 @@ import org.goko.core.gcode.execution.IExecutor;
  * @author PsyKo
  * @date 20 nov. 2015
  */
-public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionState, ExecutionToken<ExecutionState>> implements IExecutor<ExecutionState, ExecutionToken<ExecutionState>>{
+public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	/** The number of command sent but not confirmed */
 	private AtomicInteger pendingCommandCount;
 	/** The underlying service */
@@ -41,8 +41,8 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionState, Exe
 	 * @see org.goko.core.gcode.execution.IExecutor#createToken(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public TinyGExecutionToken createToken(IGCodeProvider provider) throws GkException {
-		return new TinyGExecutionToken(provider);
+	public ExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
+		return new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
 	}
 
 	/** (inheritDoc)
@@ -52,7 +52,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionState, Exe
 	protected void send(GCodeLine line) throws GkException {
 		pendingCommandCount.incrementAndGet();		
 		tinygService.send(line);
-		getToken().setLineState(line.getId(), ExecutionState.SENT);
+		getToken().setLineState(line.getId(), ExecutionTokenState.SENT);
 	}
 
 	/** (inheritDoc)
@@ -80,9 +80,9 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionState, Exe
 	 */
 	protected void onLineConfirmed() throws GkException{
 		pendingCommandCount.decrementAndGet();
-		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionState.SENT);
+		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionTokenState.SENT);
 		GCodeLine line = lstLines.get(0);
-		getToken().setLineState(line.getId(), ExecutionState.EXECUTED);
+		getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
 		notifyReadyForNextLineIfRequired();
 	}
 	

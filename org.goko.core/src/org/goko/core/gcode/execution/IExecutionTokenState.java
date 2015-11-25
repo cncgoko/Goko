@@ -7,7 +7,7 @@ package org.goko.core.gcode.execution;
  * @author PsyKo
  * @date 18 oct. 2015
  */
-public interface IExecutionState {
+public interface IExecutionTokenState {
 	/** Integer value of NONE state  */
 	public static final int NONE_STATE = 0;
 	

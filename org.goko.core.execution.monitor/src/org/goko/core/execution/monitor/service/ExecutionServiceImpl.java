@@ -26,14 +26,19 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
+import org.goko.core.execution.monitor.uiprovider.ExecutionQueueContainerUiProvider;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.core.workspace.service.IWorkspaceUIService;
 
 /**
  * Default implementation of the GCode execution monitor service
@@ -41,29 +46,32 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class ExecutionServiceImpl implements IExecutionService<ExecutionState, ExecutionToken<ExecutionState>>, IGokoService {
+public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGokoService {
 	/** Service ID */
 	public static final String SERVICE_ID = "org.goko.core.execution.monitor.service.GCodeExecutionMonitorServiceImpl";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ExecutionServiceImpl.class);
-	/** The list of listener*/
-	private List<IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>>> listenerList;
+	/** The list of listener */
+	private List<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>> listenerList;
 	/** The current executor */
-	private IExecutor<ExecutionState, ExecutionToken<ExecutionState>> executor;
+	private IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executor;
 	/** The execution queue */
-	private ExecutionQueue<ExecutionState, ExecutionToken<ExecutionState>> executionQueue;
+	private ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionQueue;
 	/** The execution queue runnable */
-	private ExecutionQueueRunnable<ExecutionState, ExecutionToken<ExecutionState>> executionQueueRunnable;
+	private ExecutionQueueRunnable<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionQueueRunnable;
 	/** The executor service used to run the execution queue runnable */
 	private ExecutorService executorService;
-	/** The state of the execution queue */
-	private ExecutionState state;
+	/** The workspace service */
+	private IWorkspaceService workspaceService;
+	/** Workspace UI Service */
+	private IWorkspaceUIService workspaceUiService;
+	
 	/**
 	 * Constructor
 	 */
-	public ExecutionServiceImpl() {
-		listenerList 	= new ArrayList<IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>>>();
-		executionQueue 	= new ExecutionQueue<ExecutionState, ExecutionToken<ExecutionState>>();
+	public ExecutionServiceImpl() {		
+		listenerList 	= new ArrayList<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>>();
+		executionQueue 	= new ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>();
 	}
 
 	/** (inheritDoc)
@@ -80,6 +88,9 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting "+getServiceId());
+		// FIXME : a sortir de ce service pour le mettre dans un service UI ? Nouveau projet ?
+		workspaceUiService.addProjectContainerUiProvider(new ExecutionQueueContainerUiProvider(this));
+		
 		LOG.info("Successfully started "+getServiceId());
 
 	}
@@ -95,20 +106,21 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#addToExecutionQueue(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void addToExecutionQueue(ExecutionToken<ExecutionState> executionToken) throws GkException {
-		executionQueue.add(executionToken);		
+	public void addToExecutionQueue(ExecutionToken<ExecutionTokenState> executionToken) throws GkException {
+		executionQueue.add(executionToken);	
+		workspaceService.notifyWorkspaceEvent(ExecutionServiceWorkspaceEvent.getCreateEvent(executionToken));
 	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#addToExecutionQueue(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public ExecutionToken<ExecutionState> addToExecutionQueue(IGCodeProvider gcodeProvider) throws GkException {
+	public ExecutionToken<ExecutionTokenState> addToExecutionQueue(IGCodeProvider gcodeProvider) throws GkException {
 		if(executor == null){
 			throw new GkTechnicalException("ExecutionServiceImpl : cannot add provider to execution queue. Executor is not set.");
 		}
-		ExecutionToken<ExecutionState> token = executor.createToken(gcodeProvider);
-		addToExecutionQueue(token);
+		ExecutionToken<ExecutionTokenState> token = executor.createToken(gcodeProvider);
+		addToExecutionQueue(token);		
 		return token;
 	}
 	
@@ -116,26 +128,26 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#removeFromExecutionQueue(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void removeFromExecutionQueue(ExecutionToken<ExecutionState> executionToken) throws GkException {
-		executionQueue.delete(executionToken.getId());		
+	public void removeFromExecutionQueue(ExecutionToken<ExecutionTokenState> executionToken) throws GkException {
+		executionQueue.delete(executionToken.getId());	
+		workspaceService.notifyWorkspaceEvent(ExecutionServiceWorkspaceEvent.getDeleteEvent(executionToken));
 	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#addExecutionListener(org.goko.core.gcode.service.IGCodeExecutionListener)
 	 */
 	@Override
-	public void addExecutionListener(IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> listener) throws GkException {
+	public void addExecutionListener(IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener) throws GkException {
 		if(!listenerList.contains(listener)){
 			listenerList.add(listener);
 		}
-
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#removeExecutionListener(org.goko.core.gcode.service.IGCodeExecutionListener)
 	 */
 	@Override
-	public void removeExecutionListener(IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> listener) throws GkException {
+	public void removeExecutionListener(IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener) throws GkException {
 		if(listenerList.contains(listener)){
 			listenerList.remove(listener);
 		}
@@ -145,21 +157,46 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionStart(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionStart(ExecutionToken<ExecutionState> token) throws GkException {
+	public void notifyExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		workspaceService.notifyWorkspaceEvent( ExecutionServiceWorkspaceEvent.getUpdateEvent(token) );
 		if(CollectionUtils.isNotEmpty(listenerList)){
-			for (IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> executionListener : listenerList) {
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onExecutionStart(token);
 			}
 		}
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#notifyQueueExecutionStart()
+	 */
+	@Override
+	public void notifyQueueExecutionStart() throws GkException {
+		if(CollectionUtils.isNotEmpty(listenerList)){
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
+				executionListener.onQueueExecutionStart();
+			}
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#notifyQueueExecutionComplete()
+	 */
+	@Override
+	public void notifyQueueExecutionComplete() throws GkException {
+		if(CollectionUtils.isNotEmpty(listenerList)){
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
+				executionListener.onQueueExecutionComplete();
+			}
+		}
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyCommandStateChanged(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void notifyCommandStateChanged(ExecutionToken<ExecutionState> token, Integer idLine) throws GkException {
+	public void notifyCommandStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		if(CollectionUtils.isNotEmpty(listenerList)){
-			for (IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> executionListener : listenerList) {
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onLineStateChanged(token, idLine);
 			}
 		}
@@ -169,9 +206,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionCanceled(ExecutionToken<ExecutionState> token) throws GkException {
+	public void notifyExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		workspaceService.notifyWorkspaceEvent( ExecutionServiceWorkspaceEvent.getUpdateEvent(token) );
 		if(CollectionUtils.isNotEmpty(listenerList)){
-			for (IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> executionListener : listenerList) {
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onExecutionCanceled(token);
 			}
 		}
@@ -181,9 +219,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionPause(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionPause(ExecutionToken<ExecutionState> token) throws GkException {
+	public void notifyExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		workspaceService.notifyWorkspaceEvent( ExecutionServiceWorkspaceEvent.getUpdateEvent(token) );
 		if(CollectionUtils.isNotEmpty(listenerList)){
-			for (IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> executionListener : listenerList) {
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onExecutionPause(token);
 			}
 		}
@@ -193,9 +232,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionComplete(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void notifyExecutionComplete(ExecutionToken<ExecutionState> token) throws GkException {
+	public void notifyExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		workspaceService.notifyWorkspaceEvent( ExecutionServiceWorkspaceEvent.getUpdateEvent(token) );
 		if(CollectionUtils.isNotEmpty(listenerList)){
-			for (IGCodeExecutionListener<ExecutionState, ExecutionToken<ExecutionState>> executionListener : listenerList) {
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onExecutionComplete(token);
 			}
 		}
@@ -205,7 +245,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#setExecutor(org.goko.core.gcode.execution.IExecutor)
 	 */
 	@Override
-	public void setExecutor(IExecutor<ExecutionState, ExecutionToken<ExecutionState>> executor) throws GkException {
+	public void setExecutor(IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executor) throws GkException {
 		this.executor = executor;		
 	}
 	
@@ -215,11 +255,12 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	@Override
 	public void beginQueueExecution() throws GkException {
 		if(executionQueue != null){
-			if(state == ExecutionState.RUNNING){
+			if(executionQueueRunnable != null && executionQueueRunnable.getState() == ExecutionState.RUNNING){
 				throw new GkTechnicalException("Queue is already running");
-			}
-			state = ExecutionState.RUNNING;
-			executionQueueRunnable = new ExecutionQueueRunnable<>();
+			}			
+			executionQueue.reset(); 
+			
+			executionQueueRunnable = new ExecutionQueueRunnable<>(this);
 			executionQueueRunnable.setExecutor(executor);
 			executionQueueRunnable.setExecutionQueue(executionQueue);
 			
@@ -235,10 +276,9 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 * @see org.goko.core.gcode.service.IExecutionService#pauseQueueExecution()
 	 */
 	@Override
-	public void pauseQueueExecution() throws GkException {
-		state = ExecutionState.PAUSED;
+	public void pauseQueueExecution() throws GkException {		
 		if(executionQueueRunnable != null){
-			executionQueueRunnable.getExecutionQueue().setPaused(true);
+			executionQueueRunnable.pause();
 		}
 	}
 	
@@ -247,8 +287,9 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 */
 	@Override
 	public void stopQueueExecution() throws GkException {
-		state = ExecutionState.STOPPED;
-		//a implementer + debrancher la synchro par le token ?
+		if(executionQueueRunnable != null){
+			executionQueueRunnable.stop();
+		}
 	}
 	
 	
@@ -257,9 +298,8 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 */
 	@Override
 	public void resumeQueueExecution() throws GkException {
-		state = ExecutionState.RUNNING;
 		if(executionQueueRunnable != null){
-			executionQueueRunnable.getExecutionQueue().setPaused(false);
+			executionQueueRunnable.resume();
 		}
 	}
 	/** (inheritDoc)
@@ -267,6 +307,45 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionState, E
 	 */
 	@Override
 	public ExecutionState getExecutionState() throws GkException {
-		return state;
+		if(executionQueueRunnable == null){
+			return ExecutionState.IDLE;
+		}
+		return executionQueueRunnable.getState();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#getExecutionQueue()
+	 */
+	@Override
+	public ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getExecutionQueue() throws GkException {		
+		return executionQueue;
+	}
+ 
+	/**
+	 * @return the workspaceUiService
+	 */
+	public IWorkspaceUIService getWorkspaceUiService() {
+		return workspaceUiService;
+	}
+
+	/**
+	 * @param workspaceUiService the workspaceUiService to set
+	 */
+	public void setWorkspaceUiService(IWorkspaceUIService workspaceUiService) {
+		this.workspaceUiService = workspaceUiService;
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) {
+		this.workspaceService = workspaceService;
 	}
 }

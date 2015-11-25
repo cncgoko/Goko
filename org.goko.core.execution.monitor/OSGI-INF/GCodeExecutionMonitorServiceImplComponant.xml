@@ -4,4 +4,6 @@
    <service>
       <provide interface="org.goko.core.gcode.service.IExecutionService"/>
    </service>
+   <reference bind="setWorkspaceUiService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceUIService" name="IWorkspaceUIService" policy="static"/>
+   <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
 </scr:component>

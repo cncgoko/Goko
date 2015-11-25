@@ -72,5 +72,8 @@ public class TinyGExecutionToken extends ExecutionToken<ExecutionState>{
 			}
 		}
 	}
+	
+	plus utilisé. 
+	Utiliser un ExecutionToken standard
 
 }

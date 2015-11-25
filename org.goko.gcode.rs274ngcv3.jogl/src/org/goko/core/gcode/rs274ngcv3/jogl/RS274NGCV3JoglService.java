@@ -145,6 +145,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	public void createRenderer(Integer idGCodeProvider) throws GkException{		
 		getRS274NGCService().getGCodeProvider(idGCodeProvider);
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);
+		Ajouter le renderer comme listener du executionService
 		renderer.setIdGCodeProvider(idGCodeProvider);		
 		this.cacheRenderer.add(renderer);
 		Activator.getJoglViewerService().addRenderer(renderer);		

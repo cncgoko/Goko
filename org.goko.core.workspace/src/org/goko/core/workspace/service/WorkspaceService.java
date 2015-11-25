@@ -63,7 +63,8 @@ public class WorkspaceService implements IWorkspaceService{
 	public void start() throws GkException {		
 		this.listenerList = new ArrayList<IWorkspaceListener>();		
 		this.project = new GkProject();
-		this.project.addProjectContainer(new ProjectContainer("TEST"));
+		this.project.addProjectContainer(new ProjectContainer("TEST")); // FIXME : remove from workspace service 
+		this.project.addProjectContainer(new ProjectContainer("EXECUTIONQUEUE")); // FIXME : remove from workspace service 
 		LOG.info("Successfully started : "+getServiceId());
 	}
 

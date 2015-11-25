@@ -1,10 +1,13 @@
 package org.goko.core.execution.monitor.service;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.IExecutionControl;
 import org.goko.core.gcode.execution.IExecutionQueue;
-import org.goko.core.gcode.execution.IExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 
 /**
@@ -13,28 +16,50 @@ import org.goko.core.log.GkLog;
  * @author Psyko
  *
  */
-public class ExecutionQueueRunnable<S extends IExecutionState, T extends IExecutionToken<S>>  implements Runnable{
+public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IExecutionToken<S>>  implements Runnable,IExecutionControl{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ExecutionQueueRunnable.class);
 	/** The current executor */
 	private IExecutor<S, T> executor;
 	/** The execution queue*/
 	private IExecutionQueue<S, T> executionQueue;
+	/** The underlying execution service */	
+	private IExecutionService<S, T> executionService;
+	/** The state of the execution */
+	private ExecutionState state;
+	
+	/**
+	 * Constructor
+	 * @param executionService the referencing execution service
+	 */
+	public ExecutionQueueRunnable(IExecutionService<S, T> executionService) {
+		this.executionService = executionService; 
+		this.state = ExecutionState.IDLE;
+	}
 	
 	/** (inheritDoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
-		while(true){ // TODO : investigate if this runnable should be a singleton or not...
-			try{
-				executionQueue.beginNextTokenExecution();
-				runExecutionToken();
-				waitTokenComplete();
-				executionQueue.endCurrentTokenExecution();
-			}catch(GkException e){
-				LOG.error(e);
-			}
+		LOG.info("Starting ExecutionQueueRunnable");
+		try{
+			setState(ExecutionState.RUNNING);
+			executionService.notifyQueueExecutionStart();
+			
+			while(executionQueue.hasNext()){
+				try{
+					executionQueue.beginNextTokenExecution();				
+					runExecutionToken();								
+					executionQueue.endCurrentTokenExecution();				
+				}catch(GkException e){
+					LOG.error(e);
+				}
+			}	
+			setState(ExecutionState.COMPLETE);		
+			executionService.notifyQueueExecutionComplete();
+		}catch(GkException e){
+			LOG.error(e);
 		}
 	}
 	
@@ -44,18 +69,11 @@ public class ExecutionQueueRunnable<S extends IExecutionState, T extends IExecut
 	 * @throws GkException GkException
 	 */
 	protected void runExecutionToken() throws GkException{
-		while(executionQueue.getCurrentToken() != null && executionQueue.getCurrentToken().hasMoreLine()){
-			T token = executionQueue.getCurrentToken();
-			executor.executeToken(token);
-		}
+		executor.setExecutionService(executionService);		
+		T token = executionQueue.getCurrentToken();
+		executor.executeToken(token);		
 	}
 	
-	private void waitTokenComplete() throws GkException {
-		while (executionQueue.getCurrentToken() != null && !executionQueue.getCurrentToken().isComplete()) {
-			executor.waitTokenComplete();
-		}
-	}
-
 	/**
 	 * @return the executor
 	 */
@@ -82,6 +100,56 @@ public class ExecutionQueueRunnable<S extends IExecutionState, T extends IExecut
 	 */
 	public void setExecutionQueue(IExecutionQueue<S, T> executionQueue) {
 		this.executionQueue = executionQueue;
+	}
+
+	/**
+	 * @return the state
+	 */
+	public ExecutionState getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(ExecutionState state) {		
+		this.state = state;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionControl#start()
+	 */
+	@Override
+	public void start() throws GkException {
+		executor.start();
+		setState(ExecutionState.RUNNING);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionControl#resume()
+	 */
+	@Override
+	public void resume() throws GkException {
+		executor.resume();
+		setState(ExecutionState.RUNNING);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionControl#pause()
+	 */
+	@Override
+	public void pause() throws GkException {
+		executor.pause();
+		setState(ExecutionState.PAUSED);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionControl#stop()
+	 */
+	@Override
+	public void stop() throws GkException {
+		executor.stop();
+		setState(ExecutionState.STOPPED); 
 	}
 
 }

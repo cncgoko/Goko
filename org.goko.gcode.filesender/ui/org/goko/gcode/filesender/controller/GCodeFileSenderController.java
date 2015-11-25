@@ -53,8 +53,8 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionState;
-import org.goko.core.gcode.execution.IExecutionState;
+import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -73,7 +73,7 @@ import org.osgi.service.event.EventHandler;
  * @author PsyKo
  *
  */
-public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionState, IExecutionToken<IExecutionState>>, EventHandler{
+public class GCodeFileSenderController extends AbstractController<GCodeFileSenderBindings> implements IGCodeExecutionListener<IExecutionTokenState, IExecutionToken<IExecutionTokenState>>, EventHandler{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GCodeFileSenderController.class);
 	private static final String[] UNITS = {"bytes", "kB","mB","gB"};
@@ -83,13 +83,13 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Inject
 	private IEventBroker eventBroker;
 	@Inject
-	private IControllerService<IExecutionState, IGCodeContext> controllerService;
+	private IControllerService<IExecutionTokenState, IGCodeContext> controllerService;
 	@Inject
 	private IGCodeExecutionTimeService timeService;
 	@Inject
 	private IWorkspaceService workspaceService;
 	@Inject
-	private IExecutionService<IExecutionState, IExecutionToken<IExecutionState>> monitorService;
+	private IExecutionService<IExecutionTokenState, IExecutionToken<IExecutionTokenState>> monitorService;
 
 	private Runnable elapsedTimeRunnable;
 
@@ -242,7 +242,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 
 	public void startFileStreaming() throws GkException{
 		
-		IExecutionToken<IExecutionState> token = controllerService.executeGCode(getDataModel().getGcodeProvider());
+		IExecutionToken<IExecutionTokenState> token = controllerService.executeGCode(getDataModel().getGcodeProvider());
 		if(getDataModel().getGcodeProvider() != null){
 			//workspaceService.deleteGCodeProvider(getDataModel().getGcodeProvider().getId());
 		}
@@ -325,14 +325,14 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	/**
 	 * @return the controllerService
 	 */
-	public IControllerService<IExecutionState, IGCodeContext> getControllerService() {
+	public IControllerService<IExecutionTokenState, IGCodeContext> getControllerService() {
 		return controllerService;
 	}
 
 	/**
 	 * @param controllerService the controllerService to set
 	 */
-	public void setControllerService(IControllerService<IExecutionState, IGCodeContext> controllerService) {
+	public void setControllerService(IControllerService<IExecutionTokenState, IGCodeContext> controllerService) {
 		this.controllerService = controllerService;
 	}
 //
@@ -355,7 +355,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionStart(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -364,7 +364,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionCanceled(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		onExecutionComplete();
 	}
 
@@ -372,19 +372,19 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionPause(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		
 	}
 
 	@Override
-	public void onExecutionComplete(IExecutionToken<IExecutionState> token) throws GkException {
+	public void onExecutionComplete(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		onExecutionComplete();
 	}
 
 	@Override
-	public void onLineStateChanged(IExecutionToken<IExecutionState> token, Integer idCommand) throws GkException {
+	public void onLineStateChanged(IExecutionToken<IExecutionTokenState> token, Integer idCommand) throws GkException {
 		//getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
-		getDataModel().setSentCommandCount( CollectionUtils.size(token.getLineByState(ExecutionState.EXECUTED)) + CollectionUtils.size(token.getLineByState(ExecutionState.ERROR)) );
+		getDataModel().setSentCommandCount( CollectionUtils.size(token.getLineByState(ExecutionTokenState.EXECUTED)) + CollectionUtils.size(token.getLineByState(ExecutionTokenState.ERROR)) );
 		getDataModel().setTotalCommandCount( token.getLineCount() );
 	}
 	
