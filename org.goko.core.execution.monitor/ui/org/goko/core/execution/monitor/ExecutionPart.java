@@ -1,8 +1,11 @@
 package org.goko.core.execution.monitor;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.PojoObservables;
@@ -16,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.goko.common.GkUiComponent;
@@ -23,6 +27,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartController;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartModel;
 import org.goko.core.log.GkLog;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * The part for execution control
@@ -33,7 +38,8 @@ import org.goko.core.log.GkLog;
 public class ExecutionPart extends GkUiComponent<ExecutionPartController, ExecutionPartModel>{
 	/** Logger */
 	private static final GkLog LOG = GkLog.getLogger(ExecutionPart.class);
-	
+	/** EXECUTION_TIMER_REFRESH_INTERVAL */
+	private static final int EXECUTION_TIMER_REFRESH_INTERVAL_MS = 1000;
 	/**
 	 * Constructor
 	 */
@@ -53,7 +59,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	 * @param parent the parent composite
 	 */
 	@PostConstruct
-	public void postConstruct(Composite parent) {
+	public void postConstruct(final Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(1, false);
@@ -72,19 +78,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Button btnStart = new Button(composite_1, SWT.NONE);
-		btnStart.addMouseListener(new MouseAdapter() {
-			/** (inheritDoc)
-			 * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
-			 */
-			@Override
-			public void mouseUp(MouseEvent e) {
-				try {					
-					getController().beginQueueExecution();					
-				} catch (GkException e1) {
-					LOG.error(e1);
-				}
-			}
-		});
+		
 		GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnStart.heightHint = 32;
 		btnStart.setLayoutData(gd_btnStart);
@@ -109,7 +103,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().stopQueueExecution();
+					getController().stopQueueExecution();					
 				} catch (GkException e1) {
 					LOG.error(e1);
 				}
@@ -126,43 +120,29 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		
 		Composite composite_2 = new Composite(composite, SWT.NONE);
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		composite_2.setLayout(new GridLayout(3, false));
+		composite_2.setLayout(new GridLayout(2, false));
 		
 		Label lblTotal = new Label(composite_2, SWT.NONE);
 		GridData gd_lblTotal = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_lblTotal.widthHint = 100;
+		gd_lblTotal.widthHint = 80;
 		lblTotal.setLayoutData(gd_lblTotal);
-		lblTotal.setText("Total");
+		lblTotal.setText("Total ");
 		
-		ProgressBar tokenProgressBar = new ProgressBar(composite_2, SWT.NONE);
+		ProgressBar tokenProgressBar = new ProgressBar(composite_2, SWT.SMOOTH);
 		tokenProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
-		Label lblTokenProgress = new Label(composite_2, SWT.NONE);
-		lblTokenProgress.setAlignment(SWT.RIGHT);
-		GridData gd_lblTokenProgress = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_lblTokenProgress.widthHint = 100;
-		lblTokenProgress.setLayoutData(gd_lblTokenProgress);
-		lblTokenProgress.setText("1/5");
 		
 		Composite composite_3 = new Composite(composite, SWT.NONE);
 		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		composite_3.setLayout(new GridLayout(3, false));
+		composite_3.setLayout(new GridLayout(2, false));
 		
 		Label lblCurrent = new Label(composite_3, SWT.NONE);
 		GridData gd_lblCurrent = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_lblCurrent.widthHint = 100;
+		gd_lblCurrent.widthHint = 80;
 		lblCurrent.setLayoutData(gd_lblCurrent);
 		lblCurrent.setText("Current token");
 		
-		ProgressBar lineProgressBar = new ProgressBar(composite_3, SWT.NONE);
+		ProgressBar lineProgressBar = new ProgressBar(composite_3, SWT.SMOOTH);
 		lineProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
-		Label lblLineProgress = new Label(composite_3, SWT.NONE);
-		lblLineProgress.setAlignment(SWT.RIGHT);
-		GridData gd_lblLineProgress = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_lblLineProgress.widthHint = 100;
-		lblLineProgress.setLayoutData(gd_lblLineProgress);
-		lblLineProgress.setText("262123/305263");
 		
 		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gd_label = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -170,32 +150,96 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		label.setLayoutData(gd_label);
 		label.setBounds(0, 0, 64, 2);
 		
-		Composite composite_4 = new Composite(composite, SWT.NONE);
-		composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
-		composite_4.setLayout(new GridLayout(3, true));
+		Composite lblElapsedLines = new Composite(composite, SWT.NONE);
+		lblElapsedLines.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		lblElapsedLines.setLayout(new GridLayout(4, false));
+		new Label(lblElapsedLines, SWT.NONE);
 		
-		Label lblElapsedTime = new Label(composite_4, SWT.NONE);
-		lblElapsedTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		Label lblCompleted = new Label(lblElapsedLines, SWT.NONE);
+		lblCompleted.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblCompleted.setAlignment(SWT.RIGHT);
+		GridData gd_lblCompleted = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gd_lblCompleted.widthHint = 100;
+		lblCompleted.setLayoutData(gd_lblCompleted);
+		lblCompleted.setText("Completed");
+		new Label(lblElapsedLines, SWT.NONE);
+		
+		Label lblTotal_1 = new Label(lblElapsedLines, SWT.NONE);
+		GridData gd_lblTotal_1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_lblTotal_1.widthHint = 100;
+		lblTotal_1.setLayoutData(gd_lblTotal_1);
+		lblTotal_1.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblTotal_1.setText("Total");
+		
+		Label lblTokens = new Label(lblElapsedLines, SWT.NONE);
+		lblTokens.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblTokens.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblTokens.setText("Tokens");
+		
+		Label lblElapsedTokens = new Label(lblElapsedLines, SWT.NONE);
+		lblElapsedTokens.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		lblElapsedTokens.setAlignment(SWT.RIGHT);
+		lblElapsedTokens.setText("1");
+				
+		Label lblSeparatorTokens = new Label(lblElapsedLines, SWT.NONE);
+		lblSeparatorTokens.setText("/");
+		
+		Label lblTotalTokens = new Label(lblElapsedLines, SWT.NONE);
+		lblTotalTokens.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		lblTotalTokens.setText("5");
+		
+		Label lblLines = new Label(lblElapsedLines, SWT.NONE);
+		lblLines.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblLines.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblLines.setText("Lines");
+		
+		Label lblLineProgress = new Label(lblElapsedLines, SWT.NONE);
+		lblLineProgress.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		lblLineProgress.setAlignment(SWT.RIGHT);
+		lblLineProgress.setText("262123");
+		
+		
+		Label lblSeparatorLines = new Label(lblElapsedLines, SWT.NONE);
+		lblSeparatorLines.setText("/");
+		
+		Label lblTotalLines = new Label(lblElapsedLines, SWT.NONE);
+		lblTotalLines.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		lblTotalLines.setText("302632");
+		
+		Label lblTime = new Label(lblElapsedLines, SWT.NONE);
+		lblTime.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		lblTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblTime.setAlignment(SWT.RIGHT);
+		lblTime.setText("Time");
+		
+		final Label lblElapsedTime = new Label(lblElapsedLines, SWT.NONE);
 		lblElapsedTime.setAlignment(SWT.RIGHT);
-		lblElapsedTime.setText("Elapsed time :");
-		new Label(composite_4, SWT.NONE);
+		lblElapsedTime.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, false, false, 1, 1));
+		new Label(lblElapsedLines, SWT.NONE);
 		
-		Label lblRemainingTime = new Label(composite_4, SWT.NONE);
-		lblRemainingTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblRemainingTime.setText("Remaining time :");
+		Label lblEstimatedTime = new Label(lblElapsedLines, SWT.NONE);
+		lblEstimatedTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		
 		try {
-			this.getController().addTextDisplayBinding(lblLineProgress, ExecutionPartModel.PROPERTY_COMPLETED_LINE_COUNT);
-			this.getController().addTextDisplayBinding(lblTokenProgress, ExecutionPartModel.PROPERTY_COMPLETED_TOKEN_COUNT);
 			
 			this.getController().addEnableBinding(btnStart, ExecutionPartModel.PROPERTY_START_BUTTON_ENABLED);
 			this.getController().addEnableBinding(btnPause, ExecutionPartModel.PROPERTY_PAUSE_BUTTON_ENABLED);
 			this.getController().addEnableBinding(btnStop , ExecutionPartModel.PROPERTY_STOP_BUTTON_ENABLED);
+			
+			this.getController().addTextDisplayBinding(lblElapsedTokens, ExecutionPartModel.PROPERTY_COMPLETED_TOKEN_COUNT);
+			this.getController().addTextDisplayBinding(lblTotalTokens, ExecutionPartModel.PROPERTY_TOTAL_TOKEN_COUNT);
+			
+			this.getController().addTextDisplayBinding(lblLineProgress , ExecutionPartModel.PROPERTY_COMPLETED_LINE_COUNT );
+			this.getController().addTextDisplayBinding(lblTotalLines , ExecutionPartModel.PROPERTY_TOKEN_LINE_COUNT );
+			
+			this.getController().addTextDisplayBinding(lblElapsedTime  , ExecutionPartModel.PROPERTY_ELAPSED_TIME_STRING );			
+			this.getController().addTextDisplayBinding(lblEstimatedTime  , ExecutionPartModel.PROPERTY_ESTIMATED_TIME_STRING );			
 		} catch (GkException e1) {
 			LOG.error(e1);
 		}
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "maximum");
-			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_LINE_COUNT).observe(getDataModel());
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOKEN_LINE_COUNT).observe(getDataModel());
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
@@ -217,5 +261,38 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
+		
+		btnStart.addMouseListener(new MouseAdapter() {
+			/** (inheritDoc)
+			 * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
+			 */
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {					
+					getController().beginQueueExecution();		
+					parent.getDisplay().asyncExec(new Runnable() {
+						/** Runnable used to update execution time measurement */
+						@Override
+						public void run() {														
+							if(parent.isDisposed()){
+								return;
+							}				
+							Display display = parent.getDisplay();
+							Date startDate = ExecutionPart.this.getDataModel().getExecutionQueueStartDate();
+							if(startDate != null){
+								long durationInMilliseconds = new Date().getTime() - startDate.getTime();
+								String durationStr = DurationFormatUtils.formatDuration(durationInMilliseconds, "HH:mm:ss");
+								ExecutionPart.this.getDataModel().setElapsedTimeString(durationStr);
+							}							
+							if(ExecutionPart.this.getDataModel().isExecutionTimerActive()){
+								display.timerExec(EXECUTION_TIMER_REFRESH_INTERVAL_MS, this);
+							}
+						}
+					});
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+		});
 	}
 }

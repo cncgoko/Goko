@@ -70,9 +70,12 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 			getExecutionService().notifyCommandStateChanged(getToken(), nextLine.getId());
 		}	
 		waitTokenComplete();
-		
-		updateState(ExecutionState.COMPLETE);
-		getExecutionService().notifyExecutionComplete(getToken());
+		if(state == ExecutionState.STOPPED){
+			getExecutionService().notifyExecutionCanceled(getToken());
+		}else{
+			updateState(ExecutionState.COMPLETE);
+			getExecutionService().notifyExecutionComplete(getToken());
+		}
 	}
 
 	/** (inheritDoc)
@@ -80,7 +83,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 */
 	@Override
 	public void waitTokenComplete() throws GkException {
-		if(!tokenComplete){
+		if(!tokenComplete && state != ExecutionState.STOPPED){
 			tokenCompleteLock.lock();
 			try{
 				tokenCompleteCondition.await();				

@@ -47,7 +47,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 			setState(ExecutionState.RUNNING);
 			executionService.notifyQueueExecutionStart();
 			
-			while(executionQueue.hasNext()){
+			while(executionQueue.hasNext() && state != ExecutionState.STOPPED){
 				try{
 					executionQueue.beginNextTokenExecution();				
 					runExecutionToken();								
@@ -56,8 +56,12 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 					LOG.error(e);
 				}
 			}	
-			setState(ExecutionState.COMPLETE);		
-			executionService.notifyQueueExecutionComplete();
+			if(state == ExecutionState.STOPPED){
+				executionService.notifyQueueExecutionCanceled();				
+			}else{
+				setState(ExecutionState.COMPLETE);		
+				executionService.notifyQueueExecutionComplete();
+			}
 		}catch(GkException e){
 			LOG.error(e);
 		}

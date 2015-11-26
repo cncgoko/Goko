@@ -16,7 +16,7 @@ import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.math.BoundingTuple6b;
 
 public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCodeContext, InstructionSet>,
-										  IGCodeExecutionTimeService<GCodeContext>{
+										  IGCodeExecutionTimeService{
 
 	IGCodeProvider parse(InputStream inputStream) throws GkException;
 	

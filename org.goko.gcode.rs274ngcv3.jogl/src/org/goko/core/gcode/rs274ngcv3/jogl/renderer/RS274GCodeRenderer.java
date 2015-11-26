@@ -114,6 +114,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	protected void buildGeometry() throws GkException {		
 		ArrayList<Point3d> lstVertices 	= new ArrayList<Point3d>();
 		ArrayList<Color4f> lstColors 	= new ArrayList<Color4f>();
+		
 		mapVerticesGroupByIdLine 	= new HashMap<Integer, VerticesGroupByLine>();
 			
 		// FIXME : don't use new gcode context
@@ -145,7 +146,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		stateBuffer = IntBuffer.allocate(getVerticesCount());
 		stateBuffer.rewind();
-		
+
 		setColorsBuffer(JoglUtils.buildFloatBuffer4f(lstColors));
 		setVerticesBuffer(JoglUtils.buildFloatBuffer3d(lstVertices));
 	}
@@ -280,6 +281,12 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	@Override
 	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
 	 */

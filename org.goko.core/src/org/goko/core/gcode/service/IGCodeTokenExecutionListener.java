@@ -34,4 +34,6 @@ public interface IGCodeTokenExecutionListener<S extends IExecutionTokenState, T 
 	void onExecutionComplete(T token) throws GkException;
 	
 	void onQueueExecutionComplete() throws GkException;
+	
+	void onQueueExecutionCanceled() throws GkException;
 }

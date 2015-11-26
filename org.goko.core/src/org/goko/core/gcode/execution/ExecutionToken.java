@@ -50,6 +50,8 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	protected T initialState;
 	/** State of the token */
 	protected ExecutionState state;
+	/** The number of line in the provider */
+	private int lineCount;
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
@@ -58,6 +60,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
 		this.gcodeProviderReference = new WeakReference<IGCodeProvider>(provider);
 		this.initialState = initState;
+		this.lineCount = provider.getLinesCount();
 		reset();
 	}
 
@@ -137,12 +140,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	 * @return the number of lines
 	 */
 	public int getLineCount() {		
-		try {
-			return getGCodeProvider().getLines().size();
-		} catch (GkException e) {
-			LOG.error(e);
-		}
-		return 0;
+		return lineCount;
 	}
 
 	/** (inheritDoc)
@@ -156,6 +154,18 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 			for (Integer idLine : lstId) {
 				result.add(getGCodeProvider().getLine(idLine));
 			}
+		}
+		return result;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.IExecutionToken#getLineCountByState(org.goko.core.gcode.execution.IExecutionTokenState)
+	 */
+	@Override
+	public int getLineCountByState(T state) throws GkException {
+		int result = 0;
+		if(mapLineByExecutionState.containsKey(state)){
+			result = CollectionUtils.size(mapLineByExecutionState.get(state));
 		}
 		return result;
 	}

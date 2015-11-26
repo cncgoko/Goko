@@ -309,10 +309,11 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public Quantity<Time> evaluateExecutionTime(IGCodeProvider provider, GCodeContext baseContext) throws GkException {
+	public Quantity<Time> evaluateExecutionTime(IGCodeProvider provider) throws GkException {
 		Quantity<Time> result = NumberQuantity.zero(SI.SECOND);
 		
 		InstructionTimeCalculatorFactory timeFactory = new InstructionTimeCalculatorFactory();		
+		GCodeContext baseContext = new GCodeContext();
 		InstructionProvider instructions = getInstructions(baseContext, provider);
 		
 		InstructionIterator iterator = getIterator(instructions, baseContext);

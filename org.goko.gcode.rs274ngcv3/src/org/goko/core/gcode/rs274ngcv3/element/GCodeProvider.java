@@ -34,6 +34,14 @@ public class GCodeProvider implements IGCodeProvider {
 		return cacheLines.get(linesSequence);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#getLinesCount()
+	 */
+	@Override
+	public int getLinesCount() throws GkException {		
+		return cacheLines.size();
+	}
+	
 	/**
 	 * Add the given line at the end of this provider
 	 * @param line the line to add

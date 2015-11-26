@@ -189,6 +189,18 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 			}
 		}
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#notifyQueueExecutionCanceled()
+	 */
+	@Override
+	public void notifyQueueExecutionCanceled() throws GkException {
+		if(CollectionUtils.isNotEmpty(listenerList)){
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
+				executionListener.onQueueExecutionCanceled();
+			}
+		}
+	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyCommandStateChanged(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken, java.lang.Integer)

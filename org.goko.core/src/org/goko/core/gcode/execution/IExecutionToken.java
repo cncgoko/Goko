@@ -58,6 +58,14 @@ public interface IExecutionToken<T extends IExecutionTokenState> extends IIdBean
 	List<GCodeLine> getLineByState(T state) throws GkException;
 	
 	/**
+	 * Returns the count of line in the given state 
+	 * @param state the target state 
+	 * @return an integer
+	 * @throws GkException GkException
+	 */
+	int getLineCountByState(T state) throws GkException;
+	
+	/**
 	 * Sets the state of the given command 
 	 * @param idCommand id of the command 
 	 * @param state the state 

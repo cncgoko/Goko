@@ -526,7 +526,7 @@ public class FileSenderPart extends GkUiComponent<GCodeFileSenderController, GCo
 	@Override
 	public void onExecutionComplete(IExecutionToken<IExecutionTokenState> token) throws GkException {
 		if(!shell.isDisposed()){			
-			final int executedCount = CollectionUtils.size(token.getLineByState(ExecutionTokenState.EXECUTED));
+			final int executedCount = token.getLineCountByState(ExecutionTokenState.EXECUTED);
 			final int totalCount 	= token.getLineCount();
 			shell.getDisplay().asyncExec(new Runnable() {
 		      @Override

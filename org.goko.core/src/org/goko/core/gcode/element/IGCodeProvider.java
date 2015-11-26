@@ -19,6 +19,12 @@ public interface IGCodeProvider extends IIdBean{
 	List<GCodeLine> getLines() throws GkException;
 	
 	/**
+	 * Returns the count of lines in this provider 
+	 * @return an integer
+	 */
+	int getLinesCount() throws GkException;
+	
+	/**
 	 * Returns the line with the given id 
 	 * @param idLine the id of the line
 	 * @return GCodeLine

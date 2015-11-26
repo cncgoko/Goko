@@ -1,17 +1,26 @@
 package org.goko.core.execution.monitor.executionpart;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
-import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.workspace.service.IWorkspaceEvent;
@@ -25,6 +34,10 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	/** The underlying workspace service */
 	@Inject
 	private IWorkspaceService workspaceService;
+	/** The optional execution time evaluation service */
+	@Inject
+	@Optional
+	private IGCodeExecutionTimeService executionTimeService;
 	
 	/** Constructor */
 	public ExecutionPartController() {
@@ -46,9 +59,9 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {		
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
 		this.getDataModel().setCompletedLineCount(0);
-		this.getDataModel().setTotalLineCount(token.getLineCount());
+		this.getDataModel().setTokenLineCount(token.getLineCount());
 		updateButtonState();
 	}
 
@@ -58,6 +71,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onQueueExecutionComplete() throws GkException {
 		updateButtonState();
+		this.getDataModel().setExecutionTimerActive(false);
 	}
 	
 	/** (inheritDoc)
@@ -66,6 +80,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onQueueExecutionStart() throws GkException {
 		updateButtonState();
+		this.getDataModel().setExecutionQueueStartDate(new Date());
+		this.getDataModel().setExecutionTimerActive(true);
 	}
 	
 	/** (inheritDoc)
@@ -76,6 +92,13 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		updateButtonState();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		updateButtonState();
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
 	 */
@@ -98,7 +121,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		int executedLineCount = CollectionUtils.size(token.getLineByState(ExecutionTokenState.EXECUTED));		
+		int executedLineCount = token.getLineCountByState(ExecutionTokenState.EXECUTED);		
 		this.getDataModel().setCompletedLineCount(executedLineCount);		
 	}
 
@@ -112,10 +135,12 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
 			updateTokenQueueData();
 		}
+		updateEstimatedExecutionTime();
 	}
 
 	public void beginQueueExecution() throws GkException {
 		executionService.beginQueueExecution();
+		this.getDataModel().setExecutionQueueStartDate(new Date());
 	}
 	
 	public void pauseResumeQueueExecution() throws GkException {
@@ -154,6 +179,20 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		getDataModel().setButtonStopEnabled( buttonStopEnabled);
 	}
 	
+	private void updateEstimatedExecutionTime() throws GkException{
+		if(executionTimeService != null){
+			List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+			
+			Quantity<Time> estimatedTime = NumberQuantity.of(BigDecimal.ZERO, SI.SECOND);
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+				Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
+				estimatedTime = estimatedTime.add(tokenTime);
+			}
+			long estimatedMs = (long)estimatedTime.to(SI.MILLISECOND).doubleValue();
+			this.getDataModel().setEstimatedTimeString(DurationFormatUtils.formatDuration(estimatedMs, "HH:mm:ss"));
+		}
+	}
+	
 	private void updateTokenQueueData() throws GkException {		
 		List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
 		int tokenCount = CollectionUtils.size(lstToken);
@@ -161,13 +200,17 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		
 		int totalTokenCount 	= 0;
 		int completedTokenCount = 0;
+		int totalLineCount		= 0;
+		
 		for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {			
 			totalTokenCount += 1;
+			totalLineCount += executionToken.getLineCount();
 			if(executionToken.getState() == ExecutionState.COMPLETE){
 				completedTokenCount += 1;	
 			}
 		}
 		this.getDataModel().setCompletedTokenCount(completedTokenCount);
 		this.getDataModel().setTotalTokenCount(totalTokenCount);
+		this.getDataModel().setTotalLineCount(totalLineCount);
 	}
 }

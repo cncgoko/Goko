@@ -53,6 +53,8 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	
 	void notifyQueueExecutionComplete() throws GkException;
 	
+	void notifyQueueExecutionCanceled() throws GkException;
+	
 	// Controls over the execution queue
 	
 	void beginQueueExecution() throws GkException;

@@ -10,6 +10,8 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -19,6 +21,7 @@ import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceDeleteEvent;
 import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.workspace.service.IWorkspaceEvent;
@@ -41,6 +44,8 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	private IRS274NGCService rs274Service;
 	/** The bounds of all the loaded gcode */
 	private BoundsRenderer contentBoundsRenderer;
+	/** Execution service */
+	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -144,9 +149,9 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	public void createRenderer(Integer idGCodeProvider) throws GkException{		
 		getRS274NGCService().getGCodeProvider(idGCodeProvider);
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);
-		Ajouter le renderer comme listener du executionService
-		renderer.setIdGCodeProvider(idGCodeProvider);		
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);		
+		renderer.setIdGCodeProvider(idGCodeProvider);
+		executionService.addExecutionListener(renderer);
 		this.cacheRenderer.add(renderer);
 		Activator.getJoglViewerService().addRenderer(renderer);		
 	}
@@ -165,6 +170,7 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	public void removeRenderer(Integer idGCodeProvider) throws GkException{
 		RS274GCodeRenderer renderer = getRendererByGCodeProvider(idGCodeProvider);
+		executionService.removeExecutionListener(renderer);
 		cacheRenderer.remove(renderer);
 		renderer.destroy();
 	}
@@ -218,5 +224,19 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	public IRS274NGCService getRS274NGCService(){
 		return this.rs274Service;
+	}
+
+	/**
+	 * @return the executionService
+	 */
+	public IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getExecutionService() {
+		return executionService;
+	}
+
+	/**
+	 * @param executionService the executionService to set
+	 */
+	public void setExecutionService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
+		this.executionService = executionService;
 	}
 }

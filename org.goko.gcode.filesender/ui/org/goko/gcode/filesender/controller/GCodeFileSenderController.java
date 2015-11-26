@@ -384,7 +384,7 @@ public class GCodeFileSenderController extends AbstractController<GCodeFileSende
 	@Override
 	public void onLineStateChanged(IExecutionToken<IExecutionTokenState> token, Integer idCommand) throws GkException {
 		//getDataModel().setSentCommandCount( token.getExecutedCommandCount()+ token.getErrorCommandCount() );
-		getDataModel().setSentCommandCount( CollectionUtils.size(token.getLineByState(ExecutionTokenState.EXECUTED)) + CollectionUtils.size(token.getLineByState(ExecutionTokenState.ERROR)) );
+		getDataModel().setSentCommandCount( token.getLineCountByState(ExecutionTokenState.EXECUTED) + token.getLineCountByState(ExecutionTokenState.ERROR) );
 		getDataModel().setTotalCommandCount( token.getLineCount() );
 	}
 	

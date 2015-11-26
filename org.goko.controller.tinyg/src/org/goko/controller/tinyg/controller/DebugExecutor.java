@@ -9,7 +9,8 @@ import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.IExecutor;
 
 public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
-
+	private Object lock = new Object();
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutor#isReadyForQueueExecution()
 	 */
@@ -32,8 +33,16 @@ public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	@Override
 	protected void send(GCodeLine line) throws GkException {		
 		getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
-		//System.out.println(line);
-		if(getToken().getLineByState(ExecutionTokenState.NONE).size() == 0){
+		System.out.println(line);
+		try {
+			synchronized (lock) {
+				lock.wait(100);	
+			}			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(getToken().getLineCountByState(ExecutionTokenState.NONE) == 0){
 			notifyTokenComplete();			
 		}
 	}
@@ -43,7 +52,7 @@ public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	public boolean isTokenComplete() throws GkException {
-		return getToken().getLineByState(ExecutionTokenState.NONE).size() == 0;
+		return getToken().getLineCountByState(ExecutionTokenState.NONE) == 0;
 	}
 	
 	/** (inheritDoc)
