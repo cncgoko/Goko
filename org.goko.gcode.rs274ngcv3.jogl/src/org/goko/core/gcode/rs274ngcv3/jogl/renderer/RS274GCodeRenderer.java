@@ -36,8 +36,8 @@ import org.goko.core.common.utils.IIdBean;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
-import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
@@ -144,11 +144,13 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		}
 		
 		setVerticesCount(CollectionUtils.size(lstVertices));
-		stateBuffer = IntBuffer.allocate(getVerticesCount());
+		if(stateBuffer == null){
+			stateBuffer = IntBuffer.allocate(getVerticesCount());
+		}
 		stateBuffer.rewind();
 
 		setColorsBuffer(JoglUtils.buildFloatBuffer4f(lstColors));
-		setVerticesBuffer(JoglUtils.buildFloatBuffer3d(lstVertices));
+		setVerticesBuffer(JoglUtils.buildFloatBuffer3d(lstVertices));		
 	}
 
 	/**
@@ -184,7 +186,15 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		gl.glBufferData(GL.GL_ARRAY_BUFFER, getVerticesCount()*Buffers.SIZEOF_FLOAT, stateBuffer, GL.GL_DYNAMIC_DRAW);
 		setUpdateBuffer(false);
 	}
-
+	
+	/**
+	 * (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#updateGeometry()
+	 */
+	public void updateGeometry() throws GkException {
+		super.updateGeometry();
+	};
+	
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#initializeAdditionalBufferObjects(javax.media.opengl.GL3)
 	 */

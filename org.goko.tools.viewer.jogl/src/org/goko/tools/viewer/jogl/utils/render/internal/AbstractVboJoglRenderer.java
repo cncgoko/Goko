@@ -56,6 +56,8 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	private Integer vertexArrayObject;	
 	/** Request for buffer update */
 	private boolean updateBuffer;
+	/** Request for geometry update */
+	private boolean updateGeometry;
 	/** Interleaved buffer */
 	private FloatBuffer interleavedBuffer;
 	/** The id of the VBO in use for the vertices data */
@@ -98,13 +100,36 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	protected void updateBufferObjects() throws GkException {
 		this.updateBuffer = true;
 	}
+	
+	protected void updateGeometry() throws GkException {
+		this.updateGeometry = true;
+	}
+	/**
+	 * Performs the update of the geometry
+	 * @param gl the GL
+	 * @throws GkException GkException
+	 */
+	protected void performUpdateGeometry(GL3 gl) throws GkException {		
+		//////////// TEST
+//		IntBuffer buffers = IntBuffer.wrap(new int[]{interleavedBufferObject});
+//		gl.glDeleteBuffers(1,buffers);
+//		interleavedBufferObject = null;
+//		
+//		IntBuffer intBuffer = IntBuffer.wrap(new int[]{vertexArrayObject});
+//		gl.glDeleteVertexArrays(1, intBuffer);
+//		vertexArrayObject = null;
+		//////////// END of TEST
+		
+		buildGeometry();
+		updateBufferObjects();
+		this.updateGeometry = false;
+	}
 	/**
 	 * Performs the update in the vertex buffers
 	 * @param gl the GL
 	 * @throws GkException GkException
 	 */
-	protected void performUpdateBufferObjects(GL3 gl) throws GkException {
-		buildGeometry();
+	protected void performUpdateBufferObjects(GL3 gl) throws GkException {		
 		initializeBufferObjects(gl);
 		this.updateBuffer = false;
 	}
@@ -177,6 +202,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 			initialize(gl);
 		}
 		gl.glBindVertexArray(this.vertexArrayObject);	
+		if(updateGeometry){
+			performUpdateGeometry(gl);
+		}
 		if(updateBuffer){
 			performUpdateBufferObjects(gl);
 		}
