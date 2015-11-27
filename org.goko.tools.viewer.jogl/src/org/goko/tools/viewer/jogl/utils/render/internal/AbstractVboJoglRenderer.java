@@ -119,9 +119,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 //		gl.glDeleteVertexArrays(1, intBuffer);
 //		vertexArrayObject = null;
 		//////////// END of TEST
-		
+		this.updateGeometry = false;
 		buildGeometry();
-		updateBufferObjects();
+		performUpdateBufferObjects(gl);
 		this.updateGeometry = false;
 	}
 	/**
@@ -138,7 +138,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @param gl the GL
 	 * @throws GkException GkException
 	 */
-	private void initializeBufferObjects(GL3 gl) throws GkException {
+	protected void initializeBufferObjects(GL3 gl) throws GkException {
 		if(this.interleavedBufferObject == null){
 			int[] vbo = new int[1];
 			gl.glGenBuffers(1, vbo, 0);
@@ -186,10 +186,12 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @param gl the GL
 	 */
 	private void initializeVertexArrayObject(GL3 gl) {
-		IntBuffer vao = IntBuffer.allocate(1);
-		gl.glGenVertexArrays(1, vao);
-		this.vertexArrayObject = vao.get(0);
-		gl.glBindVertexArray(this.vertexArrayObject);
+		if(this.vertexArrayObject == null){
+			IntBuffer vao = IntBuffer.allocate(1);
+			gl.glGenVertexArrays(1, vao);
+			this.vertexArrayObject = vao.get(0);
+			gl.glBindVertexArray(this.vertexArrayObject);
+		}
 
 	}
 
@@ -372,9 +374,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @throws GkFunctionalException GkFunctionalException
 	 */
 	protected void setVerticesCount(Integer verticesCount) throws GkFunctionalException {
-		if(!ObjectUtils.equals(verticesCount, this.verticesCount) && isInitialized()){
-			throw new GkFunctionalException("Cannot change vertices count once initialized");
-		}
+//		if(!ObjectUtils.equals(verticesCount, this.verticesCount) && isInitialized()){
+//			throw new GkFunctionalException("Cannot change vertices count once initialized");
+//		}
 		this.verticesCount = verticesCount;
 	}
 

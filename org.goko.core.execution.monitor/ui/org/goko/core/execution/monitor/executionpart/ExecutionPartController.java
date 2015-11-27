@@ -141,6 +141,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	public void beginQueueExecution() throws GkException {
 		executionService.beginQueueExecution();
 		this.getDataModel().setExecutionQueueStartDate(new Date());
+		this.getDataModel().setExecutionTimerActive(true);
 	}
 	
 	public void pauseResumeQueueExecution() throws GkException {

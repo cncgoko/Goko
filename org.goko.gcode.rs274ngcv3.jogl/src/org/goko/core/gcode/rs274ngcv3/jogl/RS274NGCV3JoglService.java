@@ -158,9 +158,10 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	
 	public void updateRenderer(Integer idGCodeProvider) throws GkException{		
 		RS274GCodeRenderer renderer = getRendererByGCodeProvider(idGCodeProvider);				
-		createRenderer(idGCodeProvider);
-		cacheRenderer.remove(renderer); a modifier
-		renderer.destroy();		
+//		createRenderer(idGCodeProvider);
+//		cacheRenderer.remove(renderer); a modifier
+//		renderer.destroy();		
+		renderer.updateGeometry();
 	}
 	
 	/**

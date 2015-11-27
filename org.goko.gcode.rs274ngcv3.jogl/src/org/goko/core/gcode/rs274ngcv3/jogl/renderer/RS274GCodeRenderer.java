@@ -153,6 +153,10 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		setVerticesBuffer(JoglUtils.buildFloatBuffer3d(lstVertices));		
 	}
 
+	@Override
+	protected void initializeBufferObjects(GL3 gl) throws GkException {		
+		super.initializeBufferObjects(gl);
+	}
 	/**
 	 * Add the given vertices to the group of vertices for this command 
 	 * @param idGCodeLine the id of the generating GCodeLine
@@ -314,16 +318,18 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		if(mapVerticesGroupByIdLine.containsKey(idLine)){
-			VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
-			ExecutionTokenState state = token.getLineState(idLine);
-			if(stateBuffer != null){				
-				for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
-					stateBuffer.put(i, state.getState());
+		if(mapVerticesGroupByIdLine != null){
+			if(mapVerticesGroupByIdLine.containsKey(idLine)){
+				VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
+				ExecutionTokenState state = token.getLineState(idLine);
+				if(stateBuffer != null){				
+					for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
+						stateBuffer.put(i, state.getState());
+					}
+					update();
 				}
-				update();
-			}
-		}		
+			}	
+		}
 	}
 
 }

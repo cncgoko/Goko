@@ -522,6 +522,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			for (IModifier<GCodeProvider> modifier : lstModifiers) {
 				if(modifier.isEnabled()){
 					target = new GCodeProvider();
+					target.setId(source.getId());
+					target.setCode(source.getCode());
 					modifier.apply(source, target);
 					source = target;
 				}

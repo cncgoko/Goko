@@ -32,11 +32,18 @@ public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	protected void send(GCodeLine line) throws GkException {		
-		getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
-		System.out.println(line);
+		
+		if(Math.random() > 0.002){
+			getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+			System.out.println(line);
+		}else{
+			getToken().setLineState(line.getId(), ExecutionTokenState.ERROR);
+			System.err.println(line);
+			getExecutionService().pauseQueueExecution();
+		}
 		try {
 			synchronized (lock) {
-				lock.wait(100);	
+				lock.wait(10);	
 			}			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

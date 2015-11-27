@@ -15,6 +15,7 @@ import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
+import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 
@@ -44,11 +45,12 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 		while(iterator.hasNext()){
 			AbstractInstruction instr = iterator.next();
-			if(instr.getType() == InstructionType.STRAIGHT_FEED){
-				StraightFeedInstruction sfi = (StraightFeedInstruction) instr;				
-				sfi.setX(sfi.getX().add(translationX));
-				sfi.setY(sfi.getY().add(translationY));
-				sfi.setZ(sfi.getZ().add(translationZ));
+			if(instr.getType() == InstructionType.STRAIGHT_FEED
+				|| instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
+				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instr;				
+				straightInstruction.setX(straightInstruction.getX().add(translationX));
+				straightInstruction.setY(straightInstruction.getY().add(translationY));
+				straightInstruction.setZ(straightInstruction.getZ().add(translationZ));
 			}
 		}
 		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
