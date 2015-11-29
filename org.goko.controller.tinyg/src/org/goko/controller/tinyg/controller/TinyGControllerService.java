@@ -14,17 +14,20 @@ import java.util.concurrent.Future;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.controller.tinyg.controller.probe.ProbeCallable;
+import org.goko.controller.tinyg.controller.topic.TinyGExecutionErrorTopic;
 import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.controller.tinyg.service.ITinyGControllerFirmwareService;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
+import org.goko.core.common.event.EventBrokerUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -50,9 +53,9 @@ import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
@@ -80,8 +83,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private ISerialConnectionService connectionService;
 	/** GCode service */
 	private IRS274NGCService gcodeService;
-	/** The sending thread	 */
-	private GCodeSendingRunnable csurrentSendingRunnable;
 	/** The current execution queue */
 	private IExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> sexecutionQueue;
 	/** The monitor service */
@@ -345,9 +346,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
 		if(executionService.getExecutionState() == ExecutionState.RUNNING){
 			if(status == TinyGStatusCode.TG_OK){
-				tinygExecutor.onLineConfirmed();
+				tinygExecutor.confirmNextLineExecution();
 			}else{
-				// FIXME : Handle error
+				handleNonOkStatus(status, receivedCommand);
+				tinygExecutor.handleNonOkStatus(status);
 			}
 		}
 //		if(executionQueue.getCurrentToken() != null){
@@ -362,15 +364,32 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 //			}
 //		}
 	}
-
-	protected void handleError(TinyGStatusCode status, String receivedCommand) throws GkException {
+	
+	/**
+	 * Handles any TinyG Status that is not TG_OK
+	 * @param status the received status or <code>null</code> if unknown
+	 * @param receivedCommand the received command 
+	 * @throws GkException GkException
+	 */
+	protected void handleNonOkStatus(TinyGStatusCode status, String receivedCommand) throws GkException {
 		String message = StringUtils.EMPTY;
+		
 		if(status == null){
 			message = " Unknown error status";
-		}else{
-			message = " Error status returned : "+status.getValue() +" - "+status.getLabel();
-		}
-		
+		}else{			
+			if(status.isError()){
+				// Error report 
+				message = "Error status returned : "+status.getValue() +" - "+status.getLabel();
+				LOG.error(message);
+				applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG");
+				EventBrokerUtils.send(eventAdmin, new TinyGExecutionErrorTopic(), new TinyGExecutionError("Error reported durring execution", "Execution was paused after TinyG reported an error. You can resume, or stop the execution at your own risk.", message));
+			}else if(status.isWarning()){
+				// Warning report 
+				message = "Warning status returned : "+status.getValue() +" - "+status.getLabel();
+				LOG.warn(message);
+				applicativeLogService.log(ApplicativeLogEvent.LOG_WARNING, message, "TinyG");
+			}			
+		}		
 //		if(executionQueue != null){
 //			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
 //			
@@ -386,17 +405,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 //			pauseMotion();
 //			// Still confirm that the command was received
 //			this.currentSendingRunnable.confirmCommand();
-//			EventBrokerUtils.send(eventAdmin, new TinyGExecutionErrorTopic(), new TinyGExecutionError("Error reported durring execution", "Execution was paused after TinyG reported an error. You can resume, or stop the execution at your own risk.", message));			
-//		}
-		
-		LOG.error(message);
-		applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG");		
+//						
+//		}	
 	}
 	
-	protected void error(String message){
-		LOG.error(message);
-		applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG Communicator");
-	}
 	
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onMachineValueUpdate(MachineValueUpdateEvent evt){
@@ -796,8 +808,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
-//		executionService.setExecutor(tinygExecutor);
-		executionService.setExecutor(new DebugExecutor());
+		this.executionService.setExecutor(tinygExecutor);
+		this.executionService.addExecutionListener(tinygExecutor);
+	//	executionService.setExecutor(new DebugExecutor());
 	}
 
 	public Unit<Length> getCurrentUnit(){

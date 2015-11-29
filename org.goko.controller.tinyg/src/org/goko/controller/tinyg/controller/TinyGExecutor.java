@@ -10,9 +10,11 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.log.GkLog;
 
 /**
  * TinyG executor implementation 
@@ -20,7 +22,9 @@ import org.goko.core.gcode.execution.IExecutor;
  * @author PsyKo
  * @date 20 nov. 2015
  */
-public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
+public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
+	/** LOG */
+	private static final GkLog LOG = GkLog.getLogger(TinyGExecutor.class);
 	/** The number of command sent but not confirmed */
 	private AtomicInteger pendingCommandCount;
 	/** The underlying service */
@@ -35,6 +39,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	public TinyGExecutor(ITinygControllerService tinygService) {
 		super();
 		this.tinygService = tinygService;
+		this.pendingCommandCount = new AtomicInteger(0);
 	}
 
 	/** (inheritDoc)
@@ -78,14 +83,42 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * Notification method called when a line is confirmed by TinyG
 	 * @throws GkException
 	 */
-	protected void onLineConfirmed() throws GkException{
+	protected void confirmNextLineExecution() throws GkException{
 		pendingCommandCount.decrementAndGet();
 		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionTokenState.SENT);
 		GCodeLine line = lstLines.get(0);
 		getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+		getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
 		notifyReadyForNextLineIfRequired();
+		notifyTokenCompleteIfRequired();
 	}
 	
+	/**
+	 * Notify the parent executor if the conditions are met
+	 * @throws GkException GkException 
+	 */
+	private void notifyTokenCompleteIfRequired() throws GkException {
+		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0){
+			notifyTokenComplete();			
+		}
+	}
+
+	/**
+	 * Handles any TinyG Status that is not TG_OK
+	 * @param status the received status or <code>null</code> if unknown 
+	 * @throws GkException GkException
+	 */
+	protected void handleNonOkStatus(TinyGStatusCode status) throws GkException {
+		if(status == null || status.isError()){
+			LOG.warn("Pausing execution queue from TinyG Executor due to received status ["+status.getValue()+"]");
+			getExecutionService().pauseQueueExecution();			
+		}
+		// We still confirm :		
+		//   - if it's a non blocking warning, it's fine
+		//   - if it's an error and the user continue the execution, it assumes the error can be ignored
+		// 	 - if it's an error and the user stops the execution, this has no impact
+		confirmNextLineExecution();
+	}
 	/**
 	 * Notify the parent executor if the conditions are met
 	 * @throws GkException GkException 
@@ -108,4 +141,75 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 		 */
 		return true;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
+	 */
+	@Override
+	public void onQueueExecutionStart() throws GkException {
+		this.pendingCommandCount.set(0);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		this.pendingCommandCount.set(0);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

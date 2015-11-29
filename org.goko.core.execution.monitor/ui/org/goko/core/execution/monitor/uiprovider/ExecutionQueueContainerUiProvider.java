@@ -1,17 +1,18 @@
 package org.goko.core.execution.monitor.uiprovider;
 
-import javax.inject.Inject;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.execution.monitor.uiprovider.menu.executionqueue.ClearExecutionQueueAction;
+import org.goko.core.execution.monitor.uiprovider.menu.executiontoken.DeleteExecutionTokenAction;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.workspace.bean.ProjectContainer;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
@@ -120,7 +121,12 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public boolean providesMenuFor(ISelection selection) throws GkException {
-		return false;
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		if(content instanceof ProjectContainer){
+			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
+		}
+		return (content instanceof ExecutionToken);
 	}
 
 	/** (inheritDoc)
@@ -128,7 +134,31 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException {
-		
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		if(content instanceof ExecutionToken){
+			createMenuForExecutionToken(contextMenu, (ExecutionToken<?>)content);
+		}else if(content instanceof ProjectContainer && StringUtils.equals(getType(), ((ProjectContainer) content).getType())){
+			createMenuForExecutionQueue(contextMenu);
+		}
+	}
+
+	/**
+	 * Create the menu for an execution token
+	 * @param contextMenu
+	 * @param content
+	 */
+	private void createMenuForExecutionToken(IMenuManager contextMenu, ExecutionToken<?> token) {
+		contextMenu.add(new DeleteExecutionTokenAction(executionService, token.getId()));
+	}
+	
+	/**
+	 * Create the menu for the execution queue
+	 * @param contextMenu
+	 * @param content
+	 */
+	private void createMenuForExecutionQueue(IMenuManager contextMenu) {
+		contextMenu.add(new ClearExecutionQueueAction(executionService));
 	}
 
 }

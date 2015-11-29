@@ -36,6 +36,7 @@ Service-Component: OSGI-INF/WorkspaceComponant.xml,
  OSGI-INF/WorkspaceUiComponant.xml
 Bundle-Activator: org.goko.core.workspace.internal.Activator
 Export-Package: org.goko.core.workspace,
+ org.goko.core.workspace.action,
  org.goko.core.workspace.bean,
  org.goko.core.workspace.internal,
  org.goko.core.workspace.service,

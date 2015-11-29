@@ -125,12 +125,32 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	}
 	
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#clearExecutionQueue()
+	 */
+	@Override
+	public void clearExecutionQueue() throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstTokens = getExecutionQueue().getExecutionToken();
+		if(CollectionUtils.isNotEmpty(lstTokens)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstTokens) {
+				removeFromExecutionQueue(executionToken);
+			}
+		}
+	}
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#removeFromExecutionQueue(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
 	public void removeFromExecutionQueue(ExecutionToken<ExecutionTokenState> executionToken) throws GkException {
 		executionQueue.delete(executionToken.getId());	
 		workspaceService.notifyWorkspaceEvent(ExecutionServiceWorkspaceEvent.getDeleteEvent(executionToken));
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#removeFromExecutionQueue(java.lang.Integer)
+	 */
+	@Override
+	public void removeFromExecutionQueue(Integer idExecutionToken) throws GkException {
+		removeFromExecutionQueue(executionQueue.getExecutionToken(idExecutionToken));
 	}
 	
 	/** (inheritDoc)
@@ -290,7 +310,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	@Override
 	public void pauseQueueExecution() throws GkException {		
 		if(executionQueueRunnable != null){
-			executionQueueRunnable.pause();
+			executionQueueRunnable.pause();			
 		}
 	}
 	
@@ -311,7 +331,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	@Override
 	public void resumeQueueExecution() throws GkException {
 		if(executionQueueRunnable != null){
-			executionQueueRunnable.resume();
+			executionQueueRunnable.resume();			
 		}
 	}
 	/** (inheritDoc)

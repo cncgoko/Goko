@@ -148,4 +148,13 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 			token.reset();
 		}
 	}
+	
+	public T getExecutionToken(Integer idExecutionToken) throws GkTechnicalException{
+		for (T t : executionTokens) {
+			if(ObjectUtils.equals(t.getId(), idExecutionToken)){
+				return t;
+			}
+		}
+		throw new GkTechnicalException("Execution token with id ["+idExecutionToken+"] does not exist in queue");
+	}
 }

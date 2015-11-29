@@ -1,13 +1,13 @@
 package org.goko.core.execution.monitor.uiprovider;
 
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.workspace.bean.ProjectContainer;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StyledString;
 
 public class ExecutionQueueContainerLabelProvider extends LabelProvider implements IStyledLabelProvider {
 
@@ -35,13 +35,19 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 	@Override
 	public Image getImage(Object element) {
 		if(element instanceof ProjectContainer){
-			return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/category.png");
+			return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/blue-documents-stack.png");
 		}else if(element instanceof ExecutionToken){
 			ExecutionToken<?> token = (ExecutionToken<?>) element;
 			if(token.getState() == ExecutionState.COMPLETE){
 				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/tick.png");	
 			}else if(token.getState() == ExecutionState.RUNNING){
 				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/control-running.png");				
+			}else if(token.getState() == ExecutionState.PAUSED){
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/pause.gif");				
+			}else if(token.getState() == ExecutionState.ERROR){
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/cross.png");				
+			}else if(token.getState() == ExecutionState.STOPPED){
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/stop.gif");				
 			}
 			
 		}

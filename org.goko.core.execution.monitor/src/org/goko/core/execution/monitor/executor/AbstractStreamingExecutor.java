@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
-import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
@@ -54,7 +54,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	public void executeToken(T token) throws GkException {
 		tokenWeakReference = new WeakReference<T>(token);
 		setTokenComplete(false);
-		
+				
 		updateState(ExecutionState.RUNNING);
 		getExecutionService().notifyExecutionStart(token);		
 		
@@ -70,6 +70,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 			getExecutionService().notifyCommandStateChanged(getToken(), nextLine.getId());
 		}	
 		waitTokenComplete();
+		
 		if(state == ExecutionState.STOPPED){
 			getExecutionService().notifyExecutionCanceled(getToken());
 		}else{

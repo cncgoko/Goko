@@ -5,5 +5,6 @@ public enum ExecutionState {
 	RUNNING,
 	PAUSED,
 	STOPPED,
+	ERROR,
 	COMPLETE;	
 }

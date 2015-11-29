@@ -21,8 +21,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
-import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
 
 public interface IExecutionService<S extends IExecutionTokenState, T extends IExecutionToken<S>> {
@@ -32,6 +32,10 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	T addToExecutionQueue(IGCodeProvider gcodeProvider) throws GkException;
 	
 	void addToExecutionQueue(T executionToken) throws GkException;	
+	
+	void clearExecutionQueue() throws GkException;
+	
+	void removeFromExecutionQueue(Integer idExecutionToken) throws GkException;
 	
 	void removeFromExecutionQueue(T executionToken) throws GkException;
 	

@@ -23,7 +23,6 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
@@ -110,19 +109,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @throws GkException GkException
 	 */
 	protected void performUpdateGeometry(GL3 gl) throws GkException {		
-		//////////// TEST
-//		IntBuffer buffers = IntBuffer.wrap(new int[]{interleavedBufferObject});
-//		gl.glDeleteBuffers(1,buffers);
-//		interleavedBufferObject = null;
-//		
-//		IntBuffer intBuffer = IntBuffer.wrap(new int[]{vertexArrayObject});
-//		gl.glDeleteVertexArrays(1, intBuffer);
-//		vertexArrayObject = null;
-		//////////// END of TEST
 		this.updateGeometry = false;
 		buildGeometry();
 		performUpdateBufferObjects(gl);
-		this.updateGeometry = false;
 	}
 	/**
 	 * Performs the update in the vertex buffers

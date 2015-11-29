@@ -127,6 +127,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	public void start() throws GkException {
 		executor.start();
 		setState(ExecutionState.RUNNING);
+		executionService.notifyExecutionStart(executionQueue.getCurrentToken());
 	}
 
 	/** (inheritDoc)
@@ -136,6 +137,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	public void resume() throws GkException {
 		executor.resume();
 		setState(ExecutionState.RUNNING);
+		executionService.notifyExecutionStart(executionQueue.getCurrentToken());
 	}
 
 	/** (inheritDoc)
@@ -145,6 +147,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	public void pause() throws GkException {
 		executor.pause();
 		setState(ExecutionState.PAUSED);
+		executionService.notifyExecutionPause(executionQueue.getCurrentToken());
 	}
 
 	/** (inheritDoc)
@@ -154,6 +157,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	public void stop() throws GkException {
 		executor.stop();
 		setState(ExecutionState.STOPPED); 
+		executionService.notifyExecutionCanceled(executionQueue.getCurrentToken());
 	}
 
 }

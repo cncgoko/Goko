@@ -2,7 +2,7 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.AbstractDeleteAction;
+import org.goko.core.workspace.action.AbstractDeleteAction;
 
 public class DeleteGCodeProviderAction extends AbstractDeleteAction {
 	/** GCode service */

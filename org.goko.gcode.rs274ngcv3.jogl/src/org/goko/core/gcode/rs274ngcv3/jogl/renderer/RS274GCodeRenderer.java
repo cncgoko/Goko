@@ -30,6 +30,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SI;
 import org.goko.core.common.utils.IIdBean;
@@ -318,17 +319,19 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		if(mapVerticesGroupByIdLine != null){
-			if(mapVerticesGroupByIdLine.containsKey(idLine)){
-				VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
-				ExecutionTokenState state = token.getLineState(idLine);
-				if(stateBuffer != null){				
-					for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
-						stateBuffer.put(i, state.getState());
+		if(ObjectUtils.equals(token.getGCodeProvider().getId(), idGCodeProvider)){
+			if(mapVerticesGroupByIdLine != null){		
+				if(mapVerticesGroupByIdLine.containsKey(idLine)){
+					VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
+					ExecutionTokenState state = token.getLineState(idLine);
+					if(stateBuffer != null){				
+						for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
+							stateBuffer.put(i, state.getState());
+						}
+						update();
 					}
-					update();
-				}
-			}	
+				}	
+			}
 		}
 	}
 

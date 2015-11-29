@@ -29,7 +29,7 @@ import org.goko.core.common.exception.GkFunctionalException;
  * @author PsyKo
  *
  */
-public enum TinyGStatusCode {
+public enum TinyGStatusCode {	
 	TG_UNKNOWN(-1,""),
 	TG_CONFIG_ASSERTION_FAILURE(90,""),
 	TG_XIO_ASSERTION_FAILURE(91,""),
@@ -105,8 +105,8 @@ public enum TinyGStatusCode {
 	TG_T_WORD_IS_MISSING(178,""),
 	TG_T_WORD_IS_INVALID(179,""),
 	TG_GENERIC_ERROR(200,""),
-	TG_MINIMUM_LENGTH_MOVE(201,"move is less than minimum length"),
-	TG_MINIMUM_TIME_MOVE(202,"move is less than minimum time"),
+	TG_MINIMUM_LENGTH_MOVE(201,"move is less than minimum length", TinyGStatusCode.SEVERITY_WARNING),
+	TG_MINIMUM_TIME_MOVE(202,"move is less than minimum time", TinyGStatusCode.SEVERITY_WARNING),
 	TG_MACHINE_ALARMED(203,"machine is alarmed. Command not processed"),
 	TG_LIMIT_SWITCH_HIT(204,"limit switch was hit causing shutdown"),
 	TG_PLANNER_FAILED_TO_CONVERGE(205,"planner can throw this exception"),
@@ -133,7 +133,7 @@ public enum TinyGStatusCode {
 	TG_PROBE_CYCLE_FAILED(250,"probing cycle did not complete"),
 	TG_PROBE_ENDPOINT_IS_STARTING_POINT(251,""),
 	TG_JOGGING_CYCLE_FAILED(252,"jogging cycle did not complete"),
-	TG_OK(0,"universal OK code"),
+	TG_OK(0,"universal OK code", TinyGStatusCode.SEVERITY_INFO),
 	TG_ERROR(1,"generic error return"),
 	TG_EAGAIN(2,"function would block here"),
 	TG_NOOP(3,"function had no-operation"),
@@ -168,10 +168,16 @@ public enum TinyGStatusCode {
 	TG_PERSISTENCE_ERROR(34,""),
 	TG_BAD_STATUS_REPORT_SETTING(35,"");
 
+	public static final int SEVERITY_INFO = 1;
+	public static final int SEVERITY_ERROR = 2;
+	public static final int SEVERITY_WARNING = 4;
+	
 	/** The integer value of the status */
 	private int value;
 	/** The label of the status */
 	private String label;
+	/** Severity level */
+	private int severity;
 
 	/**
 	 * Constructor
@@ -181,8 +187,20 @@ public enum TinyGStatusCode {
 	TinyGStatusCode(int value, String label){
 		this.value = value;
 		this.label = label;
+		this.severity = SEVERITY_ERROR;
 	}
 
+	/**
+	 * Constructor
+	 * @param value la valeur entière de l'erreur
+	 * @param label le libellé de l'erreur
+	 */
+	TinyGStatusCode(int value, String label, int severity){
+		this.value = value;
+		this.label = label;
+		this.severity = severity;
+	}
+	
 	/**
 	 * @return the value
 	 */
@@ -225,6 +243,20 @@ public enum TinyGStatusCode {
 			}
 		}
 		return null;
+	}
+	/**
+	 * Test for this status against warning severity
+	 * @return <code>true</code> if it's a warning, <code>false</code> otherwise
+	 */
+	public boolean isWarning(){
+		return severity == SEVERITY_WARNING;
+	}
+	/**
+	 * Test for this status against error severity
+	 * @return <code>true</code> if it's a error, <code>false</code> otherwise
+	 */
+	public boolean isError(){
+		return severity == SEVERITY_ERROR;
 	}
 }
 
