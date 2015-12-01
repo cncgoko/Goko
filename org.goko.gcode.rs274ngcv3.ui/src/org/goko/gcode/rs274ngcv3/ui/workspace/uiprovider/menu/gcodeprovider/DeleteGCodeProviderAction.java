@@ -1,16 +1,16 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.workspace.action.AbstractDeleteAction;
 
 public class DeleteGCodeProviderAction extends AbstractDeleteAction {
 	/** GCode service */
-	private IRS274NGCService rs274Service;
+	private IGCodeProviderRepository gcodeProviderRepository;
 	
-	public DeleteGCodeProviderAction(IRS274NGCService rs274Service, Integer idTarget) {
+	public DeleteGCodeProviderAction(IGCodeProviderRepository gcodeProviderRepository, Integer idTarget) {
 		super(idTarget);		
-		this.rs274Service = rs274Service;
+		this.gcodeProviderRepository = gcodeProviderRepository;
 	}
 
 	/** (inheritDoc)
@@ -18,7 +18,7 @@ public class DeleteGCodeProviderAction extends AbstractDeleteAction {
 	 */
 	@Override
 	protected void deleteById(Integer id) throws GkException {
-		rs274Service.deleteGCodeProvider(id);
+		gcodeProviderRepository.deleteGCodeProvider(id);
 	}
 
 }

@@ -23,7 +23,7 @@ public class GokoGeneralPreferences extends GkFieldEditorPreferencesPage {
 	@Inject
 	private IFeatureSetManager featureManager;
 	@Inject
-	IEclipseContext context;
+	private IEclipseContext context;
 	
 	public GokoGeneralPreferences() {
 		setTitle("General");		

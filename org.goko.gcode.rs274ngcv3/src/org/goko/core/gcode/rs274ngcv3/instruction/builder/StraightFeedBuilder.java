@@ -3,7 +3,7 @@ package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -58,9 +58,9 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
 		                               
-		BigDecimalQuantity<Angle> a = findWordValue("A", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> b = findWordValue("B", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> a = findWordValue("A", words, null, Units.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> b = findWordValue("B", words, null, Units.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, Units.DEGREE_ANGLE);
 
 		// Consume the word
 		GCodeWordUtils.findAndRemoveWordRegex("G(0?)1", words);

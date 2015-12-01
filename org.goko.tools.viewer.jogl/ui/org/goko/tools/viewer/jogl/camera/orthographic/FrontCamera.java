@@ -112,8 +112,8 @@ public class FrontCamera extends OrthographicCamera implements MouseMoveListener
 		double bWidth  = bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) - bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
 		double bHeight = bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT) - bounds.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT);
 
-		double boundCenterX = (bounds.getMax().getX().doubleValue() + bounds.getMin().getX().doubleValue() ) /2;
-		double boundCenterZ = (bounds.getMax().getZ().doubleValue() + bounds.getMin().getZ().doubleValue() ) /2;
+		double boundCenterX = (bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) + bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT) ) /2;
+		double boundCenterZ = (bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT) + bounds.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT) ) /2;
 
 		double targetScaleX = (2 * width  )/ (bWidth + 5);
 		double targetScaleZ = (2 * height )/ (bHeight + 5);

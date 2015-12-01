@@ -19,7 +19,7 @@ package org.goko.core.controller;
 import java.math.BigDecimal;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -61,7 +61,7 @@ public class ThreeToFourAxisAdapterWrapper implements IFourAxisControllerAdapter
 	 */
 	@Override
 	public BigDecimalQuantity<Angle> getA() {
-		return NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		return NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
 	}
 
 }

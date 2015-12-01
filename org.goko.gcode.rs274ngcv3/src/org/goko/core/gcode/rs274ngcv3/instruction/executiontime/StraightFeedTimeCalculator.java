@@ -1,10 +1,12 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
@@ -25,13 +27,13 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
 
 		Tuple6b delta = positionBefore.subtract(positionAfter);
-
-		double dx = (delta.getX() == null) ? 0 : Math.abs(positionBefore.getX().doubleValue() - positionAfter.getX().doubleValue());
-		double dy = (delta.getY() == null) ? 0 : Math.abs(positionBefore.getY().doubleValue() - positionAfter.getY().doubleValue());
-		double dz = (delta.getZ() == null) ? 0 : Math.abs(positionBefore.getZ().doubleValue() - positionAfter.getZ().doubleValue());
-		double da = (delta.getA() == null) ? 0 : Math.abs(positionBefore.getA().doubleValue() - positionAfter.getA().doubleValue());
-		double db = (delta.getB() == null) ? 0 : Math.abs(positionBefore.getB().doubleValue() - positionAfter.getB().doubleValue());
-		double dc = (delta.getC() == null) ? 0 : Math.abs(positionBefore.getC().doubleValue() - positionAfter.getC().doubleValue());
+		Unit<Length> unit = context.getUnit().getUnit();
+		double dx = (delta.getX() == null) ? 0 : Math.abs(positionBefore.getX().doubleValue(unit) - positionAfter.getX().doubleValue(unit));
+		double dy = (delta.getY() == null) ? 0 : Math.abs(positionBefore.getY().doubleValue(unit) - positionAfter.getY().doubleValue(unit));
+		double dz = (delta.getZ() == null) ? 0 : Math.abs(positionBefore.getZ().doubleValue(unit) - positionAfter.getZ().doubleValue(unit));
+		double da = (delta.getA() == null) ? 0 : Math.abs(positionBefore.getA().doubleValue(Units.DEGREE_ANGLE) - positionAfter.getA().doubleValue(Units.DEGREE_ANGLE));
+		double db = (delta.getB() == null) ? 0 : Math.abs(positionBefore.getB().doubleValue(Units.DEGREE_ANGLE) - positionAfter.getB().doubleValue(Units.DEGREE_ANGLE));
+		double dc = (delta.getC() == null) ? 0 : Math.abs(positionBefore.getC().doubleValue(Units.DEGREE_ANGLE) - positionAfter.getC().doubleValue(Units.DEGREE_ANGLE));
 
 		double max = Math.max(dx, Math.max(dy, Math.max(dz, Math.max(da, Math.max(db, dc)))));
 
@@ -39,12 +41,12 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 		if(context.getFeedrate() != null){
 			feedrate = context.getFeedrate().doubleValue();
 		}else{
-			return NumberQuantity.zero(SI.SECOND);
+			return NumberQuantity.zero(Units.SECOND);
 		}
 		if(feedrate == 0){
-			return NumberQuantity.zero(SI.SECOND);
+			return NumberQuantity.zero(Units.SECOND);
 		}		
-		return NumberQuantity.of((max / feedrate) , SI.MINUTE);		
+		return NumberQuantity.of((max / feedrate) , Units.MINUTE);		
 	}
 
 }

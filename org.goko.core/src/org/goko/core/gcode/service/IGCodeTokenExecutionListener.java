@@ -31,6 +31,8 @@ public interface IGCodeTokenExecutionListener<S extends IExecutionTokenState, T 
 
 	void onExecutionPause(T token) throws GkException;
 
+	void onExecutionResume(T token) throws GkException;
+	
 	void onExecutionComplete(T token) throws GkException;
 	
 	void onQueueExecutionComplete() throws GkException;

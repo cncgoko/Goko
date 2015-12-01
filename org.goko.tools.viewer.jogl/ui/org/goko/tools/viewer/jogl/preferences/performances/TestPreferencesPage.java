@@ -21,6 +21,7 @@ import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ObjectCollectionFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.QuantityFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.StringFieldEditor;
+import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 
@@ -76,7 +77,7 @@ public class TestPreferencesPage extends GkFieldEditorPreferencesPage{
 		bigDecimalFieldEditor.setWidthInChars(10);
 		addField(bigDecimalFieldEditor);
 		
-		QuantityFieldEditor<Length> quantityFieldEditor = new QuantityFieldEditor<Length>(parent, SWT.NONE);
+		QuantityFieldEditor<Length> quantityFieldEditor = new QuantityFieldEditor<Length>(parent, SWT.NONE, QuantityDimension.LENGTH);
 		quantityFieldEditor.setWidthInChars(8);
 		bigDecimalFieldEditor.setPreferenceName("grid.majorSpacing");
 		addField(quantityFieldEditor);

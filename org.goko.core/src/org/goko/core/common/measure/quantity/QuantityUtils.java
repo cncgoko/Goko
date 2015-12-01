@@ -57,7 +57,7 @@ public final class QuantityUtils {
 		}else if(b == null){
 			return a;
 		}
-		if(a.to(b.getUnit()).doubleValue() < b.doubleValue()){
+		if(a.doubleValue(b.getUnit()) < b.doubleValue(b.getUnit())){
 			return a;
 		}
 		return b;
@@ -76,7 +76,7 @@ public final class QuantityUtils {
 		}else if(b == null){
 			return a;
 		}
-		if(a.to(b.getUnit()).doubleValue() > b.doubleValue()){
+		if(a.doubleValue(b.getUnit()) > b.doubleValue(b.getUnit())){
 			return a;
 		}
 		return b;

@@ -27,7 +27,6 @@ import org.goko.core.common.measure.units.Unit;
 public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantity<Q> {
 	private Unit<Q> unit;
 
-
 	protected AbstractQuantity(Unit<Q> unit) {
 		super();
 		this.unit = unit;
@@ -45,9 +44,13 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 	 */
 	@Override
 	public double doubleValue(Unit<Q> unit){
-		return this.to(unit).doubleValue();
+		if(this.unit.equals(unit)){
+			return internalDoubleValue();
+		}
+		return this.to(unit).doubleValue(unit);
 	}
 	
+	protected abstract double internalDoubleValue();
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#to(org.goko.core.common.measure.units.Unit)
 	 */
@@ -57,7 +60,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 			return this;
 		}
 		UnitConverter converter = getUnit().getConverterTo(unit);		
-		return NumberQuantity.of(converter.convert(doubleValue()), unit);
+		return NumberQuantity.of(converter.convert(doubleValue(unit)), unit);
 	}
 	
 	/**
@@ -99,7 +102,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AbstractQuantity other = (AbstractQuantity) obj;
+		AbstractQuantity<?> other = (AbstractQuantity<?>) obj;
 		if (unit == null) {
 			if (other.unit != null)
 				return false;

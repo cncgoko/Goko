@@ -33,18 +33,22 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 		this.value = value;
 	}
 
-	@Override
-	public String toString() {
-		return String.valueOf(value)+" "+getUnit().getSymbol();
-	}
 	/** (inheritDoc)
-	 * @see org.goko.core.common.measure.quantity.Quantity#doubleValue()
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public double doubleValue() {
+	public String toString() {
+		return String.valueOf(value)+getUnit().getSymbol();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.AbstractQuantity#internalDoubleValue()
+	 */
+	@Override
+	protected double internalDoubleValue() {		
 		return this.value.doubleValue();
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#value()
 	 */
@@ -77,14 +81,14 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 			return this;
 		}
 		UnitConverter converter = getUnit().getConverterTo(unit);		
-		return NumberQuantity.of(new BigDecimal(converter.convert(doubleValue())), unit); 
+		return NumberQuantity.of(new BigDecimal(converter.convert(internalDoubleValue())), unit); 
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#add(org.goko.core.common.measure.quantity.Quantity)
 	 */
 	@Override
 	public BigDecimalQuantity<Q> add(Quantity<Q> q) {		
-		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() + q.to(getUnit()).doubleValue()));
+		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() + q.doubleValue(getUnit())));
 	}
 
 	/** (inheritDoc)
@@ -99,7 +103,7 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 	 */
 	@Override
 	public BigDecimalQuantity<Q> subtract(Quantity<Q> q) {
-		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() - q.to(getUnit()).doubleValue()));
+		return new BigDecimalQuantity<Q>(getUnit(), new BigDecimal(value.doubleValue() - q.doubleValue(getUnit())));
 	}
 
 
@@ -139,12 +143,13 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 	 */
 	@Override
 	public Number divide(Quantity<Q> q) {
-		return value.divide(new BigDecimal(q.to(getUnit()).doubleValue()), value.scale(), BigDecimal.ROUND_HALF_UP);		
+		return value.divide(new BigDecimal(q.doubleValue(getUnit())), value.scale(), BigDecimal.ROUND_HALF_UP);		
 	}
 
 	/** (inheritDoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -153,7 +158,7 @@ public class BigDecimalQuantity<Q extends Quantity<Q>> extends AbstractQuantity<
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BigDecimalQuantity other = (BigDecimalQuantity) obj;
+		BigDecimalQuantity<Q> other = (BigDecimalQuantity<Q>) obj;
 		if (value == null) {
 			if (other.value != null)
 				return false;

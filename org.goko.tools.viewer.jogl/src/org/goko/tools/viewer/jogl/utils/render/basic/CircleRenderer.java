@@ -45,7 +45,7 @@ public class CircleRenderer extends PolylineRenderer{
 		this.center = center;
 		this.radius = radius;
 		this.normal = normal;
-		double dRadius = radius.to(JoglUtils.JOGL_UNIT).doubleValue();
+		double dRadius = radius.doubleValue(JoglUtils.JOGL_UNIT);
 		Point3d dCenter = center.toPoint3d(JoglUtils.JOGL_UNIT);
 		Vector3d a = new Vector3d(1,0,0);
 		Vector3d b = new Vector3d(1,0,0);

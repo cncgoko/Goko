@@ -346,8 +346,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
 		gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
 		
-		gridRenderer.setMajorIncrement(NumberQuantity.of(JoglViewerPreference.getInstance().getMajorGridSpacing(), JoglUtils.JOGL_UNIT));
-		gridRenderer.setMinorIncrement(NumberQuantity.of(JoglViewerPreference.getInstance().getMinorGridSpacing(), JoglUtils.JOGL_UNIT));
+		gridRenderer.setMajorIncrement( JoglViewerPreference.getInstance().getMajorGridSpacing());
+		gridRenderer.setMinorIncrement( JoglViewerPreference.getInstance().getMinorGridSpacing());
 		gridRenderer.setMajorUnitColor( JoglViewerPreference.getInstance().getMajorColor());
 		gridRenderer.setMinorUnitColor( JoglViewerPreference.getInstance().getMinorColor());
 		gridRenderer.setOpacity(JoglViewerPreference.getInstance().getGridOpacity());

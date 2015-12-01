@@ -18,7 +18,7 @@ import javax.vecmath.Vector4f;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.math.Tuple6b;
@@ -32,7 +32,7 @@ import org.goko.core.viewer.renderer.IRendererProxy;
  */
 public class JoglUtils {
 	/** Default Jogl unit (by convention)*/
-	public static final Unit<Length> JOGL_UNIT = SI.MILLIMETRE;
+	public static final Unit<Length> JOGL_UNIT = Units.MILLIMETRE;
 	public static final String XY_GRID_ID = "GRID.XY";
 	public static final String XZ_GRID_ID = "GRID.XZ";
 	public static final String YZ_GRID_ID = "GRID.YZ";

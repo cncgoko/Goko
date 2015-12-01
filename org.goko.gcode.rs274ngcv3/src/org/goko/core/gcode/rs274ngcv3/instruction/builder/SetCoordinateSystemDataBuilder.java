@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -49,9 +49,9 @@ public class SetCoordinateSystemDataBuilder extends AbstractInstructionBuilder<S
 		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Angle> a  = findWordValue("A", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> b  = findWordValue("B", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> c  = findWordValue("C", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> a  = findWordValue("A", words, null, Units.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> b  = findWordValue("B", words, null, Units.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> c  = findWordValue("C", words, null, Units.DEGREE_ANGLE);
 		
 		Tuple6b currentOffset = context.getCoordinateSystemData(targetCoordinateSystem);
 		if(x == null) x = currentOffset.getX();

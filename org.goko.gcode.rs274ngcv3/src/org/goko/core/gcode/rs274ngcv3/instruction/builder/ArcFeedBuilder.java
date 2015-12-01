@@ -5,7 +5,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -62,9 +62,9 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
 		                               
-		BigDecimalQuantity<Angle> a = findWordValue("A", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> b = findWordValue("B", words, null, SI.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, SI.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> a = findWordValue("A", words, null, Units.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> b = findWordValue("B", words, null, Units.DEGREE_ANGLE);
+		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, Units.DEGREE_ANGLE);
 		
 		BigDecimalQuantity<Length> i = findWordValue("I", words, null, context.getUnit().getUnit());
 		BigDecimalQuantity<Length> j = findWordValue("J", words, null, context.getUnit().getUnit());
@@ -146,6 +146,7 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		k = NumberQuantity.add(k, context.getZ());
 		
 		switch (plane) {
+		// public ArcFeedInstruction(BigDecimalQuantity<Length> firstEnd, BigDecimalQuantity<Length> secondEnd, BigDecimalQuantity<Length> firstAxis, BigDecimalQuantity<Length> secondAxis, BigDecimalQuantity<Length> axisEndPoint, Integer rotation, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c, boolean clockwise) {
 		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
 			break;		
 		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);

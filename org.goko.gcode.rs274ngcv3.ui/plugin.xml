@@ -11,5 +11,13 @@
             class="org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder">
       </modifierUiBuilder>
    </extension>
+   <extension
+         id="org.goko.gcode.rs274ngcv3.ui.RS274UIOpenFragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="notexists"
+            uri="resources/fragments/RS274UIOpenFragment.e4xmi">
+      </fragment>
+   </extension>
 
 </plugin>

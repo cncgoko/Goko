@@ -4,7 +4,7 @@ import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
@@ -87,13 +87,13 @@ public class Arc3b {
 				angle =  smallestAngle;//2*Math.PI - smallestAngle;
 			}
 		}	
-		this.angle = NumberQuantity.of(angle, SI.RADIAN);
+		this.angle = NumberQuantity.of(angle, Units.RADIAN);
 	}
 	
 	public Matrix3d getRotationMatrix(Quantity<Angle> rAngle) {
 		Matrix3d m = new Matrix3d();
-		double c = Math.cos(rAngle.doubleValue(SI.RADIAN));
-		double s = Math.sin(rAngle.doubleValue(SI.RADIAN));
+		double c = Math.cos(rAngle.doubleValue(Units.RADIAN));
+		double s = Math.sin(rAngle.doubleValue(Units.RADIAN));
 		double t = 1.0 - c;
 		// if axis is not already normalised then uncomment this
 		// double magnitude = Math.sqrt(a1.x*a1.x + a1.y*a1.y + a1.z*a1.z);
@@ -122,7 +122,7 @@ public class Arc3b {
 	}
 
 	public Quantity<Length> getLength(){
-		return radius.multiply(angle.to(SI.RADIAN).abs().value());
+		return radius.multiply(Math.abs(angle.doubleValue(Units.RADIAN)));
 	}
 	
 	public Tuple6b point(double i){

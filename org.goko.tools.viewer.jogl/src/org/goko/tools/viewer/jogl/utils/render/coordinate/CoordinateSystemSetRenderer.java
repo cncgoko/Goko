@@ -31,6 +31,7 @@ import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer;
+import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -80,9 +81,9 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 					csOffset = csOffset.add(machineOrigin);
 
 					renderer.getModelMatrix().glLoadIdentity();
-					renderer.getModelMatrix().glTranslatef( (float)csOffset.getX().doubleValue(),
-															(float)csOffset.getY().doubleValue(),
-															(float)csOffset.getZ().doubleValue());
+					renderer.getModelMatrix().glTranslatef( (float)csOffset.getX().doubleValue(JoglUtils.JOGL_UNIT),
+															(float)csOffset.getY().doubleValue(JoglUtils.JOGL_UNIT),
+															(float)csOffset.getZ().doubleValue(JoglUtils.JOGL_UNIT));
 					renderer.getModelMatrix().update();
 				}
 			}

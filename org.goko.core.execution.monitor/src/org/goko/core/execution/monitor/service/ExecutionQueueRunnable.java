@@ -137,7 +137,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	public void resume() throws GkException {
 		executor.resume();
 		setState(ExecutionState.RUNNING);
-		executionService.notifyExecutionStart(executionQueue.getCurrentToken());
+		executionService.notifyExecutionResume(executionQueue.getCurrentToken());
 	}
 
 	/** (inheritDoc)

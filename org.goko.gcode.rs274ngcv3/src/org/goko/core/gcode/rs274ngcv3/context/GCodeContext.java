@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -115,9 +115,9 @@ public class GCodeContext implements IGCodeContext{
 		this.x = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
 		this.y = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
 		this.z = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
-		this.a = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
-		this.b = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
-		this.c = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		this.a = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
+		this.b = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
+		this.c = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
 	}
 	
 	/**
@@ -387,7 +387,7 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	public Tuple6b getCoordinateSystemData(EnumCoordinateSystem cs){
 		if(!coordinateSystemData.containsKey(cs)){
-			coordinateSystemData.put(cs, new Tuple6b(getUnit().getUnit(), SI.DEGREE_ANGLE).setZero());
+			coordinateSystemData.put(cs, new Tuple6b(getUnit().getUnit(), Units.DEGREE_ANGLE).setZero());
 		}
 		return coordinateSystemData.get(cs);
 	}

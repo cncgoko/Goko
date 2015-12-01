@@ -222,8 +222,8 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 		double bWidth  = bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) - bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
 		double bHeight = bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT) - bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT);
 
-		double boundCenterX = (bounds.getMax().getX().doubleValue() + bounds.getMin().getX().doubleValue() ) /2;
-		double boundCenterY = (bounds.getMax().getY().doubleValue() + bounds.getMin().getY().doubleValue() ) /2;
+		double boundCenterX = (bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT) + bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT) ) /2;
+		double boundCenterY = (bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT) + bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT) ) /2;
 
 		double targetScaleX = (2 * width  )/ (bWidth + 5);
 		double targetScaleY = (2 * height )/ (bHeight + 5);

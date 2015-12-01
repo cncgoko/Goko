@@ -33,7 +33,7 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -808,9 +808,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
-		this.executionService.setExecutor(tinygExecutor);
-		this.executionService.addExecutionListener(tinygExecutor);
-	//	executionService.setExecutor(new DebugExecutor());
+		//this.executionService.setExecutor(tinygExecutor);
+		//this.executionService.addExecutionListener(tinygExecutor);
+		executionService.setExecutor(new DebugExecutor());
 	}
 
 	public Unit<Length> getCurrentUnit(){
@@ -849,10 +849,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGConfiguration cfg = getConfiguration();
 		Tuple6b max = null;
 		if(cfg != null){
-			max = new Tuple6b(SI.MILLIMETRE, SI.DEGREE_ANGLE);
-			max.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), SI.MILLIMETRE));
-			max.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), SI.MILLIMETRE));
-			max.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), SI.MILLIMETRE));
+			max = new Tuple6b(Units.MILLIMETRE, Units.DEGREE_ANGLE);
+			max.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
+			max.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
+			max.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
 		}
 		return max;
 	}
@@ -865,10 +865,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGConfiguration cfg = getConfiguration();
 		Tuple6b min = null;
 		if(cfg != null){
-			min = new Tuple6b(SI.MILLIMETRE, SI.DEGREE_ANGLE);
-			min.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
-			min.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
-			min.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), SI.MILLIMETRE));
+			min = new Tuple6b(Units.MILLIMETRE, Units.DEGREE_ANGLE);
+			min.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
+			min.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
+			min.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
 		}
 		return min;
 	}

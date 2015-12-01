@@ -11,7 +11,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -310,7 +310,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public Quantity<Time> evaluateExecutionTime(IGCodeProvider provider) throws GkException {
-		Quantity<Time> result = NumberQuantity.zero(SI.SECOND);
+		Quantity<Time> result = NumberQuantity.zero(Units.SECOND);
 		
 		InstructionTimeCalculatorFactory timeFactory = new InstructionTimeCalculatorFactory();		
 		GCodeContext baseContext = new GCodeContext();

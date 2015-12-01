@@ -8,7 +8,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.gcode.element.IInstructionType;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
@@ -38,7 +38,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 				double deltaAngle = 0;
 				// FIXME Use a setting to define the 4th axis and then do a dynamic angle detection around the axe A,B or C
 				if( instruction.getA() != null){
-					deltaAngle = context.getA().doubleValue(SI.DEGREE_ANGLE) - instruction.getA().doubleValue(SI.DEGREE_ANGLE);
+					deltaAngle = context.getA().doubleValue(Units.DEGREE_ANGLE) - instruction.getA().doubleValue(Units.DEGREE_ANGLE);
 				}
 
 				if(Math.abs(deltaAngle) <= 0.0001){
@@ -67,7 +67,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 		if(settings.isRotaryAxisEnabled()){
 			// It's a simple line, but it doesn't mean the rotary (A, B or C) value is at 0
 			if(instruction.getA() != null){
-				Point3d endAngle 	=   endTuple.angleToPoint3d(SI.DEGREE_ANGLE);
+				Point3d endAngle 	=   endTuple.angleToPoint3d(Units.DEGREE_ANGLE);
 				
 				Matrix4d rotationMatrix = new Matrix4d();
 				rotateMatrix(rotationMatrix, Math.toRadians(endAngle.x));
@@ -120,8 +120,8 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 		Vector3d deltaVector = new Vector3d(endPoint);
 		deltaVector.sub(startPoint);
 
-		Point3d startAngle3d	= startTuple.angleToPoint3d(SI.DEGREE_ANGLE);
-		Point3d endAngle3d	 	=   endTuple.angleToPoint3d(SI.DEGREE_ANGLE);
+		Point3d startAngle3d	= startTuple.angleToPoint3d(Units.DEGREE_ANGLE);
+		Point3d endAngle3d	 	=   endTuple.angleToPoint3d(Units.DEGREE_ANGLE);
 		double startAngle = startAngle3d.x;
 		deltaAngleDeg = endAngle3d.x - startAngle3d.x;
 

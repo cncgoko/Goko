@@ -29,7 +29,7 @@ import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
@@ -211,7 +211,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		offset.setY( NumberQuantity.of(yOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
 		offset.setZ( NumberQuantity.of(zOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
 		if(aOffset != null){
-			offset.setA(  NumberQuantity.of(aOffset.asBigDecimal(), SI.DEGREE_ANGLE )  );
+			offset.setA(  NumberQuantity.of(aOffset.asBigDecimal(), Units.DEGREE_ANGLE )  );
 		}
 		tinyg.setCoordinateSystemOffset(cs, offset);
 	}
@@ -259,13 +259,13 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 					probePosition.setZ( NumberQuantity.of(zProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(aProbeResult != null){
-					probePosition.setA( NumberQuantity.of(aProbeResult.asBigDecimal(), SI.DEGREE_ANGLE) );
+					probePosition.setA( NumberQuantity.of(aProbeResult.asBigDecimal(), Units.DEGREE_ANGLE) );
 				}
 				if(bProbeResult != null){
-					probePosition.setB( NumberQuantity.of(bProbeResult.asBigDecimal(), SI.DEGREE_ANGLE) );
+					probePosition.setB( NumberQuantity.of(bProbeResult.asBigDecimal(), Units.DEGREE_ANGLE) );
 				}
 				if(cProbeResult != null){
-					probePosition.setC( NumberQuantity.of(cProbeResult.asBigDecimal(), SI.DEGREE_ANGLE) );
+					probePosition.setC( NumberQuantity.of(cProbeResult.asBigDecimal(), Units.DEGREE_ANGLE) );
 				}
 			}
 			tinyg.handleProbeResult(probeSuccess, probePosition);

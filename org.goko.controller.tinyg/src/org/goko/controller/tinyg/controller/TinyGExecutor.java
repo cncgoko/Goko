@@ -154,46 +154,37 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
 	 */
 	@Override
-	public void onQueueExecutionComplete() throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onQueueExecutionComplete() throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()

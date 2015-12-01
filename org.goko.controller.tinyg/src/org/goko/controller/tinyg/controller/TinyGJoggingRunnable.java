@@ -10,10 +10,12 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -61,7 +63,7 @@ public class TinyGJoggingRunnable implements Runnable {
 		if(StringUtils.isBlank(stepStr)){
 			stepStr = "1";
 		}
-		this.step = NumberQuantity.of(new BigDecimal(stepStr), SI.MILLIMETRE); // FIXME : store value between uses
+		this.step = NumberQuantity.of(new BigDecimal(stepStr), Units.MILLIMETRE); // FIXME : store value between uses
 		String preciseStr = preferenceStore.getString(PERSISTED_PRECISE);
 		if(StringUtils.isBlank(preciseStr)){
 			preciseStr = "false";
@@ -76,7 +78,7 @@ public class TinyGJoggingRunnable implements Runnable {
 		preferenceStore.putValue(PERSISTED_PRECISE, String.valueOf(precise));		
 		
 		if(step != null){
-			preferenceStore.putValue(PERSISTED_STEP, step.to(SI.MILLIMETRE).getValue().toPlainString());		
+			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());		
 		}
 	}
 	/** (inheritDoc)
@@ -131,23 +133,26 @@ public class TinyGJoggingRunnable implements Runnable {
 	public String startAbsoluteJog(String command) throws GkException{
 		command += axis.getAxisCode();		
 		BigDecimal target = null;
+		Unit<Length> currentUnit = tinygService.getCurrentGCodeContext().getUnit().getUnit();
 		switch (axis) {
-		case X_NEGATIVE: target = tinygService.getX().subtract(step).value();
+		case X_NEGATIVE: target = tinygService.getX().subtract(step).value(currentUnit);
 			break;
-		case X_POSITIVE: target = tinygService.getX().add(step).value();
+		case X_POSITIVE: target = tinygService.getX().add(step).value(currentUnit);
 			break;
-		case Y_NEGATIVE: target = tinygService.getY().subtract(step).value();
+		case Y_NEGATIVE: target = tinygService.getY().subtract(step).value(currentUnit);
 			break;
-		case Y_POSITIVE: target = tinygService.getY().add(step).value();
+		case Y_POSITIVE: target = tinygService.getY().add(step).value(currentUnit);
 			break;
-		case Z_NEGATIVE: target = tinygService.getZ().subtract(step).value();
+		case Z_NEGATIVE: target = tinygService.getZ().subtract(step).value(currentUnit);
 			break;
-		case Z_POSITIVE: target = tinygService.getZ().add(step).value();
+		case Z_POSITIVE: target = tinygService.getZ().add(step).value(currentUnit);
 			break;
-		case A_NEGATIVE: target = tinygService.getA().value().subtract(step.value()); // FIXME : remove crappy subtraction between angle and distance
-			break;
-		case A_POSITIVE: target = tinygService.getA().value().add(step.value()); // FIXME : remove crappy addition between angle and distance
-			break;
+		case A_NEGATIVE: //target = tinygService.getA().value().subtract(step.value()); // FIXME : remove crappy subtraction between angle and distance
+						throw new GkTechnicalException("A implémenter");
+			//break;
+		case A_POSITIVE: //target = tinygService.getA().value().add(step.value()); // FIXME : remove crappy addition between angle and distance
+						throw new GkTechnicalException("A implémenter");
+			//break;
 		default:
 			break;
 		}

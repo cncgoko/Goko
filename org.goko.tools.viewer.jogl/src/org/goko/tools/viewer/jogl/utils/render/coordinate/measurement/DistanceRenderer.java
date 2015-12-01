@@ -23,7 +23,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
@@ -31,6 +31,7 @@ import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
+import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.basic.PolylineRenderer;
 import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
 
@@ -59,7 +60,7 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 		this.endPoint = new Point3d(pEndPoint);
 		this.direction = new Vector3d();
 		this.direction.sub(endPoint, startPoint);
-		this.length = NumberQuantity.of(this.direction.length(), SIPrefix.MILLI(SI.METRE));
+		this.length = NumberQuantity.of(this.direction.length(), SIPrefix.MILLI(Units.METRE));
 		this.direction.normalize();
 		this.normal = new Vector3d(pNormal);
 		normal.normalize();
@@ -71,7 +72,7 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 		startArrowRenderer = new ArrowRenderer(startPoint, new Vector3d(-direction.x,-direction.y,-direction.z), baseDirection, new Color4f(1,1,1,1));
 
 		String sLength = GokoPreference.getInstance().format(length);
-		double dLength = length.doubleValue();
+		double dLength = length.doubleValue(JoglUtils.JOGL_UNIT);
 		textRenderer = new TextRenderer(sLength, 3, new Point3d(startPoint.x + direction.x * dLength/2,startPoint.y + direction.y * dLength/2,startPoint.z + direction.z * dLength/2), this.direction, new Vector3d(-baseDirection.x,-baseDirection.y,-baseDirection.z), TextRenderer.CENTER | verticalAlignement);
 		addRenderer(lineRenderer);
 		addRenderer(endArrowRenderer);

@@ -1,7 +1,6 @@
 package org.goko.core.gcode.service;
 
 import java.io.InputStream;
-import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
@@ -15,14 +14,6 @@ import org.goko.core.gcode.element.IInstructionSetIterator;
 
 public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, S extends IInstructionSet<I>> extends IGokoService{
 
-	List<IGCodeProvider> getGCodeProvider() throws GkException;
-	
-	IGCodeProvider getGCodeProvider(Integer id) throws GkException;
-	
-	void addGCodeProvider(IGCodeProvider provider) throws GkException; 
-	
-	void deleteGCodeProvider(Integer id) throws GkException;
-	
 	GCodeLine parseLine(String inputString) throws GkException;
 	
 	IGCodeProvider parse(InputStream inputStream) throws GkException;	

@@ -20,6 +20,7 @@ public class ExecutionPartModel extends AbstractModelObject {
 	public static final String PROPERTY_STOP_BUTTON_ENABLED		= "buttonStopEnabled";
 	public static final String PROPERTY_ELAPSED_TIME_STRING		= "elapsedTimeString";
 	public static final String PROPERTY_ESTIMATED_TIME_STRING	= "estimatedTimeString";
+	public static final String PROPERTY_PROGRESS_BAR_STATE		= "progressBarState";
 	
 	/** The number of completed token in the current execution queue */
 	private int completedTokenCount;
@@ -45,7 +46,8 @@ public class ExecutionPartModel extends AbstractModelObject {
 	private String elapsedTimeString;
 	/** Formatted estimated execution time */
 	private String estimatedTimeString;
-	
+	/** Displayed state of the progress bar */
+	private int progressBarState;
 	
 	/**
 	 * @return the completedTokenCount
@@ -190,6 +192,18 @@ public class ExecutionPartModel extends AbstractModelObject {
 	 */
 	public void setEstimatedTimeString(String estimatedTimeString) {
 		firePropertyChange(PROPERTY_ESTIMATED_TIME_STRING, this.estimatedTimeString, this.estimatedTimeString = estimatedTimeString);
+	}
+	/**
+	 * @return the progressBarState
+	 */
+	public int getProgressBarState() {
+		return progressBarState;
+	}
+	/**
+	 * @param progressBarState the progressBarState to set
+	 */
+	public void setProgressBarState(int progressBarState) {
+		firePropertyChange(PROPERTY_PROGRESS_BAR_STATE	, this.progressBarState, this.progressBarState = progressBarState);
 	}
 	
 	

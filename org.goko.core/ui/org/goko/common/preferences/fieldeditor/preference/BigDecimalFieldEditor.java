@@ -58,10 +58,16 @@ public class BigDecimalFieldEditor extends StringFieldEditor {
 		refreshValidState();
 	}
 	
+	protected BigDecimal getBigDecimalValue(){
+		return new BigDecimal(getPreferenceStore().getString(getPreferenceName()));
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.common.preferences.fieldeditor.preference.StringFieldEditor#storeValue()
+	 */
 	@Override
 	protected void storeValue() throws GkException {
 		BigDecimal decimalValue = BigDecimalUtils.parse(getControl().getText());
 		getPreferenceStore().setValue(getPreferenceName(), decimalValue.toString());
-		super.storeValue();
 	}
 }

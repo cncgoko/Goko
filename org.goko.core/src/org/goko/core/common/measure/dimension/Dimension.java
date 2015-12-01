@@ -17,6 +17,8 @@
 
 package org.goko.core.common.measure.dimension;
 
-public interface Dimension {
+import org.goko.core.common.measure.quantity.Quantity;
+
+public interface Dimension<Q extends Quantity<Q>> {
 
 }

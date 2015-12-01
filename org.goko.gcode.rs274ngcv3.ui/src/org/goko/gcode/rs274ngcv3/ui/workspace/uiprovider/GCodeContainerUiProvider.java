@@ -29,6 +29,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcoderepository.AddAllGCodeInQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.DeleteModifierAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDisableAction;
 
@@ -151,19 +152,38 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
-		if(content instanceof GCodeProvider){
+		
+		if(content instanceof ProjectContainer && StringUtils.equals(getType(), ((ProjectContainer) content).getType())){
+			createMenuForGCodeRepository(contextMenu);
+		}else if(content instanceof GCodeProvider){
 			createMenuForGCodeProvider(contextMenu, (GCodeProvider)content);
 		}else if(content instanceof IModifier<?>){
 			createMenuForGCodeModifier(contextMenu, (IModifier<?>)content);
 		}
 	}
 	
+	/**
+	 * Creates the menu for the GCode repository node of the tree
+	 * @param contextMenu the target context menu
+	 */
+	private void createMenuForGCodeRepository(IMenuManager contextMenu) {
+		contextMenu.add(new AddAllGCodeInQueueAction(executionService, rs274Service));
+	}
+
+	/**
+	 * Creates the menu for a GCode modifier node of the tree
+	 * @param contextMenu the target context menu
+	 */
 	private void createMenuForGCodeModifier(IMenuManager contextMenu, IModifier<?> modifier) {
 		contextMenu.add(new EnableDisableAction(rs274Service, modifier.getId()));
 		contextMenu.add(new Separator());
 		contextMenu.add(new DeleteModifierAction(rs274Service, modifier.getId()));		
 	}
 
+	/**
+	 * Creates the menu for a GCode provider node of the tree
+	 * @param contextMenu the target context menu
+	 */
 	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {
 		// Submenu for a specific user
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());

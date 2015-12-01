@@ -19,17 +19,16 @@
  */
 package org.goko.tools.viewer.jogl.preferences;
 
-import java.math.BigDecimal;
-
 import javax.vecmath.Color3f;
 import javax.vecmath.Vector3f;
 
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
-import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GkPreference;
@@ -110,9 +109,9 @@ public class JoglViewerPreference extends GkPreference{
 	 */
 	public void setRotaryAxisPosition(Tuple6b rotaryAxisPosition) {
 		this.rotaryAxisPosition = rotaryAxisPosition;
-		setValue(ROTARY_AXIS_POSITION_X, rotaryAxisPosition.getX().getValue().toPlainString());
-		setValue(ROTARY_AXIS_POSITION_Y, rotaryAxisPosition.getY().getValue().toPlainString());
-		setValue(ROTARY_AXIS_POSITION_Z, rotaryAxisPosition.getZ().getValue().toPlainString());
+//		setValue(ROTARY_AXIS_POSITION_X, rotaryAxisPosition.getX().getValue().toPlainString());
+//		setValue(ROTARY_AXIS_POSITION_Y, rotaryAxisPosition.getY().getValue().toPlainString());
+//		setValue(ROTARY_AXIS_POSITION_Z, rotaryAxisPosition.getZ().getValue().toPlainString());
 	}
 	/**
 	 * @return the rotaryAxisDirection
@@ -171,30 +170,32 @@ public class JoglViewerPreference extends GkPreference{
 	 * @return the majorGridSpacing
 	 * @throws GkException 
 	 */
-	public BigDecimal getMajorGridSpacing() throws GkException {
-		return GkUtils.toBigDecimal(getString(MAJOR_GRID_SPACING));			
+	public BigDecimalQuantity<Length> getMajorGridSpacing() throws GkException {
+		return NumberQuantity.of(getString(MAJOR_GRID_SPACING), QuantityDimension.LENGTH);			
 	}
 
 	/**
 	 * @param majorGridSpacing the majorGridSpacing to set
+	 * @throws GkException GkException 
 	 */
-	public void setMajorGridSpacing(BigDecimal majorGridSpacing) {
-		setValue(MAJOR_GRID_SPACING, String.valueOf(majorGridSpacing));
+	public void setMajorGridSpacing(BigDecimalQuantity<Length> majorGridSpacing) throws GkException {
+		setValue(MAJOR_GRID_SPACING, GokoPreference.getInstance().format(majorGridSpacing));
 	}
 
 	/**
 	 * @return the minorGridSpacing
 	 * @throws GkException 
 	 */
-	public BigDecimal getMinorGridSpacing() throws GkException {		
-		return GkUtils.toBigDecimal(getString(MINOR_GRID_SPACING));		
+	public BigDecimalQuantity<Length> getMinorGridSpacing() throws GkException {		
+		return NumberQuantity.of(getString(MINOR_GRID_SPACING), QuantityDimension.LENGTH);				
 	}
 
 	/**
 	 * @param minorGridSpacing the minorGridSpacing to set
+	 * @throws GkException GkException 
 	 */
-	public void setMinorGridSpacing(BigDecimal minorGridSpacing) {
-		setValue(MINOR_GRID_SPACING, String.valueOf(minorGridSpacing));
+	public void setMinorGridSpacing(BigDecimalQuantity<Length> minorGridSpacing) throws GkException {
+		setValue(MINOR_GRID_SPACING, GokoPreference.getInstance().format(minorGridSpacing));
 	}
 	
 	public Color3f getMajorColor(){
@@ -215,19 +216,19 @@ public class JoglViewerPreference extends GkPreference{
 	
 	public Tuple6b getGridStart() throws GkException{
 		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
-		Tuple6b start = new Tuple6b(unit, SI.DEGREE_ANGLE);
-		start.setX(NumberQuantity.of(new BigDecimal(getString(GRID_START_X)), unit));
-		start.setY(NumberQuantity.of(new BigDecimal(getString(GRID_START_Y)), unit));
-		start.setZ(NumberQuantity.of(new BigDecimal(getString(GRID_START_Z)), unit));
+		Tuple6b start = new Tuple6b(unit, Units.DEGREE_ANGLE);
+		start.setX(NumberQuantity.of(getString(GRID_START_X), QuantityDimension.LENGTH));
+		start.setY(NumberQuantity.of(getString(GRID_START_Y), QuantityDimension.LENGTH));
+		start.setZ(NumberQuantity.of(getString(GRID_START_Z), QuantityDimension.LENGTH));
 		return start;
 	}
 	
 	public Tuple6b getGridEnd() throws GkException{
 		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
-		Tuple6b end = new Tuple6b(unit, SI.DEGREE_ANGLE);
-		end.setX(NumberQuantity.of(new BigDecimal(getString(GRID_END_X)), unit));
-		end.setY(NumberQuantity.of(new BigDecimal(getString(GRID_END_Y)), unit));
-		end.setZ(NumberQuantity.of(new BigDecimal(getString(GRID_END_Z)), unit));
+		Tuple6b end = new Tuple6b(unit, Units.DEGREE_ANGLE);
+		end.setX(NumberQuantity.of(getString(GRID_END_X), QuantityDimension.LENGTH));
+		end.setY(NumberQuantity.of(getString(GRID_END_Y), QuantityDimension.LENGTH));
+		end.setZ(NumberQuantity.of(getString(GRID_END_Z), QuantityDimension.LENGTH));
 		return end;
 	}	
 }

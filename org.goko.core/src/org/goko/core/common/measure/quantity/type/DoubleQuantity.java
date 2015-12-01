@@ -30,12 +30,11 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 		this.value = value;
 	}
 
-
 	/** (inheritDoc)
-	 * @see org.goko.core.common.measure.quantity.Quantity#doubleValue()
+	 * @see org.goko.core.common.measure.quantity.AbstractQuantity#internalDoubleValue()
 	 */
 	@Override
-	public double doubleValue() {
+	public double internalDoubleValue() {
 		return this.value;
 	}
 
@@ -44,7 +43,7 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 	 */
 	@Override
 	public Double value() {		
-		return doubleValue();
+		return internalDoubleValue();
 	}
 
 	/** (inheritDoc)
@@ -59,7 +58,7 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 	 */
 	@Override
 	public DoubleQuantity<Q> add(Quantity<Q> q) {
-		return new DoubleQuantity<Q>(getUnit(), q.to(getUnit()).doubleValue() + value);
+		return new DoubleQuantity<Q>(getUnit(), q.doubleValue(getUnit()) + value);
 	}
 
 	
@@ -72,7 +71,7 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 	 */
 	@Override
 	public Quantity<Q> subtract(Quantity<Q> q) {
-		return new DoubleQuantity<Q>(getUnit(), value - q.to(getUnit()).doubleValue());
+		return new DoubleQuantity<Q>(getUnit(), value - q.doubleValue(getUnit()));
 	}
 
 
@@ -99,7 +98,7 @@ public class DoubleQuantity<Q extends Quantity<Q>> extends AbstractQuantity<Q>{
 	 */
 	@Override
 	public Number divide(Quantity<Q> q) {		
-		return value / q.to(getUnit()).doubleValue();
+		return value / q.doubleValue(getUnit());
 	}
 
 

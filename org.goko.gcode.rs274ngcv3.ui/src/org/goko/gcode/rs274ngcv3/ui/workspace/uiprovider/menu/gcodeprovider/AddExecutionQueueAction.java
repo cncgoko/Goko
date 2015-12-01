@@ -5,8 +5,8 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider;
 
 import org.eclipse.jface.action.Action;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IExecutionService;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService;
 
@@ -20,7 +20,7 @@ public class AddExecutionQueueAction extends Action{
 	/** Target GCode provider */
 	private Integer idGCodeProvider;
 	/** IRS274NGCService */
-	private IRS274NGCService rs274Service;
+	private IGCodeProviderRepository gcodeProviderRepository;
 	/** Target execution service*/
 	private IExecutionService<?, ?> executionService;
 	/**
@@ -28,11 +28,11 @@ public class AddExecutionQueueAction extends Action{
 	 * @param rs274WorkspaceService the {@link RS274WorkspaceService}
 	 * @param idGCodeProvider the target GCodeProvider id
 	 */
-	public AddExecutionQueueAction(IRS274NGCService rs274Service, IExecutionService<?, ?> executionService, Integer idGCodeProvider) {
+	public AddExecutionQueueAction(IGCodeProviderRepository gcodeProviderRepository, IExecutionService<?, ?> executionService, Integer idGCodeProvider) {
 		super("Add to execution queue");
 		this.executionService = executionService;
 		this.idGCodeProvider = idGCodeProvider;
-		this.rs274Service = rs274Service;
+		this.gcodeProviderRepository = gcodeProviderRepository;
 	}
 
 	/** (inheritDoc)
@@ -41,7 +41,7 @@ public class AddExecutionQueueAction extends Action{
 	@Override
 	public void run() {		
 		try {
-			executionService.addToExecutionQueue(rs274Service.getGCodeProvider(idGCodeProvider));
+			executionService.addToExecutionQueue(gcodeProviderRepository.getGCodeProvider(idGCodeProvider));
 		} catch (GkException e) {
 			LOG.error(e);
 		}

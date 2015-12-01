@@ -46,12 +46,14 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	void notifyQueueExecutionStart() throws GkException;
 	
 	void notifyExecutionStart(T token) throws GkException;
-
+	
 	void notifyCommandStateChanged(T token, Integer idCommand) throws GkException;
 
 	void notifyExecutionCanceled(T token) throws GkException;
 
 	void notifyExecutionPause(T token) throws GkException;
+	
+	void notifyExecutionResume(T token) throws GkException;
 
 	void notifyExecutionComplete(T token) throws GkException;
 	

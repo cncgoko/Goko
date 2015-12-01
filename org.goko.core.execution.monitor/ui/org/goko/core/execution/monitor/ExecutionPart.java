@@ -22,12 +22,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartController;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartModel;
 import org.goko.core.log.GkLog;
-import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * The part for execution control
@@ -236,7 +236,13 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 			this.getController().addTextDisplayBinding(lblEstimatedTime  , ExecutionPartModel.PROPERTY_ESTIMATED_TIME_STRING );			
 		} catch (GkException e1) {
 			LOG.error(e1);
-		}
+		}		
+		{ // Binding of line progress
+			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "state");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_PROGRESS_BAR_STATE).observe(getDataModel());
+			
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}		
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "maximum");
 			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOKEN_LINE_COUNT).observe(getDataModel());
@@ -249,6 +255,12 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
+		{ // Binding of tokenprogress
+			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "state");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_PROGRESS_BAR_STATE).observe(getDataModel());
+			
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}		
 		{
 			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "maximum");
 			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_TOKEN_COUNT).observe(getDataModel());

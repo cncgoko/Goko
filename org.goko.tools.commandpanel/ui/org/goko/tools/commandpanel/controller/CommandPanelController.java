@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -191,7 +191,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	public void propertyChange(PropertyChangeEvent evt) {
 		try {			
 			if(getDataModel().getJogIncrement() != null){
-				jogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), SI.MILLIMETRE));
+				jogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), Units.MILLIMETRE));
 			}
 			if(getDataModel().getJogSpeed() != null){
 				jogService.setJogFeedrate( getDataModel().getJogSpeed() );

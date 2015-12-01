@@ -58,7 +58,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		super();
 		this.center = center;
 		this.diameter = diameter;
-		this.radius = NumberQuantity.of( diameter.doubleValue() / 2, diameter.getUnit());
+		this.radius = diameter.divide(2);
 		this.color = color;
 		this.normal = normal;
 		this.centerColor = centerColor;
@@ -83,7 +83,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		Point3d pos = center.toPoint3d(JoglUtils.JOGL_UNIT);
 		direction.add(a, b);
 		direction.normalize();
-		direction.scale((float) radius.doubleValue());
+		direction.scale((float) radius.doubleValue(JoglUtils.JOGL_UNIT));
 		pos.add(direction);
 		Vector3d base = new Vector3d();
 		base.sub(a,b);
@@ -92,7 +92,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		Point3d p1 = center.toPoint3d(JoglUtils.JOGL_UNIT);
 		Point3d p2 = new Point3d(p1);
 		direction.normalize();
-		direction.scale((float) radius.doubleValue());
+		direction.scale((float) radius.doubleValue(JoglUtils.JOGL_UNIT));
 		p1.add(direction);
 		p2.sub(direction);
 

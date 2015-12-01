@@ -51,6 +51,9 @@ public class BigDecimalUtils {
 	public static BigDecimal parse(String value) throws GkException{
 		try {
 			DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance();
+			DecimalFormatSymbols sym = df.getDecimalFormatSymbols();
+			sym.setDecimalSeparator('.');
+			df.setDecimalFormatSymbols(sym);
 			df.setGroupingUsed(false);
 			df.setParseBigDecimal(true);		
 			return (BigDecimal) df.parse(value);
@@ -64,7 +67,7 @@ public class BigDecimalUtils {
 		df.setGroupingUsed(false);
 		DecimalFormatSymbols sym = df.getDecimalFormatSymbols();
 		
-		String decimalSepStr = ""+sym.getDecimalSeparator();		
+		String decimalSepStr = ".";//""+sym.getDecimalSeparator();		
 		if(".".equals(decimalSepStr)){
 			decimalSepStr = "\\"+decimalSepStr;
 		}

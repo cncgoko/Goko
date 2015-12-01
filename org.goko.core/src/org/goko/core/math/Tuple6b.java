@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
@@ -41,7 +41,7 @@ public class Tuple6b {
 	private BigDecimalQuantity<Angle> c;
 
 	public Tuple6b(){
-		this(SIPrefix.MILLI(SI.METRE), SI.DEGREE_ANGLE);
+		this(SIPrefix.MILLI(Units.METRE), Units.DEGREE_ANGLE);
 	}
 	
 	/**
@@ -304,25 +304,25 @@ public class Tuple6b {
 	}
 
 	public Point3d toPoint3d(Unit<Length> unit){
-		return new Point3d(getX().to(unit).doubleValue(), getY().to(unit).doubleValue(), getZ().to(unit).doubleValue());
+		return new Point3d(getX().doubleValue(unit), getY().doubleValue(unit), getZ().doubleValue(unit));
 	}
 
 	public Point3d angleToPoint3d(Unit<Angle> unit){
 		Point3d angle = new Point3d();
 		if(a != null){
-			angle.x = a.to(unit).doubleValue();
+			angle.x = a.doubleValue(unit);
 		}
 		if(b != null){
-			angle.y = b.to(unit).doubleValue();
+			angle.y = b.doubleValue(unit);
 		}
 		if(c != null){
-			angle.z = c.to(unit).doubleValue();
+			angle.z = c.doubleValue(unit);
 		}
 		return angle;
 	}
 	
 	public Point3f toPoint3f(Unit<Length> unit){
-		return new Point3f((float)getX().to(unit).doubleValue(), (float)getY().to(unit).doubleValue(), (float)getZ().to(unit).doubleValue());
+		return new Point3f((float)getX().doubleValue(unit), (float)getY().doubleValue(unit), (float)getZ().doubleValue(unit));
 	}
 	
 	public Tuple6b setNull() {
@@ -352,12 +352,12 @@ public class Tuple6b {
 	}
 	
 	public Tuple6b setZero() {
-		this.x = NumberQuantity.of(BigDecimal.ZERO, SI.METRE);
-		this.y = NumberQuantity.of(BigDecimal.ZERO, SI.METRE);
-		this.z = NumberQuantity.of(BigDecimal.ZERO, SI.METRE);
-		this.a = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
-		this.b = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
-		this.c = NumberQuantity.of(BigDecimal.ZERO, SI.DEGREE_ANGLE);
+		this.x = NumberQuantity.of(BigDecimal.ZERO, Units.METRE);
+		this.y = NumberQuantity.of(BigDecimal.ZERO, Units.METRE);
+		this.z = NumberQuantity.of(BigDecimal.ZERO, Units.METRE);
+		this.a = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
+		this.b = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
+		this.c = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
 		return this;
 	}
 

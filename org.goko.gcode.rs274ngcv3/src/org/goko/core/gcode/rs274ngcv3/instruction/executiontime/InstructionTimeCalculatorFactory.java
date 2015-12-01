@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -40,6 +40,6 @@ public class InstructionTimeCalculatorFactory {
 				return calculator.getExecutionTime(context, instruction);
 			}			
 		}
-		return NumberQuantity.zero(SI.SECOND);
+		return NumberQuantity.zero(Units.SECOND);
 	}
 }

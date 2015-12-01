@@ -156,31 +156,33 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		axisTransformMatrix.transform(nbStepPlusMajor);
 		axisTransformMatrix.transform(nbStepMinusMajor);
 		
+		double majorIncrementJoglUnit = majorIncrement.doubleValue(JoglUtils.JOGL_UNIT);
+		double minorIncrementJoglUnit = minorIncrement.doubleValue(JoglUtils.JOGL_UNIT);
 		for (int i = 1; i <= nbStepPlusMajor.x; i++) {
-			addVertice(new Point4d(lclCenter.x+i*majorIncrement.doubleValue(), lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);			
-			addVertice(new Point4d(lclCenter.x+i*majorIncrement.doubleValue(), lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);		
+			addVertice(new Point4d(lclCenter.x+i*majorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);			
+			addVertice(new Point4d(lclCenter.x+i*majorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);		
 			
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);			
 		}
 		
 		for (int i = 1; i <= nbStepMinusMajor.x; i++) {
-			addVertice(new Point4d(lclCenter.x-i*majorIncrement.doubleValue(), lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclCenter.x-i*majorIncrement.doubleValue(), lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclCenter.x-i*majorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclCenter.x-i*majorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);			
 		}
 		
 		for (int i = 1; i <= nbStepPlusMajor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y+i*majorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y+i*majorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclStart.x, lclCenter.y+i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclEnd.x ,  lclCenter.y+i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);
 		}
 		
 		for (int i = 1; i <= nbStepMinusMajor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y-i*majorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y-i*majorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclStart.x, lclCenter.y-i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclEnd.x ,  lclCenter.y-i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);
 		}
@@ -201,29 +203,29 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		axisTransformMatrix.transform(nbStepMinusMinor);
 		
 		for (int i = 1; i <= nbStepPlusMinor.x; i++) {
-			addVertice(new Point4d(lclCenter.x+i*minorIncrement.doubleValue(), lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclCenter.x+i*minorIncrement.doubleValue(), lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclCenter.x+i*minorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclCenter.x+i*minorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(minorUnitColor);
 			lstColors.add(minorUnitColor);			
 		}
 		
 		for (int i = 1; i <= nbStepMinusMinor.x; i++) {
-			addVertice(new Point4d(lclCenter.x-i*minorIncrement.doubleValue(), lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclCenter.x-i*minorIncrement.doubleValue(), lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclCenter.x-i*minorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclCenter.x-i*minorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(minorUnitColor);
 			lstColors.add(minorUnitColor);			
 		}
 		
 		for (int i = 1; i <= nbStepPlusMinor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y+i*minorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y+i*minorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclStart.x, lclCenter.y+i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclEnd.x ,  lclCenter.y+i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(minorUnitColor);
 			lstColors.add(minorUnitColor);
 		}
 		
 		for (int i = 1; i <= nbStepMinusMinor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y-i*minorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y-i*minorIncrement.doubleValue(), lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclStart.x, lclCenter.y-i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+			addVertice(new Point4d(lclEnd.x ,  lclCenter.y-i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 			lstColors.add(minorUnitColor);
 			lstColors.add(minorUnitColor);
 		}

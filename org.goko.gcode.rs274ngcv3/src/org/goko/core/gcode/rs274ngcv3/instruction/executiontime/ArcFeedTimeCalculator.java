@@ -5,7 +5,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -66,12 +66,12 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 		if(context.getFeedrate() != null){
 			feedrate = context.getFeedrate().doubleValue();
 		}else{
-			return NumberQuantity.zero(SI.SECOND);
+			return NumberQuantity.zero(Units.SECOND);
 		}
 		if(feedrate == 0){
-			return NumberQuantity.zero(SI.SECOND);
+			return NumberQuantity.zero(Units.SECOND);
 		}
-		return NumberQuantity.of( ((Math.abs(angle) * v1.length()) / feedrate) * 60, SI.SECOND);	
+		return NumberQuantity.of( ((Math.abs(angle) * v1.length()) / feedrate) * 60, Units.SECOND);	
 	}
 	
 	private Matrix3d getOrientationMatrix(EnumPlane enumGCodeCommandPlane){

@@ -17,15 +17,20 @@
 
 package org.goko.core.common.measure.dimension;
 
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Generic;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.units.AbstractUnit;
 import org.goko.core.common.measure.units.BaseUnit;
 import org.goko.core.common.measure.units.Unit;
 
-public class QuantityDimension implements Dimension {
-	public static final Dimension NONE = new QuantityDimension(AbstractUnit.GENERIC);
-	public static final Dimension LENGTH = new QuantityDimension("m");
-	public static final Dimension ANGLE  = new QuantityDimension("°");
-	public static final Dimension TIME   = new QuantityDimension("s");
+public class QuantityDimension<Q extends Quantity<Q>> implements Dimension<Q> {
+	public static final Dimension<Generic> NONE = new QuantityDimension<Generic>(AbstractUnit.GENERIC);
+	public static final Dimension<Length> LENGTH = new QuantityDimension<Length>("m");
+	public static final Dimension<Angle> ANGLE  = new QuantityDimension<Angle>("°");
+	public static final Dimension<Time> TIME   = new QuantityDimension<Time>("s");
 
 	private Unit<?> internUnit;
 

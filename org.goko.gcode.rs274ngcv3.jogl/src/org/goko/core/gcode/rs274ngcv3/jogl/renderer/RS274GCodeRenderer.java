@@ -32,7 +32,7 @@ import javax.vecmath.Vector3f;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -97,7 +97,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		}else{
 			// We have to render using the 4th axis
 			float angle = 0;
-			Double realAngle = fourAxisControllerAdapter.getA().doubleValue(SI.DEGREE_ANGLE);
+			Double realAngle = fourAxisControllerAdapter.getA().doubleValue(Units.DEGREE_ANGLE);
 			if(realAngle != null){
 				 angle = realAngle.floatValue();
 			}
@@ -264,20 +264,25 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		this.idGCodeProvider = idGCodeProvider;
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
-	 */
-	@Override
-	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
+	void reinitializeStateBuffer(){
 		if(stateBuffer != null){
 			int capacity = stateBuffer.capacity();
 			for (int i = 0; i < capacity; i++){
 				stateBuffer.put(i, ExecutionTokenState.NONE_STATE);
 			}
 			update();
-		}		
+		}	
 	}
-
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		if(ObjectUtils.equals(token.getGCodeProvider().getId(), getIdGCodeProvider())){
+			reinitializeStateBuffer();
+		}
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
 	 */
@@ -288,7 +293,9 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
 	 */
 	@Override
-	public void onQueueExecutionStart() throws GkException {}
+	public void onQueueExecutionStart() throws GkException {
+		reinitializeStateBuffer();
+	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
@@ -308,6 +315,12 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	@Override
 	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
 	 */

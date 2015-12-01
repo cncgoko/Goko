@@ -3,6 +3,7 @@ package org.goko.core.execution.monitor.uiprovider;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
@@ -158,7 +159,9 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 * @param content
 	 */
 	private void createMenuForExecutionQueue(IMenuManager contextMenu) {
+		contextMenu.add(new Separator());
 		contextMenu.add(new ClearExecutionQueueAction(executionService));
+		contextMenu.add(new Separator());
 	}
 
 }

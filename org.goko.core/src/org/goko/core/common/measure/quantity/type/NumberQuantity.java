@@ -18,10 +18,14 @@
 package org.goko.core.common.measure.quantity.type;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.dimension.Dimension;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.Time;
-import org.goko.core.common.measure.units.BaseUnit;
 import org.goko.core.common.measure.units.Unit;
 
 public class NumberQuantity {
@@ -36,6 +40,25 @@ public class NumberQuantity {
 	
 	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> of(String value, Unit<Q> unit){
 		return new BigDecimalQuantity<Q>(unit, new BigDecimal(value));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> of(String value, Dimension<Q> dimension) throws GkException{
+		// Try to extract unit
+		List<Unit<?>> lstUnit = Units.getAll();
+		String leftNumericValue = value;
+		Unit<Q> foundUnit = null;
+		for (Unit<?> existingUnit : lstUnit) {
+			if(StringUtils.contains(value, existingUnit.getSymbol())){
+				leftNumericValue = StringUtils.remove(value, existingUnit.getSymbol()).trim();
+				foundUnit = (Unit<Q>) existingUnit;
+				break;
+			}
+		}		
+		if(foundUnit == null){
+			throw new GkTechnicalException("No unit found in quantity ["+leftNumericValue+"]");
+		}
+		return new BigDecimalQuantity<Q>(foundUnit, new BigDecimal(leftNumericValue));
 	}
 	
 	/**

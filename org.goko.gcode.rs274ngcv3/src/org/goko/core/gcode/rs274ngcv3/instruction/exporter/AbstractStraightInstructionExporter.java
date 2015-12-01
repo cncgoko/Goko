@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
@@ -46,9 +46,9 @@ public abstract class AbstractStraightInstructionExporter<T extends AbstractStra
 		if(x != null && !x.equals(context.getX())) result.add(new GCodeWord("X", x.to(targetUnit).getValue().toPlainString() ));
 		if(y != null && !y.equals(context.getY())) result.add(new GCodeWord("Y", y.to(targetUnit).getValue().toPlainString() ));
 		if(z != null && !z.equals(context.getZ())) result.add(new GCodeWord("Z", z.to(targetUnit).getValue().toPlainString() ));
-		if(a != null && !a.equals(context.getA())) result.add(new GCodeWord("A", a.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
-		if(b != null && !b.equals(context.getB())) result.add(new GCodeWord("B", b.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
-		if(c != null && !c.equals(context.getC())) result.add(new GCodeWord("C", c.to(SI.DEGREE_ANGLE).getValue().toPlainString() ));
+		if(a != null && !a.equals(context.getA())) result.add(new GCodeWord("A", a.to(Units.DEGREE_ANGLE).getValue().toPlainString() ));
+		if(b != null && !b.equals(context.getB())) result.add(new GCodeWord("B", b.to(Units.DEGREE_ANGLE).getValue().toPlainString() ));
+		if(c != null && !c.equals(context.getC())) result.add(new GCodeWord("C", c.to(Units.DEGREE_ANGLE).getValue().toPlainString() ));
 		
 		return result;
 	}

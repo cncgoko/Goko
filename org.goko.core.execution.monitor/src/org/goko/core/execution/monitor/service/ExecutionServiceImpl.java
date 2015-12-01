@@ -261,6 +261,19 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void notifyExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		workspaceService.notifyWorkspaceEvent( ExecutionServiceWorkspaceEvent.getUpdateEvent(token) );
+		if(CollectionUtils.isNotEmpty(listenerList)){
+			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
+				executionListener.onExecutionResume(token);
+			}
+		}
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionComplete(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
 	@Override

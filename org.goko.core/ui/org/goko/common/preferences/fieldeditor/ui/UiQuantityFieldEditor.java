@@ -13,8 +13,11 @@ import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.common.utils.BigDecimalUtils;
+import org.goko.core.config.GokoPreference;
+import org.goko.core.log.GkLog;
 
 public class UiQuantityFieldEditor<Q extends Quantity<Q>> extends UiBigDecimalFieldEditor {
+	private static final GkLog LOG = GkLog.getLogger(UiQuantityFieldEditor.class);
 	private Label labelUnit;
 	private Unit<Q> unit;
 	
@@ -103,7 +106,12 @@ public class UiQuantityFieldEditor<Q extends Quantity<Q>> extends UiBigDecimalFi
 		 */
 		@Override
 		public Object convert(Object fromObject) {	
-			return ((Quantity<?>)fromObject).value().toString();			
+			try {
+				return GokoPreference.getInstance().format((Quantity<Q>)fromObject,false, false, unit);
+			} catch (GkException e) {
+				LOG.error(e);
+				return "ERROR";
+			}			
 		}
 		
 	}

@@ -6,11 +6,9 @@ import org.goko.core.common.measure.units.Unit;
 public interface Quantity<Q extends Quantity<Q>> {
 
 	Quantity<Q> to(Unit<Q> unit);
-
-	double doubleValue();
 	
 	double doubleValue(Unit<Q> unit);
-
+	
 	Number value();
 	
 	Number value(Unit<Q> unit);

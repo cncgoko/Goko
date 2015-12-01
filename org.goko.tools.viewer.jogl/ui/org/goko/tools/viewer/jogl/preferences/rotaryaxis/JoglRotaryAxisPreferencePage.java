@@ -16,6 +16,7 @@ import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.QuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
@@ -81,19 +82,19 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 		Label lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setText("Rotary axis position");
 		
-		xPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
+		xPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		xPositionField.setPreferenceName("rotaryAxisPositionX");
 		xPositionField.setWidthInChars(6);
 		xPositionField.setLabel("X");
 		new Label(composite, SWT.NONE);
 		
-		yPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
+		yPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		yPositionField.setPreferenceName("rotaryAxisPositionY");
 		yPositionField.setWidthInChars(6);
 		yPositionField.setLabel("Y");
 		new Label(composite, SWT.NONE);
 		
-		zPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE);
+		zPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		zPositionField.setPreferenceName("rotaryAxisPositionZ");
 		zPositionField.setWidthInChars(6);
 		zPositionField.setLabel("Z");
