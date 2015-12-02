@@ -27,7 +27,8 @@ import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
-import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 
@@ -37,7 +38,7 @@ import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
  * @author PsyKo
  *
  */
-public interface IGrblControllerService extends IControllerService<ExecutionState, GCodeContext>,
+public interface IGrblControllerService extends IControllerService<ExecutionTokenState, GCodeContext>,
 												IJogService,
 												IThreeAxisControllerAdapter,
 												ICoordinateSystemAdapter<EnumCoordinateSystem>,
@@ -49,14 +50,16 @@ public interface IGrblControllerService extends IControllerService<ExecutionStat
 	GrblConfiguration getConfiguration() throws GkException;
 
 	GrblState getGrblState();
-	
+
 	void setActivePollingEnabled(boolean enabled) throws GkException;
-	
+
 	boolean isActivePollingEnabled() throws GkException;
-	
+
 	GrblMachineState getState() throws GkException;
-	
+
 	void setCheckModeEnabled(boolean enabled) throws GkException;
-	
+
 	int getUsedGrblBuffer() throws GkException;
+
+	void send(GCodeLine gCodeLine) throws GkException;
 }

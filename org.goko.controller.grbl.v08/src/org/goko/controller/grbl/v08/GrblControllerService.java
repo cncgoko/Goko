@@ -31,8 +31,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -43,7 +42,6 @@ import org.goko.controller.grbl.v08.bean.GrblExecutionError;
 import org.goko.controller.grbl.v08.bean.StatusReport;
 import org.goko.controller.grbl.v08.configuration.GrblConfiguration;
 import org.goko.controller.grbl.v08.configuration.GrblSetting;
-import org.goko.controller.grbl.v08.executionqueue.GrblGCodeExecutionToken;
 import org.goko.controller.grbl.v08.topic.GrblExecutionErrorTopic;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
@@ -53,7 +51,7 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SI;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -67,15 +65,14 @@ import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.ExecutionQueue;
-import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
-import org.goko.core.gcode.service.IExecutionMonitorService;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.Event;
@@ -97,37 +94,42 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private static final String PERSISTED_STEP = "org.goko.controller.grbl.v08.GrblControllerService.step";
 	/** GCode service*/
 	private IRS274NGCService gcodeService;
-	/** The execution queue */
-	private ExecutionQueue<ExecutionState, GrblGCodeExecutionToken> executionQueue;
-	/** Sending runnable */
-	private GrblStreamingRunnable grblStreamingRunnable;
 	/** Status polling */
 	private Timer statusPollingTimer;
 	/** Controller action factory*/
 	private GrblActionFactory grblActionFactory;
-	/** Grbl used buffer spaces */
-	private int usedGrblBuffer;
 	/** Grbl configuration */
 	private GrblConfiguration configuration;
 	/** Applicative log service */
 	private IApplicativeLogService applicativeLogService;
+	/** Grbl state object */
 	private GrblState grblState;
+	/** Grbl communicator */
 	private GrblCommunicator communicator;
-	private IExecutionMonitorService monitorService;
+	/** The monitor service */
+	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
+	/** Event admin object to send topic to UI*/
 	private EventAdmin eventAdmin;
-	/** Jog related fields */	
-	private BigDecimal feed; 
+	/** Jog related fields - Feedrate */
+	private BigDecimal feed;
+	/** Jog related fields - Step */
 	private BigDecimalQuantity<Length> step;
+	/** Preference store */
 	private ScopedPreferenceStore preferenceStore;
+	/** The Grbl Executor */
+	private GrblExecutor grblExecutor;
+	/** The history of used buffer for the last sent command s*/
+	private LinkedBlockingQueue<Integer> usedBufferStack;
 	/**
 	 * Constructor
 	 */
 	public GrblControllerService() {
-		communicator		 = new GrblCommunicator(this);
-		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);		
+		communicator	= new GrblCommunicator(this);
+		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
+		usedBufferStack = new LinkedBlockingQueue<Integer>();
 		initPersistedValues();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -135,7 +137,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public String getServiceId() throws GkException {
 		return SERVICE_ID;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
@@ -146,11 +148,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		configuration 		 = new GrblConfiguration();
 		grblState 			 = new GrblState();
 		grblState.addListener(this);
-		// Initiate execution queue
-		executionQueue 				= new ExecutionQueue<ExecutionState, GrblGCodeExecutionToken>();
-		ExecutorService executor 	= Executors.newSingleThreadExecutor();
-		grblStreamingRunnable 		= new GrblStreamingRunnable(executionQueue, this);
-		executor.execute(grblStreamingRunnable);	
 		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
@@ -188,18 +185,41 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
 		persistValues();
 	}
 
-	public void sendCommand(GCodeLine gCodeLine) throws GkException{
-		String cmd = gcodeService.render(gCodeLine);			
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v08.IGrblControllerService#send(org.goko.core.gcode.element.GCodeLine)
+	 */
+	@Override
+	public void send(GCodeLine gCodeLine) throws GkException{
+		String cmd = gcodeService.render(gCodeLine);
 		List<Byte> byteCommand = GkUtils.toBytesList(cmd);
 		int usedBufferCount = CollectionUtils.size(byteCommand);
 		communicator.send( byteCommand );
-		setUsedGrblBuffer(usedGrblBuffer + usedBufferCount);
+		incrementUsedBufferCount(usedBufferCount);
 	}
 
+	/**
+	 * Register a quantity of space buffer being used for the last sent data
+	 * @param amount the amount of used space
+	 * @throws GkException GkException
+	 */
+	private void incrementUsedBufferCount(int amount) throws GkException{
+		usedBufferStack.add(amount);
+		setUsedGrblBuffer(getUsedGrblBuffer() + amount);
+	}
+
+	/**
+	 * Decrement the used serial buffer by depiling the size of the send data, in reverse order
+	 * @throws GkException GkException
+	 */
+	private void decrementUsedBufferCount() throws GkException{
+		if(CollectionUtils.isNotEmpty(usedBufferStack)){
+			Integer amount = usedBufferStack.poll();
+			setUsedGrblBuffer(getUsedGrblBuffer() - amount);
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#getPosition()
 	 */
@@ -214,7 +234,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public BigDecimalQuantity<Length> getX() throws GkException {
-		BigDecimalQuantity<Length> xPos = grblState.getWorkPosition().getX();		
+		BigDecimalQuantity<Length> xPos = grblState.getWorkPosition().getX();
 		return xPos;
 	}
 
@@ -223,7 +243,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public BigDecimalQuantity<Length> getY() throws GkException {
-		BigDecimalQuantity<Length> yPos = grblState.getWorkPosition().getY();		
+		BigDecimalQuantity<Length> yPos = grblState.getWorkPosition().getY();
 		return yPos;
 	}
 
@@ -241,11 +261,15 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
 	 */
 	@Override
-	public ExecutionToken<ExecutionState> executeGCode(IGCodeProvider gcodeProvider) throws GkException {
-		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider, gcodeService);
-		token.setMonitorService(monitorService);
-		executionQueue.add(token);
-		return token;
+	public ExecutionToken<ExecutionTokenState> executeGCode(IGCodeProvider gcodeProvider) throws GkException {
+//		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider, gcodeService);
+//		token.setMonitorService(monitorService);
+//		executionQueue.add(token);
+//		return token;
+		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeProvider, ExecutionTokenState.NONE);
+		//token.setMonitorService(getMonitorService());
+		//executionQueue.add(token);
+		throw new GkTechnicalException("To implement or remove");
 	}
 
 	/** (inheritDoc)
@@ -376,40 +400,40 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	protected void handleError(String errorMessage) throws GkException{
-		if(executionQueue != null){
-			GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
-			String formattedErrorMessage = StringUtils.EMPTY;
-			if(currentToken != null && currentToken.getLineByState(ExecutionState.SENT).size() > 0){
-				 // Error occured during GCode programm execution, let's give the source command
-				GCodeLine command = currentToken.markNextCommandAsError();
-				formattedErrorMessage = "Error with command '"+command.toString()+"' : "+ StringUtils.substringAfter(errorMessage, "error: ");				
-			}else{
-				formattedErrorMessage = "Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: ");
-			}
-			LOG.error(formattedErrorMessage);
-			getApplicativeLogService().error(formattedErrorMessage, SERVICE_ID);
-			// If not in check mode, let's pause the execution (disabled in check mode because check mode can't handle paused state and buffer would be flooded with commands)
-			if(!ObjectUtils.equals(GrblMachineState.CHECK, getState())){	
-				pauseMotion();
-				EventBrokerUtils.send(eventAdmin, new GrblExecutionErrorTopic(), new GrblExecutionError("Error reported durring execution", "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.", formattedErrorMessage));
-			}
+		decrementUsedBufferCount();
+		GCodeLine line = grblExecutor.markNextLineAsError();
+		logError(errorMessage, line);
+	}
+
+	/**
+	 * Log the given error on the given gcode line (line can be null)
+	 * @param errorMessage the error message
+	 * @param line the line (optionnal)
+	 * @throws GkException GkException
+	 */
+	protected void logError(String errorMessage, GCodeLine line) throws GkException{
+		String formattedErrorMessage = StringUtils.EMPTY;
+
+		if(line != null){
+			String lineStr = gcodeService.render(line);
+			formattedErrorMessage = "Error with command '"+lineStr+"' : "+ StringUtils.substringAfter(errorMessage, "error: ");
 		}else{
-			LOG.error("Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: "));
-			getApplicativeLogService().error(StringUtils.substringAfter(errorMessage, "error: "), SERVICE_ID);
+			formattedErrorMessage = "Grbl Error : "+ StringUtils.substringAfter(errorMessage, "error: ");
+		}
+
+		LOG.error(formattedErrorMessage);
+		getApplicativeLogService().error(formattedErrorMessage, SERVICE_ID);
+
+		// If not in check mode, let's pause the execution (disabled in check mode because check mode can't handle paused state and buffer would be flooded with commands)
+		if(!ObjectUtils.equals(GrblMachineState.CHECK, getState())){
+			pauseMotion();
+			EventBrokerUtils.send(eventAdmin, new GrblExecutionErrorTopic(), new GrblExecutionError("Error reported durring execution", "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.", formattedErrorMessage));
 		}
 	}
 
-	
 	protected void handleOkResponse() throws GkException{
-		GrblGCodeExecutionToken currentToken = executionQueue.getCurrentToken();
-		if(currentToken != null){
-			GCodeLine command = currentToken.markNextCommandAsConfirmed();
-			if(command != null ){
-				String strCommand = getGCodeService().render(command);
-				setUsedGrblBuffer(usedGrblBuffer - StringUtils.length(strCommand));
-			}
-			grblStreamingRunnable.releaseBufferSpaceMutex();
-		}
+		decrementUsedBufferCount();
+		grblExecutor.confirmNextLineExecution();
 	}
 
 	protected void initialiseConnectedState() throws GkException{
@@ -418,27 +442,28 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		refreshSpaceCoordinates();
 		refreshParserState();
 	}
-		
+
 	protected void handleStatusReport(StatusReport statusReport) throws GkException{
 		GrblMachineState previousState = getState();
-		grblState.setState(statusReport.getState());		
+		grblState.setState(statusReport.getState());
 		grblState.setMachinePosition(statusReport.getMachinePosition(), getConfiguration().getReportUnit());
 		grblState.setWorkPosition(statusReport.getWorkPosition(), getConfiguration().getReportUnit());
-		
-		if(!ObjectUtils.equals(previousState, statusReport.getState())){			
+
+		if(!ObjectUtils.equals(previousState, statusReport.getState())){
 			eventAdmin.sendEvent(new Event(CONTROLLER_TOPIC_STATE_UPDATE, (Map<String, ?>)null));
 		}
 	}
 
+	@Override
 	public GrblMachineState getState() throws GkException{
 		return grblState.getState();
 	}
-	
+
 	public void setState(GrblMachineState state) throws GkException{
 		grblState.setState(state);
 		eventAdmin.sendEvent(new Event(CONTROLLER_TOPIC_STATE_UPDATE, (Map<String, ?>)null));
 	}
-	
+
 	protected GrblMachineState getGrblStateFromString(String code){
 		switch(code){
 			case "Alarm": return GrblMachineState.ALARM;
@@ -454,13 +479,13 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/*
 	 *  Action related methods
 	 */
-	
+
 	public void startHomingSequence() throws GkException{
 		List<Byte> homeCommand = new ArrayList<Byte>();
 		homeCommand.addAll(GkUtils.toBytesList(Grbl.HOME_COMMAND));
 		communicator.send( homeCommand );
 	}
-	
+
 	/**
 	 * Pause the motion by sending a pause character to Grbl
 	 * If the execution queue is not empty, it is also paused
@@ -470,7 +495,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		List<Byte> pauseCommand = new ArrayList<Byte>();
 		pauseCommand.add(Grbl.PAUSE_COMMAND);
 		communicator.sendImmediately( pauseCommand );
-		executionQueue.setPaused(true);
+		executionService.pauseQueueExecution();
 	}
 
 	/**
@@ -483,11 +508,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		stopCommand.add(Grbl.PAUSE_COMMAND);
 		stopCommand.add(Grbl.RESET_COMMAND); // TODO : it seems that resetting while in motion causes the GRBL to go back to alarm state. Wait motion to be complete before resetting
 		communicator.sendImmediately(stopCommand);
-
-		if(executionQueue != null){
-			executionQueue.clear();
-			grblStreamingRunnable.releaseBufferSpaceMutex();
-		}
+		executionService.stopQueueExecution();
 		setUsedGrblBuffer(0);
 	}
 
@@ -499,17 +520,15 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public void startMotion() throws GkException{
 		List<Byte> startResumeCommand = new ArrayList<Byte>();
 		startResumeCommand.add(Grbl.RESUME_COMMAND);
-		communicator.sendWithoutEndLineCharacter( startResumeCommand );						
-		if(executionQueue != null){
-			executionQueue.setPaused(false);
-		}
+		communicator.sendWithoutEndLineCharacter( startResumeCommand );
+		executionService.beginQueueExecution();
 	}
-		
+
 //	/** (inheritDoc)
 //	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal)
 //	 */
-//	@Override	
-//	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {		
+//	@Override
+//	public void startJog(EnumControllerAxis axis, BigDecimal feedrate) throws GkException {
 //		String oldDistanceMode = "G90";
 //		if(grblState.getDistanceMode() == EnumGCodeCommandDistanceMode.RELATIVE){
 //			oldDistanceMode = "G91";
@@ -527,7 +546,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 //		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
 //		communicator.send(distanceModeBackup);
 //	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IStepJogService#stopJog()
 	 */
@@ -557,6 +576,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @return the usedGrblBuffer
 	 * @throws GkException  GkException
 	 */
+	@Override
 	public int getUsedGrblBuffer() throws GkException {
 		return grblState.getUsedGrblBuffer();
 	}
@@ -566,7 +586,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @throws GkException GkException
 	 */
 	public void setUsedGrblBuffer(int usedGrblBuffer) throws GkException {
-		this.usedGrblBuffer = usedGrblBuffer;
 		grblState.setUsedGrblBuffer(usedGrblBuffer);
 	}
 
@@ -691,19 +710,19 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		EnumCoordinateSystem cs = getGrblState().getCurrentContext().getCoordinateSystem();
 		String cmd = "G10";
 		switch (cs) {
-		case G54: cmd +="P1";			
+		case G54: cmd +="P1";
 		break;
-		case G55: cmd +="P2";			
+		case G55: cmd +="P2";
 		break;
-		case G56: cmd +="P3";			
+		case G56: cmd +="P3";
 		break;
-		case G57: cmd +="P4";			
+		case G57: cmd +="P4";
 		break;
-		case G58: cmd +="P5";			
+		case G58: cmd +="P5";
 		break;
-		case G59: cmd +="P6";			
+		case G59: cmd +="P6";
 		break;
-		default: throw new GkFunctionalException("GRBL-002", cs.name());			
+		default: throw new GkFunctionalException("GRBL-002", cs.name());
 		}
 		Tuple6b offsets = getCoordinateSystemOffset(getCurrentCoordinateSystem());
 		Tuple6b mPos = new Tuple6b(getPosition());
@@ -714,18 +733,18 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		cmd += "Z"+getPositionAsString(mPos.getZ());
 		communicator.send( GkUtils.toBytesList( cmd ) );
 		communicator.send( GkUtils.toBytesList( Grbl.VIEW_PARAMETERS ) );
-	}	
-	
+	}
+
 	/**
-	 * Returns the given Length quantity as a String, formatted using the goko preferences for decimal numbers 	
+	 * Returns the given Length quantity as a String, formatted using the goko preferences for decimal numbers
 	 * @param q the quantity to format
 	 * @return a String
 	 * @throws GkException GkException
 	 */
-	protected String getPositionAsString(BigDecimalQuantity<Length> q) throws GkException{	
+	protected String getPositionAsString(BigDecimalQuantity<Length> q) throws GkException{
 		return GokoPreference.getInstance().format( q.to(getCurrentUnit()), true, false);
 	}
-	
+
 	/**
 	 * Returns the current unit in the Grbl Conteext. It can be different from the unit in the goko preferences
 	 * @return Unit
@@ -733,15 +752,15 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private Unit<Length> getCurrentUnit() {
 		return grblState.getContextUnit().getUnit();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.controller.grbl.v08.IGrblControllerService#setActivePollingEnabled(boolean)
 	 */
 	@Override
 	public void setActivePollingEnabled(boolean enabled) throws GkException {
-		grblState.setActivePolling(enabled);		
+		grblState.setActivePolling(enabled);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.controller.grbl.v08.IGrblControllerService#isActivePollingEnabled()
 	 */
@@ -754,7 +773,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.controller.grbl.v08.IGrblControllerService#setCheckModeEnabled(boolean)
 	 */
 	@Override
-	public void setCheckModeEnabled(boolean enabled) throws GkException {		
+	public void setCheckModeEnabled(boolean enabled) throws GkException {
 		if((enabled && ObjectUtils.equals(GrblMachineState.READY, getState())) || // Check mode is disabled and we want to enable it
 			(!enabled && ObjectUtils.equals(GrblMachineState.CHECK, getState())) ){ // Check mode is enabled and we want to disable it
 			communicator.send(GkUtils.toBytesList(Grbl.CHECK_MODE));
@@ -762,7 +781,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			throw new GkFunctionalException("GRBL-001", String.valueOf(enabled), getState().getLabel());
 		}
 	}
-	
+
 	/**
 	 * @return the eventAdmin
 	 */
@@ -779,15 +798,16 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionMonitorService getMonitorService() {
-		return monitorService;
+	public IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getMonitorService() {
+		return executionService;
 	}
-
 	/**
 	 * @param monitorService the monitorService to set
+	 * @throws GkException GkException
 	 */
-	public void setMonitorService(IExecutionMonitorService monitorService) {
-		this.monitorService = monitorService;
+	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
+		this.executionService = monitorService;
+		executionService.setExecutor(new GrblDebugExecutor());
 	}
 
 	/** (inheritDoc)
@@ -828,7 +848,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#canImport()
 	 */
 	@Override
-	public boolean canImport() throws GkException {	
+	public boolean canImport() throws GkException {
 		return GrblMachineState.READY.equals(getState());
 	}
 
@@ -896,10 +916,10 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IJogService#isJogPrecise()
 	 */
 	@Override
-	public boolean isJogPrecise() throws GkException {		
+	public boolean isJogPrecise() throws GkException {
 		return true;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
 	 */
@@ -925,34 +945,34 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
 		communicator.send(distanceModeBackup);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
 	 */
 	@Override
-	public boolean isJogPreciseForced() throws GkException {		
+	public boolean isJogPreciseForced() throws GkException {
 		return true; // does not support continuous jog
 	}
-	
+
 	private void initPersistedValues(){
 		String feedStr = preferenceStore.getString(PERSISTED_FEED);
 		if(StringUtils.isBlank(feedStr)){
 			feedStr = "600";
 		}
-		this.feed = new BigDecimal(feedStr); 
+		this.feed = new BigDecimal(feedStr);
 		String stepStr = preferenceStore.getString(PERSISTED_STEP);
 		if(StringUtils.isBlank(stepStr)){
 			stepStr = "1";
 		}
-		this.step = NumberQuantity.of(new BigDecimal(stepStr), SI.MILLIMETRE);		
+		this.step = NumberQuantity.of(new BigDecimal(stepStr), Units.MILLIMETRE);
 	}
-	
+
 	private void persistValues(){
 		if(feed != null){
 			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
-		}		
+		}
 		if(step != null){
-			preferenceStore.putValue(PERSISTED_STEP, step.to(SI.MILLIMETRE).getValue().toPlainString());		
+			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());
 		}
 	}
 }

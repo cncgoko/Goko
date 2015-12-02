@@ -37,6 +37,7 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
+import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -51,7 +52,8 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 	private ByteCommandBuffer incomingBuffer;
 	/** The connection service */
 	private IConnectionService connectionService;
-
+	/** Executor used by grbl*/
+	private IExecutor grblExecutor;
 	/**
 	 * Constructor
 	 */
@@ -153,7 +155,7 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 	 * Create a status report from the given string
 	 * @param strStatusReport the String representing the status report
 	 * @return {@link StatusReport}
-	 * @throws GkException 
+	 * @throws GkException
 	 */
 	private StatusReport parseStatusReport(String strStatusReport) throws GkException{
 		StatusReport result = new StatusReport();

@@ -1,11 +1,12 @@
 /**
- * 
+ *
  */
 package org.goko.controller.tinyg.controller;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
 import org.goko.core.gcode.element.GCodeLine;
@@ -17,8 +18,8 @@ import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.log.GkLog;
 
 /**
- * TinyG executor implementation 
- * 
+ * TinyG executor implementation
+ *
  * @author PsyKo
  * @date 20 nov. 2015
  */
@@ -31,7 +32,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	private ITinygControllerService tinygService;
 	/** Required space in TinyG planner buffer to send a new command */
 	private int requiredBufferSpace;
-		
+
 	/**
 	 * Constructor
 	 * @param tinygService the underlying TinyG service
@@ -55,7 +56,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	protected void send(GCodeLine line) throws GkException {
-		pendingCommandCount.incrementAndGet();		
+		pendingCommandCount.incrementAndGet();
 		tinygService.send(line);
 		getToken().setLineState(line.getId(), ExecutionTokenState.SENT);
 	}
@@ -70,7 +71,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 
 	/**
 	 * Notification method when the available buffer space changed
-	 * @param availableBufferSpace the available space buffer 
+	 * @param availableBufferSpace the available space buffer
 	 * @throws GkException GkException
 	 */
 	protected void onBufferSpaceAvailableChange(int availableBufferSpace) throws GkException{
@@ -78,7 +79,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 			notifyReadyForNextLineIfRequired();
 		}
 	}
-	
+
 	/**
 	 * Notification method called when a line is confirmed by TinyG
 	 * @throws GkException
@@ -86,42 +87,72 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	protected void confirmNextLineExecution() throws GkException{
 		pendingCommandCount.decrementAndGet();
 		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionTokenState.SENT);
-		GCodeLine line = lstLines.get(0);
-		getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
-		getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
-		notifyReadyForNextLineIfRequired();
-		notifyTokenCompleteIfRequired();
+
+		if(CollectionUtils.isNotEmpty(lstLines)){
+			GCodeLine line = lstLines.get(0);
+			getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+			getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
+			notifyReadyForNextLineIfRequired();
+			notifyTokenCompleteIfRequired();
+		}
 	}
-	
+
+	/**
+	 * Notification method called when a line is throwing error by TinyG
+	 * @throws GkException
+	 */
+	protected void markNextLineAsError() throws GkException{
+		pendingCommandCount.decrementAndGet();
+		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionTokenState.SENT);
+		GCodeLine line = lstLines.get(0);
+		getToken().setLineState(line.getId(), ExecutionTokenState.ERROR);
+		getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
+	}
+
 	/**
 	 * Notify the parent executor if the conditions are met
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	private void notifyTokenCompleteIfRequired() throws GkException {
 		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0){
-			notifyTokenComplete();			
+			notifyTokenComplete();
 		}
 	}
 
 	/**
 	 * Handles any TinyG Status that is not TG_OK
-	 * @param status the received status or <code>null</code> if unknown 
+	 * @param status the received status or <code>null</code> if unknown
 	 * @throws GkException GkException
 	 */
 	protected void handleNonOkStatus(TinyGStatusCode status) throws GkException {
 		if(status == null || status.isError()){
 			LOG.warn("Pausing execution queue from TinyG Executor due to received status ["+status.getValue()+"]");
-			getExecutionService().pauseQueueExecution();			
+			getExecutionService().pauseQueueExecution();
+			markNextLineAsError();
 		}
-		// We still confirm :		
-		//   - if it's a non blocking warning, it's fine
-		//   - if it's an error and the user continue the execution, it assumes the error can be ignored
-		// 	 - if it's an error and the user stops the execution, this has no impact
-		confirmNextLineExecution();
+	}
+
+	/**
+	 * Method used to confirm all command being marked as error.
+	 * This is the result of the user continuing the execution after an error was reported.
+	 * If the user continues, it meas the error is ignored.
+	 * @throws GkException GkException
+	 */
+	protected void confirmErrorCommands() throws GkException{
+		List<GCodeLine> lstErrorToken = getToken().getLineByState(ExecutionTokenState.ERROR);
+		if(CollectionUtils.isNotEmpty(lstErrorToken)){
+			for (GCodeLine line : lstErrorToken) {
+				pendingCommandCount.decrementAndGet();
+				getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+				getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
+				notifyReadyForNextLineIfRequired();
+				notifyTokenCompleteIfRequired();
+			}
+		}
 	}
 	/**
 	 * Notify the parent executor if the conditions are met
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	protected void notifyReadyForNextLineIfRequired() throws GkException{
 		if(isReadyForNextLine()){
@@ -172,8 +203,14 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {}
-	
+	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// We confirm commands in error state:
+		//   - if it's a non blocking warning, it's fine
+		//   - if it's an error and the user continue the execution, it assumes the error can be ignored
+		// 	 - if it's an error and the user stops the execution, this confirm never happens
+		confirmErrorCommands();
+	}
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
 	 */
@@ -200,7 +237,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

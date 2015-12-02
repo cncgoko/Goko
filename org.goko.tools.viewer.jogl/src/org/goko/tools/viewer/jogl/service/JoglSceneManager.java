@@ -17,12 +17,9 @@
 
 package org.goko.tools.viewer.jogl.service;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,7 +74,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/** Flag to enable/disable the render*/
 	private boolean enabled = true;
 	private Overlay overlay;
-	private Font overlayFont;
 	private int x;
 	private int y;
 	private int width;	

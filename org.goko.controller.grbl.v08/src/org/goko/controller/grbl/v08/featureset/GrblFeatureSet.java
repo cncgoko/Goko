@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.controller.grbl.v08.featureset;
 
@@ -19,8 +19,7 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
-import org.goko.core.gcode.service.IExecutionMonitorService;
-import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.gcode.service.IExecutionService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -34,11 +33,11 @@ public class GrblFeatureSet implements IFeatureSet {
 	/** Target board definition for this feature set */
 	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v08", "Grbl v0.8 (beta)");
 	public List<ServiceRegistration> lstServiceregistration;
-	
+
 	public GrblFeatureSet() {
 		lstServiceregistration = new ArrayList<ServiceRegistration>();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#getTargetBoard()
 	 */
@@ -46,14 +45,14 @@ public class GrblFeatureSet implements IFeatureSet {
 	public TargetBoard getTargetBoard() {
 		return GRBL_TARGET_BOARD;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
 	public void start(BundleContext context) throws GkException {
 		GrblControllerService service = new GrblControllerService();
-		
+
 		lstServiceregistration.add( context.registerService(IControllerService.class,	 	service, null));
 		lstServiceregistration.add(context.registerService(IGrblControllerService.class, 	service, null));
 		lstServiceregistration.add(context.registerService(IJogService.class, 			service, null));
@@ -62,15 +61,14 @@ public class GrblFeatureSet implements IFeatureSet {
 		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, service, null));
 		lstServiceregistration.add(context.registerService(IControllerConfigurationFileExporter.class, service, null));
 		lstServiceregistration.add(context.registerService(IControllerConfigurationFileImporter.class, service, null));
-	
+
 		service.setConnectionService(findService(context, IConnectionService.class));
-		service.setGCodeService(findService(context, IGCodeService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
-		service.setMonitorService(findService(context, IExecutionMonitorService.class));
-		
+		service.setMonitorService(findService(context, IExecutionService.class));
+
 		service.start();
-		
+
 	}
 
 	protected <S> S findService( BundleContext context, Class<S> clazz){
@@ -80,7 +78,7 @@ public class GrblFeatureSet implements IFeatureSet {
 		}
 		return null;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#stop()
 	 */

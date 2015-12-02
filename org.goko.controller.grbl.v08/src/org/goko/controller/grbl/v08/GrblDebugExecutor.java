@@ -1,4 +1,4 @@
-package org.goko.controller.tinyg.controller;
+package org.goko.controller.grbl.v08;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
@@ -8,7 +8,7 @@ import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
 
-public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
+public class GrblDebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	private Object lock = new Object();
 
 	/** (inheritDoc)

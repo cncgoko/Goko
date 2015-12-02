@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package goko.dialog;
 
@@ -22,14 +22,14 @@ import org.goko.common.dialog.GkDialog;
  * @author PsyKo
  *
  */
-public class JobProgressElement extends Composite implements IProgressMonitor,IJobChangeListener {	
+public class JobProgressElement extends Composite implements IProgressMonitor,IJobChangeListener {
 	private UISynchronize sync;
 	private ProgressBar jobProgressBar;
 	private Label lblTaskName;
 	private GokoProgressDialog parentMonitor;
 	private Job job;
 	private Label lblJobName;
-	
+
 	/**
 	 * @param parent
 	 * @param style
@@ -45,9 +45,9 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 		this.parentMonitor = parentMonitor;
 		this.job = job;
 		createContent();
-		job.addJobChangeListener(this);		
+		job.addJobChangeListener(this);
 	}
-	
+
 	private void createContent(){
 		setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		GridLayout gridLayout = new GridLayout(1, false);
@@ -56,35 +56,36 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 		gridLayout.marginHeight = 0;
 		gridLayout.verticalSpacing = 2;
 		setLayout(gridLayout);
-		
+
 		lblJobName = new Label(this, SWT.NONE);
 		GridData gd_lblJobName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_lblJobName.verticalIndent = 2;
 		gd_lblJobName.horizontalIndent = 2;
 		lblJobName.setLayoutData(gd_lblJobName);
-		lblJobName.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));		
+		lblJobName.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		lblJobName.setText(job.getName());
-		
+
 		jobProgressBar = new ProgressBar(this, SWT.NONE);
 		jobProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		lblTaskName = new Label(this, SWT.NONE);
 		lblTaskName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		lblTaskName.setText("taskName");
 		lblTaskName.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
 		lblTaskName.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-				
+
 		Label label = new Label(this, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.core.runtime.IProgressMonitor#beginTask(java.lang.String, int)
 	 */
 	@Override
 	public void beginTask(final String name, final int totalWork) {
+		System.err.println("beginTask "+name);
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if(!isDisposed()){
@@ -95,13 +96,13 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 				}
 			}
 		});
-	}	
+	}
 	/** (inheritDoc)
 	 * @see org.eclipse.core.runtime.IProgressMonitor#done()
 	 */
 	@Override
 	public void done() {
-		
+		System.err.println("done()");
 	}
 
 	/** (inheritDoc)
@@ -110,21 +111,21 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void internalWorked(final double work) {
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
-			public void run() {		
+			public void run() {
 				if(!isDisposed()){
 					jobProgressBar.setSelection((int) (jobProgressBar.getSelection()+work));
 				}
 			}
 		});
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.core.runtime.IProgressMonitor#isCanceled()
 	 */
 	@Override
-	public boolean isCanceled() {		
+	public boolean isCanceled() {
 		return false;
 	}
 
@@ -143,7 +144,7 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void setTaskName(final String name) {
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if(!isDisposed()){
@@ -159,9 +160,9 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void subTask(final String name) {
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
-			public void run() {		
+			public void run() {
 				if(!isDisposed()){
 					lblTaskName.setText(name);
 				}
@@ -175,7 +176,7 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void worked(final int work) {
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				jobProgressBar.setSelection(jobProgressBar.getSelection() + work);
@@ -189,7 +190,6 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/** (inheritDoc)
@@ -198,16 +198,15 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void awake(IJobChangeEvent event) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/** (inheritDoc)
 	 * @see org.eclipse.core.runtime.jobs.IJobChangeListener#done(org.eclipse.core.runtime.jobs.IJobChangeEvent)
 	 */
 	@Override
-	public void done(final IJobChangeEvent event) {		
+	public void done(final IJobChangeEvent event) {
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if(!isDisposed()){
@@ -216,20 +215,20 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 					}
 					if(event.getResult() != null && event.getResult().getSeverity() == Status.ERROR){
 						lblTaskName.setText("Error " +job.getName());
-						GkDialog.openDialog(null, event.getResult());						
+						GkDialog.openDialog(null, event.getResult());
 					}
 				}
 			}
 		});
-		event.getJob().removeJobChangeListener(this);		
+		event.getJob().removeJobChangeListener(this);
 		parentMonitor.remove(this);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.swt.widgets.Widget#dispose()
 	 */
 	@Override
-	public void dispose() {		
+	public void dispose() {
 		super.dispose();
 		if(job != null){
 			job.removeJobChangeListener(this);
@@ -242,7 +241,7 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void running(IJobChangeEvent event) {
 		sync.asyncExec(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if(!isDisposed()){
@@ -258,7 +257,6 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void scheduled(IJobChangeEvent event) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/** (inheritDoc)
@@ -267,7 +265,6 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	@Override
 	public void sleeping(IJobChangeEvent event) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/**

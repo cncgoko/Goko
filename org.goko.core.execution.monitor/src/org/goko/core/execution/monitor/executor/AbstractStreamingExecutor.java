@@ -16,7 +16,7 @@ import org.goko.core.log.GkLog;
 
 /**
  * Defines an executor that streams the content of its provider to a distant executor.
- * 
+ *
  * @author Psyko
  *
  * @param <S> the template for the IExecutionState
@@ -37,7 +37,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	private final Lock readyForNextLineLock = new ReentrantLock();
 	/** The condition indicating that the executor is waiting to be able to execute the next line */
 	private final Condition readyForNextLineCondition  = readyForNextLineLock.newCondition();
-	
+
 	/** The lock indicating that the executor is waiting for the token execution to be complete */
 	private final Lock tokenCompleteLock = new ReentrantLock();
 	/** The condition indicating that the executor is waiting for the token execution to be complete */
@@ -46,7 +46,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	private boolean tokenComplete;
 	/** The state of the execution */
 	private ExecutionState state;
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutor#executeToken(org.goko.core.gcode.execution.IExecutionToken)
 	 */
@@ -54,23 +54,23 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	public void executeToken(T token) throws GkException {
 		tokenWeakReference = new WeakReference<T>(token);
 		setTokenComplete(false);
-				
+
 		updateState(ExecutionState.RUNNING);
-		getExecutionService().notifyExecutionStart(token);		
-		
+		getExecutionService().notifyExecutionStart(token);
+
 		while(token.hasMoreLine()){
 			waitReadyForNextLine();
 			waitExecutionUnpaused(token);
-			// We have a stop 
+			// We have a stop
 			if(state == ExecutionState.STOPPED){
 				break;
 			}
 			GCodeLine nextLine = token.takeNextLine();
 			send(nextLine);
 			getExecutionService().notifyCommandStateChanged(getToken(), nextLine.getId());
-		}	
+		}
 		waitTokenComplete();
-		
+
 		if(state == ExecutionState.STOPPED){
 			getExecutionService().notifyExecutionCanceled(getToken());
 		}else{
@@ -87,42 +87,42 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 		if(!tokenComplete && state != ExecutionState.STOPPED){
 			tokenCompleteLock.lock();
 			try{
-				tokenCompleteCondition.await();				
+				tokenCompleteCondition.await();
 			} catch (InterruptedException e) {
 				LOG.error(e);
 			}finally{
 				tokenCompleteLock.unlock();
 			}
-		}		
+		}
 	}
-	
+
 	/**
-	 * Notify this object that the token is completely executed 
+	 * Notify this object that the token is completely executed
 	 */
 	protected final void notifyTokenComplete(){
 		tokenCompleteLock.lock();
 		try{
-			setTokenComplete(true);			
-			tokenCompleteCondition.signal();		
+			setTokenComplete(true);
+			tokenCompleteCondition.signal();
 		}finally{
 			tokenCompleteLock.unlock();
 		}
 	}
-	
+
 	/**
 	 * Sends the given line for execution
 	 * @param line the line to send
 	 * @throws GkException GkException
 	 */
 	protected abstract void send(GCodeLine line) throws GkException;
-	
+
 	/**
-	 * Test if the executor is ready for the execution of the next line. 
+	 * Test if the executor is ready for the execution of the next line.
 	 * @return <code>true</code> if the executor is ready, <code>false</code> otherwise
 	 * @throws GkException GkException
 	 */
 	protected abstract boolean isReadyForNextLine() throws GkException;
-	
+
 	/**
 	 * Wait while the current token is paused.
 	 */
@@ -130,19 +130,19 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 		while(state == ExecutionState.PAUSED){
 			try {
 				synchronized (executionPausedLock) {
-					// We don't need extra fast reaction on this so synchronization will wait for the next check (after at most, tokenPauseTimeout milliseconds) 
-					executionPausedLock.wait(tokenPauseTimeout);					
-				} 
+					// We don't need extra fast reaction on this so synchronization will wait for the next check (after at most, tokenPauseTimeout milliseconds)
+					executionPausedLock.wait(tokenPauseTimeout);
+				}
 			} catch (InterruptedException e) {
 				LOG.error(e);
 			}
 		}
 	}
-	
+
 	/**
 	 * Wait until the executor is ready for sending the next line.
 	 * Can be interrupted by calling <code>notifyReadyForNextLine</code> method
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	private void waitReadyForNextLine() throws GkException{
 		if(!isReadyForNextLine()){
@@ -156,21 +156,21 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 			}
 		}
 	}
-	
+
 	/**
 	 * Notify this object that the it's ready for the execution of the next line
 	 */
-	protected final void notifyReadyForNextLine(){		
+	protected final void notifyReadyForNextLine(){
 		readyForNextLineLock.lock();
 		try{
-			readyForNextLineCondition.signal();		
+			readyForNextLineCondition.signal();
 		}finally{
 			readyForNextLineLock.unlock();
-		}		
+		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param state
 	 * @throws GkException
 	 */
@@ -178,12 +178,12 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 		setState(state);
 		getToken().setState(state);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutor#getToken()
 	 */
 	@Override
-	public T getToken() throws GkException {		
+	public T getToken() throws GkException {
 		return tokenWeakReference.get();
 	}
 
@@ -206,6 +206,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	/**
 	 * @return the tokenComplete
 	 */
+	@Override
 	public boolean isTokenComplete() throws GkException{
 		return tokenComplete;
 	}
@@ -222,37 +223,38 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 */
 	@Override
 	public void start() throws GkException {
-		updateState(ExecutionState.RUNNING);		
+		updateState(ExecutionState.RUNNING);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionControl#resume()
 	 */
 	@Override
 	public void resume() throws GkException {
-		updateState(ExecutionState.RUNNING);		
+		updateState(ExecutionState.RUNNING);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionControl#pause()
 	 */
 	@Override
 	public void pause() throws GkException {
-		updateState(ExecutionState.PAUSED);		
+		updateState(ExecutionState.PAUSED);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionControl#stop()
 	 */
 	@Override
 	public void stop() throws GkException {
-		updateState(ExecutionState.STOPPED);	
-		notifyReadyForNextLine();		
+		updateState(ExecutionState.STOPPED);
+		notifyReadyForNextLine();
 	}
 
 	/**
 	 * @return the state
 	 */
+	@Override
 	public ExecutionState getState() {
 		return state;
 	}
@@ -261,6 +263,6 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 * @param state the state to set
 	 */
 	public void setState(ExecutionState state) {
-		this.state = state;		
+		this.state = state;
 	}
 }

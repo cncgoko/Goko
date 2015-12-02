@@ -56,7 +56,6 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
-import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -83,8 +82,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private ISerialConnectionService connectionService;
 	/** GCode service */
 	private IRS274NGCService gcodeService;
-	/** The current execution queue */
-	private IExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> sexecutionQueue;
 	/** The monitor service */
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	/** Action factory */
@@ -106,11 +103,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @throws GkException GkException
 	 */
 	public TinyGControllerService() throws GkException {
-		communicator = new TinyGCommunicator(this);	
+		communicator = new TinyGCommunicator(this);
 		tinygState   = new TinyGState();
-		tinygExecutor = new TinyGExecutor(this);		
+		tinygExecutor = new TinyGExecutor(this);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -127,22 +124,15 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		LOG.info("Starting "+getServiceId());
 		configuration 			= new TinyGConfiguration();
 		actionFactory 			= new TinyGActionFactory(this);
-		
+
 		tinygState.addListener(this);
 
 		TinyGPreferences.getInstance();
-		
-		// Initiate execution queue
-	//	executionQueue 				= new ExecutionQueue<ExecutionState, TinyGExecutionToken>();
-		
-	//	ExecutorService executor 	= Executors.newSingleThreadExecutor();
-	//	currentSendingRunnable 		= new GCodeSendingRunnable(executionQueue, this);				
-	//	executor.execute(currentSendingRunnable);
-		
+
 		jogRunnable = new TinyGJoggingRunnable(this, communicator);
 		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
 		jogExecutor.execute(jogRunnable);
-		
+
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -153,7 +143,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public void stop() throws GkException {
 //		if(currentSendingRunnable != null){
 //			currentSendingRunnable.stop();
-//		}		
+//		}
 	}
 
 	/** (inheritDoc)
@@ -180,7 +170,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		//token.setMonitorService(getMonitorService());
 		//executionQueue.add(token);
 
-		return token;
+		throw new GkTechnicalException("To implement or remove");
 	}
 
 	private void checkVerbosity(TinyGConfiguration cfg) throws GkException{
@@ -190,7 +180,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 
 		BigDecimal qrVerbosity = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.QUEUE_REPORT_VERBOSITY, BigDecimal.class);
-		
+
 		if(isPlannerBufferSpaceCheck()){
 			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
 				throw new GkFunctionalException("TNG-002");
@@ -201,15 +191,15 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		BigDecimal flowControl = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
 
 		// We always need to use flow control
-		if(ObjectUtils.equals(flowControl, TinyGConfigurationValue.FLOW_CONTROL_OFF)){				
-			throw new GkFunctionalException("TNG-001");				
+		if(ObjectUtils.equals(flowControl, TinyGConfigurationValue.FLOW_CONTROL_OFF)){
+			throw new GkFunctionalException("TNG-001");
 		}
-		
+
 		// Make sure the current connection use the same flow control
 		ISerialConnection connexion = getConnectionService().getCurrentConnection();
 		TinyGConfiguration cfg = getConfiguration();
 		BigDecimal configuredFlowControl = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
-		
+
 		if(configuredFlowControl.equals(TinyGConfigurationValue.FLOW_CONTROL_RTS_CTS)){ // TinyG expects RtsCts but the serial connection does not use it
 			if((connexion.getFlowControl() & SerialParameter.FLOWCONTROL_RTSCTS) != SerialParameter.FLOWCONTROL_RTSCTS){
 				throw new GkFunctionalException("TNG-005");
@@ -220,7 +210,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			}
 		}
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#send(org.goko.core.gcode.element.GCodeLine)
 	 */
@@ -274,7 +264,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * Update the current GCodeContext with the given one
 	 * @param updatedGCodeContext the updated GCodeContext
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	protected void updateCurrentGCodeContext(GCodeContext updatedGCodeContext) throws GkException{
 		GCodeContext current = tinygState.getGCodeContext();
@@ -354,7 +344,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 //		if(executionQueue.getCurrentToken() != null){
 //			if(status == TinyGStatusCode.TG_OK){
-//				if(StringUtils.isNotEmpty(receivedCommand)){					
+//				if(StringUtils.isNotEmpty(receivedCommand)){
 //					GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
 //					executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
 //					this.currentSendingRunnable.confirmCommand();
@@ -364,35 +354,35 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 //			}
 //		}
 	}
-	
+
 	/**
 	 * Handles any TinyG Status that is not TG_OK
 	 * @param status the received status or <code>null</code> if unknown
-	 * @param receivedCommand the received command 
+	 * @param receivedCommand the received command
 	 * @throws GkException GkException
 	 */
 	protected void handleNonOkStatus(TinyGStatusCode status, String receivedCommand) throws GkException {
 		String message = StringUtils.EMPTY;
-		
+
 		if(status == null){
 			message = " Unknown error status";
-		}else{			
+		}else{
 			if(status.isError()){
-				// Error report 
+				// Error report
 				message = "Error status returned : "+status.getValue() +" - "+status.getLabel();
 				LOG.error(message);
 				applicativeLogService.log(ApplicativeLogEvent.LOG_ERROR, message, "TinyG");
 				EventBrokerUtils.send(eventAdmin, new TinyGExecutionErrorTopic(), new TinyGExecutionError("Error reported durring execution", "Execution was paused after TinyG reported an error. You can resume, or stop the execution at your own risk.", message));
 			}else if(status.isWarning()){
-				// Warning report 
+				// Warning report
 				message = "Warning status returned : "+status.getValue() +" - "+status.getLabel();
 				LOG.warn(message);
 				applicativeLogService.log(ApplicativeLogEvent.LOG_WARNING, message, "TinyG");
-			}			
-		}		
+			}
+		}
 //		if(executionQueue != null){
 //			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
-//			
+//
 //			if(currentToken != null ){
 //				List<GCodeLine> errorsCommand = currentToken.getLineByState(ExecutionState.ERROR);
 //				if(CollectionUtils.isNotEmpty(errorsCommand)){
@@ -405,11 +395,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 //			pauseMotion();
 //			// Still confirm that the command was received
 //			this.currentSendingRunnable.confirmCommand();
-//						
-//		}	
+//
+//		}
 	}
-	
-	
+
+
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onMachineValueUpdate(MachineValueUpdateEvent evt){
 		notifyListeners(evt);
@@ -432,11 +422,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		// Let's only change the new values
 		// The new value will be applied directly to TinyG. The changes will be reported in the data model when TinyG sends them back for confirmation.
 		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
-		
+
 		// TODO : perform sending in communicator
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
 			JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
-			if(jsonGroup != null){					
+			if(jsonGroup != null){
 				communicator.send( GkUtils.toBytesList(jsonGroup.toString()) );
 			}
 		}
@@ -493,7 +483,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 		if(TinyGPreferences.getInstance().isHomingEnabledAxisA()){
 			homingCommand += " A0";
-		}		
+		}
 		communicator.send(GkUtils.toBytesList(homingCommand));
 	}
 
@@ -554,7 +544,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public void pauseMotion() throws GkException{
 		communicator.send(GkUtils.toBytesList(TinyG.FEED_HOLD));
 		executionService.pauseQueueExecution();
-		
+
 	}
 
 	public void resumeMotion() throws GkException{
@@ -582,11 +572,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 		communicator.send(lstBytes);
 	}
-	
+
 	public void turnSpindleOn() throws GkException{
 		communicator.send(GkUtils.toBytesList("M3"));
 	}
-	
+
 	public void turnSpindleOff() throws GkException{
 		communicator.send(GkUtils.toBytesList("M5"));
 	}
@@ -595,6 +585,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @return the availableBuffer
 	 * @throws GkException
 	 */
+	@Override
 	public int getAvailableBuffer() throws GkException {
 		return tinygState.getAvailableBuffer();
 	}
@@ -602,6 +593,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param availableBuffer the availableBuffer to set
 	 * @throws GkException exception
 	 */
+	@Override
 	public void setAvailableBuffer(int availableBuffer) throws GkException {
 		tinygState.updateValue(TinyG.TINYG_BUFFER_COUNT, availableBuffer);
 		tinygExecutor.onBufferSpaceAvailableChange(availableBuffer);
@@ -653,7 +645,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
 		String cmd = "G1F800";
-		if(position.getX() != null){			
+		if(position.getX() != null){
 			cmd += "X"+getPositionAsString(position.getX());
 		}
 		if(position.getY() != null){
@@ -773,12 +765,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		Tuple6b mPos = new Tuple6b(tinygState.getWorkPosition());
 		mPos = mPos.add(offsets);
 		String cmd = "{\""+String.valueOf(current) +"\":{";
-		
-		cmd += "\"x\":"+ getPositionAsString(mPos.getX()) +", ";		
+
+		cmd += "\"x\":"+ getPositionAsString(mPos.getX()) +", ";
 		cmd += "\"y\":"+ getPositionAsString(mPos.getY())+", ";
 		cmd += "\"z\":"+ getPositionAsString(mPos.getZ())+"}} ";
 		communicator.send( GkUtils.toBytesList( cmd ) );
-		communicator.updateCoordinateSystem(current);		
+		communicator.updateCoordinateSystem(current);
 	}
 
 	/**
@@ -804,7 +796,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 	/**
 	 * @param monitorService the monitorService to set
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
@@ -816,7 +808,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public Unit<Length> getCurrentUnit(){
 		return tinygState.getCurrentUnit();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMaximalPosition()
 	 */
@@ -825,10 +817,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		Tuple6b max = findWorkVolumeMaximalPosition();
 		if(max == null){
 			 throw new GkTechnicalException("No maximal position currently defined for the travel max position");
-		}	
+		}
 		return max;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMinimalPosition()
 	 */
@@ -840,7 +832,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 		return min;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMaximalPosition()
 	 */
@@ -856,7 +848,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 		return max;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMinimalPosition()
 	 */
@@ -876,10 +868,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()
 	 */
 	@Override
-	public String getFileExtension() {	
+	public String getFileExtension() {
 		return "tinyg.cfg";
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#canExport()
 	 */
@@ -908,7 +900,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public boolean canImport() throws GkException {
 		return canExport();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerConfigurationFileImporter#importFrom(java.io.InputStream)
 	 */
@@ -923,7 +915,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			throw new GkTechnicalException(e);
 		}
 	}
-	
+
 	/**
 	 * @return the eventAdmin
 	 */
@@ -936,7 +928,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public void setEventAdmin(EventAdmin eventAdmin) {
 		this.eventAdmin = eventAdmin;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#killAlarm()
 	 */
@@ -989,10 +981,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IJogService#isJogPrecise()
 	 */
 	@Override
-	public boolean isJogPrecise() throws GkException {		
+	public boolean isJogPrecise() throws GkException {
 		return jogRunnable.isPrecise();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
 	 */
@@ -1006,7 +998,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
 	 */
 	@Override
-	public boolean isJogPreciseForced() throws GkException {		
+	public boolean isJogPreciseForced() throws GkException {
 		return false;
 	}
 }

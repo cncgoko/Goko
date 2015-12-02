@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goko.core.common.measure.SI;
 import org.goko.core.common.measure.SIPrefix;
-import org.goko.core.common.measure.US;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 
@@ -212,9 +211,9 @@ public class GrblConfiguration {
 	}
 
 	public Unit<Length> getReportUnit(){
-		Unit<Length> unit = SIPrefix.MILLI(SI.METRE);
+		Unit<Length> unit = SIPrefix.MILLI(Units.METRE);
 		if(getReportInches().getValue() == true){
-			unit = US.INCH; 
+			unit = Units.INCH;
 		}
 		return unit;
 	}

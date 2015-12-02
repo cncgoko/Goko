@@ -1,6 +1,5 @@
 package org.goko.core.gcode.rs274ngcv3;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -19,27 +18,29 @@ import org.goko.core.math.BoundingTuple6b;
 public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCodeContext, InstructionSet>,
 										  IGCodeExecutionTimeService, IGCodeProviderRepository{
 
-	IGCodeProvider parse(InputStream inputStream) throws GkException;
-	
 	IGCodeProvider parse(String inputString) throws GkException;
-			
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#getInstructions(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
 	InstructionProvider getInstructions(GCodeContext context, IGCodeProvider gcodeProvider) throws GkException;
-	
+
 	GCodeProvider getGCodeProvider(GCodeContext context, InstructionProvider instructionProvider) throws GkException;
-	
+
 	BoundingTuple6b getBounds(GCodeContext context, InstructionProvider instructionProvider) throws GkException;
-	
+
 	IModifier<GCodeProvider> getModifier(Integer id) throws GkException;
 
 	void addModifier(IModifier<GCodeProvider> modifier) throws GkException;
-	
+
 	void updateModifier(IModifier<GCodeProvider> modifier) throws GkException;
-	
+
 	void deleteModifier(IModifier<GCodeProvider> modifier) throws GkException;
-	
+
 	void deleteModifier(Integer idModifier) throws GkException;
-	
+
 	List<IModifier<GCodeProvider>> getModifier(List<Integer> lstId) throws GkException;
-	
+
 	List<IModifier<GCodeProvider>> getModifierByGCodeProvider(Integer idGcodeProvider) throws GkException;
 }
