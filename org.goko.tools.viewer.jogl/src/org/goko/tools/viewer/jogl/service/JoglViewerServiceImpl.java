@@ -30,22 +30,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.tools.viewer.jogl.service.overlay.KeyboardJogOverlay;
 import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
+import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
 
 /**
@@ -54,7 +54,7 @@ import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
  * @author PsyKo
  *
  */
-public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglViewerService, IPropertyChangeListener, IOverlayRenderer{
+public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglViewerService, IPropertyChangeListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JoglViewerServiceImpl.class);
 	/** SERVICE_ID */
@@ -71,8 +71,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private GridRenderer yzGridRenderer;
 	private FourAxisOriginRenderer zeroRenderer;	
 	private KeyboardJogAdatper keyboardJogAdapter;
-	private ToolRenderer toolRenderer;
-	private Font jogWarnFont;
+	private ToolRenderer toolRenderer;	
+	private IFourAxisControllerAdapter controllerAdapter;
  
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -91,8 +91,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);		
 		GokoPreference.getInstance().addPropertyChangeListener(this);
 		
-		jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
-		
 		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 		addRenderer(zeroRenderer);			
 		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);
@@ -107,7 +105,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(xyGridRenderer);
 		addRenderer(xzGridRenderer);
 		addRenderer(yzGridRenderer);
-		addOverlayRenderer(this);
+		
 		LOG.info("Successfully started " + getServiceId());
 	}
 
@@ -119,22 +117,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 
 	}
 
-	public void renderGCode(IGCodeProvider provider) throws GkException {
-//		if(gcodeRenderer != null){
-//			removeRenderer(gcodeRenderer);
-//			executionMonitorService.removeExecutionListener(gcodeRenderer);
-//			gcodeRenderer.destroy();
-//		}
-//		gcodeRenderer = new RotaryAxisAdapter(this.controllerAdapter, new DefaultGCodeRenderer(provider,));
-//		executionMonitorService.addExecutionListener(gcodeRenderer);
-//		bounds = provider.getBounds();
-//		if(boundsRenderer != null){
-//			removeRenderer(boundsRenderer);
-//		}
-//		boundsRenderer = new BoundsRenderer(provider.getBounds());
-//		addRenderer(boundsRenderer);
-//		addRenderer(gcodeRenderer);
-	}
 //
 //	/**<
 //	 * @return the controllerService
@@ -158,12 +140,12 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 * @throws GkException GkException 
 	 */
 	public void setControllerAdapter(IFourAxisControllerAdapter controllerService) throws GkException {
-//		this.controllerAdapter = controllerService;
-//		if(toolRenderer == null){
-//			toolRenderer = new ToolRenderer(getControllerAdapter());
-//			addRenderer(new ToolLinePrintRenderer(getControllerAdapter()));
-//			addRenderer(toolRenderer);
-//		}
+		this.controllerAdapter = controllerService;
+		if(toolRenderer == null){
+			toolRenderer = new ToolRenderer(controllerAdapter);
+			addRenderer(new ToolLinePrintRenderer(controllerAdapter));
+			addRenderer(toolRenderer);
+		}
 	}
 	
 	/** (inheritDoc)
@@ -284,6 +266,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 			}
 		}
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.service.IJoglViewerService#zoomToFit()
 	 */
@@ -296,52 +279,14 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 * @see org.goko.tools.viewer.jogl.service.JoglSceneManager#onCanvasCreated(org.goko.tools.viewer.jogl.GokoJoglCanvas)
 	 */
 	@Override
-	protected void onCanvasCreated(GokoJoglCanvas canvas) {
+	protected void onCanvasCreated(GokoJoglCanvas canvas) throws GkException {
 		if(jogService != null){
 			this.keyboardJogAdapter = new KeyboardJogAdatper(getCanvas(), jogService);
-			canvas.addKeyListener( keyboardJogAdapter );			
-		}
+			canvas.addKeyListener( keyboardJogAdapter );
+			addOverlayRenderer(new KeyboardJogOverlay(canvas));
+		}		
 	}
 	
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer#drawOverlayData(java.awt.Graphics2D)
-	 */
-	@Override
-	public void drawOverlayData(Graphics2D g2d) throws GkException {
-		if(getCanvas().isKeyboardJogEnabled()){
-			// Draw a big red warning saying jog is enabled
-			FontRenderContext 	frc = g2d.getFontRenderContext();
-			String warn = "Keyboard jog enabled";
-			GlyphVector gv =		 jogWarnFont.createGlyphVector(frc, warn);
-		    Rectangle 	bounds = gv.getPixelBounds(frc, 0, 0);
-		    int x = (getWidth() - bounds.width) / 2;
-		    int y = 5 + bounds.height;
-		    Rectangle2D bg = new Rectangle2D.Double(x-5,2, bounds.width + 15, bounds.height + 10);
-		    g2d.setFont(jogWarnFont);
-		    g2d.setColor(Color.RED);//new Color(0.9f,0,0,0.5f));
-		    g2d.fill(bg);
-		    g2d.setColor(Color.WHITE);
-		    g2d.drawString(warn ,x, y);
-		}
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer#isOverlayEnabled()
-	 */
-	@Override
-	public boolean isOverlayEnabled() {		
-		return true;
-	}
-//	/** (inheritDoc)
-//	 * @see org.goko.tools.viewer.jogl.service.IJoglViewerService#setCoordinateSystemEnabled(org.goko.core.gcode.bean.commands.EnumCoordinateSystem, boolean)
-//	 */
-//	@Override
-//	public void setCoordinateSystemEnabled(ICoordinateSystem cs, boolean enabled) {
-//		if(coordinateSystemRenderer != null){
-//			coordinateSystemRenderer.setCoordinateSystemEnabled(cs, enabled);
-//		}
-//	}
-
 	private void updateGridRenderer(GridRenderer gridRenderer) throws GkException{		
 		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
 		gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
@@ -367,16 +312,5 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	public void setWorkVolumeProvider(IWorkVolumeProvider workVolumeProvider) {
 		this.workVolumeProvider = workVolumeProvider;
-	}
-	// FIXME : REMOVE this
-	@Override
-	public Integer getId() {
-		return 0;
-	}
-
-	@Override
-	public void setId(Integer id) {
-				
-	}
-	
+	}	
 }

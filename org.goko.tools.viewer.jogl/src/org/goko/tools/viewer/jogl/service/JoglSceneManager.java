@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.utils.CacheById;
+import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
@@ -59,6 +60,7 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.TopCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.tools.viewer.jogl.service.overlay.CameraNameOverlay;
 import org.goko.tools.viewer.jogl.service.utils.CoreJoglRendererAlphaComparator;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
@@ -80,9 +82,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private int y;
 	private int width;	
 	private int height;
-	private int frame;
-	private long lastFrameReset;
-	private int fps;
+		
 	/** Current camera */
 	private AbstractCamera camera;
 	/** The list of supported camera */
@@ -107,8 +107,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		getRenderers();
 		initLayers();		
 		this.renderersToRemove 	= new ArrayList<ICoreJoglRenderer>();
-		this.overlayRenderers = new CacheById<IOverlayRenderer>();
-		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
+		this.overlayRenderers = new CacheById<IOverlayRenderer>(new SequentialIdGenerator());
+		JoglViewerPreference.getInstance().addPropertyChangeListener(this);		
 	}
 
 	private void initLayers() {
@@ -139,13 +139,14 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		addCamera(new LeftCamera(canvas));
 		addCamera(new FrontCamera(canvas));
 		setActiveCamera(PerspectiveCamera.ID);
-
-		setOverlayFont(new Font("SansSerif", Font.PLAIN, 12));
+		
+		addOverlayRenderer(new CameraNameOverlay(this));
+		
 		onCanvasCreated(canvas);		
 		return canvas;
 	}
 	
-	protected abstract void onCanvasCreated(GokoJoglCanvas canvas);
+	protected abstract void onCanvasCreated(GokoJoglCanvas canvas) throws GkException;
 	
 	/**
 	 * Initialization of the lights
@@ -361,44 +362,17 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		camera.updatePosition();
 	}
 
-	private void drawOverlay() {
-		this.frame += 1;
-		overlay.beginRendering();
+	private void drawOverlay() {		
+		overlay.beginRendering();		
 		Graphics2D g2d = overlay.createGraphics();
 		try{
-			if(getActiveCamera() != null){
-				FontRenderContext 	frc = g2d.getFontRenderContext();
-				String 				cameraString = getActiveCamera().getLabel();
-				GlyphVector 		gv = getOverlayFont().createGlyphVector(frc, cameraString);
-			    Rectangle 			bounds = gv.getPixelBounds(frc, 0, 0);
-			    int x = 5;
-			    int y = 5 + bounds.height;
-			    g2d.setFont(getOverlayFont());
-			    Color overlayColor = new Color(0.8f,0.8f,0.8f);
-			    Color transparentColor = new Color(0,0,0,0);
-			    g2d.setBackground(transparentColor);
-			    g2d.setColor(overlayColor);
-			    g2d.clearRect(0, 0, getWidth(), height);
-			    if(isEnabled()){
-			    	g2d.drawString(cameraString,x,y);
-			    }else{
-			    	g2d.drawString("Disabled",x,y);
-			    }
-			    if(System.currentTimeMillis() - lastFrameReset >= 500){
-			    	this.lastFrameReset = System.currentTimeMillis();
-			    	this.fps = this.frame;
-			    	this.frame = 0;
-			    }
-			    g2d.setColor(new Color(0.55f,0.45f,0.28f));
-			    g2d.drawString(String.valueOf(this.fps*2)+"fps",x,y+bounds.height+4);
-			    drawOverlayRenderer(g2d);
-				overlay.markDirty(0, 0, getWidth(), height);
-				overlay.drawAll();
-
-			}
+			drawOverlayRenderer(g2d);
 		}catch(GkException e){
 			LOG.error(e);
 		}
+		
+		overlay.markDirty(0, 0, getWidth(), height);
+		overlay.drawAll();
 		g2d.dispose();
 		overlay.endRendering();
 	}
@@ -418,9 +392,10 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	protected void drawOverlayRenderer(Graphics2D g2d) throws GkException{
 		List<IOverlayRenderer> lstRenderers = overlayRenderers.get();
+		Rectangle bounds = new Rectangle(x, y, width, height);
 		for (IOverlayRenderer overlayRenderer : lstRenderers) {
 			if(overlayRenderer.isOverlayEnabled()){
-				overlayRenderer.drawOverlayData(g2d);
+				overlayRenderer.drawOverlayData(g2d, bounds);
 			}
 		}
 	}
@@ -481,14 +456,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	protected GokoJoglCanvas getCanvas() {
 		return canvas;
-	}
-
-	public Font getOverlayFont() {
-		return overlayFont;
-	}
-
-	public void setOverlayFont(Font overlayFont) {
-		this.overlayFont = overlayFont;
 	}
 
 	public int getWidth() {

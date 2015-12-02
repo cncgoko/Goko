@@ -5,4 +5,6 @@
       <provide interface="org.goko.tools.viewer.jogl.service.IJoglViewerService"/>
    </service>
    <reference bind="setJogService" cardinality="0..1" interface="org.goko.core.controller.IJogService" name="IJogService" policy="dynamic"/>
+   <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
+   <reference bind="IThreeAxisControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IThreeAxisControllerAdapter" name="IThreeAxisControllerAdapter" policy="static"/>
 </scr:component>

@@ -60,7 +60,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 			return this;
 		}
 		UnitConverter converter = getUnit().getConverterTo(unit);		
-		return NumberQuantity.of(converter.convert(doubleValue(unit)), unit);
+		return NumberQuantity.of(converter.convert(internalDoubleValue()), unit);
 	}
 	
 	/**
@@ -70,9 +70,6 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		return unit;
 	}
 
-//	public abstract T add(Quantity<Q> q);
-//	
-//	public abstract T add(T q);
 	/**
 	 * @param unit the unit to set
 	 */
