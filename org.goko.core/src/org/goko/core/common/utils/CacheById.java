@@ -11,7 +11,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 
 /**
  * Implementation of a generic cache for IIdBean objects
- * 
+ *
  * @author Psyko
  *
  * @param <T> the type of objects to store
@@ -21,14 +21,14 @@ public class CacheById<T extends IIdBean> {
 	private Map<Integer, T> cacheById;
 	/** The id generator (may be <code>null</code>)*/
 	private IIdGenerator idGenerator;
-	
+
 	/**
 	 * Constructor
 	 */
 	public CacheById() {
 		this(null);
 	}
-	
+
 	/**
 	 * Constructor
 	 * @param idGenerator the internal id generator to use
@@ -37,7 +37,7 @@ public class CacheById<T extends IIdBean> {
 		this.cacheById = new HashMap<Integer, T>();
 		this.idGenerator = idGenerator;
 	}
-	
+
 	/**
 	 * Returns the full content of this cache. Order is not guaranted
 	 * @return a list of element T
@@ -46,7 +46,7 @@ public class CacheById<T extends IIdBean> {
 	public List<T> get() throws GkException{
 		return new ArrayList<T>(cacheById.values());
 	}
-	
+
 	/**
 	 * Return the element with the given id in this cache if it exists
 	 * @param id the id of the element to retrieve
@@ -60,11 +60,11 @@ public class CacheById<T extends IIdBean> {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Return the list of element for the given list of id
 	 * @param lstId the list of id of the element to retrieve
-	 * @return a list of elements 
+	 * @return a list of elements
 	 * @throws GkException GkException
 	 */
 	public List<T> get(List<Integer> lstId) throws GkException{
@@ -76,7 +76,7 @@ public class CacheById<T extends IIdBean> {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Return the element with the given id in this cache if it exists, or <code>null</code> otherwise
 	 * @param id the id of the element to retrieve
@@ -96,14 +96,14 @@ public class CacheById<T extends IIdBean> {
 	public boolean exist(Integer id) throws GkException{
 		return find(id) != null;
 	}
-	
+
 	/**
 	 * Add the given element to this cache
-	 * @param element the element to add 
+	 * @param element the element to add
 	 * @throws GkException GkException
 	 */
-	public void add(T element) throws GkException{	
-		if(idGenerator != null){
+	public void add(T element) throws GkException{
+		if(idGenerator != null && element.getId() == null){
 			element.setId(idGenerator.getNextValue());
 		}
 		if(exist(element.getId())){
@@ -111,18 +111,24 @@ public class CacheById<T extends IIdBean> {
 		}
 		cacheById.put(element.getId(), element);
 	}
-	
+
+	/**
+	 * Removes all the element from this cache
+	 */
+	public void removeAll(){
+		cacheById.clear();
+	}
 	/**
 	 * Add the given list of element to this cache
-	 * @param lstElement the list of elements 
+	 * @param lstElement the list of elements
 	 * @throws GkException GkException
 	 */
-	public void add(List<T> lstElement) throws GkException{	
+	public void add(List<T> lstElement) throws GkException{
 		for (T element : lstElement) {
 			add(element);
 		}
 	}
-	
+
 	/**
 	 * Removes the given element from this cache
 	 * @param element the id of the element to remove
@@ -130,7 +136,7 @@ public class CacheById<T extends IIdBean> {
 	public void remove(Integer id){
 		cacheById.remove(id);
 	}
-	
+
 	/**
 	 * Removes the given element from this cache
 	 * @param element the element to remove
@@ -138,9 +144,9 @@ public class CacheById<T extends IIdBean> {
 	public void remove(T element){
 		remove(element.getId());
 	}
-	
+
 	/**
-	 * Returns the number of element in this cache 
+	 * Returns the number of element in this cache
 	 * @return the number of element
 	 */
 	public int size(){

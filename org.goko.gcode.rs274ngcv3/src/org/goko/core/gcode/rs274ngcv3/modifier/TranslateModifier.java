@@ -9,6 +9,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -21,10 +22,10 @@ import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 
 public class TranslateModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
-	private BigDecimalQuantity<Length> translationX;	
-	private BigDecimalQuantity<Length> translationY;	
-	private BigDecimalQuantity<Length> translationZ;	
-	
+	private BigDecimalQuantity<Length> translationX;
+	private BigDecimalQuantity<Length> translationY;
+	private BigDecimalQuantity<Length> translationZ;
+
 	/**
 	 * Constructor
 	 * @param idGCodeProvider target provider id
@@ -40,7 +41,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#apply(org.goko.core.gcode.rs274ngcv3.element.GCodeProvider, org.goko.core.gcode.rs274ngcv3.element.GCodeProvider)
 	 */
 	@Override
-	protected void applyModifier(GCodeProvider source, GCodeProvider target) throws GkException {
+	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		GCodeContext localContext = new GCodeContext();
 		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
@@ -49,7 +50,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 			AbstractInstruction instr = iterator.next();
 			if(instr.getType() == InstructionType.STRAIGHT_FEED
 				|| instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
-				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instr;				
+				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instr;
 				straightInstruction.setX(straightInstruction.getX().add(translationX));
 				straightInstruction.setY(straightInstruction.getY().add(translationY));
 				straightInstruction.setZ(straightInstruction.getZ().add(translationZ));
@@ -67,7 +68,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	 * Translation of an arc feed instruction
 	 * @param instr the instruction
 	 * @param preContext the context in which the instruction is evaluated
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	private void translateArcFeed(ArcFeedInstruction instr, GCodeContext preContext) throws GkException {
 		switch (preContext.getPlane()) {
@@ -76,7 +77,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 						instr.setFirstAxis( instr.getFirstAxis().add(translationX));
 						instr.setSecondAxis( instr.getSecondAxis().add(translationY));
 						instr.setAxisEndPoint( instr.getAxisEndPoint().add(translationZ));
-			break;		
+			break;
 		case XZ_PLANE:	instr.setFirstEnd( instr.getFirstEnd().add(translationZ));
 						instr.setSecondEnd( instr.getSecondEnd().add(translationX));
 						instr.setFirstAxis( instr.getFirstAxis().add(translationZ));
@@ -89,7 +90,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 						instr.setSecondAxis( instr.getSecondAxis().add(translationZ));
 						instr.setAxisEndPoint( instr.getAxisEndPoint().add(translationX));
 			break;
-		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+preContext.getPlane()+"]");			
+		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+preContext.getPlane()+"]");
 		}
 	}
 
@@ -105,6 +106,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	 */
 	public void setTranslationX(BigDecimalQuantity<Length> translationX) {
 		this.translationX = translationX;
+		updateModificationDate();
 	}
 
 	/**
@@ -119,6 +121,7 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	 */
 	public void setTranslationY(BigDecimalQuantity<Length> translationY) {
 		this.translationY = translationY;
+		updateModificationDate();
 	}
 
 	/**
@@ -133,7 +136,8 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	 */
 	public void setTranslationZ(BigDecimalQuantity<Length> translationZ) {
 		this.translationZ = translationZ;
+		updateModificationDate();
 	}
 
-	
+
 }

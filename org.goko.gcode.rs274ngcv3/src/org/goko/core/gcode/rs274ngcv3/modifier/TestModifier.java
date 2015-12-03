@@ -4,6 +4,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -15,7 +16,7 @@ import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 
 public class TestModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
-		
+
 	/**
 	 * Constructor
 	 * @param idGCodeProvider target provider id
@@ -28,7 +29,7 @@ public class TestModifier extends AbstractModifier<GCodeProvider> implements IMo
 	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#apply(org.goko.core.gcode.rs274ngcv3.element.GCodeProvider, org.goko.core.gcode.rs274ngcv3.element.GCodeProvider)
 	 */
 	@Override
-	protected void applyModifier(GCodeProvider source, GCodeProvider target) throws GkException {
+	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		GCodeContext localContext = new GCodeContext();
 		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);

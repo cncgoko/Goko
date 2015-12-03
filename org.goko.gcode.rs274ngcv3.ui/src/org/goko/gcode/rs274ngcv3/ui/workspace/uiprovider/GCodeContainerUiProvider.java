@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider;
 
@@ -39,7 +39,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDis
  */
 public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	/** LOG */
-	private static final GkLog LOG = GkLog.getLogger(GCodeContainerUiProvider.class);	
+	private static final GkLog LOG = GkLog.getLogger(GCodeContainerUiProvider.class);
 	/** GCode service */
 	private IRS274NGCService rs274Service;
 	private IRS274WorkspaceService rs274WorkspaceService;
@@ -47,7 +47,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	private IStyledLabelProvider labelProvider;
 
 	/**
-	 * @param rs274Service 
+	 * @param rs274Service
 	 * @param type
 	 */
 	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService, IExecutionService<?, ?> executionService) {
@@ -69,20 +69,20 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		return (content instanceof IGCodeProvider)
 			|| (content instanceof IModifier);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#getStyledText(java.lang.Object)
 	 */
 	@Override
-	public StyledString getStyledText(Object element) {		
+	public StyledString getStyledText(Object element) {
 		return labelProvider.getStyledText(element);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#getImage(java.lang.Object)
 	 */
 	@Override
-	public Image getImage(Object element) {		
+	public Image getImage(Object element) {
 		return labelProvider.getImage(element);
 	}
 
@@ -104,11 +104,12 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public boolean hasChildren(Object content) throws GkException {
 		if(content instanceof GCodeProvider){
 			return CollectionUtils.isNotEmpty(rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId()));
-		}else if(content instanceof ProjectContainer){			
-			return CollectionUtils.isNotEmpty(rs274Service.getGCodeProvider());			
+		}else if(content instanceof ProjectContainer){
+			return CollectionUtils.isNotEmpty(rs274Service.getGCodeProvider());
 		}
 		return false;
 	}
+
 
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#getChildren(java.lang.Object)
@@ -117,20 +118,20 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public Object[] getChildren(Object content) throws GkException {
 		if(content instanceof GCodeProvider){
 			return rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId()).toArray();
-		}else if(content instanceof ProjectContainer){			
-			return rs274Service.getGCodeProvider().toArray();			
+		}else if(content instanceof ProjectContainer){
+			return rs274Service.getGCodeProvider().toArray();
 		}
 		return null;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#getParent(java.lang.Object)
 	 */
 	@Override
-	public Object getParent(Object content) throws GkException {		
+	public Object getParent(Object content) throws GkException {
 		return null;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#providesMenuFor(java.lang.Object)
 	 */
@@ -144,7 +145,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		return (content instanceof GCodeProvider)
 			|| (content instanceof IModifier);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#createMenuFor(org.eclipse.jface.action.IMenuManager, java.lang.Object)
 	 */
@@ -152,7 +153,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
-		
+
 		if(content instanceof ProjectContainer && StringUtils.equals(getType(), ((ProjectContainer) content).getType())){
 			createMenuForGCodeRepository(contextMenu);
 		}else if(content instanceof GCodeProvider){
@@ -161,7 +162,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 			createMenuForGCodeModifier(contextMenu, (IModifier<?>)content);
 		}
 	}
-	
+
 	/**
 	 * Creates the menu for the GCode repository node of the tree
 	 * @param contextMenu the target context menu
@@ -177,7 +178,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	private void createMenuForGCodeModifier(IMenuManager contextMenu, IModifier<?> modifier) {
 		contextMenu.add(new EnableDisableAction(rs274Service, modifier.getId()));
 		contextMenu.add(new Separator());
-		contextMenu.add(new DeleteModifierAction(rs274Service, modifier.getId()));		
+		contextMenu.add(new DeleteModifierAction(rs274Service, modifier.getId()));
 	}
 
 	/**
@@ -187,15 +188,15 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {
 		// Submenu for a specific user
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
-        contextMenu.add(subMenu); 
-       
+        contextMenu.add(subMenu);
+
         contextMenu.add(new Separator());
         contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
         contextMenu.add(new Separator());
-        contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));		
+        contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));
 	}
-	
-	
+
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#providesConfigurationPanelFor(java.lang.Object)
 	 */
@@ -203,10 +204,10 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public boolean providesConfigurationPanelFor(ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
-		
+
 		if(content instanceof IModifier<?>){
 			IModifier<?> iModifier = (IModifier<?>) content;
-			
+
 			List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
 			if(CollectionUtils.isNotEmpty(lstBuilders)){
 				for (IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
@@ -218,7 +219,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		}
 		return false;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#createConfigurationPanelFor(org.eclipse.swt.widgets.Composite, java.lang.Object)
 	 */
@@ -226,10 +227,10 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public void createConfigurationPanelFor(Composite parent, ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
-		
+
 		if(content instanceof IModifier<?>){
 			IModifier<?> iModifier = (IModifier<?>) content;
-			
+
 			List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
 			if(CollectionUtils.isNotEmpty(lstBuilders)){
 				for (IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
@@ -241,5 +242,5 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 			}
 		}
 	}
-	
+
 }

@@ -1,6 +1,7 @@
 package org.goko.core.gcode.rs274ngcv3.element;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
@@ -16,21 +17,24 @@ public class GCodeProvider implements IGCodeProvider {
 	/** The code of this provider*/
 	private String code;
 	/** The lines in this provider */
-	private CacheById<GCodeLine> cacheLines;
+	protected CacheById<GCodeLine> cacheLines;
 	/** The id of the line in the order of the file */
-	private List<Integer> linesSequence;
-	
+	protected List<Integer> linesSequence;
+	/** The latest modification date */
+	private Date modificationDate;
+
 	/** Constructor */
 	public GCodeProvider() {
 		this.cacheLines 	= new CacheById<GCodeLine>(new SequentialIdGenerator());
 		this.linesSequence 	= new ArrayList<Integer>();
+		this.modificationDate = new Date();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IGCodeProvider#getLines()
 	 */
 	@Override
-	public List<GCodeLine> getLines() throws GkException {		
+	public List<GCodeLine> getLines() throws GkException {
 		return cacheLines.get(linesSequence);
 	}
 
@@ -38,24 +42,25 @@ public class GCodeProvider implements IGCodeProvider {
 	 * @see org.goko.core.gcode.element.IGCodeProvider#getLinesCount()
 	 */
 	@Override
-	public int getLinesCount() throws GkException {		
+	public int getLinesCount() throws GkException {
 		return cacheLines.size();
 	}
-	
+
 	/**
 	 * Add the given line at the end of this provider
 	 * @param line the line to add
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
-	public void addLine(GCodeLine line) throws GkException{		
+	public void addLine(GCodeLine line) throws GkException{
 		line.setLineNumber(cacheLines.size());
-		cacheLines.add(line);		
+		cacheLines.add(line);
 		linesSequence.add(line.getId());
 	}
 
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Integer getId() {
 		return id;
 	}
@@ -63,6 +68,7 @@ public class GCodeProvider implements IGCodeProvider {
 	/**
 	 * @param id the id to set
 	 */
+	@Override
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -79,29 +85,47 @@ public class GCodeProvider implements IGCodeProvider {
 	 * @see org.goko.core.gcode.element.IGCodeProvider#getLineAtIndex(java.lang.Integer)
 	 */
 	@Override
-	public GCodeLine getLineAtIndex(Integer indexLine) throws GkException {		
+	public GCodeLine getLineAtIndex(Integer indexLine) throws GkException {
 		return cacheLines.get(getLinesSequence().get(indexLine));
 	}
 	/**
 	 * @return the linesSequence
 	 */
-	public List<Integer> getLinesSequence() {
+	private List<Integer> getLinesSequence() {
 		return linesSequence;
 	}
 
-	/**
-	 * @param linesSequence the linesSequence to set
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#getCode()
 	 */
-	public void setLinesSequence(List<Integer> linesSequence) {
-		this.linesSequence = linesSequence;
-	}
-
+	@Override
 	public String getCode() {
 		return code;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#setCode(java.lang.String)
+	 */
+	@Override
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
+	/**
+	 * @return the modificationDate
+	 */
+	public Date getModificationDate() {
+		return modificationDate;
+	}
+
+	/**
+	 * @param modificationDate the modificationDate to set
+	 */
+	public void setModificationDate(Date modificationDate) {
+		this.modificationDate = modificationDate;
+	}
+
+	public void update() throws GkException{
+		// Nothing to do here
+	}
 }

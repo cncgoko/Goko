@@ -26,10 +26,13 @@ import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
+import org.goko.core.gcode.rs274ngcv3.element.IStackableGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderModifier;
+import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderRoot;
 import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
@@ -54,7 +57,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
 	/** The cache of providers */
-	private CacheById<IGCodeProvider> cacheProviders;
+	private CacheById<IStackableGCodeProvider> cacheProviders;
 	/** The cache of modifiers */
 	private CacheById<IModifier<GCodeProvider>> cacheModifiers;
 	/** The workspace service */
@@ -63,7 +66,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
-		this.cacheProviders = new CacheById<IGCodeProvider>(new SequentialIdGenerator());
+		this.cacheProviders = new CacheById<IStackableGCodeProvider>(new SequentialIdGenerator());
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
 	}
 
@@ -413,7 +416,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
-		return applyModifiers((GCodeProvider) cacheProviders.get(id));
+		return cacheProviders.get(id);
 	}
 
 	/** (inheritDoc)
@@ -421,7 +424,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public List<IGCodeProvider> getGCodeProvider() throws GkException {
-		return cacheProviders.get();
+		return new ArrayList<IGCodeProvider>(cacheProviders.get());
 	}
 
 	/** (inheritDoc)
@@ -429,7 +432,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
-		cacheProviders.add(provider);
+		cacheProviders.add(new StackableGCodeProviderRoot(provider));
 		workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(provider));
 	}
 	/** (inheritDoc)
@@ -467,6 +470,13 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		List<IModifier<GCodeProvider>> lstModifier = getModifierByGCodeProvider(modifier.getIdGCodeProvider());
 		modifier.setOrder(lstModifier.size());
 		this.cacheModifiers.add(modifier);
+
+		IStackableGCodeProvider baseProvider = this.cacheProviders.get(modifier.getIdGCodeProvider());
+		StackableGCodeProviderModifier wrappedProvider = new StackableGCodeProviderModifier(baseProvider, modifier);
+		wrappedProvider.update();
+		this.cacheProviders.remove(baseProvider.getId());
+		this.cacheProviders.add(wrappedProvider);
+
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(modifier));
 	}
 
@@ -495,6 +505,24 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	public void deleteModifier(Integer idModifier) throws GkException {
 		IModifier<GCodeProvider> modifier = this.cacheModifiers.get(idModifier);
 		this.cacheModifiers.remove(idModifier);
+
+		// Let's find the stacked provider with this modifier
+		IStackableGCodeProvider gcode = cacheProviders.get(modifier.getIdGCodeProvider());
+		IStackableGCodeProvider next = null;
+		IStackableGCodeProvider previous = null;
+
+		while(gcode != null && !ObjectUtils.equals(gcode.getIdModifier(), modifier.getId())){
+			next = gcode;
+			gcode = gcode.getParent();
+		}
+
+		// Original --...-> previous -->  gcode  --> next
+		if(gcode != null){
+			previous = gcode.getParent();
+			next.setParent(previous);
+			gcode.setParent(null);
+		}
+
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(modifier));
 	}
 
@@ -530,23 +558,23 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		return lstProviderModifiers;
 	}
 
-	private IGCodeProvider applyModifiers(GCodeProvider provider) throws GkException {
-		List<IModifier<GCodeProvider>> lstModifiers = getModifierByGCodeProvider(provider.getId());
-		GCodeProvider source = provider;
-		GCodeProvider target = null;
-		if(CollectionUtils.isNotEmpty(lstModifiers)){
-			for (IModifier<GCodeProvider> modifier : lstModifiers) {
-				if(modifier.isEnabled()){
-					target = new GCodeProvider();
-					target.setId(source.getId());
-					target.setCode(source.getCode());
-					modifier.apply(source, target);
-					source = target;
-				}
-			}
-		}
-		return source;
-	}
+//	private IGCodeProvider applyModifiers(GCodeProvider provider) throws GkException {
+//		List<IModifier<GCodeProvider>> lstModifiers = getModifierByGCodeProvider(provider.getId());
+//		GCodeProvider source = provider;
+//		GCodeProvider target = null;
+//		if(CollectionUtils.isNotEmpty(lstModifiers)){
+//			for (IModifier<GCodeProvider> modifier : lstModifiers) {
+//				if(modifier.isEnabled()){
+//					target = new GCodeProvider();
+//					target.setId(source.getId());
+//					target.setCode(source.getCode());
+//					modifier.apply(source, target);
+//					source = target;
+//				}
+//			}
+//		}
+//		return source;
+//	}
 
 	protected void performDeleteByIdGCodeProvider(Integer id) throws GkException{
 		List<IModifier<GCodeProvider>> lstModifiers = getModifierByGCodeProvider(id);
