@@ -25,7 +25,7 @@ public class ModifierSubMenu extends MenuManager {
 		this.rs274Service = rs274Service;
 		this.rs274WorkspaceService = rs274WorkspaceService;
 		this.idGCodeProvider = idGCodeProvider;
-		buildMenu();		
+		buildMenu();
 	}
 
 	/**
@@ -34,14 +34,15 @@ public class ModifierSubMenu extends MenuManager {
 	 */
 	private void buildMenu() throws GkException {
 		List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
-		
+
 		Collections.sort(lstBuilders, new ModifierUiProviderSorter(EnumModifierUiProviderSort.ALPHABETICAL));
-		
-        for (final IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
+
+		for (final IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
 			// Actions for the sub menu
-			add(new CreateModifierAction(rs274Service, iModifierUiProvider, idGCodeProvider));
+        	CreateModifierAction action = new CreateModifierAction(rs274Service, iModifierUiProvider, idGCodeProvider);
+			add(action);
 		}
 	}
-	
-	
+
+
 }

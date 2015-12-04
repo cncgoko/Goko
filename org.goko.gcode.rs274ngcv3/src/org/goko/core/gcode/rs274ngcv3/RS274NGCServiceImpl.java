@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -486,7 +487,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public void updateModifier(IModifier<GCodeProvider> modifier) throws GkException {
 		this.cacheModifiers.remove(modifier.getId());
+		modifier.setModificationDate(new Date());
 		this.cacheModifiers.add(modifier);
+		this.cacheProviders.get(modifier.getIdGCodeProvider()).update();
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getUpdateEvent(modifier));
 	}
 
@@ -519,7 +522,12 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		// Original --...-> previous -->  gcode  --> next
 		if(gcode != null){
 			previous = gcode.getParent();
-			next.setParent(previous);
+			if(next != null){
+				next.setParent(previous);
+			}else{
+				cacheProviders.remove(modifier.getIdGCodeProvider());
+				cacheProviders.add(previous);
+			}
 			gcode.setParent(null);
 		}
 

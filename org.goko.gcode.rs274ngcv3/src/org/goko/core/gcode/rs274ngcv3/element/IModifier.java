@@ -23,5 +23,7 @@ public interface IModifier<T extends GCodeProvider> extends IIdBean {
 	void setOrder(int order);
 
 	Date getModificationDate();
+
+	void setModificationDate(Date date);
 }
 

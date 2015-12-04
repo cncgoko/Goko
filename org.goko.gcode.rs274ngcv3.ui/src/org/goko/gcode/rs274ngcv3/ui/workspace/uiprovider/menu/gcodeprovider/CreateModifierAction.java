@@ -17,7 +17,7 @@ public class CreateModifierAction extends Action{
 	private Integer idGCodeProvider;
 	/** IRS274NGCService */
 	private IRS274NGCService rs274Service;
-	
+
 	/**
 	 * Constructor
 	 * @param rs274WorkspaceService the {@link RS274WorkspaceService}
@@ -29,7 +29,7 @@ public class CreateModifierAction extends Action{
 		this.idGCodeProvider = idGCodeProvider;
 		this.rs274Service = rs274Service;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.action.Action#run()
 	 */
@@ -41,5 +41,5 @@ public class CreateModifierAction extends Action{
 			LOG.error(e);
 		}
 	}
-	
+
 }

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.core.workspace.service;
 
@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
@@ -31,12 +32,12 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	private EventAdmin eventAdmin;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
-	
+
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public WorkspaceUIService() {
-		
+
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -50,9 +51,9 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {		
+	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
-		this.mapProjectContainerUiProvider = new HashMap<String, ProjectContainerUiProvider>();		
+		this.mapProjectContainerUiProvider = new HashMap<String, ProjectContainerUiProvider>();
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -71,7 +72,7 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	public ProjectContainerUiProvider findProjectContainerUiProvider(String type)  throws GkTechnicalException{
 		return mapProjectContainerUiProvider.get(type);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceUIService#getProjectContainerUiProvider(java.lang.String)
 	 */
@@ -83,7 +84,7 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 		}
 		return result;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceUIService#existProjectContainerUiProvider(java.lang.String)
 	 */
@@ -91,23 +92,23 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	public boolean existProjectContainerUiProvider(String type)  throws GkTechnicalException{
 		return mapProjectContainerUiProvider.containsKey(type);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceUIService#addProjectContainerUiProvider(org.goko.core.workspace.bean.ProjectContainerUiProvider)
 	 */
 	@Override
-	public void addProjectContainerUiProvider(ProjectContainerUiProvider provider)  throws GkTechnicalException{	
+	public void addProjectContainerUiProvider(ProjectContainerUiProvider provider)  throws GkTechnicalException{
 		mapProjectContainerUiProvider.put(provider.getType(), provider);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceUIService#getProjectContainerUiProvider()
 	 */
 	@Override
-	public List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException {		
+	public List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException {
 		return new ArrayList<ProjectContainerUiProvider>(mapProjectContainerUiProvider.values());
 	}
-	
+
 	public void refreshWorkspaceUi(){
 		eventAdmin.postEvent(new Event(WorkspaceUIEvent.TOPIC_WORKSPACE_REFRESH, new HashMap<String, String>()));
 	}
@@ -123,7 +124,7 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	public void setEventAdmin(EventAdmin eventAdmin) {
 		this.eventAdmin = eventAdmin;
 	}
-	
+
 	/**
 	 * @param eventAdmin the eventAdmin to set
 	 */
@@ -138,7 +139,7 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	}
 	/**
 	 * @param workspaceService the workspaceService to set
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	public void setWorkspaceService(IWorkspaceService workspaceService) throws GkException {
 		this.workspaceService = workspaceService;
@@ -146,18 +147,18 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 			this.workspaceService.addWorkspaceListener(this);
 		}
 	}
-	
+
 	/**
 	 * @param workspaceService the workspaceService to remove
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
-	public void unsetWorkspaceService(IWorkspaceService workspaceService) throws GkException {		
+	public void unsetWorkspaceService(IWorkspaceService workspaceService) throws GkException {
 		if(this.workspaceService != null){
 			this.workspaceService.removeWorkspaceListener(this);
 		}
 		this.workspaceService = null;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceListener#onWorkspaceEvent(org.goko.core.workspace.service.IWorkspaceEvent)
 	 */
@@ -165,5 +166,15 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
 		refreshWorkspaceUi();
 	}
-	
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceUIService#select(java.lang.Object)
+	 */
+	@Override
+	public void select(Object obj) throws GkException {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(IEventBroker.DATA, obj);
+		eventAdmin.postEvent(new Event(WorkspaceUIEvent.TOPIC_WORKSPACE_SELECT, data));
+	}
+
 }

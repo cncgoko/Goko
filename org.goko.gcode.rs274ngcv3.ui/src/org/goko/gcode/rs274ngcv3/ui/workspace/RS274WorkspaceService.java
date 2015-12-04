@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace;
 
@@ -13,8 +13,12 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.service.IWorkspaceEvent;
+import org.goko.core.workspace.service.IWorkspaceListener;
+import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
@@ -23,7 +27,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
  * @author PsyKo
  * @date 31 oct. 2015
  */
-public class RS274WorkspaceService implements IRS274WorkspaceService{
+public class RS274WorkspaceService implements IRS274WorkspaceService, IWorkspaceListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274WorkspaceService.class);
 	/** Service ID */
@@ -31,6 +35,8 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	/** Modifier UI provider extension point */
 	private static final String MODIFIER_UI_PROVIDER = "org.goko.gcode.rs274ngcv3.ui.modifier.factory";
 	private static final String MODIFIER_UI_BUILDER = "modifierUiBuilder";
+	/** Workspace service */
+	private IWorkspaceService workspaceService;
 	/** Workspace UI service */
 	private IWorkspaceUIService workspaceUIService;
 	/** Workspace UI service */
@@ -39,7 +45,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	private IRS274NGCService gcodeService;
 	/** Extension registry */
 	private IExtensionRegistry extensionRegistry;
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -52,7 +58,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {		
+	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
 		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
 		LOG.info("Successfully started "+getServiceId());
@@ -93,14 +99,14 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	public void setGcodeService(IRS274NGCService gcodeService) {
 		this.gcodeService = gcodeService;
 	}
-	
+
 	/**
 	 * @param registry the IExtensionRegistry to set
 	 */
 	public void setExtensionRegistry(IExtensionRegistry registry){
 		this.extensionRegistry = registry;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService#getModifierBuilder()
 	 */
@@ -108,7 +114,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	@Override
 	public List<IModifierUiProvider<GCodeProvider, ?>> getModifierBuilder() throws GkException{
 		List<IModifierUiProvider<GCodeProvider, ?>> result = new ArrayList<IModifierUiProvider<GCodeProvider, ?>>();
-		
+
 		IConfigurationElement[] elts = extensionRegistry.getConfigurationElementsFor(MODIFIER_UI_PROVIDER);
 		for (IConfigurationElement elt : elts){
 			try {
@@ -116,9 +122,9 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 				result.add((IModifierUiProvider<GCodeProvider, ?>) dynBuilder);
 			} catch (CoreException e) {
 				throw new GkTechnicalException(e);
-			}			
+			}
 		}
-		
+
 		return result;
 	}
 
@@ -135,5 +141,36 @@ public class RS274WorkspaceService implements IRS274WorkspaceService{
 	public void setExecutionService(IExecutionService<?, ?> executionService) {
 		this.executionService = executionService;
 	}
-	
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceListener#onWorkspaceEvent(org.goko.core.workspace.service.IWorkspaceEvent)
+	 */
+	@Override
+	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
+		if(event.isType(RS274WorkspaceEvent.TYPE)){
+			RS274WorkspaceEvent rsEvent = (RS274WorkspaceEvent) event;
+			if(rsEvent.getContentType() == RS274WorkspaceEvent.GCODE_MODIFIER_EVENT){
+				workspaceUIService.select(gcodeService.getModifier(event.getIdElement()));
+			}else if(rsEvent.getContentType() == RS274WorkspaceEvent.GCODE_PROVIDER_EVENT){
+				workspaceUIService.select(gcodeService.getGCodeProvider(event.getIdElement()));
+			}
+		}
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 * @throws GkException GkException
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) throws GkException {
+		this.workspaceService = workspaceService;
+		this.workspaceService.addWorkspaceListener(this);
+	}
+
 }

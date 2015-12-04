@@ -79,9 +79,6 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	 */
 	@Override
 	public Date getModificationDate() {
-		if(!modifier.isEnabled()){
-			return parent.getModificationDate();
-		}
 		return super.getModificationDate();
 	}
 
@@ -92,14 +89,15 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	public void update() throws GkException{
 		parent.update();
 		// We also have to check if the parent was updated before us
-		if(modifier.isEnabled()){
-			if(lastUpdateDate == null
-			|| lastUpdateDate.getTime() < modifier.getModificationDate().getTime()
-			|| lastUpdateDate.getTime() < parent.getModificationDate().getTime()){
+		if(lastUpdateDate == null
+		|| lastUpdateDate.getTime() < modifier.getModificationDate().getTime()
+		|| lastUpdateDate.getTime() < parent.getModificationDate().getTime()){
+			if(modifier.isEnabled()){
 				clear();
 				modifier.apply(parent, this);
-				lastUpdateDate = new Date();
 			}
+			lastUpdateDate = new Date();
+			setModificationDate(lastUpdateDate);
 		}
 	}
 
