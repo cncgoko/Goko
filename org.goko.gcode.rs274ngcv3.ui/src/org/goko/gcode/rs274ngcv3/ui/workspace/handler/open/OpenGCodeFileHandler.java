@@ -17,11 +17,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.log.GkLog;
 
 public class OpenGCodeFileHandler {
+	/** Log */
+	private static final GkLog LOG = GkLog.getLogger(OpenGCodeFileHandler.class);
+	
 	@Inject
 	private IRS274NGCService gCodeService;
-
+	
+	
 	@Execute
 	public void executeOpenFile(Shell shell) throws GkException{
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
@@ -44,10 +49,9 @@ public class OpenGCodeFileHandler {
 							gcodeFile = gCodeService.parse(new FileInputStream(sourceFile), monitor);
 							gcodeFile.setCode(fileName);
 							gCodeService.addGCodeProvider(gcodeFile);
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch (GkException e) {
-							e.printStackTrace();
+						} catch (GkException | FileNotFoundException e) {
+							LOG.error(e);
+							return new Status(IStatus.ERROR, "org.goko.gcode.rs274ngcv3.ui", e.getMessage());
 						}
 						return Status.OK_STATUS;
 					};

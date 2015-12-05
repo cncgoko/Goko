@@ -28,8 +28,8 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.math.Tuple6b;
 /**
  * Interface definition for the controller.
@@ -60,6 +60,13 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	 * @throws GkException GkException
 	 */
 	boolean isReadyForFileStreaming() throws GkException;
+	
+	/**
+	 * Performs the required checks before execution
+	 * @throws GkException GkException
+	 */
+	void verifyReadyForExecution() throws GkException;
+	
 	/**
 	 * Executes the given action
 	 * @param actionId the id action of the requested action

@@ -347,11 +347,20 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		return result;
 	}
 
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#render(org.goko.core.gcode.element.GCodeLine)
 	 */
 	@Override
-	public String render(GCodeLine line) throws GkException {
+	public String render(GCodeLine line) throws GkException {		
+		return render(line, RenderingFormat.DEFAULT);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#render(org.goko.core.gcode.element.GCodeLine, org.goko.core.gcode.rs274ngcv3.RenderingFormat)
+	 */
+	@Override
+	public String render(GCodeLine line, RenderingFormat format) throws GkException {
 		StringBuffer buffer = new StringBuffer();
 		// FIXME find a better way to classify GCode words or describe a GCodeLine within the rs274 service
 		GCodeWord commentWord = null;
@@ -359,13 +368,17 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		// Add words
 		for (GCodeWord word : line.getWords()) {
 			if(StringUtils.equals(word.getLetter(), "N")){
-				buffer.insert(0, word.getValue());
-				buffer.insert(0, word.getLetter());
+				if(!format.isSkipLineNumbers()){
+					buffer.insert(0, word.getValue());
+					buffer.insert(0, word.getLetter());
+				}
 				continue;
 			}
 
 			if(StringUtils.equals(word.getLetter(), ";")){
-				commentWord = word;
+				if(!format.isSkipComments()){
+					commentWord = word;
+				}
 				continue;
 			}
 

@@ -569,4 +569,12 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	public void send(GCodeLine gCodeLine) throws GkException {
 		getCurrentService().send(gCodeLine);
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()
+	 */
+	@Override
+	public void verifyReadyForExecution() throws GkException {
+		getCurrentService().verifyReadyForExecution();		
+	}
 }

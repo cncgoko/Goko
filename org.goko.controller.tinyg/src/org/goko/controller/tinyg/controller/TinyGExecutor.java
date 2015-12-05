@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
 import org.goko.core.gcode.element.GCodeLine;
@@ -14,6 +15,7 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.log.GkLog;
 
@@ -30,6 +32,8 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	private AtomicInteger pendingCommandCount;
 	/** The underlying service */
 	private ITinygControllerService tinygService;
+	/** The underlying gcode service */
+	private IRS274NGCService rs274Service;
 	/** Required space in TinyG planner buffer to send a new command */
 	private int requiredBufferSpace;
 
@@ -37,9 +41,10 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * Constructor
 	 * @param tinygService the underlying TinyG service
 	 */
-	public TinyGExecutor(ITinygControllerService tinygService) {
+	public TinyGExecutor(ITinygControllerService tinygService, IRS274NGCService gcodeService) {
 		super();
 		this.tinygService = tinygService;
+		this.rs274Service = gcodeService;
 		this.pendingCommandCount = new AtomicInteger(0);
 	}
 
@@ -48,7 +53,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	public ExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
-		return new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
+		return new ExecutionToken<ExecutionTokenState>(rs274Service, provider, ExecutionTokenState.NONE);
 	}
 
 	/** (inheritDoc)
@@ -56,9 +61,14 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	protected void send(GCodeLine line) throws GkException {
-		pendingCommandCount.incrementAndGet();
-		tinygService.send(line);
-		getToken().setLineState(line.getId(), ExecutionTokenState.SENT);
+		String gcodeString = rs274Service.render(line);
+		if(StringUtils.isNotBlank(gcodeString)){
+			pendingCommandCount.incrementAndGet();
+			tinygService.send(line);
+			getToken().setLineState(line.getId(), ExecutionTokenState.SENT);
+		}else{
+			getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+		}
 	}
 
 	/** (inheritDoc)
@@ -129,6 +139,8 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 			LOG.warn("Pausing execution queue from TinyG Executor due to received status ["+status.getValue()+"]");
 			getExecutionService().pauseQueueExecution();
 			markNextLineAsError();
+		}else{
+			confirmNextLineExecution();
 		}
 	}
 
@@ -165,12 +177,8 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	public boolean isReadyForQueueExecution() throws GkException {
-		// FIXME : bind with TinyG
-		/*
-		 checkExecutionControl();
-		 checkVerbosity(configuration);
-		 */
-		return true;
+		tinygService.verifyReadyForExecution();
+		return tinygService.isReadyForFileStreaming();
 	}
 
 	/** (inheritDoc)
@@ -238,6 +246,20 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * @return the rs274Service
+	 */
+	public IRS274NGCService getRs274Service() {
+		return rs274Service;
+	}
+
+	/**
+	 * @param rs274Service the rs274Service to set
+	 */
+	public void setRs274Service(IRS274NGCService rs274Service) {
+		this.rs274Service = rs274Service;
 	}
 
 }

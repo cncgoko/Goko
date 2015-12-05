@@ -21,7 +21,7 @@ public class ExecutionPartModel extends AbstractModelObject {
 	public static final String PROPERTY_ELAPSED_TIME_STRING		= "elapsedTimeString";
 	public static final String PROPERTY_ESTIMATED_TIME_STRING	= "estimatedTimeString";
 	public static final String PROPERTY_PROGRESS_BAR_STATE		= "progressBarState";
-	
+		
 	/** The number of completed token in the current execution queue */
 	private int completedTokenCount;
 	/** The number token in the current execution queue */

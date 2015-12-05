@@ -21,8 +21,8 @@ import java.math.BigDecimal;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
@@ -379,8 +379,8 @@ public class Tuple6b {
 		BigDecimal bdZ = this.z.value(this.x.getUnit());
 		
 		BigDecimal bdx2 = bdX.multiply(bdX);
-		BigDecimal bdy2 = bdX.multiply(bdY);
-		BigDecimal bdz2 = bdX.multiply(bdZ);
+		BigDecimal bdy2 = bdY.multiply(bdY);
+		BigDecimal bdz2 = bdZ.multiply(bdZ);
 		return NumberQuantity.of(BigDecimalUtils.sqrt(bdx2.add(bdy2).add(bdz2),5), this.x.getUnit());
 	}
 	

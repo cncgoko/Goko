@@ -16,7 +16,6 @@
  *******************************************************************************/
 package org.goko.core.gcode.execution;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 
 /**
@@ -45,20 +45,25 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/** The current command index */
 	protected int currentIndex;
 	/** Id of the executed GCodeProvider */
-	protected WeakReference<IGCodeProvider> gcodeProviderReference;	
+	protected Integer idGCodeProvider;	
 	/** Initial state of the lines */
 	protected T initialState;
 	/** State of the token */
 	protected ExecutionState state;
 	/** The number of line in the provider */
 	private int lineCount;
+	/** The execution order */
+	private int executionOrder;
+	/** The gcode repository where the GCodeProvider is located */
+	private IGCodeProviderRepository gcodeRepository;
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
 	 * @throws GkException GkException 
 	 */
-	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
-		this.gcodeProviderReference = new WeakReference<IGCodeProvider>(provider);
+	public ExecutionToken(IGCodeProviderRepository gcodeRepository, IGCodeProvider provider, T initState) throws GkException {
+		this.gcodeRepository = gcodeRepository;
+		this.idGCodeProvider = provider.getId();
 		this.initialState = initState;
 		this.lineCount = provider.getLinesCount();
 		reset();
@@ -172,9 +177,10 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/**
 	 * Return the wrapped IGCodeProvider
 	 * @return the IGCodeProvider
+	 * @throws GkException GkException 
 	 */
-	public IGCodeProvider getGCodeProvider(){
-		return gcodeProviderReference.get();
+	public IGCodeProvider getGCodeProvider() throws GkException{
+		return gcodeRepository.getGCodeProvider(idGCodeProvider);
 	}
 	
 	/** (inheritDoc)
@@ -207,5 +213,19 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	 */
 	public void setState(ExecutionState state) {
 		this.state = state;
+	}
+
+	/**
+	 * @return the executionOrder
+	 */
+	public int getExecutionOrder() {
+		return executionOrder;
+	}
+
+	/**
+	 * @param executionOrder the executionOrder to set
+	 */
+	public void setExecutionOrder(int executionOrder) {
+		this.executionOrder = executionOrder;
 	}
 }

@@ -59,6 +59,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		workspaceService.addWorkspaceListener(this);
 		updateTokenQueueData();
 		updateButtonState();
+		workspaceService.addWorkspaceListener(this);
 	}
 
 	/** (inheritDoc)
@@ -210,6 +211,10 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 				break;		
 		}
 		
+		if(executionService.getExecutionQueue() == null 
+		|| CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
+			buttonStartEnabled = false;
+		}
 		getDataModel().setButtonStartEnabled(buttonStartEnabled);
 		getDataModel().setButtonPauseEnabled(buttonPauseEnabled);
 		getDataModel().setButtonStopEnabled( buttonStopEnabled);
@@ -268,5 +273,6 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		this.getDataModel().setCompletedTokenCount(completedTokenCount);
 		this.getDataModel().setTotalTokenCount(totalTokenCount);
 		this.getDataModel().setTotalLineCount(totalLineCount);
+		updateEstimatedExecutionTime();
 	}
 }

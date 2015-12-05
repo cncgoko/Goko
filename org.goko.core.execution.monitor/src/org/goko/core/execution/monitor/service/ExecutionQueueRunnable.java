@@ -54,19 +54,26 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 					executionQueue.endCurrentTokenExecution();				
 				}catch(GkException e){
 					LOG.error(e);
+					setState(ExecutionState.ERROR);
 				}
 			}	
 			if(state == ExecutionState.STOPPED){
 				executionService.notifyQueueExecutionCanceled();				
+			}else if(state == ExecutionState.ERROR){
+				executionService.notifyQueueExecutionCanceled();
 			}else{
 				setState(ExecutionState.COMPLETE);		
 				executionService.notifyQueueExecutionComplete();
 			}
 		}catch(GkException e){
 			LOG.error(e);
+			setState(ExecutionState.ERROR);
 		}
 	}
 	
+	protected void isValidState(){
+		
+	}
 	/**
 	 * Execute the given execution token
 	 * @param token the token to execute

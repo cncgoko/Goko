@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeExecutionTimeService;
+import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -43,4 +44,6 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 	List<IModifier<GCodeProvider>> getModifier(List<Integer> lstId) throws GkException;
 
 	List<IModifier<GCodeProvider>> getModifierByGCodeProvider(Integer idGcodeProvider) throws GkException;
+	
+	String render(GCodeLine line, RenderingFormat format) throws GkException;
 }

@@ -37,7 +37,6 @@ import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -452,12 +451,6 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 */
 	private void addEndLineCharacter(List<Byte> list){
 		list.add(new Byte((byte) endLineCharDelimiter));
-	}
-
-	protected void send(GCodeLine gCodeLine) throws GkException{	
-		String gcodeString = gcodeService.render(gCodeLine);		
-		JsonValue jsonStr = TinyGControllerUtility.toJson(gcodeString);
-		send(GkUtils.toBytesList(jsonStr.toString()));
 	}
 
 	protected void send(List<Byte> lstByte) throws GkException{

@@ -17,7 +17,7 @@ public interface IExecutionQueue<S extends IExecutionTokenState, T extends IExec
 
 	boolean hasNext();
 
-	void add(T token);
+	void add(T token) throws GkException;
 
 	void beginNextTokenExecution() throws GkException;
 

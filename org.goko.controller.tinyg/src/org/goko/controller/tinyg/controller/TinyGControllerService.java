@@ -65,6 +65,7 @@ import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.EventAdmin;
 
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 /**
  * Implementation of the TinyG controller
@@ -105,7 +106,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public TinyGControllerService() throws GkException {
 		communicator = new TinyGCommunicator(this);
 		tinygState   = new TinyGState();
-		tinygExecutor = new TinyGExecutor(this);
+		tinygExecutor = new TinyGExecutor(this, null);
 	}
 
 	/** (inheritDoc)
@@ -166,13 +167,23 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		checkExecutionControl();
 		checkVerbosity(configuration);
 		updateQueueReport();
-		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeProvider, ExecutionTokenState.NONE);
+		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeService, gcodeProvider, ExecutionTokenState.NONE);
 		//token.setMonitorService(getMonitorService());
 		//executionQueue.add(token);
 
 		throw new GkTechnicalException("To implement or remove");
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()
+	 */
+	@Override
+	public void verifyReadyForExecution() throws GkException{
+		updateQueueReport();		
+		checkExecutionControl();
+		checkVerbosity(configuration);		
+	}
+	
 	private void checkVerbosity(TinyGConfiguration cfg) throws GkException{
 		BigDecimal jsonVerbosity = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.JSON_VERBOSITY, BigDecimal.class);
 		if(!ObjectUtils.equals(jsonVerbosity, TinyGConfigurationValue.JSON_VERBOSITY_VERBOSE)){
@@ -187,6 +198,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			}
 		}
 	}
+	
 	private void checkExecutionControl() throws GkException{
 		BigDecimal flowControl = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
 
@@ -216,12 +228,18 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void send(GCodeLine gCodeLine) throws GkException{
-		communicator.send(gCodeLine);
+		String gcodeString = gcodeService.render(gCodeLine);
+		if(StringUtils.isNotBlank(gcodeString)){
+			JsonValue jsonStr = TinyGControllerUtility.toJson(gcodeString);
+			communicator.send(GkUtils.toBytesList(jsonStr.toString()));			
+		}else{			
+			tinygExecutor.confirmNextLineExecution();
+		}
 	}
 
 	public void sendTogether(List<GCodeLine> gCodeLines) throws GkException{
 		for (GCodeLine gCodeLine : gCodeLines) {
-			communicator.send(gCodeLine);
+			send(gCodeLine);
 		}
 	}
 
@@ -446,6 +464,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public void setGCodeService(IRS274NGCService gCodeService) {
 		this.gcodeService = gCodeService;
 		this.communicator.setGcodeService(gCodeService);
+		this.tinygExecutor.setRs274Service(gCodeService);
 	}
 
 	@Override
@@ -800,9 +819,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
-		//this.executionService.setExecutor(tinygExecutor);
-		//this.executionService.addExecutionListener(tinygExecutor);
-		executionService.setExecutor(new DebugExecutor());
+		this.executionService.setExecutor(tinygExecutor);
+		this.executionService.addExecutionListener(tinygExecutor);
+		//executionService.setExecutor(new DebugExecutor());
 	}
 
 	public Unit<Length> getCurrentUnit(){

@@ -16,14 +16,15 @@
  *******************************************************************************/
 package org.goko.core.gcode.execution;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.utils.CacheById;
+import org.goko.core.common.utils.SequentialIdGenerator;
 
 /**
  * @author PsyKo
@@ -33,7 +34,7 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	/** The list of execution tokens */
 	private LinkedBlockingQueue<T> remainingExecutionTokens;
 	/** The list of execution tokens */
-	private LinkedBlockingQueue<T> executionTokens;
+	private CacheById<T> executionTokens;
 	/** The current token */
 	private T currentToken;
 		
@@ -42,7 +43,7 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	 */
 	public ExecutionQueue() {
 		remainingExecutionTokens = new LinkedBlockingQueue<T>();
-		executionTokens = new LinkedBlockingQueue<T>();
+		executionTokens 		 = new CacheById<T>(new SequentialIdGenerator());
 	}
 
 	/** (inheritDoc)
@@ -57,9 +58,10 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	 * @see org.goko.core.gcode.execution.IExecutionQueue#add(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void add(T token){
-		remainingExecutionTokens.offer(token);
-		executionTokens.offer(token);
+	public void add(T token)throws GkException{
+		token.setExecutionOrder(executionTokens.size());
+		executionTokens.add(token);
+		remainingExecutionTokens.offer(token);		
 	}
 
 	/** (inheritDoc)
@@ -114,27 +116,20 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 		}
 	}
 	
-	public void delete(Integer idExecutionToken) throws GkException{
-		if(CollectionUtils.isNotEmpty(remainingExecutionTokens)){
-			T tokenToRemove = null;
-			for (T token : remainingExecutionTokens) {
-				if(ObjectUtils.equals(token.getId(), idExecutionToken)){
-					tokenToRemove = token;
-				}
-			}
-			if(tokenToRemove != null){
-				remainingExecutionTokens.remove(tokenToRemove);
-				executionTokens.remove(tokenToRemove);				
-			}
-		}
+	public void delete(Integer idExecutionToken) throws GkException{		
+		T tokenToRemove = executionTokens.get(idExecutionToken);
+		remainingExecutionTokens.remove(tokenToRemove);
+		executionTokens.remove(tokenToRemove);		
 	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionQueue#getExecutionToken()
 	 */
 	@Override
-	public List<T> getExecutionToken() throws GkException {		
-		return new ArrayList<T>(executionTokens);
+	public List<T> getExecutionToken() throws GkException {
+		List<T> lst = executionTokens.get();
+		Collections.sort(lst, new ExecutionOrderComparator());
+		return lst;
 	}
 	
 	/**
@@ -143,18 +138,13 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	 */
 	public void reset() throws GkException{
 		remainingExecutionTokens = new LinkedBlockingQueue<T>();
-		remainingExecutionTokens.addAll(executionTokens);
-		for (T token : executionTokens) {
+		remainingExecutionTokens.addAll(getExecutionToken());
+		for (T token : getExecutionToken()) {
 			token.reset();
 		}
 	}
 	
-	public T getExecutionToken(Integer idExecutionToken) throws GkTechnicalException{
-		for (T t : executionTokens) {
-			if(ObjectUtils.equals(t.getId(), idExecutionToken)){
-				return t;
-			}
-		}
-		throw new GkTechnicalException("Execution token with id ["+idExecutionToken+"] does not exist in queue");
+	public T getExecutionToken(Integer idExecutionToken) throws GkException{		
+		return executionTokens.get(idExecutionToken);
 	}
 }

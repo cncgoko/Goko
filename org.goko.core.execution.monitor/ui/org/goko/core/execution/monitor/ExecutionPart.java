@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
+import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartController;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartModel;
@@ -303,6 +304,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 					});
 				} catch (GkException e1) {
 					LOG.error(e1);
+					GkDialog.openDialog(e1);
 				}
 			}
 		});

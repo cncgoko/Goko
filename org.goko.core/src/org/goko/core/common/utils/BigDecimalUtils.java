@@ -38,6 +38,7 @@ public class BigDecimalUtils {
 
 	
 	public static BigDecimal sqrt(BigDecimal c, int scale){
+		double d = Math.sqrt(c.doubleValue());
 	 //   return sqrtNewtonRaphson(c,new BigDecimal(1),new BigDecimal(1).divide(SQRT_PRE));
 		 return new BigDecimal( Math.sqrt(c.doubleValue())).setScale(scale, RoundingMode.HALF_DOWN);
 	}

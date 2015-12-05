@@ -9,20 +9,20 @@ import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
-import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
+import org.goko.core.gcode.rs274ngcv3.instruction.StraightTraverseInstruction;
 import org.goko.core.math.Tuple6b;
 
-public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculator<StraightFeedInstruction> {
+public class StraightTraverseTimeCalculator extends AbstractInstructionTimeCalculator<StraightTraverseInstruction> {
 
-	public StraightFeedTimeCalculator() {
-		super(InstructionType.STRAIGHT_FEED);
+	public StraightTraverseTimeCalculator() {
+		super(InstructionType.STRAIGHT_TRAVERSE);
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.executiontime.AbstractInstructionTimeCalculator#calculateExecutionTime(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction)
 	 */
 	@Override
-	protected Quantity<Time> calculateExecutionTime(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
+	protected Quantity<Time> calculateExecutionTime(GCodeContext context, StraightTraverseInstruction instruction) throws GkException {
 		Tuple6b 		positionBefore 	= context.getPosition();
 		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
 
@@ -38,15 +38,7 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 //		double max = Math.max(dx, Math.max(dy, Math.max(dz, Math.max(da, Math.max(db, dc)))));
 		double max = delta.length().doubleValue(unit);
 
-		double feedrate = 0;
-		if(context.getFeedrate() != null){
-			feedrate = context.getFeedrate().doubleValue();
-		}else{
-			return NumberQuantity.zero(Units.SECOND);
-		}
-		if(feedrate == 0){
-			return NumberQuantity.zero(Units.SECOND);
-		}		
+		double feedrate = 1500;				
 		return NumberQuantity.of((max / feedrate) , Units.MINUTE);		
 	}
 

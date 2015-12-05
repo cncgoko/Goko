@@ -24,6 +24,7 @@ public class InstructionTimeCalculatorFactory {
 	public InstructionTimeCalculatorFactory() {
 		calculators = new ArrayList<AbstractInstructionTimeCalculator<? extends AbstractInstruction>>();
 		calculators.add(new StraightFeedTimeCalculator());
+		calculators.add(new StraightTraverseTimeCalculator());
 		calculators.add(new ArcFeedTimeCalculator());
 	}
 	

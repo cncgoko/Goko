@@ -66,6 +66,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	/** Workspace UI Service */
 	private IWorkspaceUIService workspaceUiService;
 	
+
 	/**
 	 * Constructor
 	 */
@@ -120,7 +121,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 			throw new GkTechnicalException("ExecutionServiceImpl : cannot add provider to execution queue. Executor is not set.");
 		}
 		ExecutionToken<ExecutionTokenState> token = executor.createToken(gcodeProvider);
-		addToExecutionQueue(token);		
+		addToExecutionQueue(token);	
 		return token;
 	}
 	
@@ -298,8 +299,8 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	 * @see org.goko.core.gcode.service.IExecutionService#beginQueueExecution()
 	 */
 	@Override
-	public void beginQueueExecution() throws GkException {
-		if(executionQueue != null){
+	public void beginQueueExecution() throws GkException {		
+		if(executionQueue != null && executor.isReadyForQueueExecution()){
 			if(executionQueueRunnable != null && executionQueueRunnable.getState() == ExecutionState.RUNNING){
 				throw new GkTechnicalException("Queue is already running");
 			}			
@@ -389,8 +390,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 
 	/**
 	 * @param workspaceService the workspaceService to set
+	 * @throws GkException GkException 
 	 */
 	public void setWorkspaceService(IWorkspaceService workspaceService) {
-		this.workspaceService = workspaceService;
+		this.workspaceService = workspaceService;		
 	}
+
 }

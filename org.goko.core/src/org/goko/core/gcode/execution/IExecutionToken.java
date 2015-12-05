@@ -28,6 +28,19 @@ import org.goko.core.gcode.element.GCodeLine;
  *
  */
 public interface IExecutionToken<T extends IExecutionTokenState> extends IIdBean {	
+	
+	/**
+	 * Returns the execution order of this execution token
+	 * @return the execution order
+	 */
+	int getExecutionOrder();
+	
+	/**
+	 * Sets the execution order of this execution token
+	 * @param order the execution order
+	 */
+	void setExecutionOrder(int order);
+	
 	/**
 	 * Check if this execution token has more command
 	 * @return <code>true</code> if there is more command, <code>false</code> otherwise
