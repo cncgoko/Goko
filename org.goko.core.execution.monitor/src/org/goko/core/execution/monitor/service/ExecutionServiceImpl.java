@@ -36,6 +36,7 @@ import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
@@ -65,7 +66,8 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	private IWorkspaceService workspaceService;
 	/** Workspace UI Service */
 	private IWorkspaceUIService workspaceUiService;
-	
+	/** GCode provider repository */
+	private IGCodeProviderRepository gcodeRepository;
 
 	/**
 	 * Constructor
@@ -301,6 +303,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	@Override
 	public void beginQueueExecution() throws GkException {		
 		if(executionQueue != null && executor.isReadyForQueueExecution()){
+			lockGCodeProvider();
 			if(executionQueueRunnable != null && executionQueueRunnable.getState() == ExecutionState.RUNNING){
 				throw new GkTechnicalException("Queue is already running");
 			}			
@@ -318,6 +321,32 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 		}
 	}
 	
+	/**
+	 * Lock the GCode providers in queue
+	 * @throws GkException GkException 
+	 */
+	private void lockGCodeProvider() throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstToken = getExecutionQueue().getExecutionToken();
+		if(CollectionUtils.isNotEmpty(lstToken)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+				gcodeRepository.lockGCodeProvider(executionToken.getGCodeProvider().getId());
+			}
+		}
+	}
+	
+	/**
+	 * Unlock the GCode providers in queue
+	 * @throws GkException GkException 
+	 */
+	private void unlockGCodeProvider() throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstToken = getExecutionQueue().getExecutionToken();
+		if(CollectionUtils.isNotEmpty(lstToken)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+				gcodeRepository.unlockGCodeProvider(executionToken.getGCodeProvider().getId());
+			}
+		}
+	}
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#pauseQueueExecution()
 	 */
@@ -336,6 +365,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 		if(executionQueueRunnable != null){
 			executionQueueRunnable.stop();
 		}
+		unlockGCodeProvider();
 	}
 	
 	
@@ -394,6 +424,20 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	 */
 	public void setWorkspaceService(IWorkspaceService workspaceService) {
 		this.workspaceService = workspaceService;		
+	}
+
+	/**
+	 * @return the gcodeRepository
+	 */
+	public IGCodeProviderRepository getGCodeRepository() {
+		return gcodeRepository;
+	}
+
+	/**
+	 * @param gcodeRepository the gcodeRepository to set
+	 */
+	public void setGCodeRepository(IGCodeProviderRepository gcodeRepository) {
+		this.gcodeRepository = gcodeRepository;
 	}
 
 }

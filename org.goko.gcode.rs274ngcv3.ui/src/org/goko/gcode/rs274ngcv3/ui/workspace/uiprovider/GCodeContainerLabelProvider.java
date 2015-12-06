@@ -47,7 +47,12 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 		if(element instanceof ProjectContainer){
 			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/resource_persp.gif");
 		}else if(element instanceof IGCodeProvider){
-			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/gcode-provider-icon.png");
+			IGCodeProvider provider = (IGCodeProvider) element;
+			if(provider.isLocked()){
+				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/lock.png");
+			}else{
+				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/gcode-provider-icon.png");
+			}
 		}else if(element instanceof IModifier){
 			if(((IModifier<?>) element).isEnabled()){
 				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/modifier-on.png");

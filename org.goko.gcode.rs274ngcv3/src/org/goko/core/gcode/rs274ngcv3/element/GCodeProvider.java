@@ -22,7 +22,9 @@ public class GCodeProvider implements IGCodeProvider {
 	protected List<Integer> linesSequence;
 	/** The latest modification date */
 	private Date modificationDate;
-
+	/** Locked state */
+	private boolean locked;
+	
 	/** Constructor */
 	public GCodeProvider() {
 		this.cacheLines 	= new CacheById<GCodeLine>(new SequentialIdGenerator());
@@ -127,5 +129,19 @@ public class GCodeProvider implements IGCodeProvider {
 
 	public void update() throws GkException{
 		// Nothing to do here
+	}
+
+	/**
+	 * @return the locked
+	 */
+	public boolean isLocked() {
+		return locked;
+	}
+
+	/**
+	 * @param locked the locked to set
+	 */
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 }

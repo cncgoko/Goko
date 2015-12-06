@@ -18,8 +18,8 @@
 package org.goko.core.gcode.service;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 
 public interface IGCodeLineExecutionListener<S extends IExecutionTokenState, T extends IExecutionToken<S>> {
 

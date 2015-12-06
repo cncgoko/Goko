@@ -27,9 +27,22 @@ public class CreateModifierAction extends Action{
 		super(modifierUiProvider.getModifierName());
 		this.modifierUiProvider = modifierUiProvider;
 		this.idGCodeProvider = idGCodeProvider;
-		this.rs274Service = rs274Service;
+		this.rs274Service = rs274Service;		
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.action.Action#isEnabled()
+	 */
+	@Override
+	public boolean isEnabled() {
+		boolean locked = true;
+		try {
+			locked = rs274Service.getGCodeProvider(idGCodeProvider).isLocked();
+		} catch (GkException e) {
+			LOG.error(e);			
+		}
+		return !locked;
+	}
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.action.Action#run()
 	 */

@@ -17,8 +17,8 @@
 
 package org.goko.core.gcode.service;
 
-import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.execution.IExecutionTokenState;
 
 public interface IGCodeExecutionListener<S extends IExecutionTokenState, T extends IExecutionToken<S>> extends IGCodeTokenExecutionListener<S,T>, IGCodeLineExecutionListener<S, T>{
 

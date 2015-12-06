@@ -38,4 +38,15 @@ public interface IGCodeProvider extends IIdBean{
 	 */
 	GCodeLine getLineAtIndex(Integer indexLine) throws GkException;	
 	
+	/**
+	 * Determines if this provider is locked
+	 * @return <code>true</code> if it's locked, <code>false</code> otherwise
+	 */
+	boolean isLocked();
+	
+	/**
+	 * Sets the locked state of this provider 
+	 * @param locked <code>true</code> if it's locked, <code>false</code> otherwise
+	 */
+	void setLocked(boolean locked);
 }

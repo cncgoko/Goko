@@ -18,7 +18,6 @@ package org.goko.core.viewer.service;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
 
 /**

@@ -56,6 +56,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	private int executionOrder;
 	/** The gcode repository where the GCodeProvider is located */
 	private IGCodeProviderRepository gcodeRepository;
+	
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
@@ -193,10 +194,11 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 		this.mapLineByExecutionState.put(initialState, new ArrayList<Integer>());		
 		this.currentIndex = -1;
 		this.setState(ExecutionState.IDLE);
+		
 		if(CollectionUtils.isNotEmpty(getGCodeProvider().getLines())){
 			for (GCodeLine gCodeLine : getGCodeProvider().getLines()) {
 				this.mapLineByExecutionState.get(initialState).add(gCodeLine.getId());
-				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);
+				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);				
 			}
 		}
 	}

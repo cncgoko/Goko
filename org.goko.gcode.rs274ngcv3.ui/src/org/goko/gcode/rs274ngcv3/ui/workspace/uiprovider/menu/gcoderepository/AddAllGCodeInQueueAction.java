@@ -6,6 +6,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.action.Action;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
@@ -35,7 +36,21 @@ public class AddAllGCodeInQueueAction extends Action {
 		this.gcodeRepository = gcodeRepository;
 	}
 
-
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.action.Action#isEnabled()
+	 */
+	@Override
+	public boolean isEnabled() {
+		boolean enabled = false;
+		try {
+			// Enabled when not running
+			enabled = !ExecutionState.RUNNING.equals(executionService.getExecutionState());
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return enabled;
+	}
+	
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.action.Action#run()
 	 */

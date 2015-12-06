@@ -47,5 +47,12 @@ public abstract class AbstractDeleteAction extends Action {
     	
     protected abstract void deleteById(Integer id) throws GkException;
 
+	/**
+	 * @return the idTarget
+	 */
+	protected Integer getIdTarget() {
+		return idTarget;
+	}
+
     
 }

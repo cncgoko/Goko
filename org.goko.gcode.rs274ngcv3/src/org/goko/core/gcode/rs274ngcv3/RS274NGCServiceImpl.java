@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Quantity;
@@ -45,6 +46,7 @@ import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeTokenType;
 import org.goko.core.gcode.rs274ngcv3.parser.ModalGroup;
+import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.math.Tuple6b;
@@ -55,6 +57,8 @@ import org.goko.core.workspace.service.IWorkspaceService;
  */
 public class RS274NGCServiceImpl implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
+	/** The list of listener */
+	private List<IGCodeProviderRepositoryListener> listenerList;
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
 	/** The cache of providers */
@@ -67,6 +71,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
+		this.listenerList 	= new ArrayList<IGCodeProviderRepositoryListener>();
 		this.cacheProviders = new CacheById<IStackableGCodeProvider>(new SequentialIdGenerator());
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
 	}
@@ -447,6 +452,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
 		cacheProviders.add(new StackableGCodeProviderRoot(provider));
+		notifyGCodeProviderCreate(provider);
 		workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(provider));
 	}
 	/** (inheritDoc)
@@ -457,9 +463,54 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		IGCodeProvider provider = cacheProviders.get(id);
 		performDeleteByIdGCodeProvider(id);
 		cacheProviders.remove(id);
-		workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(provider));
+		notifyGCodeProviderDelete(provider);		
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#lockGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public void lockGCodeProvider(Integer idGcodeProvider) throws GkException {
+		IGCodeProvider provider = cacheProviders.get(idGcodeProvider);
+		if(!provider.isLocked()){
+			provider.setLocked(true);
+			notifyGCodeProviderLocked(provider);			
+		}
+	}
+	
+	/**
+	 * Assert on the provider for the locked state 
+	 * @param idGcodeProvider id of the provider to test
+	 * @throws GkException GkException
+	 */
+	void assertGCodeProviderUnlocked(Integer idGcodeProvider) throws GkException {
+		if(isGCodeProviderUnlocked(idGcodeProvider)){
+			throw new GkFunctionalException("GCO-150");
+		}
+	}
+	
+	/**
+	 * Determines if this provider is locked
+	 * @param idGcodeProvider id of the provider to test
+	 * @return <code>true</code> if it's locked, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
+	boolean isGCodeProviderUnlocked(Integer idGcodeProvider) throws GkException {
+		return cacheProviders.get(idGcodeProvider).isLocked();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#unlockGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public void unlockGCodeProvider(Integer idGcodeProvider) throws GkException {
+		IGCodeProvider provider = cacheProviders.get(idGcodeProvider);
+		if(provider.isLocked()){
+			provider.setLocked(false);
+			notifyGCodeProviderUnlocked(provider);
+			workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getUpdateEvent(provider));
+		}
+	}
 	/**
 	 * @return the workspaceService
 	 */
@@ -480,6 +531,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void addModifier(IModifier<GCodeProvider> modifier) throws GkException {
+		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
+		
 		// Assign the order of the modifier on the target GCodeProvider
 		List<IModifier<GCodeProvider>> lstModifier = getModifierByGCodeProvider(modifier.getIdGCodeProvider());
 		modifier.setOrder(lstModifier.size());
@@ -490,7 +543,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		wrappedProvider.update();
 		this.cacheProviders.remove(baseProvider.getId());
 		this.cacheProviders.add(wrappedProvider);
-
+		notifyGCodeProviderUpdate(wrappedProvider);
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(modifier));
 	}
 
@@ -499,10 +552,13 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void updateModifier(IModifier<GCodeProvider> modifier) throws GkException {
+		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
 		this.cacheModifiers.remove(modifier.getId());
 		modifier.setModificationDate(new Date());
 		this.cacheModifiers.add(modifier);
-		this.cacheProviders.get(modifier.getIdGCodeProvider()).update();
+		IStackableGCodeProvider provider = this.cacheProviders.get(modifier.getIdGCodeProvider());
+		provider.update();
+		notifyGCodeProviderUpdate(provider);
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getUpdateEvent(modifier));
 	}
 
@@ -518,8 +574,10 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#deleteModifier(org.goko.core.gcode.rs274ngcv3.element.IModifier)
 	 */
 	@Override
-	public void deleteModifier(Integer idModifier) throws GkException {
+	public void deleteModifier(Integer idModifier) throws GkException {		
 		IModifier<GCodeProvider> modifier = this.cacheModifiers.get(idModifier);
+		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
+		
 		this.cacheModifiers.remove(idModifier);
 
 		// Let's find the stacked provider with this modifier
@@ -541,9 +599,10 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 				cacheProviders.remove(modifier.getIdGCodeProvider());
 				cacheProviders.add(previous);
 			}
-			gcode.setParent(null);
+			gcode.setParent(null);			
 		}
-
+		IStackableGCodeProvider targetProvider = cacheProviders.get(modifier.getIdGCodeProvider());
+		notifyGCodeProviderUpdate(targetProvider);
 		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(modifier));
 	}
 
@@ -601,6 +660,86 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		List<IModifier<GCodeProvider>> lstModifiers = getModifierByGCodeProvider(id);
 		for (IModifier<GCodeProvider> iModifier : lstModifiers) {
 			cacheModifiers.remove(iModifier);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#addListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener)
+	 */
+	@Override
+	public void addListener(IGCodeProviderRepositoryListener listener) throws GkException {
+		listenerList.add( listener );
+	}
+	
+	 /** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#removeListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener)
+	 */
+	@Override
+	public void removeListener(IGCodeProviderRepositoryListener listener) throws GkException {
+		listenerList.remove( listener );
+	}
+	
+	/**
+	 * Notify the listener that the given GCodeProvider was updated 
+	 * @param provider the target provider 
+	 * @throws GkException GkException
+	 */
+	protected void notifyGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
+		if (CollectionUtils.isNotEmpty(listenerList)) {
+			for (IGCodeProviderRepositoryListener listener : listenerList) {
+				listener.onGCodeProviderUpdate(provider);
+			}
+		}
+	}
+	
+	/**
+	 * Notify the listener that the given GCodeProvider was locked 
+	 * @param provider the target provider 
+	 * @throws GkException GkException
+	 */
+	protected void notifyGCodeProviderLocked(IGCodeProvider provider) throws GkException {
+		if (CollectionUtils.isNotEmpty(listenerList)) {
+			for (IGCodeProviderRepositoryListener listener : listenerList) {
+				listener.onGCodeProviderLocked(provider);
+			}
+		}
+	}
+
+	/**
+	 * Notify the listener that the given GCodeProvider was unlocked 
+	 * @param provider the target provider 
+	 * @throws GkException GkException
+	 */
+	protected void notifyGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {
+		if (CollectionUtils.isNotEmpty(listenerList)) {
+			for (IGCodeProviderRepositoryListener listener : listenerList) {
+				listener.onGCodeProviderUnlocked(provider);
+			}
+		}
+	}
+	/**
+	 * Notify the listener that the given GCodeProvider was created 
+	 * @param provider the target provider 
+	 * @throws GkException GkException
+	 */
+	protected void notifyGCodeProviderCreate(IGCodeProvider provider) throws GkException {
+		if (CollectionUtils.isNotEmpty(listenerList)) {
+			for (IGCodeProviderRepositoryListener listener : listenerList) {
+				listener.onGCodeProviderCreate(provider);
+			}
+		}
+	}
+
+	/**
+	 * Notify the listener that the given GCodeProvider was deleted 
+	 * @param provider the target provider 
+	 * @throws GkException GkException
+	 */
+	protected void notifyGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		if (CollectionUtils.isNotEmpty(listenerList)) {
+			for (IGCodeProviderRepositoryListener listener : listenerList) {
+				listener.onGCodeProviderDelete(provider);
+			}
 		}
 	}
 }

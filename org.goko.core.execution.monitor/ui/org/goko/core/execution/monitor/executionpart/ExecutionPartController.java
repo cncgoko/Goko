@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
@@ -24,6 +25,7 @@ import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceEvent;
 import org.goko.core.workspace.service.IWorkspaceListener;
 import org.goko.core.workspace.service.IWorkspaceService;
@@ -34,6 +36,7 @@ import org.goko.core.workspace.service.IWorkspaceService;
  * @author Psyko
  */
 public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IWorkspaceListener {
+	private static final GkLog LOG = GkLog.getLogger(ExecutionPartController.class);
 	/** The execution service */
 	@Inject
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
@@ -153,7 +156,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		updateButtonState();
 		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
 			updateTokenQueueData();
-		}
+		}		
 		updateEstimatedExecutionTime();
 	}
 
@@ -237,17 +240,27 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @throws GkException GkException
 	 */
 	private void updateEstimatedExecutionTime() throws GkException{
-		if(executionTimeService != null){
-			List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+		Display.getDefault().asyncExec(new Runnable() {
 			
-			Quantity<Time> estimatedTime = NumberQuantity.of(BigDecimal.ZERO, Units.SECOND);
-			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-				Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
-				estimatedTime = estimatedTime.add(tokenTime);
+			@Override
+			public void run() {
+				if(executionTimeService != null){
+					try {
+						List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+						
+						Quantity<Time> estimatedTime = NumberQuantity.of(BigDecimal.ZERO, Units.SECOND);
+						for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+							Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());							
+							estimatedTime = estimatedTime.add(tokenTime);
+						}
+						long estimatedMs = (long)estimatedTime.doubleValue(Units.MILLISECOND);
+						ExecutionPartController.this.getDataModel().setEstimatedTimeString(DurationFormatUtils.formatDuration(estimatedMs, "HH:mm:ss"));
+					} catch (GkException e) {
+						LOG.error(e);
+					}
+				}
 			}
-			long estimatedMs = (long)estimatedTime.doubleValue(Units.MILLISECOND);
-			this.getDataModel().setEstimatedTimeString(DurationFormatUtils.formatDuration(estimatedMs, "HH:mm:ss"));
-		}
+		});		
 	}
 	
 	/**
