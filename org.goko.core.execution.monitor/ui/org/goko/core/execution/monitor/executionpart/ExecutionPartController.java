@@ -9,9 +9,13 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
@@ -47,6 +51,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Inject
 	@Optional
 	private IGCodeExecutionTimeService executionTimeService;
+	/** Job for execution time estimation */
+	private Job executionUpdater;
 	
 	/** Constructor */
 	public ExecutionPartController() {
@@ -157,7 +163,6 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
 			updateTokenQueueData();
 		}		
-		updateEstimatedExecutionTime();
 	}
 
 	/**
@@ -240,27 +245,40 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @throws GkException GkException
 	 */
 	private void updateEstimatedExecutionTime() throws GkException{
-		Display.getDefault().asyncExec(new Runnable() {
-			
+		if(executionUpdater == null || executionUpdater.getState() == Job.NONE){
+			scheduleExecutionTimeEstimationJob();
+		}
+	}
+	
+	private void scheduleExecutionTimeEstimationJob() throws GkException{
+		executionUpdater = new Job("Updating execution time..."){
+			/** (inheritDoc)
+			 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+			 */
 			@Override
-			public void run() {
+			protected IStatus run(IProgressMonitor monitor) {
 				if(executionTimeService != null){
 					try {
 						List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
-						
+						SubMonitor subMonitor = SubMonitor.convert(monitor,"Computing time...", lstToken.size());
 						Quantity<Time> estimatedTime = NumberQuantity.of(BigDecimal.ZERO, Units.SECOND);
 						for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+							subMonitor.worked(1);
 							Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());							
 							estimatedTime = estimatedTime.add(tokenTime);
 						}
+						subMonitor.done();
 						long estimatedMs = (long)estimatedTime.doubleValue(Units.MILLISECOND);
 						ExecutionPartController.this.getDataModel().setEstimatedTimeString(DurationFormatUtils.formatDuration(estimatedMs, "HH:mm:ss"));
 					} catch (GkException e) {
 						LOG.error(e);
 					}
 				}
+				return Status.OK_STATUS;
 			}
-		});		
+		};
+		executionUpdater.setUser(true);
+		executionUpdater.schedule(100);	
 	}
 	
 	/**
