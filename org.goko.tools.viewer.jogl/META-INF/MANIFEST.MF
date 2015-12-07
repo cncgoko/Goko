@@ -49,6 +49,7 @@ Export-Package: org.goko.tools.viewer.jogl.preferences,
  org.goko.tools.viewer.jogl.utils.material,
  org.goko.tools.viewer.jogl.utils.render,
  org.goko.tools.viewer.jogl.utils.render.basic,
+ org.goko.tools.viewer.jogl.utils.render.coordinate,
  org.goko.tools.viewer.jogl.utils.render.coordinate.measurement,
  org.goko.tools.viewer.jogl.utils.render.internal
 

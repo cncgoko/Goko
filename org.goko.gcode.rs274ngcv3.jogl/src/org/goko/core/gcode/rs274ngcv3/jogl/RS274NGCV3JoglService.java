@@ -9,6 +9,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
+import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
@@ -28,6 +29,7 @@ import org.goko.core.workspace.service.IWorkspaceEvent;
 import org.goko.core.workspace.service.IWorkspaceListener;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.tools.viewer.jogl.utils.render.basic.BoundsRenderer;
+import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
 
 public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	/** LOG */
@@ -36,14 +38,14 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	private static final String SERVICE_ID = "org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService";
 	/** The list of managed renderer */
 	private CacheById<RS274GCodeRenderer> cacheRenderer;
-	/** The ID generator for the renderers */
-	private SequentialIdGenerator rendererIdSequence;
 	/** The workspace service */
 	private IWorkspaceService workspaceService;
 	/** The RS274 GCode service */
 	private IRS274NGCService rs274Service;
 	/** The bounds of all the loaded gcode */
 	private BoundsRenderer contentBoundsRenderer;
+	/** ICoordinateSystemAdapter */
+	private ICoordinateSystemAdapter coordinateSystemAdapter;
 	/** Execution service */
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	
@@ -63,7 +65,9 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 		LOG.info("Starting "+getServiceId());
 		
 		this.cacheRenderer = new CacheById<RS274GCodeRenderer>(new SequentialIdGenerator());
-		this.rendererIdSequence = new SequentialIdGenerator();
+		CoordinateSystemSetRenderer csrenderer = new CoordinateSystemSetRenderer();
+		csrenderer.setAdapter(coordinateSystemAdapter);
+		Activator.getJoglViewerService().addRenderer(csrenderer);
 		LOG.info("Successfully started " + getServiceId());
 	}
 
@@ -239,5 +243,19 @@ public class RS274NGCV3JoglService implements IGokoService, IWorkspaceListener{
 	 */
 	public void setExecutionService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
 		this.executionService = executionService;
+	}
+
+	/**
+	 * @return the coordinateSystemAdapter
+	 */
+	protected ICoordinateSystemAdapter getCoordinateSystemAdapter() {
+		return coordinateSystemAdapter;
+	}
+
+	/**
+	 * @param coordinateSystemAdapter the coordinateSystemAdapter to set
+	 */
+	protected void setCoordinateSystemAdapter(ICoordinateSystemAdapter coordinateSystemAdapter) {
+		this.coordinateSystemAdapter = coordinateSystemAdapter;
 	}
 }
