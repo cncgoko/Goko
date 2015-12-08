@@ -28,7 +28,7 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 	 */
 	@Override
 	public ExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
-		return new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
+		return new ExecutionToken<ExecutionTokenState>(gcodeService, provider, ExecutionTokenState.NONE);
 	}
 
 	/** (inheritDoc)

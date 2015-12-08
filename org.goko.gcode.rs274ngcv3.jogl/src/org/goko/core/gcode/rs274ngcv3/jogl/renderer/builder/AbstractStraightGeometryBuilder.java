@@ -17,7 +17,7 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraightInstruction> extends AbstractInstructionGeometryBuilder<T> {
-	
+
 	/**
 	 * Constructor
 	 * @param type
@@ -25,7 +25,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 	public AbstractStraightGeometryBuilder(IInstructionType type) {
 		super(type);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.jogl.renderer.builder.AbstractInstructionGeometryBuilder#buildInstructionGeometry(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.element.IInstruction)
 	 */
@@ -58,17 +58,21 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 	private List<Point3d> renderLinearLine(GCodeContext context, T instruction) throws GkException {
 		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		List<Point3d> vertices = new ArrayList<Point3d>();
+		Tuple6b offset = context.getCoordinateSystemData(context.getCoordinateSystem());
 		Tuple6b startTuple = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
 		Tuple6b endTuple   = new Tuple6b(instruction.getX(), instruction.getY(), instruction.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
-		
+
+		startTuple = startTuple.add(offset);
+		endTuple = endTuple.add(offset);
+
 		Point3d startPoint 	= startTuple.toPoint3d(JoglUtils.JOGL_UNIT);
 		Point3d endPoint 	=   endTuple.toPoint3d(JoglUtils.JOGL_UNIT);
-		
+
 		if(settings.isRotaryAxisEnabled()){
 			// It's a simple line, but it doesn't mean the rotary (A, B or C) value is at 0
 			if(instruction.getA() != null){
 				Point3d endAngle 	=   endTuple.angleToPoint3d(Units.DEGREE_ANGLE);
-				
+
 				Matrix4d rotationMatrix = new Matrix4d();
 				rotateMatrix(rotationMatrix, Math.toRadians(endAngle.x));
 
@@ -109,7 +113,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 
 		Tuple6b startTuple = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
 		Tuple6b endTuple   = new Tuple6b(instruction.getX(), instruction.getY(), instruction.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
-		
+
 		Point3d startPoint 	= startTuple.toPoint3d(JoglUtils.JOGL_UNIT);
 		Point3d endPoint 	=   endTuple.toPoint3d(JoglUtils.JOGL_UNIT);
 

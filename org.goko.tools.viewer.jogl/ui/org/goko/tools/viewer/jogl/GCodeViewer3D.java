@@ -51,7 +51,6 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.service.IGCodeService;
 import org.goko.tools.viewer.jogl.camera.AbstractCamera;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DController;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DModel;
@@ -67,7 +66,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	IJoglViewerService viewerService;
 	@Inject
 	private IEventBroker broker;
-	
+
 	/** Widget that displays OpenGL content. */
 	private GokoJoglCanvas glcanvas;
 	private FPSAnimator animator;
@@ -89,12 +88,12 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	public GCodeViewer3D(IEclipseContext context) throws GkException {
 		super(new GCodeViewer3DController(new GCodeViewer3DModel()));
 		ContextInjectionFactory.inject(getController(), context);
-		getController().initialize();		
+		getController().initialize();
+		context.set(GCodeViewer3DController.class, getController());
 	}
 
 	@PostConstruct
-	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {	
-		
+	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {
 		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
 		GLData gldata = new GLData();
 		gldata.doubleBuffer = true;
@@ -103,12 +102,12 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		gl_compositeParent.marginWidth = 0;
 		gl_compositeParent.marginHeight = 0;
 		compositeParent.setLayout(gl_compositeParent);
-		
+
 		final ToolBar toolBar = new ToolBar(compositeParent, SWT.FLAT | SWT.RIGHT);
-		
+
 		glcanvas = viewerService.createCanvas(compositeParent);
 		context.getParent().set(GokoJoglCanvas.class, glcanvas);
-		
+
 		final ToolItem btnEnableView = new ToolItem(toolBar, SWT.CHECK);
 		btnEnableView.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -138,7 +137,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		final ToolItem btnEnableBounds = new ToolItem(toolBar, SWT.CHECK);
 		btnEnableBounds.addSelectionListener(new SelectionAdapter() {
 			@Override public void widgetSelected(SelectionEvent e) {
-				try {					
+				try {
 					getController().setDisplayBounds(btnEnableBounds.getSelection());
 				} catch (GkException ex) {
 					displayError(ex);
@@ -150,6 +149,10 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		getController().addSelectionBinding(btnEnableBounds, "enabled");
 
 		getController().addSelectionBinding(btnEnableView, "enabled");
+
+		 // register context menu on the table
+	   // menuService.registerContextMenu(compositeParent, "org.goko.tools.viewer.jogl.popupmenu.0");
+
 //		final ICoordinateSystemAdapter csAdapter = viewerService.getCoordinateSystemAdapter();
 //		if(csAdapter != null){
 //			final Menu coordinateSystemMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
@@ -271,7 +274,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 				viewMenu.setVisible(true);
 			}
 		});
-		
+
 		ToolItem toolItem_1 = new ToolItem(toolBar, SWT.SEPARATOR);
 
 		btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
@@ -282,13 +285,13 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			}
 		});
 		glcanvas.addFocusListener(new FocusListener() {
-			
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				btnKeyboardJog.setSelection(false);
 				glcanvas.setKeyboardJogEnabled(false);
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {}
 		});
@@ -329,8 +332,8 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			getDataModel().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
 			getController().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
 		}
-		
-		broker.subscribe(TOPIC_ENABLE_KEYBOARD_JOG, this);		
+
+		broker.subscribe(TOPIC_ENABLE_KEYBOARD_JOG, this);
 	}
 
 	@PreDestroy
@@ -363,7 +366,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		if(StringUtils.equals(event.getTopic(),TOPIC_ENABLE_KEYBOARD_JOG)){
 			glcanvas.setKeyboardJogEnabled(!glcanvas.isKeyboardJogEnabled());
 			btnKeyboardJog.setSelection(glcanvas.isKeyboardJogEnabled());
-			glcanvas.setFocus();			
+			glcanvas.setFocus();
 		}
 	}
 }

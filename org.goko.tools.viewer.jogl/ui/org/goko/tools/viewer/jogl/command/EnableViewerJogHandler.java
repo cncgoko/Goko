@@ -13,7 +13,7 @@ import org.goko.tools.viewer.jogl.GCodeViewer3D;
  * @author PsyKo
  *
  */
-public class ViewerEnableJogHandler {
+public class EnableViewerJogHandler {
 	
 	@Execute
 	public void execute(IEclipseContext context, IEventBroker broker){		

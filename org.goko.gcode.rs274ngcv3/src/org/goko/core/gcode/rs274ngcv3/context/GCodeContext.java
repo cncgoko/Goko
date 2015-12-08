@@ -15,11 +15,11 @@ import org.goko.core.math.Tuple6b;
 
 public class GCodeContext implements IGCodeContext{
 	/**
-	 * Current motion mode 
+	 * Current motion mode
 	 */
-	private EnumMotionMode motionMode;	
+	private EnumMotionMode motionMode;
 	/**
-	 * Current distance mode 
+	 * Current distance mode
 	 */
 	private EnumDistanceMode distanceMode;
 	/**
@@ -27,7 +27,7 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	private EnumPlane plane;
 	/**
-	 * Current unit 
+	 * Current unit
 	 */
 	private EnumUnit unit;
 	/**
@@ -43,7 +43,7 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	private EnumCoordinateSystem coordinateSystem;
 	/**
-	 * Current spindle mode 
+	 * Current spindle mode
 	 */
 	private EnumSpindleMode spindleMode;
 	/**
@@ -55,27 +55,27 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	private BigDecimal spindleSpeed;
 	/**
-	 * Offset from origin 
+	 * Offset from origin
 	 */
 	private Tuple6b originOffset;
 	/**
-	 * Offset from origin active  
+	 * Offset from origin active
 	 */
 	private boolean originOffsetActive;
 	/**
-	 * Current motion control mode 
+	 * Current motion control mode
 	 */
 	private EnumMotionControl motionControl;
-	/** 
-	 * X coordinate in the current coordinate system 
+	/**
+	 * X coordinate in the current coordinate system
 	 */
 	private BigDecimalQuantity<Length> x;
 	/**
-	 *  Y coordinate in the current coordinate system 
+	 *  Y coordinate in the current coordinate system
 	 */
 	private BigDecimalQuantity<Length> y;
 	/**
-	 *  Z coordinate in the current coordinate system 
+	 *  Z coordinate in the current coordinate system
 	 */
 	private BigDecimalQuantity<Length> z;
 	/**
@@ -83,7 +83,7 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	private BigDecimalQuantity<Angle> a;
 	/**
-	 *  B coordinate in the current coordinate system 
+	 *  B coordinate in the current coordinate system
 	 */
 	private BigDecimalQuantity<Angle> b;
 	/**
@@ -94,9 +94,9 @@ public class GCodeContext implements IGCodeContext{
 	 * Coordinates system offsets
 	 */
 	private Map<EnumCoordinateSystem, Tuple6b> coordinateSystemData;
-	
+
 	// _______________________ END OF FIELDS DEFINITION _______________________
-	
+
 	/** Empty constructor */
 	public GCodeContext() {
 		this.originOffset = new Tuple6b().setZero();
@@ -111,15 +111,16 @@ public class GCodeContext implements IGCodeContext{
 		this.coordinateSystem = EnumCoordinateSystem.G54;
 		this.spindleMode = EnumSpindleMode.OFF;
 		this.spindleSpeed = BigDecimal.ZERO;
-		this.feedrate = BigDecimal.ZERO;		
+		this.feedrate = BigDecimal.ZERO;
 		this.x = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
 		this.y = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
 		this.z = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
 		this.a = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
 		this.b = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
 		this.c = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
+		this.initCoordinateSystemData();
 	}
-	
+
 	/**
 	 * Copy constructor
 	 * @param context the context to copy
@@ -144,17 +145,32 @@ public class GCodeContext implements IGCodeContext{
 		this.a = context.a;
 		this.b = context.b;
 		this.c = context.c;
-		
-		// Copy coordinate systems data		
+
+		// Copy coordinate systems data
 		if(!context.coordinateSystemData.isEmpty()){
 			for (EnumCoordinateSystem enumCs : context.coordinateSystemData.keySet()) {
 				coordinateSystemData.put(enumCs, new Tuple6b(context.getCoordinateSystemData(enumCs)));
 			}
 		}
 	}
-	
+
 	// _______________________ END OF CONSTRUCTORS DEFINITION _______________________
-	
+
+
+	private void initCoordinateSystemData() {
+		this.coordinateSystemData.put(EnumCoordinateSystem.G53, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G54, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G55, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G56, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G57, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G58, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59_1, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59_2, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59_3, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+
+	}
+
 	/**
 	 * @return the motionMode
 	 */
@@ -275,7 +291,7 @@ public class GCodeContext implements IGCodeContext{
 	public void setSpindleSpeed(BigDecimal spindleSpeed) {
 		this.spindleSpeed = spindleSpeed;
 	}
-	
+
 	/**
 	 * Update the position
 	 * @param x the x coordinate
@@ -286,24 +302,36 @@ public class GCodeContext implements IGCodeContext{
 	 * @param c the c coordinate
 	 * @throws GkException GkException
 	 */
-	public void setPosition(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) throws GkException{		
-		if( x != null) setX(x);
-		if( y != null) setY(y);
-		if( z != null) setZ(z);
-		if( a != null) setA(a);
-		if( b != null) setB(b);
-		if( c != null) setC(c);
+	public void setPosition(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) throws GkException{
+		if( x != null) {
+			setX(x);
+		}
+		if( y != null) {
+			setY(y);
+		}
+		if( z != null) {
+			setZ(z);
+		}
+		if( a != null) {
+			setA(a);
+		}
+		if( b != null) {
+			setB(b);
+		}
+		if( c != null) {
+			setC(c);
+		}
 	}
-	
+
 	/**
 	 * Update the position
-	 * @param tuple the tuple to get the position from 
+	 * @param tuple the tuple to get the position from
 	 * @throws GkException GkException
 	 */
 	public void setPosition(Tuple6b tuple) throws GkException{
 		setPosition(tuple.getX(),tuple.getY(),tuple.getZ(),tuple.getA(),tuple.getB(),tuple.getC());
 	}
-	
+
 	public Tuple6b getPosition() throws GkException{
 		return new Tuple6b(getX(),getY(),getZ(),getA(),getB(),getC());
 	}
@@ -379,10 +407,10 @@ public class GCodeContext implements IGCodeContext{
 	public void setC(BigDecimalQuantity<Angle> c) {
 		this.c = c;
 	}
-	
+
 	/**
 	 * Returns the offset for the given coordinate system
-	 * @param cs the coordinate system 
+	 * @param cs the coordinate system
 	 * @return {@link Tuple6b}
 	 */
 	public Tuple6b getCoordinateSystemData(EnumCoordinateSystem cs){
@@ -391,15 +419,15 @@ public class GCodeContext implements IGCodeContext{
 		}
 		return coordinateSystemData.get(cs);
 	}
-	
+
 	/**
 	 * Sets the offset for the given coordinate system
-	 * @param cs the coordinate system 
+	 * @param cs the coordinate system
 	 * @param offset the offset to set
 	 */
-	public void setCoordinateSystemData(EnumCoordinateSystem cs, Tuple6b offset){		
-		coordinateSystemData.put(cs, offset);	
-		
+	public void setCoordinateSystemData(EnumCoordinateSystem cs, Tuple6b offset){
+		coordinateSystemData.put(cs, offset);
+
 	}
 
 	/**
@@ -443,5 +471,5 @@ public class GCodeContext implements IGCodeContext{
 	public void setMotionControl(EnumMotionControl motionControl) {
 		this.motionControl = motionControl;
 	}
-	
+
 }

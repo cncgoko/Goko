@@ -266,7 +266,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 //		token.setMonitorService(monitorService);
 //		executionQueue.add(token);
 //		return token;
-		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeProvider, ExecutionTokenState.NONE);
+		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeService, gcodeProvider, ExecutionTokenState.NONE);
 		//token.setMonitorService(getMonitorService());
 		//executionQueue.add(token);
 		throw new GkTechnicalException("To implement or remove");
@@ -807,7 +807,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
-		executionService.setExecutor(new GrblDebugExecutor());
+		executionService.setExecutor(new GrblDebugExecutor(gcodeService));
 	}
 
 	/** (inheritDoc)
@@ -973,6 +973,16 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		}
 		if(step != null){
 			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()
+	 */
+	@Override
+	public void verifyReadyForExecution() throws GkException {
+		if(!isReadyForFileStreaming()){
+			throw new GkFunctionalException("Grbl is not ready for GCode execution.");
 		}
 	}
 }
