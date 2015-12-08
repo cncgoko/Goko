@@ -10,11 +10,10 @@
   	<module>../org.goko.build.parent</module>  	  	
   	<module>../com.eclipsesource.json</module>  	
   	<module>../org.goko.tools.commandpanel</module>
-  	<module>../org.goko.tools.dro</module>
+  	<module>../org.goko.tools.dro</module>  	
   	<module>../org.goko.tools.serial.jssc</module>
   	<module>../org.goko.tools.centerfinder</module>
-
-  	<module>../org.goko.gcode.filesender</module>
+  	
   	<module>../org.goko.tools.viewer.jogl</module>
 
   	<module>../org.goko.gcode.rs274ngcv3</module>
@@ -28,7 +27,8 @@
   	<module>../org.goko.core.workspace</module>  	
   	<module>../org.goko.log</module>
   	<module>../org.goko.log.logback</module>
-  	<module>../org.goko.log.ui</module>  	
+  	<module>../org.goko.log.ui</module>  
+  	<module>../org.goko.tools.camera</module>	
   	<module>../Goko</module>
  	<module>../GokoFeature</module>
   	<module>../org.goko.build.product</module>
