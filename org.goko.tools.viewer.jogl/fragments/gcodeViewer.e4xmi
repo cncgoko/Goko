@@ -7,21 +7,55 @@
       <persistedState key="org.goko.tools.viewer.jogl.gridEnabled" value="true"/>
       <persistedState key="org.goko.tools.viewer.jogl.lockCameraOnTool" value="false"/>
       <persistedState key="org.goko.tools.viewer.jogl.coordinateSystemEnabled" value="true"/>
-      <menus xmi:id="_V-TZIJ3CEeWUIrBiK8fBLg" elementId="goko.application.parts.viewer.viewmenu" toBeRendered="false" visible="false" label="ViewMenu" iconURI="">
+      <menus xmi:id="_V-TZIJ3CEeWUIrBiK8fBLg" elementId="goko.application.parts.viewer.viewmenu" label="ViewMenu" iconURI="">
         <tags>ViewMenu</tags>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_XfjJcJ3CEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.0" label="Enable/disable" type="Check" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_XfjJcJ3CEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.0" label="Enable/disable" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_BqjZ0J3HEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.enablejog" label="Enable jog" type="Check" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>
       </menus>
-      <toolbar xmi:id="_M0hmoJ3BEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.toolbar.0"/>
+      <toolbar xmi:id="_M0hmoJ3BEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.toolbar.0">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_B0Ap0J5hEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.togglerenderactivated" label="Toggle render activated" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/activated.png" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_NQZCAJ5rEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.togglegriddisplay" label="Toggle grid display" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/grid.png" type="Check" command="_EBd0UJ5rEeWki_YL0eV3Fg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_90T5EJ5rEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.toggleboundsdisplay" label="Toggle bounds display" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/show-bound.png" type="Check" command="_AMobUJ5sEeWki_YL0eV3Fg"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_vUN3QJ5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.toolbarseparator.0"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_wAUvUJ5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.zoomtofit" label="Zoom to fit" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/layer-resize.png" command="_0Z9pEJ5sEeWki_YL0eV3Fg"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_8lK6gJ5tEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.directtoolitem.setcamera" label="Set camera" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/projection-screen.png">
+          <menu xmi:id="_86ZjoJ5tEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.menu.0">
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_5wNtUJ5yEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.perspectivecamera" label="Perspective camera" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/perspective.png" command="_HuLH4J5xEeWki_YL0eV3Fg">
+              <parameters xmi:id="__AetEJ5yEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.parameter.3" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.PerspectiveCamera"/>
+            </children>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="__3uQYJ5tEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.toporthographiccamera" label="Top orthographic camera" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/ortho-top.png" command="_HuLH4J5xEeWki_YL0eV3Fg">
+              <parameters xmi:id="_UuUkcJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.parameter.0" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.top"/>
+            </children>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_X2qOYJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.leftorthographiccamera" label="Left orthographic camera" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/ortho-left.png" command="_HuLH4J5xEeWki_YL0eV3Fg">
+              <parameters xmi:id="_c9jPsJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.parameter.1" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.left"/>
+            </children>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_lHS-AJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledmenuitem.frontorthographiccamera" label="Front orthographic camera" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/ortho-front.png" command="_HuLH4J5xEeWki_YL0eV3Fg">
+              <parameters xmi:id="_qQByYJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.parameter.2" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.front"/>
+            </children>
+          </menu>
+        </children>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_WTx0cJ5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.enablekeyboardjog" label="Enable keyboard jog" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/keyboard--arrow.png" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_cLgc0J5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.toolbarseparator.1"/>
+      </toolbar>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_duAcsGqyEeW_4J3oW3NGfQ" featurename="commands" parentElementId="goko.application">
     <elements xsi:type="commands:Command" xmi:id="_lIdcEGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.command.enablekeyboardjog" commandName="Enable keyboard jog" description="Enable keyboard jog"/>
     <elements xsi:type="commands:Command" xmi:id="_w7R1kJ3FEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.command.enable" commandName="Enable"/>
+    <elements xsi:type="commands:Command" xmi:id="_EBd0UJ5rEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.command.togglegriddisplay" commandName="Toggle grid display"/>
+    <elements xsi:type="commands:Command" xmi:id="_AMobUJ5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.command.toggleboundsdisplay" commandName="Toggle bounds display"/>
+    <elements xsi:type="commands:Command" xmi:id="_0Z9pEJ5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.command.zoomtofitcommand" commandName="Zoom to fit command"/>
+    <elements xsi:type="commands:Command" xmi:id="_HuLH4J5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.command.setactivecamera" commandName="Set active camera">
+      <parameters xmi:id="_L4CgQJ5xEeWki_YL0eV3Fg" elementId="jogl.camera.id" name="jogl.camera.id" optional="false"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ln3U4GqyEeW_4J3oW3NGfQ" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_nKch8GqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.handler.0" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.EnableViewerJogHandler" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_v2FIEJ3FEeWUIrBiK8fBLg" elementId="org.goko.tools.viewer.jogl.handler.1" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.EnableViewerHandler" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_Gn98gJ5rEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.2" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.ToggleGridDisplayHandler" command="_EBd0UJ5rEeWki_YL0eV3Fg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_BeMJ0J5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.3" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.ToggleBoundsDisplayHandler" command="_AMobUJ5sEeWki_YL0eV3Fg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_15ErYJ5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.4" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.ZoomToFitHandler" command="_0Z9pEJ5sEeWki_YL0eV3Fg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_JXM7MJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.5" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.SetCameraHandler" command="_HuLH4J5xEeWki_YL0eV3Fg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wuC_IGqyEeW_4J3oW3NGfQ" featurename="bindingTables" parentElementId="goko.application">
     <elements xsi:type="commands:BindingTable" xmi:id="_yylCsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.bindingtable.0" bindingContext="_zPZFEGqzEeW_4J3oW3NGfQ">

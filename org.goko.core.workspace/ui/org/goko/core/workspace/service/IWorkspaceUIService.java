@@ -27,4 +27,9 @@ public interface IWorkspaceUIService extends IGokoService {
 	void addProjectContainerUiProvider(ProjectContainerUiProvider provider) throws GkTechnicalException;
 
 	void select(Object obj) throws GkException;
+
+	/**
+	 * Refresh the Workspace UI
+	 */
+	void refreshWorkspaceUi();
 }

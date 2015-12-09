@@ -132,13 +132,13 @@ public class GCodeViewer3DModel extends AbstractModelObject{
 	/**
 	 * @return the showBounds
 	 */
-	protected boolean isShowBounds() {
+	public boolean isShowBounds() {
 		return showBounds;
 	}
 	/**
 	 * @param showBounds the showBounds to set
 	 */
-	protected void setShowBounds(boolean showBounds) {
+	public void setShowBounds(boolean showBounds) {
 		firePropertyChange("showBounds",this.showBounds, this.showBounds = showBounds);
 	}
 	/**

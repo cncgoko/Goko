@@ -179,11 +179,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void verifyReadyForExecution() throws GkException{
-		updateQueueReport();		
+		if(!isReadyForFileStreaming()){
+			throw new GkFunctionalException("TNG-003");
+		}
+		updateQueueReport();
 		checkExecutionControl();
-		checkVerbosity(configuration);		
+		checkVerbosity(configuration);
 	}
-	
+
 	private void checkVerbosity(TinyGConfiguration cfg) throws GkException{
 		BigDecimal jsonVerbosity = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.JSON_VERBOSITY, BigDecimal.class);
 		if(!ObjectUtils.equals(jsonVerbosity, TinyGConfigurationValue.JSON_VERBOSITY_VERBOSE)){
@@ -198,7 +201,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			}
 		}
 	}
-	
+
 	private void checkExecutionControl() throws GkException{
 		BigDecimal flowControl = configuration.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class);
 
@@ -231,8 +234,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		String gcodeString = gcodeService.render(gCodeLine);
 		if(StringUtils.isNotBlank(gcodeString)){
 			JsonValue jsonStr = TinyGControllerUtility.toJson(gcodeString);
-			communicator.send(GkUtils.toBytesList(jsonStr.toString()));			
-		}else{			
+			communicator.send(GkUtils.toBytesList(jsonStr.toString()));
+		}else{
 			tinygExecutor.confirmNextLineExecution();
 		}
 	}

@@ -17,7 +17,6 @@
 
 package org.goko.tools.viewer.jogl.service;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -76,35 +75,35 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private Overlay overlay;
 	private int x;
 	private int y;
-	private int width;	
+	private int width;
 	private int height;
-		
+
 	/** Current camera */
 	private AbstractCamera camera;
 	/** The list of supported camera */
-	private List<AbstractCamera> supportedCamera;	
+	private List<AbstractCamera> supportedCamera;
 	/** Display canvas */
 	private GokoJoglCanvas canvas;
 	/** Rendering proxy */
 	private JoglRendererProxy proxy;
 	/** The list of renderer */
-	private List<ICoreJoglRenderer> renderers;	
+	private List<ICoreJoglRenderer> renderers;
 	/** The list of renderer to remove */
 	private List<ICoreJoglRenderer> renderersToRemove;
 	/** The list of overlay renderer */
 	private CacheById<IOverlayRenderer> overlayRenderers;
-	
+
 	private GLCapabilities canvasCapabilities;
 	private Map<Integer, Boolean> layerVisibility;
 	private Light light0;
 	private Light light1;
-	
+
 	public JoglSceneManager() {
 		getRenderers();
-		initLayers();		
+		initLayers();
 		this.renderersToRemove 	= new ArrayList<ICoreJoglRenderer>();
 		this.overlayRenderers = new CacheById<IOverlayRenderer>(new SequentialIdGenerator());
-		JoglViewerPreference.getInstance().addPropertyChangeListener(this);		
+		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
 	}
 
 	private void initLayers() {
@@ -135,28 +134,28 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		addCamera(new LeftCamera(canvas));
 		addCamera(new FrontCamera(canvas));
 		setActiveCamera(PerspectiveCamera.ID);
-		
+
 		addOverlayRenderer(new CameraNameOverlay(this));
-		
-		onCanvasCreated(canvas);		
+
+		onCanvasCreated(canvas);
 		return canvas;
 	}
-	
+
 	protected abstract void onCanvasCreated(GokoJoglCanvas canvas) throws GkException;
-	
+
 	/**
 	 * Initialization of the lights
 	 */
 	protected void initLights(){
-		light0 = new Light(new Point3f(1000,1000,1000), new Color4f(0.5f,0.5f,0.45f,1), new Color4f(0.25f,0.2f,0.2f,1));		
-		light1 = new Light(new Point3f(-500,-1000,-600), new Color4f(0.3f,0.3f,0.31f,1), new Color4f(0.1f,0.1f,0.15f,1));		
+		light0 = new Light(new Point3f(1000,1000,1000), new Color4f(0.5f,0.5f,0.45f,1), new Color4f(0.25f,0.2f,0.2f,1));
+		light1 = new Light(new Point3f(-500,-1000,-600), new Color4f(0.3f,0.3f,0.31f,1), new Color4f(0.1f,0.1f,0.15f,1));
 	}
-	
+
 	/** (inheritDoc)
 	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
-	public void display(GLAutoDrawable gLAutoDrawable) {		
+	public void display(GLAutoDrawable gLAutoDrawable) {
 		GL3 gl = new DebugGL3( gLAutoDrawable.getGL().getGL3());
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -171,7 +170,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 		PMVMatrix cameraMatrix = camera.getPmvMatrix();
 		ShaderLoader.getInstance().updateProjectionMatrix(gl, cameraMatrix);
-		
+
 		ShaderLoader.getInstance().updateLightData(gl, light0, light1);
 
 		proxy.setGl(gl);
@@ -182,7 +181,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			LOG.error(e);
 		}
 		gl.glUseProgram(0);
-		drawOverlay();		
+		drawOverlay();
 	}
 
 	/**
@@ -201,7 +200,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 					}
 				}
 			}
-			
+
 			if(CollectionUtils.isNotEmpty(renderersToRemove)){
 				for (ICoreJoglRenderer renderer : renderersToRemove) {
 					renderer.performDestroy(gl);
@@ -211,7 +210,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			}
 		}
 	}
-	
+
 	public boolean isLayerVisible(int layerId) {
 		if(layerVisibility.containsKey(layerId)){
 			return layerVisibility.get(layerId);
@@ -225,12 +224,12 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
 		renderers.add(renderer);
-		//synchronized (renderers) {			
+		//synchronized (renderers) {
 		// Make sure that renderer using alpha get rendered last
 		Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());
 		//}
 	}
-	
+
 	public void removeRenderer(ICoreJoglRenderer renderer) throws GkException {
 		//synchronized (renderers) {
 			getRenderers().remove(renderer);
@@ -259,8 +258,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		}
 		return renderers;
 	}
-	
-	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException{		
+
+	public void setRendererEnabled(String idRenderer, boolean enabled) throws GkException{
 		getJoglRenderer(idRenderer).setEnabled(enabled);
 	}
 
@@ -294,7 +293,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
 
 		// Line smooth
-	    gl.glEnable(GL.GL_LINE_SMOOTH);	    
+	    gl.glEnable(GL.GL_LINE_SMOOTH);
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
 
 	    int shaderProgram = ShaderLoader.loadShader(new DebugGL3(gl.getGL3()), EnumGokoShaderProgram.LINE_SHADER);
@@ -302,7 +301,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	    gl.glUseProgram(shaderProgram);
 
 	    initLights();
-	    
+
 		overlay = new Overlay(gLAutoDrawable);
 		overlay.createGraphics();
 	}
@@ -358,15 +357,15 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		camera.updatePosition();
 	}
 
-	private void drawOverlay() {		
-		overlay.beginRendering();		
+	private void drawOverlay() {
+		overlay.beginRendering();
 		Graphics2D g2d = overlay.createGraphics();
 		try{
 			drawOverlayRenderer(g2d);
 		}catch(GkException e){
 			LOG.error(e);
 		}
-		
+
 		overlay.markDirty(0, 0, getWidth(), height);
 		overlay.drawAll();
 		g2d.dispose();
@@ -374,7 +373,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	/**
-	 * Registers the given overlay renderer 
+	 * Registers the given overlay renderer
 	 * @param overlayRenderer the renderer to register
 	 * @throws GkException GkException
 	 */
@@ -461,14 +460,16 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	public void setWidth(int width) {
 		this.width = width;
 	}
-	
+
 	public void setLayerVisible(int layerId, boolean visible){
 		this.layerVisibility.put(layerId, visible);
 	}
 
-	public void zoomToFit() throws GkException {		
+	public void zoomToFit() throws GkException {
 		BoundingTuple6b contentBounds = getContentBounds();
-		getCamera().zoomToFit(contentBounds);		
+		if(contentBounds != null){
+			getCamera().zoomToFit(contentBounds);
+		}
 	}
 
 	public BoundingTuple6b getContentBounds(){

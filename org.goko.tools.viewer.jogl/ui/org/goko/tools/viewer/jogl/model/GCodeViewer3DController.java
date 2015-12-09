@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.camera.OrthographicCamera;
 import org.goko.tools.viewer.jogl.camera.PerspectiveCamera;
@@ -55,28 +54,27 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 		viewerService.setActiveCamera(OrthographicCamera.ID);
 	}
 
-	public void setGCodeFile(IGCodeProvider provider) throws GkException {
-	//	viewerService.renderGCode(provider);
-	}
-
 	public void setLockCameraOnTool(boolean lockOnTool) throws GkException {
 		viewerService.setLockCameraOnTool(lockOnTool);
 	}
 
 	public void setShowGrid(boolean showGrid) throws GkException {
 		viewerService.setLayerVisible(Layer.LAYER_GRIDS, showGrid);
+		getDataModel().setShowGrid(showGrid);
 	}
 
 	public void setRenderEnabled(boolean enabled){
 		viewerService.setEnabled(enabled);
+		getDataModel().setEnabled(enabled);
 	}
 
 	public void setShowCoordinateSystem(boolean selection) throws GkException {
 		viewerService.setRendererEnabled(CoordinateSystemSetRenderer.CODE, selection);
 	}
 
-	public void setDisplayBounds(boolean selection) throws GkException {		
-		viewerService.setLayerVisible(Layer.LAYER_BOUNDS, selection);		
+	public void setDisplayBounds(boolean selection) throws GkException {
+		viewerService.setLayerVisible(Layer.LAYER_BOUNDS, selection);
+		getDataModel().setShowBounds(selection);
 	}
 
 

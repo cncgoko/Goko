@@ -16,7 +16,6 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl.camera;
 
-import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
@@ -78,7 +77,7 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 	 */
 	@Override
 	public void setup() {
-		
+
 	}
 
 
@@ -91,9 +90,9 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 		spaceHeight = height/ zoomOffset;
 		// Set the view port (display area) to cover the entire window
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-        pmvMatrix.glLoadIdentity();        
+        pmvMatrix.glLoadIdentity();
         pmvMatrix.glOrthof( (float)(eye.x - spaceWidth), (float)(eye.x + spaceWidth), (float)(eye.y - spaceHeight), (float)(eye.y + spaceHeight), -5000 , 5000 );
-        
+
 	}
 
 
@@ -132,13 +131,13 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 			}
 		}
 	}
-	
+
 	protected void zoomMouse(MouseEvent e){
 		if(glCanvas.isFocusControl() && isActivated()){
 			zoomOffset = Math.max(0.1, zoomOffset+ (e.y-last.y) / 50.0);
 		}
 	}
-	
+
 	protected abstract void panMouse(MouseEvent e);
 
 
@@ -171,9 +170,9 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 			mouseScroll(event);
 		}
 	}
-	
+
 	protected abstract void mouseScroll(Event event);
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.camera.AbstractCamera#getLabel()
 	 */
@@ -198,7 +197,7 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		super.reshape(drawable, x, y, width, height);
-		GL2 gl = drawable.getGL().getGL2();
+
 		if (height == 0) {
 			height = 1; // prevent divide by zero
 		}

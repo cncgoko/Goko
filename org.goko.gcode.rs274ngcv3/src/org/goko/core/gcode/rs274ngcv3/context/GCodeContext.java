@@ -158,16 +158,16 @@ public class GCodeContext implements IGCodeContext{
 
 
 	private void initCoordinateSystemData() {
-		this.coordinateSystemData.put(EnumCoordinateSystem.G53, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G54, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G55, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G56, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G57, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G58, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G59, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G59_1, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G59_2, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
-		this.coordinateSystemData.put(EnumCoordinateSystem.G59_3, new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G53, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G54, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G55, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G56, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G57, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G58, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59_1, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59_2, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
+		this.coordinateSystemData.put(EnumCoordinateSystem.G59_3, new Tuple6b(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Units.MILLIMETRE));
 
 	}
 

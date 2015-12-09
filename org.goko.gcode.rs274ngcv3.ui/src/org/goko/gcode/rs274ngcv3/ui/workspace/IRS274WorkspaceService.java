@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace;
 
@@ -17,4 +17,6 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 public interface IRS274WorkspaceService extends IGokoService{
 
 	List<IModifierUiProvider<GCodeProvider, ?>> getModifierBuilder() throws GkException;
+
+	void addModifierBuilder(IModifierUiProvider<GCodeProvider, ?> modifierBuilder) throws GkException;
 }

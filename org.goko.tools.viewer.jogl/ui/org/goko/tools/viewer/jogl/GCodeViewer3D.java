@@ -33,25 +33,13 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.tools.viewer.jogl.camera.AbstractCamera;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DController;
 import org.goko.tools.viewer.jogl.model.GCodeViewer3DModel;
 import org.goko.tools.viewer.jogl.service.IJoglViewerService;
@@ -70,7 +58,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	/** Widget that displays OpenGL content. */
 	private GokoJoglCanvas glcanvas;
 	private FPSAnimator animator;
-	private ToolItem btnKeyboardJog;
 	private static final String VIEWER_ENABLED = "org.goko.tools.viewer.jogl.enabled";
 	private static final String VIEWER_GRID_ENABLED = "org.goko.tools.viewer.jogl.gridEnabled";
 	private static final String VIEWER_LOCK_CAMERA_ON_TOOL = "org.goko.tools.viewer.jogl.lockCameraOnTool";
@@ -103,52 +90,52 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		gl_compositeParent.marginHeight = 0;
 		compositeParent.setLayout(gl_compositeParent);
 
-		final ToolBar toolBar = new ToolBar(compositeParent, SWT.FLAT | SWT.RIGHT);
+		//final ToolBar toolBar = new ToolBar(compositeParent, SWT.FLAT | SWT.RIGHT);
 
 		glcanvas = viewerService.createCanvas(compositeParent);
 		context.getParent().set(GokoJoglCanvas.class, glcanvas);
 
-		final ToolItem btnEnableView = new ToolItem(toolBar, SWT.CHECK);
-		btnEnableView.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				getController().setRenderEnabled(btnEnableView.getSelection());
-			}
-		});
-		btnEnableView.setToolTipText("Enable/disable 3D view");
-		btnEnableView.setWidth(32);
-		btnEnableView.setHotImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/activated.png"));
-		btnEnableView.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/activated.png"));
-
-		final ToolItem btnEnableGrid = new ToolItem(toolBar, SWT.CHECK);
-		btnEnableGrid.addSelectionListener(new SelectionAdapter() {
-			@Override public void widgetSelected(SelectionEvent e) {
-				try {
-					getController().setShowGrid(btnEnableGrid.getSelection());
-				} catch (GkException ex) {
-					displayError(ex);
-				}
-			}
-		});
-		btnEnableGrid.setToolTipText("Show/hide grid");
-		btnEnableGrid.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/grid.png"));
-		getController().addSelectionBinding(btnEnableGrid, "showGrid");
-
-		final ToolItem btnEnableBounds = new ToolItem(toolBar, SWT.CHECK);
-		btnEnableBounds.addSelectionListener(new SelectionAdapter() {
-			@Override public void widgetSelected(SelectionEvent e) {
-				try {
-					getController().setDisplayBounds(btnEnableBounds.getSelection());
-				} catch (GkException ex) {
-					displayError(ex);
-				}
-			}
-		});
-		btnEnableBounds.setToolTipText("Show/hide bounds");
-		btnEnableBounds.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/show-bound.png"));
-		getController().addSelectionBinding(btnEnableBounds, "enabled");
-
-		getController().addSelectionBinding(btnEnableView, "enabled");
+//		final ToolItem btnEnableView = new ToolItem(toolBar, SWT.CHECK);
+//		btnEnableView.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				getController().setRenderEnabled(btnEnableView.getSelection());
+//			}
+//		});
+//		btnEnableView.setToolTipText("Enable/disable 3D view");
+//		btnEnableView.setWidth(32);
+//		btnEnableView.setHotImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/activated.png"));
+//		btnEnableView.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/activated.png"));
+//
+//		final ToolItem btnEnableGrid = new ToolItem(toolBar, SWT.CHECK);
+//		btnEnableGrid.addSelectionListener(new SelectionAdapter() {
+//			@Override public void widgetSelected(SelectionEvent e) {
+//				try {
+//					getController().setShowGrid(btnEnableGrid.getSelection());
+//				} catch (GkException ex) {
+//					displayError(ex);
+//				}
+//			}
+//		});
+//		btnEnableGrid.setToolTipText("Show/hide grid");
+//		btnEnableGrid.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/grid.png"));
+//		getController().addSelectionBinding(btnEnableGrid, "showGrid");
+//
+//		final ToolItem btnEnableBounds = new ToolItem(toolBar, SWT.CHECK);
+//		btnEnableBounds.addSelectionListener(new SelectionAdapter() {
+//			@Override public void widgetSelected(SelectionEvent e) {
+//				try {
+//					getController().setDisplayBounds(btnEnableBounds.getSelection());
+//				} catch (GkException ex) {
+//					displayError(ex);
+//				}
+//			}
+//		});
+//		btnEnableBounds.setToolTipText("Show/hide bounds");
+//		btnEnableBounds.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/show-bound.png"));
+//		getController().addSelectionBinding(btnEnableBounds, "enabled");
+//
+//		getController().addSelectionBinding(btnEnableView, "enabled");
 
 		 // register context menu on the table
 	   // menuService.registerContextMenu(compositeParent, "org.goko.tools.viewer.jogl.popupmenu.0");
@@ -223,80 +210,79 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 
 
-		ToolItem toolItem = new ToolItem(toolBar, SWT.SEPARATOR);
+//		ToolItem toolItem = new ToolItem(toolBar, SWT.SEPARATOR);
+//
+//		ToolItem btnZoomExtent = new ToolItem(toolBar, SWT.NONE);
+//		btnZoomExtent.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				try {
+//					getController().zoomToFit();
+//				} catch (GkException ex) {
+//					displayError(ex);
+//				}
+//			}
+//		});
+//		btnZoomExtent.setToolTipText("Zoom extents");
+//		btnZoomExtent.setWidth(32);
+//		btnZoomExtent.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/layer-resize.png"));
+//
+//		final ToolItem btnView = new ToolItem(toolBar, SWT.DROP_DOWN);
+//		btnView.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/projection-screen.png"));
+//		btnView.setToolTipText("Change view");
+//		final Menu viewMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
+//
+//		for (AbstractCamera camera: viewerService.getSupportedCamera()) {
+//			MenuItem btnCamera = new MenuItem(viewMenu, SWT.PUSH);
+//			btnCamera.setText(camera.getLabel());
+//			final String cameraId = camera.getId();
+//
+//			btnCamera.addSelectionListener(new SelectionAdapter() {
+//
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					try {
+//						viewerService.setActiveCamera(cameraId);
+//					} catch (GkException e1) {
+//						displayError(e1);
+//					}
+//				}
+//			});
+//		}
+//
+//
+//		btnView.addListener(SWT.Selection, new Listener() {
+//			@Override
+//			public void handleEvent(Event event) {
+//				Rectangle rect = btnView.getBounds();
+//				Point pt = new Point(rect.x, rect.y + rect.height);
+//				pt = toolBar.toDisplay(pt);
+//				viewMenu.setLocation(pt.x, pt.y);
+//				viewMenu.setVisible(true);
+//			}
+//		});
+//
+//		ToolItem toolItem_1 = new ToolItem(toolBar, SWT.SEPARATOR);
 
-		ToolItem btnZoomExtent = new ToolItem(toolBar, SWT.NONE);
-		btnZoomExtent.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					getController().zoomToFit();
-				} catch (GkException ex) {
-					displayError(ex);
-				}
-			}
-		});
-		btnZoomExtent.setToolTipText("Zoom extents");
-		btnZoomExtent.setWidth(32);
-		btnZoomExtent.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/layer-resize.png"));
-
-		final ToolItem btnView = new ToolItem(toolBar, SWT.DROP_DOWN);
-		btnView.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/projection-screen.png"));
-		btnView.setToolTipText("Change view");
-		final Menu viewMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
-
-		for (AbstractCamera camera: viewerService.getSupportedCamera()) {
-			MenuItem btnCamera = new MenuItem(viewMenu, SWT.PUSH);
-			btnCamera.setText(camera.getLabel());
-			final String cameraId = camera.getId();
-
-			btnCamera.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					try {
-						viewerService.setActiveCamera(cameraId);
-					} catch (GkException e1) {
-						displayError(e1);
-					}
-				}
-			});
-		}
-
-
-		btnView.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				Rectangle rect = btnView.getBounds();
-				Point pt = new Point(rect.x, rect.y + rect.height);
-				pt = toolBar.toDisplay(pt);
-				viewMenu.setLocation(pt.x, pt.y);
-				viewMenu.setVisible(true);
-			}
-		});
-
-		ToolItem toolItem_1 = new ToolItem(toolBar, SWT.SEPARATOR);
-
-		btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
-		btnKeyboardJog.addSelectionListener(new SelectionAdapter() {
-			@Override public void widgetSelected(SelectionEvent e) {
-				glcanvas.setFocus();
-				glcanvas.setKeyboardJogEnabled(btnKeyboardJog.getSelection());
-			}
-		});
+//		btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
+//		btnKeyboardJog.addSelectionListener(new SelectionAdapter() {
+//			@Override public void widgetSelected(SelectionEvent e) {
+//				glcanvas.setFocus();
+//				glcanvas.setKeyboardJogEnabled(btnKeyboardJog.getSelection());
+//			}
+//		});
 		glcanvas.addFocusListener(new FocusListener() {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				btnKeyboardJog.setSelection(false);
 				glcanvas.setKeyboardJogEnabled(false);
 			}
 
 			@Override
 			public void focusGained(FocusEvent e) {}
 		});
-		btnKeyboardJog.setToolTipText("Enable/disable keyboard jogging (Ctrl + J)");
-		btnKeyboardJog.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/keyboard--arrow.png"));
+//		btnKeyboardJog.setToolTipText("Enable/disable keyboard jogging (Ctrl + J)");
+//		btnKeyboardJog.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/keyboard--arrow.png"));
 
 
 
@@ -365,7 +351,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	public void handleEvent(org.osgi.service.event.Event event) {
 		if(StringUtils.equals(event.getTopic(),TOPIC_ENABLE_KEYBOARD_JOG)){
 			glcanvas.setKeyboardJogEnabled(!glcanvas.isKeyboardJogEnabled());
-			btnKeyboardJog.setSelection(glcanvas.isKeyboardJogEnabled());
 			glcanvas.setFocus();
 		}
 	}

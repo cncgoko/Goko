@@ -35,7 +35,6 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderModifier;
 import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderRoot;
-import org.goko.core.gcode.rs274ngcv3.event.RS274WorkspaceEvent;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
@@ -461,7 +460,6 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
 		cacheProviders.add(new StackableGCodeProviderRoot(provider));
 		notifyGCodeProviderCreate(provider);
-		workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(provider));
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#deleteGCodeProvider(java.lang.Integer)
@@ -516,7 +514,6 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		if(provider.isLocked()){
 			provider.setLocked(false);
 			notifyGCodeProviderUnlocked(provider);
-			workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getUpdateEvent(provider));
 		}
 	}
 	/**
@@ -552,7 +549,6 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		this.cacheProviders.remove(baseProvider.getId());
 		this.cacheProviders.add(wrappedProvider);
 		notifyGCodeProviderUpdate(wrappedProvider);
-		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getCreateEvent(modifier));
 	}
 
 	/** (inheritDoc)
@@ -567,7 +563,6 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		IStackableGCodeProvider provider = this.cacheProviders.get(modifier.getIdGCodeProvider());
 		provider.update();
 		notifyGCodeProviderUpdate(provider);
-		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getUpdateEvent(modifier));
 	}
 
 	/** (inheritDoc)
@@ -611,7 +606,6 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		}
 		IStackableGCodeProvider targetProvider = cacheProviders.get(modifier.getIdGCodeProvider());
 		notifyGCodeProviderUpdate(targetProvider);
-		this.workspaceService.notifyWorkspaceEvent(RS274WorkspaceEvent.getDeleteEvent(modifier));
 	}
 
 	/** (inheritDoc)
