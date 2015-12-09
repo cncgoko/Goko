@@ -27,4 +27,9 @@ public interface IWorkspaceService extends IGokoService{
 
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
 	
+	void addProjectContainerExporter(IProjectContainerExporter exporter) throws GkException;
+	
+	void addProjectContainerLoader(IProjectContainerLoader loader) throws GkException;
+	
+	void saveProject();
 }

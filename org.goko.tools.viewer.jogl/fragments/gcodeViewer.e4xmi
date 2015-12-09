@@ -34,8 +34,8 @@
             </children>
           </menu>
         </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_WTx0cJ5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.enablekeyboardjog" label="Enable keyboard jog" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/keyboard--arrow.png" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_cLgc0J5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.toolbarseparator.1"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_WTx0cJ5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.enablekeyboardjog" label="Enable keyboard jog" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/keyboard--arrow.png" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
       </toolbar>
     </elements>
   </fragments>
