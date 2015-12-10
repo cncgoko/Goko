@@ -9,7 +9,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.bean.ProjectContainer;
+import org.goko.core.workspace.element.ProjectContainer;
 
 public class ExecutionQueueContainerLabelProvider extends LabelProvider implements IStyledLabelProvider {
 	private static final GkLog LOG = GkLog.getLogger(ExecutionQueueContainerLabelProvider.class);
@@ -19,23 +19,23 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 	@Override
 	public StyledString getStyledText(Object element) {
 		if(element instanceof ProjectContainer){
-			StyledString styleString = new StyledString();			
-			styleString.append("Execution queue ");			
+			StyledString styleString = new StyledString();
+			styleString.append("Execution queue ");
 			return styleString;
 		}else if(element instanceof ExecutionToken){
 			ExecutionToken<?> executionToken = (ExecutionToken<?>) element;
-			StyledString styleString = new StyledString();			
+			StyledString styleString = new StyledString();
 			try {
 				styleString.append(executionToken.getGCodeProvider().getCode());
 			} catch (GkException e) {
 				styleString.append("ERROR");
 				LOG.error(e);
-			}			
+			}
 			return styleString;
 		}
 		return null;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
 	 */
@@ -46,17 +46,17 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 		}else if(element instanceof ExecutionToken){
 			ExecutionToken<?> token = (ExecutionToken<?>) element;
 			if(token.getState() == ExecutionState.COMPLETE){
-				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/tick.png");	
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/tick.png");
 			}else if(token.getState() == ExecutionState.RUNNING){
-				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/control-running.png");				
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/control-running.png");
 			}else if(token.getState() == ExecutionState.PAUSED){
-				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/pause.gif");				
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/pause.gif");
 			}else if(token.getState() == ExecutionState.ERROR){
-				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/cross.png");				
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/cross.png");
 			}else if(token.getState() == ExecutionState.STOPPED){
-				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/stop.gif");				
+				return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/stop.gif");
 			}
-			
+
 		}
 		return null;
 	}

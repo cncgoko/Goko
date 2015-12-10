@@ -13,7 +13,11 @@ import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.io.XmlProjectContainer;
+import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TestModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
@@ -30,12 +34,16 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	private static final String SERVICE_ID ="org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService";
 	/** Workspace UI service */
 	private IWorkspaceUIService workspaceUIService;
+	/** Workspace service */
+	private IWorkspaceService workspaceService;
 	/** Workspace UI service */
 	private IExecutionService<?,?> executionService;
 	/** Workspace UI service */
 	private IRS274NGCService gcodeService;
 	/** The list of existing IModifierUiProvider*/
 	List<IModifierUiProvider<GCodeProvider, ?>> lstModifierUiProvider;
+	/** Dirty state */
+	private boolean dirty;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -55,6 +63,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
 		getGcodeService().addListener(this);
 		lstModifierUiProvider = new ArrayList<IModifierUiProvider<GCodeProvider, ?>>();
+		workspaceService.addProjectSaveParticipant(this);
 		initModifierUiProvider();
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -139,6 +148,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		dirty = true;
 	}
 
 	/** (inheritDoc)
@@ -147,6 +157,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		dirty = true;
 	}
 
 	/** (inheritDoc)
@@ -155,6 +166,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		dirty = true;
 	}
 
 	/** (inheritDoc)
@@ -172,4 +184,58 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#isDirty()
+	 */
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#save(org.goko.core.workspace.io.XmlProjectContainer)
+	 */
+	@Override
+	public XmlProjectContainer<XmlRS274GContent> save() throws GkException {
+		XmlProjectContainer<XmlRS274GContent> container = new XmlProjectContainer<XmlRS274GContent>();
+		container.setType(getProjectContainerType());
+		List<IGCodeProvider> lstProviders = gcodeService.getGCodeProvider();
+		ArrayList<XmlGCodeProvider> lstXmlProvider = new ArrayList<XmlGCodeProvider>();
+
+		for (IGCodeProvider igCodeProvider : lstProviders) {
+			XmlGCodeProvider xmlProvider = new XmlGCodeProvider();
+			xmlProvider.setCode(igCodeProvider.getCode());
+			lstXmlProvider.add(xmlProvider);
+		}
+		XmlRS274GContent content = new XmlRS274GContent();
+		content.setLstGCodeProvider(lstXmlProvider);
+		container.setContent(content);
+
+		return container;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#getProjectContainerType()
+	 */
+	@Override
+	public String getProjectContainerType() {
+		return "TEST";
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) {
+		this.workspaceService = workspaceService;
+	}
+
+
 }

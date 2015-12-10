@@ -20,16 +20,14 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 
 public interface IWorkspaceService extends IGokoService{
-		
+
 	void notifyWorkspaceEvent(IWorkspaceEvent event) throws GkException;
-	
+
 	void addWorkspaceListener(IWorkspaceListener listener) throws GkException;
 
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
-	
-	void addProjectContainerExporter(IProjectContainerExporter exporter) throws GkException;
-	
-	void addProjectContainerLoader(IProjectContainerLoader loader) throws GkException;
-	
-	void saveProject();
+
+	void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException;
+
+	void saveProject() throws GkException ;
 }

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider;
 
@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
-import org.goko.core.workspace.bean.ProjectContainer;
+import org.goko.core.workspace.element.ProjectContainer;
 
 
 /**
@@ -18,7 +18,7 @@ import org.goko.core.workspace.bean.ProjectContainer;
  * @date 31 oct. 2015
  */
 public class GCodeContainerLabelProvider extends LabelProvider implements IStyledLabelProvider {
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider#getStyledText(java.lang.Object)
 	 */
@@ -27,18 +27,18 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 		if(element instanceof IGCodeProvider){
 			return new StyledString(((IGCodeProvider) element).getCode());
 		}else if(element instanceof ProjectContainer){
-			StyledString styleString = new StyledString();			
-			styleString.append("GCode ");			
+			StyledString styleString = new StyledString();
+			styleString.append("GCode ");
 			return styleString;
 		}else if(element instanceof IModifier){
-			StyledString styleString = new StyledString();			
-			styleString.append(((IModifier<?>) element).getModifierName());			
+			StyledString styleString = new StyledString();
+			styleString.append(((IModifier<?>) element).getModifierName());
 			return styleString;
 		}
 		return null;
 	}
 
-	
+
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
 	 */

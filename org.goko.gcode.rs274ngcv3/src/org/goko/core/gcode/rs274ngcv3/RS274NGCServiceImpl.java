@@ -525,8 +525,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 
 	/**
 	 * @param workspaceService the workspaceService to set
+	 * @throws GkException GkException
 	 */
-	public void setWorkspaceService(IWorkspaceService workspaceService) {
+	public void setWorkspaceService(IWorkspaceService workspaceService) throws GkException {
 		this.workspaceService = workspaceService;
 	}
 
@@ -744,4 +745,5 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			}
 		}
 	}
+
 }

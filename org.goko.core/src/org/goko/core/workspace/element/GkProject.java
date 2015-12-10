@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.goko.core.workspace.bean;
+package org.goko.core.workspace.element;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -15,15 +15,15 @@ import org.goko.core.execution.monitor.uiprovider.menu.executiontoken.DeleteExec
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
-import org.goko.core.workspace.bean.ProjectContainer;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
+import org.goko.core.workspace.element.ProjectContainer;
 
 public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvider {
 	/** The underlying ExecutionService */
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	/** The label provider */
 	private ExecutionQueueContainerLabelProvider labelProvider;
-	
+
 	public ExecutionQueueContainerUiProvider(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
 		super("EXECUTIONQUEUE");
 		this.labelProvider = new ExecutionQueueContainerLabelProvider();
@@ -72,7 +72,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	@Override
 	public void createConfigurationPanelFor(Composite parent, ISelection content) throws GkException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/** (inheritDoc)
@@ -91,8 +91,8 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public boolean hasChildren(Object content) throws GkException {
-		if(content instanceof ProjectContainer){			
-			return CollectionUtils.isNotEmpty(executionService.getExecutionQueue().getExecutionToken());			
+		if(content instanceof ProjectContainer){
+			return CollectionUtils.isNotEmpty(executionService.getExecutionQueue().getExecutionToken());
 		}
 		return false;
 	}
@@ -102,8 +102,8 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public Object[] getChildren(Object content) throws GkException {
-		if(content instanceof ProjectContainer){			
-			return executionService.getExecutionQueue().getExecutionToken().toArray();			
+		if(content instanceof ProjectContainer){
+			return executionService.getExecutionQueue().getExecutionToken().toArray();
 		}
 		return new Object[0];
 	}
@@ -152,7 +152,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	private void createMenuForExecutionToken(IMenuManager contextMenu, ExecutionToken<?> token) {
 		contextMenu.add(new DeleteExecutionTokenAction(executionService, token.getId()));
 	}
-	
+
 	/**
 	 * Create the menu for the execution queue
 	 * @param contextMenu

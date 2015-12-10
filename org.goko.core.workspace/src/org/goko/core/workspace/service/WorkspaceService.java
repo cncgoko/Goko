@@ -19,14 +19,19 @@
  */
 package org.goko.core.workspace.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.bean.GkProject;
-import org.goko.core.workspace.bean.ProjectContainer;
+import org.goko.core.workspace.element.GkProject;
+import org.goko.core.workspace.element.ProjectContainer;
+import org.goko.core.workspace.io.XmlGkProject;
+import org.goko.core.workspace.io.XmlProjectContainer;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 /**
  * Default implementation of the workspace service
@@ -45,9 +50,13 @@ public class WorkspaceService implements IWorkspaceService{
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceService";
 	/** The list of listener */
 	private List<IWorkspaceListener> listenerList;
+	/** The known save participants */
+	private List<IProjectSaveParticipant<?>> saveParticipants;
+	/** The known load participants */
+	private List<IProjectLoadParticipant> loadParticipants;
 	// Temporary project storage
 	private GkProject project;
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -60,11 +69,12 @@ public class WorkspaceService implements IWorkspaceService{
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {		
-		this.listenerList = new ArrayList<IWorkspaceListener>();		
+	public void start() throws GkException {
+		this.listenerList = new ArrayList<IWorkspaceListener>();
 		this.project = new GkProject();
-		this.project.addProjectContainer(new ProjectContainer("TEST")); // FIXME : remove from workspace service 
-		this.project.addProjectContainer(new ProjectContainer("EXECUTIONQUEUE")); // FIXME : remove from workspace service 
+		this.project.addProjectContainer(new ProjectContainer("TEST")); // FIXME : remove from workspace service
+		this.project.addProjectContainer(new ProjectContainer("EXECUTIONQUEUE")); // FIXME : remove from workspace service
+		this.saveParticipants = new ArrayList<IProjectSaveParticipant<?>>();
 		LOG.info("Successfully started : "+getServiceId());
 	}
 
@@ -92,6 +102,7 @@ public class WorkspaceService implements IWorkspaceService{
 		this.listenerList.remove(listener);
 	}
 
+	@Override
 	public void notifyWorkspaceEvent(IWorkspaceEvent event) throws GkException{
 		notifyListeners(event);
 	}
@@ -120,5 +131,37 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	public void setProject(GkProject project) {
 		this.project = project;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#addProjectSaveParticipant(org.goko.core.workspace.service.IProjectSaveParticipant)
+	 */
+	@Override
+	public void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException {
+		this.saveParticipants.add(participant);
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
+	 */
+	@Override
+	public void saveProject() throws GkException {
+		XmlGkProject xmlProject = new XmlGkProject();
+
+		ArrayList<XmlProjectContainer<?>> lstProjectContainer = new ArrayList<XmlProjectContainer<?>>();
+
+		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+			XmlProjectContainer<?> xmlProjectContainer = new XmlProjectContainer();
+			xmlProjectContainer.setType(saveParticipant.getProjectContainerType());
+			lstProjectContainer.add(saveParticipant.save());
+		}
+
+		xmlProject.setLstProjectContainer(lstProjectContainer);
+		Serializer p = new Persister();
+		try {
+			p.write(xmlProject, new File("c:/testgk.xml"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

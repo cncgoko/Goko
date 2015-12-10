@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.core.workspace.service;
 
@@ -10,10 +10,11 @@ import org.goko.core.workspace.io.XmlProjectContainer;
  * @author PsyKo
  * @date 9 déc. 2015
  */
-public interface IProjectContainerLoader {
+public interface IProjectSaveParticipant<T> {
 
-	void load(XmlProjectContainer container) throws GkException;
-	
+	boolean isDirty();
+
+    XmlProjectContainer<T> save() throws GkException;
+
 	String getProjectContainerType();
-	a implementer 
 }
