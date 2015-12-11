@@ -32,6 +32,7 @@ import org.goko.core.workspace.io.XmlGkProject;
 import org.goko.core.workspace.io.XmlProjectContainer;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.TreeStrategy;
 
 /**
  * Default implementation of the workspace service
@@ -147,16 +148,14 @@ public class WorkspaceService implements IWorkspaceService{
 	public void saveProject() throws GkException {
 		XmlGkProject xmlProject = new XmlGkProject();
 
-		ArrayList<XmlProjectContainer<?>> lstProjectContainer = new ArrayList<XmlProjectContainer<?>>();
+		ArrayList<XmlProjectContainer> lstProjectContainer = new ArrayList<XmlProjectContainer>();
 
 		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
-			XmlProjectContainer<?> xmlProjectContainer = new XmlProjectContainer();
-			xmlProjectContainer.setType(saveParticipant.getProjectContainerType());
 			lstProjectContainer.add(saveParticipant.save());
 		}
 
 		xmlProject.setLstProjectContainer(lstProjectContainer);
-		Serializer p = new Persister();
+		Serializer p = new Persister(new TreeStrategy());
 		try {
 			p.write(xmlProject, new File("c:/testgk.xml"));
 		} catch (Exception e) {

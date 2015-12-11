@@ -13,7 +13,6 @@ import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.io.XmlProjectContainer;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
@@ -22,10 +21,15 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TestModifierBuilde
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
+import org.simpleframework.xml.transform.Transform;
 
 /**
  * @author PsyKo
  * @date 31 oct. 2015
+ */
+/**
+ * @author Psyko
+ *
  */
 public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener{
 	/** LOG */
@@ -197,9 +201,8 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#save(org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override
-	public XmlProjectContainer<XmlRS274GContent> save() throws GkException {
-		XmlProjectContainer<XmlRS274GContent> container = new XmlProjectContainer<XmlRS274GContent>();
-		container.setType(getProjectContainerType());
+	public XmlRS274GContent save() throws GkException {
+		XmlRS274GContent content = new XmlRS274GContent();
 		List<IGCodeProvider> lstProviders = gcodeService.getGCodeProvider();
 		ArrayList<XmlGCodeProvider> lstXmlProvider = new ArrayList<XmlGCodeProvider>();
 
@@ -208,19 +211,22 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 			xmlProvider.setCode(igCodeProvider.getCode());
 			lstXmlProvider.add(xmlProvider);
 		}
-		XmlRS274GContent content = new XmlRS274GContent();
 		content.setLstGCodeProvider(lstXmlProvider);
-		container.setContent(content);
 
-		return container;
+		return content;
 	}
 
+	@Override
+	public Transform<XmlRS274GContent> getTransform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#getProjectContainerType()
 	 */
 	@Override
-	public String getProjectContainerType() {
-		return "TEST";
+	public Class<XmlRS274GContent> getProjectContainerClass() {
+		return XmlRS274GContent.class;
 	}
 
 	/**

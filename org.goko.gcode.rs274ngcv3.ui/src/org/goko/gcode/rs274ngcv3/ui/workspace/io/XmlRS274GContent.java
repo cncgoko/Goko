@@ -2,11 +2,12 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.io;
 
 import java.util.ArrayList;
 
+import org.goko.core.workspace.io.XmlProjectContainer;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 @Root(name="rs274Content")
-public class XmlRS274GContent {
+public class XmlRS274GContent extends XmlProjectContainer{
 
 	@ElementList
 	ArrayList<XmlGCodeProvider> lstGCodeProvider;
