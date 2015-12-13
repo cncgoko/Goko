@@ -8,6 +8,7 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1"
 Export-Package: org.goko.core.gcode.rs274ngcv3,
  org.goko.core.gcode.rs274ngcv3.context,
  org.goko.core.gcode.rs274ngcv3.element,
+ org.goko.core.gcode.rs274ngcv3.element.source,
  org.goko.core.gcode.rs274ngcv3.instruction,
  org.goko.core.gcode.rs274ngcv3.instruction.builder,
  org.goko.core.gcode.rs274ngcv3.modifier,

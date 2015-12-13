@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.core.workspace.service;
 
+import java.io.File;
+
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 
@@ -28,6 +30,12 @@ public interface IWorkspaceService extends IGokoService{
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
 
 	void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException;
-
-	void saveProject() throws GkException ;
+	
+	void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException;
+	
+	IProjectLoadParticipant<?> findProjectLoadParticipantByType(String type) throws GkException;
+	
+	void saveProject() throws GkException;
+	
+	void loadProject(File project) throws GkException;
 }

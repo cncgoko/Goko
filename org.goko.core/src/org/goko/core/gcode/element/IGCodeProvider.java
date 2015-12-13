@@ -7,9 +7,17 @@ import org.goko.core.common.utils.IIdBean;
 
 
 public interface IGCodeProvider extends IIdBean{
-	
+
+	/**
+	 * Getter for the user displayed code of this provider  
+	 * @return code the displayed code of this provider
+	 */
 	String getCode();
 	
+	/**
+	 * Setter for the user displayed code of this provider  
+	 * @param code the displayed code of this provider
+	 */
 	void setCode(String code);
 	
 	/**
@@ -49,4 +57,6 @@ public interface IGCodeProvider extends IIdBean{
 	 * @param locked <code>true</code> if it's locked, <code>false</code> otherwise
 	 */
 	void setLocked(boolean locked);
+		
+	IGCodeProviderSource getSource();
 }

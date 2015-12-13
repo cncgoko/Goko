@@ -6,6 +6,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProviderSource;
 
 public class StackableGCodeProviderModifier extends GCodeProvider implements IGCodeProvider, IStackableGCodeProvider{
 	private IStackableGCodeProvider parent;
@@ -155,4 +156,13 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 		this.parent = parent;
 		this.lastUpdateDate = null;
 	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#getSource()
+	 */
+	@Override
+	public IGCodeProviderSource getSource() {		
+		return parent.getSource();
+	}
+	
+	
 }

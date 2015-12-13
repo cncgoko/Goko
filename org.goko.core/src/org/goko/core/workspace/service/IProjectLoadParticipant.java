@@ -4,15 +4,17 @@
 package org.goko.core.workspace.service;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.workspace.io.XmlProjectContainer;
+import org.simpleframework.xml.stream.InputNode;
 
 /**
  * @author PsyKo
  * @date 9 déc. 2015
  */
-public interface IProjectLoadParticipant {
+public interface IProjectLoadParticipant<T> {
 
-	void load(XmlProjectContainer container) throws GkException;
+	void load(InputNode input) throws GkException;
 
 	String getProjectContainerType();
+	
+	T newContentInstance();
 }

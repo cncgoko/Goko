@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry exported="true" kind="lib" path="libs/guava-16.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-validator-1.4.1/commons-validator-1.4.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/simple-xml/simple-xml-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/simple-xml/simple-xml-2.7.1.jar" sourcepath="libs/simple-xml/simple-xml-2.7.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.1/commons-collections-3.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1/commons-lang3-3.1.jar"/>

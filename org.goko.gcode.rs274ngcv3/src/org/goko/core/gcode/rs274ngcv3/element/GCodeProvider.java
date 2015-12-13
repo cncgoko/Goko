@@ -9,6 +9,7 @@ import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProviderSource;
 
 
 public class GCodeProvider implements IGCodeProvider {
@@ -24,6 +25,8 @@ public class GCodeProvider implements IGCodeProvider {
 	private Date modificationDate;
 	/** Locked state */
 	private boolean locked;
+	/** This provider source */
+	private IGCodeProviderSource source;
 	
 	/** Constructor */
 	public GCodeProvider() {
@@ -143,5 +146,19 @@ public class GCodeProvider implements IGCodeProvider {
 	 */
 	public void setLocked(boolean locked) {
 		this.locked = locked;
+	}
+
+	/**
+	 * @return the source
+	 */
+	public IGCodeProviderSource getSource() {
+		return source;
+	}
+
+	/**
+	 * @param source the source to set
+	 */
+	public void setSource(IGCodeProviderSource source) {
+		this.source = source;
 	}
 }

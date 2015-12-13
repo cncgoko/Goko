@@ -1,8 +1,6 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.handler.open;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 import javax.inject.Inject;
 
@@ -17,6 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
 import org.goko.core.log.GkLog;
 
 public class OpenGCodeFileHandler {
@@ -46,10 +45,10 @@ public class OpenGCodeFileHandler {
 						IGCodeProvider gcodeFile = null;
 						try {
 							File sourceFile = new File(parentFolder, fileName);
-							gcodeFile = gCodeService.parse(new FileInputStream(sourceFile), monitor);
+							gcodeFile = gCodeService.parse(new FileGCodeSource(sourceFile), monitor);
 							gcodeFile.setCode(fileName);
 							gCodeService.addGCodeProvider(gcodeFile);
-						} catch (GkException | FileNotFoundException e) {
+						} catch (GkException e) {
 							LOG.error(e);
 							return new Status(IStatus.ERROR, "org.goko.gcode.rs274ngcv3.ui", e.getMessage());
 						}

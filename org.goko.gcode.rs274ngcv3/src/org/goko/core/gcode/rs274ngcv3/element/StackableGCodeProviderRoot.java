@@ -6,6 +6,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProviderSource;
 
 public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeProvider, IStackableGCodeProvider{
 	private IGCodeProvider parent;
@@ -91,6 +92,7 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 		parent.setCode(code);
 	}
 
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#update()
 	 */
@@ -120,4 +122,12 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 	 */
 	@Override
 	public void setParent(IStackableGCodeProvider paarent) {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#getSource()
+	 */
+	@Override
+	public IGCodeProviderSource getSource() {
+		return parent.getSource();
+	}
 }

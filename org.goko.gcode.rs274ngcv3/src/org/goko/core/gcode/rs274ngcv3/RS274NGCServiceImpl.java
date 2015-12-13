@@ -1,7 +1,5 @@
 package org.goko.core.gcode.rs274ngcv3;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +22,7 @@ import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -35,6 +34,7 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderModifier;
 import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderRoot;
+import org.goko.core.gcode.rs274ngcv3.element.source.StringGCodeSource;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
@@ -108,10 +108,11 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#parse(java.io.InputStream)
 	 */
 	@Override
-	public IGCodeProvider parse(InputStream inputStream, IProgressMonitor monitor) throws GkException {
+	public IGCodeProvider parse(IGCodeProviderSource source, IProgressMonitor monitor) throws GkException {
 		GCodeProvider provider = new GCodeProvider();
+		provider.setSource(source);
 		GCodeLexer lexer = new GCodeLexer();
-		List<List<GCodeToken>> tokens = lexer.tokenize(inputStream);
+		List<List<GCodeToken>> tokens = lexer.tokenize(source.getInputStream());
 
 		SubMonitor subMonitor = null;
 		if(monitor != null){
@@ -145,7 +146,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public IGCodeProvider parse(String inputString) throws GkException {
-		return parse(new ByteArrayInputStream(inputString.getBytes()), null);
+		return parse(new StringGCodeSource(inputString), null);
 	}
 
 	/** (inheritDoc)
@@ -153,7 +154,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public GCodeLine parseLine(String inputString) throws GkException {
-		IGCodeProvider provider = parse(new ByteArrayInputStream(inputString.getBytes()), null);
+		IGCodeProvider provider = parse(new StringGCodeSource(inputString), null);
 		return provider.getLines().get(0);
 	}
 

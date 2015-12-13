@@ -17,7 +17,7 @@ public interface IGCodeProviderRepository extends IGokoService{
 	void unlockGCodeProvider(Integer idGcodeProvider) throws GkException;
 	
 	void addGCodeProvider(IGCodeProvider provider) throws GkException; 
-	
+		
 	void deleteGCodeProvider(Integer id) throws GkException;
 	
 	void addListener(IGCodeProviderRepositoryListener listener) throws GkException;

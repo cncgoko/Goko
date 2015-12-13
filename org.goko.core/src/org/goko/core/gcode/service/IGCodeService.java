@@ -1,13 +1,12 @@
 package org.goko.core.gcode.service;
 
-import java.io.InputStream;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.element.IInstructionSet;
@@ -17,7 +16,7 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 
 	GCodeLine parseLine(String inputString) throws GkException;
 
-	IGCodeProvider parse(InputStream inputStream, IProgressMonitor monitor) throws GkException;
+	IGCodeProvider parse(IGCodeProviderSource source, IProgressMonitor monitor) throws GkException;
 
 	IInstructionProvider<I, S> getInstructions(T context, IGCodeProvider gcodeProvider) throws GkException;
 

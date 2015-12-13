@@ -10,18 +10,20 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.io.AbstractProjectLoadParticipant;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.source.XmlFileGCodeSource;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TestModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
-import org.simpleframework.xml.transform.Transform;
 
 /**
  * @author PsyKo
@@ -31,11 +33,11 @@ import org.simpleframework.xml.transform.Transform;
  * @author Psyko
  *
  */
-public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener{
+public class RS274WorkspaceService extends AbstractProjectLoadParticipant<XmlRS274GContent> implements IRS274WorkspaceService, IGCodeProviderRepositoryListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274WorkspaceService.class);
 	/** Service ID */
-	private static final String SERVICE_ID ="org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService";
+	private static final String SERVICE_ID = "org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService";
 	/** Workspace UI service */
 	private IWorkspaceUIService workspaceUIService;
 	/** Workspace service */
@@ -68,6 +70,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		getGcodeService().addListener(this);
 		lstModifierUiProvider = new ArrayList<IModifierUiProvider<GCodeProvider, ?>>();
 		workspaceService.addProjectSaveParticipant(this);
+		workspaceService.addProjectLoadParticipant(this);
 		initModifierUiProvider();
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -209,6 +212,10 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		for (IGCodeProvider igCodeProvider : lstProviders) {
 			XmlGCodeProvider xmlProvider = new XmlGCodeProvider();
 			xmlProvider.setCode(igCodeProvider.getCode());
+			FileGCodeSource s = (FileGCodeSource) igCodeProvider.getSource();
+			XmlFileGCodeSource xmlFileSource = new XmlFileGCodeSource();
+			xmlFileSource.setPath(s.getFile().getAbsolutePath());
+			xmlProvider.setSource(xmlFileSource);
 			lstXmlProvider.add(xmlProvider);
 		}
 		content.setLstGCodeProvider(lstXmlProvider);
@@ -216,17 +223,13 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		return content;
 	}
 
-	@Override
-	public Transform<XmlRS274GContent> getTransform() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#getProjectContainerType()
 	 */
 	@Override
-	public Class<XmlRS274GContent> getProjectContainerClass() {
-		return XmlRS274GContent.class;
+	public String getProjectContainerType(){
+		return "XmlRS274GContent";
 	}
 
 	/**
@@ -243,5 +246,44 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		this.workspaceService = workspaceService;
 	}
 
+//	/** (inheritDoc)
+//	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(java.lang.Object)
+//	 */
+//	@Override
+//	public void load(InputNode input) throws GkException {
+//		XmlNodeConverter<XmlRS274GContent> converter = new XmlNodeConverter<XmlRS274GContent>(XmlRS274GContent.class);
+//		XmlRS274GContent result = converter.load(input);
+//		
+//		ArrayList<XmlGCodeProvider> lstGcode = result.getLstGCodeProvider();
+//		for (XmlGCodeProvider xmlGCodeProvider : lstGcode) {
+//			
+//		}
+//		
+//		System.out.println("public void load(XmlRS274GContent content) throws GkException ");
+//	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#newContentInstance()
+	 */
+	@Override
+	public XmlRS274GContent newContentInstance() {
+		return new XmlRS274GContent();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.io.AbstractProjectLoadParticipant#getProjectContainerContentClass()
+	 */
+	@Override
+	protected Class<XmlRS274GContent> getProjectContainerContentClass() {
+		return XmlRS274GContent.class;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.io.AbstractProjectLoadParticipant#loadContent(java.lang.Object)
+	 */
+	@Override
+	protected void loadContent(XmlRS274GContent content) throws GkException {
+		
+	}
 
 }

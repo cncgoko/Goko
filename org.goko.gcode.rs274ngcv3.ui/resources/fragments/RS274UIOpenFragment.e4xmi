@@ -2,5 +2,6 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="__UlA4Jc3EeWD6osc2lSE8g">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BWIo8Jc4EeWD6osc2lSE8g" featurename="children" parentElementId="org.goko.core.open.menu">
     <elements xsi:type="menu:DirectMenuItem" xmi:id="_DuK3UJc4EeWD6osc2lSE8g" elementId="org.goko.gcode.rs274ngcv3.ui.directmenuitem.gcodefile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.rs274ngcv3.ui/resources/icons/document-attribute-g.png" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.ui/org.goko.gcode.rs274ngcv3.ui.workspace.handler.open.OpenGCodeFileHandler"/>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_a_Z20KF4EeWBEtBQsbZgJA" elementId="org.goko.gcode.rs274ngcv3.ui.directmenuitem.project" label="Project" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.ui/org.goko.gcode.rs274ngcv3.ui.workspace.handler.open.OpenGCodeProjectHandler"/>
   </fragments>
 </fragment:ModelFragments>
