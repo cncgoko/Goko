@@ -1,2 +1,8 @@
-/target/
-/workspace/
+# ignore all bin directories
+# matches "bin" in any subfolder
+bin/
+
+# ignore all target directories
+target/
+/.settings
+.classpath
