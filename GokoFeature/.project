@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>GokoFeature</name>
-	<comment></comment>
-	<projects>
-	</projects>
-	<buildSpec>
-		<buildCommand>
-			<name>org.eclipse.pde.FeatureBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-	</buildSpec>
-	<natures>
-		<nature>org.eclipse.pde.FeatureNature</nature>
-	</natures>
+  <name>org.goko.feature</name>
+  <comment>NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>Goko</project>
+    <project>org.goko.core</project>
+    <project>org.goko.controller.tinyg</project>
+    <project>com.eclipsesource.json</project>
+    <project>org.goko.gcode.rs274ngcv3</project>
+    <project>org.goko.core.execution.monitor</project>
+    <project>org.goko.log</project>
+    <project>org.goko.core.workspace</project>
+    <project>org.goko.log.ui</project>
+    <project>org.goko.tools.commandpanel</project>
+    <project>org.goko.tools.dro</project>
+    <project>org.goko.tools.serial.jssc</project>
+    <project>org.goko.tools.viewer.jogl</project>
+    <project>org.goko.log.logback</project>
+    <project>org.goko.gcode.rs274ngcv3.jogl</project>
+    <project>org.goko.gcode.rs274ngcv3.ui</project>
+    <project>org.goko.tools.centerfinder</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.pde.FeatureBuilder</name>
+    </buildCommand>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.pde.FeatureNature</nature>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
 </projectDescription>

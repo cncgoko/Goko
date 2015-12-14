@@ -16,6 +16,15 @@ public class XmlGkProject {
 	@ElementList
 	private ArrayList<XmlProjectContainer> lstProjectContainer;
 
+	@ElementList
+	private ArrayList<Object> testList;
+
+	public XmlGkProject() {
+		super();
+		this.lstProjectContainer = new ArrayList<>();
+		this.testList =  new ArrayList<>();
+	}
+
 	/**
 	 * @return the lstProjectContainer
 	 */
@@ -28,6 +37,20 @@ public class XmlGkProject {
 	 */
 	public void setLstProjectContainer(ArrayList<XmlProjectContainer> lstProjectContainer) {
 		this.lstProjectContainer = lstProjectContainer;
+	}
+
+	/**
+	 * @return the testList
+	 */
+	public ArrayList<Object> getTestList() {
+		return testList;
+	}
+
+	/**
+	 * @param testList the testList to set
+	 */
+	public void setTestList(ArrayList<Object> testList) {
+		this.testList = testList;
 	}
 
 }

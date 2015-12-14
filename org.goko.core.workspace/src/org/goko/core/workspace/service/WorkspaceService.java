@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.io.xml.DerivedTreeStrategy;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.element.GkProject;
 import org.goko.core.workspace.element.ProjectContainer;
@@ -33,9 +34,7 @@ import org.goko.core.workspace.io.XmlGkProject;
 import org.goko.core.workspace.io.XmlProjectContainer;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.Registry;
-import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
-import org.simpleframework.xml.strategy.Strategy;
 
 /**
  * Default implementation of the workspace service
@@ -55,13 +54,13 @@ public class WorkspaceService implements IWorkspaceService{
 	/** The list of listener */
 	private List<IWorkspaceListener> listenerList;
 	/** The known save participants */
-	private List<IProjectSaveParticipant<?>> saveParticipants;	
+	private List<IProjectSaveParticipant<?>> saveParticipants;
 	/** The known load participants */
 	private List<IProjectLoadParticipant<?>> loadParticipants;
 	// Temporary project storage
 	private GkProject project;
 	Registry registry;
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -84,10 +83,10 @@ public class WorkspaceService implements IWorkspaceService{
 		registry = new Registry();
 		try {
 			registry.bind(XmlProjectContainer.class, new TestConverter(this));
-		} catch (Exception e) {			
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
 		LOG.info("Successfully started : "+getServiceId());
 	}
 
@@ -151,9 +150,9 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException {
-		this.saveParticipants.add(participant);		
+		this.saveParticipants.add(participant);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#findProjectLoadParticipantByType(java.lang.String)
 	 */
@@ -173,7 +172,7 @@ public class WorkspaceService implements IWorkspaceService{
 	public void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException {
 		this.loadParticipants.add(participant);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
 	 */
@@ -184,20 +183,20 @@ public class WorkspaceService implements IWorkspaceService{
 		ArrayList<XmlProjectContainer> lstProjectContainer = new ArrayList<XmlProjectContainer>();
 
 		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
-			
+			xmlProject.getTestList().add(saveParticipant.save());
 			lstProjectContainer.add(new XmlProjectContainer(saveParticipant.getProjectContainerType(), saveParticipant.save()));
 		}
 
 		xmlProject.setLstProjectContainer(lstProjectContainer);
 		try {
-				
-			Strategy strategy = new RegistryStrategy(registry);
-			Serializer p = new Persister(strategy);		
-			p.write(xmlProject, new File("C:/Users/PsyKo/Documents/testgk.xml"));
-			//p.write(xmlProject, System.out);
-			
+
+			//Strategy strategy = new RegistryStrategy(registry);
+			Serializer p = new Persister(new DerivedTreeStrategy());
+			p.write(xmlProject, new File("C:/testgk.xml"));
+			p.write(xmlProject, System.out);
+
 		//	XmlGkProject t = p.read(XmlGkProject.class, new File("C:/Users/PsyKo/Documents/testgk.xml"));
-			
+
 //			JAXBContext context = JAXBContext.newInstance("org.goko");
 //		    Marshaller m = context.createMarshaller();
 //		    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -216,16 +215,16 @@ public class WorkspaceService implements IWorkspaceService{
 	@Override
 	public void loadProject(File projectFile) throws GkException {
 		try {
-			
-			Strategy strategy = new RegistryStrategy(registry);
-			Serializer p = new Persister(strategy);		
-			XmlGkProject tmpProject = p.read(XmlGkProject.class, new File("C:/Users/PsyKo/Documents/testgk.xml"));
-			
-			System.err.println("");		
+
+			//Strategy strategy = new RegistryStrategy(registry);
+			Serializer p = new Persister(new DerivedTreeStrategy());
+			XmlGkProject tmpProject = p.read(XmlGkProject.class, new File("C:/testgk.xml"));
+
+			System.err.println("");
 		//	p.read(XmlGkProject.class, System.out);
-			
+
 		//	XmlGkProject t = p.read(XmlGkProject.class, new File("C:/Users/PsyKo/Documents/testgk.xml"));
-			
+
 //			JAXBContext context = JAXBContext.newInstance("org.goko");
 //		    Marshaller m = context.createMarshaller();
 //		    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -235,6 +234,6 @@ public class WorkspaceService implements IWorkspaceService{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}
 	}
 }
