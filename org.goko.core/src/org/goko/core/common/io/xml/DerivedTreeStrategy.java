@@ -1,18 +1,13 @@
 package org.goko.core.common.io.xml;
 
 import java.lang.annotation.Annotation;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.reflections.Reflections;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.strategy.TreeStrategy;
 import org.simpleframework.xml.strategy.Type;
 import org.simpleframework.xml.strategy.Value;
-import org.simpleframework.xml.stream.InputNode;
 import org.simpleframework.xml.stream.NodeMap;
 import org.simpleframework.xml.stream.OutputNode;
 
@@ -47,19 +42,19 @@ public class DerivedTreeStrategy extends TreeStrategy implements Strategy {
 	}
 
 	private Class readValue(Type type, NodeMap node) throws Exception {
-		Reflections reflections = new Reflections();
-		Set<Class<?>> subtype = reflections.getSubTypesOf(type.getType());
-		InputNode inputNode = (InputNode) node.getNode();
-
-		Iterator<Class<?>> iterator = subtype.iterator();
-
-		while(iterator.hasNext()){
-			Class<?> subClass = iterator.next();
-			Root root = subClass.getAnnotation(Root.class);
-			if(StringUtils.equals(root.name(), inputNode.getName())){
-				return subClass;
-			}
-		}
+		//Reflections reflections = new Reflections();
+		//Set<Class<?>> subtype = reflections.getSubTypesOf(type.getType());
+		//InputNode inputNode = (InputNode) node.getNode();
+//
+//		Iterator<Class<?>> iterator = subtype.iterator();
+//
+//		while(iterator.hasNext()){
+//			Class<?> subClass = iterator.next();
+//			Root root = subClass.getAnnotation(Root.class);
+//			if(StringUtils.equals(root.name(), inputNode.getName())){
+//				return subClass;
+//			}
+//		}
 
 		return null;
 	}
