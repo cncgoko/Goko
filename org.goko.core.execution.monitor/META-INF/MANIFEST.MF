@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.goko.core.execution.monitor;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: org.goko.core.execution.monitor.Activator
 Export-Package: org.goko.core.execution.monitor.executor
-Require-Bundle: org.goko.core;bundle-version="0.0.1",
+Require-Bundle: org.goko.core;bundle-version="0.0.2",
  org.eclipse.swt,
  org.eclipse.e4.ui.model.workbench;bundle-version="1.1.100.v20150407-1430",
  org.goko.core.workspace,

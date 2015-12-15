@@ -42,5 +42,4 @@ Export-Package: org.goko.core.workspace,
  org.goko.core.workspace.internal,
  org.goko.core.workspace.service,
  org.goko.core.workspace.tree
-Bundle-ClassPath: icons/reflections-0.9.9-RC1-uberjar.jar,
- .
+Bundle-ClassPath: .

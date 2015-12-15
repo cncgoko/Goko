@@ -42,9 +42,10 @@ public class DerivedTreeStrategy extends TreeStrategy implements Strategy {
 	}
 
 	private Class readValue(Type type, NodeMap node) throws Exception {
-		//Reflections reflections = new Reflections();
-		//Set<Class<?>> subtype = reflections.getSubTypesOf(type.getType());
-		//InputNode inputNode = (InputNode) node.getNode();
+//		Reflections reflections = new Reflections("org.goko");
+//		Predicate d = null;
+//		Set<Class<?>> subtype = reflections.getSubTypesOf(type.getType());
+//		InputNode inputNode = (InputNode) node.getNode();
 //
 //		Iterator<Class<?>> iterator = subtype.iterator();
 //
@@ -56,6 +57,6 @@ public class DerivedTreeStrategy extends TreeStrategy implements Strategy {
 //			}
 //		}
 
-		return null;
+		return type.getType();
 	}
 }
