@@ -5,4 +5,6 @@
       <provide interface="org.goko.core.workspace.service.IWorkspaceService"/>
       <provide interface="org.goko.core.workspace.service.WorkspaceService"/>
    </service>
+   <reference bind="addProjectSaveParticipant" cardinality="0..n" interface="org.goko.core.workspace.service.IProjectSaveParticipant" name="IProjectSaveParticipant" policy="dynamic"/>
+   <reference bind="addProjectLoadParticipant" cardinality="0..n" interface="org.goko.core.workspace.service.IProjectLoadParticipant" name="IProjectLoadParticipant" policy="dynamic"/>
 </scr:component>

@@ -6,7 +6,6 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -24,7 +23,6 @@ import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
-import org.goko.core.workspace.element.ProjectContainer;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
@@ -63,10 +61,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public boolean providesLabelFor(Object content) throws GkException {
-		if(content instanceof ProjectContainer){
-			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
-		}
-		return (content instanceof IGCodeProvider)
+		return this.equals(content)
+			|| (content instanceof IGCodeProvider)
 			|| (content instanceof IModifier);
 	}
 
@@ -91,10 +87,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public boolean providesContentFor(Object content) throws GkException {
-		if(content instanceof ProjectContainer){
-			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
-		}
-		return content instanceof GCodeProvider;
+		return this.equals(content) || content instanceof GCodeProvider;
 	}
 
 	/** (inheritDoc)
@@ -104,7 +97,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public boolean hasChildren(Object content) throws GkException {
 		if(content instanceof GCodeProvider){
 			return CollectionUtils.isNotEmpty(rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId()));
-		}else if(content instanceof ProjectContainer){
+		}else if(this.equals(content)){
 			return CollectionUtils.isNotEmpty(rs274Service.getGCodeProvider());
 		}
 		return false;
@@ -118,7 +111,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public Object[] getChildren(Object content) throws GkException {
 		if(content instanceof GCodeProvider){
 			return rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId()).toArray();
-		}else if(content instanceof ProjectContainer){
+		}else if(this.equals(content)){
 			return rs274Service.getGCodeProvider().toArray();
 		}
 		return null;
@@ -139,10 +132,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public boolean providesMenuFor(ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
-		if(content instanceof ProjectContainer){
-			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
-		}
-		return (content instanceof GCodeProvider)
+		return this.equals(content)
+			|| (content instanceof GCodeProvider)
 			|| (content instanceof IModifier);
 	}
 
@@ -154,7 +145,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
 
-		if(content instanceof ProjectContainer && StringUtils.equals(getType(), ((ProjectContainer) content).getType())){
+		if(this.equals(content)){
 			createMenuForGCodeRepository(contextMenu);
 		}else if(content instanceof GCodeProvider){
 			createMenuForGCodeProvider(contextMenu, (GCodeProvider)content);

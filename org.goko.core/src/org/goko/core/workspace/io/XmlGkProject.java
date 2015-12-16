@@ -5,18 +5,25 @@ package org.goko.core.workspace.io;
 
 import java.util.ArrayList;
 
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 
 /**
  * @author PsyKo
  * @date 9 déc. 2015
  */
+@Root
 public class XmlGkProject {
+	/** The name of the resources folder */
+	@Attribute
+	private String resourcesFolderName;
 
-//	@ElementList
+	/** The list of saved resources */
+	@ElementList
 	private ArrayList<XmlProjectContainer> lstProjectContainer;
 
-	@ElementList
+//	@ElementList
 	private ArrayList<Object> testList;
 
 	public XmlGkProject() {
@@ -51,6 +58,20 @@ public class XmlGkProject {
 	 */
 	public void setTestList(ArrayList<Object> testList) {
 		this.testList = testList;
+	}
+
+	/**
+	 * @return the resourcesFolderName
+	 */
+	public String getResourcesFolderName() {
+		return resourcesFolderName;
+	}
+
+	/**
+	 * @param resourcesFolderName the resourcesFolderName to set
+	 */
+	public void setResourcesFolderName(String resourcesFolderName) {
+		this.resourcesFolderName = resourcesFolderName;
 	}
 
 }

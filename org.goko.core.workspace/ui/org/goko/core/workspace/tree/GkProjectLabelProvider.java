@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Image;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
-import org.goko.core.workspace.element.ProjectContainer;
 import org.goko.core.workspace.internal.Activator;
 
 public class GkProjectLabelProvider extends LabelProvider implements IStyledLabelProvider {
@@ -54,9 +53,8 @@ public class GkProjectLabelProvider extends LabelProvider implements IStyledLabe
 	@Override
 	public StyledString getStyledText(Object element) {
 		try {
-			if(element instanceof ProjectContainer){
-				ProjectContainer container = (ProjectContainer) element;
-				ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+			if(element instanceof ProjectContainerUiProvider){
+				ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider) element;
 				if(uiProvider != null){
 					return uiProvider.getStyledText(element);
 				}
@@ -82,9 +80,8 @@ public class GkProjectLabelProvider extends LabelProvider implements IStyledLabe
 	@Override
 	public Image getImage(Object element) {
 		try {
-			if(element instanceof ProjectContainer){
-				ProjectContainer container = (ProjectContainer) element;
-				ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+			if(element instanceof ProjectContainerUiProvider){
+				ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider) element;
 				if(uiProvider != null){
 					return uiProvider.getImage(element);
 				}

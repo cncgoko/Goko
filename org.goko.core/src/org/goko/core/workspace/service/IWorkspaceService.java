@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.workspace.element.GkProject;
 
 public interface IWorkspaceService extends IGokoService{
 
@@ -30,12 +31,14 @@ public interface IWorkspaceService extends IGokoService{
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
 
 	void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException;
-	
+
 	void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException;
-	
+
 	IProjectLoadParticipant<?> findProjectLoadParticipantByType(String type) throws GkException;
-	
-	void saveProject() throws GkException;
-	
+
+	GkProject getProject() throws GkException;
+
+	void saveProject(File project) throws GkException;
+
 	void loadProject(File project) throws GkException;
 }

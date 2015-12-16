@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" immediate="false" name="org.goko.gcode.rs274ngcv3.ui.save">
+   <implementation class="org.goko.gcode.rs274ngcv3.ui.workspace.RS274SaveParticipant"/>
+   <reference bind="setGcodeService" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
+   <service>
+      <provide interface="org.goko.core.workspace.service.IProjectSaveParticipant"/>
+   </service>
+</scr:component>

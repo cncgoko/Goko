@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.gcode.rs274ngcv3.ui.load">
+   <implementation class="org.goko.gcode.rs274ngcv3.ui.workspace.RS274LoadParticipant"/>
+   <reference bind="setGcodeService" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
+   <service>
+      <provide interface="org.goko.core.workspace.service.IProjectLoadParticipant"/>
+   </service>
+</scr:component>

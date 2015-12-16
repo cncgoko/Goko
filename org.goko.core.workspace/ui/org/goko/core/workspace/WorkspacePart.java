@@ -77,7 +77,7 @@ public class WorkspacePart {
 
 		workspaceTreeViewer.setContentProvider(new GkProjectContentProvider());
 		workspaceTreeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new GkProjectLabelProvider()));
-		workspaceTreeViewer.setInput(workspaceService.getProject());
+		workspaceTreeViewer.setInput(workspaceUiService.getProjectContainerUiProvider());
 
 		configurationComposite = new Composite(sashForm, SWT.NONE);
 		configurationComposite.setLayout(new FillLayout(SWT.HORIZONTAL));

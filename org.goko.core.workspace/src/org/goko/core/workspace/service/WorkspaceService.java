@@ -24,16 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.io.xml.DerivedTreeStrategy;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.element.GkProject;
-import org.goko.core.workspace.element.ProjectContainer;
+import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.io.SaveContext;
 import org.goko.core.workspace.io.XmlGkProject;
 import org.goko.core.workspace.io.XmlProjectContainer;
 import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.Registry;
 import org.simpleframework.xml.core.Persister;
 
 /**
@@ -59,7 +60,6 @@ public class WorkspaceService implements IWorkspaceService{
 	private List<IProjectLoadParticipant<?>> loadParticipants;
 	// Temporary project storage
 	private GkProject project;
-	Registry registry;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -76,17 +76,9 @@ public class WorkspaceService implements IWorkspaceService{
 	public void start() throws GkException {
 		this.listenerList = new ArrayList<IWorkspaceListener>();
 		this.project = new GkProject();
-		this.project.addProjectContainer(new ProjectContainer("TEST")); // FIXME : remove from workspace service
-		this.project.addProjectContainer(new ProjectContainer("EXECUTIONQUEUE")); // FIXME : remove from workspace service
 		this.saveParticipants = new ArrayList<IProjectSaveParticipant<?>>();
 		this.loadParticipants = new ArrayList<IProjectLoadParticipant<?>>();
-		registry = new Registry();
-		try {
-			registry.bind(XmlProjectContainer.class, new TestConverter(this));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		LOG.info("Successfully started : "+getServiceId());
 	}
 
@@ -134,6 +126,7 @@ public class WorkspaceService implements IWorkspaceService{
 	/**
 	 * @return the project
 	 */
+	@Override
 	public GkProject getProject() {
 		return project;
 	}
@@ -158,11 +151,11 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public IProjectLoadParticipant<?> findProjectLoadParticipantByType(String type) throws GkException {
-		for (IProjectLoadParticipant<?> participant : loadParticipants) {
-			if(StringUtils.equals(participant.getProjectContainerType(), type)){
-				return participant;
-			}
-		}
+//		for (IProjectLoadParticipant<?> participant : loadParticipants) {
+//			if(StringUtils.equals(participant.getProjectContainerType(), type)){
+//				return participant;
+//			}
+//		}
 		return null;
 	}
 	/** (inheritDoc)
@@ -173,67 +166,104 @@ public class WorkspaceService implements IWorkspaceService{
 		this.loadParticipants.add(participant);
 	}
 
+
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
 	 */
 	@Override
-	public void saveProject() throws GkException {
-		XmlGkProject xmlProject = new XmlGkProject();
+	public void saveProject(File targetProjectFile) throws GkException {
+		SaveContext context = new SaveContext();
+		File projectFile = targetProjectFile;
+		// Build complete path
+		String path = projectFile.getAbsolutePath();
+		String fullPath = FilenameUtils.getFullPath(path);
+		String name     = FilenameUtils.getBaseName(path);
+		String extension = FilenameUtils.getExtension(path);
 
-		ArrayList<XmlProjectContainer> lstProjectContainer = new ArrayList<XmlProjectContainer>();
-
-		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
-			xmlProject.getTestList().add(saveParticipant.save());
-			lstProjectContainer.add(new XmlProjectContainer(saveParticipant.getProjectContainerType(), saveParticipant.save()));
+		if(!StringUtils.equals(extension, "goko")){
+			extension = "goko";
 		}
 
-		xmlProject.setLstProjectContainer(lstProjectContainer);
+		projectFile = new File(fullPath+name+"."+extension);
+		context.setProjectName(name);
+		context.setProjectFile(projectFile);
+
+		context.setResourcesFolderName(name+"Resources");
+		context.setResourcesFolder(new File(context.getProjectFile().getParentFile(), context.getResourcesFolderName()));
+		context.getResourcesFolder().mkdir();
+
+		XmlGkProject xmlProject = new XmlGkProject();
+		xmlProject.setResourcesFolderName(context.getResourcesFolderName());
+
+		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+			xmlProject.getLstProjectContainer().addAll(saveParticipant.save(context));
+		}
+
 		try {
-
-			//Strategy strategy = new RegistryStrategy(registry);
-			Serializer p = new Persister(new DerivedTreeStrategy());
-			p.write(xmlProject, new File("C:/testgk.xml"));
+			Serializer p = new Persister();
+			p.write(xmlProject, context.getProjectFile());
 			p.write(xmlProject, System.out);
-
-		//	XmlGkProject t = p.read(XmlGkProject.class, new File("C:/Users/PsyKo/Documents/testgk.xml"));
-
-//			JAXBContext context = JAXBContext.newInstance("org.goko");
-//		    Marshaller m = context.createMarshaller();
-//		    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-		    // Write to System.out
-		//    m.marshal(xmlProject, System.out);
+			project.setFilepath(projectFile.getAbsolutePath());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			rollbackSaveProject();
+			throw new GkTechnicalException(e);
+		}
+		completeSaveProject();
+	}
+
+	/**
+	 * Notifies all the save participant that the saved occurred without issue
+	 */
+	private void completeSaveProject(){
+		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+			saveParticipant.saveComplete();
 		}
 	}
 
+	/**
+	 * Notifies all the save participant that the saved failed
+	 */
+	private void rollbackSaveProject(){
+		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+			saveParticipant.rollback();
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#loadProject(java.io.File)
 	 */
 	@Override
 	public void loadProject(File projectFile) throws GkException {
 		try {
+			LoadContext context = new LoadContext();
+			context.setProjectFile(projectFile);
+			context.setProjectName(projectFile.getName());
 
-			//Strategy strategy = new RegistryStrategy(registry);
-			Serializer p = new Persister(new DerivedTreeStrategy());
-			XmlGkProject tmpProject = p.read(XmlGkProject.class, new File("C:/testgk.xml"));
+			Serializer p = new Persister();
+			XmlGkProject xmlGkProject = p.read(XmlGkProject.class, projectFile);
+			project = new GkProject();
+			project.setFilepath(projectFile.getAbsolutePath());
+			project.setName(projectFile.getName());
 
-			System.err.println("");
-		//	p.read(XmlGkProject.class, System.out);
+			context.setResourcesFolderName(xmlGkProject.getResourcesFolderName());
+			context.setResourcesFolder(new File(projectFile.getParentFile(), xmlGkProject.getResourcesFolderName()));
 
-		//	XmlGkProject t = p.read(XmlGkProject.class, new File("C:/Users/PsyKo/Documents/testgk.xml"));
+			List<XmlProjectContainer> xmlContainers = xmlGkProject.getLstProjectContainer();
 
-//			JAXBContext context = JAXBContext.newInstance("org.goko");
-//		    Marshaller m = context.createMarshaller();
-//		    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			if(CollectionUtils.isNotEmpty(xmlContainers)){
+				for (XmlProjectContainer xmlProjectContainer : xmlContainers) {
+					// Let's find the load participant that can handle this container
+					for (IProjectLoadParticipant<?> loadParticipant : loadParticipants) {
+						if(loadParticipant.canLoad(xmlProjectContainer)){
+							loadParticipant.load(context, xmlProjectContainer);
+							break;
+						}
+						LOG.warn("No IProjectLoadParticipant found for XmlProjectContainer of type ["+xmlProjectContainer.getType()+"]");
+					}
+				}
+			}
 
-		    // Write to System.out
-		//    m.marshal(xmlProject, System.out);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new GkTechnicalException(e);
 		}
 	}
 }

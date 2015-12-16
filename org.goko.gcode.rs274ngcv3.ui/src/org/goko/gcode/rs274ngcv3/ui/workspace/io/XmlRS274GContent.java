@@ -9,7 +9,7 @@ import org.simpleframework.xml.Root;
 public class XmlRS274GContent{
 
 	@ElementList(name = "lstGCodeProvider")
-	ArrayList<XmlGCodeProvider> lstGCodeProvider;
+	private ArrayList<XmlGCodeProvider> lstGCodeProvider;
 
 	/**
 	 * @return the lstGCodeProvider

@@ -5,9 +5,10 @@ package org.goko.core.workspace.io;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
-import org.simpleframework.xml.Transient;
 
 /**
+ * Defines an Xml Project container allowing to link to internal resources
+ *
  * @author PsyKo
  * @date 9 déc. 2015
  */
@@ -16,32 +17,9 @@ public class XmlProjectContainer {
 	/** The type of this container */
 	@Attribute
 	private String type;
-	@Transient
-	private Object content;
-	
-	/**
-	 * @param type
-	 * @param content
-	 */
-	public XmlProjectContainer(String type, Object content) {
-		super();
-		this.type = type;
-		this.content = content;
-	}
-
-	/**
-	 * @return the content
-	 */
-	public Object getContent() {
-		return content;
-	}
-
-	/**
-	 * @param content the content to set
-	 */
-	public void setContent(Object content) {
-		this.content = content;
-	}
+	/** The path to the data file */
+	@Attribute
+	private String path;
 
 	/**
 	 * @return the type
@@ -49,11 +27,22 @@ public class XmlProjectContainer {
 	public String getType() {
 		return type;
 	}
-
 	/**
 	 * @param type the type to set
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+	/**
+	 * @return the path
+	 */
+	public String getPath() {
+		return path;
+	}
+	/**
+	 * @param path the path to set
+	 */
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

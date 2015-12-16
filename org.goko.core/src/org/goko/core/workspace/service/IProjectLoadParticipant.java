@@ -1,10 +1,8 @@
-/**
- *
- */
 package org.goko.core.workspace.service;
 
 import org.goko.core.common.exception.GkException;
-import org.simpleframework.xml.stream.InputNode;
+import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.io.XmlProjectContainer;
 
 /**
  * @author PsyKo
@@ -12,9 +10,8 @@ import org.simpleframework.xml.stream.InputNode;
  */
 public interface IProjectLoadParticipant<T> {
 
-	void load(InputNode input) throws GkException;
+	void load(LoadContext context, XmlProjectContainer container) throws GkException;
 
-	String getProjectContainerType();
-	
-	T newContentInstance();
+	boolean canLoad(XmlProjectContainer container) throws GkException;
+
 }

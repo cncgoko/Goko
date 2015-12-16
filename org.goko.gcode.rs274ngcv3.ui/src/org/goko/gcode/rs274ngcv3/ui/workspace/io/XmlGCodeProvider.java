@@ -7,10 +7,11 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementUnion;
 import org.simpleframework.xml.Root;
 
-@Root(name="xmlGCodeProvider")
-public class XmlGCodeProvider {	
+@Root(name="gcodeProvider")
+public class XmlGCodeProvider {
 	@Attribute
-	private String code;	
+	private String code;
+
     @ElementUnion({
 	      @Element(name="file", type=XmlFileGCodeSource.class)
 	})

@@ -9,7 +9,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.element.ProjectContainer;
 
 public class ExecutionQueueContainerLabelProvider extends LabelProvider implements IStyledLabelProvider {
 	private static final GkLog LOG = GkLog.getLogger(ExecutionQueueContainerLabelProvider.class);
@@ -18,7 +17,7 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 	 */
 	@Override
 	public StyledString getStyledText(Object element) {
-		if(element instanceof ProjectContainer){
+		if(element instanceof ExecutionQueueContainerUiProvider){
 			StyledString styleString = new StyledString();
 			styleString.append("Execution queue ");
 			return styleString;
@@ -41,7 +40,7 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 	 */
 	@Override
 	public Image getImage(Object element) {
-		if(element instanceof ProjectContainer){
+		if(element instanceof ExecutionQueueContainerUiProvider){
 			return ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/blue-documents-stack.png");
 		}else if(element instanceof ExecutionToken){
 			ExecutionToken<?> token = (ExecutionToken<?>) element;

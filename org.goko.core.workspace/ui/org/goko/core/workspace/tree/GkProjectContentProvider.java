@@ -8,8 +8,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
-import org.goko.core.workspace.element.GkProject;
-import org.goko.core.workspace.element.ProjectContainer;
 import org.goko.core.workspace.internal.Activator;
 
 public class GkProjectContentProvider implements ITreeContentProvider {
@@ -39,9 +37,10 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getElements(java.lang.Object)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object[] getElements(Object inputElement) {
-		List<ProjectContainer> containers = ((GkProject)inputElement).getProjectContainer();
+		List<ProjectContainerUiProvider> containers = ((List<ProjectContainerUiProvider>)inputElement);
 		return containers.toArray();
 	}
 
@@ -59,9 +58,8 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	}
 
 	private Object[] getChildrenIntern(Object parentElement) throws GkException{
-		if(parentElement instanceof ProjectContainer){
-			ProjectContainer container = (ProjectContainer) parentElement;
-			ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+		if(parentElement instanceof ProjectContainerUiProvider){
+			ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider) parentElement;
 			if(uiProvider != null){
 				return uiProvider.getChildren(parentElement);
 			}
@@ -83,10 +81,9 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	 */
 	@Override
 	public Object getParent(Object element) {
-		if(element instanceof ProjectContainer){
+		if(element instanceof ProjectContainerUiProvider){
 			try {
-				ProjectContainer container = (ProjectContainer) element;
-				ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+				ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider)element;
 				if(uiProvider != null){
 					return uiProvider.getParent(element);
 				}
@@ -112,9 +109,8 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	}
 
 	private boolean hasChildrenIntern(Object element) throws GkException {
-		if (element instanceof ProjectContainer) {
-			ProjectContainer container = (ProjectContainer) element;
-			ProjectContainerUiProvider uiProvider = Activator.getWorkspaceUIService().findProjectContainerUiProvider(container.getType());
+		if (element instanceof ProjectContainerUiProvider) {
+			ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider) element;
 			if (uiProvider != null) {
 				return uiProvider.hasChildren(element);
 			}

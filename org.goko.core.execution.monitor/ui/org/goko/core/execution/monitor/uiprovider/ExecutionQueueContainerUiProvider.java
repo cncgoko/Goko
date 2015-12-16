@@ -1,7 +1,6 @@
 package org.goko.core.execution.monitor.uiprovider;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
@@ -16,7 +15,6 @@ import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
-import org.goko.core.workspace.element.ProjectContainer;
 
 public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvider {
 	/** The underlying ExecutionService */
@@ -35,10 +33,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public boolean providesLabelFor(Object content) throws GkException {
-		if(content instanceof ProjectContainer){
-			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
-		}
-		return content instanceof ExecutionToken;
+		return this.equals(content) || content instanceof ExecutionToken;
 	}
 
 	/** (inheritDoc)
@@ -80,10 +75,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public boolean providesContentFor(Object content) throws GkException {
-		if(content instanceof ProjectContainer){
-			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
-		}
-		return false;
+		return this.equals(content);
 	}
 
 	/** (inheritDoc)
@@ -91,7 +83,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public boolean hasChildren(Object content) throws GkException {
-		if(content instanceof ProjectContainer){
+		if(this.equals(content)){
 			return CollectionUtils.isNotEmpty(executionService.getExecutionQueue().getExecutionToken());
 		}
 		return false;
@@ -102,7 +94,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 */
 	@Override
 	public Object[] getChildren(Object content) throws GkException {
-		if(content instanceof ProjectContainer){
+		if(this.equals(content)){
 			return executionService.getExecutionQueue().getExecutionToken().toArray();
 		}
 		return new Object[0];
@@ -124,10 +116,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	public boolean providesMenuFor(ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
-		if(content instanceof ProjectContainer){
-			return StringUtils.equals(getType(), ((ProjectContainer) content).getType());
-		}
-		return (content instanceof ExecutionToken);
+		return this.equals(content) || (content instanceof ExecutionToken);
 	}
 
 	/** (inheritDoc)
@@ -139,7 +128,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 		Object content = strSelection.getFirstElement();
 		if(content instanceof ExecutionToken){
 			createMenuForExecutionToken(contextMenu, (ExecutionToken<?>)content);
-		}else if(content instanceof ProjectContainer && StringUtils.equals(getType(), ((ProjectContainer) content).getType())){
+		}else if(this.equals(content)){
 			createMenuForExecutionQueue(contextMenu);
 		}
 	}

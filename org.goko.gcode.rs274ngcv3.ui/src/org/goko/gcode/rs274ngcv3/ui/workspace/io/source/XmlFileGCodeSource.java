@@ -1,8 +1,13 @@
 /**
- * 
+ *
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.io.source;
 
+import java.io.File;
+
+import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.IGCodeProviderSource;
+import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
@@ -28,5 +33,13 @@ public class XmlFileGCodeSource extends XmlGCodeProviderSource{
 	 */
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.source.XmlGCodeProviderSource#getSource()
+	 */
+	@Override
+	public IGCodeProviderSource getSource() throws GkException {
+		return new FileGCodeSource(new File(path));
 	}
 }

@@ -10,7 +10,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
-import org.goko.core.workspace.element.ProjectContainer;
 
 
 /**
@@ -26,7 +25,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 	public StyledString getStyledText(Object element) {
 		if(element instanceof IGCodeProvider){
 			return new StyledString(((IGCodeProvider) element).getCode());
-		}else if(element instanceof ProjectContainer){
+		}else if(element instanceof GCodeContainerUiProvider){
 			StyledString styleString = new StyledString();
 			styleString.append("GCode ");
 			return styleString;
@@ -44,7 +43,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 	 */
 	@Override
 	public Image getImage(Object element) {
-		if(element instanceof ProjectContainer){
+		if(element instanceof GCodeContainerUiProvider){
 			return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/resource_persp.gif");
 		}else if(element instanceof IGCodeProvider){
 			IGCodeProvider provider = (IGCodeProvider) element;
