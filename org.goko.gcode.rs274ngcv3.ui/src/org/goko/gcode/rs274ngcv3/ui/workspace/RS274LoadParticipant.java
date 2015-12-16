@@ -72,7 +72,7 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 		}
 	}
 
-	protected void load(XmlRS274GContent content) throws GkException {
+	protected void load(XmlRS274GContent content) throws GkException {		
 		// Load the GCodeProvider
 		List<XmlGCodeProvider> lstGCodeProvider = content.getLstGCodeProvider();
 		if(CollectionUtils.isNotEmpty(lstGCodeProvider)){

@@ -1,4 +1,4 @@
-package org.goko.gcode.rs274ngcv3.ui.workspace.handler.open;
+package org.goko.common.handlers;
 
 import java.io.File;
 
@@ -10,13 +10,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceService;
 
-public class OpenGCodeProjectHandler {
-	/** Log */
-	private static final GkLog LOG = GkLog.getLogger(OpenGCodeProjectHandler.class);
-
+public class OpenProjectHandler {
 	@Inject
 	private IWorkspaceService workspaceService;
 

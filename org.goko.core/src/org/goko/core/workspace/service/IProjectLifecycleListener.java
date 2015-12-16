@@ -4,11 +4,15 @@ import org.goko.core.common.exception.GkException;
 
 public interface IProjectLifecycleListener {
 
-	void preSave() throws GkException;
+	void beforeCreate() throws GkException;
+	
+	void afterCreate() throws GkException;
+	
+	void beforeSave() throws GkException;
 
 	void afterSave() throws GkException;
 
-	void preLoad() throws GkException;
+	void beforeLoad() throws GkException;
 
 	void afterLoad() throws GkException;
 }

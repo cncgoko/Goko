@@ -202,7 +202,6 @@ public class WorkspaceService implements IWorkspaceService{
 		try {
 			Serializer p = new Persister();
 			p.write(xmlProject, context.getProjectFile());
-			p.write(xmlProject, System.out);
 			project.setFilepath(projectFile.getAbsolutePath());
 		} catch (Exception e) {
 			rollbackSaveProject();

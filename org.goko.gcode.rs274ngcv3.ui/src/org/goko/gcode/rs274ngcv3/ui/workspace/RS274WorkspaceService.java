@@ -33,10 +33,6 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	private static final GkLog LOG = GkLog.getLogger(RS274WorkspaceService.class);
 	/** Service ID */
 	private static final String SERVICE_ID = "org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService";
-	/** Type of the RS274 content container  */
-	private static final String RS274_CONTENT_TYPE = "rs274Content";
-	/** Name of the RS274 content file  */
-	private static final String RS274_CONTENT_FILE_NAME = "rs274Content.xml";
 	/** Workspace UI service */
 	private IWorkspaceUIService workspaceUIService;
 	/** Workspace service */

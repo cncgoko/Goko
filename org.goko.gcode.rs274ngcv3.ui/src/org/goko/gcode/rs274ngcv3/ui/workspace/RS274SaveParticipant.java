@@ -36,7 +36,7 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	private IWorkspaceService workspaceService;
 	/** Dirty state of the content */
 	private boolean dirty;
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -101,10 +101,10 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 			xmlProvider.setSource(xmlFileSource);
 			lstXmlProvider.add(xmlProvider);
 		}
-		content.setLstGCodeProvider(lstXmlProvider);
-		Serializer p = new Persister();
+		content.setLstGCodeProvider(lstXmlProvider);		
 		try {
-			p.write(content, target);
+			Serializer persister = new Persister();
+			persister.write(content, target);
 		} catch (Exception e) {
 			throw new GkTechnicalException(e);
 		}
