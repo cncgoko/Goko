@@ -28,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.element.GkProject;
 import org.goko.core.workspace.io.LoadContext;
@@ -54,12 +55,16 @@ public class WorkspaceService implements IWorkspaceService{
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceService";
 	/** The list of listener */
 	private List<IWorkspaceListener> listenerList;
+	/** The list of listener for the project lifecycle  */
+	private List<IProjectLifecycleListener> projectLifecycleListenerList;
 	/** The known save participants */
 	private List<IProjectSaveParticipant<?>> saveParticipants;
 	/** The known load participants */
 	private List<IProjectLoadParticipant<?>> loadParticipants;
 	// Temporary project storage
 	private GkProject project;
+	/** The xml persistence service */
+	private IXmlPersistenceService xmlPersistenceService;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -78,7 +83,7 @@ public class WorkspaceService implements IWorkspaceService{
 		this.project = new GkProject();
 		this.saveParticipants = new ArrayList<IProjectSaveParticipant<?>>();
 		this.loadParticipants = new ArrayList<IProjectLoadParticipant<?>>();
-
+		this.projectLifecycleListenerList = new ArrayList<IProjectLifecycleListener>();
 		LOG.info("Successfully started : "+getServiceId());
 	}
 
@@ -183,8 +188,12 @@ public class WorkspaceService implements IWorkspaceService{
 		if(!StringUtils.equals(extension, "goko")){
 			extension = "goko";
 		}
+		project.setName(name);
+		project.setFilepath(fullPath+name+"."+extension);
+		// Notify listeners
+		notifyProjectBeforeSave();
 
-		projectFile = new File(fullPath+name+"."+extension);
+		projectFile = new File(project.getFilepath());
 		context.setProjectName(name);
 		context.setProjectFile(projectFile);
 
@@ -200,14 +209,34 @@ public class WorkspaceService implements IWorkspaceService{
 		}
 
 		try {
-			Serializer p = new Persister();
-			p.write(xmlProject, context.getProjectFile());
+			xmlPersistenceService.write(xmlProject, context.getProjectFile());
 			project.setFilepath(projectFile.getAbsolutePath());
-		} catch (Exception e) {
+		} catch (GkException e) {
 			rollbackSaveProject();
-			throw new GkTechnicalException(e);
+			throw e;
 		}
 		completeSaveProject();
+		// Notify listeners
+		notifyProjectAfterSave();
+		// Mark project as not dirty
+		setProjectDirty(false);
+	}
+
+	/**
+	 * Utility method to change the project dirty state and notify the listeners
+	 * @param dirty dirty state
+	 * @throws GkException GkException
+	 */
+	private void setProjectDirty(boolean dirty) throws GkException {
+		this.project.setDirty(dirty);
+		notifyProjectDirtyStateChange();
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#markProjectDirty()
+	 */
+	@Override
+	public void markProjectDirty() throws GkException {
+		setProjectDirty(true);
 	}
 
 	/**
@@ -237,8 +266,11 @@ public class WorkspaceService implements IWorkspaceService{
 			context.setProjectFile(projectFile);
 			context.setProjectName(projectFile.getName());
 
+			// Notify listeners
+			notifyProjectBeforeLoad();
+
 			Serializer p = new Persister();
-			XmlGkProject xmlGkProject = p.read(XmlGkProject.class, projectFile);
+			XmlGkProject xmlGkProject = xmlPersistenceService.read(XmlGkProject.class, projectFile);
 			project = new GkProject();
 			project.setFilepath(projectFile.getAbsolutePath());
 			project.setName(projectFile.getName());
@@ -260,9 +292,80 @@ public class WorkspaceService implements IWorkspaceService{
 					}
 				}
 			}
-
+			// Notify listeners
+			notifyProjectAfterLoad();
 		} catch (Exception e) {
 			throw new GkTechnicalException(e);
 		}
+	}
+
+	protected void notifyProjectBeforeSave() throws GkException{
+		if(CollectionUtils.isNotEmpty(projectLifecycleListenerList)){
+			for (IProjectLifecycleListener listener : projectLifecycleListenerList) {
+				listener.beforeSave();
+			}
+		}
+	}
+
+	protected void notifyProjectAfterSave() throws GkException{
+		if(CollectionUtils.isNotEmpty(projectLifecycleListenerList)){
+			for (IProjectLifecycleListener listener : projectLifecycleListenerList) {
+				listener.afterSave();
+			}
+		}
+	}
+
+	protected void notifyProjectBeforeLoad() throws GkException{
+		if(CollectionUtils.isNotEmpty(projectLifecycleListenerList)){
+			for (IProjectLifecycleListener listener : projectLifecycleListenerList) {
+				listener.beforeLoad();
+			}
+		}
+	}
+
+	protected void notifyProjectDirtyStateChange() throws GkException{
+		if(CollectionUtils.isNotEmpty(projectLifecycleListenerList)){
+			for (IProjectLifecycleListener listener : projectLifecycleListenerList) {
+				listener.onProjectDirtyStateChange();
+			}
+		}
+	}
+
+	protected void notifyProjectAfterLoad() throws GkException{
+		if(CollectionUtils.isNotEmpty(projectLifecycleListenerList)){
+			for (IProjectLifecycleListener listener : projectLifecycleListenerList) {
+				listener.afterLoad();
+			}
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#addProjectLifecycleListener(org.goko.core.workspace.service.IProjectLifecycleListener)
+	 */
+	@Override
+	public void addProjectLifecycleListener(IProjectLifecycleListener listener) throws GkException {
+		this.projectLifecycleListenerList.add(listener);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#removeProjectLifecycleListener(org.goko.core.workspace.service.IProjectLifecycleListener)
+	 */
+	@Override
+	public void removeProjectLifecycleListener(IProjectLifecycleListener listener) throws GkException {
+		this.projectLifecycleListenerList.remove(listener);
+	}
+
+	/**
+	 * @return the xmlPersistenceService
+	 */
+	public IXmlPersistenceService getXmlPersistenceService() {
+		return xmlPersistenceService;
+	}
+
+	/**
+	 * @param xmlPersistenceService the xmlPersistenceService to set
+	 */
+	public void setXmlPersistenceService(IXmlPersistenceService xmlPersistenceService) {
+		this.xmlPersistenceService = xmlPersistenceService;
 	}
 }

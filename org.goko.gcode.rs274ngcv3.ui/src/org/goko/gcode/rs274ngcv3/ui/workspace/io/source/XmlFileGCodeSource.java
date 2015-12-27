@@ -9,13 +9,13 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Root;
+import org.simpleframework.xml.DerivedType;
 
 /**
  * @author PsyKo
  * @date 13 déc. 2015
  */
-@Root(name="file")
+@DerivedType(parent=XmlGCodeProviderSource.class, name="source:file")
 public class XmlFileGCodeSource extends XmlGCodeProviderSource{
 	/** Paht of the file */
 	@Attribute

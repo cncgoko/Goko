@@ -30,6 +30,10 @@ public interface IWorkspaceService extends IGokoService{
 
 	void removeWorkspaceListener(IWorkspaceListener listener) throws GkException;
 
+	void addProjectLifecycleListener(IProjectLifecycleListener listener) throws GkException;
+
+	void removeProjectLifecycleListener(IProjectLifecycleListener listener) throws GkException;
+
 	void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException;
 
 	void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException;
@@ -37,6 +41,8 @@ public interface IWorkspaceService extends IGokoService{
 	IProjectLoadParticipant<?> findProjectLoadParticipantByType(String type) throws GkException;
 
 	GkProject getProject() throws GkException;
+
+	void markProjectDirty() throws GkException;
 
 	void saveProject(File project) throws GkException;
 

@@ -14,6 +14,8 @@ public class GkProject {
 	private String name;
 	/** The path to the project file */
 	private String filepath;
+	/** Dirty state of the project  */
+	private boolean dirty;
 
 	/**
 	 * @return the name
@@ -38,5 +40,17 @@ public class GkProject {
 	 */
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
+	}
+	/**
+	 * @return the dirty
+	 */
+	public boolean isDirty() {
+		return dirty;
+	}
+	/**
+	 * @param dirty the dirty to set
+	 */
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 }

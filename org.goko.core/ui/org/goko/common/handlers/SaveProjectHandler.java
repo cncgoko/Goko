@@ -19,18 +19,20 @@ import org.goko.core.workspace.service.IWorkspaceService;
 public class SaveProjectHandler {
 
 	@CanExecute
-	public boolean canExecute(){
-		return true;
+	public boolean canExecute(IWorkspaceService workspaceService) throws GkException{
+		GkProject project = workspaceService.getProject();
+		return project != null && project.isDirty();
 	}
 
 	@Execute
-	public void saveProject(Shell shell, IWorkspaceService workspaceService) throws GkException{
+	public boolean saveProject(Shell shell, IWorkspaceService workspaceService) throws GkException{
+		boolean saveDone = false;
 		GkProject project = workspaceService.getProject();
 		String filePath = project.getFilepath();
 
 		if(StringUtils.isEmpty(filePath)){
-			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-			dialog.setText("Open Goko project...");
+			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+			dialog.setText("Save Goko project...");
 			dialog.setFilterNames(new String[]{"Goko projects (*.goko) "});
 			dialog.setFilterExtensions(new String[]{"*.goko"});
 			filePath = dialog.open();
@@ -38,6 +40,8 @@ public class SaveProjectHandler {
 
 		if(StringUtils.isNotEmpty(filePath)){
 			workspaceService.saveProject(new File(filePath));
+			saveDone = true;
 		}
+		return saveDone;
 	}
 }

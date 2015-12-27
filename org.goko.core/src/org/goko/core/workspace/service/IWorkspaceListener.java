@@ -20,5 +20,5 @@ import org.goko.core.common.exception.GkException;
 
 public interface IWorkspaceListener {
 
-	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException;
+	void onWorkspaceEvent(IWorkspaceEvent event) throws GkException;
 }

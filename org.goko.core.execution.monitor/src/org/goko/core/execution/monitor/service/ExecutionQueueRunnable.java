@@ -12,7 +12,7 @@ import org.goko.core.log.GkLog;
 
 /**
  * Describes a runnable performing the execution of an ExecutionQueue
- * 
+ *
  * @author Psyko
  *
  */
@@ -23,20 +23,20 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	private IExecutor<S, T> executor;
 	/** The execution queue*/
 	private IExecutionQueue<S, T> executionQueue;
-	/** The underlying execution service */	
+	/** The underlying execution service */
 	private IExecutionService<S, T> executionService;
 	/** The state of the execution */
 	private ExecutionState state;
-	
+
 	/**
 	 * Constructor
 	 * @param executionService the referencing execution service
 	 */
 	public ExecutionQueueRunnable(IExecutionService<S, T> executionService) {
-		this.executionService = executionService; 
+		this.executionService = executionService;
 		this.state = ExecutionState.IDLE;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see java.lang.Runnable#run()
 	 */
@@ -46,23 +46,23 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 		try{
 			setState(ExecutionState.RUNNING);
 			executionService.notifyQueueExecutionStart();
-			
+
 			while(executionQueue.hasNext() && state != ExecutionState.STOPPED){
 				try{
-					executionQueue.beginNextTokenExecution();				
-					runExecutionToken();								
-					executionQueue.endCurrentTokenExecution();				
+					executionQueue.beginNextTokenExecution();
+					runExecutionToken();
+					executionQueue.endCurrentTokenExecution();
 				}catch(GkException e){
 					LOG.error(e);
 					setState(ExecutionState.ERROR);
 				}
-			}	
+			}
 			if(state == ExecutionState.STOPPED){
-				executionService.notifyQueueExecutionCanceled();				
+				executionService.notifyQueueExecutionCanceled();
 			}else if(state == ExecutionState.ERROR){
 				executionService.notifyQueueExecutionCanceled();
 			}else{
-				setState(ExecutionState.COMPLETE);		
+				setState(ExecutionState.COMPLETE);
 				executionService.notifyQueueExecutionComplete();
 			}
 		}catch(GkException e){
@@ -70,9 +70,9 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 			setState(ExecutionState.ERROR);
 		}
 	}
-	
+
 	protected void isValidState(){
-		
+
 	}
 	/**
 	 * Execute the given execution token
@@ -80,11 +80,11 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	 * @throws GkException GkException
 	 */
 	protected void runExecutionToken() throws GkException{
-		executor.setExecutionService(executionService);		
+		executor.setExecutionService(executionService);
 		T token = executionQueue.getCurrentToken();
-		executor.executeToken(token);		
+		executor.executeToken(token);
 	}
-	
+
 	/**
 	 * @return the executor
 	 */
@@ -116,6 +116,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	/**
 	 * @return the state
 	 */
+	@Override
 	public ExecutionState getState() {
 		return state;
 	}
@@ -123,7 +124,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	/**
 	 * @param state the state to set
 	 */
-	public void setState(ExecutionState state) {		
+	public void setState(ExecutionState state) {
 		this.state = state;
 	}
 
@@ -163,7 +164,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	@Override
 	public void stop() throws GkException {
 		executor.stop();
-		setState(ExecutionState.STOPPED); 
+		setState(ExecutionState.STOPPED);
 		executionService.notifyExecutionCanceled(executionQueue.getCurrentToken());
 	}
 

@@ -15,7 +15,7 @@ import org.simpleframework.xml.Root;
 @Root
 public class XmlProjectContainer {
 	/** The type of this container */
-	@Attribute
+	@Attribute(name="content")
 	private String type;
 	/** The path to the data file */
 	@Attribute

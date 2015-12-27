@@ -5,9 +5,9 @@ import org.goko.core.common.exception.GkException;
 public interface IProjectLifecycleListener {
 
 	void beforeCreate() throws GkException;
-	
+
 	void afterCreate() throws GkException;
-	
+
 	void beforeSave() throws GkException;
 
 	void afterSave() throws GkException;
@@ -15,4 +15,6 @@ public interface IProjectLifecycleListener {
 	void beforeLoad() throws GkException;
 
 	void afterLoad() throws GkException;
+
+	void onProjectDirtyStateChange() throws GkException;
 }

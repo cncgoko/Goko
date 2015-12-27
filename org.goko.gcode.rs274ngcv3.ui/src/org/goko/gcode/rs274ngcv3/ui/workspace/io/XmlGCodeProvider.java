@@ -1,10 +1,10 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.io;
 
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.source.XmlFileGCodeSource;
+import java.util.ArrayList;
+
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.source.XmlGCodeProviderSource;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementUnion;
 import org.simpleframework.xml.Root;
 
 @Root(name="gcodeProvider")
@@ -12,10 +12,11 @@ public class XmlGCodeProvider {
 	@Attribute
 	private String code;
 
-    @ElementUnion({
-	      @Element(name="file", type=XmlFileGCodeSource.class)
-	})
+	@Element
 	private XmlGCodeProviderSource source;
+
+   // @ElementList
+    private ArrayList<XmlGCodeModifier> modifiers;
 
 	/**
 	 * @return the code

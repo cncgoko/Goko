@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="__UlA4Jc3EeWD6osc2lSE8g">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="__UlA4Jc3EeWD6osc2lSE8g">
+  <imports xsi:type="commands:BindingContext" xmi:id="_Xy8BIKS1EeWtZ4gPa6z3WA" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BWIo8Jc4EeWD6osc2lSE8g" featurename="children" parentElementId="org.goko.core.open.menu">
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_DuK3UJc4EeWD6osc2lSE8g" elementId="org.goko.gcode.rs274ngcv3.ui.directmenuitem.gcodefile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.rs274ngcv3.ui/resources/icons/document-attribute-g.png" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.ui/org.goko.gcode.rs274ngcv3.ui.workspace.handler.open.OpenGCodeFileHandler"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_oWq5MKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.handledmenuitem.gcodefile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.rs274ngcv3.ui/resources/icons/document-attribute-g.png" command="_hmSKgKS1EeWtZ4gPa6z3WA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VUQYMKS1EeWtZ4gPa6z3WA" featurename="bindingTables" parentElementId="goko.application">
+    <elements xsi:type="commands:BindingTable" xmi:id="_aflNkKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.bindingtable.0" bindingContext="_Xy8BIKS1EeWtZ4gPa6z3WA">
+      <bindings xmi:id="_bSFokKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.keybinding.0" keySequence="M1+G" command="_hmSKgKS1EeWtZ4gPa6z3WA"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_eVRswKS1EeWtZ4gPa6z3WA" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_i2a8sKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.handler.0" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.ui/org.goko.gcode.rs274ngcv3.ui.workspace.handler.open.OpenGCodeFileHandler" command="_hmSKgKS1EeWtZ4gPa6z3WA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_elbBkKS1EeWtZ4gPa6z3WA" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_hmSKgKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.command.opengcodefile" commandName="Open GCode file"/>
   </fragments>
 </fragment:ModelFragments>

@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -16,8 +16,6 @@ import org.goko.core.workspace.io.XmlProjectContainer;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 
 public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipant<XmlRS274GContent> {
 	/** LOG */
@@ -28,6 +26,8 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	private static final String RS274_CONTENT_TYPE = "rs274Content";
 	/** Workspace service */
 	private IRS274NGCService gcodeService;
+	/** XML persistence service */
+	private IXmlPersistenceService xmlPersistenceService;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -63,16 +63,18 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 		String filePath = container.getPath();
 		File file = new File(context.getResourcesFolder().getParentFile(), filePath);
 
-		Serializer p = new Persister();
-		try {
-			XmlRS274GContent content = p.read(XmlRS274GContent.class, file);
-			load(content);
-		} catch (Exception e) {
-			throw new GkTechnicalException(e);
-		}
+		XmlRS274GContent content = xmlPersistenceService.read(XmlRS274GContent.class, file);
+		load(content);
 	}
 
-	protected void load(XmlRS274GContent content) throws GkException {		
+	/**
+	 * Load the content of the RS274 services
+	 * @param content the content to load
+	 * @throws GkException GkException
+	 */
+	protected void load(XmlRS274GContent content) throws GkException {
+		gcodeService.clearAll();
+
 		// Load the GCodeProvider
 		List<XmlGCodeProvider> lstGCodeProvider = content.getLstGCodeProvider();
 		if(CollectionUtils.isNotEmpty(lstGCodeProvider)){
@@ -104,6 +106,20 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	 */
 	public void setGcodeService(IRS274NGCService gcodeService) {
 		this.gcodeService = gcodeService;
+	}
+
+	/**
+	 * @return the xmlPersistenceService
+	 */
+	public IXmlPersistenceService getXmlPersistenceService() {
+		return xmlPersistenceService;
+	}
+
+	/**
+	 * @param xmlPersistenceService the xmlPersistenceService to set
+	 */
+	public void setXmlPersistenceService(IXmlPersistenceService xmlPersistenceService) {
+		this.xmlPersistenceService = xmlPersistenceService;
 	}
 
 }

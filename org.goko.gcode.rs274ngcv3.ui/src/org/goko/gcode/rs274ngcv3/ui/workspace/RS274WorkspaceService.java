@@ -43,8 +43,6 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	private IRS274NGCService gcodeService;
 	/** The list of existing IModifierUiProvider*/
 	private List<IModifierUiProvider<GCodeProvider, ?>> lstModifierUiProvider;
-	/** Dirty state */
-	private boolean dirty;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -148,7 +146,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
-		dirty = true;
+		markProjectDirty();
 	}
 
 	/** (inheritDoc)
@@ -157,7 +155,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
-		dirty = true;
+		markProjectDirty();
 	}
 
 	/** (inheritDoc)
@@ -166,7 +164,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
-		dirty = true;
+		markProjectDirty();
 	}
 
 	/** (inheritDoc)
@@ -185,6 +183,9 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		workspaceUIService.refreshWorkspaceUi();
 	}
 
+	protected void markProjectDirty() throws GkException{
+		workspaceService.markProjectDirty();
+	}
 	/**
 	 * @return the workspaceService
 	 */

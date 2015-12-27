@@ -5,4 +5,5 @@
    <service>
       <provide interface="org.goko.core.workspace.service.IProjectLoadParticipant"/>
    </service>
+   <reference bind="setXmlPersistenceService" cardinality="1..1" interface="org.goko.core.common.io.xml.IXmlPersistenceService" name="IXmlPersistenceService" policy="static"/>
 </scr:component>

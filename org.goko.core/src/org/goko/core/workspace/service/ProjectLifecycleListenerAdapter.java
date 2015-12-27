@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.goko.core.workspace.service;
 
@@ -7,7 +7,7 @@ import org.goko.core.common.exception.GkException;
 
 /**
  * IProjectLifecycleListener empty implementation
- * 
+ *
  * @author PsyKo
  * @date 16 déc. 2015
  */
@@ -48,5 +48,11 @@ public class ProjectLifecycleListenerAdapter implements IProjectLifecycleListene
 	 */
 	@Override
 	public void afterLoad() throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLifecycleListener#onProjectDirtyStateChange()
+	 */
+	@Override
+	public void onProjectDirtyStateChange() throws GkException {}
 
 }

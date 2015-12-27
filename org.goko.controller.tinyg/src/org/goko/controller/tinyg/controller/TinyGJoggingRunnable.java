@@ -1,9 +1,10 @@
 /**
- * 
+ *
  */
 package org.goko.controller.tinyg.controller;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -41,24 +42,24 @@ public class TinyGJoggingRunnable implements Runnable {
 	private BigDecimalQuantity<Length> step;
 	private boolean precise;
 	private ScopedPreferenceStore preferenceStore;
-	
+
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public TinyGJoggingRunnable(ITinygControllerService tinygService, TinyGCommunicator tinygCommunicator) {
-		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);		
+		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
 		this.initPersistedValues();
 		this.lock = new Object();
 		this.tinygCommunicator = tinygCommunicator;
 		this.tinygService = tinygService;
 	}
-	
+
 	private void initPersistedValues(){
 		String feedStr = preferenceStore.getString(PERSISTED_FEED);
 		if(StringUtils.isBlank(feedStr)){
 			feedStr = "600";
 		}
-		this.feed = new BigDecimal(feedStr); 
+		this.feed = new BigDecimal(feedStr);
 		String stepStr = preferenceStore.getString(PERSISTED_STEP);
 		if(StringUtils.isBlank(stepStr)){
 			stepStr = "1";
@@ -70,22 +71,22 @@ public class TinyGJoggingRunnable implements Runnable {
 		}
 		this.precise = Boolean.valueOf(preciseStr);
 	}
-	
+
 	private void persistValues(){
 		if(feed != null){
 			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
 		}
-		preferenceStore.putValue(PERSISTED_PRECISE, String.valueOf(precise));		
-		
+		preferenceStore.putValue(PERSISTED_PRECISE, String.valueOf(precise));
+
 		if(step != null){
-			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());		
+			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());
 		}
 	}
 	/** (inheritDoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void run() {		
+	public void run() {
 		while(!stopped){
 			try{
 				waitJoggingActive();
@@ -99,7 +100,7 @@ public class TinyGJoggingRunnable implements Runnable {
 							command = startRelativeJog(command);
 						}
 						tinygCommunicator.send(GkUtils.toBytesList(command));
-									
+
 						if(precise){
 							this.jogging = false;
 						}
@@ -110,7 +111,7 @@ public class TinyGJoggingRunnable implements Runnable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Determine if TinyG is ready to jog
 	 * @return <code>true</code> if TinyG is ready to receive another jog order, <code>false</code> otherwise
@@ -119,19 +120,19 @@ public class TinyGJoggingRunnable implements Runnable {
 	protected boolean isReadyToJog() throws GkException{
 		if(precise){
 			MachineState tinygState = tinygService.getState();
-			return MachineState.READY.equals(tinygState) || MachineState.PROGRAM_END.equals(tinygState) || MachineState.PROGRAM_STOP.equals(tinygState); 
+			return MachineState.READY.equals(tinygState) || MachineState.PROGRAM_END.equals(tinygState) || MachineState.PROGRAM_STOP.equals(tinygState);
 		}
 		return tinygService.getAvailableBuffer() > 28;
 	}
-	
+
 	/**
-	 * Generates jogging command when TinyG is in absolute distance mode  
-	 * @param command the base command 
+	 * Generates jogging command when TinyG is in absolute distance mode
+	 * @param command the base command
 	 * @return a String
 	 * @throws GkException GkException
 	 */
 	public String startAbsoluteJog(String command) throws GkException{
-		command += axis.getAxisCode();		
+		command += axis.getAxisCode();
 		BigDecimal target = null;
 		Unit<Length> currentUnit = tinygService.getCurrentGCodeContext().getUnit().getUnit();
 		switch (axis) {
@@ -156,13 +157,13 @@ public class TinyGJoggingRunnable implements Runnable {
 		default:
 			break;
 		}
-		command += target.toPlainString();
+		command += target.setScale(5, RoundingMode.HALF_DOWN).toPlainString();
 		return command;
 	}
-	
+
 	/**
-	 * Generates jogging command when TinyG is in relative distance mode  
-	 * @param command the base command 
+	 * Generates jogging command when TinyG is in relative distance mode
+	 * @param command the base command
 	 * @return a String
 	 * @throws GkException GkException
 	 */
@@ -170,27 +171,27 @@ public class TinyGJoggingRunnable implements Runnable {
 		command += axis.getAxisCode();
 		if(axis.isNegative()){
 			command+="-";
-		}		
+		}
 		command += GokoPreference.getInstance().format(step, true, false);
 		return command;
 	}
 
 	/**
-	 * Wait until the jog is activated 
+	 * Wait until the jog is activated
 	 * @throws GkException GkException
 	 */
 	private void waitJoggingActive() throws GkException{
 		do{
 			synchronized ( lock ) {
 				try {
-					lock.wait(50);
+					lock.wait(500);
 				} catch (InterruptedException e) {
 					LOG.error(e);
 				}
 			}
 		}while( !isJogging() );
 	}
-	
+
 	/**
 	 * @return the jogging
 	 */
@@ -201,25 +202,27 @@ public class TinyGJoggingRunnable implements Runnable {
 	 * Start jogging
 	 * @throws GkException GkException
 	 */
-	public void enableJogging() throws GkException{		
+	public void enableJogging() throws GkException{
 		this.jogging = true;
 		synchronized (lock) {
 			lock.notify();
 		}
 	}
-	
+
 	/**
 	 * Stop jogging
 	 * @throws GkException GkException
 	 */
 	public void disableJogging() throws GkException{
-		String command = StringUtils.EMPTY;	
+		this.jogging = false;
+		synchronized (lock) {
+			lock.notify();
+		}
+		String command = StringUtils.EMPTY;
 		if(!precise){ // In precise mode, let TinyG finish the complete move
 			command += "!%";
 			tinygCommunicator.send(GkUtils.toBytesList(command));
-		}	
-		
-		this.jogging = false;
+		}
 	}
 
 	/**

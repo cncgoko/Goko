@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package goko;
 
@@ -25,22 +25,22 @@ import goko.dialog.GokoProgressDialog;
 
 /**
  * Life cycle manager
- * 
+ *
  * @author PsyKo
  *
  */
 public class GokoLifeCycleManager {
 
 	/**
-	 * Post context creation method 
+	 * Post context creation method
 	 * @param eventBroker the event broker
 	 * @param context the eclipse context
 	 * @throws GkException GkException
 	 */
 	@PostContextCreate
-	public void postContextCreate(IEventBroker eventBroker, final IEclipseContext context) throws GkException {		
-		
-		final GokoProgressDialog dialog = ContextInjectionFactory.make(GokoProgressDialog.class, context);		
+	public void postContextCreate(IEventBroker eventBroker, final IEclipseContext context) throws GkException {
+
+		final GokoProgressDialog dialog = ContextInjectionFactory.make(GokoProgressDialog.class, context);
 		dialog.open();
 		dialog.getShell().setVisible(false);
 		Job.getJobManager().setProgressProvider(new ProgressProvider() {
@@ -53,10 +53,9 @@ public class GokoLifeCycleManager {
 		TargetBoardTracker tracker = ContextInjectionFactory.make(TargetBoardTracker.class, context);
 		tracker.checkTargetBoardDefined(context);
 		// Create auto update check
-		AutomaticUpdateCheck updater = ContextInjectionFactory.make(AutomaticUpdateCheck.class, context);		
-		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, updater);
-	}
-	
+		AutomaticUpdateCheck updater = ContextInjectionFactory.make(AutomaticUpdateCheck.class, context);
+		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, updater);	}
+
 	/**
 	 * Sets the JFace dialog default image to the icon of the main shell
 	 * @param shell the active shell

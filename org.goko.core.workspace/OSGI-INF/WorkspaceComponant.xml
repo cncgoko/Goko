@@ -7,4 +7,5 @@
    </service>
    <reference bind="addProjectSaveParticipant" cardinality="0..n" interface="org.goko.core.workspace.service.IProjectSaveParticipant" name="IProjectSaveParticipant" policy="dynamic"/>
    <reference bind="addProjectLoadParticipant" cardinality="0..n" interface="org.goko.core.workspace.service.IProjectLoadParticipant" name="IProjectLoadParticipant" policy="dynamic"/>
+   <reference bind="setXmlPersistenceService" cardinality="1..1" interface="org.goko.core.common.io.xml.IXmlPersistenceService" name="IXmlPersistenceService" policy="static"/>
 </scr:component>

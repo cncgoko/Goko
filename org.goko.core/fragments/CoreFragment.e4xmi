@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_aZFx0ALUEeWNAc6kezL54A">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_aZFx0ALUEeWNAc6kezL54A">
+  <imports xsi:type="commands:BindingContext" xmi:id="_pDCcgKSgEeWtZ4gPa6z3WA" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_a-EuMALUEeWNAc6kezL54A" featurename="trimBars" parentElementId="goko.application.window">
     <elements xsi:type="basic:TrimBar" xmi:id="_oUOP8ALUEeWNAc6kezL54A" elementId="org.goko.core.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_sRogsALUEeWNAc6kezL54A" elementId="org.goko.core.toolbar.0">
@@ -38,5 +39,23 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_OX0KoEtJEeWoH66P5Rv4Fg" featurename="children" parentElementId="goko.menu.tools" positionInList="last">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_WGrTwEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.handledmenuitem.exportcontrollerconfiguration" label="Export controller configuration" command="_FJ5pkEtJEeWoH66P5Rv4Fg"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_oU4JkEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.handledmenuitem.importcontrollerconfiguration" label="Import controller configuration" command="_tXXzEEtJEeWoH66P5Rv4Fg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VgUEwKSVEeWtZ4gPa6z3WA" featurename="addons" parentElementId="goko.application">
+    <elements xsi:type="application:Addon" xmi:id="_XMeEkKSVEeWtZ4gPa6z3WA" elementId="org.goko.core.addon.projectNameTitleUpdater" contributionURI="bundleclass://org.goko.core/org.goko.common.addons.ProjectNameTitleUpdater"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p40N8KSgEeWtZ4gPa6z3WA" featurename="bindingTables" parentElementId="goko.application">
+    <elements xsi:type="commands:BindingTable" xmi:id="_se-X4KSgEeWtZ4gPa6z3WA" elementId="org.goko.core.bindingtable.corebindings" bindingContext="_pDCcgKSgEeWtZ4gPa6z3WA">
+      <bindings xmi:id="_svm04KSgEeWtZ4gPa6z3WA" elementId="org.goko.core.keybinding.0" keySequence="M1+S" command="_8Eon4J_vEeWQ1PpJXX4oVQ"/>
+      <bindings xmi:id="_jpLmcKShEeWtZ4gPa6z3WA" elementId="org.goko.core.keybinding.1" keySequence="M1+O" command="_FKUQsKQnEeWPNZ1DqEcbWw"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p6ltkKS2EeWtZ4gPa6z3WA" featurename="children" parentElementId="org.goko.application.menu.file" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_unwnUKS2EeWtZ4gPa6z3WA" elementId="org.goko.core.handledmenuitem.newproject" label="New project" iconURI="platform:/plugin/org.goko.core/icons/document.png" command="_nQ6PMKI9EeWFq9L9la3C_w"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_sLIz4KS2EeWtZ4gPa6z3WA" elementId="org.goko.core.handledmenuitem.save" label="Save" iconURI="platform:/plugin/org.goko.core/icons/disk-black.png" command="_8Eon4J_vEeWQ1PpJXX4oVQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0-bZAKS3EeWtZ4gPa6z3WA" featurename="menuContributions" parentElementId="org.goko.application.menu.file">
+    <elements xsi:type="menu:MenuContribution" xmi:id="_v9AtkKS3EeWtZ4gPa6z3WA" elementId="org.goko.core.menucontribution.0" positionInParent="first">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_yj9-MKS2EeWtZ4gPa6z3WA" elementId="org.goko.core.handledmenuitem.open" label="Open" iconURI="platform:/plugin/org.goko.core/icons/folder-horizontal-open.png" command="_FKUQsKQnEeWPNZ1DqEcbWw"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>

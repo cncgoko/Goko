@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -13,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
@@ -21,20 +23,23 @@ import org.goko.core.log.GkLog;
 public class OpenGCodeFileHandler {
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(OpenGCodeFileHandler.class);
-	
+
+	private static final String LAST_GCODE_PATH = "org.goko.open.gcode.lastfolder";
+
 	@Inject
 	private IRS274NGCService gCodeService;
-	
-	
+
+
 	@Execute
 	public void executeOpenFile(Shell shell) throws GkException{
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		dialog.setText("Open GCode file...");
-
+		dialog.setFilterPath(getPersistedGCodeFolder());
 		String filePath = dialog.open();
 		String[] fileNames = dialog.getFileNames();
 
 		if(fileNames != null && fileNames.length > 0){
+			persistGCodeFolder(filePath);
 			final File parentFolder = new File(filePath).getParentFile();
 
 			for (final String fileName : fileNames) {
@@ -61,5 +66,14 @@ public class OpenGCodeFileHandler {
 			}
 
 		}
+	}
+
+
+	private void persistGCodeFolder(String filePath) {
+		GokoPreference.getInstance().setValue(LAST_GCODE_PATH, FilenameUtils.getFullPath(filePath));
+	}
+
+	private String getPersistedGCodeFolder() {
+		return GokoPreference.getInstance().getString(LAST_GCODE_PATH);
 	}
 }

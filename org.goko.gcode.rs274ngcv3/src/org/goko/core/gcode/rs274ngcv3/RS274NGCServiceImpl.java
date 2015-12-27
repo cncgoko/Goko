@@ -292,6 +292,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		this.modalGroups.add( new ModalGroup("M48", "M49"));
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeService#update(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IInstruction)
+	 */
 	@Override
 	public GCodeContext update(GCodeContext baseContext, AbstractInstruction instruction) throws GkException {
 		instruction.apply(baseContext);
@@ -745,6 +748,18 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 				listener.onGCodeProviderDelete(provider);
 			}
 		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#clearAll()
+	 */
+	@Override
+	public void clearAll() throws GkException {
+		for (IGCodeProvider gcodeProvider : getGCodeProvider()) {
+			deleteGCodeProvider(gcodeProvider.getId());
+		}
+		cacheModifiers.removeAll();
+		cacheProviders.removeAll();
 	}
 
 }

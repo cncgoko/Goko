@@ -36,7 +36,7 @@ import org.goko.core.workspace.service.IWorkspaceService;
 
 /**
  * Part displaying execution state and allowing to control it
- * 
+ *
  * @author Psyko
  */
 public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IWorkspaceListener {
@@ -53,7 +53,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	private IGCodeExecutionTimeService executionTimeService;
 	/** Job for execution time estimation */
 	private Job executionUpdater;
-	
+
 	/** Constructor */
 	public ExecutionPartController() {
 		super(new ExecutionPartModel());
@@ -89,7 +89,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		updateButtonState();
 		this.getDataModel().setExecutionTimerActive(false);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
 	 */
@@ -100,7 +100,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		this.getDataModel().setExecutionTimerActive(true);
 		updateQueueExecutionState();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
 	 */
@@ -141,7 +141,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
 		updateTokenQueueData();
-		updateButtonState();		
+		updateButtonState();
 	}
 
 	/** (inheritDoc)
@@ -149,8 +149,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		int executedLineCount = token.getLineCountByState(ExecutionTokenState.EXECUTED);		
-		this.getDataModel().setCompletedLineCount(executedLineCount);		
+		int executedLineCount = token.getLineCountByState(ExecutionTokenState.EXECUTED);
+		this.getDataModel().setCompletedLineCount(executedLineCount);
 	}
 
 	/**
@@ -162,11 +162,11 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		updateButtonState();
 		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
 			updateTokenQueueData();
-		}		
+		}
 	}
 
 	/**
-	 * Starts the execution queue 
+	 * Starts the execution queue
 	 * @throws GkException GkException
 	 */
 	public void beginQueueExecution() throws GkException {
@@ -174,9 +174,9 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		this.getDataModel().setExecutionQueueStartDate(new Date());
 		this.getDataModel().setExecutionTimerActive(true);
 	}
-	
+
 	/**
-	 * Pauses the execution queue 
+	 * Pauses the execution queue
 	 * @throws GkException GkException
 	 */
 	public void pauseResumeQueueExecution() throws GkException {
@@ -186,24 +186,24 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			executionService.pauseQueueExecution();
 		}
 	}
-	
+
 	/**
 	 * Stops the execution queue
 	 * @throws GkException GkException
 	 */
-	public void stopQueueExecution() throws GkException {		
-		executionService.stopQueueExecution();		
+	public void stopQueueExecution() throws GkException {
+		executionService.stopQueueExecution();
 	}
 
 	/**
-	 * Update the state of the buttons according to the execution state 
+	 * Update the state of the buttons according to the execution state
 	 * @throws GkException GkException
 	 */
-	private void updateButtonState() throws GkException{		
+	private void updateButtonState() throws GkException{
 		boolean buttonStopEnabled = false;
 		boolean buttonStartEnabled= false;
 		boolean buttonPauseEnabled = false;
-		
+
 		switch(executionService.getExecutionState()){
 		case IDLE:
 		case STOPPED:
@@ -216,10 +216,10 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		case RUNNING: buttonStartEnabled = false;
 					  buttonPauseEnabled = true;
 					  buttonStopEnabled = true;
-				break;		
+				break;
 		}
-		
-		if(executionService.getExecutionQueue() == null 
+
+		if(executionService.getExecutionQueue() == null
 		|| CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
 			buttonStartEnabled = false;
 		}
@@ -241,7 +241,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		}
 	}
 	/**
-	 * Update the estimated execution time 
+	 * Update the estimated execution time
 	 * @throws GkException GkException
 	 */
 	private void updateEstimatedExecutionTime() throws GkException{
@@ -249,7 +249,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			scheduleExecutionTimeEstimationJob();
 		}
 	}
-	
+
 	private void scheduleExecutionTimeEstimationJob() throws GkException{
 		executionUpdater = new Job("Updating execution time..."){
 			/** (inheritDoc)
@@ -264,7 +264,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 						Quantity<Time> estimatedTime = NumberQuantity.of(BigDecimal.ZERO, Units.SECOND);
 						for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
 							subMonitor.worked(1);
-							Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());							
+							Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
 							estimatedTime = estimatedTime.add(tokenTime);
 						}
 						subMonitor.done();
@@ -278,27 +278,27 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			}
 		};
 		executionUpdater.setUser(true);
-		executionUpdater.schedule(100);	
+		executionUpdater.schedule(100);
 	}
-	
+
 	/**
 	 * Update the data about the execution queue
 	 * @throws GkException GkException
 	 */
-	private void updateTokenQueueData() throws GkException {		
+	private void updateTokenQueueData() throws GkException {
 		List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
 		int tokenCount = CollectionUtils.size(lstToken);
 		this.getDataModel().setTotalTokenCount(tokenCount);
-		
+
 		int totalTokenCount 	= 0;
 		int completedTokenCount = 0;
 		int totalLineCount		= 0;
-		
-		for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {			
+
+		for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
 			totalTokenCount += 1;
 			totalLineCount += executionToken.getLineCount();
 			if(executionToken.getState() == ExecutionState.COMPLETE){
-				completedTokenCount += 1;	
+				completedTokenCount += 1;
 			}
 		}
 		this.getDataModel().setCompletedTokenCount(completedTokenCount);
@@ -306,4 +306,5 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		this.getDataModel().setTotalLineCount(totalLineCount);
 		updateEstimatedExecutionTime();
 	}
+
 }

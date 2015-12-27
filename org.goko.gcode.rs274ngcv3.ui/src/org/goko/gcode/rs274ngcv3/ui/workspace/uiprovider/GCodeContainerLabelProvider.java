@@ -50,7 +50,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 			if(provider.isLocked()){
 				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/lock.png");
 			}else{
-				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/gcode-provider-icon.png");
+				return ResourceManager.getPluginImage("org.goko.gcode.rs274ngcv3.ui", "resources/icons/document-attribute-g.png");
 			}
 		}else if(element instanceof IModifier){
 			if(((IModifier<?>) element).isEnabled()){
