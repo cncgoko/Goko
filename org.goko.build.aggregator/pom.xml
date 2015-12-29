@@ -13,6 +13,7 @@
   	<module>../org.goko.tools.dro</module>  	
   	<module>../org.goko.tools.serial.jssc</module>
   	<module>../org.goko.tools.centerfinder</module>
+  	<module>../org.goko.tools.camera</module>
   	
   	<module>../org.goko.tools.viewer.jogl</module>
 
