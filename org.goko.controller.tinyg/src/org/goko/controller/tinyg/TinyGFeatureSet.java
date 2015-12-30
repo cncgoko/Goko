@@ -18,20 +18,23 @@ import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
 import org.goko.core.gcode.service.IGCodeExecutionMonitorService;
 import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.log.GkLog;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.EventAdmin;
 
 /**
- * TinyG V0.97 feature set 
- * 
+ * TinyG V0.97 feature set
+ *
  * @author PsyKo
  *
  */
 public class TinyGFeatureSet implements IFeatureSet {
+	/** LOG */
+	private static final GkLog LOG = GkLog.getLogger(TinyGFeatureSet.class);
 	/** Target board definition for this feature set */
 	private static final TargetBoard TINYG_TARGET_BOARD = new TargetBoard("tinyg.v097", "TinyG v0.97");
-		
+
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#getTargetBoard()
 	 */
@@ -48,37 +51,43 @@ public class TinyGFeatureSet implements IFeatureSet {
 		TinyGControllerService service = new TinyGControllerService();
 		// ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService
 		context.registerService(IControllerService.class, service, null);
-		context.registerService(ITinygControllerService.class, service, null);		
+		context.registerService(ITinygControllerService.class, service, null);
 		context.registerService(IProbingService.class, service, null);
 		context.registerService(IFourAxisControllerAdapter.class, service, null);
 		context.registerService(ICoordinateSystemAdapter.class, service, null);
 		context.registerService(IJogService.class, service, null);
 		context.registerService(IContinuousJogService.class, service, null);
-		context.registerService(IWorkVolumeProvider.class, service, null);		
-		context.registerService(IControllerConfigurationFileExporter.class, service, null);		
-		context.registerService(IControllerConfigurationFileImporter.class, service, null);		
-				
+		context.registerService(IWorkVolumeProvider.class, service, null);
+		context.registerService(IControllerConfigurationFileExporter.class, service, null);
+		context.registerService(IControllerConfigurationFileImporter.class, service, null);
+
 		service.setGCodeService(findService(context, IGCodeService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setConnectionService(findService(context, ISerialConnectionService.class));
 		service.setMonitorService(findService(context, IGCodeExecutionMonitorService.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
-		
+
 		service.start();
 	}
 
 	protected <S> S findService( BundleContext context, Class<S> clazz){
 		ServiceReference<S> ref = context.getServiceReference(clazz);
+		S result = null;
 		if(ref != null){
-			return context.getService(ref);
+			result = context.getService(ref);
 		}
-		return null;
+		if(result != null){
+			LOG.info("Succesfully found "+clazz+"("+result+") in bundleContext ("+context+")");
+		}else{
+			LOG.warn("No registered instance for "+clazz+" in bundleContext ("+context+")");
+		}
+		return result;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSet#stop()
 	 */
 	@Override
 	public void stop() throws GkException {
-		
-	}	
+
+	}
 }
