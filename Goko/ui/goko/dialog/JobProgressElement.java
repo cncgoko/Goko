@@ -19,6 +19,8 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.dialog.GkDialog;
 
 /**
+ * Unitary element used to display the progress of a single job
+ *
  * @author PsyKo
  *
  */
