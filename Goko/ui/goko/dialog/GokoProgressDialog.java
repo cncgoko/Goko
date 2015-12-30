@@ -163,6 +163,9 @@ public class GokoProgressDialog extends Dialog {
 						GokoProgressDialog.this.getShell().setVisible(false);
 					}
 				}
+				if(!composite.isDisposed()){
+					composite.pack(true);
+				}
 			}
 		});
 	}

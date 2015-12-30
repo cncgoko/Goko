@@ -179,7 +179,9 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 
 			@Override
 			public void run() {
-				jobProgressBar.setSelection(jobProgressBar.getSelection() + work);
+				if(!isDisposed()){
+					jobProgressBar.setSelection(jobProgressBar.getSelection() + work);
+				}
 			}
 		});
 	}
