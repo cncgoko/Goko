@@ -36,7 +36,7 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBean implements IExecutionToken<T> {	
+public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBean implements IExecutionToken<T> {
 	private static final GkLog LOG = GkLog.getLogger(ExecutionToken.class);
 	/** The map of state by line Id */
 	protected Map<Integer, T> mapExecutionStateById;
@@ -45,7 +45,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/** The current command index */
 	protected int currentIndex;
 	/** Id of the executed GCodeProvider */
-	protected Integer idGCodeProvider;	
+	protected Integer idGCodeProvider;
 	/** Initial state of the lines */
 	protected T initialState;
 	/** State of the token */
@@ -56,11 +56,11 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	private int executionOrder;
 	/** The gcode repository where the GCodeProvider is located */
 	private IGCodeProviderRepository gcodeRepository;
-	
+
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	public ExecutionToken(IGCodeProviderRepository gcodeRepository, IGCodeProvider provider, T initState) throws GkException {
 		this.gcodeRepository = gcodeRepository;
@@ -76,22 +76,22 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	@Override
 	public void setLineState(Integer idLine, T state) throws GkException {
 		if(!mapExecutionStateById.containsKey(idLine)){
-			throw new GkTechnicalException("GCodeLine ["+idLine+"] not found in execution token");	
+			throw new GkTechnicalException("GCodeLine ["+idLine+"] not found in execution token");
 		}
-		
+
 		if(!mapLineByExecutionState.containsKey(state)){
-			mapLineByExecutionState.put(state, new ArrayList<Integer>());	
+			mapLineByExecutionState.put(state, new ArrayList<Integer>());
 		}
 		// remove from previous state list
 		T oldState = findLineState(idLine);
 		if(oldState != null){
-			mapLineByExecutionState.get(oldState).remove(idLine);	
+			mapLineByExecutionState.get(oldState).remove(idLine);
 		}
 		// Add to new state list
 		mapLineByExecutionState.get(state).add(idLine);
-		mapExecutionStateById.put(idLine, state);		
+		mapExecutionStateById.put(idLine, state);
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionToken#getLineState(java.lang.Integer)
 	 */
@@ -102,10 +102,10 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 		}
 		throw new GkTechnicalException("GCodeLine ["+idLine+"] not found in execution token");
 	}
-	
+
 	/**
 	 * Equivalent to getLineState except it doesn't throws Exception
-	 * @param idLine the id of the line 
+	 * @param idLine the id of the line
 	 * @return a state
 	 * @throws GkException GkException
 	 */
@@ -145,7 +145,8 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	 * Returns the number of lines
 	 * @return the number of lines
 	 */
-	public int getLineCount() {		
+	@Override
+	public int getLineCount() {
 		return lineCount;
 	}
 
@@ -163,7 +164,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 		}
 		return result;
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionToken#getLineCountByState(org.goko.core.gcode.execution.IExecutionTokenState)
 	 */
@@ -178,27 +179,35 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/**
 	 * Return the wrapped IGCodeProvider
 	 * @return the IGCodeProvider
-	 * @throws GkException GkException 
+	 * @throws GkException GkException
 	 */
 	public IGCodeProvider getGCodeProvider() throws GkException{
 		return gcodeRepository.getGCodeProvider(idGCodeProvider);
 	}
-	
+
+	/**
+	 * Return the identifier of the wrapped IGCodeProvider
+	 * @return an Integer
+	 */
+	public Integer getIdGCodeProvider() {
+		return idGCodeProvider;
+	}
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionToken#reset()
 	 */
 	@Override
 	public void reset() throws GkException {
-		this.mapExecutionStateById 	= new HashMap<Integer, T>();		
+		this.mapExecutionStateById 	= new HashMap<Integer, T>();
 		this.mapLineByExecutionState = new HashMap<T, List<Integer>>();
-		this.mapLineByExecutionState.put(initialState, new ArrayList<Integer>());		
+		this.mapLineByExecutionState.put(initialState, new ArrayList<Integer>());
 		this.currentIndex = -1;
 		this.setState(ExecutionState.IDLE);
-		
+
 		if(CollectionUtils.isNotEmpty(getGCodeProvider().getLines())){
 			for (GCodeLine gCodeLine : getGCodeProvider().getLines()) {
 				this.mapLineByExecutionState.get(initialState).add(gCodeLine.getId());
-				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);				
+				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);
 			}
 		}
 	}
@@ -206,6 +215,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/**
 	 * @return the state
 	 */
+	@Override
 	public ExecutionState getState() {
 		return state;
 	}
@@ -213,6 +223,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/**
 	 * @param state the state to set
 	 */
+	@Override
 	public void setState(ExecutionState state) {
 		this.state = state;
 	}
@@ -220,6 +231,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/**
 	 * @return the executionOrder
 	 */
+	@Override
 	public int getExecutionOrder() {
 		return executionOrder;
 	}
@@ -227,6 +239,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/**
 	 * @param executionOrder the executionOrder to set
 	 */
+	@Override
 	public void setExecutionOrder(int executionOrder) {
 		this.executionOrder = executionOrder;
 	}

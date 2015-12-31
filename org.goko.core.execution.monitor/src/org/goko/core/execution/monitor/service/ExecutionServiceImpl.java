@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
@@ -37,6 +38,7 @@ import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
@@ -47,7 +49,7 @@ import org.goko.core.workspace.service.IWorkspaceUIService;
  * @author PsyKo
  *
  */
-public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGokoService {
+public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGokoService, IGCodeProviderRepositoryListener {
 	/** Service ID */
 	public static final String SERVICE_ID = "org.goko.core.execution.monitor.service.GCodeExecutionMonitorServiceImpl";
 	/** LOG */
@@ -93,7 +95,7 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 		LOG.info("Starting "+getServiceId());
 		// FIXME : a sortir de ce service pour le mettre dans un service UI ? Nouveau projet ?
 		workspaceUiService.addProjectContainerUiProvider(new ExecutionQueueContainerUiProvider(this));
-
+		gcodeRepository.addListener(this);
 		LOG.info("Successfully started "+getServiceId());
 
 	}
@@ -441,5 +443,62 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	public void setGCodeRepository(IGCodeProviderRepository gcodeRepository) {
 		this.gcodeRepository = gcodeRepository;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderCreate(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {
+		// TODO Auto-generated method stub
+
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUpdate(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
+		// TODO Auto-generated method stub
+
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstToken = executionQueue.getExecutionToken();
+		ExecutionToken<ExecutionTokenState> tokenToRemove = null;
+		if(CollectionUtils.isNotEmpty(lstToken)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+				if(ObjectUtils.equals(provider.getId(), executionToken.getIdGCodeProvider())){
+					tokenToRemove = executionToken;
+					break;
+				}
+			}
+		}
+		if(tokenToRemove != null){
+			removeFromExecutionQueue(tokenToRemove);
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderLocked(IGCodeProvider provider) throws GkException {
+		// TODO Auto-generated method stub
+
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUnlocked(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {
+		// TODO Auto-generated method stub
+
+	}
+
 
 }
