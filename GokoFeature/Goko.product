@@ -784,7 +784,7 @@ Public License instead of this License.  But first, please read
       <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
-      <plugin id="org.eclipse.equinox.util"/>      
+      <plugin id="org.eclipse.equinox.util"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.osgi"/>
@@ -826,7 +826,7 @@ Public License instead of this License.  But first, please read
    </configurations>
 
    <repositories>
-      <repository location="http://update.goko.fr/0.0.2" enabled="true" />
+      <repository location="http://update.goko.fr/0.0.3" enabled="true" />
    </repositories>
 
 </product>
