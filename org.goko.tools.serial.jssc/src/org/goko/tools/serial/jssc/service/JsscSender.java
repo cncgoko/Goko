@@ -27,6 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.log.GkLog;
 
 import jssc.SerialPortException;
@@ -39,21 +40,18 @@ public class JsscSender implements Runnable {
 	private BlockingQueue<List<Byte>> importantQueue;
 	/** The service holding the serial port */
 	private JsscSerialConnectionService jsscService;
-	/** Lock waiting for send permission */
-	private Object clearToSendLock;
+	private Object dataAvailableToSend;
 	private boolean stopped;
-	
+
 	/**
 	 * Constructor
 	 * @param serialPort the serial port to use
 	 */
-	public JsscSender(JsscSerialConnectionService jsscService) {		
-		this.queue = new LinkedBlockingQueue<List<Byte>>();		
+	public JsscSender(JsscSerialConnectionService jsscService) {
+		this.queue = new LinkedBlockingQueue<List<Byte>>();
 		this.importantQueue = new LinkedBlockingQueue<List<Byte>>();
 		this.jsscService = jsscService;
-
-		this.clearToSendLock = new Object();
-
+		this.dataAvailableToSend = new Object();
 	}
 
 	/** (inheritDoc)
@@ -62,10 +60,11 @@ public class JsscSender implements Runnable {
 	@Override
 	public  void run() {
 
-		while(!stopped){			
+		while(!stopped){
 			if(jsscService.getSerialPort().isOpened()){
 				List<Byte> lst = null;
 				try {
+					waitDataAvailableToSend();
 					if(CollectionUtils.isNotEmpty(queue)){
 						lst = queue.take();
 					}else if(CollectionUtils.isNotEmpty(importantQueue)){
@@ -73,12 +72,14 @@ public class JsscSender implements Runnable {
 					}
 				}catch (InterruptedException e) {
 					LOG.error(e);
+				} catch (GkException e) {
+					LOG.error(e);
 				}
 
 				if(lst != null){
-					try {						 
-						Byte[] bytes = lst.toArray(new Byte[lst.size()]);						
-						jsscService.getSerialPort().writeBytes( ArrayUtils.toPrimitive(bytes) );						
+					try {
+						Byte[] bytes = lst.toArray(new Byte[lst.size()]);
+						jsscService.getSerialPort().writeBytes( ArrayUtils.toPrimitive(bytes) );
 						jsscService.notifyOutputListeners(lst);
 					} catch (SerialPortException e) {
 						LOG.error(e);
@@ -86,6 +87,8 @@ public class JsscSender implements Runnable {
 						LOG.error(e);
 					}
 				}
+			}else{
+				stop();
 			}
 		}
 	}
@@ -103,6 +106,9 @@ public class JsscSender implements Runnable {
 	 */
 	protected void sendBytes(List<Byte> bytes){
 		queue.offer(new ArrayList<Byte>(bytes));
+		synchronized (dataAvailableToSend) {
+			dataAvailableToSend.notify();
+		}
 	}
 
 	/**
@@ -111,8 +117,8 @@ public class JsscSender implements Runnable {
 	 */
 	protected void sendBytesImmediately(List<Byte> bytes){
 		importantQueue.add( new ArrayList<Byte>(bytes) );
-		synchronized (clearToSendLock) {
-			clearToSendLock.notify();
+		synchronized (dataAvailableToSend) {
+			dataAvailableToSend.notify();
 		}
 	}
 
@@ -121,5 +127,17 @@ public class JsscSender implements Runnable {
 	 */
 	protected void clearOutputBuffer(){
 		queue.clear();
+	}
+
+	private void waitDataAvailableToSend() throws GkException{
+		while(importantQueue.isEmpty() && queue.isEmpty()){
+			synchronized (dataAvailableToSend) {
+				try {
+					dataAvailableToSend.wait();
+				} catch (InterruptedException e) {
+					throw new GkTechnicalException(e);
+				}
+			}
+		}
 	}
 }

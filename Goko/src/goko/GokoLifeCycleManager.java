@@ -20,6 +20,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.internal.TargetBoardTracker;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import goko.dialog.GokoProgressDialog;
 
@@ -38,7 +40,7 @@ public class GokoLifeCycleManager {
 	 * @throws GkException GkException
 	 */
 	@PostContextCreate
-	public void postContextCreate(IEventBroker eventBroker, final IEclipseContext context) throws GkException {
+	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context) throws GkException {
 
 		final GokoProgressDialog dialog = ContextInjectionFactory.make(GokoProgressDialog.class, context);
 		dialog.open();
@@ -54,7 +56,19 @@ public class GokoLifeCycleManager {
 		tracker.checkTargetBoardDefined(context);
 		// Create auto update check
 		AutomaticUpdateCheck updater = ContextInjectionFactory.make(AutomaticUpdateCheck.class, context);
-		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, updater);	}
+		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, updater);
+
+		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
+
+			@Override
+			public void handleEvent(Event event) {
+				// Create auto update check
+				ViewMenuCreationAddon menuCreator = ContextInjectionFactory.make(ViewMenuCreationAddon.class, context);
+				menuCreator.handleEvent(event);
+				eventBroker.unsubscribe(this);
+			}
+		});
+	}
 
 	/**
 	 * Sets the JFace dialog default image to the icon of the main shell

@@ -33,6 +33,7 @@
   <handlers xmi:id="_wyCDudwYEeKC274TynxXSA" contributionURI="bundleclass://Goko/goko.handlers.AboutHandler" command="_wyCDuNwYEeKC274TynxXSA"/>
   <handlers xmi:id="_BvSLwBAeEeOTXNaDwRiLUA" elementId="goko.handler.preferences" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_i52IoBAdEeOTXNaDwRiLUA"/>
   <handlers xmi:id="_-NFSMN78EeSbWNQONxf66w" elementId="goko.handler.updateHandler" contributionURI="bundleclass://Goko/goko.handlers.UpdateHandler" command="_ASrswN79EeSbWNQONxf66w"/>
+  <handlers xmi:id="_8XFekK-tEeWhqNE8GV2-oQ" elementId="goko.handler.toggleView" contributionURI="bundleclass://Goko/goko.handlers.ToggleViewHandler" command="_1iBEMK-tEeWhqNE8GV2-oQ"/>
   <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" bindingContext="_wyBcodwYEeKC274TynxXSA">
     <bindings xmi:id="_wyCDsdwYEeKC274TynxXSA" keySequence="M1+Q" command="_wyBcqtwYEeKC274TynxXSA"/>
     <bindings xmi:id="_wyCDtNwYEeKC274TynxXSA" keySequence="M1+O" command="_wyCDstwYEeKC274TynxXSA"/>
@@ -48,6 +49,9 @@
   <commands xmi:id="_wyCDuNwYEeKC274TynxXSA" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
   <commands xmi:id="_i52IoBAdEeOTXNaDwRiLUA" elementId="goko.command.preferences" commandName="Preferences"/>
   <commands xmi:id="_ASrswN79EeSbWNQONxf66w" elementId="goko.command.update" commandName="Update"/>
+  <commands xmi:id="_1iBEMK-tEeWhqNE8GV2-oQ" elementId="goko.command.toggleView" commandName="toggleViewCommand">
+    <parameters xmi:id="_5Jln0K-tEeWhqNE8GV2-oQ" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName" optional="false"/>
+  </commands>
   <addons xmi:id="_wyBcpNwYEeKC274TynxXSA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_wyBcpdwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_wyBcptwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
