@@ -12,6 +12,7 @@ Export-Package: org.goko.core.gcode.rs274ngcv3,
  org.goko.core.gcode.rs274ngcv3.instruction,
  org.goko.core.gcode.rs274ngcv3.instruction.builder,
  org.goko.core.gcode.rs274ngcv3.modifier,
+ org.goko.core.gcode.rs274ngcv3.modifier.translate,
  org.goko.core.gcode.rs274ngcv3.parser,
  org.goko.core.gcode.rs274ngcv3.utils
 Service-Component: OSGI-INF/IRS274NGCv3.xml

@@ -1,5 +1,6 @@
 package org.goko.core.workspace.service;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.workspace.io.LoadContext;
 import org.goko.core.workspace.io.XmlProjectContainer;
@@ -10,7 +11,7 @@ import org.goko.core.workspace.io.XmlProjectContainer;
  */
 public interface IProjectLoadParticipant<T> {
 
-	void load(LoadContext context, XmlProjectContainer container) throws GkException;
+	void load(LoadContext context, XmlProjectContainer container, IProgressMonitor monitor) throws GkException;
 
 	boolean canLoad(XmlProjectContainer container) throws GkException;
 

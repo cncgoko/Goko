@@ -3,6 +3,7 @@ package org.goko.common.handlers;
 import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.SWT;
@@ -37,9 +38,18 @@ public class SaveProjectHandler {
 			dialog.setFilterExtensions(new String[]{"*.goko"});
 			filePath = dialog.open();
 		}
-
+		final String finalFilePath = filePath;
 		if(StringUtils.isNotEmpty(filePath)){
-			workspaceService.saveProject(new File(filePath));
+//			Job saveJob = new Job("Saving project"){
+//				/** (inheritDoc)
+//				 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+//				 */
+//				@Override
+//				protected IStatus run(IProgressMonitor monitor) {
+					workspaceService.saveProject(new File(finalFilePath), new NullProgressMonitor());
+//					return Status.OK_STATUS;
+//				}
+//			};
 			saveDone = true;
 		}
 		return saveDone;

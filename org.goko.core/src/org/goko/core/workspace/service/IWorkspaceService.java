@@ -18,6 +18,7 @@ package org.goko.core.workspace.service;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.workspace.element.GkProject;
@@ -44,7 +45,7 @@ public interface IWorkspaceService extends IGokoService{
 
 	void markProjectDirty() throws GkException;
 
-	void saveProject(File project) throws GkException;
+	void saveProject(File project, IProgressMonitor monitor) throws GkException;
 
-	void loadProject(File project) throws GkException;
+	void loadProject(File project, IProgressMonitor monitor) throws GkException;
 }

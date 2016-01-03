@@ -3,7 +3,7 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.translate;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.gcode.rs274ngcv3.modifier.TranslateModifier;
+import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
 
 /**
  * Model for this configuration panel

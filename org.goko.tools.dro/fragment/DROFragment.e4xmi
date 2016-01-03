@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_6HRN0BsbEeOU8qLhR-YcdQ">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_6HRN0BsbEeOU8qLhR-YcdQ">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9yneMBsbEeOU8qLhR-YcdQ" featurename="children" parentElementId="goko.application.partstack">
     <elements xsi:type="basic:Part" xmi:id="_-9Z2UBsbEeOU8qLhR-YcdQ" elementId="org.goko.tools.dro.part" contributionURI="bundleclass://org.goko.tools.dro/org.goko.tools.dro.DisplayReadOut" label="DRO" iconURI="platform:/plugin/org.goko.tools.dro/icons/compass.png" closeable="true">
-      <tags>view</tags>
       <toolbar xmi:id="_KPKAkDqbEeOE7ee0Ogu8Dw" elementId="org.goko.tools.dro.toolbar.0">
-        <children xsi:type="menu:HandledToolItem" xmi:id="_MWamMFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.handledtoolitem.settings" label="Settings" iconURI="platform:/plugin/org.goko.tools.dro/icons/gear.png" tooltip="Configure displayed values">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_MWamMFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.handledtoolitem.settings" label="Settings" iconURI="platform:/plugin/org.goko.tools.dro/icons/gear.png" tooltip="Configure displayed values" command="_YHJpUFrsEeSeFYUQtBIr9A">
           <parameters xmi:id="_ggVh0FrsEeSeFYUQtBIr9A" elementId="" name="goko.org.ui.page.id" value="org.goko.tools.dro.displayPreferences"/>
         </children>
       </toolbar>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1hJzAD8lEeOV84c-W_LF1A" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_YHJpUFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.command.dropreferences" commandName="DROPreferences" description="Open DRO preferences page">
+      <parameters xmi:id="_b9K4oFrsEeSeFYUQtBIr9A" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_IThF0D8mEeOV84c-W_LF1A" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_W2ocoFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_YHJpUFrsEeSeFYUQtBIr9A"/>
   </fragments>
 </fragment:ModelFragments>

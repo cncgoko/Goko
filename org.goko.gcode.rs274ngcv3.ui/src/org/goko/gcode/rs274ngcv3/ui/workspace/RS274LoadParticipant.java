@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.common.service.IGokoService;
@@ -59,12 +61,12 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override
-	public void load(LoadContext context, XmlProjectContainer container) throws GkException {
+	public void load(LoadContext context, XmlProjectContainer container, IProgressMonitor monitor) throws GkException {
 		String filePath = container.getPath();
 		File file = new File(context.getResourcesFolder().getParentFile(), filePath);
 
 		XmlRS274GContent content = xmlPersistenceService.read(XmlRS274GContent.class, file);
-		load(content);
+		load(content, monitor);
 	}
 
 	/**
@@ -72,18 +74,21 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	 * @param content the content to load
 	 * @throws GkException GkException
 	 */
-	protected void load(XmlRS274GContent content) throws GkException {
+	protected void load(XmlRS274GContent content, IProgressMonitor monitor) throws GkException {
 		gcodeService.clearAll();
 
 		// Load the GCodeProvider
 		List<XmlGCodeProvider> lstGCodeProvider = content.getLstGCodeProvider();
+		SubMonitor submonitor = SubMonitor.convert(monitor, CollectionUtils.size(lstGCodeProvider));
 		if(CollectionUtils.isNotEmpty(lstGCodeProvider)){
 			for (XmlGCodeProvider xmlGCodeProvider : lstGCodeProvider) {
-				IGCodeProvider provider = gcodeService.parse(xmlGCodeProvider.getSource().getSource(), null);
+				IGCodeProvider provider = gcodeService.parse(xmlGCodeProvider.getSource().getSource(), submonitor);
 				provider.setCode(xmlGCodeProvider.getCode());
 				gcodeService.addGCodeProvider(provider);
+				submonitor.worked(1);
 			}
 		}
+		submonitor.done();
 	}
 
 	/** (inheritDoc)

@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
-import org.goko.core.gcode.rs274ngcv3.modifier.TranslateModifier;
+import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
 public class TranslateModifierBuilder implements IModifierUiProvider<GCodeProvider, TranslateModifier>{

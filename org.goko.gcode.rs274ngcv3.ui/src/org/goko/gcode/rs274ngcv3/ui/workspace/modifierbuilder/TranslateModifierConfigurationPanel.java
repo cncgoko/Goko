@@ -13,7 +13,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
-import org.goko.core.gcode.rs274ngcv3.modifier.TranslateModifier;
+import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.translate.TranslateModifierConfigurationController;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.translate.TranslateModifierConfigurationModel;
 

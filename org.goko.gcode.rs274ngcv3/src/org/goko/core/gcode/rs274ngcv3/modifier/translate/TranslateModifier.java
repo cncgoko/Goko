@@ -1,4 +1,4 @@
-package org.goko.core.gcode.rs274ngcv3.modifier;
+package org.goko.core.gcode.rs274ngcv3.modifier.translate;
 
 import java.math.BigDecimal;
 
@@ -20,6 +20,7 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.internal.Activator;
+import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 
 public class TranslateModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
 	private BigDecimalQuantity<Length> translationX;

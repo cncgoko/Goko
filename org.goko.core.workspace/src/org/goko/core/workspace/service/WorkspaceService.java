@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
@@ -80,9 +81,7 @@ public class WorkspaceService implements IWorkspaceService{
 	@Override
 	public void start() throws GkException {
 		this.listenerList = new ArrayList<IWorkspaceListener>();
-		this.project = new GkProject();
-		this.saveParticipants = new ArrayList<IProjectSaveParticipant<?>>();
-		this.loadParticipants = new ArrayList<IProjectLoadParticipant<?>>();
+		this.project = new GkProject();		
 		this.projectLifecycleListenerList = new ArrayList<IProjectLifecycleListener>();
 		LOG.info("Successfully started : "+getServiceId());
 	}
@@ -148,7 +147,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException {
-		this.saveParticipants.add(participant);
+		this.getSaveParticipants().add(participant);
 	}
 
 	/** (inheritDoc)
@@ -168,7 +167,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException {
-		this.loadParticipants.add(participant);
+		this.getLoadParticipants().add(participant);
 	}
 
 
@@ -176,7 +175,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
 	 */
 	@Override
-	public void saveProject(File targetProjectFile) throws GkException {
+	public void saveProject(File targetProjectFile, IProgressMonitor monitor) throws GkException {
 		SaveContext context = new SaveContext();
 		File projectFile = targetProjectFile;
 		// Build complete path
@@ -204,7 +203,7 @@ public class WorkspaceService implements IWorkspaceService{
 		XmlGkProject xmlProject = new XmlGkProject();
 		xmlProject.setResourcesFolderName(context.getResourcesFolderName());
 
-		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+		for (IProjectSaveParticipant<?> saveParticipant : getSaveParticipants()) {
 			xmlProject.getLstProjectContainer().addAll(saveParticipant.save(context));
 		}
 
@@ -243,7 +242,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 * Notifies all the save participant that the saved occurred without issue
 	 */
 	private void completeSaveProject(){
-		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+		for (IProjectSaveParticipant<?> saveParticipant : getSaveParticipants()) {
 			saveParticipant.saveComplete();
 		}
 	}
@@ -252,7 +251,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 * Notifies all the save participant that the saved failed
 	 */
 	private void rollbackSaveProject(){
-		for (IProjectSaveParticipant<?> saveParticipant : saveParticipants) {
+		for (IProjectSaveParticipant<?> saveParticipant : getSaveParticipants()) {
 			saveParticipant.rollback();
 		}
 	}
@@ -260,7 +259,7 @@ public class WorkspaceService implements IWorkspaceService{
 	 * @see org.goko.core.workspace.service.IWorkspaceService#loadProject(java.io.File)
 	 */
 	@Override
-	public void loadProject(File projectFile) throws GkException {
+	public void loadProject(File projectFile, IProgressMonitor monitor) throws GkException {
 		try {
 			LoadContext context = new LoadContext();
 			context.setProjectFile(projectFile);
@@ -283,15 +282,16 @@ public class WorkspaceService implements IWorkspaceService{
 			if(CollectionUtils.isNotEmpty(xmlContainers)){
 				for (XmlProjectContainer xmlProjectContainer : xmlContainers) {
 					// Let's find the load participant that can handle this container
-					for (IProjectLoadParticipant<?> loadParticipant : loadParticipants) {
+					for (IProjectLoadParticipant<?> loadParticipant : getLoadParticipants()) {
 						if(loadParticipant.canLoad(xmlProjectContainer)){
-							loadParticipant.load(context, xmlProjectContainer);
+							loadParticipant.load(context, xmlProjectContainer, monitor);
 							break;
 						}
 						LOG.warn("No IProjectLoadParticipant found for XmlProjectContainer of type ["+xmlProjectContainer.getType()+"]");
 					}
 				}
 			}
+			setProjectDirty(false);
 			// Notify listeners
 			notifyProjectAfterLoad();
 		} catch (Exception e) {
@@ -367,5 +367,25 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	public void setXmlPersistenceService(IXmlPersistenceService xmlPersistenceService) {
 		this.xmlPersistenceService = xmlPersistenceService;
+	}
+	
+	/**
+	 * @return the ssaveParticipants
+	 */
+	public List<IProjectSaveParticipant<?>> getSaveParticipants() {
+		if(saveParticipants == null){
+			saveParticipants = new ArrayList<IProjectSaveParticipant<?>>();
+		}
+		return saveParticipants;
+	}
+	
+	/**
+	 * @return the loadParticipants
+	 */
+	public List<IProjectLoadParticipant<?>> getLoadParticipants() {
+		if(loadParticipants == null){
+			loadParticipants = new ArrayList<IProjectLoadParticipant<?>>();
+		}
+		return loadParticipants;
 	}
 }

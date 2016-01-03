@@ -53,8 +53,7 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	 */
 	@Override
 	public void start() throws GkException {
-		LOG.info("Starting  "+getServiceId());
-	//	workspaceService.addProjectSaveParticipant(this);
+		LOG.info("Starting  "+getServiceId());	
 		xmlPersistenceService.register(XmlFileGCodeSource.class);
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -90,7 +89,7 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 		persistContent(new File(context.getResourcesFolder(), RS274_CONTENT_FILE_NAME));
 		return containers;
 	}
-
+	
 	private void persistContent(File target) throws GkException{
 		XmlRS274GContent content = new XmlRS274GContent();
 		List<IGCodeProvider> lstProviders = gcodeService.getGCodeProvider();
@@ -115,7 +114,7 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 
 		if(CollectionUtils.isNotEmpty(lstModifiers)){
 			for (IModifier<GCodeProvider> iModifier : lstModifiers) {
-
+				
 			}
 		}
 	}

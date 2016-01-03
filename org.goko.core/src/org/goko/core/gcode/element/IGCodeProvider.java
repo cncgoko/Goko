@@ -3,10 +3,11 @@ package org.goko.core.gcode.element;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.utils.ICodeBean;
 import org.goko.core.common.utils.IIdBean;
 
 
-public interface IGCodeProvider extends IIdBean{
+public interface IGCodeProvider extends IIdBean, ICodeBean{
 
 	/**
 	 * Getter for the user displayed code of this provider  
