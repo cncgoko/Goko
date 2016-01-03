@@ -193,7 +193,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		int usedBufferCount = CollectionUtils.size(byteCommand);
 		communicator.send( byteCommand );
 		setUsedGrblBuffer(usedGrblBuffer + usedBufferCount + 2); // HAck for end of line
-		System.err.println("Sending "+cmd);
+		//System.err.println("+ "+(usedBufferCount + 2));
 	}
 
 	/** (inheritDoc)
@@ -401,8 +401,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(currentToken != null){
 			GCodeCommand command = currentToken.markNextCommandAsConfirmed();
 			if(command != null ){
-				String strCommand = new String(getGCodeService().convert(command));
-				setUsedGrblBuffer(usedGrblBuffer - StringUtils.length(strCommand));
+				String strCommand = command.getStringCommand();//new String(getGCodeService().convert(command));
+				setUsedGrblBuffer(usedGrblBuffer - StringUtils.length(strCommand) - 2);
+				//System.err.println("- "+(StringUtils.length(strCommand) + 2));
 			}
 			grblStreamingRunnable.releaseBufferSpaceMutex();
 		}
