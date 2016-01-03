@@ -529,7 +529,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(axis.isNegative()){
 			command+="-";
 		}
-		command += GokoPreference.getInstance().format(jogStep.to(getCurrentGCodeContext().getUnit().getUnit()), true);
+		command += GokoPreference.getInstance().format(jogStep.to(getCurrentGCodeContext().getUnit().getUnit()), true, false);
 		if(feedrate != null){
 			command += "F"+feedrate;
 		}
