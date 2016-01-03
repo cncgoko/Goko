@@ -192,7 +192,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		List<Byte> byteCommand = GkUtils.toBytesList(cmd);
 		int usedBufferCount = CollectionUtils.size(byteCommand);
 		communicator.send( byteCommand );
-		setUsedGrblBuffer(usedGrblBuffer + usedBufferCount);
+		setUsedGrblBuffer(usedGrblBuffer + usedBufferCount + 2); // HAck for end of line
+		System.err.println("Sending "+cmd);
 	}
 
 	/** (inheritDoc)

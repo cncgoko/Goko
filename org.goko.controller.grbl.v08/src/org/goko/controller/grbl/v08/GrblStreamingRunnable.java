@@ -136,8 +136,8 @@ public class GrblStreamingRunnable  implements Runnable {
 	 * Wait until there is enough space in Grbl buffer
 	 * @throws GkException GkException
 	 */
-	private void waitBufferSpace(int size) throws GkException {
-		while(executionQueue.getCurrentToken() != null && (grblService.getUsedGrblBuffer() + size) > Grbl.GRBL_BUFFER_SIZE){
+	private void waitBufferSpace(int size) throws GkException {		
+		while(executionQueue.getCurrentToken() != null && (grblService.getUsedGrblBuffer() + size + 2) > Grbl.GRBL_BUFFER_SIZE){
 			synchronized ( bufferSpaceMutex ) {
 				try {
 					bufferSpaceMutex.wait();
@@ -145,7 +145,7 @@ public class GrblStreamingRunnable  implements Runnable {
 					LOG.error(e);
 				}
 			}
-		}
+		}		
 	}
 
 	protected void releaseBufferSpaceMutex(){
