@@ -261,21 +261,29 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 		}
 	}
 
-	protected void notifyInputListeners(List<Byte> data) throws GkException{
+	protected void notifyInputListeners(List<Byte> data){
 		if(CollectionUtils.isNotEmpty(inputListeners)){
 			for(WeakReference<IConnectionDataListener> reference : inputListeners){
 				if(reference.get() != null){
-					reference.get().onDataReceived(data);
+					try {
+						reference.get().onDataReceived(data);
+					} catch (GkException e) {
+						LOG.error(e);
+					} 
 				}
 			}
 		}
 	}
 
-	protected void notifyOutputListeners(List<Byte> data) throws GkException{
+	protected void notifyOutputListeners(List<Byte> data){
 		if(CollectionUtils.isNotEmpty(outputListeners)){
 			for(WeakReference<IConnectionDataListener> reference : outputListeners){
 				if(reference.get() != null){
-					reference.get().onDataSent(data);
+					try {
+						reference.get().onDataSent(data);
+					} catch (GkException e) {
+						LOG.error(e);
+					}
 				}
 			}
 		}

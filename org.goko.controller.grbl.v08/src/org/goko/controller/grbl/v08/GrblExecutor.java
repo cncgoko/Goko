@@ -45,9 +45,12 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 	 */
 	@Override
 	protected boolean isReadyForNextLine() throws GkException {
-		GCodeLine nextLine = getToken().getNextLine();
-		String lineStr = gcodeService.render(nextLine);
-		return grblService.getUsedGrblBuffer() + StringUtils.length(lineStr) < Grbl.GRBL_BUFFER_SIZE;
+		if(getToken().hasMoreLine()){
+			GCodeLine nextLine = getToken().getNextLine();
+			String lineStr = gcodeService.render(nextLine);
+			return grblService.getUsedGrblBuffer() + StringUtils.length(lineStr) < Grbl.GRBL_BUFFER_SIZE;
+		}
+		return true;
 	}
 
 	/** (inheritDoc)
@@ -76,17 +79,18 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 	 * Notification method called when a line is executed
 	 * @throws GkException
 	 */
-	protected GCodeLine confirmNextLineExecution() throws GkException{
+	protected void confirmNextLineExecution() throws GkException{
 		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionTokenState.SENT);
-		GCodeLine line = null;
 		if(CollectionUtils.isNotEmpty(lstLines)){
-			line = lstLines.get(0);
-			getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
-			getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
+			GCodeLine line = null;
+			if(CollectionUtils.isNotEmpty(lstLines)){
+				line = lstLines.get(0);
+				getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+				getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
+			}
+			notifyReadyForNextLineIfRequired();
+			notifyTokenCompleteIfRequired();		
 		}
-		notifyReadyForNextLineIfRequired();
-		notifyTokenCompleteIfRequired();
-		return line;
 	}
 
 	/**

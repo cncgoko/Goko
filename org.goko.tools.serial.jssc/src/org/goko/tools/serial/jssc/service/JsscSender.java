@@ -83,8 +83,6 @@ public class JsscSender implements Runnable {
 						jsscService.notifyOutputListeners(lst);
 					} catch (SerialPortException e) {
 						LOG.error(e);
-					} catch (GkException e) {
-						LOG.error(e);
 					}
 				}
 			}else{

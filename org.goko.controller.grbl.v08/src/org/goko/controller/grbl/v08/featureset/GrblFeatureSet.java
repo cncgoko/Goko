@@ -19,6 +19,7 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IExecutionService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -53,7 +54,7 @@ public class GrblFeatureSet implements IFeatureSet {
 	public void start(BundleContext context) throws GkException {
 		GrblControllerService service = new GrblControllerService();
 
-		lstServiceregistration.add( context.registerService(IControllerService.class,	 	service, null));
+		context.registerService(IControllerService.class,	 	service, null);
 		lstServiceregistration.add(context.registerService(IGrblControllerService.class, 	service, null));
 		lstServiceregistration.add(context.registerService(IJogService.class, 			service, null));
 		lstServiceregistration.add(context.registerService(IJogService.class, 			service, null));
@@ -61,7 +62,8 @@ public class GrblFeatureSet implements IFeatureSet {
 		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, service, null));
 		lstServiceregistration.add(context.registerService(IControllerConfigurationFileExporter.class, service, null));
 		lstServiceregistration.add(context.registerService(IControllerConfigurationFileImporter.class, service, null));
-
+		
+		service.setGCodeService(findService(context, IRS274NGCService.class));
 		service.setConnectionService(findService(context, IConnectionService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));

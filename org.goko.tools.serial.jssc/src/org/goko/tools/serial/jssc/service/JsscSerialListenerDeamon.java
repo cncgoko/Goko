@@ -84,8 +84,6 @@ public class JsscSerialListenerDeamon implements Runnable, SerialPortEventListen
 			try {
 				notifiedBuffer = queue.take();
 				jsscService.notifyInputListeners(notifiedBuffer);
-			} catch (GkException e) {
-				LOG.error(e);
 			} catch (InterruptedException e) {
 				LOG.error(e);
 			}

@@ -9,4 +9,5 @@
    <reference cardinality="1..1" interface="org.osgi.service.event.EventAdmin" name="EventAdmin" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
    <reference cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
 </scr:component>

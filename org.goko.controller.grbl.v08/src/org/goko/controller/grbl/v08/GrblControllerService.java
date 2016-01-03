@@ -65,6 +65,7 @@ import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -127,6 +128,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		communicator	= new GrblCommunicator(this);
 		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
 		usedBufferStack = new LinkedBlockingQueue<Integer>();
+		grblExecutor	= new GrblExecutor(this, gcodeService);
 		initPersistedValues();
 	}
 
@@ -197,7 +199,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		List<Byte> byteCommand = GkUtils.toBytesList(cmd);
 		int usedBufferCount = CollectionUtils.size(byteCommand);
 		communicator.send( byteCommand );
-		incrementUsedBufferCount(usedBufferCount);
+		incrementUsedBufferCount(usedBufferCount + 2); // Dirty hack for end of line chars
 	}
 
 	/**
@@ -433,7 +435,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	protected void handleOkResponse() throws GkException{
 		decrementUsedBufferCount();
-		grblExecutor.confirmNextLineExecution();
+		if(executionService.getExecutionState() == ExecutionState.RUNNING){
+			grblExecutor.confirmNextLineExecution();
+		}
 	}
 
 	protected void initialiseConnectedState() throws GkException{
@@ -807,7 +811,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
-		executionService.setExecutor(new GrblDebugExecutor(gcodeService));
+		this.grblExecutor = new GrblExecutor(this, gcodeService);
+		this.executionService.setExecutor(grblExecutor);//new GrblDebugExecutor(gcodeService));
 	}
 
 	/** (inheritDoc)

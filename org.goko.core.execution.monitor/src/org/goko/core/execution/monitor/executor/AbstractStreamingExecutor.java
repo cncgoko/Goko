@@ -145,7 +145,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 * @throws GkException GkException
 	 */
 	private void waitReadyForNextLine() throws GkException{
-		if(!isReadyForNextLine()){
+		if(!isReadyForNextLine() && getToken().hasMoreLine()){
 			readyForNextLineLock.lock();
 			try{
 				readyForNextLineCondition.await();
