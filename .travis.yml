@@ -24,7 +24,7 @@ script:
 
 after_failure:
   - "cat ../org.goko.build.parent/target/surefire-reports/*.txt"
-  #TODO add surefire report exports
+  #TODO add surefire report exports 
 
 after_success:
  - chmod a+x ./../deploy.sh
