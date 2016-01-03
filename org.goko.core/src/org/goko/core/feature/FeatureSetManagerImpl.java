@@ -167,8 +167,10 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {		
 		try {
-			deactivateTargetBoardSupport(String.valueOf(event.getOldValue()));
-			startFeatureSet();
+			if(StringUtils.equals(GokoPreference.KEY_TARGET_BOARD, event.getProperty())){
+				deactivateTargetBoardSupport(String.valueOf(event.getOldValue()));
+				startFeatureSet();
+			}
 		} catch (GkException e) {
 			LOG.error(e);
 		}		
