@@ -161,5 +161,8 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 		}
 	}
 
+	public void setScrollLock(boolean lock){
+		getDataModel().setScrollLock(lock);
+	}
 
 }

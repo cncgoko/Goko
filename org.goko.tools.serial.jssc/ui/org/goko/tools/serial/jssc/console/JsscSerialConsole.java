@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.common.GkUiUtils;
@@ -59,8 +58,6 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 	private static final String CONSOLE_SCROLL_LOCKED =  "org.goko.tools.serial.jssc.consoleScrollLock";
 	private static final String CONSOLE_END_LINE_TOKEN =  "org.goko.tools.serial.jssc.consoleEndLineToken";
 	private Text commandTxt;
-	private Button btnEnableConsole;
-	private Button btnScrolllock;
 	private GkCombo<LabeledValue<String>> endLineCombo;
 
 	/**
@@ -71,6 +68,7 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 	public JsscSerialConsole(IEclipseContext context) {
 		super(new JsscSerialConsoleController());
 		ContextInjectionFactory.inject(getController(), context);
+		context.set(JsscSerialConsoleController.class, getController());
 		try{
 			getController().initialize();
 		}catch(GkException e){
@@ -91,7 +89,7 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		composite.setLayout(new GridLayout(1, false));
 
 		Composite composite_2 = new Composite(composite, SWT.NONE);
-		composite_2.setLayout(new GridLayout(2, false));
+		composite_2.setLayout(new GridLayout(4, false));
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
 		commandTxt = new Text(composite_2, SWT.BORDER);
@@ -129,35 +127,13 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		gd_btnSend.widthHint = 50;
 		btnSend.setLayoutData(gd_btnSend);
 		btnSend.setText("Send");
-
-		Composite composite_1 = new Composite(composite, SWT.NONE);
-		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		composite_1.setLayout(new GridLayout(5, false));
-
-		Label lblNewLabel = new Label(composite_1, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel.setText("Line end ");
-
-		endLineCombo = new GkCombo<LabeledValue<String>>(composite_1, SWT.NONE | SWT.READ_ONLY);
-		Combo combo = endLineCombo.getCombo();
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		combo.select(2);
-
-		btnEnableConsole = new Button(composite_1, SWT.CHECK);
-		btnEnableConsole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		btnEnableConsole.setText("Enable console");
-
-		btnScrolllock = new Button(composite_1, SWT.TOGGLE);
-		btnScrolllock.setImage(ResourceManager.getPluginImage("org.goko.tools.serial.jssc", "resources/icons/lock.png"));
-
-		Button btnClearconsole = new Button(composite_1, SWT.NONE);
-		btnClearconsole.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				getController().clearConsole();
-			}
-		});
-		btnClearconsole.setImage(ResourceManager.getPluginImage("org.goko.tools.serial.jssc", "resources/icons/eraser.png"));
+				
+						Label lblNewLabel = new Label(composite_2, SWT.NONE);
+						lblNewLabel.setText("Line end ");
+								
+										endLineCombo = new GkCombo<LabeledValue<String>>(composite_2, SWT.NONE | SWT.READ_ONLY);
+										Combo combo = endLineCombo.getCombo();
+										combo.select(2);
 
 
 		StyledText styledText = new StyledText(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
@@ -191,8 +167,6 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		}
 	}
 	private void initBindings() throws GkException{
-		getController().addSelectionBinding(btnEnableConsole, "consoleEnabled");
-		getController().addSelectionBinding(btnScrolllock, "scrollLock");
 		getController().addItemsBinding(endLineCombo, "endLineChars");
 		getController().addItemSelectionBinding(endLineCombo, "endLineToken");
 		getController().addTextModifyBinding(commandTxt, "command");
