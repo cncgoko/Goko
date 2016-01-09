@@ -36,5 +36,5 @@ public interface ICenterFinderService extends IGokoService{
 
 	void removeCapturedPoint(Tuple6b point) throws GkException;
 
-	CircleCenterFinderResult getCenter(List<Tuple6b> lstPoints) throws GkException;
+	CircleCenterFinderResult getCenter(List<Tuple6b> lstPoints, EnumPlane plane) throws GkException;
 }

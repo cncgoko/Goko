@@ -45,24 +45,34 @@ public class ViewMenuCreationAddon implements EventHandler{
 	public void handleEvent(Event event) {
 		List<MMenu> lstViewSubmenu = modelService.findElements(application, "goko.menu.window.view", MMenu.class, new ArrayList<String>(), EModelService.IN_MAIN_MENU);
 		MMenu viewSubmenu = lstViewSubmenu.get(0);
-
+		
+		
 		Collection<MPart> parts = partService.getParts();
 		Iterator<MPart> iterator = parts.iterator();
+				
 		List<MMenuElement> children = new ArrayList<MMenuElement>();
-		
+		List<MMenuElement> existingChidlren = viewSubmenu.getChildren();
+		List<String> existingChidlrenIds = new ArrayList<String>();
+		for (MMenuElement mMenuElement : existingChidlren) {
+			existingChidlrenIds.add(mMenuElement.getElementId());
+		}	
 		while (iterator.hasNext()) {
 			MPart mPart = iterator.next();
 			if(mPart.getTags().contains(VIEW_MENU_ENTRY_TAG)){
-
-				MHandledMenuItem item = MMenuFactory.INSTANCE.createHandledMenuItem();
-				item.setLabel(mPart.getLabel());
-				item.setTooltip(mPart.getLabel());
-				item.setIconURI(mPart.getIconURI());
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put(VIEW_NAME_PARAMETER, mPart.getElementId());
-				ParameterizedCommand command = commandService.createCommand("goko.command.toggleView", parameters);
-				item.setWbCommand(command);
-				children.add(item);
+				String menuItemId = "goko.menu.window.view.menuitem."+mPart.getElementId();
+				// Only creates the button if it doesn't exist yet
+				if(!existingChidlrenIds.contains(menuItemId)){ 
+					MHandledMenuItem item = MMenuFactory.INSTANCE.createHandledMenuItem();
+					item.setElementId(menuItemId);
+					item.setLabel(mPart.getLabel());
+					item.setTooltip(mPart.getLabel());
+					item.setIconURI(mPart.getIconURI());
+					Map<String, Object> parameters = new HashMap<String, Object>();
+					parameters.put(VIEW_NAME_PARAMETER, mPart.getElementId());
+					ParameterizedCommand command = commandService.createCommand("goko.command.toggleView", parameters);
+					item.setWbCommand(command);
+					children.add(item);
+				}
 			}
 		}
 		Collections.sort(children, new MenuLabelComparator());

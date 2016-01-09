@@ -30,6 +30,8 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
@@ -133,16 +135,19 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		updateRenderer();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.centerfinder.ICenterFinderService#getCenter(java.util.List)
+	 */
 	@Override
-	public CircleCenterFinderResult getCenter(List<Tuple6b> lstPoints) throws GkException{
+	public CircleCenterFinderResult getCenter(List<Tuple6b> lstPoints, EnumPlane plane) throws GkException{
 		centerResult = new CircleCenterFinderResult();
 		Tuple6b center = new Tuple6b();
 		List<Segment> lstSegment = new ArrayList<Segment>();
 		// Get the result unit (arbitrary)
 		Unit<Length> resultUnit = lstPoints.get(0).getX().getUnit();
-		Tuple6b t1 = lstPoints.get(0).to(resultUnit);
-		Tuple6b t2 = lstPoints.get(1).to(resultUnit);
-		Tuple6b t3 = lstPoints.get(2).to(resultUnit);
+		Tuple6b t1 = transformToXYPlane(plane, lstPoints.get(0).to(resultUnit));
+		Tuple6b t2 = transformToXYPlane(plane, lstPoints.get(1).to(resultUnit));
+		Tuple6b t3 = transformToXYPlane(plane, lstPoints.get(2).to(resultUnit));
 		Point3d p1 = t1.toPoint3d(resultUnit);
 		Point3d p2 = t2.toPoint3d(resultUnit);
 		Point3d p3 = t3.toPoint3d(resultUnit);
@@ -180,8 +185,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 			BigDecimalQuantity<Length> centerY = s2.getStart().getY().add(s2.getEnd().getY()).divide(2);
 			center.setX(centerX);
 			center.setY(centerY);
-			centerResult.setCenter(center);
-			centerResult.setRadius(t1.distance(center));
+			centerResult.setCenter(untransformFromXYPlane(plane, center));
+			centerResult.setRadius(t1.distance(center));			
 			updateRenderer();
 			return centerResult;
 		}else if(xParallelSegment >= 0){ // Avoid x parallel axis to avoid division by zero
@@ -222,13 +227,41 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		BigDecimal centerY = b.subtract(d.multiply(centerX));
 		center.setX( NumberQuantity.of(centerX, resultUnit));
 		center.setY( NumberQuantity.of(centerY, resultUnit));
-		centerResult.setCenter(center);
+		centerResult.setCenter(untransformFromXYPlane(plane, center));
 
 		centerResult.setRadius(t1.distance(center));
 		updateRenderer();
 		return centerResult;
 	}
 
+	private static Tuple6b transformToXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
+		
+		if(EnumPlane.XY_PLANE == enumPlane){			
+			return new Tuple6b(tuple.getX(), tuple.getY(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+			
+		}else if(EnumPlane.XZ_PLANE == enumPlane){
+			return new Tuple6b(tuple.getX(), tuple.getZ(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+			
+		}else if(EnumPlane.YZ_PLANE == enumPlane){
+			return new Tuple6b(tuple.getY(), tuple.getZ(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+		}	
+		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
+	}
+	
+	private static Tuple6b untransformFromXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
+		
+		if(EnumPlane.XY_PLANE == enumPlane){			
+			return new Tuple6b(tuple.getX(), tuple.getY(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+						
+		}else if(EnumPlane.XZ_PLANE == enumPlane){
+			return new Tuple6b(tuple.getX(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
+			
+		}else if(EnumPlane.YZ_PLANE == enumPlane){
+			return new Tuple6b(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getY(), tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
+		}		
+		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
+	}
+	
 	protected void updateRenderer() throws GkException{
 		if(getRendererService() != null){
 			if(renderer != null){

@@ -27,8 +27,8 @@ import javax.inject.Inject;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
-import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.math.Tuple6b;
+import org.goko.tools.centerfinder.EnumPlane;
 import org.goko.tools.centerfinder.ICenterFinderService;
 
 /**
@@ -39,9 +39,7 @@ import org.goko.tools.centerfinder.ICenterFinderService;
 public class CenterFinderController extends AbstractController<CenterFinderModel>{
 
 	@Inject
-	IControllerService controllerService;
-	@Inject
-	IGCodeService gcodeService;
+	IControllerService controllerService;	
 	@Inject
 	ICenterFinderService centerFinderService;
 
@@ -68,7 +66,7 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 		getDataModel().setSelectedPoint(tuple);
 		centerFinderService.capturePoint(tuple);
 		if(getDataModel().getSamplePoints().size() >= 3){
-			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint()));
+			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint(), EnumPlane.XY_PLANE));
 		}else{
 			getDataModel().setCircleCenterResult(null);
 		}
@@ -83,7 +81,7 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 		}
 
 		if(getDataModel().getSamplePoints().size() >= 3){
-			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint()));
+			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint(), EnumPlane.XY_PLANE));
 		}else{
 			getDataModel().setCircleCenterResult(null);
 		}
