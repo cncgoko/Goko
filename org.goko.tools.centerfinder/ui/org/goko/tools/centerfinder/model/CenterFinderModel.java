@@ -24,9 +24,11 @@ import java.util.List;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.goko.common.bindings.AbstractModelObject;
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.math.Tuple6b;
+import org.goko.tools.centerfinder.EnumPlane;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 
 /**
@@ -44,7 +46,9 @@ public class CenterFinderModel extends AbstractModelObject{
 	private String radius;
 	private Tuple6b selectedPoint;
 	private CircleCenterFinderResult circleCenterResult;
-
+	private List<LabeledValue<EnumPlane>> availablePlane;
+	private LabeledValue<EnumPlane> selectedPlane;
+	
 	public CenterFinderModel(){
 		samplePoints = new WritableList();
 	}
@@ -150,6 +154,30 @@ public class CenterFinderModel extends AbstractModelObject{
 	 */
 	public void setRadius(String radius) {
 		firePropertyChange("radius", this.radius, this.radius = radius);
+	}
+	/**
+	 * @return the availablePlane
+	 */
+	public List<LabeledValue<EnumPlane>> getAvailablePlane() {
+		return availablePlane;
+	}
+	/**
+	 * @param availablePlane the availablePlane to set
+	 */
+	public void setAvailablePlane(List<LabeledValue<EnumPlane>> availablePlane) {
+		firePropertyChange("availablePlane", this.availablePlane, this.availablePlane = availablePlane);
+	}
+	/**
+	 * @return the selectedPlane
+	 */
+	public LabeledValue<EnumPlane> getSelectedPlane() {
+		return selectedPlane;
+	}
+	/**
+	 * @param selectedPlane the selectedPlane to set
+	 */
+	public void setSelectedPlane(LabeledValue<EnumPlane> selectedPlane) {
+		firePropertyChange("selectedPlane", this.selectedPlane, this.selectedPlane = selectedPlane);
 	}
 
 

@@ -39,7 +39,6 @@ import org.goko.core.common.measure.units.Unit;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
 import org.goko.tools.centerfinder.bean.Segment;
-import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;
 import org.goko.tools.viewer.jogl.service.IJoglViewerService;
 import org.goko.tools.viewer.jogl.utils.render.basic.PointRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.measurement.DiameterRenderer;
@@ -54,7 +53,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	private List<PointRenderer> pointsRenderer;
 	private CircleCenterFinderResult centerResult;
 	private IJoglViewerService rendererService;
-	private ICoreJoglRenderer renderer;
+	private DiameterRenderer renderer;
 	/**
 	 * Constructor
 	 */
@@ -186,7 +185,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 			center.setX(centerX);
 			center.setY(centerY);
 			centerResult.setCenter(untransformFromXYPlane(plane, center));
-			centerResult.setRadius(t1.distance(center));			
+			centerResult.setRadius(t1.distance(center));	
+			centerResult.setPlane(plane);
 			updateRenderer();
 			return centerResult;
 		}else if(xParallelSegment >= 0){ // Avoid x parallel axis to avoid division by zero
@@ -228,8 +228,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		center.setX( NumberQuantity.of(centerX, resultUnit));
 		center.setY( NumberQuantity.of(centerY, resultUnit));
 		centerResult.setCenter(untransformFromXYPlane(plane, center));
-
 		centerResult.setRadius(t1.distance(center));
+		centerResult.setPlane(plane);
 		updateRenderer();
 		return centerResult;
 	}

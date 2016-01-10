@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.camera.OrthographicCamera;
 import org.goko.tools.viewer.jogl.camera.PerspectiveCamera;
 import org.goko.tools.viewer.jogl.service.IJoglViewerService;
@@ -32,8 +31,7 @@ import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRen
  * @author PsyKo
  *
  */
-public class GCodeViewer3DController extends AbstractController<GCodeViewer3DModel> {
-	private static final GkLog LOG = GkLog.getLogger(GCodeViewer3DController.class);
+public class GCodeViewer3DController extends AbstractController<GCodeViewer3DModel> {	
 	@Inject
 	private IJoglViewerService viewerService;
 
@@ -41,9 +39,12 @@ public class GCodeViewer3DController extends AbstractController<GCodeViewer3DMod
 		super(binding);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.common.bindings.AbstractController#initialize()
+	 */
 	@Override
 	public void initialize() throws GkException {
-		//controllerService.addListener(this);
+		// Nothing to do
 	}
 
 

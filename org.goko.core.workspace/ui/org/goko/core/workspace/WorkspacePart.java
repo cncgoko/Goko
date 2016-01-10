@@ -32,15 +32,12 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.core.workspace.service.IWorkspaceUIService;
-import org.goko.core.workspace.service.WorkspaceService;
 import org.goko.core.workspace.service.WorkspaceUIEvent;
 import org.goko.core.workspace.tree.GkProjectContentProvider;
 import org.goko.core.workspace.tree.GkProjectLabelProvider;
 
 public class WorkspacePart {
 	private static final GkLog LOG = GkLog.getLogger(WorkspacePart.class);
-	@Inject
-	private WorkspaceService workspaceService;
 	@Inject
 	private IWorkspaceUIService workspaceUiService;
 	/** The workspace tree viewer */

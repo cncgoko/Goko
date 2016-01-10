@@ -110,7 +110,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		lblStart.setBounds(0, 0, 55, 15);
 		lblStart.setText("Start");
 		
-		startXFieldEditor = new QuantityFieldEditor(composite, SWT.NONE, QuantityDimension.LENGTH);
+		startXFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		startXFieldEditor.setEmptyStringAllowed(false);
 		startXFieldEditor.setWidthInChars(6);
 		startXFieldEditor.setLabel("X");
@@ -123,7 +123,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		Label lblEnd = new Label(composite, SWT.NONE);
 		lblEnd.setText("End");
 		
-		endXFieldEditor = new QuantityFieldEditor(composite, SWT.NONE, QuantityDimension.LENGTH);
+		endXFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		endXFieldEditor.setEmptyStringAllowed(false);
 		endXFieldEditor.setWidthInChars(6);
 		endXFieldEditor.setLabel("X");
@@ -131,7 +131,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		endXFieldEditor.setUnit(lengthUnit);
 		new Label(composite, SWT.NONE);
 		
-		startYFieldEditor = new QuantityFieldEditor(composite, SWT.NONE, QuantityDimension.LENGTH);
+		startYFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		startYFieldEditor.setEmptyStringAllowed(false);
 		startYFieldEditor.setWidthInChars(6);
 		startYFieldEditor.setLabel("Y");
@@ -141,7 +141,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
-		endYFieldEditor = new QuantityFieldEditor(composite, SWT.NONE, QuantityDimension.LENGTH);
+		endYFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		endYFieldEditor.setEmptyStringAllowed(false);
 		endYFieldEditor.setWidthInChars(6);
 		endYFieldEditor.setLabel("Y");
@@ -149,7 +149,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		endYFieldEditor.setUnit(lengthUnit);
 		
 		new Label(composite, SWT.NONE);
-		startZFieldEditor = new QuantityFieldEditor(composite, SWT.NONE, QuantityDimension.LENGTH);
+		startZFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		startZFieldEditor.setEmptyStringAllowed(false);
 		startZFieldEditor.setWidthInChars(6);
 		startZFieldEditor.setLabel("Z");
@@ -159,7 +159,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
-		endZFieldEditor = new QuantityFieldEditor(composite, SWT.NONE, QuantityDimension.LENGTH);
+		endZFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
 		endZFieldEditor.setEmptyStringAllowed(false);
 		endZFieldEditor.setWidthInChars(6);
 		endZFieldEditor.setLabel("Z");

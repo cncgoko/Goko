@@ -36,8 +36,6 @@ import org.goko.core.workspace.io.LoadContext;
 import org.goko.core.workspace.io.SaveContext;
 import org.goko.core.workspace.io.XmlGkProject;
 import org.goko.core.workspace.io.XmlProjectContainer;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 
 /**
  * Default implementation of the workspace service
@@ -267,8 +265,7 @@ public class WorkspaceService implements IWorkspaceService{
 
 			// Notify listeners
 			notifyProjectBeforeLoad();
-
-			Serializer p = new Persister();
+			
 			XmlGkProject xmlGkProject = xmlPersistenceService.read(XmlGkProject.class, projectFile);
 			project = new GkProject();
 			project.setFilepath(projectFile.getAbsolutePath());

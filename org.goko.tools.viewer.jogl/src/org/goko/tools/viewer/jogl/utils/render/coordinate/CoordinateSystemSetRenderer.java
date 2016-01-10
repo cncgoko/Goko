@@ -114,14 +114,14 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 	/**
 	 * @return the adapter
 	 */
-	public ICoordinateSystemAdapter getAdapter() {
+	public ICoordinateSystemAdapter<EnumCoordinateSystem> getAdapter() {
 		return adapter;
 	}
 
 	/**
 	 * @param adapter the adapter to set
 	 */
-	public void setAdapter(ICoordinateSystemAdapter adapter) {
+	public void setAdapter(ICoordinateSystemAdapter<EnumCoordinateSystem> adapter) {
 		this.adapter = adapter;
 	}
 

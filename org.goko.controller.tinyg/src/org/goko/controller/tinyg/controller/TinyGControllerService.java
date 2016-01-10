@@ -167,7 +167,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		checkExecutionControl();
 		checkVerbosity(configuration);
 		updateQueueReport();
-		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeService, gcodeProvider, ExecutionTokenState.NONE);
+		//ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeService, gcodeProvider, ExecutionTokenState.NONE);
 		//token.setMonitorService(getMonitorService());
 		//executionQueue.add(token);
 

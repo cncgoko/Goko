@@ -48,6 +48,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.common.dialog.GkDialog;
+import org.goko.common.elements.combo.GkCombo;
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
@@ -69,7 +71,8 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 	private Label centerZLabel;
 	private Button goToCenterBtn;
 	private Label radiusLabel;
-
+	private GkCombo<LabeledValue<EnumPlane>> planeCombo;
+	
 	@Inject
 	public CenterFinderPart(IEclipseContext context) {
 		super(new CenterFinderController());
@@ -121,7 +124,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		
-		GridLayout gl_composite_1 = new GridLayout(3, false);
+		GridLayout gl_composite_1 = new GridLayout(5, false);
 		gl_composite_1.marginWidth = 0;
 		gl_composite_1.marginHeight = 0;
 		composite_1.setLayout(gl_composite_1);
@@ -147,7 +150,14 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 		Button btnNewButton_1 = new Button(composite_1, SWT.NONE);
 		btnNewButton_1.setToolTipText("Remove selected point");
 		btnNewButton_1.setImage(ResourceManager.getPluginImage("org.goko.tools.centerfinder", "icons/eraser.png"));
-
+		new Label(composite_1, SWT.NONE);
+		
+		Label lblPlane = new Label(composite_1, SWT.NONE);
+		lblPlane.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblPlane.setText("Plane");
+		
+		planeCombo = new GkCombo<>(composite_1, SWT.READ_ONLY);
+		
 //		goToCenterBtn = new Button(composite_1, SWT.NONE);
 //		goToCenterBtn.addMouseListener(new MouseAdapter() {
 //			@Override
@@ -247,6 +257,8 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 			getController().addTextDisplayBinding(centerZLabel, "centerZPosition");
 			getController().addTextDisplayBinding(radiusLabel, "radius");
 			getController().addTableSelectionBinding(tableViewer, "selectedPoint");
+			getController().addItemsBinding(planeCombo, "availablePlane");
+			getController().addItemSelectionBinding(planeCombo, "selectedPlane");
 		} catch (GkException e) {
 			LOG.error(e);
 		}

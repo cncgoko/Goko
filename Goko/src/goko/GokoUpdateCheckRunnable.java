@@ -1,7 +1,9 @@
 package goko;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -24,6 +26,8 @@ public class GokoUpdateCheckRunnable {
 	private boolean cancelled;
 	/** Nothing to update status */
 	public static final IStatus NOTHING_TO_UPDATE = new Status(Status.OK, "Goko", 10000, "", null);
+	/** Default update site location */
+	private static final String UPDATE_SITE_URL = "http://update.goko.fr/";
 	
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		ProvisioningSession session = new ProvisioningSession(agent);
@@ -34,10 +38,23 @@ public class GokoUpdateCheckRunnable {
 		IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
 		URI[] lstRepositories = manager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
 		
+		boolean updateSiteFound = false;
+		
 		if(lstRepositories != null && lstRepositories.length > 0){
 			LOG.info("Checking updates from the following repositories :");
 			for (URI uri : lstRepositories) {
-				LOG.info("  + "+uri.toString());	
+				LOG.info("  + "+uri.toString());
+				if(StringUtils.contains(uri.toString(), UPDATE_SITE_URL)){
+					updateSiteFound = true;
+				}
+			}			
+		}
+		
+		if(!updateSiteFound){ // It looks like the update site isn't always checked for unknown reasons. This is a hack to prevent this
+			try {
+				manager.addRepository(new URI(UPDATE_SITE_URL));
+			} catch (URISyntaxException e) {
+				LOG.error(e);
 			}
 		}
         //check if updates are available

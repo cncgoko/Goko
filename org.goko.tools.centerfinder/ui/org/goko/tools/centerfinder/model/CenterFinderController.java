@@ -20,11 +20,14 @@ package org.goko.tools.centerfinder.model;
  */
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.goko.common.GkUiUtils;
 import org.goko.common.bindings.AbstractController;
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.math.Tuple6b;
@@ -49,8 +52,12 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 
 	@Override
 	public void initialize() throws GkException {
-		// TODO Auto-generated method stub
-
+		List<LabeledValue<EnumPlane>> lstPlane = new ArrayList<>();
+		lstPlane.add(new LabeledValue<EnumPlane>(EnumPlane.XY_PLANE, "XY"));
+		lstPlane.add(new LabeledValue<EnumPlane>(EnumPlane.YZ_PLANE, "YZ"));
+		lstPlane.add(new LabeledValue<EnumPlane>(EnumPlane.XZ_PLANE, "XZ"));
+		getDataModel().setAvailablePlane(lstPlane);
+		getDataModel().setSelectedPlane(GkUiUtils.getLabelledValueByKey(EnumPlane.XY_PLANE, lstPlane));
 	}
 
 	public void goToCalculatedCenter(){
@@ -66,7 +73,7 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 		getDataModel().setSelectedPoint(tuple);
 		centerFinderService.capturePoint(tuple);
 		if(getDataModel().getSamplePoints().size() >= 3){
-			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint(), EnumPlane.XY_PLANE));
+			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint(), getDataModel().getSelectedPlane().getValue()));
 		}else{
 			getDataModel().setCircleCenterResult(null);
 		}
@@ -81,7 +88,7 @@ public class CenterFinderController extends AbstractController<CenterFinderModel
 		}
 
 		if(getDataModel().getSamplePoints().size() >= 3){
-			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint(), EnumPlane.XY_PLANE));
+			getDataModel().setCircleCenterResult(centerFinderService.getCenter(centerFinderService.getCapturedPoint(), getDataModel().getSelectedPlane().getValue()));
 		}else{
 			getDataModel().setCircleCenterResult(null);
 		}

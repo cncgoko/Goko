@@ -8,10 +8,7 @@ import org.eclipse.swt.widgets.Group;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
-import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 
 /**
@@ -21,7 +18,6 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
  *
  */
 public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
-	private GkLog LOG = GkLog.getLogger(JoglViewerPreferencePage.class);			
 	
 	public JoglViewerPreferencePage() {
 		setDescription("Configure the 3D viewer component.");
@@ -49,7 +45,7 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 		comboFieldEditor.setPreferenceName("performances.multisampling");
 		comboFieldEditor.setEntry(lstMultiSampling);
 		
-		Unit<Length> lengthUnit = GokoPreference.getInstance().getLengthUnit();
+		GokoPreference.getInstance().getLengthUnit();
 		addField(comboFieldEditor);
 	}
 

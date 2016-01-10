@@ -348,7 +348,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	protected boolean isBoundInScreen(BoundingTuple6b bounds){
 		float xMx = (float) bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT);
 		float yMx = (float) bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT);
-		float zMx = (float) bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT);
+		//float zMx = (float) bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT);
 		float xMn = (float) bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
 		float yMn = (float) bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT);
 		float zMn = (float) bounds.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT);

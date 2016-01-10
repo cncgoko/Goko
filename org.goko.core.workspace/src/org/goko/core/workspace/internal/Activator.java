@@ -16,7 +16,7 @@ public class Activator implements BundleActivator{
 	/** Workspace UI Service */
 	private IWorkspaceUIService workspaceUIService;
 	private BundleContext context;
-	/** Activator instnace */
+	/** Activator instance */
 	private static Activator instance;
 
 	/** (inheritDoc)
@@ -25,7 +25,7 @@ public class Activator implements BundleActivator{
 	@Override
 	public void start(BundleContext context) throws Exception {
 		this.context = context;		
-		this.instance = this;
+		instance = this;
 	}
 
 	/** (inheritDoc)

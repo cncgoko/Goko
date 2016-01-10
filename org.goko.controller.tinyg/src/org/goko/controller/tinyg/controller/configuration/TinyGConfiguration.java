@@ -302,6 +302,7 @@ public class TinyGConfiguration {
 	 * @param value the value to set
 	 * @throws GkException GkException
 	 */
+	@SuppressWarnings("unchecked")
 	private <T> void setSetting(TinyGGroupSettings group, String identifier, T value) throws GkException{
 		for(TinyGSetting<?> setting : group.getSettings()){
 			if(StringUtils.equalsIgnoreCase( setting.getIdentifier(), identifier ) ){

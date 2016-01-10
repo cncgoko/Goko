@@ -16,14 +16,6 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl.service;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Rectangle2D;
-
 import javax.media.opengl.GLAutoDrawable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +34,6 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.overlay.KeyboardJogOverlay;
-import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;

@@ -31,9 +31,6 @@ public class EquinoxSlf4jBridge implements LogListener, LogFilter {
 		logReaderService.removeLogListener(this);
 	}
 	
-//continuer la migration avec logback en p2
-//rediriger OSGI vers logback SLF4j
-//http://devblog.virtage.com/2012/07/logback-and-eclipse-attaching-logback-xml/
 	public String getLevelAsString(int level){
 		switch(level){
 		case LogService.LOG_INFO  : return "Info";

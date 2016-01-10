@@ -116,9 +116,10 @@ public class ToolRenderer extends AbstractLineRenderer {
 			lstPoint.add( new Point4f(x1, y1, toolHeight,1));			
 		}
 		
-		for (Point4f point4f : lstPoint) {
+		for (int i = 0; i < lstPoint.size(); i++) {
 			lstColor.add(new Color4f(0.87f, 0.31f, 0.43f, 1f));
 		}
+		
 		setVerticesCount(lstPoint.size());
 		setVerticesBuffer( JoglUtils.buildFloatBuffer4f(lstPoint) );
 		setColorsBuffer(   JoglUtils.buildFloatBuffer4f(lstColor) );

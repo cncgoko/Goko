@@ -83,10 +83,12 @@ public class TestPreferencesPage extends GkFieldEditorPreferencesPage{
 		addField(quantityFieldEditor);
 		
 		ComboFieldEditor comboFieldEditor = new ComboFieldEditor(parent, SWT.NONE);
+		comboFieldEditor.setBackground(comboFieldEditor.getBackground());
 		bigDecimalFieldEditor.setPreferenceName("grid.majorSpacing");
 		addField(quantityFieldEditor);
 		
 		ColorFieldEditor colorFieldEditor = new ColorFieldEditor(parent, SWT.NONE);
+		colorFieldEditor.setBackground(colorFieldEditor.getBackground());
 		
 		ObjectCollectionFieldEditor objectCollectionFieldEditor = new ObjectCollectionFieldEditor(parent, SWT.NONE);
 		objectCollectionFieldEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));

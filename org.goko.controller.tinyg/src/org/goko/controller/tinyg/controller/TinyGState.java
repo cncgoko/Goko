@@ -26,12 +26,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
@@ -43,7 +42,6 @@ import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
-import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -52,8 +50,6 @@ import org.goko.core.math.Tuple6b;
  * @author PsyKo
  */
 public class TinyGState extends MachineValueStore{
-	/** LOG */
-	private static final GkLog LOG = GkLog.getLogger(TinyGState.class);
 	/** The current GCode context */
 	private GCodeContext gcodeContext;
 	/** The position stored locally for speed reasons... */
