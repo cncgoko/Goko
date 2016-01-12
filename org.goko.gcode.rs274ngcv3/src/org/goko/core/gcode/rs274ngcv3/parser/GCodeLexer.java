@@ -43,7 +43,8 @@ public class GCodeLexer {
 	private Pattern wordPattern;
 	/** White space detection pattern at the beginning*/
 	private Pattern spacePattern;	
-
+	/** Percent sign detection pattern at the beginning*/
+	private Pattern percentPattern;
 	/**
 	 * Constructor
 	 */
@@ -53,6 +54,7 @@ public class GCodeLexer {
 		lineNumberPattern = Pattern.compile(GCodeTokenType.LINE_NUMBER.getPattern());
 		wordPattern    = Pattern.compile(GCodeTokenType.WORD.getPattern());
 		spacePattern    = Pattern.compile("^[ ]+");
+		percentPattern    = Pattern.compile(GCodeTokenType.PERCENT.getPattern());
 	}
 	/**
 	 * Create a list of token from a String
@@ -129,8 +131,13 @@ public class GCodeLexer {
 			String remainingString = extractToken(wordMatcher, tokens, GCodeTokenType.WORD);
 			return createTokens(remainingString,tokens);
 		}
-
-
+		
+		Matcher percentMatcher    = percentPattern.matcher(stringCommand);
+		if(percentMatcher.find()){
+			String remainingString = extractToken(percentMatcher, tokens, GCodeTokenType.PERCENT);
+			return createTokens(remainingString,tokens);
+		}
+		
 		throw new GkFunctionalException("GCO-101",stringCommand);
 	}
 	/**

@@ -17,6 +17,7 @@
 package org.goko.core.gcode.rs274ngcv3.parser;
 
 public enum GCodeTokenType {
+	PERCENT("PERCENT_SIGN"," *(%) *"),
 	LINE_NUMBER("LINE_NUMBER","(n|N)[0-9]{1,5}"),
 	MULTILINE_COMMENT("MULTILINE_COMMENT","\\((.*?)\\)"),
 	SIMPLE_COMMENT("SIMPLE_COMMENT",";(.*)"),

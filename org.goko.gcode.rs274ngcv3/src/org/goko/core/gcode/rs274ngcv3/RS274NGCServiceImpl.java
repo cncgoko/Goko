@@ -177,6 +177,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			}else if(token.getType() == GCodeTokenType.SIMPLE_COMMENT
 					|| token.getType() == GCodeTokenType.MULTILINE_COMMENT){
 				line.addWord(new GCodeWord(";", token.getValue()));
+			}else if(token.getType() == GCodeTokenType.PERCENT){
+				line.addWord(new GCodeWord("%", StringUtils.EMPTY));
 			}
 		}
 		return line;
@@ -221,7 +223,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 				// Update context for further instructions
 				update(localContext, instruction);
 			}
-			instructionProvider.addInstructionSet(iSet);
+			if(CollectionUtils.isNotEmpty(iSet.getInstructions())){
+				instructionProvider.addInstructionSet(iSet);
+			}
 		}
 
 		return instructionProvider;
