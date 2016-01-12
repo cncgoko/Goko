@@ -17,45 +17,47 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.tools.centerfinder.model;
-
-import javax.vecmath.Point3d;
+package org.goko.core.math;
 
 public class Segment {
-	private Point3d start;
-	private Point3d end;
-
+	private Tuple6b start;
+	private Tuple6b end;
+	
 	/**
 	 * @param start
 	 * @param end
 	 */
-	Segment(Point3d start, Point3d end) {
+	public Segment(Tuple6b start, Tuple6b end) {
 		super();
 		this.start = start;
 		this.end = end;
 	}
+
 	/**
 	 * @return the start
 	 */
-	public Point3d getStart() {
+	public Tuple6b getStart() {
 		return start;
 	}
+
 	/**
 	 * @param start the start to set
 	 */
-	public void setStart(Point3d start) {
+	public void setStart(Tuple6b start) {
 		this.start = start;
 	}
+
 	/**
 	 * @return the end
 	 */
-	public Point3d getEnd() {
+	public Tuple6b getEnd() {
 		return end;
 	}
+
 	/**
 	 * @param end the end to set
 	 */
-	public void setEnd(Point3d end) {
+	public void setEnd(Tuple6b end) {
 		this.end = end;
 	}
 

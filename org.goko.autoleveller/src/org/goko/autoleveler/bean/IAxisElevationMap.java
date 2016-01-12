@@ -22,6 +22,7 @@ package org.goko.autoleveler.bean;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.math.Segment;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -52,4 +53,12 @@ public abstract interface IAxisElevationMap {
 	 * @throws GkException GkException
 	 */
 	public Tuple6b getCorrectedElevation(final Tuple6b position) throws GkException;
+	
+	/**
+	 * Split the given segment using this elevation map 
+	 * @param segment the segment to split
+	 * @return the list of resulting segments
+	 * @throws GkException GkException
+	 */
+	public List<Segment> splitSegment(final Segment segment) throws GkException;
 }

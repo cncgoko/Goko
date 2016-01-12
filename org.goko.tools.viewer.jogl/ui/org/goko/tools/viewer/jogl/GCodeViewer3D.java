@@ -60,6 +60,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	private FPSAnimator animator;
 	private static final String VIEWER_ENABLED = "org.goko.tools.viewer.jogl.enabled";
 	private static final String VIEWER_GRID_ENABLED = "org.goko.tools.viewer.jogl.gridEnabled";
+	private static final String VIEWER_BOUNDS_ENABLED = "org.goko.tools.viewer.jogl.boundsEnabled";
 	private static final String VIEWER_LOCK_CAMERA_ON_TOOL = "org.goko.tools.viewer.jogl.lockCameraOnTool";
 	private static final String VIEWER_COORDINATE_SYSTEM_ENABLED = "org.goko.tools.viewer.jogl.coordinateSystemEnabled";
 	public  static final String TOPIC_ENABLE_KEYBOARD_JOG = "topic/org/goko/tools/viewer/jogl/enableKeyboardJog";
@@ -319,6 +320,12 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			getController().setShowCoordinateSystem(BooleanUtils.toBoolean(csEnabledStr));
 		}
 
+		String boundsEnabledStr = state.get(VIEWER_BOUNDS_ENABLED);
+		if (StringUtils.isNotEmpty(boundsEnabledStr)) {
+			getDataModel().setShowBounds(BooleanUtils.toBoolean(boundsEnabledStr));
+			getController().setDisplayBounds(BooleanUtils.toBoolean(boundsEnabledStr));
+		}
+		
 		broker.subscribe(TOPIC_ENABLE_KEYBOARD_JOG, this);
 	}
 
@@ -336,6 +343,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			part.getPersistedState().put(VIEWER_GRID_ENABLED, String.valueOf(getDataModel().isShowGrid()));
 			part.getPersistedState().put(VIEWER_LOCK_CAMERA_ON_TOOL, String.valueOf(getDataModel().isFollowTool()));
 			part.getPersistedState().put(VIEWER_COORDINATE_SYSTEM_ENABLED, String.valueOf(getDataModel().isShowCoordinateSystem()));
+			part.getPersistedState().put(VIEWER_BOUNDS_ENABLED, String.valueOf(getDataModel().isShowBounds()));
 		}
 	}
 
