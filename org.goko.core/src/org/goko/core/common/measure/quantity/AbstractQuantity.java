@@ -38,7 +38,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		}
 		return this.getUnit().getConverterToReferenceUnit().then(unit.getConverterToReferenceUnit().inverse());
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#doubleValue(org.goko.core.common.measure.units.Unit)
 	 */
@@ -49,7 +49,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		}
 		return this.to(unit).doubleValue(unit);
 	}
-	
+
 	protected abstract double internalDoubleValue();
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#to(org.goko.core.common.measure.units.Unit)
@@ -59,13 +59,14 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		if(unit == getUnit()){
 			return this;
 		}
-		UnitConverter converter = getUnit().getConverterTo(unit);		
+		UnitConverter converter = getUnit().getConverterTo(unit);
 		return NumberQuantity.of(converter.convert(internalDoubleValue()), unit);
 	}
-	
+
 	/**
 	 * @return the unit
 	 */
+	@Override
 	public Unit<Q> getUnit() {
 		return unit;
 	}
@@ -75,6 +76,38 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 	 */
 	public void setUnit(Unit<Q> unit) {
 		this.unit = unit;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#lowerThan(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public boolean lowerThan(Q quantity) {
+		return value().doubleValue() < quantity.doubleValue(getUnit());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#lowerThanOrEqualTo(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public boolean lowerThanOrEqualTo(Q quantity) {
+		return value().doubleValue() <= quantity.doubleValue(getUnit());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#greaterThan(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public boolean greaterThan(Q quantity) {
+		return value().doubleValue() > quantity.doubleValue(getUnit());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#greaterThanOrEqualTo(org.goko.core.common.measure.quantity.Quantity)
+	 */
+	@Override
+	public boolean greaterThanOrEqualTo(Q quantity) {
+		return value().doubleValue() >= quantity.doubleValue(getUnit());
 	}
 
 	/** (inheritDoc)
@@ -93,19 +126,24 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		AbstractQuantity<?> other = (AbstractQuantity<?>) obj;
 		if (unit == null) {
-			if (other.unit != null)
+			if (other.unit != null) {
 				return false;
-		} else if (!unit.equals(other.unit))
+			}
+		} else if (!unit.equals(other.unit)) {
 			return false;
+		}
 		return true;
-	}	
-	
+	}
+
 }

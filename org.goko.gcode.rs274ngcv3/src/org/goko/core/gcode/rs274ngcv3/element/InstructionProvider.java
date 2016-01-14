@@ -10,12 +10,12 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 public class InstructionProvider implements IInstructionProvider<AbstractInstruction, InstructionSet> {
 	/** The list of instruction set */
 	List<InstructionSet> lstInstructionSet;
-	
+
 	/** Constructor */
 	public InstructionProvider() {
 		lstInstructionSet = new ArrayList<InstructionSet>();
 	}
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstructionProvider#getInstructionSets()
 	 */
@@ -24,18 +24,26 @@ public class InstructionProvider implements IInstructionProvider<AbstractInstruc
 		return lstInstructionSet;
 	}
 	/**
-	 * Adds the given Instruction set 
+	 * Adds the given Instruction set
 	 * @param set the set to add
 	 */
 	public void addInstructionSet(InstructionSet set){
 		lstInstructionSet.add(set);
 	}
 
+	/**
+	 * Adds the given Instruction set
+	 * @param set the set to add
+	 */
+	public void addInstructionSet(List<InstructionSet> lstSet){
+		lstInstructionSet.addAll(lstSet);
+	}
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstructionProvider#size()
 	 */
 	@Override
-	public int size() {		
+	public int size() {
 		return CollectionUtils.size(lstInstructionSet);
 	}
 

@@ -23,5 +23,7 @@ Require-Bundle: org.goko.core,
  org.eclipse.core.databinding.observable;bundle-version="1.5.0",
  org.eclipse.core.databinding.property;bundle-version="1.5.0",
  org.eclipse.jface;bundle-version="3.11.0",
- org.goko.gcode.rs274ngcv3;bundle-version="0.0.1"
-Service-Component: OSGI-INF/GkAutoLevelerComponant.xml
+ org.goko.gcode.rs274ngcv3;bundle-version="0.0.1",
+ org.goko.gcode.rs274ngcv3.ui
+Service-Component: OSGI-INF/AutoLevelerComponant.xml,
+ OSGI-INF/AutoLevelerModifierBuilder.xml

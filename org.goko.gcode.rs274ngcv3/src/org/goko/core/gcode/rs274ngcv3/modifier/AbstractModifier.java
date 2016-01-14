@@ -5,6 +5,7 @@ import java.util.Date;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 
@@ -19,6 +20,8 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 	private int order;
 	/** The latest modification date */
 	private Date modificationDate;
+	/** The underlying GCode service */
+	private IRS274NGCService rs274NGCService;
 
 	/**
 	 * Constructor
@@ -121,7 +124,22 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 	/**
 	 * @param modificationDate the modificationDate to set
 	 */
+	@Override
 	public void setModificationDate(Date modificationDate) {
 		this.modificationDate = modificationDate;
+	}
+
+	/**
+	 * @return the rsS274NGCService
+	 */
+	public IRS274NGCService getRS274NGCService() {
+		return rs274NGCService;
+	}
+
+	/**
+	 * @param rsS274NGCService the rsS274NGCService to set
+	 */
+	public void setRS274NGCService(IRS274NGCService rsS274NGCService) {
+		this.rs274NGCService = rsS274NGCService;
 	}
 }

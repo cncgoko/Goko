@@ -19,17 +19,22 @@
  */
 package org.goko.autoleveler.service;
 
-import org.goko.autoleveler.bean.GridElevationMap;
-import org.goko.autoleveler.bean.IAxisElevationPattern;
+import java.util.List;
+
+import org.goko.autoleveler.bean.IHeightMapBuilder;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.gcode.element.IGCodeProvider;
 
 public interface IAutoLevelerService extends IGokoService{
 
-	void probe(GridElevationMap pattern) throws GkException;
+	List<IHeightMapBuilder> getOffsetMapBuilder() throws GkException;
 
-	void previewPattern(IAxisElevationPattern pattern) throws GkException;
+	IHeightMapBuilder getOffsetMapBuilder(Integer id) throws GkException;
 
-	IGCodeProvider apply(IGCodeProvider gcodeProvider) throws GkException;
+	void addOffsetMapBuilder(IHeightMapBuilder builder) throws GkException;
+
+	void deleteOffsetMapBuilder(IHeightMapBuilder builder) throws GkException;
+
+	void deleteOffsetMapBuilder(Integer idBuilder) throws GkException;
+
 }
