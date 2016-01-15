@@ -11,6 +11,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.math.Tuple6b;
 
 public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implements IHeightMapProbeBuilder {
@@ -30,6 +31,22 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	/** The Y axis step size */
 	private BigDecimalQuantity<Length> stepSizeY;
 
+	public GridHeightMapBuilder() {
+		this.start = new Tuple6b();
+		this.end   = new Tuple6b();
+		this.stepSizeX = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
+		this.stepSizeY = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
+		try {
+			setClearanceHeight(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+			setProbeFeedrate(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+			setProbeLowerHeight(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+			setProbeStartHeight(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+
+		} catch (GkException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.autoleveler.bean.IHeightMapBuilder#getMap()
 	 */
@@ -79,5 +96,69 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	public void registerProbePosition(Tuple6b probedPosition) throws GkException {
 		// TODO Auto-generated method stub
 
+	}
+
+
+	/**
+	 * @return the start
+	 */
+	public Tuple6b getStart() {
+		return start;
+	}
+
+
+	/**
+	 * @param start the start to set
+	 */
+	public void setStart(Tuple6b start) {
+		this.start = start;
+	}
+
+
+	/**
+	 * @return the end
+	 */
+	public Tuple6b getEnd() {
+		return end;
+	}
+
+
+	/**
+	 * @param end the end to set
+	 */
+	public void setEnd(Tuple6b end) {
+		this.end = end;
+	}
+
+
+	/**
+	 * @return the stepSizeX
+	 */
+	public BigDecimalQuantity<Length> getStepSizeX() {
+		return stepSizeX;
+	}
+
+
+	/**
+	 * @param stepSizeX the stepSizeX to set
+	 */
+	public void setStepSizeX(BigDecimalQuantity<Length> stepSizeX) {
+		this.stepSizeX = stepSizeX;
+	}
+
+
+	/**
+	 * @return the stepSizeY
+	 */
+	public BigDecimalQuantity<Length> getStepSizeY() {
+		return stepSizeY;
+	}
+
+
+	/**
+	 * @param stepSizeY the stepSizeY to set
+	 */
+	public void setStepSizeY(BigDecimalQuantity<Length> stepSizeY) {
+		this.stepSizeY = stepSizeY;
 	}
 }

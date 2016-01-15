@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.autoleveler.bean.IHeightMap;
-import org.goko.autoleveler.bean.IHeightMapBuilder;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
@@ -30,13 +29,12 @@ import org.goko.core.math.Tuple6b;
 
 public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider>{
 	/** The offset map builder */
-	private IHeightMapBuilder offsetMapBuilder;
+	private IHeightMap heightMap;
 	/** The theoric height to compare with the probed height */
 	private BigDecimalQuantity<Length> theoricHeight;
 
-	public AutoLevelerModifier(Integer idGCodeProvider, IHeightMapBuilder offsetMapBuilder) {
+	public AutoLevelerModifier(Integer idGCodeProvider) {
 		super(idGCodeProvider, "Auto leveler");
-		this.offsetMapBuilder = offsetMapBuilder;
 		this.theoricHeight = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
 	}
 
@@ -45,6 +43,9 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 	 */
 	@Override
 	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
+		if(heightMap == null){
+			return;//throw new GkTechnicalException("No valid height map");
+		}
 		GCodeContext localContext = new GCodeContext();
 		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
 		InstructionProvider resultInstructionProvider = new InstructionProvider();
@@ -83,8 +84,6 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 	 * @throws GkException GkException
 	 */
 	private List<InstructionSet> applyModifier(GCodeContext localContext, AbstractStraightInstruction source) throws GkException{
-		IHeightMap heightMap = offsetMapBuilder.getMap();
-
 		Tuple6b start = new Tuple6b(Units.MILLIMETRE, localContext.getX(), localContext.getY(), localContext.getZ() );
 		Tuple6b end   = new Tuple6b(Units.MILLIMETRE, source.getX(), source.getY(), source.getZ() );
 
@@ -118,18 +117,33 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 		}
 		return sets;
 	}
+
 	/**
-	 * @return the offsetMapBuilder
+	 * @return the theoricHeight
 	 */
-	public IHeightMapBuilder getOffsetMapBuilder() {
-		return offsetMapBuilder;
+	public BigDecimalQuantity<Length> getTheoricHeight() {
+		return theoricHeight;
 	}
 
 	/**
-	 * @param offsetMapBuilder the offsetMapBuilder to set
+	 * @param theoricHeight the theoricHeight to set
 	 */
-	public void setOffsetMapBuilder(IHeightMapBuilder offsetMapBuilder) {
-		this.offsetMapBuilder = offsetMapBuilder;
+	public void setTheoricHeight(BigDecimalQuantity<Length> theoricHeight) {
+		this.theoricHeight = theoricHeight;
+	}
+
+	/**
+	 * @return the heightMap
+	 */
+	public IHeightMap getHeightMap() {
+		return heightMap;
+	}
+
+	/**
+	 * @param heightMap the heightMap to set
+	 */
+	public void setHeightMap(IHeightMap heightMap) {
+		this.heightMap = heightMap;
 	}
 
 

@@ -9,25 +9,34 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.goko.autoleveler.modifier.AutoLevelerModifier;
 import org.goko.common.GkUiComponent;
 import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
+import org.goko.core.log.GkLog;
 
 public class AutoLevelerModifierConfigurationPanel extends GkUiComponent<AutoLevelerModifierConfigurationController, AutoLevelerModifierConfigurationModel> {
+	private static final GkLog LOG = GkLog.getLogger(AutoLevelerModifierConfigurationPanel.class);
 
 	/**
 	 * Constructor
 	 */
 	public AutoLevelerModifierConfigurationPanel() {
 		super(new AutoLevelerModifierConfigurationController());
+		try {
+			getController().initialize();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 
 	/**
 	 * @wbp.parser.entryPoint
 	 */
 	public void createContent(Composite parent , IModifier<?> modifier) throws GkException {
+		getController().setModifier((AutoLevelerModifier) modifier);
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		GridLayout gl_composite = new GridLayout(1, false);
@@ -129,5 +138,19 @@ public class AutoLevelerModifierConfigurationPanel extends GkUiComponent<AutoLev
 		probeFeedrate.setLabelWidthInChar(12);
 		probeFeedrate.setWidthInChars(6);
 		probeFeedrate.setLabel("Probe feedrate");
+
+		getController().addFieldEditor(xStartCoordinate);
+		getController().addFieldEditor(yStartCoordinate);
+		getController().addFieldEditor(xEndCoordinate);
+		getController().addFieldEditor(yEndCoordinate);
+		getController().addFieldEditor(xStep);
+		getController().addFieldEditor(yStep);
+		getController().addFieldEditor(zClearanceCoordinate);
+		getController().addFieldEditor(zExpectedCoordinate);
+		getController().addFieldEditor(zProbeStartCoordinate);
+		getController().addFieldEditor(zProbeLowerCoordinate);
+		getController().addFieldEditor(probeFeedrate);
+
+		getController().getModifier().setHeightMap(getController().getBuilder().getMap());
 	}
 }

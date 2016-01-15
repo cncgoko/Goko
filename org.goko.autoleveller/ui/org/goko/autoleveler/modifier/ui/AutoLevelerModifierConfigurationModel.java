@@ -5,148 +5,148 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 
 public class AutoLevelerModifierConfigurationModel extends AbstractModelObject{
-	protected static final String X_START_COORDINATE = "xStartCoordinate";
-	protected static final String Y_START_COORDINATE = "yStartCoordinate";
-	protected static final String X_END_COORDINATE   = "xEndCoordinate";
-	protected static final String Y_END_COORDINATE   = "yEndCoordinate";
-	protected static final String X_STEP   			 = "xStep";
-	protected static final String Y_STEP			 = "yStep";
-	protected static final String Z_CLEARANCE		 = "zClearance";
-	protected static final String Z_EXPECTED		 = "zExpected";
-	protected static final String Z_PROBE_START		 = "zProbeStart";
-	protected static final String Z_PROBE_LOWER		 = "zProbeLower";
+	protected static final String X_START_COORDINATE = "startCoordinateX";
+	protected static final String Y_START_COORDINATE = "startCoordinateY";
+	protected static final String X_END_COORDINATE   = "endCoordinateX";
+	protected static final String Y_END_COORDINATE   = "endCoordinateY";
+	protected static final String X_STEP   			 = "stepSizeX";
+	protected static final String Y_STEP			 = "stepSizeY";
+	protected static final String Z_CLEARANCE		 = "clearanceHeight";
+	protected static final String Z_EXPECTED		 = "expectedHeight";
+	protected static final String Z_PROBE_START		 = "probeStartHeight";
+	protected static final String Z_PROBE_LOWER		 = "probeLowerHeight";
 	protected static final String PROBE_FEEDRATE	 = "probeFeedrate";
 
-	private BigDecimalQuantity<Length> xStartCoordinate;
-	private BigDecimalQuantity<Length> yStartCoordinate;
-	private BigDecimalQuantity<Length> xEndCoordinate;
-	private BigDecimalQuantity<Length> yEndCoordinate;
-	private BigDecimalQuantity<Length> xStep;
-	private BigDecimalQuantity<Length> yStep;
-	private BigDecimalQuantity<Length> zClearance;
-	private BigDecimalQuantity<Length> zExpected;
-	private BigDecimalQuantity<Length> zProbeStart;
-	private BigDecimalQuantity<Length> zProbeLower;
+	private BigDecimalQuantity<Length> startCoordinateX;
+	private BigDecimalQuantity<Length> startCoordinateY;
+	private BigDecimalQuantity<Length> endCoordinateX;
+	private BigDecimalQuantity<Length> endCoordinateY;
+	private BigDecimalQuantity<Length> stepSizeX;
+	private BigDecimalQuantity<Length> stepSizeY;
+	private BigDecimalQuantity<Length> clearanceHeight;
+	private BigDecimalQuantity<Length> expectedHeight;
+	private BigDecimalQuantity<Length> probeStartHeight;
+	private BigDecimalQuantity<Length> probeLowerHeight;
 	private BigDecimalQuantity<Length> probeFeedrate;
 	/**
-	 * @return the xStartCoordinate
+	 * @return the startCoordinateX
 	 */
-	public BigDecimalQuantity<Length> getxStartCoordinate() {
-		return xStartCoordinate;
+	public BigDecimalQuantity<Length> getStartCoordinateX() {
+		return startCoordinateX;
 	}
 	/**
-	 * @param xStartCoordinate the xStartCoordinate to set
+	 * @param startCoordinateX the startCoordinateX to set
 	 */
-	public void setxStartCoordinate(BigDecimalQuantity<Length> xStartCoordinate) {
-		firePropertyChange(X_START_COORDINATE, xStartCoordinate, this.xStartCoordinate = xStartCoordinate);
+	public void setStartCoordinateX(BigDecimalQuantity<Length> startCoordinateX) {
+		firePropertyChange(X_START_COORDINATE, startCoordinateX, this.startCoordinateX = startCoordinateX);
 	}
 	/**
-	 * @return the yStartCoordinate
+	 * @return the startCoordinateY
 	 */
-	public BigDecimalQuantity<Length> getyStartCoordinate() {
-		return yStartCoordinate;
+	public BigDecimalQuantity<Length> getStartCoordinateY() {
+		return startCoordinateY;
 	}
 	/**
-	 * @param yStartCoordinate the yStartCoordinate to set
+	 * @param startCoordinateY the startCoordinateY to set
 	 */
-	public void setyStartCoordinate(BigDecimalQuantity<Length> yStartCoordinate) {
-		firePropertyChange(Y_START_COORDINATE, yStartCoordinate, this.yStartCoordinate = yStartCoordinate);
+	public void setStartCoordinateY(BigDecimalQuantity<Length> startCoordinateY) {
+		firePropertyChange(Y_START_COORDINATE, startCoordinateY, this.startCoordinateY = startCoordinateY);
 	}
 	/**
-	 * @return the xEndCoordinate
+	 * @return the endCoordinateX
 	 */
-	public BigDecimalQuantity<Length> getxEndCoordinate() {
-		return xEndCoordinate;
+	public BigDecimalQuantity<Length> getEndCoordinateX() {
+		return endCoordinateX;
 	}
 	/**
-	 * @param xEndCoordinate the xEndCoordinate to set
+	 * @param endCoordinateX the endCoordinateX to set
 	 */
-	public void setxEndCoordinate(BigDecimalQuantity<Length> xEndCoordinate) {
-		firePropertyChange(X_END_COORDINATE, xEndCoordinate, this.xEndCoordinate = xEndCoordinate);
+	public void setEndCoordinateX(BigDecimalQuantity<Length> endCoordinateX) {
+		firePropertyChange(X_END_COORDINATE, endCoordinateX, this.endCoordinateX = endCoordinateX);
 	}
 	/**
-	 * @return the yEndCoordinate
+	 * @return the endCoordinateY
 	 */
-	public BigDecimalQuantity<Length> getyEndCoordinate() {
-		return yEndCoordinate;
+	public BigDecimalQuantity<Length> getEndCoordinateY() {
+		return endCoordinateY;
 	}
 	/**
-	 * @param yEndCoordinate the yEndCoordinate to set
+	 * @param endCoordinateY the endCoordinateY to set
 	 */
-	public void setyEndCoordinate(BigDecimalQuantity<Length> yEndCoordinate) {
-		firePropertyChange(Y_END_COORDINATE, yEndCoordinate, this.yEndCoordinate = yEndCoordinate);
+	public void setEndCoordinateY(BigDecimalQuantity<Length> endCoordinateY) {
+		firePropertyChange(Y_END_COORDINATE, endCoordinateY, this.endCoordinateY = endCoordinateY);
 	}
 	/**
-	 * @return the xStep
+	 * @return the stepSizeX
 	 */
-	public BigDecimalQuantity<Length> getxStep() {
-		return xStep;
+	public BigDecimalQuantity<Length> getStepSizeX() {
+		return stepSizeX;
 	}
 	/**
-	 * @param xStep the xStep to set
+	 * @param stepSizeX the stepSizeX to set
 	 */
-	public void setxStep(BigDecimalQuantity<Length> xStep) {
-		firePropertyChange(X_STEP, xStep, this.xStep = xStep);
+	public void setStepSizeX(BigDecimalQuantity<Length> stepSizeX) {
+		firePropertyChange(X_STEP, stepSizeX, this.stepSizeX = stepSizeX);
 	}
 	/**
-	 * @return the yStep
+	 * @return the stepSizeY
 	 */
-	public BigDecimalQuantity<Length> getyStep() {
-		return yStep;
+	public BigDecimalQuantity<Length> getStepSizeY() {
+		return stepSizeY;
 	}
 	/**
-	 * @param yStep the yStep to set
+	 * @param stepSizeY the stepSizeY to set
 	 */
-	public void setyStep(BigDecimalQuantity<Length> yStep) {
-		firePropertyChange(Y_STEP, yStep, this.yStep = yStep);
+	public void setStepSizeY(BigDecimalQuantity<Length> stepSizeY) {
+		firePropertyChange(Y_STEP, stepSizeY, this.stepSizeY = stepSizeY);
 	}
 	/**
-	 * @return the zClearance
+	 * @return the clearanceHeight
 	 */
-	public BigDecimalQuantity<Length> getzClearance() {
-		return zClearance;
+	public BigDecimalQuantity<Length> getClearanceHeight() {
+		return clearanceHeight;
 	}
 	/**
-	 * @param zClearance the zClearance to set
+	 * @param clearanceHeight the clearanceHeight to set
 	 */
-	public void setzClearance(BigDecimalQuantity<Length> zClearance) {
-		firePropertyChange(Z_CLEARANCE, zClearance, this.zClearance = zClearance);
+	public void setClearanceHeight(BigDecimalQuantity<Length> clearanceHeight) {
+		firePropertyChange(Z_CLEARANCE, clearanceHeight, this.clearanceHeight = clearanceHeight);
 	}
 	/**
-	 * @return the zExpected
+	 * @return the expectedHeight
 	 */
-	public BigDecimalQuantity<Length> getzExpected() {
-		return zExpected;
+	public BigDecimalQuantity<Length> getExpectedHeight() {
+		return expectedHeight;
 	}
 	/**
-	 * @param zExpected the zExpected to set
+	 * @param expectedHeight the expectedHeight to set
 	 */
-	public void setzExpected(BigDecimalQuantity<Length> zExpected) {
-		firePropertyChange(Z_EXPECTED, zExpected, this.zExpected = zExpected);
+	public void setExpectedHeight(BigDecimalQuantity<Length> expectedHeight) {
+		firePropertyChange(Z_EXPECTED, expectedHeight, this.expectedHeight = expectedHeight);
 	}
 	/**
-	 * @return the zProbeStart
+	 * @return the probeStartHeight
 	 */
-	public BigDecimalQuantity<Length> getzProbeStart() {
-		return zProbeStart;
+	public BigDecimalQuantity<Length> getProbeStartHeight() {
+		return probeStartHeight;
 	}
 	/**
-	 * @param zProbeStart the zProbeStart to set
+	 * @param probeStartHeight the probeStartHeight to set
 	 */
-	public void setzProbeStart(BigDecimalQuantity<Length> zProbeStart) {
-		firePropertyChange(Z_PROBE_START, zProbeStart, this.zProbeStart = zProbeStart);
+	public void setProbeStartHeight(BigDecimalQuantity<Length> probeStartHeight) {
+		firePropertyChange(Z_PROBE_START, probeStartHeight, this.probeStartHeight = probeStartHeight);
 	}
 	/**
-	 * @return the zProbeLower
+	 * @return the probeLowerHeight
 	 */
-	public BigDecimalQuantity<Length> getzProbeLower() {
-		return zProbeLower;
+	public BigDecimalQuantity<Length> getProbeLowerHeight() {
+		return probeLowerHeight;
 	}
 	/**
-	 * @param zProbeLower the zProbeLower to set
+	 * @param probeLowerHeight the probeLowerHeight to set
 	 */
-	public void setzProbeLower(BigDecimalQuantity<Length> zProbeLower) {
-		firePropertyChange(Z_PROBE_LOWER, zProbeLower, this.zProbeLower = zProbeLower);
+	public void setProbeLowerHeight(BigDecimalQuantity<Length> probeLowerHeight) {
+		firePropertyChange(Z_PROBE_LOWER, probeLowerHeight, this.probeLowerHeight = probeLowerHeight);
 	}
 	/**
 	 * @return the probeFeedrate
@@ -160,6 +160,5 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModelObject{
 	public void setProbeFeedrate(BigDecimalQuantity<Length> probeFeedrate) {
 		firePropertyChange(PROBE_FEEDRATE, probeFeedrate, this.probeFeedrate = probeFeedrate);
 	}
-
 
 }

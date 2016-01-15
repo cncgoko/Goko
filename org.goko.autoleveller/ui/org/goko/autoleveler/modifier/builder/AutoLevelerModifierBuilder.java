@@ -1,7 +1,6 @@
 package org.goko.autoleveler.modifier.builder;
 
 import org.eclipse.swt.widgets.Composite;
-import org.goko.autoleveler.bean.grid.GridHeightMapBuilder;
 import org.goko.autoleveler.modifier.AutoLevelerModifier;
 import org.goko.autoleveler.modifier.ui.AutoLevelerModifierConfigurationPanel;
 import org.goko.core.common.exception.GkException;
@@ -18,7 +17,7 @@ public class AutoLevelerModifierBuilder implements IModifierUiProvider<GCodeProv
 	 */
 	@Override
 	public AutoLevelerModifier createDefaultModifier(Integer idTargetGCodeProvider) throws GkException {
-		AutoLevelerModifier modifier = new AutoLevelerModifier(idTargetGCodeProvider, new GridHeightMapBuilder());
+		AutoLevelerModifier modifier = new AutoLevelerModifier(idTargetGCodeProvider);
 		modifier.setRS274NGCService(rs274ngcService);
 		return modifier;
 	}

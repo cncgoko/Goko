@@ -27,3 +27,4 @@ Require-Bundle: org.goko.core,
  org.goko.gcode.rs274ngcv3.ui
 Service-Component: OSGI-INF/AutoLevelerComponant.xml,
  OSGI-INF/AutoLevelerModifierBuilder.xml
+Export-Package: org.goko.autoleveler.bean.grid
