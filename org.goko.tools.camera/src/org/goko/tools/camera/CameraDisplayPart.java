@@ -1,4 +1,3 @@
- 
 package org.goko.tools.camera;
 
 import java.beans.PropertyChangeEvent;
@@ -10,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -38,13 +38,8 @@ public class CameraDisplayPart extends GkUiComponent<CameraDisplayPartController
 	private GkCombo<LabeledValue<Webcam>> comboDevice;
 	
 	@Inject
-	public CameraDisplayPart() {
-		super(new CameraDisplayPartController());
-		try {
-			getController().initialize();
-		} catch (GkException e) {
-			LOG.error(e);
-		}
+	public CameraDisplayPart(IEclipseContext context) {
+		super(context, new CameraDisplayPartController());		
 	}
 	
 	@PostConstruct
