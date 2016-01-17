@@ -1,8 +1,8 @@
 package org.goko.core.common.io.xml.quantity;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goko.core.common.measure.dimension.QuantityDimension;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
 import org.simpleframework.xml.transform.Transform;
 
 /**
@@ -19,7 +19,7 @@ public class XmlLengthTransform implements Transform<XmlLength>{
 	public XmlLength read(String value) throws Exception {
 		XmlLength result = null;
 		if(StringUtils.isNotEmpty(value)){
-			result = new XmlLength(NumberQuantity.of(value, QuantityDimension.LENGTH));
+			result = new XmlLength(Length.parse(value));
 		}
 		return result;
 	}
@@ -31,7 +31,8 @@ public class XmlLengthTransform implements Transform<XmlLength>{
 	public String write(XmlLength value) throws Exception {
 		String result = null;
 		if(value != null){
-			result = String.valueOf(value.getQuantity().getValue())+value.getQuantity().getUnit().getSymbol();
+			Unit<Length> unit = value.getQuantity().getUnit();
+			result = String.valueOf(value.getQuantity().value(unit))+unit.getSymbol();
 		}
 		return result;
 	}

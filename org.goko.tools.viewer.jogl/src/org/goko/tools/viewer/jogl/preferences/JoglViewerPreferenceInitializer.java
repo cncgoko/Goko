@@ -3,8 +3,7 @@ package org.goko.tools.viewer.jogl.preferences;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.dimension.QuantityDimension;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.config.GkPreferenceInitializer;
 import org.goko.core.math.Tuple6b;
 
@@ -38,9 +37,9 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		prefs.setDefault(JoglViewerPreference.GRID_END_Z, "100mm");
 		
 		Tuple6b position = new Tuple6b();
-		position.setX( NumberQuantity.of(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X), QuantityDimension.LENGTH));
-		position.setY( NumberQuantity.of(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Y), QuantityDimension.LENGTH));
-		position.setZ( NumberQuantity.of(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Z), QuantityDimension.LENGTH));
+		position.setX( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X)));
+		position.setY( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Y)));
+		position.setZ( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Z)));
 		
 		prefs.setRotaryAxisPosition(position);
 	}

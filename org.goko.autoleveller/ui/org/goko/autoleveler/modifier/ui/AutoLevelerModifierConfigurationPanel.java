@@ -1,5 +1,6 @@
 package org.goko.autoleveler.modifier.ui;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -10,26 +11,24 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.autoleveler.modifier.AutoLevelerModifier;
-import org.goko.common.GkUiComponent;
+import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.bean.IPropertiesPanel;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPropertiesPanel;
 
-public class AutoLevelerModifierConfigurationPanel extends GkUiComponent<AutoLevelerModifierConfigurationController, AutoLevelerModifierConfigurationModel> {
+public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPropertiesPanel<AutoLevelerModifier, AutoLevelerModifierConfigurationController, AutoLevelerModifierConfigurationModel> implements IPropertiesPanel{
 	private static final GkLog LOG = GkLog.getLogger(AutoLevelerModifierConfigurationPanel.class);
 
 	/**
 	 * Constructor
 	 */
-	public AutoLevelerModifierConfigurationPanel() {
-		super(new AutoLevelerModifierConfigurationController());
-		try {
-			getController().initialize();
-		} catch (GkException e) {
-			LOG.error(e);
-		}
+	public AutoLevelerModifierConfigurationPanel(IEclipseContext context) {
+		super(context, new AutoLevelerModifierConfigurationController());		
 	}
 
 	/**
@@ -60,42 +59,46 @@ public class AutoLevelerModifierConfigurationPanel extends GkUiComponent<AutoLev
 		Label lblStartPoint = new Label(composite_1, SWT.NONE);
 		lblStartPoint.setText("Start");
 
-		UiQuantityFieldEditor<Length> xStartCoordinate = new UiQuantityFieldEditor<Length>(composite_1, SWT.NONE);
+		UiQuantityFieldEditor<Length> xStartCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
 		xStartCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.X_START_COORDINATE);
 		xStartCoordinate.setWidthInChars(6);
+		xStartCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());		
 		xStartCoordinate.setLabel("X");
 
-
-
-		UiQuantityFieldEditor<Length> yStartCoordinate = new UiQuantityFieldEditor<Length>(composite_1, SWT.NONE);
+		UiQuantityFieldEditor<Length> yStartCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
 		yStartCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Y_START_COORDINATE);
 		yStartCoordinate.setWidthInChars(6);
+		yStartCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		yStartCoordinate.setLabel("Y");
 
 		Label lblEndPoint = new Label(composite_1, SWT.NONE);
 		lblEndPoint.setText("End");
 
-		UiQuantityFieldEditor<Length> xEndCoordinate = new UiQuantityFieldEditor<Length>(composite_1, SWT.NONE);
+		UiQuantityFieldEditor<Length> xEndCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
 		xEndCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.X_END_COORDINATE);
 		xEndCoordinate.setWidthInChars(6);
+		xEndCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		xEndCoordinate.setLabel("X");
 
-		UiQuantityFieldEditor<Length> yEndCoordinate = new UiQuantityFieldEditor<Length>(composite_1, SWT.NONE);
+		UiQuantityFieldEditor<Length> yEndCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
 		yEndCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Y_END_COORDINATE);
 		yEndCoordinate.setWidthInChars(6);
+		yEndCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		yEndCoordinate.setLabel("Y");
 
 		Label lblStep = new Label(composite_1, SWT.NONE);
 		lblStep.setText("Step");
 
-		UiQuantityFieldEditor<Length> xStep = new UiQuantityFieldEditor<Length>(composite_1, SWT.NONE);
+		UiQuantityFieldEditor<Length> xStep = new UiLengthFieldEditor(composite_1, SWT.NONE);
 		xStep.setPropertyName(AutoLevelerModifierConfigurationModel.X_STEP);
 		xStep.setWidthInChars(6);
+		xStep.setUnit(GokoPreference.getInstance().getLengthUnit());
 		xStep.setLabel("X");
 
-		UiQuantityFieldEditor<Length> yStep = new UiQuantityFieldEditor<Length>(composite_1, SWT.NONE);
+		UiQuantityFieldEditor<Length> yStep = new UiLengthFieldEditor(composite_1, SWT.NONE);
 		yStep.setPropertyName(AutoLevelerModifierConfigurationModel.Y_STEP);
 		yStep.setWidthInChars(6);
+		yStep.setUnit(GokoPreference.getInstance().getLengthUnit());
 		yStep.setLabel("Y");
 
 		Button btnNewButton = new Button(grpArea, SWT.NONE);
@@ -109,34 +112,39 @@ public class AutoLevelerModifierConfigurationPanel extends GkUiComponent<AutoLev
 		grpProbing.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpProbing.setText("Probing");
 
-		UiQuantityFieldEditor<Length> zClearanceCoordinate = new UiQuantityFieldEditor<Length>(grpProbing, SWT.NONE);
+		UiQuantityFieldEditor<Length> zClearanceCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
 		zClearanceCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_CLEARANCE);
 		zClearanceCoordinate.setLabelWidthInChar(12);
 		zClearanceCoordinate.setWidthInChars(6);
+		zClearanceCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		zClearanceCoordinate.setLabel("Clearance Z");
 
-		UiQuantityFieldEditor<Length> zExpectedCoordinate = new UiQuantityFieldEditor<Length>(grpProbing, SWT.NONE);
+		UiQuantityFieldEditor<Length> zExpectedCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
 		zExpectedCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_EXPECTED);
 		zExpectedCoordinate.setLabelWidthInChar(12);
 		zExpectedCoordinate.setWidthInChars(6);
+		zExpectedCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		zExpectedCoordinate.setLabel("Expected Z");
 
-		UiQuantityFieldEditor<Length> zProbeStartCoordinate = new UiQuantityFieldEditor<Length>(grpProbing, SWT.NONE);
+		UiQuantityFieldEditor<Length> zProbeStartCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
 		zProbeStartCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_PROBE_START);
 		zProbeStartCoordinate.setLabelWidthInChar(12);
 		zProbeStartCoordinate.setWidthInChars(6);
+		zProbeStartCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		zProbeStartCoordinate.setLabel("Probe start Z");
 
-		UiQuantityFieldEditor<Length> zProbeLowerCoordinate = new UiQuantityFieldEditor<Length>(grpProbing, SWT.NONE);
+		UiQuantityFieldEditor<Length> zProbeLowerCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
 		zProbeLowerCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_PROBE_LOWER);
 		zProbeLowerCoordinate.setLabelWidthInChar(12);
 		zProbeLowerCoordinate.setWidthInChars(6);
+		zProbeLowerCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		zProbeLowerCoordinate.setLabel("Probe lower Z");
 
-		UiQuantityFieldEditor<Length> probeFeedrate = new UiQuantityFieldEditor<Length>(grpProbing, SWT.NONE);
+		UiQuantityFieldEditor<Length> probeFeedrate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
 		probeFeedrate.setPropertyName(AutoLevelerModifierConfigurationModel.PROBE_FEEDRATE);
 		probeFeedrate.setLabelWidthInChar(12);
 		probeFeedrate.setWidthInChars(6);
+		probeFeedrate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		probeFeedrate.setLabel("Probe feedrate");
 
 		getController().addFieldEditor(xStartCoordinate);

@@ -19,7 +19,6 @@
  */
 package org.goko.controller.grbl.v08.configuration;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -70,10 +69,7 @@ public class GrblConfigurationDialog extends GkUiDialogComponent<GrblConfigurati
 	private Button p17check;
 	
 	public GrblConfigurationDialog(Shell shell, IEclipseContext context) throws GkException {
-		super(shell, new GrblConfigurationController());		
-		ContextInjectionFactory.inject(getController(), context);
-		getController().initialize();
-
+		super(shell, context, new GrblConfigurationController());		
 	}
 
 	@Override

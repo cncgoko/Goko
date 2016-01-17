@@ -1,22 +1,18 @@
 package org.goko.common.preferences.fieldeditor.ui;
 
-import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.goko.common.preferences.fieldeditor.ui.converter.BindingConverter;
-import org.goko.core.common.exception.GkException;
+import org.goko.common.preferences.fieldeditor.ui.converter.QuantityToStringConverter;
+import org.goko.common.preferences.fieldeditor.ui.converter.StringToQuantityConverter;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.common.utils.BigDecimalUtils;
-import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 
-public class UiQuantityFieldEditor<Q extends Quantity<Q>> extends UiBigDecimalFieldEditor {
+public abstract class UiQuantityFieldEditor<Q extends Quantity<Q>> extends UiBigDecimalFieldEditor {
 	private static final GkLog LOG = GkLog.getLogger(UiQuantityFieldEditor.class);
 	private Label labelUnit;
 	private Unit<Q> unit;
@@ -72,47 +68,49 @@ public class UiQuantityFieldEditor<Q extends Quantity<Q>> extends UiBigDecimalFi
 	 */
 	@Override
 	public IBindingConverter getConverter() {				
-		return new BindingConverter(new StringToQuantityConverter(), new QuantityToStringConverter());		
+		return new BindingConverter(getQuantityConverter(), new QuantityToStringConverter());		
 	}
 	
-	class StringToQuantityConverter extends Converter{
-
-		public StringToQuantityConverter() {
-			super(String.class, BigDecimalQuantity.class);
-		}
-
-		/** (inheritDoc)
-		 * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
-		 */
-		@Override
-		public Object convert(Object fromObject) {			
-			try {
-				return NumberQuantity.of(BigDecimalUtils.parse((String)fromObject), unit);
-			} catch (GkException e) {
-				return null;
-			}
-		}
-		
-	}
+	protected abstract StringToQuantityConverter<Q> getQuantityConverter();
 	
-	class QuantityToStringConverter extends Converter{
-
-		public QuantityToStringConverter() {
-			super(BigDecimalQuantity.class, String.class);
-		}
-
-		/** (inheritDoc)
-		 * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
-		 */
-		@Override
-		public Object convert(Object fromObject) {	
-			try {
-				return GokoPreference.getInstance().format((Quantity<Q>)fromObject,false, false, unit);
-			} catch (GkException e) {
-				LOG.error(e);
-				return "ERROR";
-			}			
-		}
-		
-	}
+//	class StringToQuantityConverter extends Converter{
+//
+//		public StringToQuantityConverter() {
+//			super(String.class, BigDecimalQuantity.class);
+//		}
+//
+//		/** (inheritDoc)
+//		 * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
+//		 */
+//		@Override
+//		public Object convert(Object fromObject) {			
+//			try {
+//				return NumberQuantity.of(BigDecimalUtils.parse((String)fromObject), unit);
+//			} catch (GkException e) {
+//				return null;
+//			}
+//		}
+//		
+//	}
+//	
+//	class QuantityToStringConverter extends Converter{
+//
+//		public QuantityToStringConverter() {
+//			super(BigDecimalQuantity.class, String.class);
+//		}
+//
+//		/** (inheritDoc)
+//		 * @see org.eclipse.core.databinding.conversion.IConverter#convert(java.lang.Object)
+//		 */
+//		@Override
+//		public Object convert(Object fromObject) {	
+//			try {
+//				return GokoPreference.getInstance().format((Quantity<Q>)fromObject,false, false, unit);
+//			} catch (GkException e) {
+//				LOG.error(e);
+//				return "ERROR";
+//			}			
+//		}
+//		
+//	}
 }

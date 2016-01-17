@@ -1,33 +1,37 @@
 package org.goko.core.common.measure.quantity;
 
+import java.math.BigDecimal;
+
 import org.goko.core.common.measure.units.Unit;
 
 
 public interface Quantity<Q extends Quantity<Q>> {
 
-	Quantity<Q> to(Unit<Q> unit);
+	Q to(Unit<Q> unit);
 
 	double doubleValue(Unit<Q> unit);
 
-	Number value();
-
-	Number value(Unit<Q> unit);
+	BigDecimal value(Unit<Q> unit);
 
 	Unit<Q> getUnit();
 
-	Quantity<Q> add(Quantity<Q> q);
+	Q add(Q q);
 
-	Quantity<Q> subtract(Quantity<Q> q);
+	Q subtract(Q q);
 
-	Quantity<Q> multiply(Number n);
+	Q multiply(BigDecimal n);
+	
+	Q multiply(int n);
 
-	Quantity<Q> divide(Number n);
+	Q divide(BigDecimal n);
+	
+	Q divide(int n);
 
-	Number divide(Quantity<Q> q);
+	Number divide(Q q);
 
-	Quantity<Q> abs();
+	Q abs();
 
-	Quantity<Q> negate();
+	Q negate();
 
 	boolean lowerThan(Q quantity);
 

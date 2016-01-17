@@ -119,7 +119,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	 * @throws GkException GkException
 	 */
 	protected void performUpdateBufferObjects(GL3 gl) throws GkException {		
-		initializeBufferObjects(gl);
+		initializeBufferObjects(gl);		
 		this.updateBuffer = false;
 	}
 	/**
@@ -273,7 +273,6 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 			interleavedBuffer.clear();
 		}
 		interleavedBuffer = FloatBuffer.allocate(getVerticesCount()*stride);
-		//interleavedBuffer = GLBuffers.newDirectFloatBuffer(getVerticesCount()*stride);
 		
 		for (int i = 0; i < verticesCount; i++) {
 			

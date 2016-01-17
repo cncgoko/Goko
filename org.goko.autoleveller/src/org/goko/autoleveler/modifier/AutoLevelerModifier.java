@@ -9,8 +9,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
@@ -31,11 +29,11 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 	/** The offset map builder */
 	private IHeightMap heightMap;
 	/** The theoric height to compare with the probed height */
-	private BigDecimalQuantity<Length> theoricHeight;
+	private Length theoricHeight;
 
 	public AutoLevelerModifier(Integer idGCodeProvider) {
 		super(idGCodeProvider, "Auto leveler");
-		this.theoricHeight = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
+		this.theoricHeight = Length.ZERO;
 	}
 
 	/** (inheritDoc)
@@ -56,7 +54,7 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 		while(iterator.hasNext()){
 			localContext = new GCodeContext(iterator.getContext()); // Get the context before applying the command
 			AbstractInstruction instr = iterator.next();
-			InstructionSet resultInstructionSet = new InstructionSet();
+			
 
 			if(instr.getType() == InstructionType.STRAIGHT_FEED || instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
 				resultInstructionProvider.addInstructionSet(applyModifier(localContext, (AbstractStraightInstruction) instr));
@@ -66,14 +64,15 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 
 			}else{
 				// Other non modified instruction
+				InstructionSet resultInstructionSet = new InstructionSet();
 				resultInstructionSet.addInstruction(instr);
+				resultInstructionProvider.addInstructionSet(resultInstructionSet);
 			}
-			resultInstructionProvider.addInstructionSet(resultInstructionSet);
+			
 		}
 		GCodeProvider result = getRS274NGCService().getGCodeProvider(new GCodeContext(), resultInstructionProvider);
 		for (GCodeLine line : result.getLines()) {
-			target.addLine(line);
-			System.out.println(getRS274NGCService().render(line));
+			target.addLine(line);			
 		}
 	}
 
@@ -94,7 +93,7 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 		for(int i = 0;i < nbPoints - 1; i++){
 			Tuple6b target = lstPoints.get(i+1);
 			InstructionSet instructionSet = new InstructionSet();
-			BigDecimalQuantity<Length> probedHeight = heightMap.getHeight(target.getX(), target.getY());
+			Length probedHeight = heightMap.getHeight(target.getX(), target.getY());
 
 			// Let's compute the theorical height in the given segment
 			BigDecimal factor = BigDecimal.ONE;
@@ -103,10 +102,10 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 			}else if(!start.getY().equals(end.getY())){
 				factor = ( target.getY().subtract(start.getY()) ).divide(end.getY().subtract(start.getY()));
 			}
-			BigDecimalQuantity<Length> interpolatedHeight = start.getZ().add(end.getZ().subtract(start.getZ()).multiply( factor ));
+			Length interpolatedHeight = start.getZ().add(end.getZ().subtract(start.getZ()).multiply( factor ));
 
 			// Now we can apply the computed offset to the interpolated height
-			BigDecimalQuantity<Length> fixedHeight 	= interpolatedHeight.subtract( theoricHeight.subtract(probedHeight));
+			Length fixedHeight 	= interpolatedHeight.subtract( theoricHeight.subtract(probedHeight));
 
 			if( source.getType() == InstructionType.STRAIGHT_TRAVERSE ){
 				instructionSet.addInstruction(new StraightTraverseInstruction(target.getX(), target.getY(), fixedHeight, source.getA(), source.getB(), source.getC()));
@@ -121,14 +120,14 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 	/**
 	 * @return the theoricHeight
 	 */
-	public BigDecimalQuantity<Length> getTheoricHeight() {
+	public Length getTheoricHeight() {
 		return theoricHeight;
 	}
 
 	/**
 	 * @param theoricHeight the theoricHeight to set
 	 */
-	public void setTheoricHeight(BigDecimalQuantity<Length> theoricHeight) {
+	public void setTheoricHeight(Length theoricHeight) {
 		this.theoricHeight = theoricHeight;
 	}
 

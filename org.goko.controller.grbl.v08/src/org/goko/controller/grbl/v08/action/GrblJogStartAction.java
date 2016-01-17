@@ -59,7 +59,7 @@ public class GrblJogStartAction extends AbstractGrblControllerAction {
 //		EnumControllerAxis 	enumAxis = EnumControllerAxis.getEnum(axis);
 //		BigDecimal 			feed 	 = new BigDecimal(getStringParameter(parameters[1]));
 //		Unit<Length> unit = getControllerService().getCurrentGCodeContext().getUnit().getUnit();
-//		//BigDecimalQuantity<Length>	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
+//		//Length	step 	 = NumberQuantity.of(new BigDecimal(getStringParameter(parameters[2])), unit);
 //		getControllerService().startJog(enumAxis, feed);
 	}
 

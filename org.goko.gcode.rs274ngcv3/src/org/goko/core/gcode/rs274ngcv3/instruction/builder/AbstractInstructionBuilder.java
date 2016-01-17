@@ -4,9 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -57,15 +56,34 @@ public abstract class AbstractInstructionBuilder<I extends AbstractInstruction> 
 	 * @param words the available words
 	 * @param context the gcode context
 	 * @param defaultValue the default value
-	 * @return BigDecimalQuantity<Length>
+	 * @return Length
 	 * @throws GkException GkException
 	 */
-	public <Q extends Quantity<Q>> BigDecimalQuantity<Q> findWordValue(String letter, List<GCodeWord> words, BigDecimalQuantity<Q> defaultValue, Unit<Q> unit) throws GkException{
-		BigDecimalQuantity<Q> result = defaultValue;
+	public Length findWordLength(String letter, List<GCodeWord> words, Length defaultValue, Unit<Length> unit) throws GkException{
+		Length result = defaultValue;
 		GCodeWord word = GCodeWordUtils.findAndRemoveWordByLetter(letter, words);
 		
 		if( word != null ){
-			result = NumberQuantity.of(new BigDecimal(word.getValue()), unit);
+			result = Length.valueOf(new BigDecimal(word.getValue()), unit);
+		}
+		return result;
+	}
+	
+	/**
+	 * Extract the angle value of the word designated by the given letter in the list of word
+	 * @param letter the letter of the word
+	 * @param words the available words
+	 * @param context the gcode context
+	 * @param defaultValue the default value
+	 * @return Length
+	 * @throws GkException GkException
+	 */
+	public Angle findWordAngle(String letter, List<GCodeWord> words, Angle defaultValue, Unit<Angle> unit) throws GkException{
+		Angle result = defaultValue;
+		GCodeWord word = GCodeWordUtils.findAndRemoveWordByLetter(letter, words);
+		
+		if( word != null ){
+			result = Angle.valueOf(new BigDecimal(word.getValue()), unit);
 		}
 		return result;
 	}

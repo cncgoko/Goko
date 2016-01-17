@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.math.Tuple6b;
 
@@ -17,7 +16,7 @@ public interface IHeightMap extends IIdBean{
 	 * @return the height
 	 * @throws GkException GkException
 	 */
-	BigDecimalQuantity<Length> getHeight(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y) throws GkException;
+	Length getHeight(Length x, Length y) throws GkException;
 
 	/**
 	 * Splits a segment matching this offset map.

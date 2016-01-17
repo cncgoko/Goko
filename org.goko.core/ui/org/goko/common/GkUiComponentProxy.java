@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.goko.common;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.bindings.AbstractModelObject;
 
@@ -28,11 +29,11 @@ import org.goko.common.bindings.AbstractModelObject;
  */
 public class GkUiComponentProxy<C extends AbstractController<D>, D extends AbstractModelObject> extends GkUiComponent<C , D> {
 
-	protected GkUiComponentProxy(C abstractController, D abstractModelObject) {
-		super(abstractController, abstractModelObject);
+	protected GkUiComponentProxy(IEclipseContext context, C abstractController, D abstractModelObject) {
+		super(context, abstractController, abstractModelObject);
 	}
-	protected GkUiComponentProxy(C abstractController) {
-		super(abstractController);
+	protected GkUiComponentProxy(IEclipseContext context, C abstractController) {
+		super(context, abstractController);
 	}
 
 }

@@ -16,9 +16,8 @@ import org.eclipse.swt.widgets.Label;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.common.preferences.fieldeditor.preference.ColorFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.IntegerFieldEditor;
-import org.goko.common.preferences.fieldeditor.preference.QuantityFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.quantity.LengthFieldEditor;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
@@ -31,14 +30,14 @@ import org.goko.core.log.GkLog;
  */
 public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 	private GkLog LOG = GkLog.getLogger(GridPreferencesPage.class);	
-	private QuantityFieldEditor<Length> majorSpacingFieldEditor;
-	private QuantityFieldEditor<Length> minorSpacingFieldEditor;
-	private QuantityFieldEditor<Length> startXFieldEditor;
-	private QuantityFieldEditor<Length> startYFieldEditor;
-	private QuantityFieldEditor<Length> startZFieldEditor;
-	private QuantityFieldEditor<Length> endXFieldEditor;
-	private QuantityFieldEditor<Length> endYFieldEditor;
-	private QuantityFieldEditor<Length> endZFieldEditor;
+	private LengthFieldEditor majorSpacingFieldEditor;
+	private LengthFieldEditor minorSpacingFieldEditor;
+	private LengthFieldEditor startXFieldEditor;
+	private LengthFieldEditor startYFieldEditor;
+	private LengthFieldEditor startZFieldEditor;
+	private LengthFieldEditor endXFieldEditor;
+	private LengthFieldEditor endYFieldEditor;
+	private LengthFieldEditor endZFieldEditor;
 	@Inject
 	@Optional
 	private IWorkVolumeProvider workVolumeProvider;
@@ -60,7 +59,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		grpSettings.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		grpSettings.setLayout(new GridLayout(1, false));
 		
-		majorSpacingFieldEditor = new QuantityFieldEditor<Length>(grpSettings, SWT.NONE, QuantityDimension.LENGTH);
+		majorSpacingFieldEditor = new LengthFieldEditor(grpSettings, SWT.NONE);
 		majorSpacingFieldEditor.setLabelWidthInChar(15);
 		majorSpacingFieldEditor.setPreferenceName("grid.majorSpacing");
 		majorSpacingFieldEditor.setWidthInChars(5);
@@ -69,7 +68,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		majorSpacingFieldEditor.setPreferenceName(JoglViewerPreference.MAJOR_GRID_SPACING);
 		majorSpacingFieldEditor.setUnit(lengthUnit);
 		
-		minorSpacingFieldEditor = new QuantityFieldEditor<Length>(grpSettings, SWT.NONE, QuantityDimension.LENGTH);
+		minorSpacingFieldEditor = new LengthFieldEditor(grpSettings, SWT.NONE);
 		minorSpacingFieldEditor.setLabelWidthInChar(15);
 		minorSpacingFieldEditor.setEmptyStringAllowed(false);
 		minorSpacingFieldEditor.setPreferenceName("grid.minorSpacing");
@@ -110,7 +109,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		lblStart.setBounds(0, 0, 55, 15);
 		lblStart.setText("Start");
 		
-		startXFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		startXFieldEditor = new LengthFieldEditor(composite, SWT.NONE);
 		startXFieldEditor.setEmptyStringAllowed(false);
 		startXFieldEditor.setWidthInChars(6);
 		startXFieldEditor.setLabel("X");
@@ -123,7 +122,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		Label lblEnd = new Label(composite, SWT.NONE);
 		lblEnd.setText("End");
 		
-		endXFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		endXFieldEditor = new LengthFieldEditor(composite, SWT.NONE);
 		endXFieldEditor.setEmptyStringAllowed(false);
 		endXFieldEditor.setWidthInChars(6);
 		endXFieldEditor.setLabel("X");
@@ -131,7 +130,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		endXFieldEditor.setUnit(lengthUnit);
 		new Label(composite, SWT.NONE);
 		
-		startYFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		startYFieldEditor = new LengthFieldEditor(composite, SWT.NONE);
 		startYFieldEditor.setEmptyStringAllowed(false);
 		startYFieldEditor.setWidthInChars(6);
 		startYFieldEditor.setLabel("Y");
@@ -141,7 +140,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
-		endYFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		endYFieldEditor = new LengthFieldEditor(composite, SWT.NONE);
 		endYFieldEditor.setEmptyStringAllowed(false);
 		endYFieldEditor.setWidthInChars(6);
 		endYFieldEditor.setLabel("Y");
@@ -149,7 +148,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		endYFieldEditor.setUnit(lengthUnit);
 		
 		new Label(composite, SWT.NONE);
-		startZFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		startZFieldEditor = new LengthFieldEditor(composite, SWT.NONE);
 		startZFieldEditor.setEmptyStringAllowed(false);
 		startZFieldEditor.setWidthInChars(6);
 		startZFieldEditor.setLabel("Z");
@@ -159,7 +158,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		new Label(composite, SWT.NONE);
 		new Label(composite, SWT.NONE);
 		
-		endZFieldEditor = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		endZFieldEditor = new LengthFieldEditor(composite, SWT.NONE);
 		endZFieldEditor.setEmptyStringAllowed(false);
 		endZFieldEditor.setWidthInChars(6);
 		endZFieldEditor.setLabel("Z");

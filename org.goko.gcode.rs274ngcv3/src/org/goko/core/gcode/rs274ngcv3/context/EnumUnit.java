@@ -16,9 +16,8 @@
  *******************************************************************************/
 package org.goko.core.gcode.rs274ngcv3.context;
 
-import org.goko.core.common.measure.SIPrefix;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.common.measure.units.Unit;
 
 /**
@@ -28,8 +27,8 @@ import org.goko.core.common.measure.units.Unit;
  *
  */
 public enum EnumUnit {
-	MILLIMETERS(SIPrefix.MILLI(Units.METRE)),
-	INCHES(Units.INCH);
+	MILLIMETERS(LengthUnit.MILLIMETRE),
+	INCHES(LengthUnit.INCH);
 	
 	private Unit<Length> unit;
 

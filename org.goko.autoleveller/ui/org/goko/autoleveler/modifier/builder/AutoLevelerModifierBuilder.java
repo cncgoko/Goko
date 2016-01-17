@@ -5,13 +5,22 @@ import org.goko.autoleveler.modifier.AutoLevelerModifier;
 import org.goko.autoleveler.modifier.ui.AutoLevelerModifierConfigurationPanel;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.AbstractModifierUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.IModifierPropertiesPanel;
 
-public class AutoLevelerModifierBuilder implements IModifierUiProvider<GCodeProvider, AutoLevelerModifier>{
+public class AutoLevelerModifierBuilder extends AbstractModifierUiProvider<AutoLevelerModifier> implements IModifierUiProvider<AutoLevelerModifier>{
 	/** GCode service required by modifier */
 	private IRS274NGCService rs274ngcService;
+	
+	/**
+	 * Constructor
+	 */
+	public AutoLevelerModifierBuilder() {
+		super(AutoLevelerModifier.class);
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider#createDefaultModifier(java.lang.Integer)
 	 */
@@ -28,16 +37,6 @@ public class AutoLevelerModifierBuilder implements IModifierUiProvider<GCodeProv
 	@Override
 	public boolean providesConfigurationPanelFor(IModifier<?> modifier) throws GkException {
 		return modifier instanceof AutoLevelerModifier;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider#createConfigurationPanelFor(org.eclipse.swt.widgets.Composite, org.goko.core.gcode.rs274ngcv3.element.IModifier)
-	 */
-	@Override
-	public void createConfigurationPanelFor(Composite parent, IModifier<?> modifier) throws GkException {
-		AutoLevelerModifierConfigurationPanel panel = new AutoLevelerModifierConfigurationPanel();
-		panel.createContent(parent, modifier);
-		parent.layout();
 	}
 
 	/** (inheritDoc)
@@ -60,6 +59,17 @@ public class AutoLevelerModifierBuilder implements IModifierUiProvider<GCodeProv
 	 */
 	public void setRS274NGCService(IRS274NGCService rs274ngcService) {
 		this.rs274ngcService = rs274ngcService;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.AbstractModifierUiProvider#createPropertiesPanelForModifier(org.eclipse.swt.widgets.Composite, org.goko.core.gcode.rs274ngcv3.element.IModifier)
+	 */
+	@Override
+	protected IModifierPropertiesPanel<AutoLevelerModifier> createPropertiesPanelForModifier(Composite parent, AutoLevelerModifier modifier) throws GkException {
+		AutoLevelerModifierConfigurationPanel panel = new AutoLevelerModifierConfigurationPanel(getContext());
+		panel.createContent(parent, modifier);
+		parent.layout();
+		return panel;
 	}
 
 }

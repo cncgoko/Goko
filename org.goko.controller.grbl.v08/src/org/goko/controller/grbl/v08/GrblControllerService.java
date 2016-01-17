@@ -53,8 +53,6 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
@@ -114,7 +112,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/** Jog related fields - Feedrate */
 	private BigDecimal feed;
 	/** Jog related fields - Step */
-	private BigDecimalQuantity<Length> step;
+	private Length step;
 	/** Preference store */
 	private ScopedPreferenceStore preferenceStore;
 	/** The Grbl Executor */
@@ -235,8 +233,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getX() throws GkException {
-		BigDecimalQuantity<Length> xPos = grblState.getWorkPosition().getX();
+	public Length getX() throws GkException {
+		Length xPos = grblState.getWorkPosition().getX();
 		return xPos;
 	}
 
@@ -244,8 +242,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getY() throws GkException {
-		BigDecimalQuantity<Length> yPos = grblState.getWorkPosition().getY();
+	public Length getY() throws GkException {
+		Length yPos = grblState.getWorkPosition().getY();
 		return yPos;
 	}
 
@@ -254,8 +252,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getZ() throws GkException {
-		BigDecimalQuantity<Length> zPos = grblState.getWorkPosition().getZ();
+	public Length getZ() throws GkException {
+		Length zPos = grblState.getWorkPosition().getZ();
 		return zPos;
 	}
 
@@ -745,7 +743,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @return a String
 	 * @throws GkException GkException
 	 */
-	protected String getPositionAsString(BigDecimalQuantity<Length> q) throws GkException{
+	protected String getPositionAsString(Length q) throws GkException{
 		return GokoPreference.getInstance().format( q.to(getCurrentUnit()), true, false);
 	}
 
@@ -881,7 +879,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
+	public void setJogStep(Length step) throws GkException {
 		this.step = step;
 	}
 
@@ -889,7 +887,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IStepJogService#getJogStep()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getJogStep() throws GkException {
+	public Length getJogStep() throws GkException {
 		return step;
 	}
 
@@ -941,7 +939,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(axis.isNegative()){
 			command+="-";
 		}
-		command += step.to(getCurrentGCodeContext().getUnit().getUnit()).value();
+		command += step.value(getCurrentGCodeContext().getUnit().getUnit());
 		if(feed != null){
 			command += "F"+feed;
 		}
@@ -969,7 +967,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(StringUtils.isBlank(stepStr)){
 			stepStr = "1";
 		}
-		this.step = NumberQuantity.of(new BigDecimal(stepStr), Units.MILLIMETRE);
+		this.step = Length.valueOf(new BigDecimal(stepStr), Units.MILLIMETRE);
 	}
 
 	private void persistValues(){
@@ -977,7 +975,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
 		}
 		if(step != null){
-			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());
+			preferenceStore.putValue(PERSISTED_STEP, step.value(Units.MILLIMETRE).toPlainString());
 		}
 	}
 

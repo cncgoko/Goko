@@ -1,7 +1,6 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -35,7 +34,7 @@ public abstract class AbstractInstructionTimeCalculator<I extends AbstractInstru
 	 * @throws GkException GkException
 	 */
 	@SuppressWarnings("unchecked")
-	public final Quantity<Time> getExecutionTime(GCodeContext context, AbstractInstruction instruction) throws GkException{
+	public final Time getExecutionTime(GCodeContext context, AbstractInstruction instruction) throws GkException{
 		return calculateExecutionTime(context, (I)instruction);
 	}
 	
@@ -46,6 +45,6 @@ public abstract class AbstractInstructionTimeCalculator<I extends AbstractInstru
 	 * @return a Time quantity
 	 * @throws GkException GkException
 	 */
-	protected abstract Quantity<Time> calculateExecutionTime(GCodeContext context, I instruction) throws GkException;
+	protected abstract Time calculateExecutionTime(GCodeContext context, I instruction) throws GkException;
 	
 }

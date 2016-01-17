@@ -1,24 +1,22 @@
 package org.goko.autoleveler.bean;
 
-import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 
 public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBuilder {
 	/** The clearance height */
-	private BigDecimalQuantity<Length> zClearance;
+	private Length zClearance;
 	/** The probe start height */
-	private BigDecimalQuantity<Length> zProbeStart;
+	private Length zProbeStart;
 	/** The probe lower height */
-	private BigDecimalQuantity<Length> zProbeLower;
+	private Length zProbeLower;
 	/** The probe feed rate */
-	private BigDecimalQuantity<Length> probeFeedrate;
+	private Length probeFeedrate;
 
 	/** (inheritDoc)
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#getClearanceHeight()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getClearanceHeight() throws GkException {
+	public Length getClearanceHeight() {
 		return zClearance;
 	}
 
@@ -26,7 +24,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#getProbeStartHeight()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getProbeStartHeight() throws GkException {
+	public Length getProbeStartHeight() {
 		return zProbeStart;
 	}
 
@@ -34,7 +32,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#getProbeLowerHeight()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getProbeLowerHeight() throws GkException {
+	public Length getProbeLowerHeight() {
 		return zProbeLower;
 	}
 
@@ -42,7 +40,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#getProbeFeedrate()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getProbeFeedrate() throws GkException {
+	public Length getProbeFeedrate() {
 		return probeFeedrate;
 	}
 
@@ -50,7 +48,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#setClearanceHeight(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setClearanceHeight(BigDecimalQuantity<Length> height) throws GkException {
+	public void setClearanceHeight(Length height) {
 		this.zClearance = height;
 	}
 
@@ -58,7 +56,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#setProbeStartHeight(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setProbeStartHeight(BigDecimalQuantity<Length> height) throws GkException {
+	public void setProbeStartHeight(Length height) {
 		this.zProbeStart = height;
 	}
 
@@ -66,7 +64,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#setProbeLowerHeight(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setProbeLowerHeight(BigDecimalQuantity<Length> height) throws GkException {
+	public void setProbeLowerHeight(Length height) {
 		this.zProbeLower = height;
 	}
 
@@ -74,7 +72,7 @@ public abstract class AbstractOffsetMapProbeBuilder implements IHeightMapProbeBu
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#setProbeFeedrate(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setProbeFeedrate(BigDecimalQuantity<Length> feedrate) throws GkException {
+	public void setProbeFeedrate(Length feedrate) {
 		this.probeFeedrate = feedrate;
 	}
 

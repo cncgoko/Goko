@@ -18,12 +18,11 @@ package org.goko.core.controller;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 
 public interface IFourAxisControllerAdapter extends IThreeAxisControllerAdapter{
 	/**
 	 * Returns the A position of the controller
 	 * @return the current A position
 	 */
-	BigDecimalQuantity<Angle> getA() throws GkException;
+	Angle getA() throws GkException;
 }

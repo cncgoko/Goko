@@ -14,6 +14,7 @@ import org.goko.core.execution.monitor.uiprovider.menu.executiontoken.DeleteExec
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
+import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 
 public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvider {
@@ -65,9 +66,8 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#createConfigurationPanelFor(org.eclipse.swt.widgets.Composite, org.eclipse.jface.viewers.ISelection)
 	 */
 	@Override
-	public void createConfigurationPanelFor(Composite parent, ISelection content) throws GkException {
-		// TODO Auto-generated method stub
-
+	public IPropertiesPanel createConfigurationPanelFor(Composite parent, ISelection content) throws GkException {
+		return null;
 	}
 
 	/** (inheritDoc)

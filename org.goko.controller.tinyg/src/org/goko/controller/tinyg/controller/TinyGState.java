@@ -29,8 +29,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
@@ -224,7 +224,7 @@ public class TinyGState extends MachineValueStore{
 	 * @return {@link BigDecimalQuantity} the X position
 	 * @throws GkException GkException
 	 */
-	protected BigDecimalQuantity<Length> getX() throws GkException{
+	protected Length getX() throws GkException{
 		return position.getX();
 	}
 	
@@ -233,7 +233,7 @@ public class TinyGState extends MachineValueStore{
 	 * @return {@link BigDecimalQuantity} the Y position
 	 * @throws GkException GkException
 	 */
-	protected BigDecimalQuantity<Length> getY() throws GkException{
+	protected Length getY() throws GkException{
 		return position.getY();
 	}
 	
@@ -242,7 +242,7 @@ public class TinyGState extends MachineValueStore{
 	 * @return {@link BigDecimalQuantity} the Z position
 	 * @throws GkException GkException
 	 */
-	protected BigDecimalQuantity<Length> getZ() throws GkException{
+	protected Length getZ() throws GkException{
 		return position.getZ();
 	}
 	
@@ -251,7 +251,7 @@ public class TinyGState extends MachineValueStore{
 	 * @return {@link BigDecimalQuantity} the A position
 	 * @throws GkException GkException
 	 */
-	protected BigDecimalQuantity<Angle> getA() throws GkException{
+	protected Angle getA() throws GkException{
 		return position.getA();
 	}
 	
@@ -268,7 +268,7 @@ public class TinyGState extends MachineValueStore{
 		updateValue(TinyG.POSITION_X, x);
 		updateValue(TinyG.POSITION_Y, y);
 		updateValue(TinyG.POSITION_Z, z);
-		updateValue(TinyG.POSITION_A, new BigDecimal(position.getA().doubleValue(Units.DEGREE_ANGLE)).setScale(3, RoundingMode.HALF_DOWN));
+		updateValue(TinyG.POSITION_A, new BigDecimal(position.getA().doubleValue(AngleUnit.DEGREE_ANGLE)).setScale(3, RoundingMode.HALF_DOWN));
 	}
 
 	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {

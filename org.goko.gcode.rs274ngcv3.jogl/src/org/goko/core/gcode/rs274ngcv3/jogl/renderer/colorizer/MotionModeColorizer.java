@@ -9,7 +9,8 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 
 public class MotionModeColorizer extends AbstractInstructionColorizer {
 	private static final Color4f DEFAULT_COLOR = new Color4f(0.58f,0.58f,0.58f,0.9f);
-	private static final Color4f RAPID_COLOR = new Color4f(0.854f,0.0f,0.0f,0.9f);
+//	private static final Color4f RAPID_COLOR = new Color4f(0.854f,0.0f,0.0f,0.9f);
+	private static final Color4f RAPID_COLOR = new Color4f(1f,0.77f,0.04f, 0.9f);
 	private static final Color4f FEEDRATE_COLOR = new Color4f(0.14f,0.33f,0.80f,0.9f);	
 	private static final Color4f ARC_COLOR = new Color4f(0,0.86f,0,0.9f);
 

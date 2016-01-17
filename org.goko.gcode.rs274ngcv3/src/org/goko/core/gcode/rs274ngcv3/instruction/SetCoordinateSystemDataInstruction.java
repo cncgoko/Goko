@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -13,17 +12,17 @@ public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	/** The target coordinate system */
 	private EnumCoordinateSystem targetCoordinateSystem;
 	/** X coordinate in the target coordinate system */
-	private BigDecimalQuantity<Length> x;
+	private Length x;
 	/** Y coordinate in the target coordinate system */
-	private BigDecimalQuantity<Length> y;
+	private Length y;
 	/** Z coordinate in the target coordinate system */
-	private BigDecimalQuantity<Length> z;
+	private Length z;
 	/** A coordinate in the target coordinate system */
-	private BigDecimalQuantity<Angle> a;
+	private Angle a;
 	/** B coordinate in the target coordinate system */
-	private BigDecimalQuantity<Angle> b;
+	private Angle b;
 	/** C coordinate in the target coordinate system  */
-	private BigDecimalQuantity<Angle> c;
+	private Angle c;
 	
 	/**
 	 * Constructor 
@@ -35,7 +34,7 @@ public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	 * @param b B coordinate in the target coordinate system
 	 * @param c C coordinate in the target coordinate system
 	 */
-	public SetCoordinateSystemDataInstruction(EnumCoordinateSystem targetCoordinateSystem, BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {
+	public SetCoordinateSystemDataInstruction(EnumCoordinateSystem targetCoordinateSystem, Length x, Length y, Length z, Angle a, Angle b, Angle c) {
 		super(InstructionType.SET_COORDINATE_SYSTEM_DATA);
 		this.targetCoordinateSystem = targetCoordinateSystem;
 		this.x = x;
@@ -64,42 +63,42 @@ public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	/**
 	 * @return the x
 	 */
-	public BigDecimalQuantity<Length> getX() {
+	public Length getX() {
 		return x;
 	}
 
 	/**
 	 * @return the y
 	 */
-	public BigDecimalQuantity<Length> getY() {
+	public Length getY() {
 		return y;
 	}
 
 	/**
 	 * @return the z
 	 */
-	public BigDecimalQuantity<Length> getZ() {
+	public Length getZ() {
 		return z;
 	}
 
 	/**
 	 * @return the a
 	 */
-	public BigDecimalQuantity<Angle> getA() {
+	public Angle getA() {
 		return a;
 	}
 
 	/**
 	 * @return the b
 	 */
-	public BigDecimalQuantity<Angle> getB() {
+	public Angle getB() {
 		return b;
 	}
 
 	/**
 	 * @return the c
 	 */
-	public BigDecimalQuantity<Angle> getC() {
+	public Angle getC() {
 		return c;
 	}
 

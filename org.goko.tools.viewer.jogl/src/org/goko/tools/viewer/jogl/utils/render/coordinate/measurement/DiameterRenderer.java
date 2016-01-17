@@ -24,7 +24,6 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
@@ -38,8 +37,8 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	/** The center of the diameter*/
 	private Tuple6b center;
 	/** The value of the diameter */
-	private Quantity<Length> diameter;
-	private Quantity<Length> radius;
+	private Length diameter;
+	private Length radius;
 	/** The color */
 	private Color4f color;
 	/** The normal */
@@ -48,12 +47,12 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	private Color4f centerColor;
 	
 	/** Constructor */
-	public DiameterRenderer(Tuple6b center, Quantity<Length> diameter, Color4f color, Vector3d normal) {
+	public DiameterRenderer(Tuple6b center, Length diameter, Color4f color, Vector3d normal) {
 		this(center, diameter, color, normal, color);
 	}
 	
 	/** Constructor */
-	public DiameterRenderer(Tuple6b center, Quantity<Length> diameter, Color4f color, Vector3d normal, Color4f centerColor) {
+	public DiameterRenderer(Tuple6b center, Length diameter, Color4f color, Vector3d normal, Color4f centerColor) {
 		super();
 		this.center = center;
 		this.diameter = diameter;

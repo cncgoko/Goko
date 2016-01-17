@@ -2,7 +2,7 @@ package org.goko.core.gcode.rs274ngcv3.modifier;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
@@ -39,7 +39,7 @@ public class TestModifier extends AbstractModifier<GCodeProvider> implements IMo
 				StraightFeedInstruction sfi = (StraightFeedInstruction) instr;
 				double nb = Math.ceil(Math.random()*(Math.PI*100))/100;
 				String strNumber = String.valueOf(nb);
-				sfi.setZ(sfi.getZ().add(NumberQuantity.of(strNumber, Units.MILLIMETRE)));
+				sfi.setZ(sfi.getZ().add(Length.valueOf(strNumber, Units.MILLIMETRE)));
 			}
 		}
 		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);

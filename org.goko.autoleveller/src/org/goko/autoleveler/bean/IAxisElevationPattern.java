@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -36,7 +35,7 @@ public abstract interface IAxisElevationPattern {
 
 	public abstract List<Tuple6b> getPatternPositions() throws GkException;
 
-	public BigDecimalQuantity<Length> getStartProbePosition() throws GkException;
+	public Length getStartProbePosition() throws GkException;
 
-	public BigDecimalQuantity<Length> getEndProbePosition() throws GkException;
+	public Length getEndProbePosition() throws GkException;
 }

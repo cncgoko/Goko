@@ -17,6 +17,9 @@
 
 package org.goko.core.common.measure.converter;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 /**
  * Simple converter performing multiplication 
  * 
@@ -25,15 +28,23 @@ package org.goko.core.common.measure.converter;
  */
 public class MultiplyConverter extends AbstractUnitConverter {
 	/** Scale factor */
-	private double factor;
+	private BigDecimal factor;
 
 	/**
 	 * Constructor
 	 * @param factor the multiplying factor
 	 */
-	public MultiplyConverter(double factor) {
+	public MultiplyConverter(BigDecimal factor) {
 		super();
 		this.factor = factor;
+	}
+	
+	/**
+	 * Constructor
+	 * @param factor the multiplying factor
+	 */
+	public MultiplyConverter(String factor) {
+		this(new BigDecimal(factor));
 	}
 
 	/** (inheritDoc)
@@ -41,15 +52,15 @@ public class MultiplyConverter extends AbstractUnitConverter {
 	 */
 	@Override
 	public UnitConverter inverse() {
-		return new MultiplyConverter(1.0 / factor);
+		return new MultiplyConverter(BigDecimal.ONE.divide(factor, MathContext.DECIMAL64));
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.converter.AbstractUnitConverter#convert(double)
 	 */
 	@Override
-	public double convert(double value) {
-		return factor * value;
+	public BigDecimal convert(BigDecimal value) {
+		return factor.multiply(value);
 	}
 	
 }

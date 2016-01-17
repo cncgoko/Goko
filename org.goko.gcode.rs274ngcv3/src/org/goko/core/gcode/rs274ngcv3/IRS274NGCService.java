@@ -32,6 +32,8 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 	BoundingTuple6b getBounds(GCodeContext context, InstructionProvider instructionProvider) throws GkException;
 
 	IModifier<GCodeProvider> getModifier(Integer id) throws GkException;
+	
+	IModifier<GCodeProvider> findModifier(Integer id) throws GkException;
 
 	void addModifier(IModifier<GCodeProvider> modifier) throws GkException;
 

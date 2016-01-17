@@ -13,10 +13,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.Units;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
@@ -349,8 +346,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public Quantity<Time> evaluateExecutionTime(IGCodeProvider provider) throws GkException {
-		Quantity<Time> result = NumberQuantity.zero(Units.SECOND);
+	public Time evaluateExecutionTime(IGCodeProvider provider) throws GkException {
+		Time result = Time.ZERO;
 
 		InstructionTimeCalculatorFactory timeFactory = new InstructionTimeCalculatorFactory();
 		GCodeContext baseContext = new GCodeContext();
@@ -455,6 +452,14 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#findGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public IGCodeProvider findGCodeProvider(Integer id) throws GkException {		
+		return cacheProviders.find(id);
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#getGCodeProvider(java.lang.String)
 	 */
 	@Override
@@ -556,13 +561,15 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		this.cacheProviders.add(wrappedProvider);
 		notifyGCodeProviderUpdate(wrappedProvider);
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#updateModifier(org.goko.core.gcode.rs274ngcv3.element.IModifier)
 	 */
 	@Override
 	public void updateModifier(IModifier<GCodeProvider> modifier) throws GkException {
 		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
+		// Make sure the modifier exists
+		getModifier(modifier.getId());
 		this.cacheModifiers.remove(modifier.getId());
 		modifier.setModificationDate(new Date());
 		this.cacheModifiers.add(modifier);
@@ -625,6 +632,13 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		return cacheModifiers.get(id);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#findModifier(java.lang.Integer)
+	 */
+	@Override
+	public IModifier<GCodeProvider> findModifier(Integer id) throws GkException {		
+		return cacheModifiers.find(id);
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#getModifier(java.util.List)
 	 */

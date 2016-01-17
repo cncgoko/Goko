@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.jface.action.MenuManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.ModifierUiProviderSorter;
@@ -49,11 +48,11 @@ public class ModifierSubMenu extends MenuManager {
 	 * @throws GkException GkException
 	 */
 	private void buildMenu() throws GkException {
-		List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
+		List<IModifierUiProvider<?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
 
 		Collections.sort(lstBuilders, new ModifierUiProviderSorter(EnumModifierUiProviderSort.ALPHABETICAL));
 
-		for (final IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
+		for (final IModifierUiProvider<?> iModifierUiProvider : lstBuilders) {
 			// Actions for the sub menu
         	CreateModifierAction action = new CreateModifierAction(rs274Service, iModifierUiProvider, idGCodeProvider);
 			add(action);

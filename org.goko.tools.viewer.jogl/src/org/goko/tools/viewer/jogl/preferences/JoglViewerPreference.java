@@ -25,11 +25,8 @@ import javax.vecmath.Vector3f;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
-import org.goko.core.common.measure.dimension.QuantityDimension;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GkPreference;
 import org.goko.core.config.GokoPreference;
@@ -170,15 +167,15 @@ public class JoglViewerPreference extends GkPreference{
 	 * @return the majorGridSpacing
 	 * @throws GkException 
 	 */
-	public BigDecimalQuantity<Length> getMajorGridSpacing() throws GkException {
-		return NumberQuantity.of(getString(MAJOR_GRID_SPACING), QuantityDimension.LENGTH);			
+	public Length getMajorGridSpacing() throws GkException {
+		return Length.parse(getString(MAJOR_GRID_SPACING));			
 	}
 
 	/**
 	 * @param majorGridSpacing the majorGridSpacing to set
 	 * @throws GkException GkException 
 	 */
-	public void setMajorGridSpacing(BigDecimalQuantity<Length> majorGridSpacing) throws GkException {
+	public void setMajorGridSpacing(Length majorGridSpacing) throws GkException {
 		setValue(MAJOR_GRID_SPACING, GokoPreference.getInstance().format(majorGridSpacing));
 	}
 
@@ -186,15 +183,15 @@ public class JoglViewerPreference extends GkPreference{
 	 * @return the minorGridSpacing
 	 * @throws GkException 
 	 */
-	public BigDecimalQuantity<Length> getMinorGridSpacing() throws GkException {		
-		return NumberQuantity.of(getString(MINOR_GRID_SPACING), QuantityDimension.LENGTH);				
+	public Length getMinorGridSpacing() throws GkException {		
+		return Length.parse(getString(MINOR_GRID_SPACING));				
 	}
 
 	/**
 	 * @param minorGridSpacing the minorGridSpacing to set
 	 * @throws GkException GkException 
 	 */
-	public void setMinorGridSpacing(BigDecimalQuantity<Length> minorGridSpacing) throws GkException {
+	public void setMinorGridSpacing(Length minorGridSpacing) throws GkException {
 		setValue(MINOR_GRID_SPACING, GokoPreference.getInstance().format(minorGridSpacing));
 	}
 	
@@ -216,19 +213,19 @@ public class JoglViewerPreference extends GkPreference{
 	
 	public Tuple6b getGridStart() throws GkException{
 		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
-		Tuple6b start = new Tuple6b(unit, Units.DEGREE_ANGLE);
-		start.setX(NumberQuantity.of(getString(GRID_START_X), QuantityDimension.LENGTH));
-		start.setY(NumberQuantity.of(getString(GRID_START_Y), QuantityDimension.LENGTH));
-		start.setZ(NumberQuantity.of(getString(GRID_START_Z), QuantityDimension.LENGTH));
+		Tuple6b start = new Tuple6b(unit, AngleUnit.DEGREE_ANGLE);
+		start.setX(Length.parse(getString(GRID_START_X)));
+		start.setY(Length.parse(getString(GRID_START_Y)));
+		start.setZ(Length.parse(getString(GRID_START_Z)));
 		return start;
 	}
 	
 	public Tuple6b getGridEnd() throws GkException{
 		Unit<Length> unit = GokoPreference.getInstance().getLengthUnit();
-		Tuple6b end = new Tuple6b(unit, Units.DEGREE_ANGLE);
-		end.setX(NumberQuantity.of(getString(GRID_END_X), QuantityDimension.LENGTH));
-		end.setY(NumberQuantity.of(getString(GRID_END_Y), QuantityDimension.LENGTH));
-		end.setZ(NumberQuantity.of(getString(GRID_END_Z), QuantityDimension.LENGTH));
+		Tuple6b end = new Tuple6b(unit, AngleUnit.DEGREE_ANGLE);
+		end.setX(Length.parse(getString(GRID_END_X)));
+		end.setY(Length.parse(getString(GRID_END_Y)));
+		end.setZ(Length.parse(getString(GRID_END_Z)));
 		return end;
 	}	
 }

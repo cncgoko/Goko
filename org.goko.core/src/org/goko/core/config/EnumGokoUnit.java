@@ -2,9 +2,8 @@ package org.goko.core.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.SIPrefix;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.common.measure.units.Unit;
 
 /**
@@ -14,8 +13,8 @@ import org.goko.core.common.measure.units.Unit;
  *
  */
 public enum EnumGokoUnit {
-	MILLIMETERS("millimeters", SIPrefix.MILLI(Units.METRE)),
-	INCHES("inches", Units.INCH);
+	MILLIMETERS("millimeters", LengthUnit.MILLIMETRE),
+	INCHES("inches", LengthUnit.INCH);
 
 	String code;
 	Unit<Length> unit;

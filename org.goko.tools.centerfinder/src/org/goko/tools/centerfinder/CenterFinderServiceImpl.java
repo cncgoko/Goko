@@ -31,10 +31,7 @@ import javax.vecmath.Vector3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.math.Segment;
 import org.goko.core.math.Tuple6b;
@@ -180,8 +177,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		if(xParallelSegment >= 0 && yParallelSegment >= 0){ // 3 Points make a rectangle triangle
 			s1 = lstSegment.get(xParallelSegment);
 			s2 = lstSegment.get(yParallelSegment);			
-			BigDecimalQuantity<Length> centerX = s1.getStart().getX().add(s1.getEnd().getX()).divide(2);
-			BigDecimalQuantity<Length> centerY = s2.getStart().getY().add(s2.getEnd().getY()).divide(2);
+			Length centerX = s1.getStart().getX().add(s1.getEnd().getX()).divide(2);
+			Length centerY = s2.getStart().getY().add(s2.getEnd().getY()).divide(2);
 			center.setX(centerX);
 			center.setY(centerY);
 			centerResult.setCenter(untransformFromXYPlane(plane, center));
@@ -194,16 +191,16 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 			s2 = lstSegment.get((xParallelSegment+2)%3);
 		}
 
-		BigDecimal x1 = s1.getStart().getX().getValue();
-		BigDecimal x2 = s1.getEnd().getX().getValue();
-		BigDecimal x3 = s2.getEnd().getX().getValue();
+		BigDecimal x1 = s1.getStart().getX().value(resultUnit);
+		BigDecimal x2 = s1.getEnd().getX().value(resultUnit);
+		BigDecimal x3 = s2.getEnd().getX().value(resultUnit);
 
-		BigDecimal y1 = s1.getStart().getY().getValue();
-		BigDecimal y2 = s1.getEnd().getY().getValue();
-		BigDecimal y3 = s2.getEnd().getY().getValue();
+		BigDecimal y1 = s1.getStart().getY().value(resultUnit);
+		BigDecimal y2 = s1.getEnd().getY().value(resultUnit);
+		BigDecimal y3 = s2.getEnd().getY().value(resultUnit);
 		if(s2.getEnd().equals(s1.getStart()) || s2.getEnd().equals(s1.getEnd())){
-			x3 = s2.getStart().getX().getValue();
-			y3 = s2.getStart().getY().getValue();
+			x3 = s2.getStart().getX().value(resultUnit);
+			y3 = s2.getStart().getY().value(resultUnit);
 		}
 		
 //		BigDecimal a = ( x3*x3 - x2*x2 + y3*y3 - y2*y2) / (2*(y3-y2));
@@ -225,8 +222,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		
 		BigDecimal centerX = (a.subtract(b).divide(c.subtract(d), RoundingMode.HALF_UP));
 		BigDecimal centerY = b.subtract(d.multiply(centerX));
-		center.setX( NumberQuantity.of(centerX, resultUnit));
-		center.setY( NumberQuantity.of(centerY, resultUnit));
+		center.setX( Length.valueOf(centerX, resultUnit));
+		center.setY( Length.valueOf(centerY, resultUnit));
 		centerResult.setCenter(untransformFromXYPlane(plane, center));
 		centerResult.setRadius(t1.distance(center));
 		centerResult.setPlane(plane);
@@ -237,13 +234,13 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	private static Tuple6b transformToXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
 		
 		if(EnumPlane.XY_PLANE == enumPlane){			
-			return new Tuple6b(tuple.getX(), tuple.getY(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(tuple.getX(), tuple.getY(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 			
 		}else if(EnumPlane.XZ_PLANE == enumPlane){
-			return new Tuple6b(tuple.getX(), tuple.getZ(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(tuple.getX(), tuple.getZ(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 			
 		}else if(EnumPlane.YZ_PLANE == enumPlane){
-			return new Tuple6b(tuple.getY(), tuple.getZ(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(tuple.getY(), tuple.getZ(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 		}	
 		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
 	}
@@ -251,13 +248,13 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	private static Tuple6b untransformFromXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
 		
 		if(EnumPlane.XY_PLANE == enumPlane){			
-			return new Tuple6b(tuple.getX(), tuple.getY(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(tuple.getX(), tuple.getY(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 						
 		}else if(EnumPlane.XZ_PLANE == enumPlane){
-			return new Tuple6b(tuple.getX(), NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(tuple.getX(), Length.ZERO, tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
 			
 		}else if(EnumPlane.YZ_PLANE == enumPlane){
-			return new Tuple6b(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE), tuple.getY(), tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(Length.ZERO, tuple.getY(), tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
 		}		
 		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
 	}

@@ -3,10 +3,9 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder;
 import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
-public class ModifierUiProviderSorter implements Comparator<IModifierUiProvider<GCodeProvider, ?>>{
+public class ModifierUiProviderSorter implements Comparator<IModifierUiProvider<?>>{
 	/** Sort methods*/
 	public enum EnumModifierUiProviderSort{
 		ALPHABETICAL,
@@ -28,7 +27,7 @@ public class ModifierUiProviderSorter implements Comparator<IModifierUiProvider<
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public int compare(IModifierUiProvider<GCodeProvider, ?> modifier1, IModifierUiProvider<GCodeProvider, ?> modifier2) {
+	public int compare(IModifierUiProvider<?> modifier1, IModifierUiProvider<?> modifier2) {
 		int result = 0;
 		switch (sortType) {
 		case ALPHABETICAL:	result = compareAlphabetical(modifier1, modifier2);		
@@ -46,7 +45,7 @@ public class ModifierUiProviderSorter implements Comparator<IModifierUiProvider<
 	 * @param modifier2 modifier 2
 	 * @return int
 	 */
-	private int compareAlphabetical(IModifierUiProvider<GCodeProvider, ?> modifier1, IModifierUiProvider<GCodeProvider, ?> modifier2) {
+	private int compareAlphabetical(IModifierUiProvider<?> modifier1, IModifierUiProvider<?> modifier2) {
 		return StringUtils.defaultString(modifier1.getModifierName()).compareTo(modifier2.getModifierName());
 	}
 	
@@ -56,7 +55,7 @@ public class ModifierUiProviderSorter implements Comparator<IModifierUiProvider<
 	 * @param modifier2 modifier 2
 	 * @return int
 	 */
-	private int compareAlphabeticalInverse(IModifierUiProvider<GCodeProvider, ?> modifier1, IModifierUiProvider<GCodeProvider, ?> modifier2) {
+	private int compareAlphabeticalInverse(IModifierUiProvider<?> modifier1, IModifierUiProvider<?> modifier2) {
 		return StringUtils.defaultString(modifier2.getModifierName()).compareTo(modifier1.getModifierName());
 	}
 

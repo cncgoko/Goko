@@ -17,8 +17,6 @@
 
 package org.goko.core.config;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
@@ -35,8 +33,6 @@ import org.goko.core.common.measure.dimension.Dimension;
 import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.log.GkLog;
 
@@ -144,28 +140,20 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	public boolean isCheckForUpdate(){
 		return getBoolean(KEY_CHECK_UPDATE);
 	}
-	
-	public <Q extends Quantity<Q>> String format(BigDecimalQuantity<Q> quantity) throws GkException{
-		Unit<Q> targetUnit = getConfiguredUnit(quantity);
-		BigDecimal newValue = quantity.getValue().setScale(getDigitCount(), RoundingMode.HALF_DOWN);
-		BigDecimalQuantity<Q> baseQuantity = NumberQuantity.of(newValue, targetUnit);
-		Quantity<Q> convertedQuantity = baseQuantity.to(targetUnit);
-		return format(convertedQuantity);
-	}
 
-	public <Q extends Quantity<Q>> String format(Quantity<Q> quantity) throws GkException{
+	public <Q extends Quantity<Q>> String format(Q quantity) throws GkException{
 		return format(quantity, false);
 	}
 
-	public <Q extends Quantity<Q>> String format(Quantity<Q> quantity, boolean keepTraillingZero) throws GkException{
+	public <Q extends Quantity<Q>> String format(Q quantity, boolean keepTraillingZero) throws GkException{
 		return format(quantity, keepTraillingZero, true);
 	}
 	
-	public <Q extends Quantity<Q>> String format(Quantity<Q> quantity, boolean keepTraillingZero, boolean displayUnit) throws GkException{
+	public <Q extends Quantity<Q>> String format(Q quantity, boolean keepTraillingZero, boolean displayUnit) throws GkException{
 		return format(quantity, keepTraillingZero, displayUnit, null);
 	}
 	
-	public <Q extends Quantity<Q>> String format(Quantity<Q> quantity, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit) throws GkException{
+	public <Q extends Quantity<Q>> String format(Q quantity, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit) throws GkException{
 		String result = StringUtils.EMPTY;
 		Unit<Q> 	localTargetUnit 	= ptargetUnit;
 		if(ptargetUnit == null){

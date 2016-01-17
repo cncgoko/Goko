@@ -10,7 +10,6 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -46,13 +45,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	 */
 	@Inject
 	public ExecutionPart(IEclipseContext context) {
-		super(new ExecutionPartController());
-		ContextInjectionFactory.inject(getController(), context);
-		try {
-			getController().initialize();
-		} catch (GkException e) {
-			LOG.error(e);
-		}
+		super(context, new ExecutionPartController());		
 	}
 	
 	/**

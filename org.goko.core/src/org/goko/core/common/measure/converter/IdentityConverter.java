@@ -17,6 +17,8 @@
 
 package org.goko.core.common.measure.converter;
 
+import java.math.BigDecimal;
+
 public class IdentityConverter extends AbstractUnitConverter{
 
 	/** (inheritDoc)
@@ -31,7 +33,7 @@ public class IdentityConverter extends AbstractUnitConverter{
 	 * @see org.goko.core.common.measure.converter.UnitConverter#convert(double)
 	 */
 	@Override
-	public double convert(double value) {
+	public BigDecimal convert(BigDecimal value) {
 		return value;
 	}
 

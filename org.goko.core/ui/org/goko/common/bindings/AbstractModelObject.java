@@ -33,23 +33,26 @@ public abstract class AbstractModelObject {
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
-	  changeSupport.addPropertyChangeListener(listener);
+		changeSupport.addPropertyChangeListener(listener);
 	}
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
-	  changeSupport.removePropertyChangeListener(listener);
+		changeSupport.removePropertyChangeListener(listener);
 	}
 
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-	  changeSupport.addPropertyChangeListener(propertyName, listener);
+		changeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-	  changeSupport.removePropertyChangeListener(propertyName, listener);
+		changeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName,  Object oldValue, Object newValue) {
-		  changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		if(oldValue != null){
+			boolean v = oldValue.equals(newValue);			
+		}
+		changeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	/**
@@ -60,7 +63,8 @@ public abstract class AbstractModelObject {
 	}
 
 	/**
-	 * @param bindingStatus the bindingStatus to set
+	 * @param bindingStatus
+	 *            the bindingStatus to set
 	 */
 	public void setValidationMessages(List<BindingStatus> bindingStatus) {
 		firePropertyChange("validationMessages", this.validationMessages, this.validationMessages = bindingStatus);

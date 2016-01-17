@@ -20,7 +20,6 @@
 package org.goko.tools.centerfinder.bean;
 
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.EnumPlane;
 
@@ -28,7 +27,7 @@ public class CircleCenterFinderResult {
 	/** The center of the circle */
 	private Tuple6b center;
 	/** the radius of the circle */
-	private BigDecimalQuantity<Length> radius;
+	private Length radius;
 	/** The plane in which the circle is described */
 	private EnumPlane plane;
 	
@@ -47,16 +46,16 @@ public class CircleCenterFinderResult {
 	/**
 	 * @return the radius
 	 */
-	public BigDecimalQuantity<Length> getRadius() {
+	public Length getRadius() {
 		return radius;
 	}
 	/**
 	 * @param radius the radius to set
 	 */
-	public void setRadius(BigDecimalQuantity<Length> radius) {
+	public void setRadius(Length radius) {
 		this.radius = radius;
 	}
-	public BigDecimalQuantity<Length> getDiameter() {		
+	public Length getDiameter() {		
 		return this.radius.multiply(2);
 	}
 	/**

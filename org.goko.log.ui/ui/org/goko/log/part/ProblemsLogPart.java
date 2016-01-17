@@ -4,7 +4,6 @@ package org.goko.log.part;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -15,7 +14,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.goko.common.GkUiComponent;
-import org.goko.core.common.exception.GkException;
 import org.goko.log.part.model.ProblemTreeContentProvider;
 import org.goko.log.part.model.ProblemTreeLabelProvider;
 import org.goko.log.part.model.ProblemsLogController;
@@ -25,15 +23,8 @@ public class ProblemsLogPart extends GkUiComponent<ProblemsLogController, Proble
 
 	@Inject
 	public ProblemsLogPart(IEclipseContext context) {
-		super(new ProblemsLogController());
+		super(context, new ProblemsLogController());
 		context.set(ProblemsLogPart.class, this);
-		ContextInjectionFactory.inject(getController(), context);
-		try {
-			getController().initialize();
-		} catch (GkException e) {
-			displayMessage(e);
-		}
-
 	}
 
 

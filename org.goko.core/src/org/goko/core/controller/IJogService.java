@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.controller.bean.EnumControllerAxis;
 
 /**
@@ -19,8 +18,8 @@ import org.goko.core.controller.bean.EnumControllerAxis;
  */
 public interface IJogService {
 
-	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException;	
-	public BigDecimalQuantity<Length> getJogStep() throws GkException;
+	public void setJogStep(Length step) throws GkException;	
+	public Length getJogStep() throws GkException;
 	
 	public void setJogFeedrate(BigDecimal feed) throws GkException;	
 	public BigDecimal getJogFeedrate() throws GkException;

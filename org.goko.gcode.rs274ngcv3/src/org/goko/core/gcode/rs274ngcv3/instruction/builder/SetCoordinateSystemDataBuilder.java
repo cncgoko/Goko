@@ -4,10 +4,9 @@ import java.util.List;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -46,12 +45,12 @@ public class SetCoordinateSystemDataBuilder extends AbstractInstructionBuilder<S
 		}
 		
 		EnumCoordinateSystem targetCoordinateSystem = EnumCoordinateSystem.getEnum(coordinateSystemInteger);
-		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Angle> a  = findWordValue("A", words, null, Units.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> b  = findWordValue("B", words, null, Units.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> c  = findWordValue("C", words, null, Units.DEGREE_ANGLE);
+		Length x = findWordLength("X", words, null, context.getUnit().getUnit());
+		Length y = findWordLength("Y", words, null, context.getUnit().getUnit());
+		Length z = findWordLength("Z", words, null, context.getUnit().getUnit());
+		Angle a  = findWordAngle("A", words, null, AngleUnit.DEGREE_ANGLE);
+		Angle b  = findWordAngle("B", words, null, AngleUnit.DEGREE_ANGLE);
+		Angle c  = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
 		
 		Tuple6b currentOffset = context.getCoordinateSystemData(targetCoordinateSystem);
 		if(x == null) x = currentOffset.getX();

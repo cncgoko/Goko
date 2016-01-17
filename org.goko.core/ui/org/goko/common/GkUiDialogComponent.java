@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.goko.common;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.common.bindings.AbstractController;
@@ -28,9 +29,9 @@ import org.goko.core.common.exception.GkException;
 public abstract class GkUiDialogComponent<C extends AbstractController<D>, D extends AbstractModelObject> extends Dialog{
 	GkUiComponentProxy<C, D> uiComponent;
 
-	public GkUiDialogComponent(Shell shell, C abstractController) {
+	public GkUiDialogComponent(Shell shell, IEclipseContext context, C abstractController) {
 		super(shell);
-		uiComponent = new GkUiComponentProxy<C, D>(abstractController);
+		uiComponent = new GkUiComponentProxy<C, D>(context, abstractController);
 	}
 
 	@EventListener(ErrorEvent.class)

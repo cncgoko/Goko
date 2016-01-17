@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -66,14 +65,8 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 	 */
 	@Inject
 	public JsscSerialConsole(IEclipseContext context) {
-		super(new JsscSerialConsoleController());
-		ContextInjectionFactory.inject(getController(), context);
-		context.set(JsscSerialConsoleController.class, getController());
-		try{
-			getController().initialize();
-		}catch(GkException e){
-			displayMessage(e);
-		}
+		super(context, new JsscSerialConsoleController());		
+		context.set(JsscSerialConsoleController.class, getController());		
 	}
 
 	/**

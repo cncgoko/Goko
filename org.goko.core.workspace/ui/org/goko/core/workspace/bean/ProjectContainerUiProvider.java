@@ -66,7 +66,7 @@ public abstract class ProjectContainerUiProvider {
 
 	public abstract boolean providesConfigurationPanelFor(ISelection content) throws GkException;
 	
-	public abstract void createConfigurationPanelFor(Composite parent, ISelection content) throws GkException;
+	public abstract IPropertiesPanel createConfigurationPanelFor(Composite parent, ISelection content) throws GkException;
 	
 	public abstract boolean providesContentFor(Object content) throws GkException;
 	

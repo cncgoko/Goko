@@ -1,71 +1,57 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.translate;
 
-import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierModelObject;
 
 /**
  * Model for this configuration panel
  */
-public class TranslateModifierConfigurationModel extends AbstractModelObject{
-	private TranslateModifier modifier;
+public class TranslateModifierConfigurationModel extends AbstractModifierModelObject{
+	private Length translationX;
+	private Length translationY;
+	private Length translationZ;
 	
-	public TranslateModifier getModifier() {
-		return modifier;
-	}
-
-	public void setModifier(TranslateModifier modifier) {
-		this.modifier = modifier;
-	}
-
 	/**
 	 * @return the translationX
 	 */
-	public BigDecimalQuantity<Length> getTranslationX() {
-		return modifier.getTranslationX();
+	public Length getTranslationX() {
+		return translationX;
 	}
 
 	/**
 	 * @param translationX the translationX to set
 	 */
-	public void setTranslationX(BigDecimalQuantity<Length> translationX) {
-		BigDecimalQuantity<Length> oldValue = modifier.getTranslationX();
-		modifier.setTranslationX(translationX);
-		firePropertyChange("translationX", oldValue, modifier.getTranslationX());
+	public void setTranslationX(Length translationX) {		
+		firePropertyChange("translationX", this.translationX, this.translationX = translationX);
 		
 	}
 
 	/**
 	 * @return the translationY
 	 */
-	public BigDecimalQuantity<Length> getTranslationY() {
-		return modifier.getTranslationY();
+	public Length getTranslationY() {
+		return translationY;
 	}
 
 	/**
 	 * @param translationY the translationY to set
 	 */
-	public void setTranslationY(BigDecimalQuantity<Length> translationY) {
-		BigDecimalQuantity<Length> oldValue = modifier.getTranslationY();
-		modifier.setTranslationY(translationY);
-		firePropertyChange("translationY", oldValue, modifier.getTranslationY());
+	public void setTranslationY(Length translationY) {
+		firePropertyChange("translationY", this.translationY, this.translationY = translationY);
 	}
 
 	/**
 	 * @return the translationZ
 	 */
-	public BigDecimalQuantity<Length> getTranslationZ() {
-		return modifier.getTranslationZ();
+	public Length getTranslationZ() {
+		return translationZ;
 	}
 
 	/**
 	 * @param translationZ the translationZ to set
 	 */
-	public void setTranslationZ(BigDecimalQuantity<Length> translationZ) {
-		BigDecimalQuantity<Length> oldValue = modifier.getTranslationZ();
-		modifier.setTranslationZ(translationZ);
-		firePropertyChange("translationZ", oldValue, modifier.getTranslationZ());
+	public void setTranslationZ(Length translationZ) {
+		firePropertyChange("translationZ", this.translationZ, this.translationZ = translationZ);
 	}
 	
 	

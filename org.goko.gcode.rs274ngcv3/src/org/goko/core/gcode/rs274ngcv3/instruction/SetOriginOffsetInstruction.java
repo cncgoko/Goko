@@ -3,27 +3,26 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.math.Tuple6b;
 
 public class SetOriginOffsetInstruction extends AbstractInstruction {
 	/** Target X coordinate in the current coordinate system */
-	private BigDecimalQuantity<Length> x;
+	private Length x;
 	/** Target Y coordinate in the current coordinate system */
-	private BigDecimalQuantity<Length> y;
+	private Length y;
 	/** Target Z coordinate in the current coordinate system */
-	private BigDecimalQuantity<Length> z;
+	private Length z;
 	/** Target A coordinate in the current coordinate system */
-	private BigDecimalQuantity<Angle> a;
+	private Angle a;
 	/** Target B coordinate in the current coordinate system */
-	private BigDecimalQuantity<Angle> b;
+	private Angle b;
 	/** Target C coordinate in the current coordinate system  */
-	private BigDecimalQuantity<Angle> c;
+	private Angle c;
 
 	/** Constructor */
-	public SetOriginOffsetInstruction(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {
+	public SetOriginOffsetInstruction(Length x, Length y, Length z, Angle a, Angle b, Angle c) {
 		super(InstructionType.SET_ORIGIN_OFFSETS);
 		this.x = x;
 		this.y = y;
@@ -66,42 +65,42 @@ public class SetOriginOffsetInstruction extends AbstractInstruction {
 	/**
 	 * @return the x
 	 */
-	public BigDecimalQuantity<Length> getX() {
+	public Length getX() {
 		return x;
 	}
 
 	/**
 	 * @return the y
 	 */
-	public BigDecimalQuantity<Length> getY() {
+	public Length getY() {
 		return y;
 	}
 
 	/**
 	 * @return the z
 	 */
-	public BigDecimalQuantity<Length> getZ() {
+	public Length getZ() {
 		return z;
 	}
 
 	/**
 	 * @return the a
 	 */
-	public BigDecimalQuantity<Angle> getA() {
+	public Angle getA() {
 		return a;
 	}
 
 	/**
 	 * @return the b
 	 */
-	public BigDecimalQuantity<Angle> getB() {
+	public Angle getB() {
 		return b;
 	}
 
 	/**
 	 * @return the c
 	 */
-	public BigDecimalQuantity<Angle> getC() {
+	public Angle getC() {
 		return c;
 	}
 

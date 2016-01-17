@@ -3,7 +3,7 @@ package org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer;
 import javax.vecmath.Color4f;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
@@ -24,7 +24,7 @@ public class ArcAngleColorizer extends AbstractInstructionColorizer {
 		if(instruction.getType() == InstructionType.ARC_FEED){
 			ArcFeedInstruction arcFeedInstruction = (ArcFeedInstruction) instruction;
 			Arc3b arc = InstructionUtils.getArc(context, arcFeedInstruction);
-			float c = Math.abs((float) (arc.getAngle().doubleValue(Units.RADIAN) / (2*Math.PI)));			
+			float c = Math.abs((float) (arc.getAngle().doubleValue(AngleUnit.RADIAN) / (2*Math.PI)));			
 			
 			color = new Color4f(c,c,c,1f);
 			

@@ -17,7 +17,43 @@
 
 package org.goko.core.common.measure.quantity;
 
+import java.math.BigDecimal;
 
-public interface Length extends Quantity<Length> {
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.units.Unit;
 
+public class Length extends AbstractQuantity<Length> {
+	public static final Length ZERO = new Length(BigDecimal.ZERO, Units.MILLIMETRE);
+	/**
+	 * @param value
+	 * @param unit
+	 */
+	protected Length(BigDecimal value, Unit<Length> unit) {
+		super(value, unit);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#valueOf(java.math.BigDecimal, org.goko.core.common.measure.units.Unit)
+	 */
+	@Override
+	public Length createQuantity(BigDecimal value, Unit<Length> unit) {		
+		return Length.valueOf(value, unit);
+	}
+	
+	public static Length valueOf(BigDecimal value, Unit<Length> unit) {		
+		return new Length(value, unit);
+	}
+	
+	public static Length valueOf(String value, Unit<Length> unit) {		
+		return new Length(new BigDecimal(value), unit);
+	}
+	
+	public static Length valueOf(int value, Unit<Length> unit) {		
+		return new Length(new BigDecimal(value), unit);
+	}
+	
+	public static Length parse(String value) throws GkException {		
+		return Length.ZERO.parse(value, LengthUnit.getAll());
+	}
 }

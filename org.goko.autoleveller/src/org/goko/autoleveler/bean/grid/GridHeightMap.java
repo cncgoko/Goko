@@ -9,8 +9,6 @@ import org.goko.autoleveler.bean.IHeightMap;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.math.Tuple6b;
 
@@ -47,8 +45,8 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 * @see org.goko.autoleveler.bean.IHeightMap#getHeight(org.goko.core.common.measure.quantity.type.BigDecimalQuantity, org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getHeight(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y) throws GkException {
-		Tuple6b clippedPosition = new Tuple6b(x.getUnit(), x, y, NumberQuantity.of(BigDecimal.ZERO, x.getUnit()));
+	public Length getHeight(Length x, Length y) throws GkException {
+		Tuple6b clippedPosition = new Tuple6b(x.getUnit(), x, y, Length.ZERO);
 		// Clamp the target position in the map area
 		clippedPosition = clippedPosition.max(start);
 		clippedPosition = clippedPosition.min(end);
@@ -87,17 +85,17 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 
 		Tuple6b start = new Tuple6b(pStart);
 		Tuple6b end = new Tuple6b(pEnd);
-		start.setZ(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
-		end.setZ(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+		start.setZ(Length.ZERO);
+		end.setZ(Length.ZERO);
 		{
 			// Let's divide the segment along the X axis (in this case, segmenting line are along Y axis
-			List<BigDecimalQuantity<Length>> lstIntersectionXCoordinate = getIntersectingDivisionsX(start, end);
+			List<Length> lstIntersectionXCoordinate = getIntersectingDivisionsX(start, end);
 
 			lstSubSegmentX.add(start);
 			if(CollectionUtils.isNotEmpty(lstIntersectionXCoordinate)){
-				for (BigDecimalQuantity<Length> xCoord : lstIntersectionXCoordinate) {
-					BigDecimalQuantity<Length> computedY = start.getY().add( xCoord.subtract(start.getX()).multiply(slope) );
-					Tuple6b pt = new Tuple6b(Units.MILLIMETRE, xCoord, computedY, NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+				for (Length xCoord : lstIntersectionXCoordinate) {
+					Length computedY = start.getY().add( xCoord.subtract(start.getX()).multiply(slope) );
+					Tuple6b pt = new Tuple6b(Units.MILLIMETRE, xCoord, computedY, Length.ZERO);
 					lstSubSegmentX.add(pt);
 				}
 			}
@@ -110,15 +108,15 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 			for (int j = 0; j < iterationMax; j++) {
 				Tuple6b tmpStart = lstSubSegmentX.get(j);
 				Tuple6b tmpEnd = lstSubSegmentX.get(j+1);
-				List<BigDecimalQuantity<Length>> lstIntersectionYCoordinate = getIntersectingDivisionsY(tmpStart, tmpEnd);
+				List<Length> lstIntersectionYCoordinate = getIntersectingDivisionsY(tmpStart, tmpEnd);
 				lstSubSegment.add(tmpStart);
 				if(CollectionUtils.isNotEmpty(lstIntersectionYCoordinate)){
-					for (BigDecimalQuantity<Length> yCoord : lstIntersectionYCoordinate) {
-						BigDecimalQuantity<Length> computedX = tmpStart.getX();
+					for (Length yCoord : lstIntersectionYCoordinate) {
+						Length computedX = tmpStart.getX();
 						if(!slope.equals(BigDecimal.ZERO)){
 							computedX = yCoord.subtract(tmpStart.getY()).divide(slope).add( tmpStart.getX() );
 						}
-						Tuple6b pt = new Tuple6b(Units.MILLIMETRE, computedX, yCoord, NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
+						Tuple6b pt = new Tuple6b(Units.MILLIMETRE, computedX, yCoord, Length.ZERO);
 						lstSubSegment.add(pt);
 					}
 				}
@@ -134,8 +132,8 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 * @param end the end point of the segment
 	 * @return a list of Quantity
 	 */
-	private List<BigDecimalQuantity<Length>> getIntersectingDivisionsX(Tuple6b start, Tuple6b end){
-		List<BigDecimalQuantity<Length>> lstXPosition = new ArrayList<>();
+	private List<Length> getIntersectingDivisionsX(Tuple6b start, Tuple6b end){
+		List<Length> lstXPosition = new ArrayList<>();
 		// Start < End
 		if(start.getX().lowerThanOrEqualTo(end.getX())){
 			for(int i = 0; i < xDivisionCount ; i++){
@@ -166,8 +164,8 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 * @param end the end point of the segment
 	 * @return a list of Quantity
 	 */
-	private List<BigDecimalQuantity<Length>> getIntersectingDivisionsY(Tuple6b start, Tuple6b end){
-		List<BigDecimalQuantity<Length>> lstYPosition = new ArrayList<>();
+	private List<Length> getIntersectingDivisionsY(Tuple6b start, Tuple6b end){
+		List<Length> lstYPosition = new ArrayList<>();
 		// Start < End
 		if(start.getY().lowerThanOrEqualTo(end.getY())){
 			for(int i = 0; i < yDivisionCount ; i++){
@@ -197,7 +195,7 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 * @param position the row position
 	 * @return integer
 	 */
-	private int getCellXIndex(BigDecimalQuantity<Length> x){
+	private int getCellXIndex(Length x){
 		int cellIndex = 0;
 		for(int i = 0; i < xDivisionCount - 1 ; i++){
 			Tuple6b gridPoint = offsets.get(vertices[i][0]);
@@ -214,7 +212,7 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 * @param position the column position
 	 * @return integer
 	 */
-	private int getCellYIndex(BigDecimalQuantity<Length> y){
+	private int getCellYIndex(Length y){
 		int cellIndex = 0;
 		for(int i = 0; i < yDivisionCount - 1; i++){
 			Tuple6b gridPoint = offsets.get(vertices[0][i]);
@@ -235,18 +233,18 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 * @param v4 probed position of corner 4
 	 * @return the probed height
 	 */
-	private BigDecimalQuantity<Length> findOffsetBilinear(Tuple6b position,Tuple6b v1,Tuple6b v2,Tuple6b v3,Tuple6b v4){
-		BigDecimalQuantity<Length> x1 =  position.getY().subtract(v1.getY()).abs();
-		BigDecimalQuantity<Length> dx1 = v2.getY().subtract(v1.getY()).abs();
-		BigDecimalQuantity<Length> a1z = v2.getZ().multiply(x1.divide(dx1)).add(v1.getZ().multiply( 1 - (x1.divide(dx1).doubleValue())));
+	private Length findOffsetBilinear(Tuple6b position,Tuple6b v1,Tuple6b v2,Tuple6b v3,Tuple6b v4){
+		Length x1 =  position.getY().subtract(v1.getY()).abs();
+		Length dx1 = v2.getY().subtract(v1.getY()).abs();
+		Length a1z = v2.getZ().multiply(x1.divide(dx1)).add(v1.getZ().multiply( BigDecimal.ONE.subtract(x1.divide(dx1)) ));
 
-		BigDecimalQuantity<Length> x2 =  position.getY().subtract(v3.getY()).abs();
-		BigDecimalQuantity<Length> dx2 = v4.getY().subtract(v3.getY()).abs();
-		BigDecimalQuantity<Length> a2z = v4.getZ().multiply(x2.divide(dx2)).add(v3.getZ().multiply( 1 - (x2.divide(dx2).doubleValue())));
+		Length x2 =  position.getY().subtract(v3.getY()).abs();
+		Length dx2 = v4.getY().subtract(v3.getY()).abs();
+		Length a2z = v4.getZ().multiply(x2.divide(dx2)).add(v3.getZ().multiply( BigDecimal.ONE.subtract(x2.divide(dx2) )));
 
-		BigDecimalQuantity<Length> y1  = position.getX().subtract(v1.getX()).abs();
-		BigDecimalQuantity<Length> dy1 = v3.getX().subtract(v1.getX()).abs();
-		BigDecimalQuantity<Length> zFinal = a2z.multiply(y1.divide(dy1)).add(a1z.multiply(1 - (y1.divide(dy1).doubleValue() )));
+		Length y1  = position.getX().subtract(v1.getX()).abs();
+		Length dy1 = v3.getX().subtract(v1.getX()).abs();
+		Length zFinal = a2z.multiply(y1.divide(dy1)).add(a1z.multiply( BigDecimal.ONE.subtract(y1.divide(dy1) )));
 
 		return zFinal;
 	}

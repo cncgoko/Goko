@@ -35,9 +35,8 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
@@ -680,7 +679,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		executeGCode(command);
 	}
 
-	protected String getPositionAsString(BigDecimalQuantity<Length> q) throws GkException{
+	protected String getPositionAsString(Length q) throws GkException{
 		return GokoPreference.getInstance().format(q.to(getCurrentUnit()), true, false);
 	}
 	/**
@@ -706,28 +705,28 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getX() throws GkException {
+	public Length getX() throws GkException {
 		return tinygState.getX();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getY() throws GkException {
+	public Length getY() throws GkException {
 		return tinygState.getY();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getZ() throws GkException {
+	public Length getZ() throws GkException {
 		return tinygState.getZ();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IFourAxisControllerAdapter#getA()
 	 */
 	@Override
-	public BigDecimalQuantity<Angle> getA() throws GkException {
+	public Angle getA() throws GkException {
 		return tinygState.getA();
 	}
 
@@ -863,10 +862,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGConfiguration cfg = getConfiguration();
 		Tuple6b max = null;
 		if(cfg != null){
-			max = new Tuple6b(Units.MILLIMETRE, Units.DEGREE_ANGLE);
-			max.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
-			max.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
-			max.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
+			max = new Tuple6b(Units.MILLIMETRE, AngleUnit.DEGREE_ANGLE);
+			max.setX( Length.valueOf( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
+			max.setY( Length.valueOf( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
+			max.setZ( Length.valueOf( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class), Units.MILLIMETRE));
 		}
 		return max;
 	}
@@ -879,11 +878,11 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		TinyGConfiguration cfg = getConfiguration();
 		Tuple6b min = null;
 		if(cfg != null){
-			min = new Tuple6b(Units.MILLIMETRE, Units.DEGREE_ANGLE);
-			min.setX( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
-			min.setY( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
-			min.setZ( NumberQuantity.of( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
-		}
+			min = new Tuple6b(Units.MILLIMETRE, AngleUnit.DEGREE_ANGLE);
+			min.setX( Length.valueOf( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
+			min.setY( Length.valueOf( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
+			min.setZ( Length.valueOf( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
+	}
 		return min;
 	}
 	/** (inheritDoc)
@@ -963,7 +962,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
+	public void setJogStep(Length step) throws GkException {
 		jogRunnable.setStep(step);
 	}
 
@@ -971,7 +970,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IStepJogService#getJogStep()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getJogStep() throws GkException {
+	public Length getJogStep() throws GkException {
 		return jogRunnable.getStep();
 	}
 

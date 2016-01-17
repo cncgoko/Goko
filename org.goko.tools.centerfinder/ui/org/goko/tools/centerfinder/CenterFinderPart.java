@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -53,7 +52,6 @@ import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
@@ -75,13 +73,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 	
 	@Inject
 	public CenterFinderPart(IEclipseContext context) {
-		super(new CenterFinderController());
-		ContextInjectionFactory.inject(getController(), context);
-		try {
-			getController().initialize();
-		} catch (GkException e) {
-			LOG.error(e);
-		}
+		super(context, new CenterFinderController());
 	}
 
 	@PostConstruct
@@ -282,7 +274,7 @@ public class CenterFinderPart extends GkUiComponent<CenterFinderController, Cent
 				return StringUtils.EMPTY;
 			}
 			Tuple6b tuple = (Tuple6b) element;			
-			Quantity<Length> quantity = tuple.getX();
+			Length quantity = tuple.getX();
 			if(axis == 1){
 				quantity = tuple.getY();
 			}else if(axis == 2){

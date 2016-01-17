@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -19,7 +18,7 @@ public class StraightTraverseInstruction extends AbstractStraightInstruction {
 	 * @param b B coordinate
 	 * @param c C coordinate
 	 */
-	public StraightTraverseInstruction(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {
+	public StraightTraverseInstruction(Length x, Length y, Length z, Angle a, Angle b, Angle c) {
 		super(InstructionType.STRAIGHT_TRAVERSE, x, y, z, a, b, c);
 	}
 	

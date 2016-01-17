@@ -29,4 +29,5 @@ Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/RS274WorkspaceComponant.xml,OSGI-INF/RS274SaveParticipantComponent.xml,
  OSGI-INF/RS274LoadParticipantComponent.xml
 Export-Package: org.goko.gcode.rs274ngcv3.ui.workspace,
- org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider
+ org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider,
+ org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel

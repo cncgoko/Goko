@@ -1,13 +1,8 @@
 package org.goko.core.gcode.rs274ngcv3.modifier.translate;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
@@ -23,9 +18,9 @@ import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 
 public class TranslateModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
-	private BigDecimalQuantity<Length> translationX;
-	private BigDecimalQuantity<Length> translationY;
-	private BigDecimalQuantity<Length> translationZ;
+	private Length translationX;
+	private Length translationY;
+	private Length translationZ;
 
 	/**
 	 * Constructor
@@ -33,9 +28,9 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	 */
 	public TranslateModifier(Integer idGCodeProvider) {
 		super(idGCodeProvider, "Translate");
-		this.translationX = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
-		this.translationY = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
-		this.translationZ = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
+		this.translationX = Length.ZERO;
+		this.translationY = Length.ZERO;
+		this.translationZ = Length.ZERO;
 	}
 
 	/** (inheritDoc)
@@ -98,14 +93,14 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	/**
 	 * @return the translationX
 	 */
-	public BigDecimalQuantity<Length> getTranslationX() {
+	public Length getTranslationX() {
 		return translationX;
 	}
 
 	/**
 	 * @param translationX the translationX to set
 	 */
-	public void setTranslationX(BigDecimalQuantity<Length> translationX) {
+	public void setTranslationX(Length translationX) {
 		this.translationX = translationX;
 		updateModificationDate();
 	}
@@ -113,14 +108,14 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	/**
 	 * @return the translationY
 	 */
-	public BigDecimalQuantity<Length> getTranslationY() {
+	public Length getTranslationY() {
 		return translationY;
 	}
 
 	/**
 	 * @param translationY the translationY to set
 	 */
-	public void setTranslationY(BigDecimalQuantity<Length> translationY) {
+	public void setTranslationY(Length translationY) {
 		this.translationY = translationY;
 		updateModificationDate();
 	}
@@ -128,14 +123,14 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	/**
 	 * @return the translationZ
 	 */
-	public BigDecimalQuantity<Length> getTranslationZ() {
+	public Length getTranslationZ() {
 		return translationZ;
 	}
 
 	/**
 	 * @param translationZ the translationZ to set
 	 */
-	public void setTranslationZ(BigDecimalQuantity<Length> translationZ) {
+	public void setTranslationZ(Length translationZ) {
 		this.translationZ = translationZ;
 		updateModificationDate();
 	}

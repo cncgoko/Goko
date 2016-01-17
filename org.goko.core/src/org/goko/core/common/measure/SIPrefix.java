@@ -24,15 +24,15 @@ import org.goko.core.common.measure.units.BaseUnit;
 import org.goko.core.common.measure.units.Unit;
 
 public class SIPrefix {
-	private static UnitConverter MEGA  = new MultiplyConverter(1000000.0);
-	private static UnitConverter KILO  = new MultiplyConverter(1000.0);
-	private static UnitConverter HECTO = new MultiplyConverter(100.0);
-	private static UnitConverter DECA  = new MultiplyConverter(10.0);
-	private static UnitConverter DECI  = new MultiplyConverter(1.0/100.0);
-	private static UnitConverter CENTI = new MultiplyConverter(1.0/100.0);
-	private static UnitConverter MILLI = new MultiplyConverter(1.0/1000.0);
-	private static UnitConverter MICRO = new MultiplyConverter(1.0/1000000.0);
-	private static UnitConverter NANO  = new MultiplyConverter(1.0/1000000000.0);
+	private static UnitConverter MEGA  = new MultiplyConverter("1000000.0");
+	private static UnitConverter KILO  = new MultiplyConverter("1000.0");
+	private static UnitConverter HECTO = new MultiplyConverter("100.0");
+	private static UnitConverter DECA  = new MultiplyConverter("10.0");
+	private static UnitConverter DECI  = new MultiplyConverter("0.1");
+	private static UnitConverter CENTI = new MultiplyConverter("0.01");
+	private static UnitConverter MILLI = new MultiplyConverter("0.001");
+	private static UnitConverter MICRO = new MultiplyConverter("0.000001");
+	private static UnitConverter NANO  = new MultiplyConverter("0.000000001");
 
 
 	public static <Q extends Quantity<Q>> Unit<Q> MEGA(BaseUnit<Q> unit){

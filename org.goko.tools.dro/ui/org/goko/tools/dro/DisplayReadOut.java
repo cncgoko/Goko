@@ -11,7 +11,6 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -53,13 +52,7 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 	
 	@Inject
 	public DisplayReadOut(IEclipseContext context) {
-		super(new DisplayReadOutController());
-		ContextInjectionFactory.inject(getController(), context);
-		try {
-			getController().initialize();			
-		} catch (GkException e) {
-			displayMessage(e);
-		}	
+		super(context, new DisplayReadOutController());			
 	}
 
 	/**

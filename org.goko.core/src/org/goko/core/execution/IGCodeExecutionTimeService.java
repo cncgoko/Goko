@@ -17,7 +17,6 @@
 package org.goko.core.execution;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -36,5 +35,5 @@ public interface IGCodeExecutionTimeService extends IGokoService{
 	 * @return a long giving the seconds required to execute the code
 	 * @throws GkException GkException
 	 */
-	Quantity<Time> evaluateExecutionTime(IGCodeProvider provider) throws GkException;
+	Time evaluateExecutionTime(IGCodeProvider provider) throws GkException;
 }

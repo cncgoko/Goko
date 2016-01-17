@@ -17,6 +17,7 @@
 
 package org.goko.core.common.measure.converter;
 
+import java.math.BigDecimal;
 
 public abstract class AbstractUnitConverter implements UnitConverter {
 
@@ -24,8 +25,8 @@ public abstract class AbstractUnitConverter implements UnitConverter {
      * @see org.goko.core.common.measure.converter.UnitConverter#convert(java.lang.Number)
      */
     @Override
-	public Number convert(Number value) {
-        return convert(value.doubleValue());
+	public BigDecimal convert(BigDecimal value) {
+        return convert(value);
     }
 
     /** (inheritDoc)

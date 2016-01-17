@@ -33,7 +33,6 @@ import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
@@ -326,7 +325,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
 	@Override
-	public BigDecimalQuantity getX() throws GkException {
+	public Length getX() throws GkException {
 		return getCurrentService().getX();
 	}
 
@@ -334,7 +333,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getY()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getY() throws GkException {
+	public Length getY() throws GkException {
 		return getCurrentService().getY();
 	}
 
@@ -342,12 +341,12 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getZ()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getZ() throws GkException {
+	public Length getZ() throws GkException {
 		return getCurrentService().getZ();
 	}
 
 	@Override
-	public BigDecimalQuantity<Angle> getA() throws GkException {
+	public Angle getA() throws GkException {
 		return getCurrentService().getA();
 	}
 
@@ -502,7 +501,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IStepJogService#getJogStep()
 	 */
 	@Override
-	public BigDecimalQuantity<Length> getJogStep() throws GkException {		
+	public Length getJogStep() throws GkException {		
 		return getCurrentService().getJogStep();
 	}
 	
@@ -510,7 +509,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
 	 */
 	@Override
-	public void setJogStep(BigDecimalQuantity<Length> step) throws GkException {
+	public void setJogStep(Length step) throws GkException {
 		getCurrentService().setJogStep(step);		
 	}
 

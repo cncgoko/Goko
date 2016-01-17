@@ -22,6 +22,7 @@ import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
@@ -30,6 +31,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.Modi
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcoderepository.AddAllGCodeInQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.DeleteModifierAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDisableAction;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.IModifierPropertiesPanel;
 
 /**
  * @author PsyKo
@@ -96,7 +98,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	@Override
 	public boolean hasChildren(Object content) throws GkException {
 		if(content instanceof GCodeProvider){
-			return CollectionUtils.isNotEmpty(rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId()));
+			List<IModifier<GCodeProvider>> lst = rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId());
+			return CollectionUtils.isNotEmpty(lst);
 		}else if(this.equals(content)){
 			return CollectionUtils.isNotEmpty(rs274Service.getGCodeProvider());
 		}
@@ -199,9 +202,9 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		if(content instanceof IModifier<?>){
 			IModifier<?> iModifier = (IModifier<?>) content;
 
-			List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
+			List<IModifierUiProvider<?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
 			if(CollectionUtils.isNotEmpty(lstBuilders)){
-				for (IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
+				for (IModifierUiProvider<?> iModifierUiProvider : lstBuilders) {
 					if(iModifierUiProvider.providesConfigurationPanelFor(iModifier)){
 						return true;
 					}
@@ -215,23 +218,25 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#createConfigurationPanelFor(org.eclipse.swt.widgets.Composite, java.lang.Object)
 	 */
 	@Override
-	public void createConfigurationPanelFor(Composite parent, ISelection selection) throws GkException {
+	public IPropertiesPanel createConfigurationPanelFor(Composite parent, ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
 
 		if(content instanceof IModifier<?>){
 			IModifier<?> iModifier = (IModifier<?>) content;
 
-			List<IModifierUiProvider<GCodeProvider, ?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
+			List<IModifierUiProvider<?>> lstBuilders = rs274WorkspaceService.getModifierBuilder();
 			if(CollectionUtils.isNotEmpty(lstBuilders)){
-				for (IModifierUiProvider<GCodeProvider, ?> iModifierUiProvider : lstBuilders) {
+				for (IModifierUiProvider<?> iModifierUiProvider : lstBuilders) {
 					if(iModifierUiProvider.providesConfigurationPanelFor(iModifier)){
-						iModifierUiProvider.createConfigurationPanelFor(parent, iModifier);
-						break;
+						IModifierPropertiesPanel<?> panel = iModifierUiProvider.createConfigurationPanelFor(parent, iModifier);
+						panel.initializeFromModifier();
+						return panel;
 					}
 				}
 			}
 		}
+		return null;
 	}
 
 }

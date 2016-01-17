@@ -29,8 +29,9 @@ import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
@@ -206,11 +207,11 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		JsonValue zOffset = offsetObj.get("z");
 		JsonValue aOffset = offsetObj.get("a");
 		Tuple6b offset = new Tuple6b().setZero();
-		offset.setX( NumberQuantity.of(xOffset.asBigDecimal(), tinyg.getCurrentUnit() ));
-		offset.setY( NumberQuantity.of(yOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
-		offset.setZ( NumberQuantity.of(zOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
+		offset.setX( Length.valueOf(xOffset.asBigDecimal(), tinyg.getCurrentUnit() ));
+		offset.setY( Length.valueOf(yOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
+		offset.setZ( Length.valueOf(zOffset.asBigDecimal(), tinyg.getCurrentUnit() ) );
 		if(aOffset != null){
-			offset.setA(  NumberQuantity.of(aOffset.asBigDecimal(), Units.DEGREE_ANGLE )  );
+			offset.setA(  Angle.valueOf(aOffset.asBigDecimal(), AngleUnit.DEGREE_ANGLE )  );
 		}
 		tinyg.setCoordinateSystemOffset(cs, offset);
 	}
@@ -249,22 +250,22 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 				JsonValue cProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_C);
 				probePosition = new Tuple6b();
 				if(xProbeResult != null){
-					probePosition.setX( NumberQuantity.of(xProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
+					probePosition.setX( Length.valueOf(xProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(yProbeResult != null){
-					probePosition.setY( NumberQuantity.of(yProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
+					probePosition.setY( Length.valueOf(yProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(zProbeResult != null){
-					probePosition.setZ( NumberQuantity.of(zProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
+					probePosition.setZ( Length.valueOf(zProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
 				}
 				if(aProbeResult != null){
-					probePosition.setA( NumberQuantity.of(aProbeResult.asBigDecimal(), Units.DEGREE_ANGLE) );
+					probePosition.setA( Angle.valueOf(aProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
 				}
 				if(bProbeResult != null){
-					probePosition.setB( NumberQuantity.of(bProbeResult.asBigDecimal(), Units.DEGREE_ANGLE) );
+					probePosition.setB( Angle.valueOf(bProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
 				}
 				if(cProbeResult != null){
-					probePosition.setC( NumberQuantity.of(cProbeResult.asBigDecimal(), Units.DEGREE_ANGLE) );
+					probePosition.setC( Angle.valueOf(cProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
 				}
 			}
 			tinyg.handleProbeResult(probeSuccess, probePosition);

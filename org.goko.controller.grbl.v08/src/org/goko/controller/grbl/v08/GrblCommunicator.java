@@ -30,7 +30,6 @@ import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
@@ -186,13 +185,13 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		if(values != null && values.length >= 3){
 			Unit<Length> unit = grbl.getConfiguration().getReportUnit();
 			if(NumberUtils.isNumber(values[0])){
-				target.setX(NumberQuantity.of(new BigDecimal(values[0]), unit));
+				target.setX(Length.valueOf(new BigDecimal(values[0]), unit));
 			}
 			if(NumberUtils.isNumber(values[1])){
-				target.setY(NumberQuantity.of(new BigDecimal(values[1]), unit));
+				target.setY(Length.valueOf(new BigDecimal(values[1]), unit));
 			}
 			if(NumberUtils.isNumber(values[2])){
-				target.setZ(NumberQuantity.of(new BigDecimal(values[2]), unit));
+				target.setZ(Length.valueOf(new BigDecimal(values[2]), unit));
 			}
 		}
 	}
@@ -208,9 +207,9 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		BigDecimal x = new BigDecimal(values[0]);
 		BigDecimal y = new BigDecimal(values[1]);
 		BigDecimal z = new BigDecimal(values[2]);
-		targetPoint.setX(NumberQuantity.of(x, unit));
-		targetPoint.setY(NumberQuantity.of(y, unit));
-		targetPoint.setZ(NumberQuantity.of(z, unit));
+		targetPoint.setX(Length.valueOf(x, unit));
+		targetPoint.setY(Length.valueOf(y, unit));
+		targetPoint.setZ(Length.valueOf(z, unit));
 
 		return identifier;
 	}

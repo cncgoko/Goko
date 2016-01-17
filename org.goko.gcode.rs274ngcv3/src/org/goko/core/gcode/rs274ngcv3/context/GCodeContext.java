@@ -7,9 +7,8 @@ import java.util.Map;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.math.Tuple6b;
 
@@ -69,27 +68,27 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * X coordinate in the current coordinate system
 	 */
-	private BigDecimalQuantity<Length> x;
+	private Length x;
 	/**
 	 *  Y coordinate in the current coordinate system
 	 */
-	private BigDecimalQuantity<Length> y;
+	private Length y;
 	/**
 	 *  Z coordinate in the current coordinate system
 	 */
-	private BigDecimalQuantity<Length> z;
+	private Length z;
 	/**
 	 *  A coordinate in the current coordinate system
 	 */
-	private BigDecimalQuantity<Angle> a;
+	private Angle a;
 	/**
 	 *  B coordinate in the current coordinate system
 	 */
-	private BigDecimalQuantity<Angle> b;
+	private Angle b;
 	/**
 	 *  C coordinate in the current coordinate system
 	 */
-	private BigDecimalQuantity<Angle> c;
+	private Angle c;
 	/**
 	 * Coordinates system offsets
 	 */
@@ -112,12 +111,12 @@ public class GCodeContext implements IGCodeContext{
 		this.spindleMode = EnumSpindleMode.OFF;
 		this.spindleSpeed = BigDecimal.ZERO;
 		this.feedrate = BigDecimal.ZERO;
-		this.x = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
-		this.y = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
-		this.z = NumberQuantity.of(BigDecimal.ZERO, unit.getUnit());
-		this.a = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
-		this.b = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
-		this.c = NumberQuantity.of(BigDecimal.ZERO, Units.DEGREE_ANGLE);
+		this.x = Length.ZERO;
+		this.y = Length.ZERO;
+		this.z = Length.ZERO;
+		this.a = Angle.ZERO;
+		this.b = Angle.ZERO;
+		this.c = Angle.ZERO;
 		this.initCoordinateSystemData();
 	}
 
@@ -302,7 +301,7 @@ public class GCodeContext implements IGCodeContext{
 	 * @param c the c coordinate
 	 * @throws GkException GkException
 	 */
-	public void setPosition(BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) throws GkException{
+	public void setPosition(Length x, Length y, Length z, Angle a, Angle b, Angle c) throws GkException{
 		if( x != null) {
 			setX(x);
 		}
@@ -338,73 +337,73 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * @return the x
 	 */
-	public BigDecimalQuantity<Length> getX() {
+	public Length getX() {
 		return x;
 	}
 	/**
 	 * @param x the x to set
 	 */
-	public void setX(BigDecimalQuantity<Length> x) {
+	public void setX(Length x) {
 		this.x = x;
 	}
 	/**
 	 * @return the y
 	 */
-	public BigDecimalQuantity<Length> getY() {
+	public Length getY() {
 		return y;
 	}
 	/**
 	 * @param y the y to set
 	 */
-	public void setY(BigDecimalQuantity<Length> y) {
+	public void setY(Length y) {
 		this.y = y;
 	}
 	/**
 	 * @return the z
 	 */
-	public BigDecimalQuantity<Length> getZ() {
+	public Length getZ() {
 		return z;
 	}
 	/**
 	 * @param z the z to set
 	 */
-	public void setZ(BigDecimalQuantity<Length> z) {
+	public void setZ(Length z) {
 		this.z = z;
 	}
 	/**
 	 * @return the a
 	 */
-	public BigDecimalQuantity<Angle> getA() {
+	public Angle getA() {
 		return a;
 	}
 	/**
 	 * @param a the a to set
 	 */
-	public void setA(BigDecimalQuantity<Angle> a) {
+	public void setA(Angle a) {
 		this.a = a;
 	}
 	/**
 	 * @return the b
 	 */
-	public BigDecimalQuantity<Angle> getB() {
+	public Angle getB() {
 		return b;
 	}
 	/**
 	 * @param b the b to set
 	 */
-	public void setB(BigDecimalQuantity<Angle> b) {
+	public void setB(Angle b) {
 		this.b = b;
 	}
 	/**
 	 * @return the c
 	 */
-	public BigDecimalQuantity<Angle> getC() {
+	public Angle getC() {
 		return c;
 	}
 	/**
 	 * @param c the c to set
 	 */
-	public void setC(BigDecimalQuantity<Angle> c) {
+	public void setC(Angle c) {
 		this.c = c;
 	}
 
@@ -415,7 +414,7 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	public Tuple6b getCoordinateSystemData(EnumCoordinateSystem cs){
 		if(!coordinateSystemData.containsKey(cs)){
-			coordinateSystemData.put(cs, new Tuple6b(getUnit().getUnit(), Units.DEGREE_ANGLE).setZero());
+			coordinateSystemData.put(cs, new Tuple6b(getUnit().getUnit(), AngleUnit.DEGREE_ANGLE).setZero());
 		}
 		return coordinateSystemData.get(cs);
 	}

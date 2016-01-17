@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -56,13 +55,7 @@ public class JsscSerialPortSelectorCombo extends GkUiComponent<JsscSerialPortSel
 	 */
 	@Inject
 	public JsscSerialPortSelectorCombo(IEclipseContext context) {
-		super(new JsscSerialPortSelectorController());
-		ContextInjectionFactory.inject(getController(), context);
-		try {
-			getController().initialize();
-		} catch (GkException e) {
-			displayMessage(e);
-		}
+		super(context, new JsscSerialPortSelectorController());
 	}
 
 	/**

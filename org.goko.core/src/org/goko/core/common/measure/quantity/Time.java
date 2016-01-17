@@ -17,7 +17,34 @@
 
 package org.goko.core.common.measure.quantity;
 
+import java.math.BigDecimal;
 
-public interface Time extends Quantity<Time> {
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.units.Unit;
 
+public class Time extends AbstractQuantity<Time> {
+	public static final Time ZERO = new Time(BigDecimal.ZERO, TimeUnit.SECOND);
+	/**
+	 * @param value
+	 * @param unit
+	 */
+	protected Time(BigDecimal value, Unit<Time> unit) {
+		super(value, unit);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.measure.quantity.Quantity#valueOf(java.math.BigDecimal, org.goko.core.common.measure.units.Unit)
+	 */
+	@Override
+	public Time createQuantity(BigDecimal value, Unit<Time> unit) {		
+		return Time.valueOf(value, unit);
+	}
+	
+	public static Time valueOf(BigDecimal value, Unit<Time> unit) {		
+		return new Time(value, unit);
+	}
+	
+	public static Time parse(String value) throws GkException {		
+		return Time.ZERO.parse(value, TimeUnit.getAll());
+	}
 }

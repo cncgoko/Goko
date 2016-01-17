@@ -17,6 +17,7 @@
 
 package org.goko.core.common.measure.converter;
 
+import java.math.BigDecimal;
 
 /**
  * Unit converter interface
@@ -35,14 +36,7 @@ public interface UnitConverter {
 	 * @param value the value to convert
 	 * @return the converted value
 	 */
-	Number convert(Number value);
-
-	/**
-	 * Converts the double value
-	 * @param value the value to convert
-	 * @return the converted value
-	 */
-	double convert(double value);
+	BigDecimal convert(BigDecimal value);
 
 	boolean isIdentity();
 

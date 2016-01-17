@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.core.workspace.service.WorkspaceUIEvent;
@@ -44,18 +45,21 @@ public class WorkspacePart {
 	private TreeViewer workspaceTreeViewer;
 	/** Composite containing the configuration panel */
 	private Composite configurationComposite;
-
-	@Inject
+	/** The currently displayed properties panel */
+	private IPropertiesPanel currentPropertiesPanel;
+	
+	@Inject	
 	public WorkspacePart() {
 
 	}
 
 	@PostConstruct
 	public void postConstruct(Composite parent) throws GkException {
-		parent.setLayout(new GridLayout(1, false));
-		new Label(parent, SWT.NONE);
+		Composite rootComposite = new Composite(parent, SWT.NONE);
+		rootComposite.setLayout(new GridLayout(1, false));
+		new Label(rootComposite, SWT.NONE);
 
-		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+		SashForm sashForm = new SashForm(rootComposite, SWT.VERTICAL);
 		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
 		Composite composite = new Composite(sashForm, SWT.NONE);
@@ -91,15 +95,22 @@ public class WorkspacePart {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				for (Control control : configurationComposite.getChildren()) {
-					control.dispose();
-				}
 				try{
+					if(currentPropertiesPanel != null){					
+						currentPropertiesPanel.beforeDiscard();
+						currentPropertiesPanel.discard();
+						currentPropertiesPanel = null;
+					}
+					// Remove any child of the configuration composite just in case
+					for (Control control : configurationComposite.getChildren()) {
+						control.dispose();
+					}				
+					
 		        	List<ProjectContainerUiProvider> uiProviders = workspaceUiService.getProjectContainerUiProvider();
 		            if(CollectionUtils.isNotEmpty(uiProviders)){
 		            	for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {
-		            		if(projectContainerUiProvider.providesConfigurationPanelFor(workspaceTreeViewer.getSelection())){
-		            			projectContainerUiProvider.createConfigurationPanelFor(configurationComposite, workspaceTreeViewer.getSelection());
+		            		if(projectContainerUiProvider.providesConfigurationPanelFor(workspaceTreeViewer.getSelection())){		            			
+		            			currentPropertiesPanel = projectContainerUiProvider.createConfigurationPanelFor(configurationComposite, workspaceTreeViewer.getSelection());
 		            		}
 						}
 		            }

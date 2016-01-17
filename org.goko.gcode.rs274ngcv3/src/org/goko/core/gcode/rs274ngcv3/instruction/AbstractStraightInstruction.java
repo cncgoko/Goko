@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
@@ -14,17 +13,17 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
  */
 public abstract class AbstractStraightInstruction extends AbstractInstruction {
 	/** X coordinate in the current coordinate system */
-	private BigDecimalQuantity<Length> x;
+	private Length x;
 	/** Y coordinate in the current coordinate system */
-	private BigDecimalQuantity<Length> y;
+	private Length y;
 	/** Z coordinate in the current coordinate system */
-	private BigDecimalQuantity<Length> z;
+	private Length z;
 	/** A coordinate in the current coordinate system */
-	private BigDecimalQuantity<Angle> a;
+	private Angle a;
 	/** B coordinate in the current coordinate system */
-	private BigDecimalQuantity<Angle> b;
+	private Angle b;
 	/** C coordinate in the current coordinate system  */
-	private BigDecimalQuantity<Angle> c;
+	private Angle c;
 
 	/**
 	 * Constructor 
@@ -35,7 +34,7 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 	 * @param b B coordinate
 	 * @param c C coordinate
 	 */
-	public AbstractStraightInstruction(InstructionType type, BigDecimalQuantity<Length> x, BigDecimalQuantity<Length> y, BigDecimalQuantity<Length> z, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c) {		
+	public AbstractStraightInstruction(InstructionType type, Length x, Length y, Length z, Angle a, Angle b, Angle c) {		
 		super(type);
 		this.x = x;
 		this.y = y;
@@ -56,84 +55,84 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 	/**
 	 * @return the x
 	 */
-	public BigDecimalQuantity<Length> getX() {
+	public Length getX() {
 		return x;
 	}
 
 	/**
 	 * @return the y
 	 */
-	public BigDecimalQuantity<Length> getY() {
+	public Length getY() {
 		return y;
 	}
 
 	/**
 	 * @return the z
 	 */
-	public BigDecimalQuantity<Length> getZ() {
+	public Length getZ() {
 		return z;
 	}
 
 	/**
 	 * @return the a
 	 */
-	public BigDecimalQuantity<Angle> getA() {
+	public Angle getA() {
 		return a;
 	}
 
 	/**
 	 * @return the b
 	 */
-	public BigDecimalQuantity<Angle> getB() {
+	public Angle getB() {
 		return b;
 	}
 
 	/**
 	 * @return the c
 	 */
-	public BigDecimalQuantity<Angle> getC() {
+	public Angle getC() {
 		return c;
 	}
 
 	/**
 	 * @param x the x to set
 	 */
-	public void setX(BigDecimalQuantity<Length> x) {
+	public void setX(Length x) {
 		this.x = x;
 	}
 
 	/**
 	 * @param y the y to set
 	 */
-	public void setY(BigDecimalQuantity<Length> y) {
+	public void setY(Length y) {
 		this.y = y;
 	}
 
 	/**
 	 * @param z the z to set
 	 */
-	public void setZ(BigDecimalQuantity<Length> z) {
+	public void setZ(Length z) {
 		this.z = z;
 	}
 
 	/**
 	 * @param a the a to set
 	 */
-	public void setA(BigDecimalQuantity<Angle> a) {
+	public void setA(Angle a) {
 		this.a = a;
 	}
 
 	/**
 	 * @param b the b to set
 	 */
-	public void setB(BigDecimalQuantity<Angle> b) {
+	public void setB(Angle b) {
 		this.b = b;
 	}
 
 	/**
 	 * @param c the c to set
 	 */
-	public void setC(BigDecimalQuantity<Angle> c) {
+	public void setC(Angle c) {
 		this.c = c;
 	}
 	

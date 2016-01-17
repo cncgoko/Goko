@@ -32,7 +32,7 @@ import javax.vecmath.Vector3f;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -97,7 +97,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		}else{
 			// We have to render using the 4th axis
 			float angle = 0;
-			Double realAngle = fourAxisControllerAdapter.getA().doubleValue(Units.DEGREE_ANGLE);
+			Double realAngle = fourAxisControllerAdapter.getA().doubleValue(AngleUnit.DEGREE_ANGLE);
 			if(realAngle != null){
 				 angle = realAngle.floatValue();
 			}
@@ -145,11 +145,10 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		}
 		
 		setVerticesCount(CollectionUtils.size(lstVertices));
-		if(stateBuffer == null){
-			stateBuffer = IntBuffer.allocate(getVerticesCount());
-		}
+		
+		stateBuffer = IntBuffer.allocate(getVerticesCount());
 		stateBuffer.rewind();
-
+		
 		setColorsBuffer(JoglUtils.buildFloatBuffer4f(lstColors));
 		setVerticesBuffer(JoglUtils.buildFloatBuffer3d(lstVertices));		
 	}
@@ -197,7 +196,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#updateGeometry()
 	 */
 	public void updateGeometry() throws GkException {
-		super.updateGeometry();
+		super.updateGeometry();		
 	};
 	
 	/** (inheritDoc)

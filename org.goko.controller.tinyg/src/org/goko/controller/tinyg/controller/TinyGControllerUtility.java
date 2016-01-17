@@ -28,7 +28,8 @@ import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
 import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.math.Tuple6b;
 
@@ -83,16 +84,16 @@ public class TinyGControllerUtility {
 		JsonValue newPositionZ = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_Z);
 		JsonValue newPositionA = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_A);
 		if(newPositionX != null){
-			newPosition.setX( NumberQuantity.of(newPositionX.asBigDecimal(), lastKnownPosition.getX().getUnit()));
+			newPosition.setX( Length.valueOf(newPositionX.asBigDecimal(), lastKnownPosition.getX().getUnit()));
 		}
 		if(newPositionY != null){
-			newPosition.setY(NumberQuantity.of(newPositionY.asBigDecimal() , lastKnownPosition.getY().getUnit()));
+			newPosition.setY( Length.valueOf(newPositionY.asBigDecimal() , lastKnownPosition.getY().getUnit()));
 		}
 		if(newPositionZ != null){
-			newPosition.setZ(NumberQuantity.of(newPositionZ.asBigDecimal() , lastKnownPosition.getZ().getUnit()));
+			newPosition.setZ( Length.valueOf(newPositionZ.asBigDecimal() , lastKnownPosition.getZ().getUnit()));
 		}
 		if(newPositionA != null){
-			newPosition.setA(NumberQuantity.of(newPositionA.asBigDecimal() , lastKnownPosition.getA().getUnit()));
+			newPosition.setA( Angle.valueOf(newPositionA.asBigDecimal() , lastKnownPosition.getA().getUnit()));
 		}
 		return newPosition;
 	}

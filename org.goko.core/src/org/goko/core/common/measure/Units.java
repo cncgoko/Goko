@@ -22,15 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.goko.core.common.measure.converter.MultiplyConverter;
 import org.goko.core.common.measure.dimension.QuantityDimension;
-import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.Time;
-import org.goko.core.common.measure.units.AbstractUnit;
 import org.goko.core.common.measure.units.BaseUnit;
-import org.goko.core.common.measure.units.TransformedUnit;
 import org.goko.core.common.measure.units.Unit;
 
 /**
@@ -54,68 +49,7 @@ public class Units {
      * One millimetre equals one thousandth of a metre
      */
 	public static final Unit<Length> MILLIMETRE = add(SIPrefix.MILLI(METRE));
-	
-	 /**
-     * The SI base unit for angle quantities (standard name <code>rad</code>).
-     * An angle's measurement in radians is numerically equal to the length of a corresponding arc of a unit circle,
-     */
-	public static final BaseUnit<Angle> RADIAN = add(new BaseUnit<Angle>("rad", QuantityDimension.ANGLE));
-	
-	/**
-	 * Degrees (angular degrees, symbol ï¿½ ) 
-	 */
-	public static final TransformedUnit<Angle> DEGREE_ANGLE = add(new TransformedUnit<Angle>("°", RADIAN, new MultiplyConverter(180.0/Math.PI)));
-
-	 /**
-     * The SI base unit for time quantities (standard name <code>s</code>).
-     * The second is the duration of 9192631770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium 133 atom.
-     */
-	public static final BaseUnit<Time> SECOND = add(new BaseUnit<Time>("s", QuantityDimension.TIME));
-	
-	/**
-	 * Derived from SECONDS
-	 * One millisecond = 1/1000 seconds
-	 */
-	public static final TransformedUnit<Time> MILLISECOND = add(new TransformedUnit<Time>("ms", SECOND, new MultiplyConverter(1.0/1000.0)));
-	
-	/**
-	 * Derived from SECONDS
-	 * One minute = 60 seconds
-	 */
-	public static final TransformedUnit<Time> MINUTE = add(new TransformedUnit<Time>("min", SECOND, new MultiplyConverter(60)));
-	
-	/**
-	 * Derived from MINUTE
-	 * One hour = 60 minutes
-	 */
-	public static final TransformedUnit<Time> HOUR = add(new TransformedUnit<Time>("h", MINUTE, new MultiplyConverter(60)));
-	
-	/**
-	 * Derived from HOUR
-	 * One day = 24 hours
-	 */
-	public static final TransformedUnit<Time> DAY  = add(new TransformedUnit<Time>("d", HOUR, new MultiplyConverter(24)));
-	
-	
-	
-	/* *************************************************************************************************************************
-	 *
-	 *   Non metric units
-	 *   
-	 * ************************************************************************************************************************ */
-	  
-	/**
-	 * A unit of length equal to <code>0.3048 m</code> (standard name
-	 * <code>ft</code>).
-	 */
-	public static final Unit<Length> 	 FOOT = add(new TransformedUnit<Length>("ft", METRE, new MultiplyConverter(0.3048)));
-	/**
-	 * A unit of length equal to <code>0.0254 m</code> (standard name
-	 * <code>in</code>).
-	 */
-	public static final Unit<Length> 	 INCH = add(new TransformedUnit<Length>("in", (AbstractUnit<Length>) FOOT, new MultiplyConverter(1.0/12)));
-	
-	
+		
 	/**
 	 * Registers a Unit to the map of handled units
 	 * @param unit the unit to register

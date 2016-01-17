@@ -1,6 +1,5 @@
 package org.goko.core.execution.monitor.executionpart;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -18,10 +17,8 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.swt.SWT;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
 import org.goko.core.gcode.execution.ExecutionState;
@@ -261,14 +258,14 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 					try {
 						List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
 						SubMonitor subMonitor = SubMonitor.convert(monitor,"Computing time...", lstToken.size());
-						Quantity<Time> estimatedTime = NumberQuantity.of(BigDecimal.ZERO, Units.SECOND);
+						Time estimatedTime = Time.ZERO;
 						for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
 							subMonitor.worked(1);
-							Quantity<Time> tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
+							Time tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
 							estimatedTime = estimatedTime.add(tokenTime);
 						}
 						subMonitor.done();
-						long estimatedMs = (long)estimatedTime.doubleValue(Units.MILLISECOND);
+						long estimatedMs = (long)estimatedTime.doubleValue(TimeUnit.MILLISECOND);
 						ExecutionPartController.this.getDataModel().setEstimatedTimeString(DurationFormatUtils.formatDuration(estimatedMs, "HH:mm:ss"));
 					} catch (GkException e) {
 						LOG.error(e);

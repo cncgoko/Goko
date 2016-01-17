@@ -10,8 +10,7 @@ import org.goko.autoleveler.bean.IHeightMapProbeBuilder;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.math.Tuple6b;
 
 public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implements IHeightMapProbeBuilder {
@@ -27,25 +26,19 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	/** The end point of this map */
 	private Tuple6b end;
 	/** The X axis step size */
-	private BigDecimalQuantity<Length> stepSizeX;
+	private Length stepSizeX;
 	/** The Y axis step size */
-	private BigDecimalQuantity<Length> stepSizeY;
+	private Length stepSizeY;
 
 	public GridHeightMapBuilder() {
 		this.start = new Tuple6b();
 		this.end   = new Tuple6b();
-		this.stepSizeX = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
-		this.stepSizeY = NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE);
-		try {
-			setClearanceHeight(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
-			setProbeFeedrate(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
-			setProbeLowerHeight(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
-			setProbeStartHeight(NumberQuantity.of(BigDecimal.ZERO, Units.MILLIMETRE));
-
-		} catch (GkException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.stepSizeX = Length.valueOf(2, LengthUnit.INCH);
+		this.stepSizeY = Length.ZERO;		
+		setClearanceHeight(Length.ZERO);
+		setProbeFeedrate(Length.ZERO);
+		setProbeLowerHeight(Length.ZERO);
+		setProbeStartHeight(Length.ZERO);
 	}
 	/** (inheritDoc)
 	 * @see org.goko.autoleveler.bean.IHeightMapBuilder#getMap()
@@ -83,7 +76,7 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#getProbePositions()
 	 */
 	@Override
-	public List<Tuple6b> getProbePositions() throws GkException {
+	public List<Tuple6b> getProbePositions() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -93,7 +86,7 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	 * @see org.goko.autoleveler.bean.IHeightMapProbeBuilder#registerProbePosition(org.goko.core.math.Tuple6b)
 	 */
 	@Override
-	public void registerProbePosition(Tuple6b probedPosition) throws GkException {
+	public void registerProbePosition(Tuple6b probedPosition) {
 		// TODO Auto-generated method stub
 
 	}
@@ -134,7 +127,7 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	/**
 	 * @return the stepSizeX
 	 */
-	public BigDecimalQuantity<Length> getStepSizeX() {
+	public Length getStepSizeX() {
 		return stepSizeX;
 	}
 
@@ -142,7 +135,7 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	/**
 	 * @param stepSizeX the stepSizeX to set
 	 */
-	public void setStepSizeX(BigDecimalQuantity<Length> stepSizeX) {
+	public void setStepSizeX(Length stepSizeX) {
 		this.stepSizeX = stepSizeX;
 	}
 
@@ -150,7 +143,7 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	/**
 	 * @return the stepSizeY
 	 */
-	public BigDecimalQuantity<Length> getStepSizeY() {
+	public Length getStepSizeY() {
 		return stepSizeY;
 	}
 
@@ -158,7 +151,7 @@ public class GridHeightMapBuilder extends AbstractOffsetMapProbeBuilder implemen
 	/**
 	 * @param stepSizeY the stepSizeY to set
 	 */
-	public void setStepSizeY(BigDecimalQuantity<Length> stepSizeY) {
+	public void setStepSizeY(Length stepSizeY) {
 		this.stepSizeY = stepSizeY;
 	}
 }

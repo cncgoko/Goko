@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -42,23 +41,23 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
  */
 public class ArcFeedInstruction extends AbstractInstruction {
 	/** The first coordinate of the end of the arc */
-	private BigDecimalQuantity<Length> firstEnd;
+	private Length firstEnd;
 	/** The second coordinate of the end of the arc */
-	private BigDecimalQuantity<Length> secondEnd;
+	private Length secondEnd;
 	/** The first coordinate of the center of the arc */
-	private BigDecimalQuantity<Length> firstAxis;
+	private Length firstAxis;
 	/** The second coordinate of the center of the arc */
-	private BigDecimalQuantity<Length> secondAxis;
+	private Length secondAxis;
 	/** The third coordinate of the end of the arc */
-	private BigDecimalQuantity<Length> axisEndPoint;
+	private Length axisEndPoint;
 	/** The rotation count (1 for an arc, N+1 for N turns */
 	private Integer rotation;
 	/** A coordinate */
-	private BigDecimalQuantity<Angle> a;
+	private Angle a;
 	/** B coordinate */
-	private BigDecimalQuantity<Angle> b;
+	private Angle b;
 	/** C coordinate */
-	private BigDecimalQuantity<Angle> c;
+	private Angle c;
 	/** Rotation direction */
 	private boolean clockwise;
 	
@@ -68,7 +67,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	}
 
 	/** Constructor */	
-	public ArcFeedInstruction(BigDecimalQuantity<Length> firstEnd, BigDecimalQuantity<Length> secondEnd, BigDecimalQuantity<Length> firstAxis, BigDecimalQuantity<Length> secondAxis, BigDecimalQuantity<Length> axisEndPoint, Integer rotation, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c, boolean clockwise) {
+	public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
 		super(InstructionType.ARC_FEED);
 		this.firstEnd = firstEnd;
 		this.secondEnd = secondEnd;
@@ -109,70 +108,70 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	/**
 	 * @return the firstEnd
 	 */
-	public BigDecimalQuantity<Length> getFirstEnd() {
+	public Length getFirstEnd() {
 		return firstEnd;
 	}
 
 	/**
 	 * @param firstEnd the firstEnd to set
 	 */
-	public void setFirstEnd(BigDecimalQuantity<Length> firstEnd) {
+	public void setFirstEnd(Length firstEnd) {
 		this.firstEnd = firstEnd;
 	}
 
 	/**
 	 * @return the secondEnd
 	 */
-	public BigDecimalQuantity<Length> getSecondEnd() {
+	public Length getSecondEnd() {
 		return secondEnd;
 	}
 
 	/**
 	 * @param secondEnd the secondEnd to set
 	 */
-	public void setSecondEnd(BigDecimalQuantity<Length> secondEnd) {
+	public void setSecondEnd(Length secondEnd) {
 		this.secondEnd = secondEnd;
 	}
 
 	/**
 	 * @return the firstAxis
 	 */
-	public BigDecimalQuantity<Length> getFirstAxis() {
+	public Length getFirstAxis() {
 		return firstAxis;
 	}
 
 	/**
 	 * @param firstAxis the firstAxis to set
 	 */
-	public void setFirstAxis(BigDecimalQuantity<Length> firstAxis) {
+	public void setFirstAxis(Length firstAxis) {
 		this.firstAxis = firstAxis;
 	}
 
 	/**
 	 * @return the secondAxis
 	 */
-	public BigDecimalQuantity<Length> getSecondAxis() {
+	public Length getSecondAxis() {
 		return secondAxis;
 	}
 
 	/**
 	 * @param secondAxis the secondAxis to set
 	 */
-	public void setSecondAxis(BigDecimalQuantity<Length> secondAxis) {
+	public void setSecondAxis(Length secondAxis) {
 		this.secondAxis = secondAxis;
 	}
 
 	/**
 	 * @return the axisEndPoint
 	 */
-	public BigDecimalQuantity<Length> getAxisEndPoint() {
+	public Length getAxisEndPoint() {
 		return axisEndPoint;
 	}
 
 	/**
 	 * @param axisEndPoint the axisEndPoint to set
 	 */
-	public void setAxisEndPoint(BigDecimalQuantity<Length> axisEndPoint) {
+	public void setAxisEndPoint(Length axisEndPoint) {
 		this.axisEndPoint = axisEndPoint;
 	}
 
@@ -193,21 +192,21 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	/**
 	 * @return the a
 	 */
-	public BigDecimalQuantity<Angle> getA() {
+	public Angle getA() {
 		return a;
 	}
 
 	/**
 	 * @return the b
 	 */
-	public BigDecimalQuantity<Angle> getB() {
+	public Angle getB() {
 		return b;
 	}
 
 	/**
 	 * @return the c
 	 */
-	public BigDecimalQuantity<Angle> getC() {
+	public Angle getC() {
 		return c;
 	}
 

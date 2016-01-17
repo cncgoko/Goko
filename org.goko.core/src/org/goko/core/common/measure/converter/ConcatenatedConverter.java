@@ -17,6 +17,8 @@
 
 package org.goko.core.common.measure.converter;
 
+import java.math.BigDecimal;
+
 /**
  * Unit converter used to concatenate 2 converters
  * 
@@ -49,7 +51,7 @@ public class ConcatenatedConverter extends AbstractUnitConverter {
 	 * @see org.goko.core.common.measure.converter.UnitConverter#convert(double)
 	 */
 	@Override
-	public double convert(double value) {
+	public BigDecimal convert(BigDecimal value) {
 		return left.convert(right.convert(value));
 	}
 

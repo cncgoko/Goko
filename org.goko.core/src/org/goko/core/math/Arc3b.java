@@ -1,14 +1,14 @@
 package org.goko.core.math;
 
+import java.math.BigDecimal;
+
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 
 public class Arc3b {
@@ -20,8 +20,8 @@ public class Arc3b {
 	private Point3d pEnd;
 	
 	private Vector3d axis;
-	private Quantity<Angle> angle;
-	private Quantity<Length> radius;
+	private Angle angle;
+	private Length radius;
 	private Unit<Length> unit;
 	
 	public Arc3b(Tuple6b start, Tuple6b center, Tuple6b end, Vector3d axis, boolean clockwise) {
@@ -30,7 +30,7 @@ public class Arc3b {
 		this.center = center;
 		this.end = end;		
 		this.axis = axis;
-		this.radius = start.distance(end);//new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z).length();
+		this.radius = start.distance(center);//new Vector3d(start.x - center.x, start.y - center.y, start.z - center.z).length();
 		// Internal fields
 		this.unit = start.getX().getUnit();
 		this.pStart = start.toPoint3d(unit);
@@ -87,13 +87,13 @@ public class Arc3b {
 				angle =  smallestAngle;//2*Math.PI - smallestAngle;
 			}
 		}	
-		this.angle = NumberQuantity.of(angle, Units.RADIAN);
+		this.angle = Angle.valueOf(BigDecimal.valueOf(angle), AngleUnit.RADIAN);
 	}
 	
-	public Matrix3d getRotationMatrix(Quantity<Angle> rAngle) {
+	public Matrix3d getRotationMatrix(Angle rAngle) {
 		Matrix3d m = new Matrix3d();
-		double c = Math.cos(rAngle.doubleValue(Units.RADIAN));
-		double s = Math.sin(rAngle.doubleValue(Units.RADIAN));
+		double c = Math.cos(rAngle.doubleValue(AngleUnit.RADIAN));
+		double s = Math.sin(rAngle.doubleValue(AngleUnit.RADIAN));
 		double t = 1.0 - c;
 		// if axis is not already normalised then uncomment this
 		// double magnitude = Math.sqrt(a1.x*a1.x + a1.y*a1.y + a1.z*a1.z);
@@ -121,12 +121,12 @@ public class Arc3b {
 		return m;
 	}
 
-	public Quantity<Length> getLength(){
-		return radius.multiply(Math.abs(angle.doubleValue(Units.RADIAN)));
+	public Length getLength(){
+		return radius.multiply(angle.value(AngleUnit.RADIAN).abs());
 	}
 	
 	public Tuple6b point(double i){
-		Matrix3d rMat = getRotationMatrix(angle.multiply(i));
+		Matrix3d rMat = getRotationMatrix(angle.multiply(BigDecimal.valueOf(i)));
 		Point3d res = new Point3d(pStart);
 		res.sub(pCenter);
 		rMat.transform(res);
@@ -172,14 +172,14 @@ public class Arc3b {
 	/**
 	 * @return the angle
 	 */
-	public Quantity<Angle> getAngle() {
+	public Angle getAngle() {
 		return angle;
 	}
 
 	/**
 	 * @return the radius
 	 */
-	public Quantity<Length> getRadius() {
+	public Length getRadius() {
 		return radius;
 	}
 	

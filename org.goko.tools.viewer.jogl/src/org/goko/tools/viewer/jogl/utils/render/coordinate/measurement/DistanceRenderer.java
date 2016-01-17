@@ -17,17 +17,17 @@
 
 package org.goko.tools.viewer.jogl.utils.render.coordinate.measurement;
 
+import java.math.BigDecimal;
+
 import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.SIPrefix;
+import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
@@ -47,7 +47,7 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 	private Point3d endPoint;
 	private Vector3d normal;
 	private Vector3d direction;
-	private Quantity<Length> length;
+	private Length length;
 
 	private PolylineRenderer lineRenderer;
 	private ArrowRenderer startArrowRenderer;
@@ -60,7 +60,7 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 		this.endPoint = new Point3d(pEndPoint);
 		this.direction = new Vector3d();
 		this.direction.sub(endPoint, startPoint);
-		this.length = NumberQuantity.of(this.direction.length(), SIPrefix.MILLI(Units.METRE));
+		this.length = Length.valueOf(BigDecimal.valueOf(this.direction.length()), SIPrefix.MILLI(Units.METRE));
 		this.direction.normalize();
 		this.normal = new Vector3d(pNormal);
 		normal.normalize();

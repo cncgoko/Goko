@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.common;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -34,17 +36,27 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 	private D dataModel;
 
 
-	public GkUiComponent(C abstractController, D abstractModelObject) {
+	public GkUiComponent(IEclipseContext context, C abstractController, D abstractModelObject) {
 		this.controller = abstractController;
 		this.dataModel = abstractModelObject;
-		this.controller.addListener(this);
+		this.controller.addListener(this);		
+		initialize(context);
 	}
 
-	public GkUiComponent(C abstractController) {
+	public GkUiComponent(IEclipseContext context, C abstractController) {
 		this.controller = abstractController;
 		this.dataModel = this.controller.getDataModel();
+		initialize(context);
 	}
 
+	private void initialize(IEclipseContext context){
+		ContextInjectionFactory.inject(getController(), context);
+		try {
+			getController().initialize();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+	}
 	public void displayError(GkException e){
 		getController().log(e);
 		displayError(new ErrorEvent(e, "Goko"));

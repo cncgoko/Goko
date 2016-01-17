@@ -1,14 +1,14 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 
+import java.math.BigDecimal;
+
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.Time;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -25,7 +25,7 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.executiontime.AbstractInstructionTimeCalculator#calculateExecutionTime(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction)
 	 */
 	@Override
-	protected Quantity<Time> calculateExecutionTime(GCodeContext context, ArcFeedInstruction instruction) throws GkException {
+	protected Time calculateExecutionTime(GCodeContext context, ArcFeedInstruction instruction) throws GkException {
 		boolean clockwise = instruction.isClockwise();
 
 		Matrix3d matrix = getOrientationMatrix(context.getPlane());
@@ -62,16 +62,16 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 			}
 		}
 
-		double feedrate = 0;
+		BigDecimal feedrate = BigDecimal.ZERO;
 		if(context.getFeedrate() != null){
-			feedrate = context.getFeedrate().doubleValue();
+			feedrate = context.getFeedrate();
 		}else{
-			return NumberQuantity.zero(Units.SECOND);
+			return Time.ZERO;
 		}
-		if(feedrate == 0){
-			return NumberQuantity.zero(Units.SECOND);
+		if(feedrate == BigDecimal.ZERO){
+			return Time.ZERO;
 		}
-		return NumberQuantity.of( ((Math.abs(angle) * v1.length()) / feedrate) * 60, Units.SECOND);	
+		return Time.valueOf( BigDecimal.valueOf((Math.abs(angle) * v1.length())).divide(feedrate), TimeUnit.MINUTE);	
 	}
 	
 	private Matrix3d getOrientationMatrix(EnumPlane enumGCodeCommandPlane){

@@ -5,10 +5,9 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -58,17 +57,17 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 	protected ArcFeedInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		EnumPlane plane = context.getPlane();
 		
-		BigDecimalQuantity<Length> x = findWordValue("X", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Length> y = findWordValue("Y", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Length> z = findWordValue("Z", words, null, context.getUnit().getUnit());
+		Length x = findWordLength("X", words, null, context.getUnit().getUnit());
+		Length y = findWordLength("Y", words, null, context.getUnit().getUnit());
+		Length z = findWordLength("Z", words, null, context.getUnit().getUnit());
 		                               
-		BigDecimalQuantity<Angle> a = findWordValue("A", words, null, Units.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> b = findWordValue("B", words, null, Units.DEGREE_ANGLE);
-		BigDecimalQuantity<Angle> c = findWordValue("C", words, null, Units.DEGREE_ANGLE);
+		Angle a = findWordAngle("A", words, null, AngleUnit.DEGREE_ANGLE);
+		Angle b = findWordAngle("B", words, null, AngleUnit.DEGREE_ANGLE);
+		Angle c = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
 		
-		BigDecimalQuantity<Length> i = findWordValue("I", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Length> j = findWordValue("J", words, null, context.getUnit().getUnit());
-		BigDecimalQuantity<Length> k = findWordValue("K", words, null, context.getUnit().getUnit());
+		Length i = findWordLength("I", words, null, context.getUnit().getUnit());
+		Length j = findWordLength("J", words, null, context.getUnit().getUnit());
+		Length k = findWordLength("K", words, null, context.getUnit().getUnit());
 		
 		Integer r = 1;
 		
@@ -146,7 +145,7 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		k = NumberQuantity.add(k, context.getZ());
 		
 		switch (plane) {
-		// public ArcFeedInstruction(BigDecimalQuantity<Length> firstEnd, BigDecimalQuantity<Length> secondEnd, BigDecimalQuantity<Length> firstAxis, BigDecimalQuantity<Length> secondAxis, BigDecimalQuantity<Length> axisEndPoint, Integer rotation, BigDecimalQuantity<Angle> a, BigDecimalQuantity<Angle> b, BigDecimalQuantity<Angle> c, boolean clockwise) {
+		// public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
 		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
 			break;		
 		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);

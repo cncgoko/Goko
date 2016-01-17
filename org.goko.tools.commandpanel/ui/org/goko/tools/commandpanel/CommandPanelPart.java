@@ -26,7 +26,6 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
@@ -107,9 +106,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	@Inject
 	public CommandPanelPart(IEclipseContext context) throws GkException {
-		super(new CommandPanelController(new CommandPanelModel()));
-		ContextInjectionFactory.inject(getController(), context);
-		getController().initialize();
+		super(context, new CommandPanelController(new CommandPanelModel()));		
 	}
 
 	/**

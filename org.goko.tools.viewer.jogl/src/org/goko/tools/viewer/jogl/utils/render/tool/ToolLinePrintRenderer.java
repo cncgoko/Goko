@@ -51,9 +51,9 @@ public class ToolLinePrintRenderer extends AbstractLineRenderer{
 		List<Point4f> lstPoint = new ArrayList<Point4f>();
 		List<Color4f> lstColor = new ArrayList<Color4f>();
 		
-		float x = controllerAdapter.getX().to(JoglUtils.JOGL_UNIT).getValue().floatValue();
-		float y = controllerAdapter.getY().to(JoglUtils.JOGL_UNIT).getValue().floatValue();
-		float z = controllerAdapter.getZ().to(JoglUtils.JOGL_UNIT).getValue().floatValue();
+		float x = controllerAdapter.getX().value(JoglUtils.JOGL_UNIT).floatValue();
+		float y = controllerAdapter.getY().value(JoglUtils.JOGL_UNIT).floatValue();
+		float z = controllerAdapter.getZ().value(JoglUtils.JOGL_UNIT).floatValue();
 		
 		lstPoint.add( new Point4f(0,0,0,1));
 		lstPoint.add( new Point4f(x,0,0,1));		

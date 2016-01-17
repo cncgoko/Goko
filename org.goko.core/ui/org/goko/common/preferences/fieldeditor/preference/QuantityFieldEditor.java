@@ -8,22 +8,18 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.dimension.Dimension;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.common.utils.BigDecimalUtils;
 import org.goko.core.config.GokoPreference;
 
-public class QuantityFieldEditor<Q extends Quantity<Q>> extends BigDecimalFieldEditor {
+public abstract class QuantityFieldEditor<Q extends Quantity<Q>> extends BigDecimalFieldEditor {
 	private Label labelUnit;
 	private Unit<Q> unit;
 	private Quantity<Q> quantity;
-	private Dimension<Q> dimension;
 	
-	public QuantityFieldEditor(Composite parent, int style, Dimension<Q> dimension) {
+	public QuantityFieldEditor(Composite parent, int style) {
 		super(parent, style);
-		this.dimension = dimension;
 	}
 	
 	/** (inheritDoc)
@@ -82,8 +78,10 @@ public class QuantityFieldEditor<Q extends Quantity<Q>> extends BigDecimalFieldE
 	 */
 	@Override
 	protected void loadValue() throws GkException {
-		quantity =  NumberQuantity.of(getPreferenceStore().getString(getPreferenceName()), dimension);
+		quantity =  createQuantity(getPreferenceStore().getString(getPreferenceName()));
 		getControl().setText( GokoPreference.getInstance().format(quantity.to(getUnit()), false, false));
 		refreshValidState();
 	}
+	
+	protected abstract Q createQuantity(String value) throws GkException;
 }

@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.goko.common;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.preference.PreferencePage;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.bindings.AbstractModelObject;
@@ -29,13 +30,13 @@ public abstract class GkUiPreferencePageComponent<C extends AbstractController<D
 	private static final GkLog LOG = GkLog.getLogger(GkUiPreferencePageComponent.class);
 	GkUiComponentProxy<C, D> uiComponent;
 
-	public GkUiPreferencePageComponent(C abstractController) {
+	public GkUiPreferencePageComponent(IEclipseContext context, C abstractController) {
 		super();
-		uiComponent = new GkUiComponentProxy<C, D>(abstractController);
+		uiComponent = new GkUiComponentProxy<C, D>(context, abstractController);
 	}
-	public GkUiPreferencePageComponent(String title, C abstractController) {
+	public GkUiPreferencePageComponent(String title, IEclipseContext context, C abstractController) {
 		super(title);
-		uiComponent = new GkUiComponentProxy<C, D>(abstractController);
+		uiComponent = new GkUiComponentProxy<C, D>(context, abstractController);
 	}
 
 	@EventListener(ErrorEvent.class)

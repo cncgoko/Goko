@@ -14,8 +14,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
@@ -39,7 +37,7 @@ public class TinyGJoggingRunnable implements Runnable {
 	private Object lock;
 	private EnumTinyGAxis axis;
 	private BigDecimal feed;
-	private BigDecimalQuantity<Length> step;
+	private Length step;
 	private boolean precise;
 	private ScopedPreferenceStore preferenceStore;
 
@@ -64,7 +62,7 @@ public class TinyGJoggingRunnable implements Runnable {
 		if(StringUtils.isBlank(stepStr)){
 			stepStr = "1";
 		}
-		this.step = NumberQuantity.of(new BigDecimal(stepStr), Units.MILLIMETRE); // FIXME : store value between uses
+		this.step = Length.valueOf(new BigDecimal(stepStr), Units.MILLIMETRE); // FIXME : store value between uses
 		String preciseStr = preferenceStore.getString(PERSISTED_PRECISE);
 		if(StringUtils.isBlank(preciseStr)){
 			preciseStr = "false";
@@ -79,7 +77,7 @@ public class TinyGJoggingRunnable implements Runnable {
 		preferenceStore.putValue(PERSISTED_PRECISE, String.valueOf(precise));
 
 		if(step != null){
-			preferenceStore.putValue(PERSISTED_STEP, step.to(Units.MILLIMETRE).getValue().toPlainString());
+			preferenceStore.putValue(PERSISTED_STEP, step.value(Units.MILLIMETRE).toPlainString());
 		}
 	}
 	/** (inheritDoc)
@@ -257,14 +255,14 @@ public class TinyGJoggingRunnable implements Runnable {
 	/**
 	 * @return the step
 	 */
-	public BigDecimalQuantity<Length> getStep() {
+	public Length getStep() {
 		return step;
 	}
 
 	/**
 	 * @param step the step to set
 	 */
-	public void setStep(BigDecimalQuantity<Length> step) {
+	public void setStep(Length step) {
 		this.step = step;
 		persistValues();
 	}

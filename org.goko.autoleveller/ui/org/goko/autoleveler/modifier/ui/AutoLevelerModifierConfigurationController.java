@@ -2,11 +2,10 @@ package org.goko.autoleveler.modifier.ui;
 
 import org.goko.autoleveler.bean.grid.GridHeightMapBuilder;
 import org.goko.autoleveler.modifier.AutoLevelerModifier;
-import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController;
 
-public class AutoLevelerModifierConfigurationController extends AbstractController<AutoLevelerModifierConfigurationModel>{
-	private AutoLevelerModifier modifier;
+public class AutoLevelerModifierConfigurationController extends AbstractModifierPanelController<AutoLevelerModifierConfigurationModel, AutoLevelerModifier>{
 	private GridHeightMapBuilder builder;
 
 	public AutoLevelerModifierConfigurationController() {
@@ -29,15 +28,16 @@ public class AutoLevelerModifierConfigurationController extends AbstractControll
 		getDataModel().setProbeStartHeight(builder.getProbeStartHeight());
 		getDataModel().setProbeLowerHeight(builder.getProbeLowerHeight());
 		getDataModel().setProbeFeedrate(builder.getProbeFeedrate());
-		getDataModel().setExpectedHeight(modifier.getTheoricHeight());
 	}
 
-
-
-	public void updateHeightMap(){
-
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#initializeFromModifier()
+	 */
+	@Override
+	public void initializeFromModifier() throws GkException {
+		getDataModel().setExpectedHeight(getModifier().getTheoricHeight());
 	}
-
+	
 	/**
 	 * @return the builder
 	 */
@@ -52,18 +52,15 @@ public class AutoLevelerModifierConfigurationController extends AbstractControll
 		this.builder = builder;
 	}
 
-	/**
-	 * @return the modifier
+	/** (inheritDoc)
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#updateModifier()
 	 */
-	public AutoLevelerModifier getModifier() {
+	@Override
+	protected AutoLevelerModifier updateModifier() throws GkException {
+		AutoLevelerModifier modifier = getModifier();
+		modifier.setHeightMap(builder.getMap());
+		modifier.setTheoricHeight(getDataModel().getExpectedHeight());
 		return modifier;
-	}
-
-	/**
-	 * @param modifier the modifier to set
-	 */
-	public void setModifier(AutoLevelerModifier modifier) {
-		this.modifier = modifier;
 	}
 
 }

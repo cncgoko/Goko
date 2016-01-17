@@ -74,9 +74,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 	 */
 	@Inject
 	public GCodeViewer3D(IEclipseContext context) throws GkException {
-		super(new GCodeViewer3DController(new GCodeViewer3DModel()));
-		ContextInjectionFactory.inject(getController(), context);
-		getController().initialize();
+		super(context, new GCodeViewer3DController(new GCodeViewer3DModel()));		
 		context.set(GCodeViewer3DController.class, getController());
 	}
 

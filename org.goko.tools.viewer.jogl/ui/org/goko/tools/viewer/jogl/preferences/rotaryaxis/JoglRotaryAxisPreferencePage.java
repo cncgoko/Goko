@@ -14,9 +14,8 @@ import org.goko.common.GkUiUtils;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
 import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
-import org.goko.common.preferences.fieldeditor.preference.QuantityFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.quantity.LengthFieldEditor;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
@@ -26,9 +25,9 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxi
 public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 	private BooleanFieldEditor booleanFieldEditor;
 	private Group grpSettings;
-	private QuantityFieldEditor<Length> xPositionField;
-	private QuantityFieldEditor<Length> yPositionField;
-	private QuantityFieldEditor<Length> zPositionField;
+	private LengthFieldEditor xPositionField;
+	private LengthFieldEditor yPositionField;
+	private LengthFieldEditor zPositionField;
 	
 	public JoglRotaryAxisPreferencePage() {
 		setTitle("4th axis");
@@ -82,19 +81,19 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 		Label lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setText("Rotary axis position");
 		
-		xPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		xPositionField = new LengthFieldEditor(composite, SWT.NONE);
 		xPositionField.setPreferenceName("rotaryAxisPositionX");
 		xPositionField.setWidthInChars(6);
 		xPositionField.setLabel("X");
 		new Label(composite, SWT.NONE);
 		
-		yPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		yPositionField = new LengthFieldEditor(composite, SWT.NONE);
 		yPositionField.setPreferenceName("rotaryAxisPositionY");
 		yPositionField.setWidthInChars(6);
 		yPositionField.setLabel("Y");
 		new Label(composite, SWT.NONE);
 		
-		zPositionField = new QuantityFieldEditor<Length>(composite, SWT.NONE, QuantityDimension.LENGTH);
+		zPositionField = new LengthFieldEditor(composite, SWT.NONE);
 		zPositionField.setPreferenceName("rotaryAxisPositionZ");
 		zPositionField.setWidthInChars(6);
 		zPositionField.setLabel("Z");

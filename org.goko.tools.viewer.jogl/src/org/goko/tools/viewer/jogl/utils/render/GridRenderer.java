@@ -37,7 +37,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.service.Layer;
@@ -53,8 +52,8 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
  */
 public class GridRenderer extends AbstractVboJoglRenderer {
 	private String id;
-	private Quantity<Length> majorIncrement;
-	private Quantity<Length> minorIncrement;
+	private Length majorIncrement;
+	private Length minorIncrement;
 	private Color4f majorUnitColor	= new Color4f(0.4f, 0.4f, 0.4f,1f);
 	private Color4f minorUnitColor	= new Color4f(0.4f, 0.4f, 0.4f,1f);
 	private Color4f originColor		= new Color4f(0.8f, 0.8f, 0.8f,1f);
@@ -67,8 +66,8 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	public GridRenderer(String id){		
 		this(id, new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
 				 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT),
-				 NumberQuantity.of(10, JoglUtils.JOGL_UNIT),
-				 NumberQuantity.of(1, JoglUtils.JOGL_UNIT),
+				 Length.valueOf(10, JoglUtils.JOGL_UNIT),
+				 Length.valueOf(1, JoglUtils.JOGL_UNIT),
 				 new Color3f(0.4f, 0.4f, 0.4f),
 				 new Color3f(0.4f, 0.4f, 0.4f),
 				 0.5f, new Vector4f(0f,0f,1f,0f));
@@ -294,7 +293,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	/**
 	 * @param majorIncrement the majorIncrement to set
 	 */
-	public void setMajorIncrement(Quantity<Length> majorIncrement) {
+	public void setMajorIncrement(Length majorIncrement) {
 		this.majorIncrement = majorIncrement;
 	}
 
@@ -308,7 +307,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	/**
 	 * @param minorIncrement the minorIncrement to set
 	 */
-	public void setMinorIncrement(Quantity<Length> minorIncrement) {
+	public void setMinorIncrement(Length minorIncrement) {
 		this.minorIncrement = minorIncrement;
 	}
 

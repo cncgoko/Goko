@@ -2,9 +2,7 @@ package org.goko.autoleveler.bean;
 
 import java.util.List;
 
-import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -15,23 +13,23 @@ import org.goko.core.math.Tuple6b;
  */
 public interface IHeightMapProbeBuilder extends IHeightMapBuilder{
 
-	List<Tuple6b> getProbePositions() throws GkException;
+	List<Tuple6b> getProbePositions();
 
-	BigDecimalQuantity<Length> getClearanceHeight() throws GkException;
+	Length getClearanceHeight();
 
-	void setClearanceHeight(BigDecimalQuantity<Length> height) throws GkException;
+	void setClearanceHeight(Length height);
 
-	BigDecimalQuantity<Length> getProbeStartHeight() throws GkException;
+	Length getProbeStartHeight();
 
-	void setProbeStartHeight(BigDecimalQuantity<Length> height) throws GkException;
+	void setProbeStartHeight(Length height);
 
-	BigDecimalQuantity<Length> getProbeLowerHeight() throws GkException;
+	Length getProbeLowerHeight();
 
-	void setProbeLowerHeight(BigDecimalQuantity<Length> height) throws GkException;
+	void setProbeLowerHeight(Length height);
 
-	BigDecimalQuantity<Length> getProbeFeedrate() throws GkException;
+	Length getProbeFeedrate();
 
-	void setProbeFeedrate(BigDecimalQuantity<Length> feedrate ) throws GkException;
+	void setProbeFeedrate(Length feedrate );
 
-	void registerProbePosition(Tuple6b probedPosition) throws GkException;
+	void registerProbePosition(Tuple6b probedPosition);
 }

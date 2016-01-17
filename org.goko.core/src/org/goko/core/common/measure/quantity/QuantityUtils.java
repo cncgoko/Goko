@@ -1,18 +1,7 @@
 package org.goko.core.common.measure.quantity;
 
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-
 public final class QuantityUtils {
-	
-	public static <Q extends Quantity<Q>> Quantity<Q> add(Quantity<Q> a, Quantity<Q> b){
-		if(a == null){
-			return b;
-		}else if(b == null){
-			return a;
-		}
-		return a.add(b);
-	}
-	
+		
 	/**
 	 * Performs the addition of the two given quantity and make sure the type of quantity remains the same 
 	 * Unit conversion is used to make sure the sum is made in the corresponding units
@@ -20,7 +9,7 @@ public final class QuantityUtils {
 	 * @param b quantity B
 	 * @return the sum of the two values 
 	 */
-	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> add(BigDecimalQuantity<Q> a, BigDecimalQuantity<Q> b){
+	public static <Q extends Quantity<Q>> Q add(Q a, Q b){
 		if(a == null){
 			return b;
 		}else if(b == null){
@@ -36,7 +25,7 @@ public final class QuantityUtils {
 	 * @param b quantity B
 	 * @return the subtraction of the two values 
 	 */
-	public static <Q extends Quantity<Q>> BigDecimalQuantity<Q> subtract(BigDecimalQuantity<Q> a, BigDecimalQuantity<Q> b){
+	public static <Q extends Quantity<Q>> Q subtract(Q a, Q b){
 		if(a == null){
 			return b;
 		}else if(b == null){
@@ -51,13 +40,13 @@ public final class QuantityUtils {
 	 * @param b quantity B
 	 * @return the quantity representing the lowest amount 
 	 */
-	public static <T extends Quantity<Q>, Q extends Quantity<Q>> T min(T a, T b){
+	public static <Q extends Quantity<Q>> Q min(Q a, Q b){
 		if(a == null){
 			return b;
 		}else if(b == null){
 			return a;
 		}
-		if(a.doubleValue(b.getUnit()) < b.doubleValue(b.getUnit())){
+		if(a.value(b.getUnit()).compareTo(b.value(b.getUnit())) < 0){
 			return a;
 		}
 		return b;
@@ -70,13 +59,13 @@ public final class QuantityUtils {
 	 * @param b quantity B
 	 * @return the quantity representing the lowest amount 
 	 */
-	public static <T extends Quantity<Q>, Q extends Quantity<Q>> T max(T a, T b){
+	public static <Q extends Quantity<Q>> Q max(Q a, Q b){
 		if(a == null){
 			return b;
 		}else if(b == null){
 			return a;
 		}
-		if(a.doubleValue(b.getUnit()) > b.doubleValue(b.getUnit())){
+		if(a.value(b.getUnit()).compareTo(b.value(b.getUnit())) > 0){
 			return a;
 		}
 		return b;

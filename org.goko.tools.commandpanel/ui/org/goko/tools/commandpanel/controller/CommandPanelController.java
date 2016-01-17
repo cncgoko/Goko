@@ -38,8 +38,6 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.BigDecimalQuantity;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
@@ -144,7 +142,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				try {					
 					Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
 					getDataModel().setLengthUnit(unit);
-					BigDecimalQuantity<Length> step = NumberQuantity.of(getDataModel().getJogIncrement(), unit);					
+					Length step = Length.valueOf(getDataModel().getJogIncrement(), unit);					
 					boolean isPrecise = getDataModel().isPreciseJog();
 					jogService.setJogStep(step);
 					jogService.setJogFeedrate(getDataModel().getJogSpeed());
@@ -173,7 +171,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		getDataModel().setLengthUnit(unit);
 		getDataModel().setJogSpeed(jogService.getJogFeedrate());
 		getDataModel().setPreciseJog( jogService.isJogPrecise() );		
-		getDataModel().setJogIncrement( jogService.getJogStep().to(unit).getValue() );
+		getDataModel().setJogIncrement( jogService.getJogStep().value(unit) );
 	}
 
 	public void setCoordinateSystem(EnumCoordinateSystem enumCoordinateSystem) throws GkException {
@@ -191,7 +189,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	public void propertyChange(PropertyChangeEvent evt) {
 		try {			
 			if(getDataModel().getJogIncrement() != null){
-				jogService.setJogStep( NumberQuantity.of(getDataModel().getJogIncrement(), Units.MILLIMETRE));
+				jogService.setJogStep( Length.valueOf(getDataModel().getJogIncrement(), Units.MILLIMETRE));
 			}
 			if(getDataModel().getJogSpeed() != null){
 				jogService.setJogFeedrate( getDataModel().getJogSpeed() );

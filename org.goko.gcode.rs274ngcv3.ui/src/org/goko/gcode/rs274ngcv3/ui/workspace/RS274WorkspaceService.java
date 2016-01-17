@@ -9,7 +9,6 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
@@ -17,6 +16,7 @@ import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TestModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder;
+import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize.SegmentizeModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
@@ -42,8 +42,14 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	/** Workspace UI service */
 	private IRS274NGCService gcodeService;
 	/** The list of existing IModifierUiProvider*/
-	private List<IModifierUiProvider<GCodeProvider, ?>> lstModifierUiProvider;
+	private List<IModifierUiProvider<?>> lstModifierUiProvider;
 
+	/**
+	 * Constructor
+	 */
+	public RS274WorkspaceService() {
+		lstModifierUiProvider = new ArrayList<IModifierUiProvider<?>>();
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -60,8 +66,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		LOG.info("Starting  "+getServiceId());
 		// Create the RS274 project container
 		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
-		getGcodeService().addListener(this);
-		lstModifierUiProvider = new ArrayList<IModifierUiProvider<GCodeProvider, ?>>();
+		getGcodeService().addListener(this);		
 		initModifierUiProvider();
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -73,6 +78,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	private void initModifierUiProvider() throws GkException {
 		addModifierBuilder(new TestModifierBuilder());
 		addModifierBuilder(new TranslateModifierBuilder());
+		addModifierBuilder(new SegmentizeModifierBuilder());
 	}
 
 	/** (inheritDoc)
@@ -115,7 +121,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService#getModifierBuilder()
 	 */
 	@Override
-	public List<IModifierUiProvider<GCodeProvider, ?>> getModifierBuilder() throws GkException{
+	public List<IModifierUiProvider<?>> getModifierBuilder() throws GkException{
 		return lstModifierUiProvider;
 	}
 
@@ -123,7 +129,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService#addModifierBuilder(org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider)
 	 */
 	@Override
-	public void addModifierBuilder(IModifierUiProvider<GCodeProvider, ?> modifierBuilder) throws GkException {
+	public void addModifierBuilder(IModifierUiProvider<?> modifierBuilder) throws GkException {
 		lstModifierUiProvider.add(modifierBuilder);
 	}
 	/**
