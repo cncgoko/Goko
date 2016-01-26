@@ -36,7 +36,10 @@ public class SegmentizePropertiesPanel extends AbstractModifierPropertiesPanel<S
 	 * @wbp.parser.entryPoint
 	 */
 	public void createContent(Composite parent) throws GkException {
-		Group composite = new Group(parent, SWT.NONE);
+		Composite rootComposite = new Composite(parent, SWT.NONE);
+		rootComposite.setLayout(new GridLayout(1, false));
+		Group composite = new Group(rootComposite, SWT.NONE);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		composite.setText("Properties");
 		composite.setLayout(new GridLayout(1, false));

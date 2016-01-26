@@ -5,7 +5,8 @@ public enum EnumGokoShaderProgram{
 	LINE_SHADER("/org/goko/tools/viewer/jogl/shaders/line/lineVertexShader.glsl","/org/goko/tools/viewer/jogl/shaders/line/lineFragmentShader.glsl"),
 	TEXT_SHADER( "/org/goko/tools/viewer/jogl/shaders/text/textVertexShader.glsl",  "/org/goko/tools/viewer/jogl/shaders/text/textFragmentShader.glsl"),
 	SHADED_FLAT_SHADER( "/org/goko/tools/viewer/jogl/shaders/shaded/shadedFlatVertexShader.glsl",  "/org/goko/tools/viewer/jogl/shaders/shaded/shadedFlatFragmentShader.glsl"),
-	SHADED_SHADER( "/org/goko/tools/viewer/jogl/shaders/shaded/shadedLitVertexShader.glsl",  "/org/goko/tools/viewer/jogl/shaders/shaded/shadedLitFragmentShader.glsl");
+	SHADED_SHADER( "/org/goko/tools/viewer/jogl/shaders/shaded/shadedLitVertexShader.glsl",  "/org/goko/tools/viewer/jogl/shaders/shaded/shadedLitFragmentShader.glsl"),
+	Z_LEVEL_SHADER( "/org/goko/tools/viewer/jogl/shaders/zlevel/zLevelVertexShader.glsl",  "/org/goko/tools/viewer/jogl/shaders/zlevel/zLevelFragmentShader.glsl");
 
 	private String vertexShaderPath;
 	private String fragmentShaderPath;

@@ -118,4 +118,13 @@ public class JoglRendererWrapper extends AbstractCoreJoglRenderer {
 		// TODO Auto-generated method stub
 
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.ICoreJoglRenderer#update()
+	 */
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -14,7 +14,6 @@ import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.core.workspace.service.IWorkspaceUIService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TestModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize.SegmentizeModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
@@ -76,7 +75,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @throws GkException GkException
 	 */
 	private void initModifierUiProvider() throws GkException {
-		addModifierBuilder(new TestModifierBuilder());
+		//addModifierBuilder(new TestModifierBuilder());
 		addModifierBuilder(new TranslateModifierBuilder());
 		addModifierBuilder(new SegmentizeModifierBuilder());
 	}

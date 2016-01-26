@@ -37,6 +37,7 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
+import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
 import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter;
 import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter.EnumModifierSortType;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
@@ -55,6 +56,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
 	/** The list of listener */
 	private List<IGCodeProviderRepositoryListener> listenerList;
+	/** The list of modifier listener */
+	private List<IModifierListener> modifierListenerList;
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
 	/** The cache of providers */
@@ -63,14 +66,18 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	private CacheByCode<IStackableGCodeProvider> cacheProvidersByCode;
 	/** The cache of modifiers */
 	private CacheById<IModifier<GCodeProvider>> cacheModifiers;
-
+	/** Boolean allowing to enable/disable gcode update notification */
+	private boolean gcodeProviderUdateNotificationEnabled;
+	
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
 		this.listenerList 	= new ArrayList<IGCodeProviderRepositoryListener>();
+		this.modifierListenerList = new ArrayList<IModifierListener>();
 		this.cacheProviders = new CacheById<IStackableGCodeProvider>(new SequentialIdGenerator());
 		this.cacheProvidersByCode = new CacheByCode<IStackableGCodeProvider>();
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
+		this.gcodeProviderUdateNotificationEnabled = true;
 	}
 
 	/** (inheritDoc)
@@ -490,10 +497,12 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void deleteGCodeProvider(Integer id) throws GkException {
-		IGCodeProvider provider = cacheProviders.get(id);
+		// Remove attached modifiers 
 		performDeleteByIdGCodeProvider(id);
+		IGCodeProvider provider = cacheProviders.get(id);		
 		cacheProviders.remove(id);
-		cacheProvidersByCode.remove(provider.getCode());
+		cacheProvidersByCode.remove(provider.getCode()); 
+				
 		notifyGCodeProviderDelete(provider);
 	}
 
@@ -559,7 +568,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		wrappedProvider.update();
 		this.cacheProviders.remove(baseProvider.getId());
 		this.cacheProviders.add(wrappedProvider);
-		notifyGCodeProviderUpdate(wrappedProvider);
+		notifyModifierCreate(modifier);
+		notifyGCodeProviderUpdate(wrappedProvider);		
 	}
 	
 	/** (inheritDoc)
@@ -575,7 +585,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		this.cacheModifiers.add(modifier);
 		IStackableGCodeProvider provider = this.cacheProviders.get(modifier.getIdGCodeProvider());
 		provider.update();
-		notifyGCodeProviderUpdate(provider);
+		notifyModifierUpdate(modifier);
+		notifyGCodeProviderUpdate(provider);		
 	}
 
 	/** (inheritDoc)
@@ -621,7 +632,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 			gcode.setParent(null);
 		}
 		IStackableGCodeProvider targetProvider = cacheProviders.get(modifier.getIdGCodeProvider());
-		notifyGCodeProviderUpdate(targetProvider);
+		notifyModifierDelete(modifier);
+		notifyGCodeProviderUpdate(targetProvider);		
 	}
 
 	/** (inheritDoc)
@@ -683,8 +695,12 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 
 	protected void performDeleteByIdGCodeProvider(Integer id) throws GkException{
 		List<IModifier<GCodeProvider>> lstModifiers = getModifierByGCodeProvider(id);
-		for (IModifier<GCodeProvider> iModifier : lstModifiers) {
-			cacheModifiers.remove(iModifier);
+		if(CollectionUtils.isNotEmpty(lstModifiers)){
+			disableGcodeProviderUdateNotification();
+			for (IModifier<GCodeProvider> iModifier : lstModifiers) {
+				deleteModifier(iModifier);
+			}
+			enableGcodeProviderUdateNotification();
 		}
 	}
 
@@ -696,6 +712,14 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		listenerList.add( listener );
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#addModifierListener(org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener)
+	 */
+	@Override
+	public void addModifierListener(IModifierListener listener){
+		modifierListenerList.add(listener);
+	}
+	
 	 /** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#removeListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener)
 	 */
@@ -710,9 +734,11 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @throws GkException GkException
 	 */
 	protected void notifyGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
-		if (CollectionUtils.isNotEmpty(listenerList)) {
-			for (IGCodeProviderRepositoryListener listener : listenerList) {
-				listener.onGCodeProviderUpdate(provider);
+		if(isGcodeProviderUdateNotificationEnabled()){
+			if (CollectionUtils.isNotEmpty(listenerList)) {
+				for (IGCodeProviderRepositoryListener listener : listenerList) {
+					listener.onGCodeProviderUpdate(provider);
+				}
 			}
 		}
 	}
@@ -768,6 +794,45 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		}
 	}
 
+	/**
+	 * Notify the listener that the given modifier was created
+	 * @param modifier the target provider
+	 * @throws GkException GkException
+	 */
+	protected void notifyModifierCreate(IModifier<?> modifier) throws GkException {
+		if (CollectionUtils.isNotEmpty(modifierListenerList)) {
+			for (IModifierListener listener : modifierListenerList) {
+				listener.onModifierCreate(modifier.getId());
+			}
+		}
+	}
+	
+	/**
+	 * Notify the listener that the given modifier was created
+	 * @param modifier the target provider
+	 * @throws GkException GkException
+	 */
+	protected void notifyModifierUpdate(IModifier<?> modifier) throws GkException {
+		if (CollectionUtils.isNotEmpty(modifierListenerList)) {
+			for (IModifierListener listener : modifierListenerList) {
+				listener.onModifierUpdate(modifier.getId());
+			}
+		}
+	}
+	
+	/**
+	 * Notify the listener that the given modifier was created
+	 * @param modifier the target provider
+	 * @throws GkException GkException
+	 */
+	protected void notifyModifierDelete(IModifier<?> modifier) throws GkException {
+		if (CollectionUtils.isNotEmpty(modifierListenerList)) {
+			for (IModifierListener listener : modifierListenerList) {
+				listener.onModifierDelete(modifier.getId());
+			}
+		}
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#clearAll()
 	 */
@@ -780,4 +845,25 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		cacheProviders.removeAll();
 	}
 
+	/**
+	 * @return the gcodeProviderUdateNotificationEnabled
+	 */
+	protected boolean isGcodeProviderUdateNotificationEnabled() {
+		return gcodeProviderUdateNotificationEnabled;
+	}
+
+	/**
+	 * @param gcodeProviderUdateNotificationEnabled the gcodeProviderUdateNotificationEnabled to set
+	 */
+	protected void setGcodeProviderUdateNotificationEnabled(boolean gcodeProviderUdateNotificationEnabled) {
+		this.gcodeProviderUdateNotificationEnabled = gcodeProviderUdateNotificationEnabled;
+	}
+
+	protected void disableGcodeProviderUdateNotification(){
+		setGcodeProviderUdateNotificationEnabled(false);
+	}
+	
+	protected void enableGcodeProviderUdateNotification(){
+		setGcodeProviderUdateNotificationEnabled(true);
+	}
 }

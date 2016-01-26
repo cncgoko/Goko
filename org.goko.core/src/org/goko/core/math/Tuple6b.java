@@ -51,8 +51,7 @@ public class Tuple6b {
 	 * @param b
 	 * @param c
 	 */
-	public Tuple6b(Length x, Length y, Length z,
-			Angle a, Angle b, Angle c) {
+	public Tuple6b(Length x, Length y, Length z, Angle a, Angle b, Angle c) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -62,6 +61,9 @@ public class Tuple6b {
 		this.c = c;
 	}
 
+	public Tuple6b(Length x, Length y, Length z) {
+		this(x,y,z, Angle.ZERO, Angle.ZERO, Angle.ZERO);
+	}
 	public Tuple6b(Tuple6b tuple){
 		this.x = tuple.x;
 		this.y = tuple.y;

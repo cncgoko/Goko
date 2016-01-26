@@ -1,6 +1,7 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider;
 
 import org.eclipse.jface.action.Action;
+import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.log.GkLog;
@@ -51,6 +52,7 @@ public class CreateModifierAction extends Action{
 			rs274Service.addModifier(modifierUiProvider.createDefaultModifier(idGCodeProvider));
 		} catch (GkException e) {
 			LOG.error(e);
+			GkDialog.openDialog(null, e);			 
 		}
 	}
 

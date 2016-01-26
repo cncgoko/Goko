@@ -266,4 +266,13 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
 	public IBindingConverter getConverter(){
 		return null;
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.common.preferences.fieldeditor.ui.UiFieldEditor#setEnabled(boolean)
+	 */
+	@Override
+	public void setEnabled(boolean enabled) {		
+		super.setEnabled(enabled);
+		getControl().setEnabled(enabled);
+	}
 }

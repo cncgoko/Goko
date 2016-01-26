@@ -84,7 +84,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		
 		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 		addRenderer(zeroRenderer);			
-		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);
+		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);		
 		this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID);
 		this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID);
 		this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
@@ -95,8 +95,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		updateGridRenderer(yzGridRenderer);
 		addRenderer(xyGridRenderer);
 		addRenderer(xzGridRenderer);
-		addRenderer(yzGridRenderer);
-		
+		addRenderer(yzGridRenderer);		
 		LOG.info("Successfully started " + getServiceId());
 	}
 

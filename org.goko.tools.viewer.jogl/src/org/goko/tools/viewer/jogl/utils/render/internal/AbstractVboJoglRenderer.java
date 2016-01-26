@@ -57,6 +57,8 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	private boolean updateBuffer;
 	/** Request for geometry update */
 	private boolean updateGeometry;
+	/** Request for shader update */
+	private boolean updateShader;
 	/** Interleaved buffer */
 	private FloatBuffer interleavedBuffer;
 	/** The id of the VBO in use for the vertices data */
@@ -100,7 +102,7 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		this.updateBuffer = true;
 	}
 	
-	protected void updateGeometry() throws GkException {
+	public void updateGeometry() throws GkException {
 		this.updateGeometry = true;
 	}
 	/**
@@ -121,6 +123,16 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	protected void performUpdateBufferObjects(GL3 gl) throws GkException {		
 		initializeBufferObjects(gl);		
 		this.updateBuffer = false;
+	}
+	
+	/**
+	 * Performs the update in the shader data
+	 * @param gl the GL
+	 * @throws GkException GkException
+	 */
+	protected void performUpdateShader(GL3 gl) throws GkException {		
+		updateShaderData(gl);
+		this.updateShader = false;
 	}
 	/**
 	 * Initializes and bind the several vertex buffer objects
@@ -198,6 +210,9 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 		}
 		if(updateBuffer){
 			performUpdateBufferObjects(gl);
+		}
+		if(updateShader){
+			performUpdateShader(gl);
 		}
 		if(interleavedBuffer == null){
 			buildInterleavedBuffer();
@@ -307,6 +322,14 @@ public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	public void update(){
 		this.updateBuffer = true;
 	}
+	
+	/**
+	 * Update the shader datas
+	 */
+	public void updateShaderData(){
+		this.updateShader = true;
+	}
+	
 	/**
 	 * @return the verticesBuffer
 	 */

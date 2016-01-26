@@ -48,6 +48,7 @@ import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
@@ -58,6 +59,10 @@ import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
+import org.goko.core.gcode.rs274ngcv3.instruction.SetFeedRateInstruction;
+import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
+import org.goko.core.gcode.rs274ngcv3.instruction.StraightProbeInstruction;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
@@ -644,14 +649,29 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
 	 */
 	@Override
-	public Future<ProbeResult> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException {
-		futureProbeResult = new ProbeCallable();
-		String strCommand = "G38.2 "+axis.getAxisCode()+String.valueOf(maximumPosition)+" F"+feedrate;
-		IGCodeProvider command = gcodeService.parse(strCommand);
-		executeGCode(command);
+	public Future<ProbeResult> probe(ProbeRequest probeRequest) throws GkException {
+		futureProbeResult = new ProbeCallable();		
+		IGCodeProvider probeProvider = getZProbingCode(probeRequest, getCurrentGCodeContext());
+		//executeGCode(probeProvider);
+		executionService.addToExecutionQueue(probeProvider);
 		return Executors.newSingleThreadExecutor().submit(futureProbeResult);
 	}
 
+	private IGCodeProvider getZProbingCode(ProbeRequest probeRequest, GCodeContext gcodeContext) throws GkException{		
+		InstructionProvider instrProvider = new InstructionProvider();
+		// Move to clearance coordinate 
+		instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
+		instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getClearance(), null, null, null) );
+		// Move to probe position		
+		instrProvider.addInstruction( new StraightFeedInstruction(probeRequest.getProbeCoordinate().getX(), probeRequest.getProbeCoordinate().getY(), null, null, null, null) );
+		// Move to probe start position
+		instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getProbeStart(), null, null, null) );
+		// Actual probe command
+		instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getProbeFeedrate()) );
+		instrProvider.addInstruction( new StraightProbeInstruction(null, null, probeRequest.getProbeEnd(), null, null, null) );
+		return gcodeService.getGCodeProvider(gcodeContext, instrProvider);
+	}
+	
 	protected void handleProbeResult(boolean probed, Tuple6b position){
 		if(this.futureProbeResult != null){
 			ProbeResult probeResult = new ProbeResult();

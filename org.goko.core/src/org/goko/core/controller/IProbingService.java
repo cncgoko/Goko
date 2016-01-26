@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
 
 /**
@@ -32,11 +32,9 @@ public interface IProbingService extends IGokoService {
 
 	/**
 	 * Initiate a probe sequence with the given parameters
-	 * @param axis the probing axis
-	 * @param feedrate the probing speed
-	 * @param maximumPosition the maximum position at which the probing should stop if nothing was detected
+	 * @param probeRequest the ProbeRequest
 	 * @return a future Tuple6b
 	 * @throws GkException GkException
 	 */
-	Future<ProbeResult> probe(EnumControllerAxis axis, double feedrate, double maximumPosition) throws GkException;
+	Future<ProbeResult> probe(ProbeRequest probeRequest) throws GkException;
 }

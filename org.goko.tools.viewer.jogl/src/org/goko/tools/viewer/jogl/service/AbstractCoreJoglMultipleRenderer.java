@@ -36,7 +36,7 @@ public abstract class AbstractCoreJoglMultipleRenderer extends AbstractCoreJoglR
 	 */
 	public AbstractCoreJoglMultipleRenderer() {
 		super(0);
-		this.renderers = new ArrayList<AbstractCoreJoglRenderer>();
+		this.renderers = new ArrayList<AbstractCoreJoglRenderer>();		
 	}
 
 
@@ -125,5 +125,15 @@ public abstract class AbstractCoreJoglMultipleRenderer extends AbstractCoreJoglR
 		}
 	}
 
-
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.ICoreJoglRenderer#update()
+	 */
+	@Override
+	public void update() {
+		if(CollectionUtils.isNotEmpty(renderers)){
+			for (AbstractCoreJoglRenderer abstractCoreJoglRenderer : renderers) {
+				abstractCoreJoglRenderer.update();
+			}
+		}
+	}
 }

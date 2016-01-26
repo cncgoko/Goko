@@ -20,12 +20,15 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.goko.core.common.exception.GkException;
@@ -37,7 +40,7 @@ import org.goko.core.workspace.service.WorkspaceUIEvent;
 import org.goko.core.workspace.tree.GkProjectContentProvider;
 import org.goko.core.workspace.tree.GkProjectLabelProvider;
 
-public class WorkspacePart {
+public class WorkspacePart implements Listener {
 	private static final GkLog LOG = GkLog.getLogger(WorkspacePart.class);
 	@Inject
 	private IWorkspaceUIService workspaceUiService;
@@ -47,6 +50,7 @@ public class WorkspacePart {
 	private Composite configurationComposite;
 	/** The currently displayed properties panel */
 	private IPropertiesPanel currentPropertiesPanel;
+	private ScrolledComposite scrolledComposite;
 	
 	@Inject	
 	public WorkspacePart() {
@@ -55,7 +59,9 @@ public class WorkspacePart {
 
 	@PostConstruct
 	public void postConstruct(Composite parent) throws GkException {
+		
 		Composite rootComposite = new Composite(parent, SWT.NONE);
+		rootComposite.setBounds(0, 0, 448, 452);
 		rootComposite.setLayout(new GridLayout(1, false));
 		new Label(rootComposite, SWT.NONE);
 
@@ -80,9 +86,18 @@ public class WorkspacePart {
 		workspaceTreeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new GkProjectLabelProvider()));
 		workspaceTreeViewer.setInput(workspaceUiService.getProjectContainerUiProvider());
 
-		configurationComposite = new Composite(sashForm, SWT.NONE);
-		configurationComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-
+		scrolledComposite = new ScrolledComposite(sashForm, SWT.BORDER |SWT.V_SCROLL);
+		//scrolledComposite.setExpandHorizontal(true);
+		scrolledComposite.setExpandVertical(true);		
+		scrolledComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		scrolledComposite.addListener(SWT.Resize, this);
+		
+		configurationComposite = new Composite(scrolledComposite, SWT.NONE);
+		FillLayout fl_configurationComposite = new FillLayout(SWT.VERTICAL);
+		configurationComposite.setLayout(fl_configurationComposite);
+		
+	
+		scrolledComposite.setContent(configurationComposite);
 		sashForm.setWeights(new int[] {1, 1});
 
 		createWorkspaceTreeContextMenu();
@@ -111,10 +126,18 @@ public class WorkspacePart {
 		            	for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {
 		            		if(projectContainerUiProvider.providesConfigurationPanelFor(workspaceTreeViewer.getSelection())){		            			
 		            			currentPropertiesPanel = projectContainerUiProvider.createConfigurationPanelFor(configurationComposite, workspaceTreeViewer.getSelection());
+		            			
 		            		}
 						}
-		            }
+		            }  		
+		            scrolledComposite.setContent(configurationComposite);
+		            configurationComposite.layout();
+		            configurationComposite.setSize(configurationComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		    		
 		            configurationComposite.getParent().layout();
+		            
+		    		scrolledComposite.setMinSize(configurationComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		    		scrolledComposite.layout(true);
 	        	}catch(GkException e){
 	        		LOG.error(e);
 	        	}
@@ -170,4 +193,13 @@ public class WorkspacePart {
 		workspaceTreeViewer.setSelection(new StructuredSelection(data), true);
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+	 */
+	@Override
+	public void handleEvent(Event event) {	
+		configurationComposite.setSize(configurationComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolledComposite.setMinSize(configurationComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolledComposite.layout(true);
+	}
 }

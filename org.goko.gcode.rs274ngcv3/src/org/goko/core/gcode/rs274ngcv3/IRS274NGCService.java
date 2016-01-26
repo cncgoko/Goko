@@ -12,6 +12,7 @@ import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
+import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.math.BoundingTuple6b;
@@ -43,6 +44,8 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 
 	void deleteModifier(Integer idModifier) throws GkException;
 
+	void addModifierListener(IModifierListener listener);
+	
 	List<IModifier<GCodeProvider>> getModifier(List<Integer> lstId) throws GkException;
 
 	List<IModifier<GCodeProvider>> getModifierByGCodeProvider(Integer idGcodeProvider) throws GkException;

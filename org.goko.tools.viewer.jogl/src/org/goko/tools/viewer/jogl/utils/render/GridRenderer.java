@@ -36,7 +36,6 @@ import javax.vecmath.Vector4f;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.service.Layer;
@@ -76,7 +75,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	/**
 	 * Constructor
 	 */
-	public GridRenderer(String id, Tuple6b start, Tuple6b end, Quantity<Length> majorIncrement, Quantity<Length> minorIncrement, Color3f majorColor, Color3f minorColor, float opacity, Vector4f normal) {
+	public GridRenderer(String id, Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float opacity, Vector4f normal) {
 		super(GL.GL_LINES,  COLORS | VERTICES);
 		this.id = id;
 		this.setLayerId(Layer.LAYER_GRIDS);		
@@ -286,7 +285,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	/**
 	 * @return the majorIncrement
 	 */
-	public Quantity<Length> getMajorIncrement() {
+	public Length getMajorIncrement() {
 		return majorIncrement;
 	}
 
@@ -300,7 +299,7 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	/**
 	 * @return the minorIncrement
 	 */
-	public Quantity<Length> getMinorIncrement() {
+	public Length getMinorIncrement() {
 		return minorIncrement;
 	}
 

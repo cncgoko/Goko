@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.goko.autoleveler.bean.IHeightMap;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.element.GCodeLine;
@@ -25,9 +24,9 @@ import org.goko.core.gcode.rs274ngcv3.instruction.StraightTraverseInstruction;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.math.Tuple6b;
 
-public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider>{
+public abstract class AutoLevelerModifier<T extends IHeightMap> extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider>{
 	/** The offset map builder */
-	private IHeightMap heightMap;
+	private T heightMap;
 	/** The theoric height to compare with the probed height */
 	private Length theoricHeight;
 
@@ -59,8 +58,8 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 			if(instr.getType() == InstructionType.STRAIGHT_FEED || instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
 				resultInstructionProvider.addInstructionSet(applyModifier(localContext, (AbstractStraightInstruction) instr));
 
-			}else if(instr.getType() == InstructionType.ARC_FEED){
-				throw new GkTechnicalException("ARC_FEED command are not supported in auto leveler modifier");
+//			}else if(instr.getType() == InstructionType.ARC_FEED){
+//				throw new GkTechnicalException("ARC_FEED command are not supported in auto leveler modifier");
 
 			}else{
 				// Other non modified instruction
@@ -94,7 +93,9 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 			Tuple6b target = lstPoints.get(i+1);
 			InstructionSet instructionSet = new InstructionSet();
 			Length probedHeight = heightMap.getHeight(target.getX(), target.getY());
-
+			if(probedHeight == null){
+				probedHeight = Length.ZERO;
+			}
 			// Let's compute the theorical height in the given segment
 			BigDecimal factor = BigDecimal.ONE;
 			if(!start.getX().equals(end.getX())){
@@ -134,14 +135,14 @@ public class AutoLevelerModifier extends AbstractModifier<GCodeProvider> impleme
 	/**
 	 * @return the heightMap
 	 */
-	public IHeightMap getHeightMap() {
+	public T getHeightMap() {
 		return heightMap;
 	}
 
 	/**
 	 * @param heightMap the heightMap to set
 	 */
-	public void setHeightMap(IHeightMap heightMap) {
+	public void setHeightMap(T heightMap) {
 		this.heightMap = heightMap;
 	}
 

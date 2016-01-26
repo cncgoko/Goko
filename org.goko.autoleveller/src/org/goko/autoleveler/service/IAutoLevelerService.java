@@ -19,22 +19,9 @@
  */
 package org.goko.autoleveler.service;
 
-import java.util.List;
-
-import org.goko.autoleveler.bean.IHeightMapBuilder;
-import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 
 public interface IAutoLevelerService extends IGokoService{
 
-	List<IHeightMapBuilder> getOffsetMapBuilder() throws GkException;
-
-	IHeightMapBuilder getOffsetMapBuilder(Integer id) throws GkException;
-
-	void addOffsetMapBuilder(IHeightMapBuilder builder) throws GkException;
-
-	void deleteOffsetMapBuilder(IHeightMapBuilder builder) throws GkException;
-
-	void deleteOffsetMapBuilder(Integer idBuilder) throws GkException;
 
 }

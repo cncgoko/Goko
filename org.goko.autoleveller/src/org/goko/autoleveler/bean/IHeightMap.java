@@ -10,6 +10,12 @@ import org.goko.core.math.Tuple6b;
 public interface IHeightMap extends IIdBean{
 
 	/**
+	 * Indicates if this map has already been probed against real surface
+	 * @return <code>true</code> if it was probed, <code>false</code> otherwise
+	 */
+	boolean isProbed();
+	
+	/**
 	 * Returns the offset at the given position
 	 * @param x the X position of the location point
 	 * @param y the Y position of the location point

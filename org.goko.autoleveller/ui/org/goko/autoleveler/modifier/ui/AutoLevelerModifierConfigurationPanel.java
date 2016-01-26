@@ -2,15 +2,18 @@ package org.goko.autoleveler.modifier.ui;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.goko.autoleveler.modifier.AutoLevelerModifier;
+import org.goko.autoleveler.modifier.GridAutoLevelerModifier;
+import org.goko.common.dialog.GkErrorDialog;
+import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
@@ -21,7 +24,7 @@ import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPropertiesPanel;
 
-public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPropertiesPanel<AutoLevelerModifier, AutoLevelerModifierConfigurationController, AutoLevelerModifierConfigurationModel> implements IPropertiesPanel{
+public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPropertiesPanel<GridAutoLevelerModifier, AutoLevelerModifierConfigurationController, AutoLevelerModifierConfigurationModel> implements IPropertiesPanel{
 	private static final GkLog LOG = GkLog.getLogger(AutoLevelerModifierConfigurationPanel.class);
 
 	/**
@@ -35,13 +38,41 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 	 * @wbp.parser.entryPoint
 	 */
 	public void createContent(Composite parent , IModifier<?> modifier) throws GkException {
-		getController().setModifier((AutoLevelerModifier) modifier);
+		getController().setModifier((GridAutoLevelerModifier) modifier);
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
-		GridLayout gl_composite = new GridLayout(1, false);
-		gl_composite.marginRight = 20;
+		GridLayout gl_composite = new GridLayout(1, false);		
 		composite.setLayout(gl_composite);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		Group grpAction = new Group(composite, SWT.NONE);
+		grpAction.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+		grpAction.setText("Action");
+		grpAction.setLayout(new GridLayout(2, true));
+		grpAction.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		
+		Button btnStartProbing = new Button(grpAction, SWT.NONE);
+		btnStartProbing.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					getController().startMapProbing();
+				} catch (GkException e1) {
+					GkErrorDialog.openDialog(null, e1);
+				}
+			}
+		});
+		btnStartProbing.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnStartProbing.setText("Start probing");
+		
+		Button btnClearProbedData = new Button(grpAction, SWT.NONE);
+		btnClearProbedData.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				getController().clearProbedData();
+			}
+		});
+		btnClearProbedData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		btnClearProbedData.setText("Clear probed data");
 
 		Group grpArea = new Group(composite, SWT.NONE);
 		grpArea.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
@@ -89,22 +120,19 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		Label lblStep = new Label(composite_1, SWT.NONE);
 		lblStep.setText("Step");
 
-		UiQuantityFieldEditor<Length> xStep = new UiLengthFieldEditor(composite_1, SWT.NONE);
+		UiBigDecimalFieldEditor xStep = new UiBigDecimalFieldEditor(composite_1, SWT.NONE);
 		xStep.setPropertyName(AutoLevelerModifierConfigurationModel.X_STEP);
-		xStep.setWidthInChars(6);
-		xStep.setUnit(GokoPreference.getInstance().getLengthUnit());
+		xStep.setWidthInChars(6);		
 		xStep.setLabel("X");
 
-		UiQuantityFieldEditor<Length> yStep = new UiLengthFieldEditor(composite_1, SWT.NONE);
+		UiBigDecimalFieldEditor yStep = new UiBigDecimalFieldEditor(composite_1, SWT.NONE);
 		yStep.setPropertyName(AutoLevelerModifierConfigurationModel.Y_STEP);
 		yStep.setWidthInChars(6);
-		yStep.setUnit(GokoPreference.getInstance().getLengthUnit());
 		yStep.setLabel("Y");
 
-		Button btnNewButton = new Button(grpArea, SWT.NONE);
-		btnNewButton.setImage(ResourceManager.getPluginImage("org.goko.autoleveller", "icons/document-bounds-32.png"));
-		btnNewButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-		btnNewButton.setText("GCode bounds");
+		Button btnMatchBounds = new Button(grpArea, SWT.NONE);		
+		btnMatchBounds.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		btnMatchBounds.setText("Match bounds");
 
 		Group grpProbing = new Group(composite, SWT.NONE);
 		grpProbing.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
@@ -147,6 +175,24 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		probeFeedrate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		probeFeedrate.setLabel("Probe feedrate");
 
+		getController().addEnableBinding(xStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(yStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(xEndCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(yEndCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(xStep, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(yStep, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(zClearanceCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(zExpectedCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(zProbeStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(zProbeLowerCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(probeFeedrate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		
+		getController().addEnableBinding(btnStartProbing, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(btnMatchBounds, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		
+		getController().addEnableReverseBinding(btnClearProbedData, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		
+		
 		getController().addFieldEditor(xStartCoordinate);
 		getController().addFieldEditor(yStartCoordinate);
 		getController().addFieldEditor(xEndCoordinate);
@@ -158,7 +204,5 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		getController().addFieldEditor(zProbeStartCoordinate);
 		getController().addFieldEditor(zProbeLowerCoordinate);
 		getController().addFieldEditor(probeFeedrate);
-
-		getController().getModifier().setHeightMap(getController().getBuilder().getMap());
 	}
 }

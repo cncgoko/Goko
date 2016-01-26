@@ -43,4 +43,6 @@ public interface ICoreJoglRenderer {
 	boolean useAlpha();	
 	
 	BoundingTuple6b getBounds();
+	
+	void update();
 }

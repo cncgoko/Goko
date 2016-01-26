@@ -23,6 +23,17 @@ public class InstructionProvider implements IInstructionProvider<AbstractInstruc
 	public List<InstructionSet> getInstructionSets() {
 		return lstInstructionSet;
 	}
+	
+	/**
+	 * Adds the given Instruction set
+	 * @param set the set to add
+	 */
+	public void addInstruction(AbstractInstruction instruction){
+		InstructionSet set = new InstructionSet();
+		set.addInstruction(instruction);
+		lstInstructionSet.add(set);
+	}
+	
 	/**
 	 * Adds the given Instruction set
 	 * @param set the set to add

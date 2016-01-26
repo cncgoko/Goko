@@ -73,7 +73,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 	}
 
 	public boolean equals(Q obj) {
-		return value.equals(obj.value(getUnit()));
+		return value.compareTo(obj.value(getUnit())) == 0;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#value(org.goko.core.common.measure.units.Unit)

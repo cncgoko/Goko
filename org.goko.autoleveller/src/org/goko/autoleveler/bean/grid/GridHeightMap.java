@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.autoleveler.bean.IHeightMap;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.utils.AbstractIdBean;
@@ -25,7 +26,17 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	private int xDivisionCount;
 	/** Number of divisions on the Y axis*/
 	private int yDivisionCount;
-
+	/** The clearance height */
+	private Length clearanceHeight;
+	/** The probe start height */
+	private Length probeStartHeight;
+	/** The probe lower height */
+	private Length probeLowerHeight;
+	/** The probe feed rate */
+	private Length probeFeedrate;
+	/** Boolean indicating that the map has been probed */
+	private boolean isProbed;
+		
 	/**
 	 * Constructor
 	 * @param vertices the grid of offsets indexes
@@ -35,8 +46,8 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 		super();
 		this.vertices = vertices;
 		this.offsets = offsets;
-		this.xDivisionCount = vertices.length;
-		this.yDivisionCount = vertices[0].length;
+		this.xDivisionCount = vertices.length - 1;
+		this.yDivisionCount = vertices[0].length - 1;
 		this.start = offsets.get( vertices[0][0]);
 		this.end   = offsets.get( vertices[xDivisionCount - 1][yDivisionCount - 1]);
 	}
@@ -46,21 +57,25 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 */
 	@Override
 	public Length getHeight(Length x, Length y) throws GkException {
-		Tuple6b clippedPosition = new Tuple6b(x.getUnit(), x, y, Length.ZERO);
-		// Clamp the target position in the map area
-		clippedPosition = clippedPosition.max(start);
-		clippedPosition = clippedPosition.min(end);
-
-		int cellXIndex = getCellXIndex(x);
-		int cellYIndex = getCellYIndex(y);
-
-		// Get the corner position around the target point
-		Tuple6b pA = offsets.get( vertices[cellXIndex  ][cellYIndex  ]);
-		Tuple6b pB = offsets.get( vertices[cellXIndex  ][cellYIndex+1]);
-		Tuple6b pC = offsets.get( vertices[cellXIndex+1][cellYIndex  ]);
-		Tuple6b pD = offsets.get( vertices[cellXIndex+1][cellYIndex+1]);
-
-		return findOffsetBilinear(clippedPosition, pA, pB, pC, pD);
+		Tuple6b clippedPosition = new Tuple6b(x, y, Length.ZERO);
+		if(x.greaterThan(start.getX()) && x.lowerThan(end.getX())
+			&& y.greaterThan(start.getY()) && y.lowerThan(end.getY())){
+			// Clamp the target position in the map area
+			clippedPosition = clippedPosition.max(start);
+			clippedPosition = clippedPosition.min(end);
+			
+			int cellXIndex = getCellXIndex(x);
+			int cellYIndex = getCellYIndex(y);
+			
+			// Get the corner position around the target point
+			Tuple6b pA = offsets.get( vertices[cellXIndex  ][cellYIndex  ]);
+			Tuple6b pB = offsets.get( vertices[cellXIndex  ][cellYIndex+1]);
+			Tuple6b pC = offsets.get( vertices[cellXIndex+1][cellYIndex  ]);
+			Tuple6b pD = offsets.get( vertices[cellXIndex+1][cellYIndex+1]);
+		
+			return findOffsetBilinear(clippedPosition, pA, pB, pC, pD);
+		}
+		return null;
 	}
 
 	/** (inheritDoc)
@@ -197,9 +212,9 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 */
 	private int getCellXIndex(Length x){
 		int cellIndex = 0;
-		for(int i = 0; i < xDivisionCount - 1 ; i++){
+		for(int i = 0; i <= xDivisionCount ; i++){
 			Tuple6b gridPoint = offsets.get(vertices[i][0]);
-			if(gridPoint.getX().doubleValue(Units.MILLIMETRE) >= x.doubleValue(Units.MILLIMETRE) ){
+			if(gridPoint.getX().greaterThanOrEqualTo(x) ){
 				break;
 			}
 			cellIndex = i;
@@ -214,9 +229,9 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 */
 	private int getCellYIndex(Length y){
 		int cellIndex = 0;
-		for(int i = 0; i < yDivisionCount - 1; i++){
+		for(int i = 0; i <= yDivisionCount; i++){
 			Tuple6b gridPoint = offsets.get(vertices[0][i]);
-			if(gridPoint.getY().doubleValue(Units.MILLIMETRE) >= y.doubleValue(Units.MILLIMETRE) ){
+			if(gridPoint.getY().greaterThanOrEqualTo(y) ){
 				break;
 			}
 			cellIndex = i;
@@ -248,33 +263,194 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 
 		return zFinal;
 	}
+	
 	/**
-	 * Test method
-	 * @param args arguments
-	 * @throws GkException GkException
+	 * @return the offsets
 	 */
-	public static void main(String[] args) throws GkException {
-		List<Tuple6b> lOffsets = new ArrayList<>();
-		lOffsets.add( new Tuple6b(new BigDecimal("0"), new BigDecimal("0"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("10"), new BigDecimal("0"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("20"), new BigDecimal("0"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("0"), new BigDecimal("10"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("10"), new BigDecimal("10"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("20"), new BigDecimal("10"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("0"), new BigDecimal("20"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("10"), new BigDecimal("20"), new BigDecimal("0"), Units.MILLIMETRE));
-		lOffsets.add( new Tuple6b(new BigDecimal("20"), new BigDecimal("20"), new BigDecimal("0"), Units.MILLIMETRE));
-
-		int[][] lVertices = new int[][]{{0,3,6},{1,4,7},{2,5,8}};
-		GridHeightMap map = new GridHeightMap(lVertices, lOffsets);
-
-		Tuple6b pStart = new Tuple6b(new BigDecimal("5"), new BigDecimal("5"), new BigDecimal("0"), Units.MILLIMETRE);
-		Tuple6b pEnd   = new Tuple6b(new BigDecimal("15"), new BigDecimal("5"), new BigDecimal("0"), Units.MILLIMETRE);
-		List<Tuple6b> lst = map.splitSegment(pStart, pEnd);
-		long t = System.currentTimeMillis();
-//		for(int i = 0; i < 100000; i++){
-//			map.splitSegment(pStart, pEnd);
-//		}
-		System.out.println( (System.currentTimeMillis() - t) +"ms");
+	public List<Tuple6b> getOffsets() {
+		return offsets;
 	}
+
+	public Tuple6b getPoint(int x, int y){
+		if(vertices != null && vertices.length > x){
+			if(vertices[x] != null && vertices[x].length > y){
+				int index = vertices[x][y];
+				return offsets.get(index);
+			}	
+		}
+		return null;
+	}
+	
+	public void build() throws GkException{
+		if(xDivisionCount <= 0 || yDivisionCount <= 0){
+			throw new GkTechnicalException("X/Y division count should be positive");
+		}
+		Length dx = end.getX().subtract(start.getX()).divide(xDivisionCount);
+		Length dy = end.getY().subtract(start.getY()).divide(yDivisionCount);
+		
+		offsets = new ArrayList<Tuple6b>();
+		vertices = new int[xDivisionCount + 1][yDivisionCount + 1];
+		for(int x = 0 ; x <= xDivisionCount; x++){			
+			Length xCoord = start.getX().add(dx.multiply(x));
+			for(int y = 0 ; y <= yDivisionCount; y++){
+				vertices[x][y] = offsets.size();
+				/// TEMPORARY TEST CODE
+				//float dz = getProbeStartHeight().subtract(getProbeLowerHeight()).value(JoglUtils.JOGL_UNIT).floatValue();
+				offsets.add(new Tuple6b(xCoord, start.getY().add(dy.multiply(y)), Length.ZERO));//Length.valueOf(BigDecimal.valueOf(Math.random()*dz-(dz/2)), LengthUnit.MILLIMETRE)));
+				setProbed(true);
+				/// END OF TEMPORARY TEST CODE
+			}
+		}			
+	}
+	/**
+	 * @param offsets the offsets to set
+	 */
+	public void setOffsets(List<Tuple6b> offsets) {
+		this.offsets = offsets;
+	}
+
+	/**
+	 * @return the start
+	 */
+	public Tuple6b getStart() {
+		return start;
+	}
+
+	/**
+	 * @param start the start to set
+	 */
+	public void setStart(Tuple6b start) {
+		this.start = start;
+	}
+
+	/**
+	 * @return the end
+	 */
+	public Tuple6b getEnd() {
+		return end;
+	}
+
+	/**
+	 * @param end the end to set
+	 */
+	public void setEnd(Tuple6b end) {
+		this.end = end;
+	}
+
+	/**
+	 * @return the xDivisionCount
+	 */
+	public int getxDivisionCount() {
+		return xDivisionCount;
+	}
+
+	/**
+	 * @param xDivisionCount the xDivisionCount to set
+	 */
+	public void setxDivisionCount(int xDivisionCount) {
+		this.xDivisionCount = xDivisionCount;
+	}
+
+	/**
+	 * @return the yDivisionCount
+	 */
+	public int getyDivisionCount() {
+		return yDivisionCount;
+	}
+
+	/**
+	 * @param yDivisionCount the yDivisionCount to set
+	 */
+	public void setyDivisionCount(int yDivisionCount) {
+		this.yDivisionCount = yDivisionCount;
+	}
+
+	/**
+	 * @return
+	 */
+	public Length getStepSizeX() {		
+		return end.getX().subtract(start.getX()).divide(xDivisionCount);
+	}
+	
+	/**
+	 * @return
+	 */
+	public Length getStepSizeY() {		
+		return end.getY().subtract(start.getY()).divide(yDivisionCount);
+	}
+
+	/**
+	 * @return the clearanceHeight
+	 */
+	public Length getClearanceHeight() {
+		return clearanceHeight;
+	}
+
+	/**
+	 * @param clearanceHeight the clearanceHeight to set
+	 */
+	public void setClearanceHeight(Length clearanceHeight) {
+		this.clearanceHeight = clearanceHeight;
+	}
+
+	/**
+	 * @return the probeStartHeight
+	 */
+	public Length getProbeStartHeight() {
+		return probeStartHeight;
+	}
+
+	/**
+	 * @param probeStartHeight the probeStartHeight to set
+	 */
+	public void setProbeStartHeight(Length probeStartHeight) {
+		this.probeStartHeight = probeStartHeight;
+	}
+
+	/**
+	 * @return the probeLowerHeight
+	 */
+	public Length getProbeLowerHeight() {
+		return probeLowerHeight;
+	}
+
+	/**
+	 * @param probeLowerHeight the probeLowerHeight to set
+	 */
+	public void setProbeLowerHeight(Length probeLowerHeight) {
+		this.probeLowerHeight = probeLowerHeight;
+	}
+
+	/**
+	 * @return the probeFeedrate
+	 */
+	public Length getProbeFeedrate() {
+		return probeFeedrate;
+	}
+
+	/**
+	 * @param probeFeedrate the probeFeedrate to set
+	 */
+	public void setProbeFeedrate(Length probeFeedrate) {
+		this.probeFeedrate = probeFeedrate;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.autoleveler.bean.IHeightMap#isProbed()
+	 */
+	@Override
+	public boolean isProbed() {
+		return isProbed;
+	}
+
+	/**
+	 * @param isProbed the isProbed to set
+	 */
+	public void setProbed(boolean isProbed) {
+		this.isProbed = isProbed;
+	}
+	
+	
+
+
 }

@@ -1,5 +1,7 @@
 package org.goko.autoleveler.modifier.ui;
 
+import java.math.BigDecimal;
+
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierModelObject;
 
@@ -15,18 +17,20 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	protected static final String Z_PROBE_START		 = "probeStartHeight";
 	protected static final String Z_PROBE_LOWER		 = "probeLowerHeight";
 	protected static final String PROBE_FEEDRATE	 = "probeFeedrate";
+	protected static final String MODIFICATION_ALLOWED	 = "modificationAllowed";
 
 	private Length startCoordinateX;
 	private Length startCoordinateY;
 	private Length endCoordinateX;
 	private Length endCoordinateY;
-	private Length stepSizeX;
-	private Length stepSizeY;
+	private BigDecimal stepSizeX;
+	private BigDecimal stepSizeY;
 	private Length clearanceHeight;
 	private Length expectedHeight;
 	private Length probeStartHeight;
 	private Length probeLowerHeight;
 	private Length probeFeedrate;
+	private boolean modificationAllowed;
 	/**
 	 * @return the startCoordinateX
 	 */
@@ -78,25 +82,25 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	/**
 	 * @return the stepSizeX
 	 */
-	public Length getStepSizeX() {
+	public BigDecimal getStepSizeX() {
 		return stepSizeX;
 	}
 	/**
 	 * @param stepSizeX the stepSizeX to set
 	 */
-	public void setStepSizeX(Length stepSizeX) {
+	public void setStepSizeX(BigDecimal stepSizeX) {
 		firePropertyChange(X_STEP, this.stepSizeX, this.stepSizeX = stepSizeX);
 	}
 	/**
 	 * @return the stepSizeY
 	 */
-	public Length getStepSizeY() {
+	public BigDecimal getStepSizeY() {
 		return stepSizeY;
 	}
 	/**
 	 * @param stepSizeY the stepSizeY to set
 	 */
-	public void setStepSizeY(Length stepSizeY) {
+	public void setStepSizeY(BigDecimal stepSizeY) {
 		firePropertyChange(Y_STEP, this.stepSizeY, this.stepSizeY = stepSizeY);
 	}
 	/**
@@ -158,6 +162,18 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	 */
 	public void setProbeFeedrate(Length probeFeedrate) {
 		firePropertyChange(PROBE_FEEDRATE, this.probeFeedrate, this.probeFeedrate = probeFeedrate);
+	}
+	/**
+	 * @return the modificationAllowed
+	 */
+	public boolean isModificationAllowed() {
+		return modificationAllowed;
+	}
+	/**
+	 * @param modificationAllowed the modificationAllowed to set
+	 */
+	public void setModificationAllowed(boolean modificationAllowed) {
+		firePropertyChange(MODIFICATION_ALLOWED, this.modificationAllowed, this.modificationAllowed = modificationAllowed);
 	}
 
 }
