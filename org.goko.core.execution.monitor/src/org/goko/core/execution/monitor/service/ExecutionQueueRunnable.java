@@ -163,9 +163,11 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	 */
 	@Override
 	public void stop() throws GkException {
-		executor.stop();
-		setState(ExecutionState.STOPPED);
-		executionService.notifyExecutionCanceled(executionQueue.getCurrentToken());
+		if(getState() != ExecutionState.STOPPED){
+			setState(ExecutionState.STOPPED);
+			executor.stop();		
+			//executionService.notifyExecutionCanceled(executionQueue.getCurrentToken());			
+		}
 	}
 
 }

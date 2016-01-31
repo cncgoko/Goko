@@ -32,8 +32,10 @@ import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
 
 public interface ITinygControllerService extends IControllerService<ExecutionTokenState, GCodeContext>,
 												 IProbingService,
@@ -42,7 +44,8 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 												 IJogService,												 
 												 IWorkVolumeProvider,
 												 IControllerConfigurationFileExporter,
-												 IControllerConfigurationFileImporter{
+												 IControllerConfigurationFileImporter,
+												 IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>{
 
 	/**
 	 * Returns the TinyG configuration
@@ -98,4 +101,6 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 	public void setAvailableBuffer(int availableBuffer) throws GkException;
 	
 	void send(GCodeLine gCodeLine) throws GkException;
+	
+	void stopMotion() throws GkException;
 }

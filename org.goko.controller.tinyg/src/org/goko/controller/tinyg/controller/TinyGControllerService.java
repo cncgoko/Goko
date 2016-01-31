@@ -5,11 +5,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -56,6 +59,7 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -93,8 +97,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
 	private TinyGState tinygState;
-	/** Waiting probe result */
-	private ProbeCallable futureProbeResult;
 	/** Communicator */
 	private TinyGCommunicator communicator;
 	/** Applicative log service */
@@ -103,6 +105,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private EventAdmin eventAdmin;
 	private TinyGJoggingRunnable jogRunnable;
 	private TinyGExecutor tinygExecutor;
+	private CompletionService<ProbeResult> completionService;
+	private List<ProbeCallable> lstProbeCallable;	
+	private IGCodeProvider probeGCodeProvider;
+	
 	/**
 	 * Constructor
 	 * @throws GkException GkException
@@ -580,8 +586,29 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	public void stopMotion() throws GkException{
 		getConnectionService().clearOutputBuffer();
-		communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
+		
+		if(CollectionUtils.isNotEmpty(lstProbeCallable)){
+			// Probe active, let's hack over a TinyG bug
+			communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD));
+			Executors.newSingleThreadExecutor().submit(new Runnable() {
+				
+				@Override
+				public void run() {					
+					try {
+						Thread.sleep(1000);
+						communicator.sendImmediately(GkUtils.toBytesList(TinyG.QUEUE_FLUSH));
+					} catch (GkException | InterruptedException e) {
+						LOG.error(e);
+					}
+				}
+			});
+		}else{
+			communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
+		}
+				
 		executionService.stopQueueExecution();
+		cancelActiveProbing();
+		//communicator.send(GkUtils.toBytesList(TinyG.QUEUE_FLUSH));
 		// Force a queue report update
 		//	updateQueueReport();
 		//	this.resetAvailableBuffer();
@@ -645,39 +672,88 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return "440.18";
 	}
 
+	protected void cancelActiveProbing() throws GkException{
+		if(CollectionUtils.isNotEmpty(lstProbeCallable)){
+			for (ProbeCallable probeCallable: lstProbeCallable) {
+				probeCallable.setProbeResult(null);
+			}
+			lstProbeCallable.clear();			
+		}
+	}
+	
+	protected void clearProbingGCode() throws GkException{
+		if(probeGCodeProvider != null){
+			gcodeService.deleteGCodeProvider(probeGCodeProvider.getId());
+			probeGCodeProvider = null;
+		}
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#probe(java.util.List)
+	 */
+	@Override
+	public CompletionService<ProbeResult> probe(List<ProbeRequest> lstProbeRequest) throws GkException {		
+		Executor executor = Executors.newSingleThreadExecutor();
+		this.completionService = new ExecutorCompletionService<ProbeResult>(executor);		
+		this.lstProbeCallable = new ArrayList<>();
+		
+		for (ProbeRequest probeRequest : lstProbeRequest) {
+			ProbeCallable probeCallable = new ProbeCallable();
+			this.lstProbeCallable.add(probeCallable);
+			completionService.submit(probeCallable);			
+		}
+		
+		probeGCodeProvider = getZProbingCode(lstProbeRequest, getCurrentGCodeContext());
+		probeGCodeProvider.setCode("TinyG probing");
+		gcodeService.addGCodeProvider(probeGCodeProvider);
+		probeGCodeProvider = gcodeService.getGCodeProvider(probeGCodeProvider.getId());// Required since internally the provider is a new one
+		executionService.addToExecutionQueue(probeGCodeProvider);
+		executionService.beginQueueExecution();
+		
+		return completionService;
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
 	 */
 	@Override
-	public Future<ProbeResult> probe(ProbeRequest probeRequest) throws GkException {
-		futureProbeResult = new ProbeCallable();		
-		IGCodeProvider probeProvider = getZProbingCode(probeRequest, getCurrentGCodeContext());
-		//executeGCode(probeProvider);
-		executionService.addToExecutionQueue(probeProvider);
-		return Executors.newSingleThreadExecutor().submit(futureProbeResult);
+	public CompletionService<ProbeResult> probe(ProbeRequest probeRequest) throws GkException {
+		List<ProbeRequest> lstProbeRequest = new ArrayList<ProbeRequest>();
+		lstProbeRequest.add(probeRequest);
+		return probe(lstProbeRequest);		
 	}
 
-	private IGCodeProvider getZProbingCode(ProbeRequest probeRequest, GCodeContext gcodeContext) throws GkException{		
+	private IGCodeProvider getZProbingCode(List<ProbeRequest> lstProbeRequest, GCodeContext gcodeContext) throws GkException{		
 		InstructionProvider instrProvider = new InstructionProvider();
-		// Move to clearance coordinate 
-		instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
-		instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getClearance(), null, null, null) );
-		// Move to probe position		
-		instrProvider.addInstruction( new StraightFeedInstruction(probeRequest.getProbeCoordinate().getX(), probeRequest.getProbeCoordinate().getY(), null, null, null, null) );
-		// Move to probe start position
-		instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getProbeStart(), null, null, null) );
-		// Actual probe command
-		instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getProbeFeedrate()) );
-		instrProvider.addInstruction( new StraightProbeInstruction(null, null, probeRequest.getProbeEnd(), null, null, null) );
+		for (ProbeRequest probeRequest : lstProbeRequest) {
+			// Move to clearance coordinate 
+			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
+			instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getClearance(), null, null, null) );
+			// Move to probe position		
+			instrProvider.addInstruction( new StraightFeedInstruction(probeRequest.getProbeCoordinate().getX(), probeRequest.getProbeCoordinate().getY(), null, null, null, null) );
+			// Move to probe start position
+			instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getProbeStart(), null, null, null) );
+			// Actual probe command
+			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getProbeFeedrate()) );
+			instrProvider.addInstruction( new StraightProbeInstruction(null, null, probeRequest.getProbeEnd(), null, null, null) );
+		}
 		return gcodeService.getGCodeProvider(gcodeContext, instrProvider);
 	}
 	
-	protected void handleProbeResult(boolean probed, Tuple6b position){
-		if(this.futureProbeResult != null){
+	protected void handleProbeResult(boolean probed, Tuple6b position) throws GkException{
+		if(CollectionUtils.isNotEmpty(lstProbeCallable)){
 			ProbeResult probeResult = new ProbeResult();
 			probeResult.setProbed(probed);
 			probeResult.setProbedPosition(position);
-			this.futureProbeResult.setProbeResult(probeResult);
+			
+			ProbeCallable callable = lstProbeCallable.remove(0);
+			callable.setProbeResult(probeResult);
+		}
+		
+		if(CollectionUtils.isEmpty(lstProbeCallable)){
+			if(probeGCodeProvider != null){
+				gcodeService.deleteGCodeProvider(probeGCodeProvider.getId());
+				probeGCodeProvider = null;
+			}
 		}
 	}
 	/** (inheritDoc)
@@ -1042,4 +1118,62 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public boolean isJogPreciseForced() throws GkException {
 		return false;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
+	 */
+	@Override
+	public void onQueueExecutionStart() throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(IExecutionToken<ExecutionTokenState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IExecutionToken<ExecutionTokenState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(IExecutionToken<ExecutionTokenState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionResume(IExecutionToken<ExecutionTokenState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(IExecutionToken<ExecutionTokenState> token) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {
+		clearProbingGCode();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		clearProbingGCode();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {}
 }

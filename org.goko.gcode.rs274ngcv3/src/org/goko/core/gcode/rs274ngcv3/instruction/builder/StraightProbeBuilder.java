@@ -40,6 +40,9 @@ public class StraightProbeBuilder extends AbstractInstructionBuilder<StraightPro
 		Angle b = findWordAngle("B", words, null, AngleUnit.DEGREE_ANGLE);
 		Angle c = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
  			
+		// Consume the word
+		GCodeWordUtils.findAndRemoveWord("G38.2", words);
+				
 		return new StraightProbeInstruction(x, y, z, a, b, c);
 	}
 }

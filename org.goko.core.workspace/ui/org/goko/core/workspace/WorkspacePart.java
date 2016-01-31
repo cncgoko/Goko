@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -87,14 +88,18 @@ public class WorkspacePart implements Listener {
 		workspaceTreeViewer.setInput(workspaceUiService.getProjectContainerUiProvider());
 
 		scrolledComposite = new ScrolledComposite(sashForm, SWT.BORDER |SWT.V_SCROLL);
+		scrolledComposite.setExpandHorizontal(true);
+		scrolledComposite.setAlwaysShowScrollBars(true);
 		//scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setExpandVertical(true);		
 		scrolledComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 		scrolledComposite.addListener(SWT.Resize, this);
 		
 		configurationComposite = new Composite(scrolledComposite, SWT.NONE);
-		FillLayout fl_configurationComposite = new FillLayout(SWT.VERTICAL);
-		configurationComposite.setLayout(fl_configurationComposite);
+		GridLayout gl_configurationComposite = new GridLayout(1, false);
+		gl_configurationComposite.marginWidth = 0;
+		gl_configurationComposite.marginHeight = 0;
+		configurationComposite.setLayout(gl_configurationComposite);
 		
 	
 		scrolledComposite.setContent(configurationComposite);
@@ -126,18 +131,17 @@ public class WorkspacePart implements Listener {
 		            	for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {
 		            		if(projectContainerUiProvider.providesConfigurationPanelFor(workspaceTreeViewer.getSelection())){		            			
 		            			currentPropertiesPanel = projectContainerUiProvider.createConfigurationPanelFor(configurationComposite, workspaceTreeViewer.getSelection());
-		            			
 		            		}
 						}
 		            }  		
 		            scrolledComposite.setContent(configurationComposite);
-		            configurationComposite.layout();
-		            configurationComposite.setSize(configurationComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		    		
+		            Point size = configurationComposite.computeSize(280, SWT.DEFAULT);		            
+		            configurationComposite.setSize(size);
+		            configurationComposite.layout(true);
 		            configurationComposite.getParent().layout();
 		            
-		    		scrolledComposite.setMinSize(configurationComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		    		scrolledComposite.layout(true);
+		    		scrolledComposite.setMinSize(configurationComposite.computeSize(280, SWT.DEFAULT));		    		
+		    		scrolledComposite.layout(true);		    		
 	        	}catch(GkException e){
 	        		LOG.error(e);
 	        	}

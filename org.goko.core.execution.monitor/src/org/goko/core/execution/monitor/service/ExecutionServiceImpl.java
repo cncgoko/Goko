@@ -366,10 +366,12 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	 */
 	@Override
 	public void stopQueueExecution() throws GkException {
-		if(executionQueueRunnable != null){
-			executionQueueRunnable.stop();
+		if(getExecutionState() != ExecutionState.STOPPED){
+			if(executionQueueRunnable != null){
+				executionQueueRunnable.stop();
+			}
+			unlockGCodeProvider();
 		}
-		unlockGCodeProvider();
 	}
 
 

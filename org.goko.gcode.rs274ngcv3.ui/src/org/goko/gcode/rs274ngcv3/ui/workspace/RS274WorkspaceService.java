@@ -9,6 +9,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
@@ -27,7 +28,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
  * @author Psyko
  *
  */
-public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener{
+public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener, IModifierListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274WorkspaceService.class);
 	/** Service ID */
@@ -66,6 +67,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 		// Create the RS274 project container
 		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
 		getGcodeService().addListener(this);		
+		getGcodeService().addModifierListener(this);		
 		initModifierUiProvider();
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -151,6 +153,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		workspaceUIService.select(provider);
 		markProjectDirty();
 	}
 
@@ -159,7 +162,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 */
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
-		workspaceUIService.refreshWorkspaceUi();
+	//	workspaceUIService.refreshWorkspaceUi();
 		markProjectDirty();
 	}
 
@@ -203,6 +206,30 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 */
 	public void setWorkspaceService(IWorkspaceService workspaceService) {
 		this.workspaceService = workspaceService;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener#onModifierCreate(java.lang.Integer)
+	 */
+	@Override
+	public void onModifierCreate(Integer idModifier) throws GkException {
+		workspaceUIService.refreshWorkspaceUi();
+		workspaceUIService.select(gcodeService.getModifier(idModifier));
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener#onModifierUpdate(java.lang.Integer)
+	 */
+	@Override
+	public void onModifierUpdate(Integer idModifier) throws GkException {
+		workspaceUIService.refreshWorkspaceUi();
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener#onModifierDelete(java.lang.Integer)
+	 */
+	@Override
+	public void onModifierDelete(Integer idModifier) throws GkException {
+		workspaceUIService.refreshWorkspaceUi();
 	}
 
 }

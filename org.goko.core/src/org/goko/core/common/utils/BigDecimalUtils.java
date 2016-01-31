@@ -45,7 +45,13 @@ public class BigDecimalUtils {
 	
 	public static String toString(BigDecimal value){
 		DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance();
+		
+		DecimalFormatSymbols sym = df.getDecimalFormatSymbols();
+		sym.setDecimalSeparator('.');
+		df.setDecimalFormatSymbols(sym);
 		df.setGroupingUsed(false);
+		df.setParseBigDecimal(true);		
+		
 		return df.format(value);
 	}
 	

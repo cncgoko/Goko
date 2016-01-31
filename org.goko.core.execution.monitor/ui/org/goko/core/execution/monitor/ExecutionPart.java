@@ -27,6 +27,9 @@ import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartController;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartModel;
+import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.log.GkLog;
 
 /**
@@ -35,11 +38,13 @@ import org.goko.core.log.GkLog;
  * @author Psyko
  *
  */
-public class ExecutionPart extends GkUiComponent<ExecutionPartController, ExecutionPartModel>{
+public class ExecutionPart extends GkUiComponent<ExecutionPartController, ExecutionPartModel> implements IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	/** Logger */
 	private static final GkLog LOG = GkLog.getLogger(ExecutionPart.class);
 	/** EXECUTION_TIMER_REFRESH_INTERVAL */
 	private static final int EXECUTION_TIMER_REFRESH_INTERVAL_MS = 1000;
+	/** Parent composite */
+	private Composite parent;
 	/**
 	 * Constructor
 	 */
@@ -54,6 +59,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	 */
 	@PostConstruct
 	public void postConstruct(final Composite parent) {
+		this.parent = parent;
 		parent.setLayout(new GridLayout(1, false));
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(1, false);
@@ -275,31 +281,118 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {					
-					getController().beginQueueExecution();		
-					parent.getDisplay().asyncExec(new Runnable() {
-						/** Runnable used to update execution time measurement */
-						@Override
-						public void run() {														
-							if(parent.isDisposed()){
-								return;
-							}				
-							Display display = parent.getDisplay();
-							Date startDate = ExecutionPart.this.getDataModel().getExecutionQueueStartDate();
-							if(startDate != null){
-								long durationInMilliseconds = new Date().getTime() - startDate.getTime();
-								String durationStr = DurationFormatUtils.formatDuration(durationInMilliseconds, "HH:mm:ss");
-								ExecutionPart.this.getDataModel().setElapsedTimeString(durationStr);
-							}							
-							if(ExecutionPart.this.getDataModel().isExecutionTimerActive()){
-								display.timerExec(EXECUTION_TIMER_REFRESH_INTERVAL_MS, this);
-							}
-						}
-					});
+					getController().beginQueueExecution();	
+					
 				} catch (GkException e1) {
 					LOG.error(e1);
 					GkDialog.openDialog(e1);
 				}
 			}
 		});
+		
+		try {
+			getController().getExecutionService().addExecutionListener(this);
+		} catch (GkException e1) {
+			LOG.error(e1);
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
+	 */
+	@Override
+	public void onQueueExecutionStart() throws GkException {
+				
+		parent.getDisplay().asyncExec(new Runnable() {
+			/** Runnable used to update execution time measurement */
+			@Override
+			public void run() {														
+				if(parent.isDisposed()){
+					return;
+				}				
+				Display display = parent.getDisplay();
+				Date startDate = ExecutionPart.this.getDataModel().getExecutionQueueStartDate();
+				if(startDate != null){
+					long durationInMilliseconds = new Date().getTime() - startDate.getTime();
+					String durationStr = DurationFormatUtils.formatDuration(durationInMilliseconds, "HH:mm:ss");
+					ExecutionPart.this.getDataModel().setElapsedTimeString(durationStr);
+				}							
+				if(ExecutionPart.this.getDataModel().isExecutionTimerActive()){
+					display.timerExec(EXECUTION_TIMER_REFRESH_INTERVAL_MS, this);
+				}
+			}
+		});	
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
+		// TODO Auto-generated method stub
+		
 	}
 }

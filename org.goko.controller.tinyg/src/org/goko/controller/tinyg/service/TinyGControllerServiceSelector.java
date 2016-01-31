@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletionService;
 
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.event.Event;
@@ -42,6 +42,7 @@ import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -305,10 +306,18 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IProbingService#probe(org.goko.core.controller.bean.EnumControllerAxis, double, double)
 	 */
 	@Override
-	public Future<ProbeResult> probe(ProbeRequest request) throws GkException {
+	public CompletionService<ProbeResult> probe(ProbeRequest request) throws GkException {
 		return getCurrentService().probe(request);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#probe(java.util.List)
+	 */
+	@Override
+	public CompletionService<ProbeResult> probe(List<ProbeRequest> probeRequest) throws GkException {		
+		return getCurrentService().probe(probeRequest);
+	}
+	
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
 		getCurrentService().moveToAbsolutePosition(position);
@@ -571,10 +580,90 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#stopMotion()
+	 */
+	@Override
+	public void stopMotion() throws GkException {
+		getCurrentService().stopMotion();
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()
 	 */
 	@Override
 	public void verifyReadyForExecution() throws GkException {
 		getCurrentService().verifyReadyForExecution();		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
+	 */
+	@Override
+	public void onQueueExecutionStart() throws GkException {
+		getCurrentService().onQueueExecutionStart();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		getCurrentService().onExecutionStart(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		getCurrentService().onExecutionCanceled(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		getCurrentService().onExecutionPause(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionResume(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		getCurrentService().onExecutionResume(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		getCurrentService().onExecutionComplete(token);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {
+		getCurrentService().onQueueExecutionComplete();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		getCurrentService().onQueueExecutionCanceled();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
+		getCurrentService().onLineStateChanged(token, idLine);
 	}
 }

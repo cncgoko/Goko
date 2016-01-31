@@ -25,6 +25,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
@@ -69,7 +71,7 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 				    @Override
 					public void run() {
 				    	if(!textDisplay.isDisposed()){
-					    	textDisplay.append(text);
+					        textDisplay.append(text);
 					    	if(!getDataModel().isScrollLock()){
 					    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
 					    	}
@@ -90,7 +92,12 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 				    @Override
 					public void run() {
 				    	if(!textDisplay.isDisposed()){
-					    	textDisplay.append(text);
+					    	StyleRange style = new StyleRange();
+					        style.start = textDisplay.getCharCount();
+					        style.length = StringUtils.length(text);
+					        style.foreground = textDisplay.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
+					        textDisplay.append(text);
+					        textDisplay.setStyleRange(style);
 					    	if(!getDataModel().isScrollLock()){
 					    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
 					    	}

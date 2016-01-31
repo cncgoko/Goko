@@ -68,7 +68,6 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		super(context, new JsscSerialConsoleController());		
 		context.set(JsscSerialConsoleController.class, getController());		
 	}
-
 	/**
 	 * Create contents of the view part.
 	 *
@@ -121,12 +120,12 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		btnSend.setLayoutData(gd_btnSend);
 		btnSend.setText("Send");
 				
-						Label lblNewLabel = new Label(composite_2, SWT.NONE);
-						lblNewLabel.setText("Line end ");
+		Label lblNewLabel = new Label(composite_2, SWT.NONE);
+		lblNewLabel.setText("Line end ");
 								
-										endLineCombo = new GkCombo<LabeledValue<String>>(composite_2, SWT.NONE | SWT.READ_ONLY);
-										Combo combo = endLineCombo.getCombo();
-										combo.select(2);
+		endLineCombo = new GkCombo<LabeledValue<String>>(composite_2, SWT.NONE | SWT.READ_ONLY);
+		Combo combo = endLineCombo.getCombo();
+		combo.select(2);
 
 
 		StyledText styledText = new StyledText(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);

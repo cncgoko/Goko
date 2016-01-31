@@ -92,6 +92,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void onQueueExecutionStart() throws GkException {
+		updateEstimatedExecutionTime();
 		updateButtonState();
 		this.getDataModel().setExecutionQueueStartDate(new Date());
 		this.getDataModel().setExecutionTimerActive(true);
@@ -302,6 +303,13 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		this.getDataModel().setTotalTokenCount(totalTokenCount);
 		this.getDataModel().setTotalLineCount(totalLineCount);
 		updateEstimatedExecutionTime();
+	}
+
+	/**
+	 * @return the executionService
+	 */
+	public IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getExecutionService() {
+		return executionService;
 	}
 
 }

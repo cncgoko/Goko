@@ -125,6 +125,12 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public Object getParent(Object content) throws GkException {
+		if(content instanceof GCodeProvider){
+			return this;
+		}else if(content instanceof IModifier){
+			IModifier<?> modifier = (IModifier<?>)content;
+			return rs274Service.getGCodeProvider(modifier.getIdGCodeProvider());
+		}
 		return null;
 	}
 

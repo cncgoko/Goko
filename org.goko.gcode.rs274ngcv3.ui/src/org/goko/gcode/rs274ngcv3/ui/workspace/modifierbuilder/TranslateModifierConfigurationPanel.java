@@ -34,12 +34,16 @@ public class TranslateModifierConfigurationPanel extends AbstractModifierPropert
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		composite.setText("Properties");
 		composite.setLayout(new GridLayout(1, false));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		GridData gl_data = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);		 
+		composite.setLayoutData(gl_data);
 		
 		Label lblTranslation = new Label(composite, SWT.NONE);
+		lblTranslation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		lblTranslation.setText("Translation");
 		
 		UiQuantityFieldEditor<Length> translationX = new UiLengthFieldEditor(composite, SWT.NONE);
+		translationX.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		translationX.setWidthInChars(8);
 		translationX.setPropertyName("translationX");
 		translationX.setLabel("X");
 		translationX.setUnit(GokoPreference.getInstance().getLengthUnit());
@@ -48,6 +52,8 @@ public class TranslateModifierConfigurationPanel extends AbstractModifierPropert
 		getController().addFieldEditor(translationX);	
 		
 		UiQuantityFieldEditor<Length> translationY = new UiLengthFieldEditor(composite, SWT.NONE);
+		translationY.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		translationY.setWidthInChars(8);
 		translationY.setPropertyName("translationY");
 		translationY.setLabel("Y");
 		translationY.setUnit(GokoPreference.getInstance().getLengthUnit());
@@ -56,6 +62,8 @@ public class TranslateModifierConfigurationPanel extends AbstractModifierPropert
 		getController().addFieldEditor(translationY);	
 		
 		UiQuantityFieldEditor<Length> translationZ = new UiLengthFieldEditor(composite, SWT.NONE);
+		translationZ.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		translationZ.setWidthInChars(8);
 		translationZ.setPropertyName("translationZ");
 		translationZ.setLabel("Z");
 		translationZ.setUnit(GokoPreference.getInstance().getLengthUnit());

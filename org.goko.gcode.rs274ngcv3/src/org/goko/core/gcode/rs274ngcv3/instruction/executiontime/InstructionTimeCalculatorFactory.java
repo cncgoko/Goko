@@ -23,6 +23,7 @@ public class InstructionTimeCalculatorFactory {
 		calculators.add(new StraightFeedTimeCalculator());
 		calculators.add(new StraightTraverseTimeCalculator());
 		calculators.add(new ArcFeedTimeCalculator());
+		calculators.add(new StraightProbeTimeCalculator());
 	}
 	
 	/**

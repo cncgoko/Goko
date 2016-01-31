@@ -487,19 +487,24 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 */
 	@Override
 	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
+		LOG.info("Adding GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
 		StackableGCodeProviderRoot wrappedProvider = new StackableGCodeProviderRoot(provider);
 		cacheProviders.add(wrappedProvider);
 		cacheProvidersByCode.add(wrappedProvider);
-		notifyGCodeProviderCreate(provider);
+		provider.setId(wrappedProvider.getId());
+		notifyGCodeProviderCreate(wrappedProvider);
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#deleteGCodeProvider(java.lang.Integer)
 	 */
 	@Override
 	public void deleteGCodeProvider(Integer id) throws GkException {
+		IGCodeProvider provider = cacheProviders.get(id);
+		LOG.info("Deleting GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
 		// Remove attached modifiers 
 		performDeleteByIdGCodeProvider(id);
-		IGCodeProvider provider = cacheProviders.get(id);		
+		// Update the provider once it's modified
+		provider = cacheProviders.get(id);
 		cacheProviders.remove(id);
 		cacheProvidersByCode.remove(provider.getCode()); 
 				

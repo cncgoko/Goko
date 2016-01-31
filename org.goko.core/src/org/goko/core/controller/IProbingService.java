@@ -16,7 +16,8 @@
  *******************************************************************************/
 package org.goko.core.controller;
 
-import java.util.concurrent.Future;
+import java.util.List;
+import java.util.concurrent.CompletionService;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
@@ -36,5 +37,13 @@ public interface IProbingService extends IGokoService {
 	 * @return a future Tuple6b
 	 * @throws GkException GkException
 	 */
-	Future<ProbeResult> probe(ProbeRequest probeRequest) throws GkException;
+	CompletionService<ProbeResult> probe(ProbeRequest probeRequest) throws GkException;
+	
+	/**
+	 * Initiate a probe sequence with the given parameters
+	 * @param probeRequest the ProbeRequest
+	 * @return a future Tuple6b
+	 * @throws GkException GkException
+	 */
+	CompletionService<ProbeResult> probe(List<ProbeRequest> probeRequest) throws GkException;
 }

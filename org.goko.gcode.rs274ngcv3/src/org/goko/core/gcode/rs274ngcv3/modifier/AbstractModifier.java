@@ -142,4 +142,37 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 	public void setRS274NGCService(IRS274NGCService rsS274NGCService) {
 		this.rs274NGCService = rsS274NGCService;
 	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((idGCodeProvider == null) ? 0 : idGCodeProvider.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractModifier other = (AbstractModifier) obj;
+		if (idGCodeProvider == null) {
+			if (other.idGCodeProvider != null)
+				return false;
+		} else if (!idGCodeProvider.equals(other.idGCodeProvider))
+			return false;
+		return true;
+	}
+	
+	
 }

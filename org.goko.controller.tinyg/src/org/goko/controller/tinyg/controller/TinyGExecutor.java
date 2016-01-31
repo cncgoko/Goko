@@ -261,5 +261,13 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	public void setRs274Service(IRS274NGCService rs274Service) {
 		this.rs274Service = rs274Service;
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#stop()
+	 */
+	@Override
+	public void stop() throws GkException {		
+		super.stop();	
+		tinygService.stopMotion();
+	}
 }

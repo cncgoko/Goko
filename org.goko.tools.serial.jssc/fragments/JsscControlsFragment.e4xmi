@@ -35,6 +35,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iUKDwAn2EeS08MVRlzsAnw" featurename="children" parentElementId="goko.application.partstack">
     <elements xsi:type="basic:Part" xmi:id="_jYHbIAn2EeS08MVRlzsAnw" elementId="org.goko.tools.serial.jssc.part.0" contributionURI="bundleclass://org.goko.tools.serial.jssc/org.goko.tools.serial.jssc.console.JsscSerialConsole" label="Serial console" iconURI="platform:/plugin/org.goko.tools.serial.jssc/resources/icons/terminal.png">
+      <tags>view</tags>
       <toolbar xmi:id="_YSxFgLTAEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.toolbar.0">
         <children xsi:type="menu:HandledToolItem" xmi:id="_YzGLYLTAEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.handledtoolitem.enabledisableconsole" label="Enable/disable console" iconURI="platform:/plugin/org.goko.tools.serial.jssc/resources/icons/activated.png" tooltip="Enable/disable console" command="_qeJGQLS_EeWKMfEVt-PchA"/>
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_EWhuoLTCEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.toolbarseparator.0"/>
