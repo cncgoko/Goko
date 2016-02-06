@@ -3,6 +3,7 @@ package org.goko.tools.autoleveler.modifier.ui;
 import java.math.BigDecimal;
 
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierModelObject;
 
 public class AutoLevelerModifierConfigurationModel extends AbstractModifierModelObject{
@@ -29,7 +30,7 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	private Length expectedHeight;
 	private Length probeStartHeight;
 	private Length probeLowerHeight;
-	private Length probeFeedrate;
+	private Speed probeFeedrate;
 	private boolean modificationAllowed;
 	/**
 	 * @return the startCoordinateX
@@ -154,13 +155,13 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	/**
 	 * @return the probeFeedrate
 	 */
-	public Length getProbeFeedrate() {
+	public Speed getProbeFeedrate() {
 		return probeFeedrate;
 	}
 	/**
 	 * @param probeFeedrate the probeFeedrate to set
 	 */
-	public void setProbeFeedrate(Length probeFeedrate) {
+	public void setProbeFeedrate(Speed probeFeedrate) {
 		firePropertyChange(PROBE_FEEDRATE, this.probeFeedrate, this.probeFeedrate = probeFeedrate);
 	}
 	/**

@@ -1,6 +1,7 @@
 package org.goko.core.execution.monitor.executor;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -84,10 +85,10 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 */
 	@Override
 	public void waitTokenComplete() throws GkException {
-		if(!tokenComplete && state != ExecutionState.STOPPED){
+		while(!tokenComplete && state != ExecutionState.STOPPED){
 			tokenCompleteLock.lock();
 			try{
-				tokenCompleteCondition.await();
+				tokenCompleteCondition.await(100, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
 				LOG.error(e);
 			}finally{
@@ -145,10 +146,11 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 * @throws GkException GkException
 	 */
 	private void waitReadyForNextLine() throws GkException{
-		if(!isReadyForNextLine() && getToken().hasMoreLine()){
+		while(!isReadyForNextLine() && getToken().hasMoreLine()){
 			readyForNextLineLock.lock();
 			try{
-				readyForNextLineCondition.await();
+				// We perform a while loop to make sure the notification is not missed
+				readyForNextLineCondition.await(100, TimeUnit.MILLISECONDS); 
 			} catch (InterruptedException e) {
 				LOG.error(e);
 			}finally{

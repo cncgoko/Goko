@@ -166,7 +166,7 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
 		refreshWorkspaceUi();
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceUIService#select(java.lang.Object)
 	 */

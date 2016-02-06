@@ -121,6 +121,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getDefault();
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
+		
 	    canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 	    canvasCapabilities.setHardwareAccelerated(true);
 	    canvasCapabilities.setDoubleBuffered(true);
@@ -224,16 +225,16 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
 		renderers.add(renderer);
-		//synchronized (renderers) {
-		// Make sure that renderer using alpha get rendered last
-		Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());
-		//}
+		synchronized (renderers) {
+			// Make sure that renderer using alpha get rendered last
+			Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());
+		}
 	}
 
 	public void removeRenderer(ICoreJoglRenderer renderer) throws GkException {
-		//synchronized (renderers) {
+		synchronized (renderers) {
 			getRenderers().remove(renderer);
-		//}
+		}
 	}
 	public void removeRenderer(IViewer3DRenderer renderer) throws GkException {
 		synchronized (renderers) {

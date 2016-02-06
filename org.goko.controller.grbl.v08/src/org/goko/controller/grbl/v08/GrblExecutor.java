@@ -112,5 +112,40 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 			notifyTokenComplete();
 		}
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#pause()
+	 */
+	@Override
+	public void pause() throws GkException {		
+		super.pause();
+		grblService.pauseMotion();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#stop()
+	 */
+	@Override
+	public void stop() throws GkException {		
+		super.stop();
+		grblService.stopMotion();
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#start()
+	 */
+	@Override
+	public void start() throws GkException {		
+		super.start();
+		grblService.startMotion();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#resume()
+	 */
+	@Override
+	public void resume() throws GkException {
+		super.resume();
+		grblService.resumeMotion();
+	}
 }

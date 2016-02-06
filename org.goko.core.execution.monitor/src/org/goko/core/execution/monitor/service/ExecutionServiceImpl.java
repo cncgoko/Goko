@@ -356,8 +356,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	 */
 	@Override
 	public void pauseQueueExecution() throws GkException {
-		if(executionQueueRunnable != null){
-			executionQueueRunnable.pause();
+		if(getExecutionState() != ExecutionState.PAUSED){
+			if(executionQueueRunnable != null){
+				executionQueueRunnable.pause();
+			}
 		}
 	}
 
@@ -380,8 +382,10 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	 */
 	@Override
 	public void resumeQueueExecution() throws GkException {
-		if(executionQueueRunnable != null){
-			executionQueueRunnable.resume();
+		if(getExecutionState() == ExecutionState.PAUSED){
+			if(executionQueueRunnable != null){
+				executionQueueRunnable.resume();
+			}
 		}
 	}
 	/** (inheritDoc)

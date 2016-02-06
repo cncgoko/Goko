@@ -1,12 +1,9 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.Time;
-import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightProbeInstruction;
@@ -30,16 +27,16 @@ public class StraightProbeTimeCalculator extends AbstractInstructionTimeCalculat
 		
 		Length max = delta.length();
 
-		BigDecimal feedrate = BigDecimal.ZERO;
+		Speed feedrate = Speed.ZERO;
 		if(context.getFeedrate() != null){
 			feedrate = context.getFeedrate();
 		}else{
 			return Time.ZERO;
 		}
-		if(feedrate ==  BigDecimal.ZERO){
+		if(feedrate.equals(Speed.ZERO)){
 			return Time.ZERO;
 		}		
-		return Time.valueOf((max.divide(feedrate).value(LengthUnit.MILLIMETRE)) , TimeUnit.MINUTE);		
+		return max.divide(feedrate);		
 	}
 
 }

@@ -13,6 +13,7 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.builder.AbstractInstructionGeometryBuilder;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.builder.ArcFeedGeometryBuilder;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.builder.StraightFeedGeometryBuilder;
+import org.goko.core.gcode.rs274ngcv3.jogl.renderer.builder.StraightProbeGeometryBuilder;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.builder.StraightTraverseGeometryBuilder;
 
 public class InstructionGeometryFactory {
@@ -29,6 +30,7 @@ public class InstructionGeometryFactory {
 		this.lstBuilders.add( new StraightFeedGeometryBuilder() );
 		this.lstBuilders.add( new StraightTraverseGeometryBuilder() );
 		this.lstBuilders.add( new ArcFeedGeometryBuilder() );
+		this.lstBuilders.add( new StraightProbeGeometryBuilder() );
 	}
 	
 	public static InstructionGeometryFactory getInstance(){

@@ -18,6 +18,7 @@
 package org.goko.core.common.measure.quantity;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
@@ -55,5 +56,9 @@ public class Length extends AbstractQuantity<Length> {
 	
 	public static Length parse(String value) throws GkException {		
 		return Length.ZERO.parse(value, LengthUnit.getAll());
+	}
+	
+	public Time divide(Speed speed){
+		return Time.valueOf(this.value(LengthUnit.METRE).divide(speed.value(SpeedUnit.METRE_PER_SECOND), MathContext.DECIMAL64), TimeUnit.SECOND);
 	}
 }

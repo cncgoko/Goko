@@ -170,7 +170,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {		
 		workspaceUIService.refreshWorkspaceUi();
 		markProjectDirty();
 	}

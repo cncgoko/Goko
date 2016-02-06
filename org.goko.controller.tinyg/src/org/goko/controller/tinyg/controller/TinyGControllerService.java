@@ -573,17 +573,35 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * ************************************************/
 
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#pauseMotion()
+	 */
+	@Override
 	public void pauseMotion() throws GkException{
 		communicator.send(GkUtils.toBytesList(TinyG.FEED_HOLD));
 		executionService.pauseQueueExecution();
-
 	}
-
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#resumeMotion()
+	 */
+	@Override
 	public void resumeMotion() throws GkException{
 		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
 		executionService.resumeQueueExecution();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#startMotion()
+	 */
+	@Override
+	public void startMotion() throws GkException {
+		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
+		executionService.beginQueueExecution();
+	}
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#stopMotion()
+	 */
+	@Override
 	public void stopMotion() throws GkException{
 		getConnectionService().clearOutputBuffer();
 		

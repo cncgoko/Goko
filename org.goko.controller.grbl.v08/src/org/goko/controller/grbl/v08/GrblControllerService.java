@@ -66,7 +66,6 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
-import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -209,6 +208,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private void incrementUsedBufferCount(int amount) throws GkException{
 		usedBufferStack.add(amount);
 		setUsedGrblBuffer(getUsedGrblBuffer() + amount);
+		System.out.println("+"+amount);
 	}
 
 	/**
@@ -219,6 +219,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(CollectionUtils.isNotEmpty(usedBufferStack)){
 			Integer amount = usedBufferStack.poll();
 			setUsedGrblBuffer(getUsedGrblBuffer() - amount);
+			System.out.println("-"+amount);
 		}
 	}
 	/** (inheritDoc)
@@ -402,8 +403,10 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	protected void handleError(String errorMessage) throws GkException{
 		decrementUsedBufferCount();
-		GCodeLine line = grblExecutor.markNextLineAsError();
-		logError(errorMessage, line);
+		if(grblExecutor.getState() == ExecutionState.RUNNING){
+			GCodeLine line = grblExecutor.markNextLineAsError();		
+			logError(errorMessage, line);
+		}
 	}
 
 	/**
@@ -513,6 +516,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		communicator.sendImmediately(stopCommand);
 		executionService.stopQueueExecution();
 		setUsedGrblBuffer(0);
+		usedBufferStack.clear();
 	}
 
 	/**
@@ -524,7 +528,18 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		List<Byte> startResumeCommand = new ArrayList<Byte>();
 		startResumeCommand.add(Grbl.RESUME_COMMAND);
 		communicator.sendWithoutEndLineCharacter( startResumeCommand );
-		executionService.beginQueueExecution();
+		if(executionService.getExecutionState() == ExecutionState.PAUSED){
+			executionService.resumeQueueExecution();
+		}else{
+			executionService.beginQueueExecution();
+		}
+	}
+	
+	public void resumeMotion() throws GkException{
+		List<Byte> startResumeCommand = new ArrayList<Byte>();
+		startResumeCommand.add(Grbl.RESUME_COMMAND);
+		communicator.sendWithoutEndLineCharacter( startResumeCommand );		
+		executionService.resumeQueueExecution();		
 	}
 
 //	/** (inheritDoc)

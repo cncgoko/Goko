@@ -1,17 +1,16 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
 public class SetFeedRateInstruction extends AbstractInstruction {
 	/** The feedrate of the instruction */
-	private BigDecimal feedrate;
+	private Speed feedrate;
 	
 	/** Constructor */
-	public SetFeedRateInstruction(BigDecimal feedrate) {
+	public SetFeedRateInstruction(Speed feedrate) {
 		super(InstructionType.SET_FEED_RATE);
 		this.feedrate = feedrate;
 	}
@@ -27,7 +26,7 @@ public class SetFeedRateInstruction extends AbstractInstruction {
 	/**
 	 * @return the feedrate
 	 */
-	public BigDecimal getFeedrate() {
+	public Speed getFeedrate() {
 		return feedrate;
 	}
 

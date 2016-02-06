@@ -588,6 +588,14 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 	
 	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#startMotion()
+	 */
+	@Override
+	public void startMotion() throws GkException {
+		getCurrentService().startMotion();		
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()
 	 */
 	@Override
@@ -665,5 +673,21 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		getCurrentService().onLineStateChanged(token, idLine);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#pauseMotion()
+	 */
+	@Override
+	public void pauseMotion() throws GkException {
+		getCurrentService().pauseMotion();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#resumeMotion()
+	 */
+	@Override
+	public void resumeMotion() throws GkException {
+		getCurrentService().resumeMotion();
 	}
 }

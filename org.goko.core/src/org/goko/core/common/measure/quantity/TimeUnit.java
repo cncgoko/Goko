@@ -39,19 +39,19 @@ public class TimeUnit {
 	 * Derived from SECONDS
 	 * One minute = 60 seconds
 	 */
-	public static final TransformedUnit<Time> MINUTE = add(new TransformedUnit<Time>("min", SECOND, new MultiplyConverter("60")));
+	public static final TransformedUnit<Time> MINUTE = add(new TransformedUnit<Time>("min", SECOND, new MultiplyConverter("60.0")));
 	
 	/**
 	 * Derived from MINUTE
 	 * One hour = 60 minutes
 	 */
-	public static final TransformedUnit<Time> HOUR = add(new TransformedUnit<Time>("h", MINUTE, new MultiplyConverter("60")));
+	public static final TransformedUnit<Time> HOUR = add(new TransformedUnit<Time>("h", MINUTE, new MultiplyConverter("60.0")));
 	
 	/**
 	 * Derived from HOUR
 	 * One day = 24 hours
 	 */
-	public static final TransformedUnit<Time> DAY  = add(new TransformedUnit<Time>("d", HOUR, new MultiplyConverter("24")));
+	public static final TransformedUnit<Time> DAY  = add(new TransformedUnit<Time>("d", HOUR, new MultiplyConverter("24.0")));
 	
 	/**
 	 * Registers a Unit to the map of handled units

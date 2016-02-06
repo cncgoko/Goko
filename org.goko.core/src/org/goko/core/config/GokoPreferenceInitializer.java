@@ -1,5 +1,7 @@
 package org.goko.core.config;
 
+import org.goko.core.common.exception.GkTechnicalException;
+
 /**
  * Goko general preference initializer
  * 
@@ -12,10 +14,11 @@ public class GokoPreferenceInitializer extends GkPreferenceInitializer {
 	
 	
 	/** (inheritDoc)
+	 * @throws GkTechnicalException 
 	 * @see org.goko.core.config.GkPreferenceInitializer#initializeDefaultGkPreferences()
 	 */
 	@Override
-	public void initializeDefaultGkPreferences() {
+	public void initializeDefaultGkPreferences() throws GkTechnicalException {
 		GokoPreference prefs = GokoPreference.getInstance();
 		prefs.setDefault(GokoPreference.KEY_DISTANCE_UNIT, GokoPreference.DEFAULT_DISTANCE_UNIT_CODE);
 		prefs.setDistanceUnit(GokoPreference.DEFAULT_DISTANCE_UNIT);		

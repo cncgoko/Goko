@@ -15,8 +15,10 @@ import org.goko.common.dialog.GkErrorDialog;
 import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
+import org.goko.common.preferences.fieldeditor.ui.UiSpeedFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.log.GkLog;
@@ -169,11 +171,11 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		zProbeLowerCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		zProbeLowerCoordinate.setLabel("Probe lower Z");
 
-		UiQuantityFieldEditor<Length> probeFeedrate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
+		UiQuantityFieldEditor<Speed> probeFeedrate = new UiSpeedFieldEditor(grpProbing, SWT.NONE);
 		probeFeedrate.setPropertyName(AutoLevelerModifierConfigurationModel.PROBE_FEEDRATE);
 		probeFeedrate.setLabelWidthInChar(12);
 		probeFeedrate.setWidthInChars(6);
-		probeFeedrate.setUnit(GokoPreference.getInstance().getLengthUnit());
+		probeFeedrate.setUnit(GokoPreference.getInstance().getSpeedUnit());
 		probeFeedrate.setLabel("Probe feedrate");
 
 		getController().addEnableBinding(xStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);

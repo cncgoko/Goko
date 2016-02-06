@@ -9,6 +9,7 @@ import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.math.Tuple6b;
 
@@ -48,7 +49,7 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * Current feed rate
 	 */
-	private BigDecimal feedrate;
+	private Speed feedrate;
 	/**
 	 * Current spindle speed
 	 */
@@ -110,7 +111,7 @@ public class GCodeContext implements IGCodeContext{
 		this.coordinateSystem = EnumCoordinateSystem.G54;
 		this.spindleMode = EnumSpindleMode.OFF;
 		this.spindleSpeed = BigDecimal.ZERO;
-		this.feedrate = BigDecimal.ZERO;
+		this.feedrate = Speed.ZERO;
 		this.x = Length.ZERO;
 		this.y = Length.ZERO;
 		this.z = Length.ZERO;
@@ -269,13 +270,13 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * @return the feedrate
 	 */
-	public BigDecimal getFeedrate() {
+	public Speed getFeedrate() {
 		return feedrate;
 	}
 	/**
 	 * @param feedrate the feedrate to set
 	 */
-	public void setFeedrate(BigDecimal feedrate) {
+	public void setFeedrate(Speed feedrate) {
 		this.feedrate = feedrate;
 	}
 	/**

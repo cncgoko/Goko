@@ -6,5 +6,5 @@
    </service>
    <reference bind="setJogService" cardinality="0..1" interface="org.goko.core.controller.IJogService" name="IJogService" policy="dynamic"/>
    <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
-   <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IThreeAxisControllerAdapter" name="IThreeAxisControllerAdapter" policy="static"/>
+   <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IThreeAxisControllerAdapter" name="IThreeAxisControllerAdapter" policy="dynamic"/>
 </scr:component>

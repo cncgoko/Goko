@@ -62,4 +62,12 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 	int getUsedGrblBuffer() throws GkException;
 
 	void send(GCodeLine gCodeLine) throws GkException;
+	
+	void pauseMotion() throws GkException;;
+	
+	void stopMotion() throws GkException;
+	
+	void startMotion() throws GkException;
+	
+	void resumeMotion() throws GkException;
 }

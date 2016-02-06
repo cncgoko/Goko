@@ -18,6 +18,7 @@
 package org.goko.core.common.measure.converter;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 /**
  * Simple converter performing multiplication 
@@ -25,7 +26,7 @@ import java.math.BigDecimal;
  * @author PsyKo
  *
  */
-public class MultiplyConverter extends AbstractUnitConverter {
+public class DivideConverter extends AbstractUnitConverter {
 	/** Scale factor */
 	private BigDecimal factor;
 
@@ -33,7 +34,7 @@ public class MultiplyConverter extends AbstractUnitConverter {
 	 * Constructor
 	 * @param factor the multiplying factor
 	 */
-	public MultiplyConverter(BigDecimal factor) {
+	public DivideConverter(BigDecimal factor) {
 		super();
 		this.factor = factor;
 	}
@@ -42,7 +43,7 @@ public class MultiplyConverter extends AbstractUnitConverter {
 	 * Constructor
 	 * @param factor the multiplying factor
 	 */
-	public MultiplyConverter(String factor) {
+	public DivideConverter(String factor) {
 		this(new BigDecimal(factor));
 	}
 
@@ -51,7 +52,7 @@ public class MultiplyConverter extends AbstractUnitConverter {
 	 */
 	@Override
 	public UnitConverter inverse() {
-		return new DivideConverter(factor);
+		return new MultiplyConverter(factor);
 	}
 
 	/** (inheritDoc)
@@ -59,7 +60,7 @@ public class MultiplyConverter extends AbstractUnitConverter {
 	 */
 	@Override
 	public BigDecimal convert(BigDecimal value) {
-		return factor.multiply(value);
+		return value.divide(factor, MathContext.DECIMAL128);
 	}
 	
 }

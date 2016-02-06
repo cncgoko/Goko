@@ -1,11 +1,14 @@
 package org.goko.core.execution.monitor.executionpart;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,11 +24,14 @@ import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.service.IWorkspaceEvent;
 import org.goko.core.workspace.service.IWorkspaceListener;
@@ -36,7 +42,7 @@ import org.goko.core.workspace.service.IWorkspaceService;
  *
  * @author Psyko
  */
-public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IWorkspaceListener {
+public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IWorkspaceListener, IGCodeProviderRepositoryListener{
 	private static final GkLog LOG = GkLog.getLogger(ExecutionPartController.class);
 	/** The execution service */
 	@Inject
@@ -44,13 +50,18 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	/** The underlying workspace service */
 	@Inject
 	private IWorkspaceService workspaceService;
+	/** The repository for GCode providers*/
+	@Inject
+	private IGCodeProviderRepository gcodeProviderRepository;
 	/** The optional execution time evaluation service */
 	@Inject
 	@Optional
 	private IGCodeExecutionTimeService executionTimeService;
 	/** Job for execution time estimation */
 	private Job executionUpdater;
-
+	/** Map of execution time by token id */
+	private Map<Integer, Time> executionTimeByToken;
+	
 	/** Constructor */
 	public ExecutionPartController() {
 		super(new ExecutionPartModel());
@@ -63,9 +74,11 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	public void initialize() throws GkException {
 		executionService.addExecutionListener(this);
 		workspaceService.addWorkspaceListener(this);
+		gcodeProviderRepository.addListener(this);
 		updateTokenQueueData();
 		updateButtonState();
 		workspaceService.addWorkspaceListener(this);
+		executionTimeByToken = new HashMap<Integer, Time>();
 	}
 
 	/** (inheritDoc)
@@ -249,6 +262,10 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	}
 
 	private void scheduleExecutionTimeEstimationJob() throws GkException{
+		scheduleExecutionTimeEstimationJob(null);
+	}
+	
+	private void scheduleExecutionTimeEstimationJob(final Integer idToken) throws GkException{
 		executionUpdater = new Job("Updating execution time..."){
 			/** (inheritDoc)
 			 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
@@ -258,14 +275,21 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 				if(executionTimeService != null){
 					try {
 						List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
-						SubMonitor subMonitor = SubMonitor.convert(monitor,"Computing time...", lstToken.size());
 						Time estimatedTime = Time.ZERO;
-						for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-							subMonitor.worked(1);
-							Time tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
-							estimatedTime = estimatedTime.add(tokenTime);
+						if(CollectionUtils.isNotEmpty(lstToken)){
+							SubMonitor subMonitor = SubMonitor.convert(monitor,"Computing time...", lstToken.size());
+							// Refresh the unitary times first
+							for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+								Time tokenTime = executionTimeByToken.get(executionToken.getId());
+								if(tokenTime == null || idToken == null ||ObjectUtils.equals(idToken, executionToken.getId())){
+									tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
+									executionTimeByToken.put(executionToken.getId(), tokenTime);
+								}
+								subMonitor.worked(1);
+								estimatedTime = estimatedTime.add(tokenTime);
+							}							
+							subMonitor.done();
 						}
-						subMonitor.done();
 						long estimatedMs = (long)estimatedTime.doubleValue(TimeUnit.MILLISECOND);
 						ExecutionPartController.this.getDataModel().setEstimatedTimeString(DurationFormatUtils.formatDuration(estimatedMs, "HH:mm:ss"));
 					} catch (GkException e) {
@@ -311,5 +335,59 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	public IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getExecutionService() {
 		return executionService;
 	}
+
+	private Integer getExecutionTokenByGCodeProvider(Integer idGCodeProvider) throws GkException{
+		List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+		
+		if(CollectionUtils.isNotEmpty(lstToken)){			
+			// Refresh the unitary times first
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {				
+				if(ObjectUtils.equals(idGCodeProvider, executionToken.getIdGCodeProvider())){
+					return executionToken.getId();
+				}
+			}	
+		}
+		return null;
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderCreate(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUpdate(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
+		Integer idToken = getExecutionTokenByGCodeProvider(provider.getId());
+		if(idToken != null){
+			scheduleExecutionTimeEstimationJob( idToken );
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		Integer idToken = getExecutionTokenByGCodeProvider(provider.getId());
+		if(idToken != null){
+			executionTimeByToken.remove(idToken);
+			scheduleExecutionTimeEstimationJob(idToken);
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderLocked(IGCodeProvider provider) throws GkException {}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUnlocked(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {}
 
 }

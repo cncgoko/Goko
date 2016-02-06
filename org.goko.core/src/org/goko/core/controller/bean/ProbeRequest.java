@@ -1,8 +1,7 @@
 package org.goko.core.controller.bean;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -21,9 +20,9 @@ public class ProbeRequest {
 	/** The probe end position */
 	private Length probeEnd;
 	/** The probe feedrate */
-	private BigDecimal probeFeedrate;
+	private Speed probeFeedrate;
 	/** The motion feedrate */
-	private BigDecimal motionFeedrate;
+	private Speed motionFeedrate;
 	/** The position where the probe should happens */
 	private Tuple6b probeCoordinate;
 	
@@ -79,13 +78,13 @@ public class ProbeRequest {
 	/**
 	 * @return the probeFeedrate
 	 */
-	public BigDecimal getProbeFeedrate() {
+	public Speed getProbeFeedrate() {
 		return probeFeedrate;
 	}
 	/**
 	 * @param probeFeedrate the probeFeedrate to set
 	 */
-	public void setProbeFeedrate(BigDecimal probeFeedrate) {
+	public void setProbeFeedrate(Speed probeFeedrate) {
 		this.probeFeedrate = probeFeedrate;
 	}
 	/**
@@ -103,13 +102,13 @@ public class ProbeRequest {
 	/**
 	 * @return the motionFeedrate
 	 */
-	public BigDecimal getMotionFeedrate() {
+	public Speed getMotionFeedrate() {
 		return motionFeedrate;
 	}
 	/**
 	 * @param motionFeedrate the motionFeedrate to set
 	 */
-	public void setMotionFeedrate(BigDecimal motionFeedrate) {
+	public void setMotionFeedrate(Speed motionFeedrate) {
 		this.motionFeedrate = motionFeedrate;
 	}
 	

@@ -76,7 +76,7 @@ public class WorkspacePart implements Listener {
 		gl_composite.horizontalSpacing = 0;
 		composite.setLayout(gl_composite);
 
-		workspaceTreeViewer = new TreeViewer(composite, SWT.BORDER);
+		workspaceTreeViewer = new TreeViewer(composite, SWT.BORDER);		
 		Tree tree = workspaceTreeViewer.getTree();
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -86,7 +86,7 @@ public class WorkspacePart implements Listener {
 		workspaceTreeViewer.setContentProvider(new GkProjectContentProvider());
 		workspaceTreeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new GkProjectLabelProvider()));
 		workspaceTreeViewer.setInput(workspaceUiService.getProjectContainerUiProvider());
-
+		
 		scrolledComposite = new ScrolledComposite(sashForm, SWT.BORDER |SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setAlwaysShowScrollBars(true);
@@ -97,7 +97,7 @@ public class WorkspacePart implements Listener {
 		
 		configurationComposite = new Composite(scrolledComposite, SWT.NONE);
 		GridLayout gl_configurationComposite = new GridLayout(1, false);
-		gl_configurationComposite.marginWidth = 0;
+		gl_configurationComposite.marginWidth = 2;
 		gl_configurationComposite.marginHeight = 0;
 		configurationComposite.setLayout(gl_configurationComposite);
 		
@@ -185,7 +185,7 @@ public class WorkspacePart implements Listener {
 	@Inject
 	@Optional
 	private void subscribeWorkspaceRefresh(@UIEventTopic(WorkspaceUIEvent.TOPIC_WORKSPACE_REFRESH) Map<Object, Object> data) {
-	  if(workspaceTreeViewer != null){
+	  if(workspaceTreeViewer != null){		  
 		  workspaceTreeViewer.refresh();
 	  }
 	}

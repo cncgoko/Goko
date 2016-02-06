@@ -275,10 +275,13 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			@Override
 			public void focusLost(FocusEvent e) {
 				glcanvas.setKeyboardJogEnabled(false);
+				System.err.println("Focus lost");
 			}
 
 			@Override
-			public void focusGained(FocusEvent e) {}
+			public void focusGained(FocusEvent e) {
+				System.err.println("Focus gained");
+			}
 		});
 //		btnKeyboardJog.setToolTipText("Enable/disable keyboard jogging (Ctrl + J)");
 //		btnKeyboardJog.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/keyboard--arrow.png"));

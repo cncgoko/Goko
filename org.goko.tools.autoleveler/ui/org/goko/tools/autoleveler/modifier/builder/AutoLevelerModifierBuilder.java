@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -62,7 +64,7 @@ public class AutoLevelerModifierBuilder extends AbstractModifierUiProvider<GridA
 		defaultMap.setClearanceHeight(Length.valueOf(3, LengthUnit.MILLIMETRE));
 		defaultMap.setStart(bounds.getMin());
 		defaultMap.setEnd(bounds.getMax());
-		defaultMap.setProbeFeedrate(Length.valueOf(30, LengthUnit.MILLIMETRE));
+		defaultMap.setProbeFeedrate(Speed.valueOf(30, SpeedUnit.MILLIMETRE_PER_MINUTE));
 		defaultMap.setProbeStartHeight(Length.valueOf(1, LengthUnit.MILLIMETRE));
 		defaultMap.setProbeLowerHeight(Length.valueOf(-1, LengthUnit.MILLIMETRE));
 		modifier.setRS274NGCService(rs274ngcService);

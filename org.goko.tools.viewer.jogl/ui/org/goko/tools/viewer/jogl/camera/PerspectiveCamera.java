@@ -29,6 +29,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -42,7 +44,7 @@ import org.goko.tools.viewer.jogl.service.JoglUtils;
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
-public class PerspectiveCamera extends AbstractCamera implements MouseMoveListener,MouseListener,Listener {
+public class PerspectiveCamera extends AbstractCamera implements MouseMoveListener,MouseListener,Listener,FocusListener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.PerspectiveCamera";
 
 	protected Point2i last;
@@ -72,6 +74,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		fAspect = 0;
 		glCanvas.addMouseListener(this);
 		glCanvas.addMouseMoveListener(this);
+		glCanvas.addFocusListener(this);
 		glCanvas.addListener(SWT.MouseWheel, this);
 		pmvMatrix = new PMVMatrix();
 
@@ -196,7 +199,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		distance += (e.y - last.y)/20.0;
 		distance = Math.min(1000, Math.max(1, distance));
 	}
-	protected void panMouse(MouseEvent e){
+	protected void panMouse(MouseEvent e){		
 		Vector3f yCameraRelative = new Vector3f(target.x - eye.x, target.y - eye.y, 0);
 		yCameraRelative.normalize();
 		Vector3f xCameraRelative = new Vector3f();
@@ -227,7 +230,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	@Override
 	public void mouseDown(MouseEvent e) {
 		last = new Point2i(e.x, e.y);
-		glCanvas.forceFocus();
+		//glCanvas.forceFocus();
 	}
 
 	/** (inheritDoc)
@@ -485,5 +488,21 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	@Override
 	public void setPmvMatrix(PMVMatrix pmvMatrix) {
 		this.pmvMatrix = pmvMatrix;
+	}
+
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.events.FocusListener#focusGained(org.eclipse.swt.events.FocusEvent)
+	 */
+	@Override
+	public void focusGained(FocusEvent e) {
+		last = null;
+	}
+
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.events.FocusListener#focusLost(org.eclipse.swt.events.FocusEvent)
+	 */
+	@Override
+	public void focusLost(FocusEvent e) {
+		last = null;
 	}
 }

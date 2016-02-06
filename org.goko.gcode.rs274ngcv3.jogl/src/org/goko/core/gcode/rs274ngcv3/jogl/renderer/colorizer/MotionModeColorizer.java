@@ -13,6 +13,7 @@ public class MotionModeColorizer extends AbstractInstructionColorizer {
 	private static final Color4f RAPID_COLOR = new Color4f(1f,0.77f,0.04f, 0.9f);
 	private static final Color4f FEEDRATE_COLOR = new Color4f(0.14f,0.33f,0.80f,0.9f);	
 	private static final Color4f ARC_COLOR = new Color4f(0,0.86f,0,0.9f);
+	private static final Color4f PROBE_COLOR = new Color4f(0.80f,0.40f,1f,0.9f);
 
 	
 	/** (inheritDoc)
@@ -27,6 +28,8 @@ public class MotionModeColorizer extends AbstractInstructionColorizer {
 			color = FEEDRATE_COLOR;
 		}else if(instruction.getType() == InstructionType.STRAIGHT_TRAVERSE){
 			color = RAPID_COLOR;
+		}else if(instruction.getType() == InstructionType.STRAIGHT_PROBE){
+			color = PROBE_COLOR;
 		}
 		return color;
 	}

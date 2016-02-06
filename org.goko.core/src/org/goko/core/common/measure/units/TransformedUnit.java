@@ -40,6 +40,7 @@ public class TransformedUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
 		this.parentUnit = parentUnit;
 		this.converter = converter;
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.units.AbstractUnit#getReferenceUnit()
 	 */

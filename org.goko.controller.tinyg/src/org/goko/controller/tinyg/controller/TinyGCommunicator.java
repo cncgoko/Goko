@@ -32,6 +32,10 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
@@ -284,7 +288,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);
 			EnumUnit 		 units 			= findUnits(statusReportObject);
 			BigDecimal 					 velocity 		= findVelocity(statusReportObject);
-			BigDecimal 					 feedrate 		= findFeedrate(statusReportObject);
+			Speed 					 feedrate 		= findFeedrate(statusReportObject);
 			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getCurrentGCodeContext());
 
@@ -312,10 +316,14 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		return null;
 	}
 
-	private BigDecimal findFeedrate(JsonObject feedrate){
+	private Speed findFeedrate(JsonObject feedrate){
 		JsonValue feedrateReport = feedrate.get(TinyGJsonUtils.STATUS_REPORT_FEEDRATE);
 		if(feedrateReport != null){
-			return feedrateReport.asBigDecimal().setScale(3, BigDecimal.ROUND_HALF_EVEN);
+			Unit<Speed> unit = SpeedUnit.MILLIMETRE_PER_MINUTE;
+			if(tinyg.getCurrentUnit().equals(LengthUnit.INCH)){
+				unit = SpeedUnit.INCH_PER_MINUTE;	
+			}
+			return Speed.valueOf(feedrateReport.asBigDecimal().setScale(3, BigDecimal.ROUND_HALF_EVEN), unit);
 		}
 		return null;
 	}

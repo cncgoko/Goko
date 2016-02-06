@@ -270,4 +270,31 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 		super.stop();	
 		tinygService.stopMotion();
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#pause()
+	 */
+	@Override
+	public void pause() throws GkException {		
+		super.pause();
+		tinygService.pauseMotion();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#start()
+	 */
+	@Override
+	public void start() throws GkException {		
+		super.start();
+		tinygService.start();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#resume()
+	 */
+	@Override
+	public void resume() throws GkException {		
+		super.resume();
+		tinygService.resumeMotion();
+	}
 }

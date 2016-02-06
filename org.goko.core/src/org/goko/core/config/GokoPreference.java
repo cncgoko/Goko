@@ -33,6 +33,8 @@ import org.goko.core.common.measure.dimension.Dimension;
 import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.log.GkLog;
 
@@ -102,6 +104,14 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	}
 	
 	/**
+	 * @return the distanceUnit
+	 * @throws GkException
+	 */
+	public Unit<Speed> getSpeedUnit() throws GkException {
+		return mapConfiguredUnits.get(QuantityDimension.SPEED);
+	}
+	
+	/**
 	 * Returns the configured target board 
 	 * @return the configured target board
 	 */
@@ -118,10 +128,18 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	}
 	/**
 	 * @param distanceUnit the distanceUnit to set
+	 * @throws GkTechnicalException GkTechnicalException 
 	 */
-	public void setDistanceUnit(EnumGokoUnit distanceUnit) {
+	public void setDistanceUnit(EnumGokoUnit distanceUnit) throws GkTechnicalException {
 		getPreferenceStore().setValue(KEY_DISTANCE_UNIT, distanceUnit.getCode());
 		mapConfiguredUnits.put(QuantityDimension.LENGTH, distanceUnit.getUnit());
+		if(distanceUnit == EnumGokoUnit.MILLIMETERS){
+			mapConfiguredUnits.put(QuantityDimension.SPEED, SpeedUnit.MILLIMETRE_PER_MINUTE);	
+		}else if(distanceUnit == EnumGokoUnit.INCHES){
+			mapConfiguredUnits.put(QuantityDimension.SPEED, SpeedUnit.INCH_PER_MINUTE);
+		}else{
+			throw new GkTechnicalException("Unsupported distance unit ["+distanceUnit.getCode()+"]");
+		}
 	}
 	
 	/**

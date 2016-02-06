@@ -14,6 +14,8 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeRequest;
@@ -96,8 +98,8 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 		request.setClearance(getDataModel().getClearanceHeight());
 		request.setProbeStart(getDataModel().getProbeStartHeight());
 		request.setProbeEnd(getDataModel().getProbeLowerHeight());
-		request.setProbeFeedrate(getDataModel().getProbeFeedrate().value(LengthUnit.MILLIMETRE));
-		request.setMotionFeedrate(new BigDecimal("1000"));
+		request.setProbeFeedrate(getDataModel().getProbeFeedrate());
+		request.setMotionFeedrate(Speed.valueOf(600, SpeedUnit.MILLIMETRE_PER_MINUTE));
 		request.setProbeCoordinate(tuple6b);
 		return request;
 	}

@@ -21,6 +21,7 @@
       <children xsi:type="menu:Menu" xmi:id="_wyCDwdwYEeKC274TynxXSA" elementId="goko.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_EuPSEN79EeSbWNQONxf66w" elementId="goko.handledmenuitem.update" label="Update" command="_ASrswN79EeSbWNQONxf66w"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_3z5r0Ad7EeW5EMyXN5EkVg" elementId="goko.menuseparator.0"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__eSYEMhvEeWpu_gVhK3ZQg" elementId="goko.handledmenuitem.onlinehelp" label="Online help" iconURI="platform:/plugin/Goko/icons/question-frame.png" command="_Cc_k4MhwEeWpu_gVhK3ZQg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwtwYEeKC274TynxXSA" label="About" command="_wyCDuNwYEeKC274TynxXSA"/>
       </children>
     </mainMenu>
@@ -34,6 +35,7 @@
   <handlers xmi:id="_BvSLwBAeEeOTXNaDwRiLUA" elementId="goko.handler.preferences" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_i52IoBAdEeOTXNaDwRiLUA"/>
   <handlers xmi:id="_-NFSMN78EeSbWNQONxf66w" elementId="goko.handler.updateHandler" contributionURI="bundleclass://Goko/goko.handlers.UpdateHandler" command="_ASrswN79EeSbWNQONxf66w"/>
   <handlers xmi:id="_8XFekK-tEeWhqNE8GV2-oQ" elementId="goko.handler.toggleView" contributionURI="bundleclass://Goko/goko.handlers.ToggleViewHandler" command="_1iBEMK-tEeWhqNE8GV2-oQ"/>
+  <handlers xmi:id="_EaS_EMhwEeWpu_gVhK3ZQg" elementId="goko.handler.0" contributionURI="bundleclass://Goko/goko.handlers.OnlineHelpHandler" command="_Cc_k4MhwEeWpu_gVhK3ZQg"/>
   <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" bindingContext="_wyBcodwYEeKC274TynxXSA">
     <bindings xmi:id="_wyCDsdwYEeKC274TynxXSA" keySequence="M1+Q" command="_wyBcqtwYEeKC274TynxXSA"/>
     <bindings xmi:id="_wyCDtNwYEeKC274TynxXSA" keySequence="M1+O" command="_wyCDstwYEeKC274TynxXSA"/>
@@ -52,6 +54,7 @@
   <commands xmi:id="_1iBEMK-tEeWhqNE8GV2-oQ" elementId="goko.command.toggleView" commandName="toggleViewCommand">
     <parameters xmi:id="_5Jln0K-tEeWhqNE8GV2-oQ" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName" optional="false"/>
   </commands>
+  <commands xmi:id="_Cc_k4MhwEeWpu_gVhK3ZQg" elementId="goko.command.onlinehelpcommand" commandName="Online help command"/>
   <addons xmi:id="_wyBcpNwYEeKC274TynxXSA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_wyBcpdwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_wyBcptwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

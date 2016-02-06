@@ -2,7 +2,7 @@
 <feature
       id="org.goko.feature"
       label="Goko Feature"
-      version="0.0.2.qualifier"
+      version="0.3.0.qualifier"
       provider-name="Goko">
 
    <license url="http://www.gnu.org/licenses/gpl-3.0.en.html">
@@ -683,7 +683,7 @@ Public License instead of this License.  But first, please read
    </license>
 
    <url>
-      <update label="Goko Update site" url="http://update.goko.fr/0.0.3"/>
+      <update label="Goko Update site" url="http://update.goko.fr/0.3.0"/>
       <discovery label="Goko" url="http://www.goko.fr/"/>
    </url>
 

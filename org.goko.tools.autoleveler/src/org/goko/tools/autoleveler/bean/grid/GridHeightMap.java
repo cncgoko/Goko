@@ -9,6 +9,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.autoleveler.bean.IHeightMap;
@@ -33,7 +34,7 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	/** The probe lower height */
 	private Length probeLowerHeight;
 	/** The probe feed rate */
-	private Length probeFeedrate;
+	private Speed probeFeedrate;
 	/** Boolean indicating that the map has been probed */
 	private boolean isProbed;
 		
@@ -420,14 +421,14 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	/**
 	 * @return the probeFeedrate
 	 */
-	public Length getProbeFeedrate() {
+	public Speed getProbeFeedrate() {
 		return probeFeedrate;
 	}
 
 	/**
 	 * @param probeFeedrate the probeFeedrate to set
 	 */
-	public void setProbeFeedrate(Length probeFeedrate) {
+	public void setProbeFeedrate(Speed probeFeedrate) {
 		this.probeFeedrate = probeFeedrate;
 	}
 

@@ -31,6 +31,7 @@ import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
@@ -82,7 +83,7 @@ public class TinyGState extends MachineValueStore{
 		gcodeContext.setActiveToolNumber(0);
 		gcodeContext.setUnit(EnumUnit.MILLIMETERS);
 		gcodeContext.setMotionMode(EnumMotionMode.RAPID);
-		gcodeContext.setFeedrate(BigDecimal.ZERO);
+		gcodeContext.setFeedrate(Speed.ZERO);
 		gcodeContext.setDistanceMode(EnumDistanceMode.ABSOLUTE);
 		gcodeContext.setPlane(EnumPlane.XY_PLANE);
 	}

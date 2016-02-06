@@ -185,10 +185,10 @@ public class GCodeProvider implements IGCodeProvider {
 		if (getClass() != obj.getClass())
 			return false;
 		GCodeProvider other = (GCodeProvider) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (getId() == null) {
+			if (other.getId() != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!getId().equals(other.getId()))
 			return false;
 		return true;
 	}
