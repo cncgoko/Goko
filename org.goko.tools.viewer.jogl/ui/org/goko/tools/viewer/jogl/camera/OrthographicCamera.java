@@ -25,6 +25,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -37,7 +39,7 @@ import org.goko.tools.viewer.jogl.service.JoglUtils;
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
-public abstract class OrthographicCamera extends AbstractCamera implements MouseMoveListener,MouseListener, Listener {
+public abstract class OrthographicCamera extends AbstractCamera implements MouseMoveListener, MouseListener, FocusListener, Listener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.OrthographicCamera";
 	protected Point2i last;
 	protected Point3f eye;
@@ -232,6 +234,20 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 		zoomOffset = Math.min(targetScaleX, targetScaleY);
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.events.FocusListener#focusGained(org.eclipse.swt.events.FocusEvent)
+	 */
+	@Override
+	public void focusGained(FocusEvent e) {
+		last = null;
+	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.swt.events.FocusListener#focusLost(org.eclipse.swt.events.FocusEvent)
+	 */
+	@Override
+	public void focusLost(FocusEvent e) {
+		last = null;
+	}
 
 }
