@@ -19,6 +19,8 @@
  */
 package org.goko.tools.centerfinder.bean;
 
+import javax.vecmath.Vector3d;
+
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.EnumPlane;
@@ -69,6 +71,18 @@ public class CircleCenterFinderResult {
 	 */
 	public void setPlane(EnumPlane plane) {
 		this.plane = plane;
+	}
+	/**
+	 * The normal to the given plane
+	 * @return
+	 */
+	public Vector3d getNormal() {
+		switch (plane) {
+		case XY_PLANE: return new Vector3d(0,0,1);			
+		case YZ_PLANE: return new Vector3d(1,0,0);
+		case XZ_PLANE: return new Vector3d(0,1,0);
+		default:return new Vector3d(0,0,1);			
+		}
 	}
 	
 	

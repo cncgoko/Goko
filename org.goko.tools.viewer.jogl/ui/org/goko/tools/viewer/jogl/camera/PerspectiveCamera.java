@@ -505,4 +505,5 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	public void focusLost(FocusEvent e) {
 		last = null;
 	}
+		
 }

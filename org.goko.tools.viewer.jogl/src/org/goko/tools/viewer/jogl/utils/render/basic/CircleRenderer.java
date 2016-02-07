@@ -49,7 +49,8 @@ public class CircleRenderer extends PolylineRenderer{
 		Point3d dCenter = center.toPoint3d(JoglUtils.JOGL_UNIT);
 		Vector3d a = new Vector3d(1,0,0);
 		Vector3d b = new Vector3d(1,0,0);
-		if(a.dot(normal) <= 0.01){
+		
+		if(Math.abs(a.dot(normal) - 1) < 0.0001){
 			a = new Vector3d(0,1,0);
 		}
 		b.cross(normal, a);

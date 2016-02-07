@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
@@ -220,10 +219,15 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		BigDecimal c = ( x3.subtract(x2).divide(y3.subtract(y2), RoundingMode.HALF_UP ));
 		BigDecimal d = ( x2.subtract(x1).divide(y2.subtract(y1), RoundingMode.HALF_UP ));
 		
+		if( c.equals(d) ){
+			throw new GkFunctionalException("Invalid points. Cannot compute center");
+		}
+		
 		BigDecimal centerX = (a.subtract(b).divide(c.subtract(d), RoundingMode.HALF_UP));
 		BigDecimal centerY = b.subtract(d.multiply(centerX));
 		center.setX( Length.valueOf(centerX, resultUnit));
 		center.setY( Length.valueOf(centerY, resultUnit));
+		System.out.println();
 		centerResult.setCenter(untransformFromXYPlane(plane, center));
 		centerResult.setRadius(t1.distance(center));
 		centerResult.setPlane(plane);
@@ -251,10 +255,10 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 			return new Tuple6b(tuple.getX(), tuple.getY(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 						
 		}else if(EnumPlane.XZ_PLANE == enumPlane){
-			return new Tuple6b(tuple.getX(), Length.ZERO, tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(tuple.getX(), Length.ZERO, tuple.getY(), tuple.getA(), tuple.getB(), tuple.getC());
 			
 		}else if(EnumPlane.YZ_PLANE == enumPlane){
-			return new Tuple6b(Length.ZERO, tuple.getY(), tuple.getZ(), tuple.getA(), tuple.getB(), tuple.getC());
+			return new Tuple6b(Length.ZERO, tuple.getX(), tuple.getY(), tuple.getA(), tuple.getB(), tuple.getC());
 		}		
 		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
 	}
@@ -266,7 +270,8 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 				renderer = null;
 			}
 			if(centerResult != null && renderer == null){
-				renderer = new DiameterRenderer(centerResult.getCenter(), centerResult.getDiameter(), CIRCLE_COLOR, new Vector3d(0,0,1), CENTER_COLOR );
+				
+				renderer = new DiameterRenderer(centerResult.getCenter(), centerResult.getDiameter(), CIRCLE_COLOR, centerResult.getNormal(), CENTER_COLOR );
 				getRendererService().addRenderer(renderer);
 			}
 		}

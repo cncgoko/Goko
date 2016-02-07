@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
@@ -271,7 +272,11 @@ public class GrblState extends MachineValueStore{
 	protected void setCurrentContext(GCodeContext currentContext) {
 		this.currentContext = currentContext;
 		try {
-			updateValue(Grbl.CONTEXT_FEEDRATE, currentContext.getFeedrate());
+			if(currentContext.getUnit() == EnumUnit.MILLIMETERS){
+				updateValue(Grbl.CONTEXT_FEEDRATE, currentContext.getFeedrate().value(SpeedUnit.MILLIMETRE_PER_MINUTE));
+			}else{
+				updateValue(Grbl.CONTEXT_FEEDRATE, currentContext.getFeedrate().value(SpeedUnit.INCH_PER_MINUTE));
+			}
 			updateValue(Grbl.CONTEXT_COORD_SYSTEM, currentContext.getCoordinateSystem()); //g54 ne sont pas trouvés
 			updateValue(Grbl.CONTEXT_DISTANCE_MODE, currentContext.getDistanceMode());
 			updateValue(Grbl.CONTEXT_MOTION_MODE, currentContext.getMotionMode());
