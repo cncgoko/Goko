@@ -10,7 +10,7 @@ env:
    - UPDATE_FOLDER: update
    - updateRepository: true
    - updateBinaries: true
-   - gokoVersion: 0.0.3
+   - gokoVersion: 0.3.0
 
 cache:
   directories:
