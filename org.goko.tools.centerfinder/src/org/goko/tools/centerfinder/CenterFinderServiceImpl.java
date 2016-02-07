@@ -44,7 +44,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	private static final String SERVICE_ID = "org.goko.tools.centerfinder";
 	private static final Color4f POINT_COLOR = new Color4f(1f,0.82f,0.16f,1f);
 	private static final Color4f CENTER_COLOR = new Color4f(0f,0.47f,0.62f,1f);
-	private static final Color4f CIRCLE_COLOR = new Color4f(0.26f,0.47f,0.0f,1f);
+	private static final Color4f CIRCLE_COLOR = new Color4f(0.42f,0.81f,0.94f,1f);
 	private List<Tuple6b> memorizedPoints;
 	private List<PointRenderer> pointsRenderer;
 	private CircleCenterFinderResult centerResult;
@@ -71,7 +71,6 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 */
 	@Override
 	public void start() throws GkException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -80,7 +79,6 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -201,12 +199,6 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 			x3 = s2.getStart().getX().value(resultUnit);
 			y3 = s2.getStart().getY().value(resultUnit);
 		}
-		
-//		BigDecimal a = ( x3*x3 - x2*x2 + y3*y3 - y2*y2) / (2*(y3-y2));
-//		BigDecimal b = ( x2*x2 - x1*x1 + y2*y2 - y1*y1)/(2*(y2-y1));
-//		BigDecimal c = ( x3-x2) / (y3-y2);
-//		BigDecimal d = ( x2-x1) / (y2-y1);
-
 
 		if( y3.subtract(y2).multiply(BigDecimal.valueOf(2)).abs().doubleValue() < 0.0001 ){
 			throw new GkFunctionalException("Invalid points. Cannot compute center"); // Use translatable messages
@@ -226,8 +218,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		BigDecimal centerX = (a.subtract(b).divide(c.subtract(d), RoundingMode.HALF_UP));
 		BigDecimal centerY = b.subtract(d.multiply(centerX));
 		center.setX( Length.valueOf(centerX, resultUnit));
-		center.setY( Length.valueOf(centerY, resultUnit));
-		System.out.println();
+		center.setY( Length.valueOf(centerY, resultUnit));		
 		centerResult.setCenter(untransformFromXYPlane(plane, center));
 		centerResult.setRadius(t1.distance(center));
 		centerResult.setPlane(plane);
@@ -235,8 +226,14 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		return centerResult;
 	}
 
-	private static Tuple6b transformToXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
-		
+	/**
+	 * Change the given tuple so it is expressed in the XY plane
+	 * @param enumPlane the origin plane
+	 * @param tuple the tuple to transform
+	 * @return the transformed tuple in the XY plane
+	 * @throws GkException GkException
+	 */
+	private static Tuple6b transformToXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{		
 		if(EnumPlane.XY_PLANE == enumPlane){			
 			return new Tuple6b(tuple.getX(), tuple.getY(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 			
@@ -249,8 +246,14 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
 	}
 	
-	private static Tuple6b untransformFromXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
-		
+	/**
+	 * Change the given tuple in the XY plane to the target plane 
+	 * @param enumPlane the target plane 
+	 * @param tuple the tuple in the XY plane
+	 * @return the tuple in the given plane 
+	 * @throws GkException GkException
+	 */
+	private static Tuple6b untransformFromXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{		
 		if(EnumPlane.XY_PLANE == enumPlane){			
 			return new Tuple6b(tuple.getX(), tuple.getY(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 						
@@ -263,6 +266,10 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
 	}
 	
+	/**
+	 * Update the renderer for the circle center finder 
+	 * @throws GkException GkException
+	 */
 	protected void updateRenderer() throws GkException{
 		if(getRendererService() != null){
 			if(renderer != null){

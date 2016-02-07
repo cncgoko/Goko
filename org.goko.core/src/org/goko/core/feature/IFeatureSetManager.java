@@ -47,4 +47,11 @@ public interface IFeatureSetManager {
 	 * @throws GkException GkException
 	 */
 	void startFeatureSet() throws GkException;
+
+	/**
+	 * Returns the currently active target board
+	 * @return the currently active target board
+	 * @throws GkException 
+	 */
+	TargetBoard getCurrentTargetBoard() throws GkException;
 }

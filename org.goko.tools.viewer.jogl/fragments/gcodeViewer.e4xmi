@@ -60,6 +60,18 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wuC_IGqyEeW_4J3oW3NGfQ" featurename="bindingTables" parentElementId="goko.application">
     <elements xsi:type="commands:BindingTable" xmi:id="_yylCsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.bindingtable.0" bindingContext="_zPZFEGqzEeW_4J3oW3NGfQ">
       <bindings xmi:id="_zCcqsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.keybinding.0" keySequence="M1+J" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
+      <bindings xmi:id="_Cois8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.2" keySequence="M2+T" command="_HuLH4J5xEeWki_YL0eV3Fg">
+        <parameters xmi:id="_EdbK8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.4" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.top"/>
+      </bindings>
+      <bindings xmi:id="_LyTt0M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.1" keySequence="M2+P" command="_HuLH4J5xEeWki_YL0eV3Fg">
+        <parameters xmi:id="_Na7RcM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.5" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.PerspectiveCamera"/>
+      </bindings>
+      <bindings xmi:id="_Q3PnUM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.3" keySequence="M2+L" command="_HuLH4J5xEeWki_YL0eV3Fg">
+        <parameters xmi:id="_R3bR8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.6" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.left"/>
+      </bindings>
+      <bindings xmi:id="_T4VZwM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.4" keySequence="21+F" command="_HuLH4J5xEeWki_YL0eV3Fg">
+        <parameters xmi:id="_VLN98M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.7" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.front"/>
+      </bindings>
     </elements>
   </fragments>
 </fragment:ModelFragments>

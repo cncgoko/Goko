@@ -32,6 +32,7 @@ import org.goko.core.log.GkLog;
 @Creatable
 public class TargetBoardTracker {
 	private static final GkLog LOG = GkLog.getLogger(TargetBoardTracker.class);
+	private static final String KEY_CONTEXT_TARGET_BOARD = "org.goko.targetBoard";
 	@Inject
 	IFeatureSetManager featureSetManager;
 
@@ -73,23 +74,28 @@ public class TargetBoardTracker {
 			featureSetManager.setTargetBoard(dialog.getTargetBoard());		
 		}
 	}
-
+	
 	/**
 	 * Tracks the current target board 
 	 * @param targetBoard the target board 
 	 * @param context the IEclipseContext
-	 */
+	 */	
 	@Inject
 	@Optional
-	public void onTargetBoardChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_TARGET_BOARD) String targetBoard, IEclipseContext context, final UISynchronize uiSync, final IWorkbench workbench) {				    
+	public void onTargetBoardChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_TARGET_BOARD) String targetBoard, IEclipseContext context, final UISynchronize uiSync, final IWorkbench workbench) {			    
+		
 		boolean restartRequired = false;
-		if(StringUtils.isNotBlank(String.valueOf(context.get("org.goko.targetBoard")))){
-			restartRequired = StringUtils.equals(targetBoard, String.valueOf(context.get("org.goko.targetBoard")));
+		String currentBoard = null;
+		if(context.get(KEY_CONTEXT_TARGET_BOARD) != null){
+			currentBoard = String.valueOf(context.get(KEY_CONTEXT_TARGET_BOARD));
 		}
-		context.set("org.goko.targetBoard",  targetBoard);
+		if(StringUtils.isNotBlank(currentBoard)){
+			restartRequired = !StringUtils.equals(targetBoard, currentBoard);
+		}
+		context.set(KEY_CONTEXT_TARGET_BOARD,  targetBoard);
 		// Restart is required for proper behavior 
 		if(restartRequired && uiSync != null && workbench != null){
-			uiSync.syncExec(new Runnable() {
+			uiSync.asyncExec(new Runnable() {
 
 				@Override
 				public void run() {

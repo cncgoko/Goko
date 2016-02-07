@@ -11,11 +11,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.osgi.framework.BundleContext;
@@ -25,11 +24,13 @@ import org.osgi.framework.FrameworkUtil;
  * @author PsyKo
  *
  */
-public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, IPropertyChangeListener {
+public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 	/** Service ID */
 	private static final String SERVICE_ID = "org.goko.core.feature.GokoFeatureManager";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(FeatureSetManagerImpl.class);
+	/** The list of target boards */
+	private CacheByCode<TargetBoard> cacheTargetBoard;
 	/** The list of registered features set */
 	private List<IFeatureSet> lstFeatureSet;
 	/** Current running feature set */
@@ -41,7 +42,7 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	public FeatureSetManagerImpl() {
 		this.lstFeatureSet = new ArrayList<IFeatureSet>();
 		this.lstActiveFeatureSet = new ArrayList<IFeatureSet>();
-		GokoPreference.getInstance().addPropertyChangeListener(this);
+		this.cacheTargetBoard = new CacheByCode<TargetBoard>();
 	}
 
 	/**
@@ -52,18 +53,21 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 	public void addFeatureSet(IFeatureSet featureSet) throws GkException {
 		if(!lstFeatureSet.contains(featureSet)){
 			lstFeatureSet.add(featureSet);		
+			if(!cacheTargetBoard.exist(featureSet.getTargetBoard().getCode())){
+				cacheTargetBoard.add(featureSet.getTargetBoard());
+			}
 			startIfRequired(featureSet);
 		}
 	}	
-	
-	private void deactivateTargetBoardSupport(String targetBoard) throws GkException{
-		// Let's unload any started set
-		if (StringUtils.isNotBlank(targetBoard) && CollectionUtils.isNotEmpty(lstActiveFeatureSet)) {			
-			for (IFeatureSet iFeatureSet : lstActiveFeatureSet) {				
-				iFeatureSet.stop();
-			}			
-		}
-	}
+//	
+//	private void deactivateTargetBoardSupport(String targetBoard) throws GkException{
+//		// Let's unload any started set
+//		if (StringUtils.isNotBlank(targetBoard) && CollectionUtils.isNotEmpty(lstActiveFeatureSet)) {			
+//			for (IFeatureSet iFeatureSet : lstActiveFeatureSet) {				
+//				iFeatureSet.stop();
+//			}			
+//		}
+//	}
 	
 	private void startIfRequired(IFeatureSet featureSet) throws GkException {
 		if (StringUtils.isNotBlank(getTargetBoard()) &&
@@ -84,6 +88,13 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 		return GokoPreference.getInstance().getTargetBoard();	
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.feature.IFeatureSetManager#getCurrentTargetBoard()
+	 */
+	@Override
+	public TargetBoard getCurrentTargetBoard() throws GkException {		
+		return cacheTargetBoard.get(getTargetBoard());
+	}
 	/**
 	 * (inheritDoc)
 	 * @see org.goko.core.feature.IFeatureSetManager#setTargetBoard(java.lang.String)
@@ -161,23 +172,6 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager, 
 			}
 		}
 		return lstBoards;
-	}
-
-	/**
-	 * (inheritDoc)
-	 * 
-	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
-	 */
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {		
-		try {
-			if(StringUtils.equals(GokoPreference.KEY_TARGET_BOARD, event.getProperty())){
-				deactivateTargetBoardSupport(String.valueOf(event.getOldValue()));
-				startFeatureSet();
-			}
-		} catch (GkException e) {
-			LOG.error(e);
-		}		
 	}
 
 	/** (inheritDoc)

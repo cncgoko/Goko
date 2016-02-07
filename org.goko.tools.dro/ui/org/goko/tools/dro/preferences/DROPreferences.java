@@ -12,6 +12,10 @@ import org.goko.core.config.GkPreference;
 public class DROPreferences extends GkPreference{
 	/** ID of this configuration */
 	public static final String NODE_ID = "org.goko.tools.droservice";
+	/** Key for displayed values. This contains a list of values id, separated by a the separator */
+	public static final String KEY_DISPLAYED_VALUES = "dro.displayedValues.list";
+	/** The values separator */
+	public static final String DISPLAYED_VALUES_SEPARATOR = ";";
 	private static DROPreferences instance;
 	
 	/**

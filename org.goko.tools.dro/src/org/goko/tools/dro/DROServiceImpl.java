@@ -33,7 +33,7 @@ import org.goko.tools.dro.preferences.DROPreferences;
 
 public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	private static final GkLog LOG = GkLog.getLogger(DROServiceImpl.class);
-	public static final String SERVICE_ID = "org.goko.tools.dro.service";
+	public static final String SERVICE_ID = "org.goko.tools.dro.service";	
 	private IControllerService controllerService;
 	private List<MachineValueDefinition> lstDefinition;
 	
@@ -82,17 +82,24 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	}
 
 	private void updateValues() {
-		String[] token = StringUtils.split(DROPreferences.getInstance().getString("dro.displayedValues.list"), ";");
+		String[] token = StringUtils.split(DROPreferences.getInstance().getString(DROPreferences.KEY_DISPLAYED_VALUES), DROPreferences.DISPLAYED_VALUES_SEPARATOR);
+		String updatedValue = StringUtils.EMPTY;
 		lstDefinition.clear();
 		if(token != null && token.length > 0){
 			for (String string : token) {
-				try {
-					MachineValueDefinition val = controllerService.getMachineValueDefinition(string);
-					lstDefinition.add(val);
+				try {					
+					MachineValueDefinition val = controllerService.findMachineValueDefinition(string);
+					if(val != null){
+						lstDefinition.add(val);
+						// Confirm existence
+						updatedValue += string+DROPreferences.DISPLAYED_VALUES_SEPARATOR;
+					}
 				} catch (GkException e) {
 					LOG.error(e);					
 				}
 			}
+			// Memorize only existing machine values. We use the put method to prevent firing an update event
+			DROPreferences.getInstance().putValue(DROPreferences.KEY_DISPLAYED_VALUES, updatedValue);
 		}
 	}
 

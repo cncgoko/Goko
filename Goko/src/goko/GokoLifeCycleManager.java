@@ -54,6 +54,7 @@ public class GokoLifeCycleManager {
 		// Create target board tracker
 		TargetBoardTracker tracker = ContextInjectionFactory.make(TargetBoardTracker.class, context);
 		tracker.checkTargetBoardDefined(context);
+		context.set(TargetBoardTracker.class, tracker);
 		// Create auto update check
 		AutomaticUpdateCheck updater = ContextInjectionFactory.make(AutomaticUpdateCheck.class, context);
 		eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, updater);

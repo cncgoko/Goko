@@ -95,6 +95,14 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 		return instance;
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.config.GkPreference#setValue(java.lang.String, boolean)
+	 */
+	@Override
+	public void setValue(String name, boolean value) {
+		// TODO Auto-generated method stub
+		super.setValue(name, value);
+	}
 	/**
 	 * @return the distanceUnit
 	 * @throws GkException
@@ -232,7 +240,24 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 			mapConfiguredUnits.put(QuantityDimension.LENGTH, EnumGokoUnit.getEnum(unit).getUnit());
 		} catch (GkTechnicalException e) {
 			LOG.error(e);
-		}
-		
+		}		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.config.GkPreference#putValue(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void putValue(String name, String value) {
+		// TODO Auto-generated method stub
+		super.putValue(name, value);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.config.GkPreference#setValue(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void setValue(String name, String value) {
+		// TODO Auto-generated method stub
+		super.setValue(name, value);
 	}
 }

@@ -1,12 +1,14 @@
 package org.goko.core.feature;
 
+import org.goko.core.common.utils.ICodeBean;
+
 /**
  * Target board definition
  * 
  * @author PsyKo
  *
  */
-public class TargetBoard {
+public class TargetBoard implements ICodeBean{
 	/** the identifier of the target board  */
 	private String id;
 	/** the user label */
@@ -74,6 +76,20 @@ public class TargetBoard {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.common.utils.ICodeBean#getCode()
+	 */
+	@Override
+	public String getCode() {	
+		return id;
+	}
+	/** (inheritDoc)
+	 * @see org.goko.core.common.utils.ICodeBean#setCode(java.lang.String)
+	 */
+	@Override
+	public void setCode(String code) {
+		setId(code);
 	}
 	
 	
