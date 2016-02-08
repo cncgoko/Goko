@@ -14,11 +14,13 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.internal.TargetBoardTracker;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -69,6 +71,12 @@ public class GokoLifeCycleManager {
 				eventBroker.unsubscribe(this);
 			}
 		});
+		
+		// Does the model require a refresh ?
+		if(GokoPreference.getInstance().isSystemClearPersistedState()){
+			GokoPreference.getInstance().setSystemClearPersistedState(false);
+			System.getProperties().put(IWorkbench.CLEAR_PERSISTED_STATE, "true");	
+		}		
 	}
 
 	/**

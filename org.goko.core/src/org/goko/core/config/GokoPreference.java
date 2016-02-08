@@ -45,6 +45,10 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	public static final String NODE_ID = "org.goko.core";
 	/** The instance of this config */
 	private static GokoPreference instance;
+	/** Key to set the clear persisted state option at runtime */
+	public static final String KEY_SYSTEM_CLEAR_PERSISTED_STATE = "systemClearPersistedState";
+	/** Default value of the clear persisted state option  */
+	public static final boolean DEFAULT_SYSTEM_CLEAR_PERSISTED_STATE = false;
 	/** The target board id */
 	public static final String KEY_TARGET_BOARD = "targetBoard";
 	/** Default target board */
@@ -69,7 +73,7 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	public static final String DEFAULT_CHECK_UPDATE_FREQUENCY  = EnumUpdateCheckFrequency.ONCE_A_DAY.getCode();
 	/** The default precision to display after coma for distance values  */
 	public static final int DEFAULT_DISTANCE_DIGIT_COUNT = 3;
-	
+		
 	/** Used units */
 	private Map<Dimension, Unit> mapConfiguredUnits;
 
@@ -243,21 +247,17 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 		}		
 	}
 	
-	/** (inheritDoc)
-	 * @see org.goko.core.config.GkPreference#putValue(java.lang.String, java.lang.String)
+	/**
+	 * @return the systemClearPersistedState
 	 */
-	@Override
-	public void putValue(String name, String value) {
-		// TODO Auto-generated method stub
-		super.putValue(name, value);
+	public boolean isSystemClearPersistedState() {
+		return getPreferenceStore().getBoolean(KEY_SYSTEM_CLEAR_PERSISTED_STATE);
 	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.config.GkPreference#setValue(java.lang.String, java.lang.String)
+
+	/**
+	 * @param systemClearPersistedState the systemClearPersistedState to set
 	 */
-	@Override
-	public void setValue(String name, String value) {
-		// TODO Auto-generated method stub
-		super.setValue(name, value);
+	public void setSystemClearPersistedState(boolean systemClearPersistedState) {
+		getPreferenceStore().setValue(KEY_SYSTEM_CLEAR_PERSISTED_STATE, systemClearPersistedState);
 	}
 }
