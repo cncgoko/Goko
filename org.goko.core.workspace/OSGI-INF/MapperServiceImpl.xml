@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.core.workspace.service.MapperServiceImpl">
+   <implementation class="org.goko.core.workspace.service.MapperServiceImpl"/>
+   <service>
+      <provide interface="org.goko.core.workspace.service.IMapperService"/>
+   </service>
+</scr:component>

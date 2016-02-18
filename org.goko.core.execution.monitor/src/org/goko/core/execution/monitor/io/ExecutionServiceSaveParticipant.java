@@ -15,8 +15,8 @@ import org.goko.core.execution.monitor.io.xml.XmlExecutionService;
 import org.goko.core.execution.monitor.io.xml.XmlExecutionToken;
 import org.goko.core.execution.monitor.service.ExecutionServiceImpl;
 import org.goko.core.gcode.execution.ExecutionQueue;
-import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.ExecutionToken;
+import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.SaveContext;
 import org.goko.core.workspace.io.XmlProjectContainer;
@@ -31,8 +31,6 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 	private static final GkLog LOG = GkLog.getLogger(ExecutionServiceSaveParticipant.class);
 	/** Service ID */
 	private static final String SERVICE_ID = "org.goko.core.execution.monitor.io.ExecutionServiceSaveParticipant";
-	/** Type of loaded container */
-	private static final String EXECUTION_SERVICE_CONTENT_TYPE = "executionService";
 	/** Target file for the container */
 	private static final String EXECUTION_SERVICE_CONTENT_FILE_NAME = "executionService.xml";
 	/** XML persistence service */
@@ -54,7 +52,7 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
-		
+		xmlPersistenceService.register(XmlExecutionService.class);
 		LOG.info("Successfully started "+getServiceId());
 	}
 	
@@ -82,15 +80,12 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 	public List<XmlProjectContainer> save(SaveContext context) throws GkException {
 		List<XmlProjectContainer> containers = new ArrayList<XmlProjectContainer>();
 
-		XmlProjectContainer rs274Container = new XmlProjectContainer();
-		rs274Container.setType(EXECUTION_SERVICE_CONTENT_TYPE);
-		rs274Container.setPath(context.getResourcePath(EXECUTION_SERVICE_CONTENT_FILE_NAME));
-		containers.add(rs274Container);
-		persistContent(new File(context.getResourcesFolder(), EXECUTION_SERVICE_CONTENT_FILE_NAME));
+		XmlExecutionService container = persistContent(new File(context.getResourcesFolder(), EXECUTION_SERVICE_CONTENT_FILE_NAME));
+		containers.add(container);		
 		return containers;
 	}
 
-	private void persistContent(File target) throws GkException{
+	private XmlExecutionService persistContent(File target) throws GkException{
 		XmlExecutionService content = new XmlExecutionService();
 		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue = executionService.getExecutionQueue();
 		List<ExecutionToken<ExecutionTokenState>> tokens = queue.getExecutionToken();
@@ -105,8 +100,8 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 			}
 		}
 		
-		content.setLstExecutionToken(lstExecutionToken);
-		xmlPersistenceService.write(content, target);
+		content.setLstExecutionToken(lstExecutionToken);		
+		return content;
 	}
 	
 	/** (inheritDoc)

@@ -2,9 +2,10 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.io;
 
 import java.util.ArrayList;
 
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.source.XmlGCodeProviderSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProviderSource;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 @Root(name="gcodeProvider")
@@ -15,7 +16,7 @@ public class XmlGCodeProvider {
 	@Element
 	private XmlGCodeProviderSource source;
 
-   // @ElementList
+   @ElementList(name="modifiers")
     private ArrayList<XmlGCodeModifier> modifiers;
 
 	/**
@@ -44,5 +45,19 @@ public class XmlGCodeProvider {
 	 */
 	public void setSource(XmlGCodeProviderSource source) {
 		this.source = source;
+	}
+
+	/**
+	 * @return the modifiers
+	 */
+	public ArrayList<XmlGCodeModifier> getModifiers() {
+		return modifiers;
+	}
+
+	/**
+	 * @param modifiers the modifiers to set
+	 */
+	public void setModifiers(ArrayList<XmlGCodeModifier> modifiers) {
+		this.modifiers = modifiers;
 	}
 }

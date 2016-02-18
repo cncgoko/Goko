@@ -1,23 +1,31 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace;
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.LoadContext;
-import org.goko.core.workspace.io.XmlProjectContainer;
+import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.FileGCodeSourceExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.SegmentizeModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.TranslateModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.FileGCodeSourceLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.SegmentizeModifierLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.TranslateModifierLoader;
 
 public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipant<XmlRS274GContent> {
 	/** LOG */
@@ -30,6 +38,8 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	private IRS274NGCService gcodeService;
 	/** XML persistence service */
 	private IXmlPersistenceService xmlPersistenceService;
+	/** Mapper service */
+	private IMapperService mapperService;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -45,6 +55,13 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
+		mapperService.addLoader(new FileGCodeSourceLoader());
+		mapperService.addLoader(new SegmentizeModifierLoader());
+		mapperService.addLoader(new TranslateModifierLoader());		
+		
+		mapperService.addExporter(new FileGCodeSourceExporter());
+		mapperService.addExporter(new TranslateModifierExporter());
+		mapperService.addExporter(new SegmentizeModifierExporter());		
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -53,20 +70,16 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	 */
 	@Override
 	public void stop() throws GkException {
-		// TODO Auto-generated method stub
-
+		LOG.info("Stopping  "+getServiceId());
+		LOG.info("Successfully stopped "+getServiceId());
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override
-	public void load(LoadContext context, XmlProjectContainer container, IProgressMonitor monitor) throws GkException {
-		String filePath = container.getPath();
-		File file = new File(context.getResourcesFolder().getParentFile(), filePath);
-
-		XmlRS274GContent content = xmlPersistenceService.read(XmlRS274GContent.class, file);
-		load(content, monitor);
+	public void load(LoadContext context, XmlRS274GContent container, IProgressMonitor monitor) throws GkException {
+		load(container, monitor);
 	}
 
 	/**
@@ -79,24 +92,38 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 
 		// Load the GCodeProvider
 		List<XmlGCodeProvider> lstGCodeProvider = content.getLstGCodeProvider();
+		
 		SubMonitor submonitor = SubMonitor.convert(monitor, CollectionUtils.size(lstGCodeProvider));
 		if(CollectionUtils.isNotEmpty(lstGCodeProvider)){
 			for (XmlGCodeProvider xmlGCodeProvider : lstGCodeProvider) {
-				IGCodeProvider provider = gcodeService.parse(xmlGCodeProvider.getSource().getSource(), submonitor);
+				IGCodeProviderSource source = mapperService.load(xmlGCodeProvider.getSource(), IGCodeProviderSource.class);
+				IGCodeProvider provider = gcodeService.parse(source, submonitor);
 				provider.setCode(xmlGCodeProvider.getCode());
 				gcodeService.addGCodeProvider(provider);
+				loadModifiers(provider, xmlGCodeProvider, submonitor);
 				submonitor.worked(1);
 			}
 		}
 		submonitor.done();
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void loadModifiers(IGCodeProvider provider, XmlGCodeProvider xmlGCodeProvider, IProgressMonitor monitor) throws GkException {
+		if(CollectionUtils.isNotEmpty(xmlGCodeProvider.getModifiers())){			
+			for (XmlGCodeModifier xmlGCodeModifier : xmlGCodeProvider.getModifiers()) {
+				AbstractModifier<GCodeProvider> modifier = mapperService.load(xmlGCodeModifier, AbstractModifier.class);
+				modifier.setRS274NGCService(gcodeService);
+				modifier.setIdGCodeProvider(provider.getId());
+				gcodeService.addModifier(modifier);
+			}
+		}
+	}
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#canLoad(org.goko.core.workspace.io.XmlProjectContainer)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getContainerClass()
 	 */
 	@Override
-	public boolean canLoad(XmlProjectContainer container) throws GkException {
-		return StringUtils.equals(RS274_CONTENT_TYPE, container.getType());
+	public Class<XmlRS274GContent> getContainerClass() {
+		return XmlRS274GContent.class;
 	}
 
 	/**
@@ -125,6 +152,20 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	 */
 	public void setXmlPersistenceService(IXmlPersistenceService xmlPersistenceService) {
 		this.xmlPersistenceService = xmlPersistenceService;
+	}
+
+	/**
+	 * @return the mapperService
+	 */
+	public IMapperService getMapperService() {
+		return mapperService;
+	}
+
+	/**
+	 * @param mapperService the mapperService to set
+	 */
+	public void setMapperService(IMapperService mapperService) {
+		this.mapperService = mapperService;
 	}
 
 }

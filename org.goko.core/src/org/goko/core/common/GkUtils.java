@@ -101,4 +101,5 @@ public class GkUtils {
 		str =  StringUtils.replace(str, ""+'\r', "\\r");
 		return str;
 	}
+	
 }

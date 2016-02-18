@@ -1,6 +1,5 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +11,19 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
-import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.SaveContext;
 import org.goko.core.workspace.io.XmlProjectContainer;
+import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectSaveParticipant;
 import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.source.XmlFileGCodeSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlFileGCodeSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProviderSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlSegmentizeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlTranslateModifier;
 
 public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GContent> , IGokoService {
 	/** LOG */
@@ -37,6 +40,7 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	private IWorkspaceService workspaceService;
 	/** XML persistence service */
 	private IXmlPersistenceService xmlPersistenceService;
+	private IMapperService mapperService;
 	/** Dirty state of the content */
 	private boolean dirty;
 
@@ -54,7 +58,10 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());	
-		xmlPersistenceService.register(XmlFileGCodeSource.class);
+		xmlPersistenceService.register(XmlRS274GContent.class);		
+		xmlPersistenceService.register(XmlFileGCodeSource.class);		
+		xmlPersistenceService.register(XmlSegmentizeModifier.class);		
+		xmlPersistenceService.register(XmlTranslateModifier.class);		
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -80,17 +87,13 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	 */
 	@Override
 	public List<XmlProjectContainer> save(SaveContext context) throws GkException {
-		List<XmlProjectContainer> containers = new ArrayList<XmlProjectContainer>();
-
-		XmlProjectContainer rs274Container = new XmlProjectContainer();
-		rs274Container.setType(RS274_CONTENT_TYPE);
-		rs274Container.setPath(context.getResourcePath(RS274_CONTENT_FILE_NAME));
-		containers.add(rs274Container);
-		persistContent(new File(context.getResourcesFolder(), RS274_CONTENT_FILE_NAME));
+		List<XmlProjectContainer> containers = new ArrayList<XmlProjectContainer>();		
+		XmlRS274GContent content = persistContent(/*new File(context.getResourcesFolder(), RS274_CONTENT_FILE_NAME)*/);
+		containers.add(content);
 		return containers;
 	}
 	
-	private void persistContent(File target) throws GkException{
+	private XmlRS274GContent persistContent(/*File target*/) throws GkException{
 		XmlRS274GContent content = new XmlRS274GContent();
 		List<IGCodeProvider> lstProviders = gcodeService.getGCodeProvider();
 		ArrayList<XmlGCodeProvider> lstXmlProvider = new ArrayList<XmlGCodeProvider>();
@@ -98,25 +101,30 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 		for (IGCodeProvider igCodeProvider : lstProviders) {
 			XmlGCodeProvider xmlProvider = new XmlGCodeProvider();
 			xmlProvider.setCode(igCodeProvider.getCode());
-			FileGCodeSource s = (FileGCodeSource) igCodeProvider.getSource();
-			XmlFileGCodeSource xmlFileSource = new XmlFileGCodeSource();
-			xmlFileSource.setPath(s.getFile().getAbsolutePath());
-			xmlProvider.setSource(xmlFileSource);
+			xmlProvider.setSource(mapperService.export(igCodeProvider.getSource(), XmlGCodeProviderSource.class));
+			// Persist the modifiers of this provider 
+			persistModifiers(xmlProvider, igCodeProvider);
+			
 			lstXmlProvider.add(xmlProvider);
 		}
 		content.setLstGCodeProvider(lstXmlProvider);
-
-		xmlPersistenceService.write(content, target);
+		return content;
+		
 	}
 
 	private void persistModifiers(XmlGCodeProvider xmlProvider, IGCodeProvider provider) throws GkException{
 		List<IModifier<GCodeProvider>> lstModifiers = gcodeService.getModifierByGCodeProvider(provider.getId());
-
+		ArrayList<XmlGCodeModifier> modifiers = null;
+		
 		if(CollectionUtils.isNotEmpty(lstModifiers)){
+			modifiers = new ArrayList<>();
 			for (IModifier<GCodeProvider> iModifier : lstModifiers) {
-				
+				XmlGCodeModifier modifier = mapperService.export(iModifier, XmlGCodeModifier.class);
+				modifiers.add(modifier);
 			}
-		}
+		}		
+		
+		xmlProvider.setModifiers(modifiers);
 	}
 
 	/** (inheritDoc)
@@ -176,6 +184,20 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	 */
 	public void setXmlPersistenceService(IXmlPersistenceService xmlPersistenceService) {
 		this.xmlPersistenceService = xmlPersistenceService;
+	}
+
+	/**
+	 * @return the mapperService
+	 */
+	public IMapperService getMapperService() {
+		return mapperService;
+	}
+
+	/**
+	 * @param mapperService the mapperService to set
+	 */
+	public void setMapperService(IMapperService mapperService) {
+		this.mapperService = mapperService;
 	}
 
 }

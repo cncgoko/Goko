@@ -17,6 +17,7 @@ import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
+import org.goko.core.common.utils.UniqueCacheByCode;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -37,6 +38,7 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
+import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
 import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter;
 import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter.EnumModifierSortType;
@@ -75,7 +77,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		this.listenerList 	= new ArrayList<IGCodeProviderRepositoryListener>();
 		this.modifierListenerList = new ArrayList<IModifierListener>();
 		this.cacheProviders = new CacheById<IStackableGCodeProvider>(new SequentialIdGenerator());
-		this.cacheProvidersByCode = new CacheByCode<IStackableGCodeProvider>();
+		this.cacheProvidersByCode = new UniqueCacheByCode<IStackableGCodeProvider>();
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
 		this.gcodeProviderUdateNotificationEnabled = true;
 	}
@@ -494,6 +496,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		provider.setId(wrappedProvider.getId());
 		notifyGCodeProviderCreate(wrappedProvider);
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#deleteGCodeProvider(java.lang.Integer)
 	 */
@@ -567,7 +570,10 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		List<IModifier<GCodeProvider>> lstModifier = getModifierByGCodeProvider(modifier.getIdGCodeProvider());
 		modifier.setOrder(lstModifier.size());
 		this.cacheModifiers.add(modifier);
-
+		if(modifier instanceof AbstractModifier){
+			// FIXME: found how to remove this dirty hack
+			((AbstractModifier) modifier).setRS274NGCService(this);
+		}
 		IStackableGCodeProvider baseProvider = this.cacheProviders.get(modifier.getIdGCodeProvider());
 		StackableGCodeProviderModifier wrappedProvider = new StackableGCodeProviderModifier(baseProvider, modifier);
 		wrappedProvider.update();
@@ -576,6 +582,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		notifyModifierCreate(modifier);
 		notifyGCodeProviderUpdate(wrappedProvider);		
 	}
+	
+
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#updateModifier(org.goko.core.gcode.rs274ngcv3.element.IModifier)

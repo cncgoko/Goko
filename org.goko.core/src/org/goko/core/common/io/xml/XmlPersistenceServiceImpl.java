@@ -4,11 +4,14 @@ import java.io.File;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.io.xml.quantity.XmlLength;
+import org.goko.core.common.io.xml.quantity.XmlLengthTransform;
 import org.goko.core.log.GkLog;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.TypedRegistry;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.TypedTreeStrategy;
+import org.simpleframework.xml.transform.RegistryMatcher;
 
 public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	/** Log */
@@ -33,8 +36,11 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting "+getServiceId());
-		this.registry = new TypedRegistry();
-		this.persister = new Persister(new TypedTreeStrategy(registry));
+		RegistryMatcher matcher = new RegistryMatcher();
+		matcher.bind(XmlLength.class, new XmlLengthTransform());
+		this.registry = new TypedRegistry();		
+		this.persister = new Persister(new TypedTreeStrategy(registry), matcher);
+		
 		LOG.info("Successfully started "+getServiceId());
 	}
 

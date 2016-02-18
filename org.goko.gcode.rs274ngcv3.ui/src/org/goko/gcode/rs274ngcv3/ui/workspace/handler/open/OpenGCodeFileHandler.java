@@ -1,6 +1,7 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.handler.open;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -68,9 +69,13 @@ public class OpenGCodeFileHandler {
 		}
 	}
 
-
 	private void persistGCodeFolder(String filePath) {
 		GokoPreference.getInstance().setValue(LAST_GCODE_PATH, FilenameUtils.getFullPath(filePath));
+		try {
+			GokoPreference.getInstance().save();
+		} catch (IOException e) {
+			LOG.error(e);
+		}
 	}
 
 	private String getPersistedGCodeFolder() {

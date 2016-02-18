@@ -21,7 +21,9 @@ package org.goko.core.workspace.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -59,11 +61,13 @@ public class WorkspaceService implements IWorkspaceService{
 	/** The known save participants */
 	private List<IProjectSaveParticipant<?>> saveParticipants;
 	/** The known load participants */
-	private List<IProjectLoadParticipant<?>> loadParticipants;
+	private Map<Class<?>, IProjectLoadParticipant<?>> loadParticipants;
 	// Temporary project storage
 	private GkProject project;
 	/** The xml persistence service */
 	private IXmlPersistenceService xmlPersistenceService;
+	/** The mapper service */
+	private IMapperService mapperService;
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -165,10 +169,15 @@ public class WorkspaceService implements IWorkspaceService{
 	 */
 	@Override
 	public void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException {
-		this.getLoadParticipants().add(participant);
+		this.getLoadParticipants().put(participant.getContainerClass(), participant);
 	}
 
-
+	protected <T extends XmlProjectContainer> IProjectLoadParticipant<T> getProjectLoadParticipant(Class<T> containerClass) throws GkException{
+		if(getLoadParticipants().containsKey(containerClass)){
+			return (IProjectLoadParticipant<T>) getLoadParticipants().get(containerClass);
+		}
+		throw new GkTechnicalException("No load participant found for class ["+containerClass+"]");
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
 	 */
@@ -267,25 +276,18 @@ public class WorkspaceService implements IWorkspaceService{
 			notifyProjectBeforeLoad();
 			
 			XmlGkProject xmlGkProject = xmlPersistenceService.read(XmlGkProject.class, projectFile);
+			
 			project = new GkProject();
 			project.setFilepath(projectFile.getAbsolutePath());
 			project.setName(projectFile.getName());
 
 			context.setResourcesFolderName(xmlGkProject.getResourcesFolderName());
 			context.setResourcesFolder(new File(projectFile.getParentFile(), xmlGkProject.getResourcesFolderName()));
-
-			List<XmlProjectContainer> xmlContainers = xmlGkProject.getLstProjectContainer();
-
-			if(CollectionUtils.isNotEmpty(xmlContainers)){
-				for (XmlProjectContainer xmlProjectContainer : xmlContainers) {
-					// Let's find the load participant that can handle this container
-					for (IProjectLoadParticipant<?> loadParticipant : getLoadParticipants()) {
-						if(loadParticipant.canLoad(xmlProjectContainer)){
-							loadParticipant.load(context, xmlProjectContainer, monitor);
-							break;
-						}
-						LOG.warn("No IProjectLoadParticipant found for XmlProjectContainer of type ["+xmlProjectContainer.getType()+"]");
-					}
+			
+			if(CollectionUtils.isNotEmpty(xmlGkProject.getLstProjectContainer())){
+				for (XmlProjectContainer projectContainer : xmlGkProject.getLstProjectContainer()) {
+					IProjectLoadParticipant<XmlProjectContainer> loadParticipant = (IProjectLoadParticipant<XmlProjectContainer>) getProjectLoadParticipant(projectContainer.getClass());
+					loadParticipant.load(context, projectContainer, monitor);
 				}
 			}
 			setProjectDirty(false);
@@ -379,10 +381,24 @@ public class WorkspaceService implements IWorkspaceService{
 	/**
 	 * @return the loadParticipants
 	 */
-	public List<IProjectLoadParticipant<?>> getLoadParticipants() {
+	private Map<Class<?>, IProjectLoadParticipant<?>> getLoadParticipants() {
 		if(loadParticipants == null){
-			loadParticipants = new ArrayList<IProjectLoadParticipant<?>>();
+			loadParticipants = new HashMap<Class<?>, IProjectLoadParticipant<?>>();
 		}
 		return loadParticipants;
+	}
+
+	/**
+	 * @return the mapperService
+	 */
+	public IMapperService getMapperService() {
+		return mapperService;
+	}
+
+	/**
+	 * @param mapperService the mapperService to set
+	 */
+	public void setMapperService(IMapperService mapperService) {
+		this.mapperService = mapperService;
 	}
 }

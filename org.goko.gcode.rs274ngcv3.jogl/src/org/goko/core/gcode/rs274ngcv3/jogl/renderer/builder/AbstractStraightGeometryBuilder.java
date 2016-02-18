@@ -53,7 +53,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 		return new ArrayList<Point3d>();
 	}
 
-
+//verifier la prise en compte des coordinates systems dans toutes les commandes
 
 	private List<Point3d> renderLinearLine(GCodeContext context, T instruction) throws GkException {
 		JoglViewerPreference settings = JoglViewerPreference.getInstance();

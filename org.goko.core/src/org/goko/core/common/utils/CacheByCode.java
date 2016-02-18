@@ -19,7 +19,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 public class CacheByCode<T extends ICodeBean> {
 	/** The actual content */
 	private Map<String, T> cacheById;
-
+	
 	/**
 	 * Constructor
 	 * @param idGenerator the internal id generator to use

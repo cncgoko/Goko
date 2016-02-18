@@ -33,8 +33,8 @@ Import-Package: javax.annotation;version="1.2.0",
  org.osgi.framework;version="1.3.0",
  org.osgi.service.event;version="1.3.1"
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/WorkspaceComponant.xml,
- OSGI-INF/WorkspaceUiComponant.xml
+Service-Component: OSGI-INF/WorkspaceComponant.xml,OSGI-INF/WorkspaceUiComponant.xml,
+ OSGI-INF/MapperServiceImpl.xml
 Bundle-Activator: org.goko.core.workspace.internal.Activator
 Export-Package: org.goko.core.workspace,
  org.goko.core.workspace.action,

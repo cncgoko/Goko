@@ -4,6 +4,7 @@
 package org.goko.core.gcode.element;
 
 /**
+ * DEfinition of a coordinate system
  * @author PsyKo
  * @date 17 oct. 2015
  */

@@ -24,6 +24,17 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 	private IRS274NGCService rs274NGCService;
 
 	/**
+	 * Constructor	 
+	 * @param modifierName the name of the modifier
+	 */
+	public AbstractModifier(String modifierName) {
+		super();
+		this.modifierName = modifierName;
+		this.enabled = true;
+		this.modificationDate = new Date();
+	}
+	
+	/**
 	 * Constructor
 	 * @param idGCodeProvider the target provider
 	 * @param modifierName the name of the modifier

@@ -4,11 +4,13 @@
 package org.goko.core.execution.monitor.io.xml;
 
 import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
 
 /**
  * @author PsyKo
  * @date 1 janv. 2016
  */
+@Root(name="executionToken")
 public class XmlExecutionToken {
 	/** Execution order of this token in the queue */
 	@Attribute(name="executionOrder")

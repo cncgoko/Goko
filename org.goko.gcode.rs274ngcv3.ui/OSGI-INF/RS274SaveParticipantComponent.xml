@@ -6,4 +6,5 @@
    <service>
       <provide interface="org.goko.core.workspace.service.IProjectSaveParticipant"/>
    </service>
+   <reference bind="setMapperService" cardinality="1..1" interface="org.goko.core.workspace.service.IMapperService" name="IMapperService" policy="static"/>
 </scr:component>

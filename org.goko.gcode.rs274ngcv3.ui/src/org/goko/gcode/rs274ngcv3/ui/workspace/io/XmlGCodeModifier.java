@@ -1,11 +1,10 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.io;
 
 import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
 
+@Root(name="modifier")
 public abstract class XmlGCodeModifier {
-	/** Code of the target GCode provider */
-	@Attribute
-	private String target;
 	/** State of the modifier */
 	@Attribute
 	private boolean enabled;
@@ -13,18 +12,6 @@ public abstract class XmlGCodeModifier {
 	@Attribute
 	private int order;
 
-	/**
-	 * @return the target
-	 */
-	public String getTarget() {
-		return target;
-	}
-	/**
-	 * @param target the target to set
-	 */
-	public void setTarget(String target) {
-		this.target = target;
-	}
 	/**
 	 * @return the enabled
 	 */

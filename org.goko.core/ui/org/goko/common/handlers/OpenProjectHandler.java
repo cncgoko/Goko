@@ -1,6 +1,7 @@
 package org.goko.common.handlers;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -38,7 +39,7 @@ public class OpenProjectHandler {
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 			dialog.setText("Open Goko project...");
 			dialog.setFilterNames(new String[]{"Goko projects (*.goko) "});
-			dialog.setFilterExtensions(new String[]{"*.goko"});
+			dialog.setFilterExtensions(new String[]{"*.goko"});			
 			dialog.setFilterPath(getPersistedGCodeFolder());
 			final String filePath = dialog.open();
 
@@ -107,6 +108,11 @@ public class OpenProjectHandler {
 
 	private void persistGCodeFolder(String filePath) {
 		GokoPreference.getInstance().setValue(LAST_PROJECT_PATH, FilenameUtils.getFullPath(filePath));
+		try {
+			GokoPreference.getInstance().save();
+		} catch (IOException e) {
+			LOG.error(e);
+		}
 	}
 
 	private String getPersistedGCodeFolder() {

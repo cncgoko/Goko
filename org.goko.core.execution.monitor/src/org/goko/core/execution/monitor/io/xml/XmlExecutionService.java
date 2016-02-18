@@ -5,18 +5,19 @@ package org.goko.core.execution.monitor.io.xml;
 
 import java.util.ArrayList;
 
+import org.goko.core.workspace.io.XmlProjectContainer;
+import org.simpleframework.xml.DerivedType;
 import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 
 /**
  * @author PsyKo
  * @date 1 janv. 2016
  */
 
-@Root(name="executionService")
-public class XmlExecutionService {
+@DerivedType(parent=XmlProjectContainer.class, name="content:execution")
+public class XmlExecutionService extends XmlProjectContainer{
 	/** The list of execution token */
-	@ElementList(name = "lstExecutionToken")
+	@ElementList(name = "executionTokens")
 	private ArrayList<XmlExecutionToken> lstExecutionToken;
 
 	/**

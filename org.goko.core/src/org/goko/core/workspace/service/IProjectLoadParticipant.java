@@ -9,10 +9,10 @@ import org.goko.core.workspace.io.XmlProjectContainer;
  * @author PsyKo
  * @date 9 déc. 2015
  */
-public interface IProjectLoadParticipant<T> {
+public interface IProjectLoadParticipant<T extends XmlProjectContainer> {
 
-	void load(LoadContext context, XmlProjectContainer container, IProgressMonitor monitor) throws GkException;
+	void load(LoadContext context, T container, IProgressMonitor monitor) throws GkException;
 
-	boolean canLoad(XmlProjectContainer container) throws GkException;
+	Class<T> getContainerClass();
 
 }

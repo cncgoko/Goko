@@ -39,6 +39,14 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 	private Length chordalTolerance;
 	
 	/**
+	 * Constructeur
+	 */
+	public SegmentizeModifier() {
+		super(MODIFIER_NAME);
+		this.chordalTolerance = Length.valueOf(new BigDecimal("0.1"), LengthUnit.MILLIMETRE);
+	}
+	
+	/**
 	 * @param idGCodeProvider
 	 * @param modifierName
 	 */
@@ -54,7 +62,7 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 	@Override
 	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		GCodeContext localContext = new GCodeContext();
-		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
+		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
 		InstructionProvider resultInstructionProvider = new InstructionProvider();
 
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);

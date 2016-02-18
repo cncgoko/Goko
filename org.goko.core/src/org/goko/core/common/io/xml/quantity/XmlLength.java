@@ -29,5 +29,17 @@ public class XmlLength {
 		this.quantity = quantity;
 	}
 
-
+	public static Length valueOf(XmlLength xmlLength){
+		if(xmlLength != null){
+			return xmlLength.getQuantity();
+		}
+		return null;
+	}
+	
+	public static XmlLength valueOf(Length length){
+		if(length != null){
+			return new XmlLength(length);
+		}
+		return null;
+	}
 }

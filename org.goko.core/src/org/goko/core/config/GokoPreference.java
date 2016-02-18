@@ -91,22 +91,13 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 		if(instance == null){
 			try {
 				instance = new GokoPreference();				
-				//nstance.initialize();
 			} catch (GkException e) {
 				LOG.error(e);
 			}
 		}
 		return instance;
 	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.config.GkPreference#setValue(java.lang.String, boolean)
-	 */
-	@Override
-	public void setValue(String name, boolean value) {
-		// TODO Auto-generated method stub
-		super.setValue(name, value);
-	}
+
 	/**
 	 * @return the distanceUnit
 	 * @throws GkException

@@ -3,6 +3,9 @@
  */
 package org.goko.core.workspace.element;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Describes a Goko project
  *
@@ -16,7 +19,15 @@ public class GkProject {
 	private String filepath;
 	/** Dirty state of the project  */
 	private boolean dirty;
-
+	/** The list of container */
+	private List<AbstractProjectContainer> container;
+	
+	/**
+	 * Constructor
+	 */
+	public GkProject() {
+		container = new ArrayList<AbstractProjectContainer>();
+	}
 	/**
 	 * @return the name
 	 */
@@ -52,5 +63,15 @@ public class GkProject {
 	 */
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+	
+	public void addContainer(AbstractProjectContainer container){
+		this.container.add(container);
+	}
+	/**
+	 * @return the container
+	 */
+	public List<AbstractProjectContainer> getContainer() {
+		return container;
 	}
 }

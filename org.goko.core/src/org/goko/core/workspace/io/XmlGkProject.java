@@ -13,14 +13,14 @@ import org.simpleframework.xml.Root;
  * @author PsyKo
  * @date 9 déc. 2015
  */
-@Root
+@Root(name="gkProject")
 public class XmlGkProject {
 	/** The name of the resources folder */
 	@Attribute
 	private String resourcesFolderName;
 
 	/** The list of saved resources */
-	@ElementList
+	@ElementList(name="containers")
 	private ArrayList<XmlProjectContainer> lstProjectContainer;
 
 //	@ElementList
@@ -73,5 +73,4 @@ public class XmlGkProject {
 	public void setResourcesFolderName(String resourcesFolderName) {
 		this.resourcesFolderName = resourcesFolderName;
 	}
-
 }

@@ -22,7 +22,9 @@ public class TranslateModifierBuilder extends AbstractModifierUiProvider<Transla
 	 */
 	@Override
 	public TranslateModifier createDefaultModifier(Integer idTargetGCodeProvider) throws GkException {
-		return new TranslateModifier(idTargetGCodeProvider);
+		TranslateModifier modifier = new TranslateModifier();
+		modifier.setIdGCodeProvider(idTargetGCodeProvider);
+		return modifier;
 	}
 
 	/** (inheritDoc)

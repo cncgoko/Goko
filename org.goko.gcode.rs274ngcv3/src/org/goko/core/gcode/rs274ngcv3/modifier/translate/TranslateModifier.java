@@ -21,13 +21,13 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	private Length translationX;
 	private Length translationY;
 	private Length translationZ;
-
+	
 	/**
 	 * Constructor
 	 * @param idGCodeProvider target provider id
 	 */
-	public TranslateModifier(Integer idGCodeProvider) {
-		super(idGCodeProvider, "Translate");
+	public TranslateModifier() {
+		super("Translate");
 		this.translationX = Length.ZERO;
 		this.translationY = Length.ZERO;
 		this.translationZ = Length.ZERO;

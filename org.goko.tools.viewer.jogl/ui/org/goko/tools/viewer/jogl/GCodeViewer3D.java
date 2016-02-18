@@ -33,6 +33,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.opengl.GLData;
@@ -93,183 +95,19 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 		glcanvas = viewerService.createCanvas(compositeParent);
 		context.getParent().set(GokoJoglCanvas.class, glcanvas);
-
-//		final ToolItem btnEnableView = new ToolItem(toolBar, SWT.CHECK);
-//		btnEnableView.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				getController().setRenderEnabled(btnEnableView.getSelection());
-//			}
-//		});
-//		btnEnableView.setToolTipText("Enable/disable 3D view");
-//		btnEnableView.setWidth(32);
-//		btnEnableView.setHotImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/activated.png"));
-//		btnEnableView.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/activated.png"));
-//
-//		final ToolItem btnEnableGrid = new ToolItem(toolBar, SWT.CHECK);
-//		btnEnableGrid.addSelectionListener(new SelectionAdapter() {
-//			@Override public void widgetSelected(SelectionEvent e) {
-//				try {
-//					getController().setShowGrid(btnEnableGrid.getSelection());
-//				} catch (GkException ex) {
-//					displayError(ex);
-//				}
-//			}
-//		});
-//		btnEnableGrid.setToolTipText("Show/hide grid");
-//		btnEnableGrid.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/grid.png"));
-//		getController().addSelectionBinding(btnEnableGrid, "showGrid");
-//
-//		final ToolItem btnEnableBounds = new ToolItem(toolBar, SWT.CHECK);
-//		btnEnableBounds.addSelectionListener(new SelectionAdapter() {
-//			@Override public void widgetSelected(SelectionEvent e) {
-//				try {
-//					getController().setDisplayBounds(btnEnableBounds.getSelection());
-//				} catch (GkException ex) {
-//					displayError(ex);
-//				}
-//			}
-//		});
-//		btnEnableBounds.setToolTipText("Show/hide bounds");
-//		btnEnableBounds.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/show-bound.png"));
-//		getController().addSelectionBinding(btnEnableBounds, "enabled");
-//
-//		getController().addSelectionBinding(btnEnableView, "enabled");
-
-		 // register context menu on the table
-	   // menuService.registerContextMenu(compositeParent, "org.goko.tools.viewer.jogl.popupmenu.0");
-
-//		final ICoordinateSystemAdapter csAdapter = viewerService.getCoordinateSystemAdapter();
-//		if(csAdapter != null){
-//			final Menu coordinateSystemMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
-//			final MenuItem csItemAll = new MenuItem(coordinateSystemMenu, SWT.PUSH);
-//			csItemAll.setText("Show all");
-//			csItemAll.addSelectionListener(new SelectionAdapter() {
-//			  @Override public void widgetSelected(SelectionEvent e) {
-//				  try {
-//					for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
-//						  viewerService.setCoordinateSystemEnabled(cs, true);
-//						  getDataModel().getCoordinateSystemEnabled().put(cs.name(), true);
-//					  }
-//				} catch (GkException e1) {
-//					displayError(e1);
-//				}
-//			  };
-//			});
-//			MenuItem csItemNone = new MenuItem(coordinateSystemMenu, SWT.PUSH);
-//			csItemNone.setText("Hide all");
-//			csItemNone.addSelectionListener(new SelectionAdapter() {
-//				  @Override public void widgetSelected(SelectionEvent e) {
-//					  try {
-//						for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
-//							  viewerService.setCoordinateSystemEnabled(cs, false);
-//							  getDataModel().getCoordinateSystemEnabled().put(cs.name(), false);
-//						  }
-//					} catch (GkException e1) {
-//						displayError(e1);
-//					}
-//				  };
-//				});
-//			MenuItem csItemSeparator = new MenuItem(coordinateSystemMenu, SWT.SEPARATOR);
-//			// Create the menu for CS display
-//			for (final EnumCoordinateSystem cs : csAdapter.getCoordinateSystem()) {
-//		      final MenuItem item = new MenuItem(coordinateSystemMenu, SWT.CHECK);
-//		      item.setText(cs.name());
-//		      viewerService.setCoordinateSystemEnabled(cs, true);
-//    		  getDataModel().getCoordinateSystemEnabled().put(cs.name(), true);
-//		      item.addSelectionListener(new SelectionAdapter() {
-//		    	  @Override public void widgetSelected(SelectionEvent e) {
-//		    		  viewerService.setCoordinateSystemEnabled(cs, item.getSelection());
-//		    		  getDataModel().getCoordinateSystemEnabled().put(cs.name(), item.getSelection());
-//		    	  };
-//		      });
-//		      {
-//		    	  IObservableValue 	modelObservable 	= Observables.observeMapEntry(getDataModel().getCoordinateSystemEnabled(), cs.name());
-//		    	  IObservableValue  controlObservable 	= WidgetProperties.selection().observe(item);
-//
-//		    	  UpdateValueStrategy policy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
-//		    	  getController().getBindingContext().bindValue(controlObservable, modelObservable,null, policy);
-//		      }
-//		    }
-//
-//			final ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
-//			tltmDropdownItem.setToolTipText("Show/hide coordinates systems");
-//			tltmDropdownItem.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/show-cs.png"));
-//			tltmDropdownItem.addListener(SWT.Selection, new Listener() {
-//				@Override
-//				public void handleEvent(Event event) {
-//					Rectangle rect = tltmDropdownItem.getBounds();
-//					Point pt = new Point(rect.x, rect.y + rect.height);
-//					pt = toolBar.toDisplay(pt);
-//					coordinateSystemMenu.setLocation(pt.x, pt.y);
-//					coordinateSystemMenu.setVisible(true);
-//				}
-//			});
-//		}
-
-
-
-//		ToolItem toolItem = new ToolItem(toolBar, SWT.SEPARATOR);
-//
-//		ToolItem btnZoomExtent = new ToolItem(toolBar, SWT.NONE);
-//		btnZoomExtent.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				try {
-//					getController().zoomToFit();
-//				} catch (GkException ex) {
-//					displayError(ex);
-//				}
-//			}
-//		});
-//		btnZoomExtent.setToolTipText("Zoom extents");
-//		btnZoomExtent.setWidth(32);
-//		btnZoomExtent.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/layer-resize.png"));
-//
-//		final ToolItem btnView = new ToolItem(toolBar, SWT.DROP_DOWN);
-//		btnView.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/projection-screen.png"));
-//		btnView.setToolTipText("Change view");
-//		final Menu viewMenu = new Menu(toolBar.getShell(), SWT.POP_UP);
-//
-//		for (AbstractCamera camera: viewerService.getSupportedCamera()) {
-//			MenuItem btnCamera = new MenuItem(viewMenu, SWT.PUSH);
-//			btnCamera.setText(camera.getLabel());
-//			final String cameraId = camera.getId();
-//
-//			btnCamera.addSelectionListener(new SelectionAdapter() {
-//
-//				@Override
-//				public void widgetSelected(SelectionEvent e) {
-//					try {
-//						viewerService.setActiveCamera(cameraId);
-//					} catch (GkException e1) {
-//						displayError(e1);
-//					}
-//				}
-//			});
-//		}
-//
-//
-//		btnView.addListener(SWT.Selection, new Listener() {
-//			@Override
-//			public void handleEvent(Event event) {
-//				Rectangle rect = btnView.getBounds();
-//				Point pt = new Point(rect.x, rect.y + rect.height);
-//				pt = toolBar.toDisplay(pt);
-//				viewMenu.setLocation(pt.x, pt.y);
-//				viewMenu.setVisible(true);
-//			}
-//		});
-//
-//		ToolItem toolItem_1 = new ToolItem(toolBar, SWT.SEPARATOR);
-
-//		btnKeyboardJog = new ToolItem(toolBar, SWT.CHECK);
-//		btnKeyboardJog.addSelectionListener(new SelectionAdapter() {
-//			@Override public void widgetSelected(SelectionEvent e) {
-//				glcanvas.setFocus();
-//				glcanvas.setKeyboardJogEnabled(btnKeyboardJog.getSelection());
-//			}
-//		});
+		glcanvas.addMouseListener(new MouseAdapter() {
+			/** (inheritDoc)
+			 * @see org.eclipse.swt.events.MouseAdapter#mouseDown(org.eclipse.swt.events.MouseEvent)
+			 */
+			@Override
+			public void mouseDown(MouseEvent e) {
+				// focus on right click
+				
+					glcanvas.setFocus();
+					glcanvas.forceFocus();
+				System.err.println("set focus");
+			}
+		});
 		glcanvas.addFocusListener(new FocusListener() {
 
 			@Override
@@ -282,10 +120,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 				
 			}
 		});
-//		btnKeyboardJog.setToolTipText("Enable/disable keyboard jogging (Ctrl + J)");
-//		btnKeyboardJog.setImage(ResourceManager.getPluginImage("org.goko.tools.viewer.jogl", "resources/icons/keyboard--arrow.png"));
-
-
 
 		glcanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -295,8 +129,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		animator.start();
 
 		ContextInjectionFactory.inject(glcanvas, context);
-
-		// glcanvas.setMenu(initContextualMenu(composite));
 
 		Map<String, String> state = part.getPersistedState();
 		String viewerEnabledStr = state.get(VIEWER_ENABLED);

@@ -37,6 +37,7 @@ public class SegmentizePropertiesPanel extends AbstractModifierPropertiesPanel<S
 	 */
 	public void createContent(Composite parent) throws GkException {
 		Composite rootComposite = new Composite(parent, SWT.NONE);
+		rootComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		rootComposite.setLayout(new GridLayout(1, false));
 		Group composite = new Group(rootComposite, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
