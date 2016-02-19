@@ -6,6 +6,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.io.xml.quantity.XmlLength;
 import org.goko.core.common.io.xml.quantity.XmlLengthTransform;
+import org.goko.core.common.io.xml.quantity.XmlSpeed;
+import org.goko.core.common.io.xml.quantity.XmlSpeedTransform;
 import org.goko.core.log.GkLog;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.TypedRegistry;
@@ -38,6 +40,7 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 		LOG.info("Starting "+getServiceId());
 		RegistryMatcher matcher = new RegistryMatcher();
 		matcher.bind(XmlLength.class, new XmlLengthTransform());
+		matcher.bind(XmlSpeed.class, new XmlSpeedTransform());
 		this.registry = new TypedRegistry();		
 		this.persister = new Persister(new TypedTreeStrategy(registry), matcher);
 		

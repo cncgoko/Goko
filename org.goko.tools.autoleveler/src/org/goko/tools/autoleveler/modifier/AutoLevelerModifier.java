@@ -30,8 +30,8 @@ public abstract class AutoLevelerModifier<T extends IHeightMap> extends Abstract
 	/** The theoric height to compare with the probed height */
 	private Length theoricHeight;
 
-	public AutoLevelerModifier(Integer idGCodeProvider) {
-		super(idGCodeProvider, "Auto leveler");
+	public AutoLevelerModifier() {
+		super("Auto leveler");
 		this.theoricHeight = Length.ZERO;
 	}
 

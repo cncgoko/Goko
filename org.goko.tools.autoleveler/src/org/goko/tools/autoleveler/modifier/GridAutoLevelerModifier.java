@@ -14,8 +14,8 @@ public class GridAutoLevelerModifier extends AutoLevelerModifier<GridHeightMap>{
 	/**
 	 * @param idGCodeProvider
 	 */
-	public GridAutoLevelerModifier(Integer idGCodeProvider) {
-		super(idGCodeProvider);
+	public GridAutoLevelerModifier() {
+		super();
 	}
 
 }

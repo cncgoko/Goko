@@ -52,7 +52,8 @@ public class AutoLevelerModifierBuilder extends AbstractModifierUiProvider<GridA
 	 */
 	@Override
 	public GridAutoLevelerModifier createDefaultModifier(Integer idTargetGCodeProvider) throws GkException {
-		GridAutoLevelerModifier modifier = new GridAutoLevelerModifier(idTargetGCodeProvider);
+		GridAutoLevelerModifier modifier = new GridAutoLevelerModifier();
+		modifier.setIdGCodeProvider(idTargetGCodeProvider);
 		IGCodeProvider provider = getRS274NGCService().getGCodeProvider(idTargetGCodeProvider);
 		BoundingTuple6b bounds = getRS274NGCService().getBounds(new GCodeContext(), getRS274NGCService().getInstructions(new GCodeContext(), provider));
 		List<Tuple6b> offsets = new ArrayList<Tuple6b>();

@@ -30,6 +30,7 @@ Require-Bundle: org.goko.core,
  org.jogamp.jogl;bundle-version="2.0.2",
  org.goko.controller.tinyg,
  org.goko.gcode.rs274ngcv3;bundle-version="0.0.1"
-Service-Component: OSGI-INF/AutoLevelerComponant.xml,
- OSGI-INF/AutoLevelerModifierBuilder.xml
-Export-Package: org.goko.tools.autoleveler.bean.grid
+Service-Component: OSGI-INF/AutoLevelerComponant.xml,OSGI-INF/AutoLevelerModifierBuilder.xml,
+ OSGI-INF/AutoLevelerServiceImpl.xml
+Export-Package: org.goko.tools.autoleveler.bean.grid,
+ org.goko.tools.autoleveler.modifier

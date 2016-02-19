@@ -8,7 +8,7 @@ Require-Bundle: org.eclipse.swt,org.eclipse.e4.ui.model.workbench;bund
  se.core.databinding.property;bundle-version="1.5.0",org.eclipse.jface
  ;bundle-version="3.11.0"
 Bundle-ClassPath: lib/webcam-capture-0.3.10.jar,lib/bridj-0.6.2.jar,.
-Bundle-Version: 0.3.0.201602181908
+Bundle-Version: 0.3.0.201602182012
 Bundle-Name: Camera Tool
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0.0";resolution:=optional,

@@ -69,7 +69,7 @@
       <bindings xmi:id="_Q3PnUM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.3" keySequence="M2+L" command="_HuLH4J5xEeWki_YL0eV3Fg">
         <parameters xmi:id="_R3bR8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.6" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.left"/>
       </bindings>
-      <bindings xmi:id="_T4VZwM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.4" keySequence="21+F" command="_HuLH4J5xEeWki_YL0eV3Fg">
+      <bindings xmi:id="_T4VZwM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.4" keySequence="M2+F" command="_HuLH4J5xEeWki_YL0eV3Fg">
         <parameters xmi:id="_VLN98M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.7" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.front"/>
       </bindings>
     </elements>
