@@ -108,7 +108,7 @@ public class TinyGState extends MachineValueStore{
 		storeValue(TinyG.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);
 		storeValue(TinyG.TINYG_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", 0);
-		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", BigDecimal.ZERO);
+		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", StringUtils.EMPTY);
 		addListener(this);
 		offsets = new HashMap<EnumCoordinateSystem, Tuple6b>();
 		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
