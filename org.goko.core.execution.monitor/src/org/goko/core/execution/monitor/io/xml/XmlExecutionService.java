@@ -14,12 +14,19 @@ import org.simpleframework.xml.ElementList;
  * @date 1 janv. 2016
  */
 
-@DerivedType(parent=XmlProjectContainer.class, name="content:execution")
+@DerivedType(parent=XmlProjectContainer.class, name=XmlExecutionService.CONTAINER_TYPE)
 public class XmlExecutionService extends XmlProjectContainer{
+	public static final String CONTAINER_TYPE ="content:execution";	
 	/** The list of execution token */
 	@ElementList(name = "executionTokens")
 	private ArrayList<XmlExecutionToken> lstExecutionToken;
 
+	/**
+	 * Constructor 
+	 */
+	public XmlExecutionService() {
+		super(CONTAINER_TYPE);
+	}
 	/**
 	 * @return the lstExecutionToken
 	 */

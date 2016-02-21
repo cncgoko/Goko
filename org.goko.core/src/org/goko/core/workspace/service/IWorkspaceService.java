@@ -37,9 +37,7 @@ public interface IWorkspaceService extends IGokoService{
 
 	void addProjectSaveParticipant(IProjectSaveParticipant<?> participant) throws GkException;
 
-	void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException;
-
-	IProjectLoadParticipant<?> findProjectLoadParticipantByType(String type) throws GkException;
+	void addProjectLoadParticipant(IProjectLoadParticipant participant) throws GkException;
 
 	GkProject getProject() throws GkException;
 

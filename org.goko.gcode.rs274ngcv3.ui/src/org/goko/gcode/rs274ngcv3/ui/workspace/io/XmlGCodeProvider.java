@@ -16,7 +16,7 @@ public class XmlGCodeProvider {
 	@Element
 	private XmlGCodeProviderSource source;
 
-   @ElementList(name="modifiers")
+	@ElementList(name="modifiers", required=false)
     private ArrayList<XmlGCodeModifier> modifiers;
 
 	/**

@@ -192,8 +192,8 @@ public class TinyGState extends MachineValueStore{
 		setWorkPosition(gcodeContext.getPosition());
 		updateValue(TinyG.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
 		updateValue(TinyG.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
-		updateValue(TinyG.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));
-		updateValue(TinyG.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());		
+		updateValue(TinyG.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));		
+		updateValue(TinyG.CONTEXT_FEEDRATE, GokoPreference.getInstance().format(gcodeContext.getFeedrate(), false));		
 	}
 
 	/**

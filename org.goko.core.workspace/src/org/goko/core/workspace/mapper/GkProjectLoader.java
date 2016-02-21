@@ -25,8 +25,8 @@ public class GkProjectLoader implements ILoader<XmlGkProject, GkProject> {
 		GkProject project = new GkProject();
 		project.setDirty(false);
 		
-		if(CollectionUtils.isNotEmpty(input.getLstProjectContainer())){
-			for (XmlProjectContainer xmlProjectContainer : input.getLstProjectContainer()) {
+		if(CollectionUtils.isNotEmpty(input.getProjectContainer())){
+			for (XmlProjectContainer xmlProjectContainer : input.getProjectContainer()) {
 				mapperService.load(xmlProjectContainer, XmlProjectContainer.class);
 			}
 		}

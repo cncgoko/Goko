@@ -15,6 +15,7 @@ import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.service.AbstractProjectLoadParticipant;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
@@ -27,13 +28,15 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.FileGCodeSourceLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.SegmentizeModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.TranslateModifierLoader;
 
-public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipant<XmlRS274GContent> {
+public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS274GContent> implements IGokoService, IProjectLoadParticipant {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274LoadParticipant.class);
 	/** Service ID */
 	private static final String SERVICE_ID = "org.goko.gcode.rs274ngcv3.ui.workspace.RS274LoadParticipant";
 	/** Type of the RS274 content container  */
 	private static final String RS274_CONTENT_TYPE = "rs274Content";
+	/** Load priority */
+	private static final int LOAD_PRIORITY = 100;
 	/** Workspace service */
 	private IRS274NGCService gcodeService;
 	/** XML persistence service */
@@ -41,6 +44,13 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	/** Mapper service */
 	private IMapperService mapperService;
 
+	/**
+	 * Constructor
+	 */
+	public RS274LoadParticipant() {
+		super(XmlRS274GContent.class);
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -75,23 +85,21 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getPriority()
+	 */
+	@Override
+	public int getPriority() {		
+		return LOAD_PRIORITY;
+	}
+	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override
-	public void load(LoadContext context, XmlRS274GContent container, IProgressMonitor monitor) throws GkException {
-		load(container, monitor);
-	}
-
-	/**
-	 * Load the content of the RS274 services
-	 * @param content the content to load
-	 * @throws GkException GkException
-	 */
-	protected void load(XmlRS274GContent content, IProgressMonitor monitor) throws GkException {
+	protected void loadContainer(LoadContext context, XmlRS274GContent container, IProgressMonitor monitor) throws GkException {
 		gcodeService.clearAll();
 
 		// Load the GCodeProvider
-		List<XmlGCodeProvider> lstGCodeProvider = content.getLstGCodeProvider();
+		List<XmlGCodeProvider> lstGCodeProvider = container.getLstGCodeProvider();
 		
 		SubMonitor submonitor = SubMonitor.convert(monitor, CollectionUtils.size(lstGCodeProvider));
 		if(CollectionUtils.isNotEmpty(lstGCodeProvider)){
@@ -117,6 +125,14 @@ public class RS274LoadParticipant implements IGokoService, IProjectLoadParticipa
 				gcodeService.addModifier(modifier);
 			}
 		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getContainerType()
+	 */
+	@Override
+	public String getContainerType() {		
+		return XmlRS274GContent.CONTAINER_TYPE;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getContainerClass()

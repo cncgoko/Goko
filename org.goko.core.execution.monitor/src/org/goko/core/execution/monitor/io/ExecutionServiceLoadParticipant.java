@@ -19,13 +19,14 @@ import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.service.AbstractProjectLoadParticipant;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
 
 /**
  * @author PsyKo
  * @date 1 janv. 2016
  */
-public class ExecutionServiceLoadParticipant implements IProjectLoadParticipant<XmlExecutionService>, IGokoService {
+public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticipant<XmlExecutionService> implements IProjectLoadParticipant, IGokoService {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ExecutionServiceLoadParticipant.class);
 	/** Service ID */
@@ -36,7 +37,16 @@ public class ExecutionServiceLoadParticipant implements IProjectLoadParticipant<
 	private ExecutionServiceImpl executionService;
 	/** GCode provider repository */
 	private IGCodeProviderRepository gcodeRepository;
-	
+	/** Load priority */
+	private static final int LOAD_PRIORITY = 500;
+		
+	/**
+	 * Constructor
+	 */
+	public ExecutionServiceLoadParticipant() {
+		super(XmlExecutionService.class);
+	}
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -63,19 +73,27 @@ public class ExecutionServiceLoadParticipant implements IProjectLoadParticipant<
 		// TODO Auto-generated method stub
 		
 	}
-	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getContainerClass()
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getPriority()
 	 */
 	@Override
-	public Class<XmlExecutionService> getContainerClass() {		
-		return XmlExecutionService.class;
+	public int getPriority() {		
+		return LOAD_PRIORITY;
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#getContainerType()
+	 */
+	@Override
+	public String getContainerType() {		
+		return XmlExecutionService.CONTAINER_TYPE;
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override
-	public void load(LoadContext context, XmlExecutionService container, IProgressMonitor monitor) throws GkException {
+	public void loadContainer(LoadContext context, XmlExecutionService container, IProgressMonitor monitor) throws GkException {
 		ArrayList<XmlExecutionToken> lstToken = container.getLstExecutionToken();
 		
 		if(CollectionUtils.isNotEmpty(lstToken)){

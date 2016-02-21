@@ -6,12 +6,20 @@ import org.goko.core.workspace.io.XmlProjectContainer;
 import org.simpleframework.xml.DerivedType;
 import org.simpleframework.xml.ElementList;
 
-@DerivedType(parent=XmlProjectContainer.class, name="content:rs274")
+@DerivedType(parent=XmlProjectContainer.class, name=XmlRS274GContent.CONTAINER_TYPE)
 public class XmlRS274GContent extends XmlProjectContainer{
-
+	public static final String CONTAINER_TYPE ="content:rs274";
+	
 	@ElementList(name = "gcodeProviders")
 	private ArrayList<XmlGCodeProvider> lstGCodeProvider;
 
+	/**
+	 * Constructor
+	 */
+	public XmlRS274GContent() {
+		super(CONTAINER_TYPE);
+	}
+	
 	/**
 	 * @return the lstGCodeProvider
 	 */

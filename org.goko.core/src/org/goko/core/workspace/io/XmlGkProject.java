@@ -21,29 +21,29 @@ public class XmlGkProject {
 
 	/** The list of saved resources */
 	@ElementList(name="containers")
-	private ArrayList<XmlProjectContainer> lstProjectContainer;
+	private ArrayList<XmlProjectContainer> projectContainer;
 
 //	@ElementList
 	private ArrayList<Object> testList;
 
 	public XmlGkProject() {
 		super();
-		this.lstProjectContainer = new ArrayList<>();
+		this.projectContainer = new ArrayList<>();
 		this.testList =  new ArrayList<>();
 	}
 
 	/**
 	 * @return the lstProjectContainer
 	 */
-	public ArrayList<XmlProjectContainer> getLstProjectContainer() {
-		return lstProjectContainer;
+	public ArrayList<XmlProjectContainer> getProjectContainer() {
+		return projectContainer;
 	}
 
 	/**
 	 * @param lstProjectContainer the lstProjectContainer to set
 	 */
-	public void setLstProjectContainer(ArrayList<XmlProjectContainer> lstProjectContainer) {
-		this.lstProjectContainer = lstProjectContainer;
+	public void setProjectContainer(ArrayList<XmlProjectContainer> lstProjectContainer) {
+		this.projectContainer = lstProjectContainer;
 	}
 
 	/**

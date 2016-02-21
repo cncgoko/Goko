@@ -21,6 +21,7 @@ package org.goko.core.workspace.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class WorkspaceService implements IWorkspaceService{
 	/** The known save participants */
 	private List<IProjectSaveParticipant<?>> saveParticipants;
 	/** The known load participants */
-	private Map<Class<?>, IProjectLoadParticipant<?>> loadParticipants;
+	private List<IProjectLoadParticipant> loadParticipants;
 	// Temporary project storage
 	private GkProject project;
 	/** The xml persistence service */
@@ -153,31 +154,13 @@ public class WorkspaceService implements IWorkspaceService{
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#findProjectLoadParticipantByType(java.lang.String)
-	 */
-	@Override
-	public IProjectLoadParticipant<?> findProjectLoadParticipantByType(String type) throws GkException {
-//		for (IProjectLoadParticipant<?> participant : loadParticipants) {
-//			if(StringUtils.equals(participant.getProjectContainerType(), type)){
-//				return participant;
-//			}
-//		}
-		return null;
-	}
-	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#addProjectLoadParticipant(org.goko.core.workspace.service.IProjectLoadParticipant)
 	 */
 	@Override
-	public void addProjectLoadParticipant(IProjectLoadParticipant<?> participant) throws GkException {
-		this.getLoadParticipants().put(participant.getContainerClass(), participant);
+	public void addProjectLoadParticipant(IProjectLoadParticipant participant) throws GkException {
+		this.getLoadParticipants().add(participant);
 	}
 
-	protected <T extends XmlProjectContainer> IProjectLoadParticipant<T> getProjectLoadParticipant(Class<T> containerClass) throws GkException{
-		if(getLoadParticipants().containsKey(containerClass)){
-			return (IProjectLoadParticipant<T>) getLoadParticipants().get(containerClass);
-		}
-		throw new GkTechnicalException("No load participant found for class ["+containerClass+"]");
-	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
 	 */
@@ -211,7 +194,7 @@ public class WorkspaceService implements IWorkspaceService{
 		xmlProject.setResourcesFolderName(context.getResourcesFolderName());
 
 		for (IProjectSaveParticipant<?> saveParticipant : getSaveParticipants()) {
-			xmlProject.getLstProjectContainer().addAll(saveParticipant.save(context));
+			xmlProject.getProjectContainer().addAll(saveParticipant.save(context));
 		}
 
 		try {
@@ -284,10 +267,21 @@ public class WorkspaceService implements IWorkspaceService{
 			context.setResourcesFolderName(xmlGkProject.getResourcesFolderName());
 			context.setResourcesFolder(new File(projectFile.getParentFile(), xmlGkProject.getResourcesFolderName()));
 			
-			if(CollectionUtils.isNotEmpty(xmlGkProject.getLstProjectContainer())){
-				for (XmlProjectContainer projectContainer : xmlGkProject.getLstProjectContainer()) {
-					IProjectLoadParticipant<XmlProjectContainer> loadParticipant = (IProjectLoadParticipant<XmlProjectContainer>) getProjectLoadParticipant(projectContainer.getClass());
-					loadParticipant.load(context, projectContainer, monitor);
+			Map<String, XmlProjectContainer> mapContainerByType = new HashMap<>();	
+			if(CollectionUtils.isNotEmpty(xmlGkProject.getProjectContainer())){
+				for (XmlProjectContainer projectContainer : xmlGkProject.getProjectContainer()) {
+					mapContainerByType.put(projectContainer.getType(), projectContainer);					
+				}
+			}
+			// Sort by priority
+			Collections.sort(getLoadParticipants(), new ProjectLoadParticipantComparator());
+			
+			if(CollectionUtils.isNotEmpty(getLoadParticipants())){
+				for (IProjectLoadParticipant loadParticipant : getLoadParticipants()) {
+					if(mapContainerByType.containsKey(loadParticipant.getContainerType())){
+						loadParticipant.load(context, mapContainerByType.get(loadParticipant.getContainerType()), monitor);	
+					}
+					
 				}
 			}
 			setProjectDirty(false);
@@ -381,9 +375,9 @@ public class WorkspaceService implements IWorkspaceService{
 	/**
 	 * @return the loadParticipants
 	 */
-	private Map<Class<?>, IProjectLoadParticipant<?>> getLoadParticipants() {
+	private List<IProjectLoadParticipant> getLoadParticipants() {
 		if(loadParticipants == null){
-			loadParticipants = new HashMap<Class<?>, IProjectLoadParticipant<?>>();
+			loadParticipants = new ArrayList<IProjectLoadParticipant>();
 		}
 		return loadParticipants;
 	}
