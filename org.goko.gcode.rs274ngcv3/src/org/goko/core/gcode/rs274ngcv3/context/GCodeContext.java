@@ -10,6 +10,7 @@ import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.math.Tuple6b;
 
@@ -41,7 +42,7 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * Current coordinate system
 	 */
-	private EnumCoordinateSystem coordinateSystem;
+	private ICoordinateSystem coordinateSystem;
 	/**
 	 * Current spindle mode
 	 */
@@ -93,14 +94,14 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * Coordinates system offsets
 	 */
-	private Map<EnumCoordinateSystem, Tuple6b> coordinateSystemData;
+	private Map<ICoordinateSystem, Tuple6b> coordinateSystemData;
 
 	// _______________________ END OF FIELDS DEFINITION _______________________
 
 	/** Empty constructor */
 	public GCodeContext() {
 		this.originOffset = new Tuple6b().setZero();
-		this.coordinateSystemData = new HashMap<EnumCoordinateSystem, Tuple6b>();
+		this.coordinateSystemData = new HashMap<ICoordinateSystem, Tuple6b>();
 		this.originOffsetActive = true;
 		this.motionMode = EnumMotionMode.RAPID;
 		this.distanceMode = EnumDistanceMode.ABSOLUTE;
@@ -148,7 +149,7 @@ public class GCodeContext implements IGCodeContext{
 
 		// Copy coordinate systems data
 		if(!context.coordinateSystemData.isEmpty()){
-			for (EnumCoordinateSystem enumCs : context.coordinateSystemData.keySet()) {
+			for (ICoordinateSystem enumCs : context.coordinateSystemData.keySet()) {
 				coordinateSystemData.put(enumCs, new Tuple6b(context.getCoordinateSystemData(enumCs)));
 			}
 		}
@@ -246,13 +247,13 @@ public class GCodeContext implements IGCodeContext{
 	/**
 	 * @return the coordinateSystem
 	 */
-	public EnumCoordinateSystem getCoordinateSystem() {
+	public ICoordinateSystem getCoordinateSystem() {
 		return coordinateSystem;
 	}
 	/**
 	 * @param coordinateSystem the coordinateSystem to set
 	 */
-	public void setCoordinateSystem(EnumCoordinateSystem coordinateSystem) {
+	public void setCoordinateSystem(ICoordinateSystem coordinateSystem) {
 		this.coordinateSystem = coordinateSystem;
 	}
 	/**
@@ -407,13 +408,19 @@ public class GCodeContext implements IGCodeContext{
 	public void setC(Angle c) {
 		this.c = c;
 	}
-
+	/**
+	 * Returns the offset for the active coordinate system
+	 * @return {@link Tuple6b}
+	 */
+	public Tuple6b getActiveCoordinateSystemData(){
+		return getCoordinateSystemData(getCoordinateSystem());
+	}
 	/**
 	 * Returns the offset for the given coordinate system
 	 * @param cs the coordinate system
 	 * @return {@link Tuple6b}
 	 */
-	public Tuple6b getCoordinateSystemData(EnumCoordinateSystem cs){
+	public Tuple6b getCoordinateSystemData(ICoordinateSystem cs){
 		if(!coordinateSystemData.containsKey(cs)){
 			coordinateSystemData.put(cs, new Tuple6b(getUnit().getUnit(), AngleUnit.DEGREE_ANGLE).setZero());
 		}
@@ -425,7 +432,7 @@ public class GCodeContext implements IGCodeContext{
 	 * @param cs the coordinate system
 	 * @param offset the offset to set
 	 */
-	public void setCoordinateSystemData(EnumCoordinateSystem cs, Tuple6b offset){
+	public void setCoordinateSystemData(ICoordinateSystem cs, Tuple6b offset){
 		coordinateSystemData.put(cs, offset);
 
 	}

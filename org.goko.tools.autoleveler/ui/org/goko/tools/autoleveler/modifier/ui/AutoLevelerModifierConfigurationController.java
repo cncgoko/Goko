@@ -20,12 +20,14 @@ import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController;
 import org.goko.tools.autoleveler.bean.grid.GridHeightMap;
 import org.goko.tools.autoleveler.modifier.GridAutoLevelerModifier;
 
 public class AutoLevelerModifierConfigurationController extends AbstractModifierPanelController<AutoLevelerModifierConfigurationModel, GridAutoLevelerModifier>{
+	private static final GkLog LOG = GkLog.getLogger(AutoLevelerModifierConfigurationController.class);
 	@Inject
 	@Optional
 	private IProbingService probingService;
@@ -132,14 +134,14 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 						Future<ProbeResult> futureProbeResult = result.take();
 						ProbeResult probeResult = futureProbeResult.get();
 						if(probeResult == null){
-							System.out.println("Probe result is null. Probably cancelled.");
+							LOG.info("Probe result is null. Probably cancelled.");
 							continue;
 						}
 						if(probeResult.isProbed()){
-							System.out.println(probeResult.getProbedPosition().getZ());
-							mapPoints.get(i).setZ(probeResult.getProbedPosition().getZ());
+							LOG.info("Probed "+probeResult.getProbedPosition().getZ());
+							map.getOffsets().get(i).setZ(probeResult.getProbedPosition().getZ());
 						}else{
-							System.out.println("Could not find the probed position within range");
+							LOG.info("Could not find the probed position within range");
 							mapPoints.get(i).setZ(Length.valueOf(BigDecimal.valueOf(Math.random()*5-2), LengthUnit.MILLIMETRE));
 						}
 						i++;
@@ -148,14 +150,11 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 					performUpdateModifier();
 					initializeFromModifier();
 				} catch (GkException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e);
 				}	
 			}
 		});

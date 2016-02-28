@@ -104,7 +104,7 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	 * @return GCodeContext
 	 * @throws GkException exception
 	 */
-	G getCurrentGCodeContext() throws GkException;
+	G getGCodeContext() throws GkException;
 
 	/**
 	 * Returns the list of available values

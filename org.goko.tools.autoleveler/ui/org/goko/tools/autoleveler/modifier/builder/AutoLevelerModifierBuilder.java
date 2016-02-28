@@ -148,10 +148,10 @@ public class AutoLevelerModifierBuilder extends AbstractModifierUiProvider<GridA
 	 * @see org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener#onModifierDelete(java.lang.Integer)
 	 */
 	@Override
-	public void onModifierDelete(Integer idModifier) throws GkException {
-		if(renderers.containsKey(idModifier)){			
-			AbstractVboJoglRenderer renderer = renderers.get(idModifier);						
-			renderers.remove(idModifier);
+	public void onModifierDelete(IModifier<?> modifier) throws GkException {
+		if(renderers.containsKey(modifier.getId())){			
+			AbstractVboJoglRenderer renderer = renderers.get(modifier.getId());						
+			renderers.remove(modifier.getId());
 			renderer.destroy();
 		}
 	}

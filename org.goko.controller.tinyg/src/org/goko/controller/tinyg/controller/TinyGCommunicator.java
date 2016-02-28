@@ -42,6 +42,7 @@ import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.bean.MachineState;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -290,7 +291,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			BigDecimal 					 velocity 		= findVelocity(statusReportObject);
 			Speed 					 feedrate 		= findFeedrate(statusReportObject);
 			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
-			GCodeContext gcodeContext = new GCodeContext(tinyg.getCurrentGCodeContext());
+			GCodeContext gcodeContext = new GCodeContext(tinyg.getGCodeContext());
 
 			gcodeContext.setPosition(workPosition);			
 			gcodeContext.setDistanceMode(distanceMode);
@@ -335,7 +336,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * @throws GkException
 	 */
 	private Tuple6b findWorkPosition(JsonObject statusReport) throws GkException{
-		Tuple6b 	workPosition = tinyg.getCurrentGCodeContext().getPosition();
+		Tuple6b 	workPosition = tinyg.getGCodeContext().getPosition();
 		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport);
 		return workPosition;
 	}
@@ -420,8 +421,8 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		send(GkUtils.toBytesList("{\"G59\":\"\"}"));
 	}
 	
-	protected void updateCoordinateSystem(EnumCoordinateSystem cs) throws GkException{
-		send(GkUtils.toBytesList("{\""+cs.name()+"\":\"\"}"));		
+	protected void updateCoordinateSystem(ICoordinateSystem cs) throws GkException{
+		send(GkUtils.toBytesList("{\""+cs.getCode()+"\":\"\"}"));		
 	}
 	
 	/**

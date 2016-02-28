@@ -32,13 +32,13 @@ public class OpenGCodeFileHandler {
 
 
 	@Execute
-	public void executeOpenFile(Shell shell) throws GkException{
+	public void executeOpenFile(Shell shell) {		
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		dialog.setText("Open GCode file...");
 		dialog.setFilterPath(getPersistedGCodeFolder());
 		String filePath = dialog.open();
 		String[] fileNames = dialog.getFileNames();
-
+		
 		if(fileNames != null && fileNames.length > 0){
 			persistGCodeFolder(filePath);
 			final File parentFolder = new File(filePath).getParentFile();

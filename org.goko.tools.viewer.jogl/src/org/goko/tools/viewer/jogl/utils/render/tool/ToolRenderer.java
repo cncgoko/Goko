@@ -10,11 +10,11 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point4f;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoPreference;
+import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 
@@ -26,6 +26,8 @@ public class ToolRenderer extends AbstractLineRenderer {
 	private static final GkLog LOG = GkLog.getLogger(ToolRenderer.class);
 	/** the controller service used to retrieve the tool position */
 	private IThreeAxisControllerAdapter controllerAdapter;
+	/** The GCodeContext provider */
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	/** */
 	private int segmentCount = 24;
 	
@@ -33,9 +35,8 @@ public class ToolRenderer extends AbstractLineRenderer {
 	 * Constructor
 	 * @param controllerService the controller service used to retrieve the tool position
 	 */
-	public ToolRenderer(IThreeAxisControllerAdapter controllerService) {
-		super(GL.GL_LINES, VERTICES | COLORS);
-		this.controllerAdapter = controllerService;
+	public ToolRenderer() {
+		super(GL.GL_LINES, VERTICES | COLORS);		
 	}
 
 	/** (inheritDoc)
@@ -52,11 +53,15 @@ public class ToolRenderer extends AbstractLineRenderer {
 		try{
 			if(getControllerAdapter() != null){
 				modelMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-				modelMatrix.glLoadIdentity();
-				Unit<Length> targetLengthUnit = GokoPreference.getInstance().getLengthUnit();
-				p.x = getControllerAdapter().getX().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT); 
-				p.y = getControllerAdapter().getY().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT);
-				p.z = getControllerAdapter().getZ().to(targetLengthUnit).doubleValue(JoglUtils.JOGL_UNIT);				
+				modelMatrix.glLoadIdentity();		
+				if(gcodeContextProvider != null){
+					Tuple6b offset = gcodeContextProvider.getGCodeContext().getActiveCoordinateSystemData();
+					p = offset.toPoint3d(JoglUtils.JOGL_UNIT);
+				}
+				p.x += getControllerAdapter().getX().doubleValue(JoglUtils.JOGL_UNIT); 
+				p.y += getControllerAdapter().getY().doubleValue(JoglUtils.JOGL_UNIT);
+				p.z += getControllerAdapter().getZ().doubleValue(JoglUtils.JOGL_UNIT);
+				
 				modelMatrix.glTranslatef((float)p.x, (float)p.y, (float)p.z);
 				modelMatrix.update();
 			}
@@ -123,6 +128,27 @@ public class ToolRenderer extends AbstractLineRenderer {
 		setVerticesCount(lstPoint.size());
 		setVerticesBuffer( JoglUtils.buildFloatBuffer4f(lstPoint) );
 		setColorsBuffer(   JoglUtils.buildFloatBuffer4f(lstColor) );
+	}
+
+	/**
+	 * @return the gcodeContextProvider
+	 */
+	public IGCodeContextProvider<GCodeContext> getGcodeContextProvider() {
+		return gcodeContextProvider;
+	}
+
+	/**
+	 * @param gcodeContextProvider the gcodeContextProvider to set
+	 */
+	public void setGcodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
+		this.gcodeContextProvider = gcodeContextProvider;
+	}
+
+	/**
+	 * @param controllerAdapter the controllerAdapter to set
+	 */
+	public void setControllerAdapter(IThreeAxisControllerAdapter controllerAdapter) {
+		this.controllerAdapter = controllerAdapter;
 	}
 
 }

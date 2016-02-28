@@ -49,9 +49,6 @@ public abstract class AbstractModelObject {
 	}
 
 	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		if(oldValue != null){
-			boolean v = oldValue.equals(newValue);			
-		}
 		changeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 

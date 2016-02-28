@@ -34,6 +34,13 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#isConfigured()
+	 */
+	@Override
+	public boolean isConfigured() {		
+		return true;
+	}
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#apply(org.goko.core.gcode.rs274ngcv3.element.GCodeProvider, org.goko.core.gcode.rs274ngcv3.element.GCodeProvider)
 	 */
 	@Override

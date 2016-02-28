@@ -36,7 +36,7 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	 */
 	@Override
 	public List<GCodeLine> getLines() throws GkException {
-		if(!modifier.isEnabled()){
+		if(!modifier.isEnabled() || !modifier.isConfigured()){
 			return parent.getLines();
 		}
 		return super.getLines();
@@ -47,7 +47,7 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	 */
 	@Override
 	public int getLinesCount() throws GkException {
-		if(!modifier.isEnabled()){
+		if(!modifier.isEnabled() || !modifier.isConfigured()){
 			return parent.getLinesCount();
 		}
 		return super.getLinesCount();
@@ -58,7 +58,7 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	 */
 	@Override
 	public GCodeLine getLine(Integer idLine) throws GkException {
-		if(!modifier.isEnabled()){
+		if(!modifier.isEnabled() || !modifier.isConfigured()){
 			return parent.getLine(idLine);
 		}
 		return super.getLine(idLine);
@@ -69,7 +69,7 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	 */
 	@Override
 	public GCodeLine getLineAtIndex(Integer indexLine) throws GkException {
-		if(!modifier.isEnabled()){
+		if(!modifier.isEnabled() || !modifier.isConfigured()){
 			return parent.getLineAtIndex(indexLine);
 		}
 		return super.getLineAtIndex(indexLine);
@@ -93,7 +93,7 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 		if(lastUpdateDate == null
 		|| lastUpdateDate.getTime() < modifier.getModificationDate().getTime()
 		|| lastUpdateDate.getTime() < parent.getModificationDate().getTime()){
-			if(modifier.isEnabled()){
+			if(modifier.isEnabled() && modifier.isConfigured()){
 				clear();
 				modifier.apply(parent, this);
 			}

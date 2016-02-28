@@ -10,6 +10,7 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
@@ -38,6 +39,8 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 	private BoundsRenderer contentBoundsRenderer;
 	/** ICoordinateSystemAdapter */
 	private ICoordinateSystemAdapter coordinateSystemAdapter;
+	/** ICoordinateSystemAdapter */
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	/** Execution service */
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 
@@ -105,7 +108,7 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 	 */
 	public void createRenderer(Integer idGCodeProvider) throws GkException{
 		getRS274NGCService().getGCodeProvider(idGCodeProvider);
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider);
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider, gcodeContextProvider);
 		renderer.setIdGCodeProvider(idGCodeProvider);
 		executionService.addExecutionListener(renderer);
 		this.cacheRenderer.add(renderer);
@@ -230,4 +233,20 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 	 */
 	@Override
 	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException { }
+
+	/**
+	 * @return the gcodeContextProvider
+	 */
+	public IGCodeContextProvider<GCodeContext> getGCodeContextProvider() {
+		return gcodeContextProvider;
+	}
+
+	/**
+	 * @param gcodeContextProvider the gcodeContextProvider to set
+	 */
+	public void setGCodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
+		this.gcodeContextProvider = gcodeContextProvider;
+	}
+
+
 }

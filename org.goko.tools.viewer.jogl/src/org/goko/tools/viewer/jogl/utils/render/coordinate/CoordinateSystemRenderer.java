@@ -24,7 +24,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
 
@@ -44,10 +44,10 @@ public class CoordinateSystemRenderer extends AbstractCoreJoglMultipleRenderer{
 	 * @param colorY the Y axis color
 	 * @param colorZ the Z axis color
 	 */
-	public CoordinateSystemRenderer(EnumCoordinateSystem enumCoordinateSystem, float scale, Color3f colorX, Color3f colorY, Color3f colorZ, Color3f textColor) {
+	public CoordinateSystemRenderer(ICoordinateSystem enumCoordinateSystem, float scale, Color3f colorX, Color3f colorY, Color3f colorZ, Color3f textColor) {
 		super();
 		addRenderer(new ThreeAxisRenderer(scale, colorX, colorY, colorZ));
-		TextRenderer textRenderer = new TextRenderer(enumCoordinateSystem.name(), 2, new Point3d(), TextRenderer.BOTTOM | TextRenderer.LEFT);
+		TextRenderer textRenderer = new TextRenderer(enumCoordinateSystem.getCode(), 2, new Point3d(), TextRenderer.BOTTOM | TextRenderer.LEFT);
 		textRenderer.setColor(textColor.x, textColor.y, textColor.z, 1);
 		addRenderer( textRenderer );
 	}

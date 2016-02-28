@@ -27,7 +27,7 @@ import javax.vecmath.Color3f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer;
@@ -43,12 +43,12 @@ import com.jogamp.opengl.util.PMVMatrix;
  */
 public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRenderer{
 	public static final String CODE = "org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer";
-	private ICoordinateSystemAdapter<EnumCoordinateSystem> adapter;
-	private Map<EnumCoordinateSystem, AbstractCoreJoglRenderer> coordinateSystemRenderer;
+	private ICoordinateSystemAdapter<ICoordinateSystem> adapter;
+	private Map<ICoordinateSystem, AbstractCoreJoglRenderer> coordinateSystemRenderer;
 
 	public CoordinateSystemSetRenderer() {
 		super();
-		coordinateSystemRenderer = new HashMap<EnumCoordinateSystem, AbstractCoreJoglRenderer>();
+		coordinateSystemRenderer = new HashMap<ICoordinateSystem, AbstractCoreJoglRenderer>();
 	}
 
 	/**
@@ -70,11 +70,11 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 			return;
 		}
 		if(adapter != null){
-			EnumCoordinateSystem activeCoordinateSystem = adapter.getCurrentCoordinateSystem();
+			ICoordinateSystem activeCoordinateSystem = adapter.getCurrentCoordinateSystem();
 			Tuple6b offsets 		= adapter.getCoordinateSystemOffset(activeCoordinateSystem);
-			Tuple6b machineOrigin 	= new Tuple6b().setZero().subtract(new Tuple6b(offsets));
+			Tuple6b machineOrigin 	= new Tuple6b().setZero();//.subtract(new Tuple6b(offsets));
 
-			for (EnumCoordinateSystem cs : adapter.getCoordinateSystem()) {
+			for (ICoordinateSystem cs : adapter.getCoordinateSystem()) {
 				AbstractCoreJoglRenderer renderer = getCoordinateSystemRenderer(cs);
 				Tuple6b csOffset = adapter.getCoordinateSystemOffset(cs);
 				if(csOffset != null){
@@ -101,7 +101,7 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 
 	}
 
-	protected AbstractCoreJoglRenderer getCoordinateSystemRenderer(EnumCoordinateSystem cs){
+	protected AbstractCoreJoglRenderer getCoordinateSystemRenderer(ICoordinateSystem cs){
 		if(!coordinateSystemRenderer.containsKey(cs)){
 			//ThreeAxisRenderer axisRenderer = new ThreeAxisRenderer(4, new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f));
 			CoordinateSystemRenderer axisRenderer = new CoordinateSystemRenderer(cs, 4, new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(1f,0.77f,0.04f));
@@ -114,18 +114,18 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 	/**
 	 * @return the adapter
 	 */
-	public ICoordinateSystemAdapter<EnumCoordinateSystem> getAdapter() {
+	public ICoordinateSystemAdapter<ICoordinateSystem> getAdapter() {
 		return adapter;
 	}
 
 	/**
 	 * @param adapter the adapter to set
 	 */
-	public void setAdapter(ICoordinateSystemAdapter<EnumCoordinateSystem> adapter) {
+	public void setAdapter(ICoordinateSystemAdapter<ICoordinateSystem> adapter) {
 		this.adapter = adapter;
 	}
 
-	public void setCoordinateSystemEnabled(EnumCoordinateSystem cs, boolean enabled) {
+	public void setCoordinateSystemEnabled(ICoordinateSystem cs, boolean enabled) {
 		if(coordinateSystemRenderer.containsKey(cs)){
 			coordinateSystemRenderer.get(cs).setEnabled(enabled);
 		}

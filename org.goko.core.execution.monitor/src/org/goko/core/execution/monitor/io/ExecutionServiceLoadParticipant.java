@@ -90,6 +90,14 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 	}
 	
 	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#clearContent()
+	 */
+	@Override
+	public void clearContent() throws GkException {
+		executionService.clearExecutionQueue();
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override

@@ -87,6 +87,14 @@ public class GkLog {
 		logger.error("Error occured :", e);		
 	}
 
+	/**
+	 * Error logging
+	 * @param e the exception to log
+	 */
+	public void error(Throwable e) {
+		logger.error("Unexpected error occured :", e);		
+	}
+	
 	public static GkLog getLogger(Class<?> clazz) {
 		MessageResource.getInstance();
 		return new GkLog(LoggerFactory.getLogger(clazz));

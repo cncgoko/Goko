@@ -101,11 +101,9 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			 */
 			@Override
 			public void mouseDown(MouseEvent e) {
-				// focus on right click
-				
-					glcanvas.setFocus();
-					glcanvas.forceFocus();
-				System.err.println("set focus");
+				// focus on right click				
+				glcanvas.setFocus();
+				glcanvas.forceFocus();				
 			}
 		});
 		glcanvas.addFocusListener(new FocusListener() {

@@ -62,6 +62,7 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
@@ -683,40 +684,41 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		getGrblState().setOffset(EnumCoordinateSystem.valueOf(offsetIdentifier), value);
 	}
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#getCurrentGCodeContext()
+	 * @see org.goko.core.controller.IControllerService#getGCodeContext()
 	 */
 	@Override
-	public GCodeContext getCurrentGCodeContext() throws GkException {
+	public GCodeContext getGCodeContext() throws GkException {
 		return grblState.getCurrentContext();
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystemOffset(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystemOffset(org.goko.core.gcode.element.ICoordinateSystem)
 	 */
 	@Override
-	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {
 		return grblState.getOffset(cs);
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystem()
 	 */
 	@Override
-	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
-		return new ArrayList<EnumCoordinateSystem>(Arrays.asList(EnumCoordinateSystem.values()));
+	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
+		return new ArrayList<ICoordinateSystem>(Arrays.asList(EnumCoordinateSystem.values()));
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCurrentCoordinateSystem()
 	 */
 	@Override
-	public EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException {
+	public ICoordinateSystem getCurrentCoordinateSystem() throws GkException {
 		return grblState.getCurrentContext().getCoordinateSystem();
 	}
+
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.element.ICoordinateSystem)
 	 */
 	@Override
-	public void setCurrentCoordinateSystem(EnumCoordinateSystem cs) throws GkException {
+	public void setCurrentCoordinateSystem(ICoordinateSystem cs) throws GkException {
 		communicator.send( GkUtils.toBytesList( String.valueOf(cs)) );
 		communicator.send( GkUtils.toBytesList( "$G" ) );
 	}
@@ -725,22 +727,22 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void resetCurrentCoordinateSystem() throws GkException {
-		EnumCoordinateSystem cs = getGrblState().getCurrentContext().getCoordinateSystem();
+		ICoordinateSystem cs = getGrblState().getCurrentContext().getCoordinateSystem();
 		String cmd = "G10";
-		switch (cs) {
-		case G54: cmd +="P1";
+		switch (cs.getCode()) {
+		case "G54": cmd +="P1";
 		break;
-		case G55: cmd +="P2";
+		case "G55": cmd +="P2";
 		break;
-		case G56: cmd +="P3";
+		case "G56": cmd +="P3";
 		break;
-		case G57: cmd +="P4";
+		case "G57": cmd +="P4";
 		break;
-		case G58: cmd +="P5";
+		case "G58": cmd +="P5";
 		break;
-		case G59: cmd +="P6";
+		case "G59": cmd +="P6";
 		break;
-		default: throw new GkFunctionalException("GRBL-002", cs.name());
+		default: throw new GkFunctionalException("GRBL-002", cs.getCode());
 		}
 		Tuple6b offsets = getCoordinateSystemOffset(getCurrentCoordinateSystem());
 		Tuple6b mPos = new Tuple6b(getPosition());
@@ -955,7 +957,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(axis.isNegative()){
 			command+="-";
 		}
-		command += step.value(getCurrentGCodeContext().getUnit().getUnit());
+		command += step.value(getGCodeContext().getUnit().getUnit());
 		if(feed != null){
 			command += "F"+feed;
 		}

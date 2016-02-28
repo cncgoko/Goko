@@ -94,12 +94,14 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		lblStartPoint.setText("Start");
 
 		UiQuantityFieldEditor<Length> xStartCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
+		xStartCoordinate.setEmptyStringAllowed(false);
 		xStartCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.X_START_COORDINATE);
 		xStartCoordinate.setWidthInChars(6);
 		xStartCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());		
 		xStartCoordinate.setLabel("X");
 
 		UiQuantityFieldEditor<Length> yStartCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
+		yStartCoordinate.setEmptyStringAllowed(false);
 		yStartCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Y_START_COORDINATE);
 		yStartCoordinate.setWidthInChars(6);
 		yStartCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
@@ -109,12 +111,14 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		lblEndPoint.setText("End");
 
 		UiQuantityFieldEditor<Length> xEndCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
+		xEndCoordinate.setEmptyStringAllowed(false);
 		xEndCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.X_END_COORDINATE);
 		xEndCoordinate.setWidthInChars(6);
 		xEndCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
 		xEndCoordinate.setLabel("X");
 
 		UiQuantityFieldEditor<Length> yEndCoordinate = new UiLengthFieldEditor(composite_1, SWT.NONE);
+		yEndCoordinate.setEmptyStringAllowed(false);
 		yEndCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Y_END_COORDINATE);
 		yEndCoordinate.setWidthInChars(6);
 		yEndCoordinate.setUnit(GokoPreference.getInstance().getLengthUnit());
@@ -124,11 +128,13 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		lblStep.setText("Step");
 
 		UiBigDecimalFieldEditor xStep = new UiBigDecimalFieldEditor(composite_1, SWT.NONE);
+		xStep.setEmptyStringAllowed(false);
 		xStep.setPropertyName(AutoLevelerModifierConfigurationModel.X_STEP);
 		xStep.setWidthInChars(6);		
 		xStep.setLabel("X");
 
 		UiBigDecimalFieldEditor yStep = new UiBigDecimalFieldEditor(composite_1, SWT.NONE);
+		yStep.setEmptyStringAllowed(false);
 		yStep.setPropertyName(AutoLevelerModifierConfigurationModel.Y_STEP);
 		yStep.setWidthInChars(6);
 		yStep.setLabel("Y");
@@ -144,6 +150,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		grpProbing.setText("Probing");
 
 		UiQuantityFieldEditor<Length> zClearanceCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
+		zClearanceCoordinate.setEmptyStringAllowed(false);
 		zClearanceCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_CLEARANCE);
 		zClearanceCoordinate.setLabelWidthInChar(12);
 		zClearanceCoordinate.setWidthInChars(6);
@@ -151,6 +158,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		zClearanceCoordinate.setLabel("Clearance Z");
 
 		UiQuantityFieldEditor<Length> zExpectedCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
+		zExpectedCoordinate.setEmptyStringAllowed(false);
 		zExpectedCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_EXPECTED);
 		zExpectedCoordinate.setLabelWidthInChar(12);
 		zExpectedCoordinate.setWidthInChars(6);
@@ -158,6 +166,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		zExpectedCoordinate.setLabel("Expected Z");
 
 		UiQuantityFieldEditor<Length> zProbeStartCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
+		zProbeStartCoordinate.setEmptyStringAllowed(false);
 		zProbeStartCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_PROBE_START);
 		zProbeStartCoordinate.setLabelWidthInChar(12);
 		zProbeStartCoordinate.setWidthInChars(6);
@@ -165,6 +174,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		zProbeStartCoordinate.setLabel("Probe start Z");
 
 		UiQuantityFieldEditor<Length> zProbeLowerCoordinate = new UiLengthFieldEditor(grpProbing, SWT.NONE);
+		zProbeLowerCoordinate.setEmptyStringAllowed(false);
 		zProbeLowerCoordinate.setPropertyName(AutoLevelerModifierConfigurationModel.Z_PROBE_LOWER);
 		zProbeLowerCoordinate.setLabelWidthInChar(12);
 		zProbeLowerCoordinate.setWidthInChars(6);
@@ -172,6 +182,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		zProbeLowerCoordinate.setLabel("Probe lower Z");
 
 		UiQuantityFieldEditor<Speed> probeFeedrate = new UiSpeedFieldEditor(grpProbing, SWT.NONE);
+		probeFeedrate.setEmptyStringAllowed(false);
 		probeFeedrate.setPropertyName(AutoLevelerModifierConfigurationModel.PROBE_FEEDRATE);
 		probeFeedrate.setLabelWidthInChar(12);
 		probeFeedrate.setWidthInChars(6);

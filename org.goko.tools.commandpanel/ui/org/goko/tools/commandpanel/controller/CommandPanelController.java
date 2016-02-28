@@ -140,7 +140,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			@Override
 			public void mouseDown(MouseEvent e) {
 				try {					
-					Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
 					getDataModel().setLengthUnit(unit);
 					Length step = Length.valueOf(getDataModel().getJogIncrement(), unit);					
 					boolean isPrecise = getDataModel().isPreciseJog();
@@ -156,7 +156,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
 					getDataModel().setLengthUnit(unit);					
 					jogService.stopJog();					
 				} catch (GkException e1) {
@@ -167,7 +167,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	}
 
 	public void initilizeValues() throws GkException {
-		Unit<Length> unit = controllerService.getCurrentGCodeContext().getUnit().getUnit();
+		Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
 		getDataModel().setLengthUnit(unit);
 		getDataModel().setJogSpeed(jogService.getJogFeedrate());
 		getDataModel().setPreciseJog( jogService.isJogPrecise() );		

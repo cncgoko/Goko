@@ -33,6 +33,7 @@ import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.event.EventBrokerUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
+import org.goko.core.common.event.ObservableDelegate;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
@@ -53,8 +54,10 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
@@ -63,6 +66,7 @@ import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.instruction.SetFeedRateInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
@@ -108,7 +112,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private CompletionService<ProbeResult> completionService;
 	private List<ProbeCallable> lstProbeCallable;	
 	private IGCodeProvider probeGCodeProvider;
-	
+	private ObservableDelegate<IGCodeContextListener<GCodeContext>> gcodeContextListener;
 	/**
 	 * Constructor
 	 * @throws GkException GkException
@@ -116,7 +120,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public TinyGControllerService() throws GkException {
 		communicator = new TinyGCommunicator(this);
 		tinygState   = new TinyGState();
-		tinygExecutor = new TinyGExecutor(this, null);
+		tinygExecutor = new TinyGExecutor(this, null);		
+		gcodeContextListener = new GCodeContextObservable();
 	}
 
 	/** (inheritDoc)
@@ -330,8 +335,25 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			current.setSelectedToolNumber(updatedGCodeContext.getSelectedToolNumber());
 		}
 		tinygState.setGCodeContext(current);
+		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(current);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IObservable#addObserver(java.lang.Object)
+	 */
+	@Override
+	public void addObserver(IGCodeContextListener<GCodeContext> observer) {
+		gcodeContextListener.addObserver(observer);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IObservable#removeObserver(java.lang.Object)
+	 */
+	@Override
+	public boolean removeObserver(IGCodeContextListener<GCodeContext> observer) {		
+		return gcodeContextListener.removeObserver(observer);
+	}
+	
 	/**
 	 * Return a copy of the current stored configuration
 	 * @return a copy of {@link TinyGConfiguration}
@@ -720,7 +742,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			completionService.submit(probeCallable);			
 		}
 		
-		probeGCodeProvider = getZProbingCode(lstProbeRequest, getCurrentGCodeContext());
+		probeGCodeProvider = getZProbingCode(lstProbeRequest, getGCodeContext());
 		probeGCodeProvider.setCode("TinyG probing");
 		gcodeService.addGCodeProvider(probeGCodeProvider);
 		probeGCodeProvider = gcodeService.getGCodeProvider(probeGCodeProvider.getId());// Required since internally the provider is a new one
@@ -805,13 +827,13 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#getCurrentGCodeContext()
+	 * @see org.goko.core.controller.IControllerService#getGCodeContext()
 	 */
 	@Override
-	public GCodeContext getCurrentGCodeContext() throws GkException {
+	public GCodeContext getGCodeContext() throws GkException {
 		return tinygState.getGCodeContext();
 	}
-
+	
 	public void setVelocity(BigDecimal velocity) throws GkException {
 		tinygState.setVelocity(velocity);
 	}
@@ -848,7 +870,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystemOffset(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
 	 */
 	@Override
-	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {
 		return tinygState.getCoordinateSystemOffset(cs);
 	}
 
@@ -856,7 +878,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCurrentCoordinateSystem()
 	 */
 	@Override
-	public EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException {
+	public ICoordinateSystem getCurrentCoordinateSystem() throws GkException {
 		return tinygState.getGCodeContext().getCoordinateSystem();
 	}
 
@@ -864,8 +886,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystem()
 	 */
 	@Override
-	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
-		return Arrays.asList(EnumCoordinateSystem.values());
+	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
+		List<ICoordinateSystem> lstCoordinateSystem = new ArrayList<ICoordinateSystem>();
+		lstCoordinateSystem.addAll(Arrays.asList(EnumCoordinateSystem.values()));
+		return lstCoordinateSystem;
 	}
 	public void setCoordinateSystemOffset(EnumCoordinateSystem cs, Tuple6b offset) throws GkException {
 		tinygState.setCoordinateSystemOffset(cs, offset);
@@ -886,8 +910,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
 	 */
 	@Override
-	public void setCurrentCoordinateSystem(EnumCoordinateSystem cs) throws GkException {
-		communicator.send( GkUtils.toBytesList( String.valueOf(cs)) );
+	public void setCurrentCoordinateSystem(ICoordinateSystem cs) throws GkException {
+		communicator.send( GkUtils.toBytesList( cs.getCode()) );
 	}
 
 	/** (inheritDoc)
@@ -895,7 +919,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void resetCurrentCoordinateSystem() throws GkException {
-		EnumCoordinateSystem current = getCurrentCoordinateSystem();
+		ICoordinateSystem current = getCurrentCoordinateSystem();
 		Tuple6b offsets = getCoordinateSystemOffset(current);
 		Tuple6b mPos = new Tuple6b(tinygState.getWorkPosition());
 		mPos = mPos.add(offsets);

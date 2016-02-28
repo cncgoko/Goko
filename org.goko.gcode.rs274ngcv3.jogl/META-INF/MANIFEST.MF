@@ -8,7 +8,8 @@ Require-Bundle: org.goko.core;bundle-version="0.0.2",
  org.goko.gcode.rs274ngcv3;bundle-version="0.0.1",
  org.goko.tools.viewer.jogl;bundle-version="0.0.2",
  org.jogamp.jogl;bundle-version="2.0.2"
-Import-Package: org.osgi.framework
+Import-Package: com.google.common.base,
+ org.osgi.framework
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/RS274JoglBridge.xml
 Bundle-Activator: org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator

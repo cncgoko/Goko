@@ -10,4 +10,7 @@ package org.goko.core.gcode.element;
  */
 public interface ICoordinateSystem {
 
+	String getCode();
+	
+	boolean equals(ICoordinateSystem coordinateSystem);
 }

@@ -37,6 +37,7 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
@@ -56,7 +57,7 @@ public class TinyGState extends MachineValueStore{
 	/** The position stored locally for speed reasons... */
 	private Tuple6b position;
 	/** The offsets */
-	private Map<EnumCoordinateSystem, Tuple6b> offsets;
+	private Map<ICoordinateSystem, Tuple6b> offsets;
 	/** Unit in use by TinyG*/
 	private Unit<Length> currentUnit;
 
@@ -110,7 +111,7 @@ public class TinyGState extends MachineValueStore{
 		storeValue(TinyG.TINYG_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", 0);
 		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", StringUtils.EMPTY);
 		addListener(this);
-		offsets = new HashMap<EnumCoordinateSystem, Tuple6b>();
+		offsets = new HashMap<ICoordinateSystem, Tuple6b>();
 		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
 		offsets.put(EnumCoordinateSystem.G54, new Tuple6b());
 		offsets.put(EnumCoordinateSystem.G55, new Tuple6b());
@@ -272,12 +273,15 @@ public class TinyGState extends MachineValueStore{
 		updateValue(TinyG.POSITION_A, new BigDecimal(position.getA().doubleValue(AngleUnit.DEGREE_ANGLE)).setScale(3, RoundingMode.HALF_DOWN));
 	}
 
-	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {
 		return offsets.get(cs);
 	}
 
-	public void setCoordinateSystemOffset(EnumCoordinateSystem cs, Tuple6b offset) throws GkException {
+	public void setCoordinateSystemOffset(ICoordinateSystem cs, Tuple6b offset) throws GkException {
 		offsets.put(cs, offset);
+		if(gcodeContext != null){
+			gcodeContext.setCoordinateSystemData(cs, offset);
+		}
 	}
 
 	/**

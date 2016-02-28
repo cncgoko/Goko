@@ -16,29 +16,32 @@
  *******************************************************************************/
 package org.goko.core.gcode.rs274ngcv3.context;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.ICoordinateSystem;
 
 public enum EnumCoordinateSystem implements ICoordinateSystem{
-	G53(0),
-	G54(1),
-	G55(2),
-	G56(3),
-	G57(4),
-	G58(5),
-	G59(6),
-	G59_1(7),
-	G59_2(8),
-	G59_3(9);
+	G53(0, "G53"),
+	G54(1, "G54"),
+	G55(2, "G55"),
+	G56(3, "G56"),
+	G57(4, "G57"),
+	G58(5, "G58"),
+	G59(6, "G59"),
+	G59_1(7, "G59.1"),
+	G59_2(8, "G59.2"),
+	G59_3(9, "G59.3");
 	
 	/** Integer denomination of the coordinate system */
-	int intValue;
-
+	private int intValue;
+	
+	private String code;
 	/** Constructor
 	 * @param intValue the integer value of the coordinate system 
 	 */
-	private EnumCoordinateSystem(int intValue) {
+	private EnumCoordinateSystem(int intValue, String code) {
 		this.intValue = intValue;
+		this.code = code;
 	}
 	
 	/**
@@ -62,4 +65,20 @@ public enum EnumCoordinateSystem implements ICoordinateSystem{
 	public int getIntValue() {
 		return intValue;
 	}
+
+	/**
+	 * @return the code
+	 */
+	public String getCode() {
+		return code;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.ICoordinateSystem#equals(org.goko.core.gcode.element.ICoordinateSystem)
+	 */
+	@Override
+	public boolean equals(ICoordinateSystem coordinateSystem) {		
+		return StringUtils.equals(code, coordinateSystem.getCode());
+	}
+	
 }

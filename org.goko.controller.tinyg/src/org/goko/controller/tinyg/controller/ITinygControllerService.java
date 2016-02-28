@@ -31,21 +31,23 @@ import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContextProvider;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 
 public interface ITinygControllerService extends IControllerService<ExecutionTokenState, GCodeContext>,
 												 IProbingService,
 												 IFourAxisControllerAdapter,
-												 ICoordinateSystemAdapter<EnumCoordinateSystem>,
+												 ICoordinateSystemAdapter<ICoordinateSystem>,
 												 IJogService,												 
 												 IWorkVolumeProvider,
 												 IControllerConfigurationFileExporter,
 												 IControllerConfigurationFileImporter,
-												 IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>{
+												 IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>,
+												 GCodeContextProvider{
 
 	/**
 	 * Returns the TinyG configuration

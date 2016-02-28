@@ -43,7 +43,7 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 	 */
 	public SegmentizeModifier() {
 		super(MODIFIER_NAME);
-		this.chordalTolerance = Length.valueOf(new BigDecimal("0.1"), LengthUnit.MILLIMETRE);
+		this.chordalTolerance = Length.valueOf("0.1", LengthUnit.MILLIMETRE);
 	}
 	
 	/**
@@ -52,9 +52,16 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 	 */
 	public SegmentizeModifier(Integer idGCodeProvider) {
 		super(idGCodeProvider, MODIFIER_NAME);
-		this.chordalTolerance = Length.valueOf(new BigDecimal("0.1"), LengthUnit.MILLIMETRE);
+		this.chordalTolerance = Length.valueOf("0.1", LengthUnit.MILLIMETRE);
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#isConfigured()
+	 */
+	@Override
+	public boolean isConfigured() {		
+		return chordalTolerance != null && !chordalTolerance.equals(Length.ZERO);
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier#applyModifier(org.goko.core.gcode.element.IGCodeProvider, org.goko.core.gcode.rs274ngcv3.element.GCodeProvider)

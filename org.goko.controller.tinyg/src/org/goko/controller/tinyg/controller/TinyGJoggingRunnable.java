@@ -91,7 +91,7 @@ public class TinyGJoggingRunnable implements Runnable {
 				if(isReadyToJog()){
 					if(axis != null && feed != null && step != null){
 						String command = "G1F"+feed.toPlainString();
-						EnumDistanceMode distanceMode = tinygService.getCurrentGCodeContext().getDistanceMode();
+						EnumDistanceMode distanceMode = tinygService.getGCodeContext().getDistanceMode();
 						if(distanceMode == EnumDistanceMode.ABSOLUTE){
 							command = startAbsoluteJog(command);
 						}else{
@@ -132,7 +132,7 @@ public class TinyGJoggingRunnable implements Runnable {
 	public String startAbsoluteJog(String command) throws GkException{
 		command += axis.getAxisCode();
 		BigDecimal target = null;
-		Unit<Length> currentUnit = tinygService.getCurrentGCodeContext().getUnit().getUnit();
+		Unit<Length> currentUnit = tinygService.getGCodeContext().getUnit().getUnit();
 		switch (axis) {
 		case X_NEGATIVE: target = tinygService.getX().subtract(step).value(currentUnit);
 			break;

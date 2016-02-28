@@ -22,7 +22,6 @@ package org.goko.controller.tinyg.service;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,12 @@ import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
@@ -324,13 +324,28 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#getCurrentGCodeContext()
+	 * @see org.goko.core.controller.IControllerService#getGCodeContext()
 	 */
 	@Override
-	public GCodeContext getCurrentGCodeContext() throws GkException {
-		return getCurrentService().getCurrentGCodeContext();
+	public GCodeContext getGCodeContext() throws GkException {
+		return getCurrentService().getGCodeContext();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IObservable#addObserver(java.lang.Object)
+	 */
+	@Override
+	public void addObserver(IGCodeContextListener<GCodeContext> observer) {
+		getCurrentService().addObserver(observer);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IObservable#removeObserver(java.lang.Object)
+	 */
+	@Override
+	public boolean removeObserver(IGCodeContextListener<GCodeContext> observer) {		
+		return getCurrentService().removeObserver(observer);
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
 	 */
@@ -361,18 +376,18 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 
 	@Override
-	public Tuple6b getCoordinateSystemOffset(EnumCoordinateSystem cs) throws GkException {
+	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {
 		return getCurrentService().getCoordinateSystemOffset(cs);
 	}
 
 	@Override
-	public EnumCoordinateSystem getCurrentCoordinateSystem() throws GkException {
+	public ICoordinateSystem getCurrentCoordinateSystem() throws GkException {
 		return getCurrentService().getCurrentCoordinateSystem();
 	}
 
 	@Override
-	public List<EnumCoordinateSystem> getCoordinateSystem() throws GkException {
-		return Arrays.asList(EnumCoordinateSystem.values());
+	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
+		return getCurrentService().getCoordinateSystem();
 	}
 
 	@Override
@@ -381,10 +396,10 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.bean.commands.EnumCoordinateSystem)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#setCurrentCoordinateSystem(org.goko.core.gcode.element.ICoordinateSystem)
 	 */
 	@Override
-	public void setCurrentCoordinateSystem(EnumCoordinateSystem cs) throws GkException {
+	public void setCurrentCoordinateSystem(ICoordinateSystem cs) throws GkException {
 		getCurrentService().setCurrentCoordinateSystem(cs);
 	}
 

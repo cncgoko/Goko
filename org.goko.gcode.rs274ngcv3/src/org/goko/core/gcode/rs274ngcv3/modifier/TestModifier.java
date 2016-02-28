@@ -24,7 +24,13 @@ public class TestModifier extends AbstractModifier<GCodeProvider> implements IMo
 	public TestModifier(Integer idGCodeProvider) {
 		super(idGCodeProvider, "Test modifier");
 	}
-
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#isConfigured()
+	 */
+	@Override
+	public boolean isConfigured() {	
+		return true;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#apply(org.goko.core.gcode.rs274ngcv3.element.GCodeProvider, org.goko.core.gcode.rs274ngcv3.element.GCodeProvider)
 	 */

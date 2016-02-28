@@ -13,6 +13,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -43,7 +44,12 @@ public class GokoLifeCycleManager {
 	 */
 	@PostContextCreate
 	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context) throws GkException {
-
+		/* ******************************************** */
+		/*            Setting event advisor             */
+		/* ******************************************** */
+		GokoEventLoopAdvisor advisor = ContextInjectionFactory.make(GokoEventLoopAdvisor.class, context);
+		context.set(IEventLoopAdvisor.class, advisor);
+		
 		final GokoProgressDialog dialog = ContextInjectionFactory.make(GokoProgressDialog.class, context);
 		dialog.open();
 		dialog.getShell().setVisible(false);
@@ -76,7 +82,8 @@ public class GokoLifeCycleManager {
 		if(GokoPreference.getInstance().isSystemClearPersistedState()){
 			GokoPreference.getInstance().setSystemClearPersistedState(false);
 			System.getProperties().put(IWorkbench.CLEAR_PERSISTED_STATE, "true");	
-		}		
+		}	
+		
 	}
 
 	/**

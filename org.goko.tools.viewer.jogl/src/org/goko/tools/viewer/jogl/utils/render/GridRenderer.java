@@ -36,6 +36,10 @@ import javax.vecmath.Vector4f;
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.controller.IGCodeContextProvider;
+import org.goko.core.controller.event.IGCodeContextListener;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.service.Layer;
@@ -49,7 +53,8 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
  * @author PsyKo
  *
  */
-public class GridRenderer extends AbstractVboJoglRenderer {
+public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeContextListener<GCodeContext> {
+	private static final GkLog LOG = GkLog.getLogger(GridRenderer.class);
 	private String id;
 	private Length majorIncrement;
 	private Length minorIncrement;
@@ -61,8 +66,9 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 	private float opacity;
 	private Matrix4f axisTransformMatrix; 
 	private Vector4f normal; 
-	
-	public GridRenderer(String id){		
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
+	 
+	public GridRenderer(String id, IGCodeContextProvider<GCodeContext> gcodeContextProvider){		
 		this(id, new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
 				 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT),
 				 Length.valueOf(10, JoglUtils.JOGL_UNIT),
@@ -70,6 +76,10 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 				 new Color3f(0.4f, 0.4f, 0.4f),
 				 new Color3f(0.4f, 0.4f, 0.4f),
 				 0.5f, new Vector4f(0f,0f,1f,0f));
+		this.gcodeContextProvider = gcodeContextProvider;
+		if(this.gcodeContextProvider != null){
+			gcodeContextProvider.addObserver(this);
+		}
 	}
 			
 	/**
@@ -112,7 +122,10 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		Tuple6b lclEnd6b 			= new Tuple6b();
 		lclEnd6b.max(start, end);
 		Tuple6b lclCenter6b = new Tuple6b(0,0,0, JoglUtils.JOGL_UNIT);
-		
+		if(gcodeContextProvider != null){
+			GCodeContext context = gcodeContextProvider.getGCodeContext();
+			lclCenter6b = context.getCoordinateSystemData( context.getCoordinateSystem() );
+		}
 		// Determine min/max if zero is not in the desired area
 		lclCenter6b = lclCenter6b.max(lclStart6b).min(lclEnd6b);
 				
@@ -260,11 +273,17 @@ public class GridRenderer extends AbstractVboJoglRenderer {
 		gl.glEnable(GL3.GL_LINE_SMOOTH);
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.event.IGCodeContextListener#onGCodeContextEvent(org.goko.core.gcode.element.IGCodeContext)
+	 */
 	@Override
-	protected void performRender(GL3 gl) throws GkException {		
-		super.performRender(gl);
+	public void onGCodeContextEvent(GCodeContext context) {
+		try {
+			updateGeometry();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
-
 	/**
 	 * @return the opacity
 	 */

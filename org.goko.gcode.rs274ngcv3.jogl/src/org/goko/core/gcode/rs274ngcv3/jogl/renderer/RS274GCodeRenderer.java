@@ -35,6 +35,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.controller.IFourAxisControllerAdapter;
+import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
 import org.goko.core.gcode.execution.ExecutionToken;
@@ -46,6 +47,7 @@ import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.IInstructionColorizer;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.MotionModeColorizer;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.ICoreJoglRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
@@ -61,7 +63,10 @@ import com.jogamp.opengl.util.PMVMatrix;
  * @author PsyKo
  *
  */
-public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJoglRenderer, IIdBean, IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> {
+public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJoglRenderer, IIdBean,
+																		IGCodeExecutionListener<ExecutionTokenState,
+																		ExecutionToken<ExecutionTokenState>>{
+	private static final GkLog LOG = GkLog.getLogger(RS274GCodeRenderer.class);
 	/** Internal ID */
 	private Integer id;
 	/** Id of the generating GCodeProvider*/
@@ -76,14 +81,16 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	private Integer stateBufferObject;
 	/** The 4 axis controller adapter that provides angle of the current stock*/
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
-
+	/** The GCode context supplier */
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	/**
 	 * Constructor
 	 * @param gcodeProvider the GCodeProvider to render
 	 */
-	public RS274GCodeRenderer(Integer idGCodeProvider) {
+	public RS274GCodeRenderer(Integer idGCodeProvider, IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
 		super(GL.GL_LINE_STRIP, COLORS | VERTICES);
 		this.idGCodeProvider = idGCodeProvider;
+		this.gcodeContextProvider = gcodeContextProvider;
 		setLineWidth(1f);
 	}
 	
@@ -117,31 +124,40 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		ArrayList<Color4f> lstColors 	= new ArrayList<Color4f>();
 		
 		mapVerticesGroupByIdLine 	= new HashMap<Integer, VerticesGroupByLine>();
-			
-		// FIXME : don't use new gcode context
-		GCodeContext context = new GCodeContext();
 		
+		GCodeContext context = new GCodeContext(gcodeContextProvider.getGCodeContext());
+		context.setX(null);
+		context.setY(null);
+		context.setZ(null);
+		context.setA(null);
+		context.setB(null);
+		context.setC(null);
+
 		IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(idGCodeProvider);		
 		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, provider);
 		
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, context);		
 		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new MotionModeColorizer();
-//		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new SelectedPlaneColorizer();
+		//IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new SelectedPlaneColorizer();
 		//IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new ArcAngleColorizer(); 
-		
+
 		while(iterator.hasNext()){
 			GCodeContext preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();
-			List<Point3d> 		vertices 	= InstructionGeometryFactory.build(preContext, instruction);
 			
-			addVerticesGroup(instruction.getIdGCodeLine(), lstVertices.size(), vertices);
-			lstVertices.addAll(vertices);
-			
-			// Let's generate the colors and update the bounds as well
-			Color4f color = colorizer.getColor(preContext, instruction);
-			for ( int i = 0; i < vertices.size(); i++) {
-				lstColors.add(color);				
-			}			
+			// TEST : Make sure we have a complete start position for rendering. 
+			if(preContext.getX() != null && preContext.getY() != null && preContext.getZ() != null){
+				List<Point3d> 		vertices 	= InstructionGeometryFactory.build(preContext, instruction);
+				
+				addVerticesGroup(instruction.getIdGCodeLine(), lstVertices.size(), vertices);
+				lstVertices.addAll(vertices);
+				
+				// Let's generate the colors and update the bounds as well
+				Color4f color = colorizer.getColor(preContext, instruction);
+				for ( int i = 0; i < vertices.size(); i++) {
+					lstColors.add(color);				
+				}	
+			}
 		}
 		
 		setVerticesCount(CollectionUtils.size(lstVertices));
@@ -346,6 +362,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 			}
 		}
 	}
+
 
 }
 

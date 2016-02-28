@@ -4,6 +4,7 @@
 package org.goko.core.gcode.rs274ngcv3.modifier;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 
 /**
  * @author PsyKo
@@ -15,5 +16,5 @@ public interface IModifierListener {
 	
 	void onModifierUpdate(Integer idModifier) throws GkException;
 	
-	void onModifierDelete(Integer idModifier) throws GkException;
+	void onModifierDelete(IModifier<?> modifier) throws GkException;
 }

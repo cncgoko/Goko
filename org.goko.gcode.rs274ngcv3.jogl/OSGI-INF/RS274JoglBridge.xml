@@ -5,4 +5,5 @@
    <reference cardinality="1..1" interface="org.goko.tools.viewer.jogl.service.IJoglViewerService" name="IJoglViewerService" policy="static"/>
    <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
    <reference bind="setCoordinateSystemAdapter" cardinality="1..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="static"/>
+   <reference bind="setGCodeContextProvider" cardinality="1..1" interface="org.goko.core.controller.IGCodeContextProvider" name="IGCodeContextProvider" policy="static"/>
 </scr:component>

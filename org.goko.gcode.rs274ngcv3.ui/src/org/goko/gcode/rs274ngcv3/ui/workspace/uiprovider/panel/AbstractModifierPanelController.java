@@ -1,5 +1,8 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.inject.Inject;
 
 import org.eclipse.swt.widgets.Display;
@@ -11,17 +14,19 @@ import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.log.GkLog;
 
 
-public abstract class AbstractModifierPanelController<T extends AbstractModifierModelObject, M extends IModifier<GCodeProvider>> extends AbstractController<T> {
+public abstract class AbstractModifierPanelController<T extends AbstractModifierModelObject, M extends IModifier<GCodeProvider>> extends AbstractController<T> implements PropertyChangeListener {
 	private static final GkLog LOG = GkLog.getLogger(AbstractModifierPanelController.class);
 	@Inject
 	private IRS274NGCService rs274NGCService ;
 	private M modifier;
+	
 	/**
 	 * Constructor
 	 * @param binding
 	 */
 	public AbstractModifierPanelController(T binding) {
 		super(binding);
+		binding.addPropertyChangeListener(this);
 	}
 
 	/** (inheritDoc)
@@ -56,22 +61,40 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 	 * Performs the update in the RS274 service
 	 * @throws GkException GkException
 	 */
-	public void performUpdateModifier() throws GkException{		
-		Display.getDefault().asyncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					if(getRS274NGCService().findModifier(getModifier().getId()) != null){
-						getRS274NGCService().updateModifier(updateModifier());
+	public void performUpdateModifier() throws GkException{	
+		if(getDataModel().isDirty()){
+			Display.getDefault().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						if(getRS274NGCService().findModifier(getModifier().getId()) != null){
+							getRS274NGCService().updateModifier(updateModifier());
+						}
+					} catch (GkException e) {
+						LOG.error(e);
 					}
-				} catch (GkException e) {
-					LOG.error(e);
 				}
-			}
-		});
+			});
+			getDataModel().setDirty(false);
+		}
 	}
-
+	
+	/** (inheritDoc)
+	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		try {
+			if(getDataModel().isDirty()){
+				performUpdateModifier();
+			}
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+	
+	}
+	
 	/**
 	 * @return the modifier
 	 */

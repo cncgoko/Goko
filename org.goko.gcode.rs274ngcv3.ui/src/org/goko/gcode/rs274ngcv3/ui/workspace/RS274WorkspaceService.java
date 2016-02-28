@@ -6,9 +6,12 @@ package org.goko.gcode.rs274ngcv3.ui.workspace;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
@@ -215,6 +218,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	public void onModifierCreate(Integer idModifier) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
 		workspaceUIService.select(gcodeService.getModifier(idModifier));
+		markProjectDirty();
 	}
 	
 	/** (inheritDoc)
@@ -223,13 +227,22 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	@Override
 	public void onModifierUpdate(Integer idModifier) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		markProjectDirty();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener#onModifierDelete(java.lang.Integer)
 	 */
 	@Override
-	public void onModifierDelete(Integer idModifier) throws GkException {
+	public void onModifierDelete(IModifier<?> modifier) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		List<IModifier<GCodeProvider>> modifiers = gcodeService.getModifierByGCodeProvider(modifier.getIdGCodeProvider());
+		if(CollectionUtils.isNotEmpty(modifiers)){
+			workspaceUIService.select(modifiers.get(0));			
+		}else{
+			IGCodeProvider provider = gcodeService.getGCodeProvider(modifier.getIdGCodeProvider());
+			workspaceUIService.select(provider);
+		}		
+		markProjectDirty();
 	}
 
 }

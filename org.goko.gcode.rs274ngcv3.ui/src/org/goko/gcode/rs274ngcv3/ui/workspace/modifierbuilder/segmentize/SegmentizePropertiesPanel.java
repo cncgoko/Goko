@@ -47,6 +47,7 @@ public class SegmentizePropertiesPanel extends AbstractModifierPropertiesPanel<S
 		new Label(composite, SWT.NONE);
 		
 		UiLengthFieldEditor lengthFieldEditor = new UiLengthFieldEditor(composite, SWT.NONE);
+		lengthFieldEditor.setEmptyStringAllowed(false);
 		lengthFieldEditor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		lengthFieldEditor.setWidthInChars(5);
 		lengthFieldEditor.setUnit(GokoPreference.getInstance().getLengthUnit());

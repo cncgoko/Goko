@@ -91,13 +91,21 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 	public int getPriority() {		
 		return LOAD_PRIORITY;
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#clearContent()
+	 */
+	@Override
+	public void clearContent() throws GkException {
+		gcodeService.clearAll();
+
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
 	 */
 	@Override
 	protected void loadContainer(LoadContext context, XmlRS274GContent container, IProgressMonitor monitor) throws GkException {
-		gcodeService.clearAll();
-
 		// Load the GCodeProvider
 		List<XmlGCodeProvider> lstGCodeProvider = container.getLstGCodeProvider();
 		

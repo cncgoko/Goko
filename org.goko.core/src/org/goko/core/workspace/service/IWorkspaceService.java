@@ -43,6 +43,8 @@ public interface IWorkspaceService extends IGokoService{
 
 	void markProjectDirty() throws GkException;
 
+	void createNewProject() throws GkException;
+	
 	void saveProject(File project, IProgressMonitor monitor) throws GkException;
 
 	void loadProject(File project, IProgressMonitor monitor) throws GkException;

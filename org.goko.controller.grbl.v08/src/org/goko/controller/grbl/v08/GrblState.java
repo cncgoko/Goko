@@ -31,6 +31,7 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
@@ -43,14 +44,14 @@ import org.goko.core.math.Tuple6b;
 public class GrblState extends MachineValueStore{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GrblState.class);
-	private Map<EnumCoordinateSystem, Tuple6b> offsets;
+	private Map<ICoordinateSystem, Tuple6b> offsets;
 	private GCodeContext currentContext;
 	private boolean activePolling;
 	private Tuple6b workPosition;
 
 	public GrblState() {
 		super();
-		offsets 		= new HashMap<EnumCoordinateSystem, Tuple6b>();
+		offsets 		= new HashMap<ICoordinateSystem, Tuple6b>();
 		currentContext 	= new GCodeContext();
 		workPosition 	= new Tuple6b().setZero();
 		try {
@@ -159,7 +160,7 @@ public class GrblState extends MachineValueStore{
 	 * @param value value
 	 * @throws GkException GkException
 	 */
-	protected void setOffset(EnumCoordinateSystem name, Tuple6b value) throws GkException{
+	protected void setOffset(ICoordinateSystem name, Tuple6b value) throws GkException{
 		offsets.put(name, value);
 	}
 	/**
@@ -167,7 +168,7 @@ public class GrblState extends MachineValueStore{
 	 * @param id id
 	 * @throws GkException GkException
 	 */
-	public Tuple6b getOffset(EnumCoordinateSystem cs) throws GkException{
+	public Tuple6b getOffset(ICoordinateSystem cs) throws GkException{
 		if(offsets.containsKey(cs)){
 			return offsets.get(cs);		}
 

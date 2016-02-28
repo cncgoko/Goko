@@ -36,6 +36,13 @@ public abstract class AutoLevelerModifier<T extends IHeightMap> extends Abstract
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#isConfigured()
+	 */
+	@Override
+	public boolean isConfigured() {		
+		return heightMap != null && heightMap.isProbed();
+	}
+	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier#applyModifier(org.goko.core.gcode.element.IGCodeProvider, org.goko.core.gcode.rs274ngcv3.element.GCodeProvider)
 	 */
 	@Override

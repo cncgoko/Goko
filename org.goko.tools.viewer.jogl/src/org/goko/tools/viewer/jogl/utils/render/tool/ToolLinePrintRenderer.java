@@ -12,7 +12,10 @@ import javax.vecmath.Color4f;
 import javax.vecmath.Point4f;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 
@@ -23,14 +26,15 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
 public class ToolLinePrintRenderer extends AbstractLineRenderer{
 	/** Adapter giving the 3 axis positions */
 	private IThreeAxisControllerAdapter controllerAdapter;
-
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	/**
 	 * @param renderPrimitive
 	 * @param usedBuffers
 	 */
-	public ToolLinePrintRenderer(IThreeAxisControllerAdapter controllerService) {
+	public ToolLinePrintRenderer(IThreeAxisControllerAdapter controllerService, IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
 		super(GL.GL_LINES, VERTICES | COLORS);
 		this.controllerAdapter = controllerService;
+		this.gcodeContextProvider = gcodeContextProvider;
 		this.setLineWidth(2f);
 	}	
 
@@ -39,7 +43,7 @@ public class ToolLinePrintRenderer extends AbstractLineRenderer{
 	 */
 	@Override
 	protected void performRender(GL3 gl) throws GkException {		
-		update();
+		updateGeometry();
 		super.performRender(gl);
 		
 	}
@@ -54,18 +58,30 @@ public class ToolLinePrintRenderer extends AbstractLineRenderer{
 		float x = controllerAdapter.getX().value(JoglUtils.JOGL_UNIT).floatValue();
 		float y = controllerAdapter.getY().value(JoglUtils.JOGL_UNIT).floatValue();
 		float z = controllerAdapter.getZ().value(JoglUtils.JOGL_UNIT).floatValue();
-		
-		lstPoint.add( new Point4f(0,0,0,1));
-		lstPoint.add( new Point4f(x,0,0,1));		
+		Tuple6b offset = new Tuple6b().setZero();
+		float sx = 0;
+		float sy = 0;
+		float sz = 0;
+		if(gcodeContextProvider != null){
+			offset = gcodeContextProvider.getGCodeContext().getActiveCoordinateSystemData();
+			sx = offset.getX().value(JoglUtils.JOGL_UNIT).floatValue();
+			sy = offset.getY().value(JoglUtils.JOGL_UNIT).floatValue();
+			sz = offset.getZ().value(JoglUtils.JOGL_UNIT).floatValue();
+		}
+		x += sx;
+		y += sy;
+		z += sz;
+		lstPoint.add( new Point4f(sx,sy,sz,1));
+		lstPoint.add( new Point4f(x,sy,sz,1));		
 		lstColor.add(new Color4f(1f, 0.0f, 0.0f, 1f));
 		lstColor.add(new Color4f(1f, 0.0f, 0.0f, 1f));
 		
-		lstPoint.add( new Point4f(x,0, 0,1));
-		lstPoint.add( new Point4f(x,y, 0,1));
+		lstPoint.add( new Point4f(x,sy, sz,1));
+		lstPoint.add( new Point4f(x,y, sz,1));
 		lstColor.add(new Color4f(0.0f, 1.0f, 0.0f, 1f));
 		lstColor.add(new Color4f(0.0f, 1.0f, 0.0f, 1f));
 		
-		lstPoint.add( new Point4f(x,y, 0,1));
+		lstPoint.add( new Point4f(x,y, sz,1));
 		lstPoint.add( new Point4f(x,y, z,1));
 		lstColor.add(new Color4f(0.0f, 0.0f, 1.0f, 1f));
 		lstColor.add(new Color4f(0.0f, 0.0f, 1.0f, 1f));

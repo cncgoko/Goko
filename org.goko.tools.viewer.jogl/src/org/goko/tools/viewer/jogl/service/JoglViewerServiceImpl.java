@@ -24,10 +24,12 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IFourAxisControllerAdapter;
+import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
@@ -64,7 +66,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private KeyboardJogAdatper keyboardJogAdapter;
 	private ToolRenderer toolRenderer;	
 	private IFourAxisControllerAdapter controllerAdapter;
- 
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -81,15 +84,21 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		LOG.info("Starting "+getServiceId());
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);		
 		GokoPreference.getInstance().addPropertyChangeListener(this);
-		
+				
 		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 		addRenderer(zeroRenderer);			
-		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);		
-		this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID);
-		this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID);
+		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);		
+		this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
+		this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
 		this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
 		this.xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
 		this.yzGridRenderer.setNormal(JoglUtils.X_AXIS);
+		this.toolRenderer = new ToolRenderer();
+		this.toolRenderer.setGcodeContextProvider(gcodeContextProvider);
+		this.toolRenderer.setControllerAdapter(controllerAdapter);		
+		addRenderer(toolRenderer);
+		addRenderer(new ToolLinePrintRenderer(controllerAdapter, gcodeContextProvider));
+		
 		updateGridRenderer(xyGridRenderer);
 		updateGridRenderer(xzGridRenderer);
 		updateGridRenderer(yzGridRenderer);
@@ -107,14 +116,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 
 	}
 
-//
-//	/**<
-//	 * @return the controllerService
-//	 */
-//	public IFourAxisControllerAdapter getControllerAdapter() {
-//		return controllerAdapter;
-//	}
-
 	/**
 	 * @param controllerService the controllerService to set
 	 */
@@ -130,12 +131,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 * @throws GkException GkException 
 	 */
 	public void setControllerAdapter(IFourAxisControllerAdapter controllerService) throws GkException {
-		this.controllerAdapter = controllerService;
-		if(toolRenderer == null){
-			toolRenderer = new ToolRenderer(controllerAdapter);
-			addRenderer(new ToolLinePrintRenderer(controllerAdapter));
-			addRenderer(toolRenderer);
-		}
+		this.controllerAdapter = controllerService;	
 	}
 	
 	/** (inheritDoc)
@@ -161,28 +157,6 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	public void setLockCameraOnTool(boolean lockCameraOnTool) {
 		this.lockCameraOnTool = lockCameraOnTool;
 	}
-
-
-//	/**
-//	 * @return the coordinateSystemAdapter
-//	 */
-//	@Override
-//	public ICoordinateSystemAdapter getCoordinateSystemAdapter() {
-//		return coordinateSystemAdapter;
-//	}
-
-//	/**
-//	 * @param coordinateSystemAdapter the coordinateSystemAdapter to set
-//	 * @throws GkException
-//	 */
-//	public void setCoordinateSystemAdapter(ICoordinateSystemAdapter<ICoordinateSystem> coordinateSystemAdapter) throws GkException {
-//		this.coordinateSystemAdapter = coordinateSystemAdapter;
-//		if(this.coordinateSystemRenderer == null){
-//			this.coordinateSystemRenderer = new CoordinateSystemSetRenderer();
-//			addRenderer(coordinateSystemRenderer);
-//		}
-//		this.coordinateSystemRenderer.setAdapter(coordinateSystemAdapter);
-//	}
 
 	/**
 	 * @return the continuousJogService
@@ -215,11 +189,11 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 				this.xyGridRenderer.destroy();
 				this.xzGridRenderer.destroy();
 				this.yzGridRenderer.destroy();
-				this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID);
+				this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);
 				this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
-				this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID);
+				this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
 				this.xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
-				this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID);
+				this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
 				this.yzGridRenderer.setNormal(JoglUtils.X_AXIS);
 				updateGridRenderer(xyGridRenderer);
 				updateGridRenderer(xzGridRenderer);
@@ -302,5 +276,19 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	public void setWorkVolumeProvider(IWorkVolumeProvider workVolumeProvider) {
 		this.workVolumeProvider = workVolumeProvider;
+	}
+
+	/**
+	 * @return the gcodeContextProvider
+	 */
+	public IGCodeContextProvider<GCodeContext> getGcodeContextProvider() {
+		return gcodeContextProvider;
+	}
+
+	/**
+	 * @param gcodeContextProvider the gcodeContextProvider to set
+	 */
+	public void setGcodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
+		this.gcodeContextProvider = gcodeContextProvider;
 	}	
 }

@@ -13,6 +13,8 @@ public interface IProjectLoadParticipant {
 	
 	int getPriority();
 	
+	void clearContent() throws GkException;
+	
 	void load(LoadContext context, XmlProjectContainer container, IProgressMonitor monitor) throws GkException;
 	
 	String getContainerType();

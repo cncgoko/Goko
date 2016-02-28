@@ -245,6 +245,26 @@ public class WorkspaceService implements IWorkspaceService{
 			saveParticipant.rollback();
 		}
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#createNewProject()
+	 */
+	@Override
+	public void createNewProject() throws GkException {
+		project = new GkProject();
+		project.setName("Untitled");
+		if(CollectionUtils.isNotEmpty(getLoadParticipants())){
+			// Clear stored data first
+			for (IProjectLoadParticipant loadParticipant : getLoadParticipants()) {
+				loadParticipant.clearContent();
+			}
+		}
+		
+		setProjectDirty(false);
+		// Notify listeners
+		notifyProjectAfterLoad();
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#loadProject(java.io.File)
 	 */
@@ -273,10 +293,16 @@ public class WorkspaceService implements IWorkspaceService{
 					mapContainerByType.put(projectContainer.getType(), projectContainer);					
 				}
 			}
-			// Sort by priority
+			
+			// Sort by priority			
 			Collections.sort(getLoadParticipants(), new ProjectLoadParticipantComparator());
 			
 			if(CollectionUtils.isNotEmpty(getLoadParticipants())){
+				// Clear stored data first
+				for (IProjectLoadParticipant loadParticipant : getLoadParticipants()) {
+					loadParticipant.clearContent();
+				}
+				// Load new data
 				for (IProjectLoadParticipant loadParticipant : getLoadParticipants()) {
 					if(mapContainerByType.containsKey(loadParticipant.getContainerType())){
 						loadParticipant.load(context, mapContainerByType.get(loadParticipant.getContainerType()), monitor);	

@@ -14,6 +14,8 @@ public interface IModifier<T extends GCodeProvider> extends IIdBean {
 
 	boolean isEnabled();
 
+	boolean isConfigured();
+	
 	void setEnabled(boolean enabled);
 
 	public void apply(IGCodeProvider source, T target) throws GkException;

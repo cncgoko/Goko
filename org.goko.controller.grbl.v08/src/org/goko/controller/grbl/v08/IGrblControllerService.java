@@ -28,8 +28,8 @@ import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.execution.ExecutionTokenState;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 
 /**
@@ -41,7 +41,7 @@ import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 public interface IGrblControllerService extends IControllerService<ExecutionTokenState, GCodeContext>,
 												IJogService,
 												IThreeAxisControllerAdapter,
-												ICoordinateSystemAdapter<EnumCoordinateSystem>,
+												ICoordinateSystemAdapter<ICoordinateSystem>,
 												IControllerConfigurationFileExporter,
 												IControllerConfigurationFileImporter{
 

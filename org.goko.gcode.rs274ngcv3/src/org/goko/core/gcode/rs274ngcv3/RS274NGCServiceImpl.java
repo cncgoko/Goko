@@ -642,7 +642,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 				cacheProviders.add(previous);
 				cacheProvidersByCode.add(previous);
 			}
-			gcode.setParent(null);
+		//	gcode.setParent(null);
 		}
 		IStackableGCodeProvider targetProvider = cacheProviders.get(modifier.getIdGCodeProvider());
 		notifyModifierDelete(modifier);
@@ -841,7 +841,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	protected void notifyModifierDelete(IModifier<?> modifier) throws GkException {
 		if (CollectionUtils.isNotEmpty(modifierListenerList)) {
 			for (IModifierListener listener : modifierListenerList) {
-				listener.onModifierDelete(modifier.getId());
+				listener.onModifierDelete(modifier);
 			}
 		}
 	}
@@ -854,8 +854,9 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		for (IGCodeProvider gcodeProvider : getGCodeProvider()) {
 			deleteGCodeProvider(gcodeProvider.getId());
 		}
-		cacheModifiers.removeAll();
+		cacheModifiers.removeAll();		
 		cacheProviders.removeAll();
+		cacheProvidersByCode.removeAll();
 	}
 
 	/**

@@ -3,14 +3,14 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.math.Tuple6b;
 
 public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	/** The target coordinate system */
-	private EnumCoordinateSystem targetCoordinateSystem;
+	private ICoordinateSystem targetCoordinateSystem;
 	/** X coordinate in the target coordinate system */
 	private Length x;
 	/** Y coordinate in the target coordinate system */
@@ -34,7 +34,7 @@ public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	 * @param b B coordinate in the target coordinate system
 	 * @param c C coordinate in the target coordinate system
 	 */
-	public SetCoordinateSystemDataInstruction(EnumCoordinateSystem targetCoordinateSystem, Length x, Length y, Length z, Angle a, Angle b, Angle c) {
+	public SetCoordinateSystemDataInstruction(ICoordinateSystem targetCoordinateSystem, Length x, Length y, Length z, Angle a, Angle b, Angle c) {
 		super(InstructionType.SET_COORDINATE_SYSTEM_DATA);
 		this.targetCoordinateSystem = targetCoordinateSystem;
 		this.x = x;
@@ -105,7 +105,7 @@ public class SetCoordinateSystemDataInstruction extends AbstractInstruction {
 	/**
 	 * @return the targetCoordinateSystem
 	 */
-	public EnumCoordinateSystem getTargetCoordinateSystem() {
+	public ICoordinateSystem getTargetCoordinateSystem() {
 		return targetCoordinateSystem;
 	}
 
