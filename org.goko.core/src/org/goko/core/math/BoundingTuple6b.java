@@ -35,6 +35,12 @@ public class BoundingTuple6b {
 		this.min = min.min(max);
 		this.max = max.max(max);
 	}
+	
+	public BoundingTuple6b(BoundingTuple6b bounds){
+		super();
+		this.min = new Tuple6b(bounds.getMin());
+		this.max = new Tuple6b(bounds.getMax());
+	}
 	/**
 	 * Add the given bound to this bound
 	 * @param bound the bound to add

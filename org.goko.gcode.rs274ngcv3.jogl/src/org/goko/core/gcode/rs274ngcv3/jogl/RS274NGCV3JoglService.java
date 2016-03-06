@@ -89,13 +89,12 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 					IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(renderer.getIdGCodeProvider());
 					InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
 					BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(new GCodeContext(), instructionProvider);
-					renderer.setBounds(bounds);
-				
-					if(result == null){
-						result = bounds;
-					}else{
-						result.add(bounds);
-					}
+					renderer.setBounds(bounds);				
+				}
+				if(result == null){
+					result = new BoundingTuple6b(renderer.getBounds());
+				}else{
+					result.add(renderer.getBounds());
 				}
 			}
 
