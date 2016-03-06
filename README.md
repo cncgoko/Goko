@@ -1,4 +1,4 @@
-# Goko - Dev branch[![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=dev)](https://travis-ci.org/cncgoko/Goko)  [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
+# Goko - Dev branch[![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=gcode-migration)](https://travis-ci.org/cncgoko/Goko) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 
 Current dev version  : ```0.3.0```
 
