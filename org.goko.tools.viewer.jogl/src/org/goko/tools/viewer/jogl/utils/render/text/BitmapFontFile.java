@@ -47,8 +47,6 @@ public class BitmapFontFile {
 			URL url = new URL("platform:/plugin/org.goko.tools.viewer.jogl"+bffFileName);
 			InputStream inputStream = url.openConnection().getInputStream();
 			
-			//InputStream inputStream = new FileInputStream(f);
-			
 			mapChars = new HashMap<Integer, CharBlock>();
 			mapPages = new HashMap<Integer, PageBlock>();
 			

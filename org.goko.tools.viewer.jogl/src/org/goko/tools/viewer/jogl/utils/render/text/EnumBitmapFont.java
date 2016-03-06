@@ -18,9 +18,7 @@
 package org.goko.tools.viewer.jogl.utils.render.text;
 
 public enum EnumBitmapFont {
-//	CONSOLAS("consolas","/org/goko/viewer/jogl/utils/render/text/Consolas_512.bff");
-	//CONSOLAS("consolas","/resources/font/Consolas_$size.bff");
-	CONSOLAS("consolas","/resources/font/Consolas_1024.fnt");
+	CONSOLAS("consolas","/resources/font/Consolas_$size.fnt");
 	private String name;
 	private String filepath;
 

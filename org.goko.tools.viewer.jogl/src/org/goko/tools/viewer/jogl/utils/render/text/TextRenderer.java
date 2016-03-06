@@ -79,7 +79,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	protected void performInitialize(GL3 gl) throws GkException {		
 		IntBuffer intBuffer = IntBuffer.allocate(1);
 		gl.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE, intBuffer);
-		textureSize = 1024;//Math.min(2048, intBuffer.get());
+		textureSize = Math.min(1024, intBuffer.get());
 		this.bff = BitmapFontFileManager.getBitmapFontFile(enumBitmapFont, textureSize);
 
 

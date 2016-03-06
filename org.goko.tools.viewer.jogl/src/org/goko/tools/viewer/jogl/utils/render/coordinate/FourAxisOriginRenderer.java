@@ -19,13 +19,13 @@ public class FourAxisOriginRenderer extends AbstractCoreJoglMultipleRenderer {
 
 	public FourAxisOriginRenderer(boolean displayRotaryAxis) {
 		super();
-		TextRenderer xTextRenderer = new TextRenderer("X",2, new Point3d(10,-0.1,0), TextRenderer.MIDDLE | TextRenderer.LEFT);
+		TextRenderer xTextRenderer = new TextRenderer("X",2, new Point3d(10.2,0.45,0), TextRenderer.MIDDLE | TextRenderer.LEFT);
 		xTextRenderer.setColor(1,0,0,1);
 		addRenderer(new ArrowRenderer(new Point3d(10,0,0.01), new Vector3d(1,0,0), new Vector3d(0,1,0), new Color4f(1,0,0,1)));
-		TextRenderer yTextRenderer = new TextRenderer("Y",2, new Point3d(-0.5,10,0), TextRenderer.BOTTOM | TextRenderer.LEFT);
+		TextRenderer yTextRenderer = new TextRenderer("Y",2, new Point3d(-0.475,10.2,0), TextRenderer.BOTTOM | TextRenderer.LEFT);
 		yTextRenderer.setColor(0,1,0,1);
 		addRenderer(new ArrowRenderer(new Point3d(0,10,0.01), new Vector3d(0,1,0), new Vector3d(1,0,0), new Color4f(0,1,0,1)));
-		TextRenderer zTextRenderer = new TextRenderer("Z",2, new Point3d(-0.5,0,10), new Vector3d(1,0,0), new Vector3d(0,0,1), TextRenderer.BOTTOM | TextRenderer.LEFT);
+		TextRenderer zTextRenderer = new TextRenderer("Z",2, new Point3d(-0.4,0,10.2), new Vector3d(1,0,0), new Vector3d(0,0,1), TextRenderer.BOTTOM | TextRenderer.LEFT);
 		addRenderer(new ArrowRenderer(new Point3d(0,0,10), new Vector3d(0,0,1), new Vector3d(1,0,0), new Color4f(0,0,1,1)));
 		zTextRenderer.setColor(0,0,1,1);
 		addRenderer(xTextRenderer);
