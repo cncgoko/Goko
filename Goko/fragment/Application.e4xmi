@@ -10,7 +10,8 @@
     </children>
     <mainMenu xmi:id="_wyCDvNwYEeKC274TynxXSA" elementId="goko.menu">
       <children xsi:type="menu:Menu" xmi:id="_wyCDvdwYEeKC274TynxXSA" elementId="org.goko.application.menu.file" label="File">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwNwYEeKC274TynxXSA" label="Quit" command="_wyBcqtwYEeKC274TynxXSA"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_vHEYIOPxEeWCt8ZZIB-AhA" elementId="org.goko.application.menu.file.quitseparator"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwNwYEeKC274TynxXSA" elementId="org.goko.application.menu.file.quit" label="Quit" command="_wyBcqtwYEeKC274TynxXSA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_tvXhAAxJEeOHAtsV431cHw" elementId="goko.menu.window" label="Window">
         <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View"/>
