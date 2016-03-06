@@ -477,11 +477,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		grblState.setState(statusReport.getState());
 		grblState.setMachinePosition(statusReport.getMachinePosition(), getConfiguration().getReportUnit());
 		grblState.setWorkPosition(statusReport.getWorkPosition(), getConfiguration().getReportUnit());
-		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
-		
+				
 		if(!ObjectUtils.equals(previousState, statusReport.getState())){
 			eventAdmin.sendEvent(new Event(CONTROLLER_TOPIC_STATE_UPDATE, (Map<String, ?>)null));
 		}
+		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
 	}
 
 	@Override
@@ -743,7 +743,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void setCurrentCoordinateSystem(ICoordinateSystem cs) throws GkException {
-		communicator.send( GkUtils.toBytesList( String.valueOf(cs)) );
+		communicator.send( GkUtils.toBytesList( cs.getCode()) );
 		communicator.send( GkUtils.toBytesList( "$G" ) );
 	}
 	/** (inheritDoc)
@@ -778,7 +778,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		communicator.send( GkUtils.toBytesList( cmd ) );
 		communicator.send( GkUtils.toBytesList( Grbl.VIEW_PARAMETERS ) );
 	}
-//mettre a jour le gcode context ou c'est nécessaire
+	
 	/**
 	 * Returns the given Length quantity as a String, formatted using the goko preferences for decimal numbers
 	 * @param q the quantity to format

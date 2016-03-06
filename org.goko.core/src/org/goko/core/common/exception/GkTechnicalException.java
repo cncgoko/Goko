@@ -42,7 +42,8 @@ public class GkTechnicalException extends GkException {
 	 * @param t Throwable
 	 */
 	public GkTechnicalException(Throwable t) {
-		super(t);		
+		super(t);
+		this.message = t.getMessage();
 	}
 	/**
 	 * @return the message

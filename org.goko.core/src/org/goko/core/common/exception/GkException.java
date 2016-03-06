@@ -44,6 +44,6 @@ public abstract class GkException extends Exception{
 	 * Constructor
 	 */
 	public GkException(Throwable t){
-		super(t);
+		super(t.getMessage(), t);
 	}
 }
