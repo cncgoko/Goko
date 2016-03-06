@@ -3,10 +3,9 @@ package org.goko.tools.viewer.jogl.utils.render.text;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL3;
 
-import org.apache.commons.io.FilenameUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 
@@ -38,26 +36,18 @@ public class BitmapFontFile {
 	private ByteBuffer buffer;
 	private int base;
 	private int lineHeight;
-	
-	public static void main(String[] args) throws Exception {
-		int t = -1496;
-		byte[] b = { (byte) (t >> 24), (byte) (t >> 16), (byte) (t >> 8), (byte) (t)};
-		int t1 = getInt32(ByteBuffer.wrap(b));
-		new BitmapFontFile().load("");
-	}
-	
+		
 	protected CharBlock getCharacterInfo(char character){
 		return mapChars.get((int)character);
 	}
 	
 	protected void load(String bffFileName) throws GkException{
-		//URL url = new URL("file://c:/test.ttf");
-		//BufferedReader reader = new BufferedReader(new FileReader("c:/test.ttf"));
-	//	InputStream inputStream = url.openConnection().getInputStream();
+
 		try{
-			File f = new File("C:/Users/PsyKo/test.fnt");
-			String prefix = FilenameUtils.getFullPath(f.getAbsolutePath());
-			InputStream inputStream = new FileInputStream(f);
+			URL url = new URL("platform:/plugin/org.goko.tools.viewer.jogl"+bffFileName);
+			InputStream inputStream = url.openConnection().getInputStream();
+			
+			//InputStream inputStream = new FileInputStream(f);
 			
 			mapChars = new HashMap<Integer, CharBlock>();
 			mapPages = new HashMap<Integer, PageBlock>();
@@ -65,7 +55,7 @@ public class BitmapFontFile {
 			loadFileIdentifier(inputStream);
 			loadInfoBlock(inputStream);
 			loadCommonBlock(inputStream);
-			loadPagesBlock(prefix, inputStream);
+			loadPagesBlock(inputStream);
 			loadCharsBlock(inputStream);
 			
 			
@@ -75,10 +65,9 @@ public class BitmapFontFile {
 		}
 	}
 	
-	protected void loadBuffer(String imageFile) throws IOException{
-		 // open image
-		 File imgPath = new File(imageFile);
-		 BufferedImage bufferedImage = ImageIO.read(imgPath);
+	protected void loadBuffer(URL urlFile) throws IOException{
+		 // open image		 
+		 BufferedImage bufferedImage = ImageIO.read(urlFile);
 
 		 // get DataBufferBytes from Raster
 		 WritableRaster raster = bufferedImage .getRaster();
@@ -96,10 +85,10 @@ public class BitmapFontFile {
 	private void loadFileIdentifier(InputStream inputStream) throws IOException {
 		byte[] identifier = new byte[3];
 		inputStream.read(identifier);
-		System.out.println("File identifier : "+ String.valueOf(identifier));
+		//System.out.println("File identifier : "+ String.valueOf(identifier));
 		byte[] version = new byte[1];
 		inputStream.read(version);
-		System.out.println("File version : "+ String.valueOf((int)version[0]));
+		//System.out.println("File version : "+ String.valueOf((int)version[0]));
 	}
 
 	/**
@@ -116,7 +105,7 @@ public class BitmapFontFile {
 	 * @param inputStream the {@link InputStream}
 	 * @throws IOException IOException
 	 */
-	private void loadCommonBlock(InputStream inputStream) throws IOException {
+	private void loadCommonBlock(InputStream inputStream) throws IOException { 
 		ByteBuffer data = getBlockData(inputStream);
 //		lineHeight 2 uint 0  
 //		base 2 uint 2  
@@ -139,7 +128,7 @@ public class BitmapFontFile {
 	 * @param inputStream the {@link InputStream}
 	 * @throws IOException IOException
 	 */
-	private void loadPagesBlock(String prefix, InputStream inputStream) throws IOException {
+	private void loadPagesBlock(InputStream inputStream) throws IOException {
 		ByteBuffer data = getBlockData(inputStream);
 		int size = data.limit();
 		int id = 0;
@@ -149,8 +138,9 @@ public class BitmapFontFile {
 			if(c == 0){
 				// Page detected
 				mapPages.put(id, new PageBlock(id, buffer.toString()));
-				System.out.println("Detected image "+buffer.toString());
-				loadBuffer(prefix+mapPages.get(id).getFile());
+				//System.out.println("Detected image "+buffer.toString());
+				URL url = new URL("platform:/plugin/org.goko.tools.viewer.jogl/resources/font/"+mapPages.get(id).getFile());
+				loadBuffer(url);
 				id++;
 				buffer.setLength(0);
 			}else{
@@ -180,7 +170,7 @@ public class BitmapFontFile {
 			int page = getUint8(data);
 			int chnl = getUint8(data);
 			mapChars.put(id, new CharBlock(id, x, y, width, height, xOffset, yOffset, xAdvance, page));
-			System.out.println((char)id+","+id+", "+x+", "+ y+", "+ width+", "+ height+", "+ xOffset+", "+ yOffset+", "+ xAdvance+", "+page);
+			//System.out.println((char)id+","+id+", "+x+", "+ y+", "+ width+", "+ height+", "+ xOffset+", "+ yOffset+", "+ xAdvance+", "+page);
 		}
 	}
 	
@@ -194,11 +184,12 @@ public class BitmapFontFile {
 		byte[] blockHeader = new byte[5];
 		inputStream.read(blockHeader);
 		ByteBuffer data = ByteBuffer.wrap(blockHeader);
-		System.out.println("Block id : "+ String.valueOf(getUint8(data)));		
+		int blockId = getUint8(data);
+		//System.out.println("Block id : "+ String.valueOf(blockId));		
 		
 		
 		int length = getUint32(data);
-		System.out.println("Block length : "+ String.valueOf(length));
+		//System.out.println("Block length : "+ String.valueOf(length));
 		
 		byte[] blockData = new byte[length];
 		inputStream.read(blockData); 
