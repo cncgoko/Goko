@@ -15,7 +15,7 @@
  *  along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.goko.tools.viewer.jogl.utils.render.text;
+package org.goko.tools.viewer.jogl.utils.render.text.v1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,6 @@ import java.util.Map;
 import javax.media.opengl.GL3;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goko.core.common.exception.GkException;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -42,24 +41,23 @@ public class BitmapFontFileManager {
 		return instance;
 	}
 
-	public static BitmapFontFile getBitmapFontFile(EnumBitmapFont font, int size) throws GkException{
+	public static BitmapFontFile getBitmapFontFile(EnumBitmapFont font, int size){
 		return getInstance().getBitmapFontFileInternal(font, size);
 	}
 
-	public static Texture getTextureFont(GL3 gl, EnumBitmapFont font, int size) throws GkException{
+	public static Texture getTextureFont(GL3 gl, EnumBitmapFont font, int size){
 		return getInstance().getTextureFontInternal(gl, font, size);
 	}
 
-	private Texture getTextureFontInternal(GL3 gl, EnumBitmapFont font, int size) throws GkException {
+	private Texture getTextureFontInternal(GL3 gl, EnumBitmapFont font, int size) {
 		BitmapFontFile bff = getBitmapFontFileInternal(font, size);
 		return bff.getTexture(gl);
 	}
 
-	private BitmapFontFile getBitmapFontFileInternal(EnumBitmapFont font, int size) throws GkException{
+	private BitmapFontFile getBitmapFontFileInternal(EnumBitmapFont font, int size){
 		if(!mapBffByFontName.containsKey(font)){
 			String path = StringUtils.replace(font.getFilepath(),"$size",String.valueOf(size));
-			BitmapFontFile file = new BitmapFontFile();
-			file.load(path);
+			BitmapFontFile file = new BitmapFontFile(path);
 			mapBffByFontName.put(font, file);
 		}
 		return mapBffByFontName.get(font);

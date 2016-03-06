@@ -15,6 +15,7 @@ import org.goko.core.controller.IControllerConfigurationFileExporter;
 import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.feature.IFeatureSet;
@@ -62,6 +63,7 @@ public class GrblFeatureSet implements IFeatureSet {
 		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, service, null));
 		lstServiceregistration.add(context.registerService(IControllerConfigurationFileExporter.class, service, null));
 		lstServiceregistration.add(context.registerService(IControllerConfigurationFileImporter.class, service, null));
+		lstServiceregistration.add(context.registerService(IGCodeContextProvider.class, service, null));
 		
 		service.setGCodeService(findService(context, IRS274NGCService.class));
 		service.setConnectionService(findService(context, IConnectionService.class));

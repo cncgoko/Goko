@@ -1,4 +1,4 @@
-package org.goko.tools.viewer.jogl.utils.render.text;
+package org.goko.tools.viewer.jogl.utils.render.text.v2;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -36,8 +36,6 @@ public class BitmapFontFile {
 	private int textureHeight;
 	private Texture texture;
 	private ByteBuffer buffer;
-	private int base;
-	private int lineHeight;
 	
 	public static void main(String[] args) throws Exception {
 		int t = -1496;
@@ -128,10 +126,10 @@ public class BitmapFontFile {
 //		redChnl 1 uint 12  
 //		greenChnl 1 uint 13  
 //		blueChnl 1 uint 14 
-		lineHeight = getUint16(data);
-		base = getUint16(data);
-		textureWidth  = getUint16(data);
-		textureHeight = getUint16(data);
+		int lineHeight = getUint16(data);
+		int base = getUint16(data);
+		textureWidth  = getUint32(data);
+		textureHeight = getUint32(data);
 	}
 	
 	/**
@@ -193,7 +191,7 @@ public class BitmapFontFile {
 	private ByteBuffer getBlockData(InputStream inputStream) throws IOException{
 		byte[] blockHeader = new byte[5];
 		inputStream.read(blockHeader);
-		ByteBuffer data = ByteBuffer.wrap(blockHeader);
+		ByteBuffer data = ByteBuffer.wrap(blockHeader);		;
 		System.out.println("Block id : "+ String.valueOf(getUint8(data)));		
 		
 		
@@ -333,33 +331,5 @@ public class BitmapFontFile {
 	 */
 	public ByteBuffer getBuffer() {
 		return buffer;
-	}
-
-	/**
-	 * @return the base
-	 */
-	public int getBase() {
-		return base;
-	}
-
-	/**
-	 * @param base the base to set
-	 */
-	public void setBase(int base) {
-		this.base = base;
-	}
-
-	/**
-	 * @return the lineHeight
-	 */
-	public int getLineHeight() {
-		return lineHeight;
-	}
-
-	/**
-	 * @param lineHeight the lineHeight to set
-	 */
-	public void setLineHeight(int lineHeight) {
-		this.lineHeight = lineHeight;
 	}
 }

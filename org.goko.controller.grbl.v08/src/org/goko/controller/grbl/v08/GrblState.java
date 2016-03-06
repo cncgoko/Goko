@@ -160,8 +160,11 @@ public class GrblState extends MachineValueStore{
 	 * @param value value
 	 * @throws GkException GkException
 	 */
-	protected void setOffset(ICoordinateSystem name, Tuple6b value) throws GkException{
-		offsets.put(name, value);
+	protected void setOffset(ICoordinateSystem coordinateSystem, Tuple6b offset) throws GkException{
+		offsets.put(coordinateSystem, offset);		
+		if(currentContext != null){
+			currentContext.setCoordinateSystemData(coordinateSystem, offset);
+		}
 	}
 	/**
 	 * Generic method for getting an offset

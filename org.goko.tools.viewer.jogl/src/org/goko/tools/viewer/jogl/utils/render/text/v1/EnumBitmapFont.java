@@ -15,12 +15,11 @@
  *  along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.goko.tools.viewer.jogl.utils.render.text;
+package org.goko.tools.viewer.jogl.utils.render.text.v1;
 
 public enum EnumBitmapFont {
 //	CONSOLAS("consolas","/org/goko/viewer/jogl/utils/render/text/Consolas_512.bff");
-	//CONSOLAS("consolas","/resources/font/Consolas_$size.bff");
-	CONSOLAS("consolas","/resources/font/Consolas.fnt");
+	CONSOLAS("consolas","/resources/font/Consolas_$size.bff");
 	private String name;
 	private String filepath;
 

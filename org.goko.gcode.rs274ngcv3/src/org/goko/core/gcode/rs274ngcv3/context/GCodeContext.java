@@ -434,7 +434,6 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	public void setCoordinateSystemData(ICoordinateSystem cs, Tuple6b offset){
 		coordinateSystemData.put(cs, offset);
-
 	}
 
 	/**

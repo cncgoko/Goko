@@ -93,7 +93,9 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 		modifier.getHeightMap().setProbed(false);
 		getDataModel().setModificationAllowed(true);
 	}
-
+	public boolean isProbingService(){
+		return probingService != null;
+	}
 	private ProbeRequest getProbeRequest(Tuple6b tuple6b){
 		ProbeRequest request = new ProbeRequest();
 		request.setAxis(EnumControllerAxis.Z_POSITIVE);

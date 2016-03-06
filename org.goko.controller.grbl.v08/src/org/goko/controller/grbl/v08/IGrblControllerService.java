@@ -31,6 +31,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContextProvider;
 
 /**
  * Definition of the Grbl service
@@ -43,7 +44,8 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 												IThreeAxisControllerAdapter,
 												ICoordinateSystemAdapter<ICoordinateSystem>,
 												IControllerConfigurationFileExporter,
-												IControllerConfigurationFileImporter{
+												IControllerConfigurationFileImporter,
+												GCodeContextProvider{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 

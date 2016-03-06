@@ -48,6 +48,7 @@ import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.event.EventBrokerUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
+import org.goko.core.common.event.ObservableDelegate;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
@@ -60,6 +61,7 @@ import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
@@ -71,6 +73,7 @@ import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
@@ -120,6 +123,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private GrblExecutor grblExecutor;
 	/** The history of used buffer for the last sent command s*/
 	private LinkedBlockingQueue<Integer> usedBufferStack;
+	/** GCode context listener delegate */
+	private ObservableDelegate<IGCodeContextListener<GCodeContext>> gcodeContextListener;
 	/**
 	 * Constructor
 	 */
@@ -128,6 +133,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
 		usedBufferStack = new LinkedBlockingQueue<Integer>();
 		grblExecutor	= new GrblExecutor(this, gcodeService);
+		gcodeContextListener = new GCodeContextObservable();
 		initPersistedValues();
 	}
 
@@ -152,6 +158,22 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IObservable#addObserver(java.lang.Object)
+	 */
+	@Override
+	public void addObserver(IGCodeContextListener<GCodeContext> observer) {
+		gcodeContextListener.addObserver(observer);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.event.IObservable#removeObserver(java.lang.Object)
+	 */
+	@Override
+	public boolean removeObserver(IGCodeContextListener<GCodeContext> observer) {		
+		return gcodeContextListener.removeObserver(observer);
+	}
+	
 	protected void stopStatusPolling(){
 		statusPollingTimer.cancel();
 	}
@@ -390,7 +412,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	protected void receiveParserState(String parserState) throws GkException {
 		String[] commands = StringUtils.split(parserState," ");
-		GCodeContext context = new GCodeContext();
+		GCodeContext context = getGCodeContext();
 		if(commands != null){
 			for (String strCommand : commands) {
 				IGCodeProvider provider = gcodeService.parse(strCommand);
@@ -399,7 +421,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			}
 		}
 		grblState.setCurrentContext(context);
-
+		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(context);
 	}
 
 	protected void handleError(String errorMessage) throws GkException{
@@ -455,7 +477,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		grblState.setState(statusReport.getState());
 		grblState.setMachinePosition(statusReport.getMachinePosition(), getConfiguration().getReportUnit());
 		grblState.setWorkPosition(statusReport.getWorkPosition(), getConfiguration().getReportUnit());
-
+		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
+		
 		if(!ObjectUtils.equals(previousState, statusReport.getState())){
 			eventAdmin.sendEvent(new Event(CONTROLLER_TOPIC_STATE_UPDATE, (Map<String, ?>)null));
 		}
@@ -682,6 +705,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	protected void setOffsetCoordinate(String offsetIdentifier, Tuple6b value) throws GkException{
 		getGrblState().setOffset(EnumCoordinateSystem.valueOf(offsetIdentifier), value);
+		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#getGCodeContext()
@@ -754,7 +778,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		communicator.send( GkUtils.toBytesList( cmd ) );
 		communicator.send( GkUtils.toBytesList( Grbl.VIEW_PARAMETERS ) );
 	}
-
+//mettre a jour le gcode context ou c'est nécessaire
 	/**
 	 * Returns the given Length quantity as a String, formatted using the goko preferences for decimal numbers
 	 * @param q the quantity to format

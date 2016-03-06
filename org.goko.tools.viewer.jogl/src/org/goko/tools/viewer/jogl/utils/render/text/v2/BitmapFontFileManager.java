@@ -15,7 +15,7 @@
  *  along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.goko.tools.viewer.jogl.utils.render.text;
+package org.goko.tools.viewer.jogl.utils.render.text.v2;
 
 import java.util.HashMap;
 import java.util.Map;

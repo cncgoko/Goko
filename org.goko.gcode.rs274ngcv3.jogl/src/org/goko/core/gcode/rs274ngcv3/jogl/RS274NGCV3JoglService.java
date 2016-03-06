@@ -85,14 +85,17 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 		if(CollectionUtils.isNotEmpty(lstRenderer)){
 			BoundingTuple6b result = null;
 			for (RS274GCodeRenderer renderer : lstRenderer) {
-				IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(renderer.getIdGCodeProvider());
-				InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
-				BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(new GCodeContext(), instructionProvider);
-				renderer.setBounds(bounds);
-				if(result == null){
-					result = bounds;
-				}else{
-					result.add(bounds);
+				if(renderer.getBounds() == null){  // Only update if bound is null
+					IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(renderer.getIdGCodeProvider());
+					InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
+					BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(new GCodeContext(), instructionProvider);
+					renderer.setBounds(bounds);
+				
+					if(result == null){
+						result = bounds;
+					}else{
+						result.add(bounds);
+					}
 				}
 			}
 
@@ -209,6 +212,8 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 	 */
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
+		RS274GCodeRenderer renderer = getRendererByGCodeProvider(provider.getId());
+		renderer.setBounds(null); // Force update by setting bounds to null
 		updateRenderer(provider.getId());
 		updateContentBounds();
 	}

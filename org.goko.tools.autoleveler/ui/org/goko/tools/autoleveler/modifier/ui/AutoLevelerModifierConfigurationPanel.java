@@ -42,6 +42,19 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 	public void createContent(Composite parent , IModifier<?> modifier) throws GkException {
 		getController().setModifier((GridAutoLevelerModifier) modifier);
 		Composite composite = new Composite(parent, SWT.NONE);
+		if(!getController().isProbingService()){
+			composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
+			GridLayout gl_composite = new GridLayout(1, false);		
+			composite.setLayout(gl_composite);
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+			
+			Label lblNewLabel = new Label(composite, SWT.NONE);
+			lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+			lblNewLabel.setText("Current target board does not support probing");
+		
+			return;
+		}
+		
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		GridLayout gl_composite = new GridLayout(1, false);		
 		composite.setLayout(gl_composite);

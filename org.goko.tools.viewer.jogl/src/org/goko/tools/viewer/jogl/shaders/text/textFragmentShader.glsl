@@ -15,7 +15,8 @@ void main(){
 	tmpColor =  vColor * texture2D( fontTextureSampler, UV ).rgba;
 	
 	if(tmpColor.a < 0.15){		
-		discard;
-	}
-	color = tmpColor;
+		discard;		
+	}else{
+		color = tmpColor;
+	}	
 }

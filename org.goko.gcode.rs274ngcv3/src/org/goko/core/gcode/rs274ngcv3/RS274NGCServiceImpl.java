@@ -215,12 +215,12 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 				AbstractInstruction instruction = factory.build(localContext, localWords);
 				if(instruction == null){
 					// We have words is the list, but we can't build any instruction from them. End while loop
-					traceUnusedWords(localWords);
+					traceUnusedWords(gcodeProvider, localWords);
 					break;
 				}else{
 					// Make sure we consumed at least one word
 					if(localWords.size() == wordCountBefore){
-						throw new GkTechnicalException("An instruction was created but no word was removed. Instruction created : "+instruction.getClass());
+						throw new GkTechnicalException("An instruction was created but no word was removed for provider ["+gcodeProvider.getCode()+"]. Instruction created : "+instruction.getClass());
 					}
 				}
 
@@ -259,12 +259,12 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * Trace the unused words in a line
 	 * @param unusedWords the list of unused words
 	 */
-	private void traceUnusedWords(List<GCodeWord> unusedWords){
+	private void traceUnusedWords( IGCodeProvider gcodeProvider, List<GCodeWord> unusedWords){
 		String wordstr = "";
 		for (GCodeWord gCodeWord : unusedWords) {
 			wordstr += gCodeWord.completeString() + " ";
 		}
-		LOG.warn("GCodeWord not supported "+wordstr+". They will be present in the GCode file, but won't generate instruction");
+		LOG.warn("Provider ["+gcodeProvider.getCode()+"] - GCodeWord not supported "+wordstr+". They will be present in the GCode file, but won't generate instruction");
 	}
 
 	/**

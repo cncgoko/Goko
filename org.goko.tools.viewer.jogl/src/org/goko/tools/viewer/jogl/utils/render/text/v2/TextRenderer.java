@@ -1,4 +1,4 @@
-package org.goko.tools.viewer.jogl.utils.render.text;
+package org.goko.tools.viewer.jogl.utils.render.text.v2;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -79,7 +79,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	protected void performInitialize(GL3 gl) throws GkException {		
 		IntBuffer intBuffer = IntBuffer.allocate(1);
 		gl.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE, intBuffer);
-		textureSize = 1024;//Math.min(2048, intBuffer.get());
+		textureSize = Math.min(2048, intBuffer.get());
 		this.bff = BitmapFontFileManager.getBitmapFontFile(enumBitmapFont, textureSize);
 
 
@@ -145,10 +145,12 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		// Compute width
 		for (int i = 0; i < length; i++) {
 			char letter = text.charAt(i);
-			CharBlock info = bff.getCharacterInfo(letter);
-			float sizeRatio = (float) (size / bff.getLineHeight());
-			
-			textWidth += sizeRatio * (info.getXadvance() - info.getXoffset());
+			CharBlock info = bff.getCharacterInfo(letter);			
+			float cw = info.getWidth();
+			float ch = info.getHeight();
+			float ratio = (float) (cw*size / ch); // The actual width of the letter
+
+			textWidth += ratio;
 		}
 		Vector3d wVector = new Vector3d(widthVector);
 		wVector.scale((float) textWidth);
@@ -179,29 +181,31 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	}
 
 	private void generateBuffers(char letter, Point3d position, FloatBuffer vertices, FloatBuffer colors, FloatBuffer uvs){
-		CharBlock info = bff.getCharacterInfo(letter);
-		float sizeRatio = (float) (size / bff.getLineHeight());
+		CharBlock info = bff.getCharacterInfo(letter);		
 		float w = bff.getTextureWidth();
 		float h = bff.getTextureHeight();
 		Vector3d wVector = new Vector3d(widthVector);
-		wVector.scale(sizeRatio * info.getWidth());		
+		float cw = info.getWidth();
+		float ch = info.getHeight();
+		float ratio = (float) (cw*size / ch);
+		wVector.scale(ratio);
 		Vector3d hVector = new Vector3d(heightVector);
-		hVector.scale((float) sizeRatio * (bff.getBase()-info.getYoffset()));
+		hVector.scale((float) size);
 		//   3----4
 		//   |    |
 		//   |    |
 		//   1----2
 		float u1 = (info.getX())/w;
-		float v1 = (/*bff.getTextureHeight() - */(info.getY() + info.getHeight()))/h;
-		
-		float u2 = (info.getX() + info.getWidth())/w;
-		float v2 = (/*bff.getTextureHeight() - */(info.getY() + info.getHeight()))/h;
+		float v1 = (bff.getTextureHeight() - (info.getY()))/h;
+
+		float u2 = (info.getX() + cw)/w;
+		float v2 = (bff.getTextureHeight() - (info.getY()))/h;
 
 		float u3 = (info.getX())/w;
-		float v3 = (/*bff.getTextureHeight() - */(info.getY() ))/h;
+		float v3 = (bff.getTextureHeight() - (info.getY() - info.getHeight()))/h;
 
-		float u4 = (info.getX() + info.getWidth())/w;
-		float v4 = (/*bff.getTextureHeight() - */(info.getY()))/h;
+		float u4 = (info.getX() + cw)/w;
+		float v4 = (bff.getTextureHeight() - (info.getY() - info.getHeight()))/h;
 
 		Point3d p1 = new Point3d(position);
 		Point3d p2 = new Point3d(position.x+wVector.x,position.y+wVector.y,position.z+wVector.z);
@@ -232,8 +236,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		vertices.put(new float[]{(float)p4.x, (float)p4.y, (float)p4.z, 1});
 		colors.put(new float[]{color.x,color.y,color.z,color.w});
 		uvs.put(new float[]{u4, v4});
-		wVector = new Vector3d(widthVector);
-		wVector.scale(sizeRatio * (info.getXadvance() - info.getXoffset()));		
+
 		position.add(wVector);
 	}
 	
