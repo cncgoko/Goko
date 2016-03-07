@@ -130,6 +130,11 @@ public class ToolRenderer extends AbstractLineRenderer {
 		setColorsBuffer(   JoglUtils.buildFloatBuffer4f(lstColor) );
 	}
 
+//	rajouter modifier :
+//		- scale
+//		- rotateScal
+//		- override feedrate
+//		- set coordinate system
 	/**
 	 * @return the gcodeContextProvider
 	 */
