@@ -42,8 +42,7 @@ public class ScalePropertiesPanel extends AbstractModifierPropertiesPanel<ScaleM
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		composite.setText("Properties");
-		composite.setLayout(new GridLayout(2, false));
-		new Label(composite, SWT.NONE);
+		composite.setLayout(new GridLayout(1, false));
 		new Label(composite, SWT.NONE);
 		
 		UiBigDecimalFieldEditor lengthFieldEditor = new UiBigDecimalFieldEditor(composite, SWT.NONE);
@@ -53,9 +52,5 @@ public class ScalePropertiesPanel extends AbstractModifierPropertiesPanel<ScaleM
 		lengthFieldEditor.setLabel("Scale");
 		
 		getController().addFieldEditor(lengthFieldEditor);
-		
-		Label label = new Label(composite, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		label.setText("%");
 	}
 }

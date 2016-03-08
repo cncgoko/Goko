@@ -40,7 +40,7 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 	 */
 	@Override
 	public boolean isConfigured() {
-		return scaleFactor != null;
+		return scaleFactor != null && !scaleFactor.equals(BigDecimal.ZERO);
 	}
 
 	/** (inheritDoc)

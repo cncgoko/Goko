@@ -58,6 +58,7 @@ public class Arc3b {
 	public void build(boolean clockwise){		
 		Matrix3d matrix = getBaseChangeMatrix();
 		Matrix3d invMatrix = new Matrix3d();
+		
 		invMatrix.invert(matrix);		
 		
 		Point3d lStart 	= new Point3d(pStart);

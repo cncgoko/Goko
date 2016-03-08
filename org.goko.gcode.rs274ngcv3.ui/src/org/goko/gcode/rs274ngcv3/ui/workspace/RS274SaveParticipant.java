@@ -22,6 +22,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlFileGCodeSource;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProviderSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlScaleModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlSegmentizeModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlTranslateModifier;
 
@@ -62,6 +63,7 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 		xmlPersistenceService.register(XmlFileGCodeSource.class);		
 		xmlPersistenceService.register(XmlSegmentizeModifier.class);		
 		xmlPersistenceService.register(XmlTranslateModifier.class);		
+		xmlPersistenceService.register(XmlScaleModifier.class);		
 		LOG.info("Successfully started "+getServiceId());
 	}
 
