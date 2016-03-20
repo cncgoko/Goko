@@ -11,14 +11,15 @@ import org.goko.core.controller.event.IGCodeContextListener;
  * @date 24 févr. 2016
  */
 public class GCodeContextObservable extends ObservableDelegate<IGCodeContextListener<GCodeContext>> {
-					
-	
+						
 	/**
-	 * 
+	 * Constructor
 	 */
+	@SuppressWarnings("unchecked")
 	public GCodeContextObservable() {
 		super((Class<IGCodeContextListener<GCodeContext>>)(Object)IGCodeContextListener.class);
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.event.AbstractObservable#getEventDispatcher()
 	 */

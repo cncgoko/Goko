@@ -176,7 +176,7 @@ public abstract class AbstractModifier<T extends GCodeProvider> extends Abstract
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AbstractModifier other = (AbstractModifier) obj;
+		AbstractModifier<?> other = (AbstractModifier<?>) obj;
 		if (idGCodeProvider == null) {
 			if (other.idGCodeProvider != null)
 				return false;

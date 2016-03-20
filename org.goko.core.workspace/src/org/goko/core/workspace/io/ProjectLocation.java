@@ -197,10 +197,8 @@ public class ProjectLocation implements IProjectLocation {
 		createProjectFolder();
 		// Export each URI to local folder
 		Set<Entry<String, URI>> entrySet = mapFile.entrySet();
-		
-		
+				
 		for (Entry<String, URI> entry : entrySet) {
-			URI resourceUri = entry.getValue();
 			URIResourceLocation resource = mapUriLocation.get(entry.getKey());		
 			
 			if(resource.getReferenceCount() > 0){				

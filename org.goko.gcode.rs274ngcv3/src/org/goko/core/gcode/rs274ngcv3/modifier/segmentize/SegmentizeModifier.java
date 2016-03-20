@@ -117,7 +117,6 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 		}
 		for(int i = 1; i < division; i++){
 			InstructionSet set = new InstructionSet();
-			float f = (float)i/(division+1);
 			Tuple6b pt = arc.point( (float)i/division );			 
 			StraightFeedInstruction straightInstruction = new StraightFeedInstruction(pt.getX(), pt.getY(), pt.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
 			set.addInstruction(straightInstruction);

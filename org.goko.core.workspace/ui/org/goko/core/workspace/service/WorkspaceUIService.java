@@ -13,7 +13,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -23,8 +22,6 @@ import org.osgi.service.event.EventAdmin;
  * @date 30 oct. 2015
  */
 public class WorkspaceUIService extends AbstractGokoService implements IGokoService, IWorkspaceUIService, IWorkspaceListener {
-	/** LOG */
-	private static final GkLog LOG = GkLog.getLogger(WorkspaceService.class);
 	/** Service ID */
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceUIService";
 	/** The map of registered UI providers */

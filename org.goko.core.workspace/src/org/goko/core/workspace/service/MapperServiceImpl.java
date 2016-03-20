@@ -64,6 +64,7 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 			throw new GkTechnicalException("A loder for input class ["+loader.getInputClass()+"] already exist (registered is ["+loaders.get(loader.getInputClass()).getClass()+"]).");
 		}
 		loaders.put(loader.getInputClass(), loader);
+		LOG.info("Added loader "+loader.getClass());
 	}
 
 	/** (inheritDoc)
@@ -75,6 +76,7 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 			throw new GkTechnicalException("An exporter for input class ["+exporter.getInputClass()+"] already exist (registered is ["+exporters.get(exporter.getInputClass()).getClass()+"]).");
 		}
 		exporters.put(exporter.getInputClass(), exporter);
+		LOG.info("Added exporter "+exporter.getClass());
 	}
 
 	/** (inheritDoc)
@@ -93,7 +95,15 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 		return getExporter(object.getClass(), outputClass).export(object, this);
 	}
 
-	private <O> ILoader<Object, O> getLoader(Class inputClass, Class<O> outputClass) throws GkException{
+	/**
+	 * Returns the loader that transforms the inputClass to the outputClass
+	 * @param inputClass the input class
+	 * @param outputClass the output class
+	 * @return ILoader
+	 * @throws GkException GkException
+	 */
+	@SuppressWarnings("unchecked")
+	private <O> ILoader<Object, O> getLoader(Class<?> inputClass, Class<O> outputClass) throws GkException{
 		if(loaders.containsKey(inputClass)){
 			ILoader<?, ?> loader = loaders.get(inputClass);
 			if(outputClass.isAssignableFrom(loader.getOutputClass())){
@@ -104,7 +114,15 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 		throw new GkTechnicalException("No loader found for input class ["+inputClass+"]");
 	}
 	
-	private <O> IExporter<Object, O> getExporter(Class inputClass, Class<O> outputClass) throws GkException{
+	/**
+	 * Returns the exporter that transforms the inputClass to the outputClass
+	 * @param inputClass the input class
+	 * @param outputClass the output class
+	 * @return IExporter
+	 * @throws GkException GkException
+	 */
+	@SuppressWarnings("unchecked")
+	private <O> IExporter<Object, O> getExporter(Class<?> inputClass, Class<O> outputClass) throws GkException{
 		if(exporters.containsKey(inputClass)){
 			IExporter<?, ?> exporter = exporters.get(inputClass);
 			if(outputClass.isAssignableFrom(exporter.getOutputClass())){
@@ -113,53 +131,5 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 			throw new GkTechnicalException("No exporter found for input class ["+inputClass+"] with matching output class ["+outputClass+"]");
 		}
 		throw new GkTechnicalException("No exporter found for input class ["+inputClass+"]");
-	}
-	
-//	public static void main(String[] args) throws Exception {
-//		MapperServiceImpl mapper = new MapperServiceImpl();
-//		
-//		ILoader<String, Integer> loader = new ILoader<String, Integer>() {
-//			
-//			@Override
-//			public Integer load(String input, IMapperService mapperService) throws Exception {				
-//				return Integer.valueOf(input);
-//			}
-//			
-//			@Override
-//			public Class<Integer> getOutputClass() {				
-//				return Integer.class;
-//			}
-//			
-//			@Override
-//			public Class<String> getInputClass() {
-//				return String.class;
-//			}
-//		};
-//		
-//		ILoader<String, Number> loaderNumber = new ILoader<String, Number>() {
-//			
-//			@Override
-//			public Number load(String input, IMapperService mapperService) throws Exception {				
-//				return Integer.valueOf(input);
-//			}
-//			
-//			@Override
-//			public Class<Number> getOutputClass() {				
-//				return Number.class;
-//			}
-//			
-//			@Override
-//			public Class<String> getInputClass() {
-//				return String.class;
-//			}
-//		};
-//		
-//		mapper.addLoader(loader);
-//		//mapper.addLoader(loaderNumber);
-//
-//		Number n = mapper.load("13", Number.class);
-//		Integer i = mapper.load("13", Integer.class);
-//		System.out.println("");
-//	}
-	
+	}		
 }
