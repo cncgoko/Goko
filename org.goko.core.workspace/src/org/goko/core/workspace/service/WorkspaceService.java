@@ -80,7 +80,7 @@ public class WorkspaceService extends AbstractGokoService implements IWorkspaceS
 	public String getServiceId() throws GkException {
 		return SERVICE_ID;
 	}
-//voir comment gerer le relationnel entre le gcode source et les workspace resource
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
@@ -181,6 +181,7 @@ public class WorkspaceService extends AbstractGokoService implements IWorkspaceS
 	 */
 	@Override
 	public void saveProject(IProjectLocation output, IProgressMonitor monitor) throws GkException {		
+		LOG.info("Saving project to "+output.getLocation());
 		// Notify listeners
 		notifyProjectBeforeSave();
 				
@@ -210,6 +211,7 @@ public class WorkspaceService extends AbstractGokoService implements IWorkspaceS
 		notifyProjectAfterSave();
 		// Mark project as not dirty
 		setProjectDirty(false);
+		LOG.info("Project save complete.");
 	}
 
 	/**

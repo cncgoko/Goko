@@ -20,6 +20,8 @@ public interface IProjectLocation {
 	
 	void setLocation(URI target);
 	
+	URI getLocation();
+	
 	void setProjectDescriptor(InputStream projectDescriptor) throws GkException;
 	
 	InputStream getProjectDescriptor() throws GkException;

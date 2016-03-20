@@ -289,6 +289,14 @@ public class ProjectLocation implements IProjectLocation {
 		projectDescriptorUri = URIUtil.append(projectUri, name+".goko");		
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.io.IProjectLocation#getLocation()
+	 */
+	@Override
+	public URI getLocation() {		
+		return projectUri;
+	}
+	
 	protected URI getURI(String name){
 		return mapFile.get(name);
 	}
