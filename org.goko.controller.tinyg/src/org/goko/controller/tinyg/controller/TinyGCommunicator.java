@@ -195,7 +195,10 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 
 			}else if(StringUtils.equals(name, TinyGJsonUtils.PROBE_REPORT)){
 				handleProbeReport(responseEnvelope.get(TinyGJsonUtils.PROBE_REPORT));
-
+			
+			}else if(StringUtils.equals(name, TinyGJsonUtils.MESSAGE_REPORT)){
+				handleMessage(responseEnvelope.get(TinyGJsonUtils.MESSAGE_REPORT));
+				
 			}else if(StringUtils.defaultString(name).matches("(g|G)5(4|5|6|7|8|9)")){
 				handleCoordinateSystemOffsetReport(name, responseEnvelope.get(name));
 			}else{
@@ -240,6 +243,10 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		tinyg.setAvailableBuffer(queueReport.asInt());
 	}
 
+	private void handleMessage(JsonValue message) throws GkException {
+		applicativeLogService.warning(message.asString(), "TinyG");		
+	}
+	
 	private void handleProbeReport(JsonValue probeReport) throws GkException {
 		if(probeReport.isObject()){
 			Tuple6b 	probePosition 		= null;

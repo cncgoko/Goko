@@ -22,6 +22,11 @@ package org.goko.log.part.handlers;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.goko.log.part.ProblemsLogPart;
 
+/**
+ * Handler used to clear the Log part
+ * @author PsyKo
+ * @date 20 mars 2016
+ */
 public class ClearLogHandler {
 
 	@Execute

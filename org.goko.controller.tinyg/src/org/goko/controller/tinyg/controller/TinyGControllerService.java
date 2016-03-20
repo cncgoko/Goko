@@ -395,17 +395,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				tinygExecutor.handleNonOkStatus(status);
 			}
 		}
-//		if(executionQueue.getCurrentToken() != null){
-//			if(status == TinyGStatusCode.TG_OK){
-//				if(StringUtils.isNotEmpty(receivedCommand)){
-//					GCodeLine parsedLine = getGcodeService().parseLine(receivedCommand);
-//					executionQueue.getCurrentToken().markAsConfirmed(parsedLine);
-//					this.currentSendingRunnable.confirmCommand();
-//				}
-//			}else{
-//				handleError(status, receivedCommand);
-//			}
-//		}
 	}
 
 	/**

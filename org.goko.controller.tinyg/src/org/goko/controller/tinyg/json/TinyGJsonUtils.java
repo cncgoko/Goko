@@ -43,6 +43,7 @@ public class TinyGJsonUtils {
 	public static final String GCODE_COMMAND = "gc";
 	public static final String LINE_REPORT = "n";
 	public static final String PROBE_REPORT = "prb";
+	public static final String MESSAGE_REPORT = "msg";
 
 	public static final String STATUS_REPORT_POSITION_X = "posx";
 	public static final String STATUS_REPORT_POSITION_Y = "posy";
