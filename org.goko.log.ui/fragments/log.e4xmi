@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_Nk-cQFlFEeSVmbiiB8ZO7A">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_Nk-cQFlFEeSVmbiiB8ZO7A">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SczG0FlFEeSVmbiiB8ZO7A" featurename="children" parentElementId="goko.application.partstack">
     <elements xsi:type="basic:Part" xmi:id="_UISYQFlFEeSVmbiiB8ZO7A" elementId="org.goko.log.ui.part.problems" contributionURI="bundleclass://org.goko.log.ui/org.goko.log.part.ProblemsLogPart" label="Problems" iconURI="platform:/plugin/org.goko.log.ui/icons/problems_view.gif" closeable="true">
       <tags>view</tags>
       <toolbar xmi:id="_fVBHkFrTEeSeFYUQtBIr9A" elementId="org.goko.log.ui.toolbar.0">
-        <children xsi:type="menu:HandledToolItem" xmi:id="_rljkwFrWEeSeFYUQtBIr9A" elementId="org.goko.log.ui.handledtoolitem.0" iconURI="platform:/plugin/org.goko.log.ui/icons/clear_co.gif"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_rljkwFrWEeSeFYUQtBIr9A" elementId="org.goko.log.ui.handledtoolitem.0" iconURI="platform:/plugin/org.goko.log.ui/icons/clear_co.gif" command="_P4FYcO65EeW79p2f7vJRqA"/>
       </toolbar>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_L5teYO65EeW79p2f7vJRqA" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_RQjAMO65EeW79p2f7vJRqA" elementId="org.goko.log.ui.handler.0" contributionURI="bundleclass://org.goko.log.ui/org.goko.log.part.handlers.ClearLogHandler" command="_P4FYcO65EeW79p2f7vJRqA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Nh3vAO65EeW79p2f7vJRqA" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_P4FYcO65EeW79p2f7vJRqA" elementId="org.goko.log.ui.command.clearlog" commandName="Clear log"/>
   </fragments>
 </fragment:ModelFragments>
