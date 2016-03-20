@@ -5,8 +5,12 @@
          id="org.goko.core.workspace.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="initial"
+            apply="notexists"
             uri="fragment/WorkspaceFragment.e4xmi">
+      </fragment>
+      <fragment
+            apply="initial"
+            uri="fragment/WorkspacePartFragment.e4xmi">
       </fragment>
    </extension>
 

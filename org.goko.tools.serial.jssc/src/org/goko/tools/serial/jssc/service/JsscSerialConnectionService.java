@@ -28,6 +28,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
@@ -44,7 +45,7 @@ import jssc.SerialPortList;
  * @author PsyKo
  *
  */
-public class JsscSerialConnectionService implements IJsscSerialConnectionService{
+public class JsscSerialConnectionService extends AbstractGokoService implements IJsscSerialConnectionService{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JsscSerialConnectionService.class);
 	/** Service ID */
@@ -76,19 +77,17 @@ public class JsscSerialConnectionService implements IJsscSerialConnectionService
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting " + SERVICE_ID);
+	public void startService() throws GkException {		
 		this.inputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
 		this.outputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
 		this.connectionListeners = new ArrayList<WeakReference<IConnectionListener>>();
-		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
+	public void stopService() throws GkException {
 		if(deamon != null){
 			deamon.stop();
 		}		

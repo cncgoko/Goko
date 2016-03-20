@@ -27,6 +27,7 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
  org.eclipse.core.runtime,
+ org.eclipse.core.runtime.jobs,
  org.eclipse.e4.core.contexts,
  org.eclipse.e4.ui.model.application.ui.menu,
  org.goko.common.bindings,
@@ -40,6 +41,7 @@ Export-Package: org.goko.core.workspace,
  org.goko.core.workspace.action,
  org.goko.core.workspace.bean,
  org.goko.core.workspace.internal,
+ org.goko.core.workspace.io.xml,
  org.goko.core.workspace.service,
  org.goko.core.workspace.tree
 Bundle-ClassPath: .

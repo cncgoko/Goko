@@ -26,12 +26,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.log.GkLog;
 import org.goko.tools.dro.preferences.DROPreferences;
 
-public class DROServiceImpl implements IDROService, IPropertyChangeListener{
+public class DROServiceImpl extends AbstractGokoService implements IDROService, IPropertyChangeListener{
 	private static final GkLog LOG = GkLog.getLogger(DROServiceImpl.class);
 	public static final String SERVICE_ID = "org.goko.tools.dro.service";	
 	private IControllerService controllerService;
@@ -49,20 +50,18 @@ public class DROServiceImpl implements IDROService, IPropertyChangeListener{
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {	
-		LOG.info("Starting " + SERVICE_ID);
+	public void startService() throws GkException {
 		lstDefinition = new ArrayList<MachineValueDefinition>();		
 		DROPreferences.getInstance().addPropertyChangeListener(this);
 		updateValues();
-		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
-		// TODO Auto-generated method stub
+	public void stopService() throws GkException {
+		
 	}
 
 	/** (inheritDoc)

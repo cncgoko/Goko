@@ -1,5 +1,7 @@
 package org.goko.core.gcode.rs274ngcv3;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -14,6 +16,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
@@ -54,7 +57,7 @@ import org.goko.core.math.Tuple6b;
 /**
  * @author Psyko
  */
-public class RS274NGCServiceImpl implements IRS274NGCService{
+public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
 	/** The list of listener */
 	private List<IGCodeProviderRepositoryListener> listenerList;
@@ -94,20 +97,16 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting " + getServiceId());
-
-		LOG.info("Successfully started " + getServiceId());
+	public void startService() throws GkException {
+		
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
-		LOG.info("Stopping " + getServiceId());
-
-		LOG.info("Successfully stopped " + getServiceId());
+	public void stopService() throws GkException {
+		
 	}
 
 
@@ -117,10 +116,17 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 	@Override
 	public IGCodeProvider parse(IGCodeProviderSource source, IProgressMonitor monitor) throws GkException {
 		GCodeProvider provider = new GCodeProvider();
-		provider.setSource(source);
+		provider.setSource(source);		
 		GCodeLexer lexer = new GCodeLexer();
-		List<List<GCodeToken>> tokens = lexer.tokenize(source.getInputStream());
-
+		InputStream stream = source.openInputStream();
+		List<List<GCodeToken>> tokens = lexer.tokenize(stream);
+		
+		try {
+			stream.close();
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
+		
 		SubMonitor subMonitor = null;
 		if(monitor != null){
 			subMonitor = SubMonitor.convert(monitor,"Reading file", tokens.size());
@@ -493,7 +499,8 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		StackableGCodeProviderRoot wrappedProvider = new StackableGCodeProviderRoot(provider);
 		cacheProviders.add(wrappedProvider);
 		cacheProvidersByCode.add(wrappedProvider);
-		provider.setId(wrappedProvider.getId());
+		provider.setId(wrappedProvider.getId());	
+		provider.getSource().bind();
 		notifyGCodeProviderCreate(wrappedProvider);
 	}
 	
@@ -510,7 +517,7 @@ public class RS274NGCServiceImpl implements IRS274NGCService{
 		provider = cacheProviders.get(id);
 		cacheProviders.remove(id);
 		cacheProvidersByCode.remove(provider.getCode()); 
-				
+		provider.getSource().delete();		
 		notifyGCodeProviderDelete(provider);
 	}
 

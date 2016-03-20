@@ -13,5 +13,9 @@ import org.goko.core.common.exception.GkException;
  */
 public interface IGCodeProviderSource {
 	
-	InputStream getInputStream() throws GkException;
+	InputStream openInputStream() throws GkException;
+	
+	void delete() throws GkException;
+	
+	void bind() throws GkException;
 }

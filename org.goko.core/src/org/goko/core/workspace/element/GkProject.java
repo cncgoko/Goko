@@ -6,6 +6,8 @@ package org.goko.core.workspace.element;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.goko.core.workspace.io.IProjectLocation;
+
 /**
  * Describes a Goko project
  *
@@ -15,8 +17,8 @@ import java.util.List;
 public class GkProject {
 	/** The name of the project */
 	private String name;
-	/** The path to the project file */
-	private String filepath;
+	/** The project location */
+	private IProjectLocation location;
 	/** Dirty state of the project  */
 	private boolean dirty;
 	/** The list of container */
@@ -39,19 +41,7 @@ public class GkProject {
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-	/**
-	 * @return the filepath
-	 */
-	public String getFilepath() {
-		return filepath;
-	}
-	/**
-	 * @param filepath the filepath to set
-	 */
-	public void setFilepath(String filepath) {
-		this.filepath = filepath;
-	}
+	}	
 	/**
 	 * @return the dirty
 	 */
@@ -73,5 +63,17 @@ public class GkProject {
 	 */
 	public List<AbstractProjectContainer> getContainer() {
 		return container;
+	}
+	/**
+	 * @return the location
+	 */
+	public IProjectLocation getLocation() {
+		return location;
+	}
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(IProjectLocation location) {
+		this.location = location;
 	}
 }

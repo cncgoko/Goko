@@ -6,6 +6,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
@@ -26,7 +27,7 @@ import org.goko.core.math.BoundingTuple6b;
 import org.goko.tools.viewer.jogl.utils.render.basic.BoundsRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
 
-public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderRepositoryListener{
+public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoService, IGCodeProviderRepositoryListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCV3JoglService.class);
 	/** ID of the service */
@@ -56,23 +57,19 @@ public class RS274NGCV3JoglService implements IGokoService, IGCodeProviderReposi
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting "+getServiceId());
-
+	public void startService() throws GkException {		
 		this.cacheRenderer = new CacheById<RS274GCodeRenderer>(new SequentialIdGenerator());
 		CoordinateSystemSetRenderer csrenderer = new CoordinateSystemSetRenderer();
 		csrenderer.setAdapter(coordinateSystemAdapter);
 		Activator.getJoglViewerService().addRenderer(csrenderer);
-		LOG.info("Successfully started " + getServiceId());
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
-		LOG.info("Stopping "+getServiceId());
-		LOG.info("Successfully stopped " + getServiceId());
+	public void stopService() throws GkException {
+		
 	}
 
 	private void updateContentBounds() throws GkException {

@@ -26,11 +26,12 @@ Import-Package: javax.inject;version="1.0.0",
  org.goko.core.gcode.rs274ngcv3,
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/RS274WorkspaceComponant.xml,OSGI-INF/RS274SaveParticipantComponent.xml,
- OSGI-INF/RS274LoadParticipantComponent.xml
+Service-Component: OSGI-INF/RS274WorkspaceComponant.xml,OSGI-INF/RS274SaveParticipantComponent.xml,OSGI-INF/RS274LoadParticipantComponent.xml
 Export-Package: org.goko.gcode.rs274ngcv3.ui.workspace,
  org.goko.gcode.rs274ngcv3.ui.workspace.io,
+ org.goko.gcode.rs274ngcv3.ui.workspace.io.bean,
  org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter,
- org.goko.gcode.rs274ngcv3.ui.workspace.io.loader,
+ org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier,
+ org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier,
  org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider,
  org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel

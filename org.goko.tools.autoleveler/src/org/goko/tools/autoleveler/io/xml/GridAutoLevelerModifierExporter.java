@@ -6,7 +6,7 @@ package org.goko.tools.autoleveler.io.xml;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.quantity.XmlLength;
 import org.goko.core.workspace.service.IMapperService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.AbstractModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.AbstractModifierExporter;
 import org.goko.tools.autoleveler.modifier.GridAutoLevelerModifier;
 
 /**
@@ -32,7 +32,7 @@ public class GridAutoLevelerModifierExporter extends AbstractModifierExporter<Gr
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.AbstractModifierExporter#exportModifierData(org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier, org.goko.core.gcode.rs274ngcv3.element.IModifier, org.goko.core.workspace.service.IMapperService)
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.AbstractModifierExporter#exportModifierData(org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier, org.goko.core.gcode.rs274ngcv3.element.IModifier, org.goko.core.workspace.service.IMapperService)
 	 */
 	@Override
 	protected void exportModifierData(XmlGridAutoLevelerModifier output, GridAutoLevelerModifier input, IMapperService mapperService) throws GkException {
@@ -40,7 +40,7 @@ public class GridAutoLevelerModifierExporter extends AbstractModifierExporter<Gr
 		output.setHeightMap(mapperService.export(input.getHeightMap(), AbstractXmlHeightMap.class));
 	}
 	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.AbstractModifierLoader#createOutputInstance()
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.AbstractModifierLoader#createOutputInstance()
 	 */
 	@Override
 	protected XmlGridAutoLevelerModifier createOutputInstance() {

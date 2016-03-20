@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -32,7 +33,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
  * @author Psyko
  *
  */
-public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener, IModifierListener{
+public class RS274WorkspaceService extends AbstractGokoService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener, IModifierListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274WorkspaceService.class);
 	/** Service ID */
@@ -66,14 +67,12 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting  "+getServiceId());
+	public void startService() throws GkException {		
 		// Create the RS274 project container
 		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
 		getGcodeService().addListener(this);		
 		getGcodeService().addModifierListener(this);		
-		initModifierUiProvider();
-		LOG.info("Successfully started "+getServiceId());
+		initModifierUiProvider();		
 	}
 
 	/**
@@ -91,7 +90,7 @@ public class RS274WorkspaceService implements IRS274WorkspaceService, IGCodeProv
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
+	public void stopService() throws GkException {
 
 	}
 

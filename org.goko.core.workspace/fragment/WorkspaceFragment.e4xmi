@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_R-Gp4H9UEeWiwps-G4ndPA">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_U19AwH9UEeWiwps-G4ndPA" featurename="children" parentElementId="goko.application.partstack">
-    <elements xsi:type="basic:Part" xmi:id="_WOgvIH9UEeWiwps-G4ndPA" elementId="org.goko.core.workspace.part.workspace" contributionURI="bundleclass://org.goko.core.workspace/org.goko.core.workspace.WorkspacePart" label="Workspace" iconURI="platform:/plugin/org.goko.core.workspace/icons/node/folder-tree.png"/>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_R-Gp4H9UEeWiwps-G4ndPA">
+  <imports xsi:type="commands:BindingContext" xmi:id="_6lltsOrzEeW3gspDVf0Ang" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0u0lwOnOEeWTGrnu4rwRUg" featurename="children" parentElementId="org.goko.application.menu.file.open">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_AZTP4OnPEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handledmenuitem.project" label="Open project" command="_4ugucOnOEeWTGrnu4rwRUg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3CzakOnOEeWTGrnu4rwRUg" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_4ugucOnOEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.command.openproject" commandName="Open project"/>
+    <elements xsi:type="commands:Command" xmi:id="_XGYyYOn8EeWTGrnu4rwRUg" elementId="org.goko.core.workspace.command.saveproject" commandName="Save project"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_73fRkOnOEeWTGrnu4rwRUg" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_9X57cOnOEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handler.0" contributionURI="bundleclass://org.goko.core.workspace/org.goko.core.workspace.handlers.OpenProjectHandler" command="_4ugucOnOEeWTGrnu4rwRUg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_Yc-K0On8EeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handler.1" contributionURI="bundleclass://org.goko.core.workspace/org.goko.core.workspace.handlers.SaveProjectHandler" command="_XGYyYOn8EeWTGrnu4rwRUg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_eDj5UOnPEeWTGrnu4rwRUg" featurename="children" parentElementId="org.goko.core.open.menu" positionInList="before:org.goko.core.menuseparator.0">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_hNSqYOnPEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handledmenuitem.project" label="Project" command="_4ugucOnOEeWTGrnu4rwRUg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_R1VIcOn8EeWTGrnu4rwRUg" featurename="children" parentElementId="org.goko.core.save.menu">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_UNrf4On8EeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handledmenuitem.saveproject" label="Save project" command="_XGYyYOn8EeWTGrnu4rwRUg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_yeH1IOrkEeW3gspDVf0Ang" featurename="bindingTables" parentElementId="goko.application">
+    <elements xsi:type="commands:BindingTable" xmi:id="_0z9EEOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.bindingtable.0" bindingContext="_6lltsOrzEeW3gspDVf0Ang">
+      <bindings xmi:id="_1GkeEOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.keybinding.0" keySequence="M1+O" command="_4ugucOnOEeWTGrnu4rwRUg"/>
+      <bindings xmi:id="_2h_TMOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.keybinding.1" keySequence="M1+S" command="_XGYyYOn8EeWTGrnu4rwRUg"/>
+    </elements>
   </fragments>
 </fragment:ModelFragments>

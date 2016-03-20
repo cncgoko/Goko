@@ -19,7 +19,10 @@
  */
 package org.goko.core.workspace.service;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,18 +30,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.element.GkProject;
-import org.goko.core.workspace.io.LoadContext;
-import org.goko.core.workspace.io.SaveContext;
+import org.goko.core.workspace.io.IProjectInputLocation;
+import org.goko.core.workspace.io.IProjectLocation;
+import org.goko.core.workspace.io.IResourceLocation;
+import org.goko.core.workspace.io.ProjectLocation;
 import org.goko.core.workspace.io.XmlGkProject;
 import org.goko.core.workspace.io.XmlProjectContainer;
+import org.goko.core.workspace.io.xml.XmlURIResourceLocation;
+import org.goko.core.workspace.mapper.URIResourceLocationExporter;
+import org.goko.core.workspace.mapper.URIResourceLocationLoader;
 
 /**
  * Default implementation of the workspace service
@@ -46,11 +53,7 @@ import org.goko.core.workspace.io.XmlProjectContainer;
  * @author PsyKo
  *
  */
-/**
- * @author PsyKo
- *
- */
-public class WorkspaceService implements IWorkspaceService{
+public class WorkspaceService extends AbstractGokoService implements IWorkspaceService{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(WorkspaceService.class);
 	/** Service ID */
@@ -77,26 +80,38 @@ public class WorkspaceService implements IWorkspaceService{
 	public String getServiceId() throws GkException {
 		return SERVICE_ID;
 	}
-
+//voir comment gerer le relationnel entre le gcode source et les workspace resource
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
+	public void startService() throws GkException {
 		this.listenerList = new ArrayList<IWorkspaceListener>();
-		this.project = new GkProject();		
+		this.project = new GkProject();
+		this.project.setLocation( new ProjectLocation() );
 		this.projectLifecycleListenerList = new ArrayList<IProjectLifecycleListener>();
-		LOG.info("Successfully started : "+getServiceId());
+		
+		this.mapperService.addLoader(new URIResourceLocationLoader(this));
+		this.mapperService.addExporter(new URIResourceLocationExporter());
+		
+		this.xmlPersistenceService.register(XmlURIResourceLocation.class);
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
+	public void stopService() throws GkException {
 
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#addResource(java.net.URI)
+	 */
+	@Override
+	public IResourceLocation addResource(URI uri) throws GkException {
+		return project.getLocation().addResource(uri.toString(), uri);
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.IWorkspaceService#addWorkspaceListener(IWorkspaceListener)
 	 */
@@ -165,45 +180,31 @@ public class WorkspaceService implements IWorkspaceService{
 	 * @see org.goko.core.workspace.service.IWorkspaceService#saveProject()
 	 */
 	@Override
-	public void saveProject(File targetProjectFile, IProgressMonitor monitor) throws GkException {
-		SaveContext context = new SaveContext();
-		File projectFile = targetProjectFile;
-		// Build complete path
-		String path = projectFile.getAbsolutePath();
-		String fullPath = FilenameUtils.getFullPath(path);
-		String name     = FilenameUtils.getBaseName(path);
-		String extension = FilenameUtils.getExtension(path);
-
-		if(!StringUtils.equals(extension, "goko")){
-			extension = "goko";
-		}
-		project.setName(name);
-		project.setFilepath(fullPath+name+"."+extension);
+	public void saveProject(IProjectLocation output, IProgressMonitor monitor) throws GkException {		
 		// Notify listeners
 		notifyProjectBeforeSave();
-
-		projectFile = new File(project.getFilepath());
-		context.setProjectName(name);
-		context.setProjectFile(projectFile);
-
-		context.setResourcesFolderName(name+"Resources");
-		context.setResourcesFolder(new File(context.getProjectFile().getParentFile(), context.getResourcesFolderName()));
-		context.getResourcesFolder().mkdir();
-
+				
 		XmlGkProject xmlProject = new XmlGkProject();
-		xmlProject.setResourcesFolderName(context.getResourcesFolderName());
-
+		
+		project.getLocation().importProjectDependencies();
+		
 		for (IProjectSaveParticipant<?> saveParticipant : getSaveParticipants()) {
-			xmlProject.getProjectContainer().addAll(saveParticipant.save(context));
+			xmlProject.getProjectContainer().addAll(saveParticipant.save(output));
 		}
-
+		
 		try {
-			xmlPersistenceService.write(xmlProject, context.getProjectFile());
-			project.setFilepath(projectFile.getAbsolutePath());
+			ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+			xmlPersistenceService.write(xmlProject, oStream);			
+			output.setProjectDescriptor(new ByteArrayInputStream(oStream.toByteArray()));
+			// Persist the output
+			output.write();
 		} catch (GkException e) {
 			rollbackSaveProject();
 			throw e;
 		}
+		project.setLocation(output);
+		project.setName(project.getLocation().getName());
+		
 		completeSaveProject();
 		// Notify listeners
 		notifyProjectAfterSave();
@@ -252,7 +253,8 @@ public class WorkspaceService implements IWorkspaceService{
 	@Override
 	public void createNewProject() throws GkException {
 		project = new GkProject();
-		project.setName("Untitled");
+		project.setLocation( new ProjectLocation() );
+		
 		if(CollectionUtils.isNotEmpty(getLoadParticipants())){
 			// Clear stored data first
 			for (IProjectLoadParticipant loadParticipant : getLoadParticipants()) {
@@ -266,26 +268,23 @@ public class WorkspaceService implements IWorkspaceService{
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IWorkspaceService#loadProject(java.io.File)
+	 * @see org.goko.core.workspace.service.IWorkspaceService#loadProject(IProjectInputLocation)
 	 */
 	@Override
-	public void loadProject(File projectFile, IProgressMonitor monitor) throws GkException {
-		try {
-			LoadContext context = new LoadContext();
-			context.setProjectFile(projectFile);
-			context.setProjectName(projectFile.getName());
-
+	public void loadProject(IProjectLocation input, IProgressMonitor monitor) throws GkException {
+		try {			
+			input.read();
 			// Notify listeners
 			notifyProjectBeforeLoad();
 			
-			XmlGkProject xmlGkProject = xmlPersistenceService.read(XmlGkProject.class, projectFile);
+			// Read the project description file 
+			InputStream projectFileInputStream = input.getProjectDescriptor();
+			XmlGkProject xmlGkProject = xmlPersistenceService.read(XmlGkProject.class, projectFileInputStream);
+			projectFileInputStream.close();
 			
-			project = new GkProject();
-			project.setFilepath(projectFile.getAbsolutePath());
-			project.setName(projectFile.getName());
-
-			context.setResourcesFolderName(xmlGkProject.getResourcesFolderName());
-			context.setResourcesFolder(new File(projectFile.getParentFile(), xmlGkProject.getResourcesFolderName()));
+			project = new GkProject();			
+			project.setName(input.getName());
+			project.setLocation(input);
 			
 			Map<String, XmlProjectContainer> mapContainerByType = new HashMap<>();	
 			if(CollectionUtils.isNotEmpty(xmlGkProject.getProjectContainer())){
@@ -305,9 +304,8 @@ public class WorkspaceService implements IWorkspaceService{
 				// Load new data
 				for (IProjectLoadParticipant loadParticipant : getLoadParticipants()) {
 					if(mapContainerByType.containsKey(loadParticipant.getContainerType())){
-						loadParticipant.load(context, mapContainerByType.get(loadParticipant.getContainerType()), monitor);	
-					}
-					
+						loadParticipant.load(mapContainerByType.get(loadParticipant.getContainerType()), input, monitor);	
+					}					
 				}
 			}
 			setProjectDirty(false);

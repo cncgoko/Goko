@@ -18,7 +18,7 @@ import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.service.AbstractProjectLoadParticipant;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
 
@@ -97,11 +97,9 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 		executionService.clearExecutionQueue();
 	}
 	
-	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
-	 */
+	
 	@Override
-	public void loadContainer(LoadContext context, XmlExecutionService container, IProgressMonitor monitor) throws GkException {
+	public void loadContainer(XmlExecutionService container, IProjectLocation input, IProgressMonitor monitor) throws GkException {
 		ArrayList<XmlExecutionToken> lstToken = container.getLstExecutionToken();
 		
 		if(CollectionUtils.isNotEmpty(lstToken)){

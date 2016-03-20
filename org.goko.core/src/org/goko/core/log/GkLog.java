@@ -84,7 +84,7 @@ public class GkLog {
 	 * @param e the exception to log
 	 */
 	public void error(Exception e) {
-		logger.error("Error occured :", e);		
+		logger.error("Error occured : "+e.getMessage(), e);		
 	}
 
 	/**

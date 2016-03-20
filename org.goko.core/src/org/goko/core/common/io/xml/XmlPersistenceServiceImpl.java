@@ -1,6 +1,7 @@
 package org.goko.core.common.io.xml;
 
-import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
@@ -72,9 +73,9 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	 * @see org.goko.core.common.io.xml.IXmlPersistenceService#read(java.lang.Class, java.io.File)
 	 */
 	@Override
-	public <T> T read(Class<T> type, File file) throws GkException {
+	public <T> T read(Class<T> type, InputStream input) throws GkException {
 		try {
-			return persister.read(type, file);
+			return persister.read(type, input);
 		} catch (Exception e) {
 			throw new GkTechnicalException(e);
 		}
@@ -84,9 +85,9 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	 * @see org.goko.core.common.io.xml.IXmlPersistenceService#write(java.lang.Object, java.io.File)
 	 */
 	@Override
-	public <T> void write(T type, File file) throws GkException {
+	public <T> void write(T type, OutputStream output) throws GkException {
 		try {
-			persister.write(type, file);
+			persister.write(type, output);
 		} catch (Exception e) {
 			throw new GkTechnicalException(e);
 		}

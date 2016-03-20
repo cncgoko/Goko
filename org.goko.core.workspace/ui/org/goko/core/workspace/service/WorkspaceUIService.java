@@ -11,6 +11,7 @@ import java.util.Map;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
@@ -21,7 +22,7 @@ import org.osgi.service.event.EventAdmin;
  * @author PsyKo
  * @date 30 oct. 2015
  */
-public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IWorkspaceListener {
+public class WorkspaceUIService extends AbstractGokoService implements IGokoService, IWorkspaceUIService, IWorkspaceListener {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(WorkspaceService.class);
 	/** Service ID */
@@ -51,17 +52,15 @@ public class WorkspaceUIService implements IGokoService, IWorkspaceUIService, IW
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting  "+getServiceId());
-		this.mapProjectContainerUiProvider = new HashMap<String, ProjectContainerUiProvider>();
-		LOG.info("Successfully started "+getServiceId());
+	public void startService() throws GkException {		
+		this.mapProjectContainerUiProvider = new HashMap<String, ProjectContainerUiProvider>();		
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
+	public void stopService() throws GkException {
 
 	}
 

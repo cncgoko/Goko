@@ -1,13 +1,13 @@
 /**
  * 
  */
-package org.goko.gcode.rs274ngcv3.ui.workspace.io.loader;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.quantity.XmlLength;
 import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
 import org.goko.core.workspace.service.IMapperService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlTranslateModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlTranslateModifier;
 
 /**
  * @author PsyKo
@@ -32,7 +32,7 @@ public class TranslateModifierLoader extends AbstractModifierLoader<XmlTranslate
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.AbstractModifierLoader#loadModifierData(org.goko.core.gcode.rs274ngcv3.element.IModifier, org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier, org.goko.core.workspace.service.IMapperService)
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.AbstractModifierLoader#loadModifierData(org.goko.core.gcode.rs274ngcv3.element.IModifier, org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier, org.goko.core.workspace.service.IMapperService)
 	 */
 	@Override
 	protected void loadModifierData(TranslateModifier output, XmlTranslateModifier input, IMapperService mapperService) throws GkException {
@@ -42,7 +42,7 @@ public class TranslateModifierLoader extends AbstractModifierLoader<XmlTranslate
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.AbstractModifierLoader#createOutputInstance()
+	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.AbstractModifierLoader#createOutputInstance()
 	 */
 	@Override
 	protected TranslateModifier createOutputInstance() {

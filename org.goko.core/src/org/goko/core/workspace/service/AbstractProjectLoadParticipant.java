@@ -5,7 +5,7 @@ package org.goko.core.workspace.service;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.io.XmlProjectContainer;
 
 /**
@@ -24,15 +24,16 @@ public abstract class AbstractProjectLoadParticipant<T extends XmlProjectContain
 		this.containerClass = containerClass;
 	}
 	
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.XmlProjectContainer, org.goko.core.workspace.io.IProjectInputLocation, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public void load(LoadContext context, XmlProjectContainer container, IProgressMonitor monitor) throws GkException {
-		loadContainer(context, (T)container, monitor);
+	public void load(XmlProjectContainer container, IProjectLocation input, IProgressMonitor monitor) throws GkException {
+		loadContainer((T)container, input, monitor);
 	}
 	
-	abstract protected void loadContainer(LoadContext context, T container, IProgressMonitor monitor) throws GkException ;
+	abstract protected void loadContainer(T container, IProjectLocation input, IProgressMonitor monitor) throws GkException ;
 	
 	public Class<T> getContainerClass() {
 		return containerClass;

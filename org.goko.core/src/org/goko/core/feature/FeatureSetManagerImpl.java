@@ -13,6 +13,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.config.GokoPreference;
@@ -24,7 +25,7 @@ import org.osgi.framework.FrameworkUtil;
  * @author PsyKo
  *
  */
-public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
+public class FeatureSetManagerImpl extends AbstractGokoService implements IGokoService, IFeatureSetManager {
 	/** Service ID */
 	private static final String SERVICE_ID = "org.goko.core.feature.GokoFeatureManager";
 	/** LOG */
@@ -142,10 +143,8 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {		
-		LOG.info("Starting " + SERVICE_ID);	
+	public void startService() throws GkException {
 		startFeatureSet();
-		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
 	/**
@@ -153,8 +152,7 @@ public class FeatureSetManagerImpl implements IGokoService, IFeatureSetManager {
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
-		// TODO Auto-generated method stub
+	public void stopService() throws GkException {
 
 	}
 

@@ -16,12 +16,14 @@
  *******************************************************************************/
 package org.goko.core.workspace.service;
 
-import java.io.File;
+import java.net.URI;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.workspace.element.GkProject;
+import org.goko.core.workspace.io.IProjectLocation;
+import org.goko.core.workspace.io.IResourceLocation;
 
 public interface IWorkspaceService extends IGokoService{
 
@@ -45,7 +47,12 @@ public interface IWorkspaceService extends IGokoService{
 
 	void createNewProject() throws GkException;
 	
-	void saveProject(File project, IProgressMonitor monitor) throws GkException;
+	void saveProject(IProjectLocation output, IProgressMonitor monitor) throws GkException;
 
-	void loadProject(File project, IProgressMonitor monitor) throws GkException;
+	void loadProject(IProjectLocation input, IProgressMonitor monitor) throws GkException;
+	
+	// Tests
+	
+	IResourceLocation addResource(URI uri) throws GkException;
+		
 }

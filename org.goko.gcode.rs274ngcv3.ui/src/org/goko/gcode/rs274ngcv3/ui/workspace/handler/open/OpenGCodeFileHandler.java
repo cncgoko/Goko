@@ -18,8 +18,10 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.element.source.FileGCodeSource;
+import org.goko.core.gcode.rs274ngcv3.element.source.ResourceLocationGCodeSource;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.io.IResourceLocation;
+import org.goko.core.workspace.service.IWorkspaceService;
 
 public class OpenGCodeFileHandler {
 	/** Log */
@@ -29,7 +31,8 @@ public class OpenGCodeFileHandler {
 
 	@Inject
 	private IRS274NGCService gCodeService;
-
+	@Inject
+	private IWorkspaceService workspaceService;
 
 	@Execute
 	public void executeOpenFile(Shell shell) {		
@@ -49,11 +52,14 @@ public class OpenGCodeFileHandler {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						IGCodeProvider gcodeFile = null;
+						File sourceFile = null;
 						try {
-							File sourceFile = new File(parentFolder, fileName);
-							gcodeFile = gCodeService.parse(new FileGCodeSource(sourceFile), monitor);
+							sourceFile = new File(parentFolder, fileName);
+							IResourceLocation resource = workspaceService.addResource(sourceFile.toURI());
+							ResourceLocationGCodeSource gcodeSource = new ResourceLocationGCodeSource(resource);
+							gcodeFile = gCodeService.parse(gcodeSource, monitor);
 							gcodeFile.setCode(fileName);
-							gCodeService.addGCodeProvider(gcodeFile);
+							gCodeService.addGCodeProvider(gcodeFile);							
 						} catch (GkException e) {
 							LOG.error(e);
 							return new Status(IStatus.ERROR, "org.goko.gcode.rs274ngcv3.ui", e.getMessage());

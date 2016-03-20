@@ -12,19 +12,20 @@ import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.io.SaveContext;
+import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.io.XmlProjectContainer;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectSaveParticipant;
 import org.goko.core.workspace.service.IWorkspaceService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlFileGCodeSource;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProviderSource;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlScaleModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlSegmentizeModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlTranslateModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlScaleModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlSegmentizeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlTranslateModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlExternalFileGCodeSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlGCodeProviderSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlResourceLocationGCodeSource;
 
 public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GContent> , IGokoService {
 	/** LOG */
@@ -60,7 +61,8 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());	
 		xmlPersistenceService.register(XmlRS274GContent.class);		
-		xmlPersistenceService.register(XmlFileGCodeSource.class);		
+		xmlPersistenceService.register(XmlExternalFileGCodeSource.class);		
+		xmlPersistenceService.register(XmlResourceLocationGCodeSource.class);		
 		xmlPersistenceService.register(XmlSegmentizeModifier.class);		
 		xmlPersistenceService.register(XmlTranslateModifier.class);		
 		xmlPersistenceService.register(XmlScaleModifier.class);		
@@ -84,24 +86,25 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 		return dirty;
 	}
 
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#save(org.goko.core.workspace.io.SaveContext)
+	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#save(org.goko.core.workspace.io.IProjectOutputLocation)
 	 */
 	@Override
-	public List<XmlProjectContainer> save(SaveContext context) throws GkException {
+	public List<XmlProjectContainer> save(IProjectLocation output) throws GkException {
 		List<XmlProjectContainer> containers = new ArrayList<XmlProjectContainer>();		
 		XmlRS274GContent content = persistContent(/*new File(context.getResourcesFolder(), RS274_CONTENT_FILE_NAME)*/);
 		containers.add(content);
 		return containers;
 	}
 	
-	private XmlRS274GContent persistContent(/*File target*/) throws GkException{
+	private XmlRS274GContent persistContent() throws GkException{
 		XmlRS274GContent content = new XmlRS274GContent();
 		List<IGCodeProvider> lstProviders = gcodeService.getGCodeProvider();
 		ArrayList<XmlGCodeProvider> lstXmlProvider = new ArrayList<XmlGCodeProvider>();
 
 		for (IGCodeProvider igCodeProvider : lstProviders) {
-			XmlGCodeProvider xmlProvider = new XmlGCodeProvider();
+			XmlGCodeProvider xmlProvider = new XmlGCodeProvider();	
 			xmlProvider.setCode(igCodeProvider.getCode());
 			xmlProvider.setSource(mapperService.export(igCodeProvider.getSource(), XmlGCodeProviderSource.class));
 			// Persist the modifiers of this provider 

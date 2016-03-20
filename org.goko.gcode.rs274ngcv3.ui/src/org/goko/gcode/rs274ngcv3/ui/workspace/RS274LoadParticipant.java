@@ -14,21 +14,21 @@ import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.io.LoadContext;
+import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.service.AbstractProjectLoadParticipant;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.FileGCodeSourceExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.ScaleModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.SegmentizeModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.TranslateModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.FileGCodeSourceLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.ScaleModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.SegmentizeModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.TranslateModifierLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.ResourceLocationGCodeSourceExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ScaleModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.SegmentizeModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.TranslateModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ScaleModifierLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.SegmentizeModifierLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.TranslateModifierLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.source.ResourceLocationGCodeSourceLoader;
 
 public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS274GContent> implements IGokoService, IProjectLoadParticipant {
 	/** LOG */
@@ -67,12 +67,12 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
-		mapperService.addLoader(new FileGCodeSourceLoader());
+		mapperService.addLoader(new ResourceLocationGCodeSourceLoader());
 		mapperService.addLoader(new SegmentizeModifierLoader());
 		mapperService.addLoader(new TranslateModifierLoader());		
 		mapperService.addLoader(new ScaleModifierLoader());		
 		
-		mapperService.addExporter(new FileGCodeSourceExporter());
+		mapperService.addExporter(new ResourceLocationGCodeSourceExporter());
 		mapperService.addExporter(new TranslateModifierExporter());
 		mapperService.addExporter(new SegmentizeModifierExporter());		
 		mapperService.addExporter(new ScaleModifierExporter());		
@@ -106,10 +106,10 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectLoadParticipant#load(org.goko.core.workspace.io.LoadContext, org.goko.core.workspace.io.XmlProjectContainer)
+	 * @see org.goko.core.workspace.service.AbstractProjectLoadParticipant#loadContainer(org.goko.core.workspace.io.XmlProjectContainer, org.goko.core.workspace.io.IProjectInputLocation, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	protected void loadContainer(LoadContext context, XmlRS274GContent container, IProgressMonitor monitor) throws GkException {
+	protected void loadContainer(XmlRS274GContent container, IProjectLocation input, IProgressMonitor monitor) throws GkException {
 		// Load the GCodeProvider
 		List<XmlGCodeProvider> lstGCodeProvider = container.getLstGCodeProvider();
 		

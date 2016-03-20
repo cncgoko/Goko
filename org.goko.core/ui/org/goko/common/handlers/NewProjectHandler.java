@@ -67,6 +67,7 @@ public class NewProjectHandler {
 	 * @throws GkException GkException
 	 */
 	private boolean  saveProject(Shell shell) throws GkException {
-		return new SaveProjectHandler().saveProject(shell, workspaceService);
+		throw new RuntimeException("TO COMPLETE");
+		//return new SaveProjectHandler().saveProject(shell, workspaceService);
 	}
 }

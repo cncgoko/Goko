@@ -1,4 +1,4 @@
-package org.goko.common.handlers;
+package org.goko.core.workspace.handlers;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.element.GkProject;
+import org.goko.core.workspace.io.ProjectLocation;
 import org.goko.core.workspace.service.IWorkspaceService;
 
 public class OpenProjectHandler {
@@ -52,8 +53,8 @@ public class OpenProjectHandler {
 					 */
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
-						try {
-							workspaceService.loadProject(new File(filePath), monitor);
+						try {							
+							workspaceService.loadProject(new ProjectLocation(new File(filePath).toURI()), monitor);
 						} catch (GkException e) {
 							LOG.error(e);
 							return new Status(IStatus.ERROR, "org.goko.core", e.getMessage());

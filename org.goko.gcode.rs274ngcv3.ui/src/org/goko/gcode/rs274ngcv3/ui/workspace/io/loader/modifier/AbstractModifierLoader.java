@@ -1,14 +1,14 @@
 /**
  *
  */
-package org.goko.gcode.rs274ngcv3.ui.workspace.io.loader;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.workspace.service.ILoader;
 import org.goko.core.workspace.service.IMapperService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
 
 /**
  * @author PsyKo

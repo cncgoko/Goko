@@ -3,7 +3,6 @@
  */
 package org.goko.core.execution.monitor.io;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.io.SaveContext;
+import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.io.XmlProjectContainer;
 import org.goko.core.workspace.service.IProjectSaveParticipant;
 
@@ -73,19 +72,20 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 		return false;
 	}
 
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#save(org.goko.core.workspace.io.SaveContext)
+	 * @see org.goko.core.workspace.service.IProjectSaveParticipant#save(org.goko.core.workspace.io.IProjectOutputLocation)
 	 */
 	@Override
-	public List<XmlProjectContainer> save(SaveContext context) throws GkException {
+	public List<XmlProjectContainer> save(IProjectLocation outputLocation) throws GkException {
 		List<XmlProjectContainer> containers = new ArrayList<XmlProjectContainer>();
 
-		XmlExecutionService container = persistContent(new File(context.getResourcesFolder(), EXECUTION_SERVICE_CONTENT_FILE_NAME));
+		XmlExecutionService container = persistContent();
 		containers.add(container);		
 		return containers;
 	}
 
-	private XmlExecutionService persistContent(File target) throws GkException{
+	private XmlExecutionService persistContent() throws GkException{
 		XmlExecutionService content = new XmlExecutionService();
 		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue = executionService.getExecutionQueue();
 		List<ExecutionToken<ExecutionTokenState>> tokens = queue.getExecutionToken();

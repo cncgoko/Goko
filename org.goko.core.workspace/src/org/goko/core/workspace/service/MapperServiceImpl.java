@@ -8,13 +8,14 @@ import java.util.Map;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.log.GkLog;
 
 /**
  * @author PsyKo
  * @date 10 févr. 2016
  */
-public class MapperServiceImpl implements IMapperService {
+public class MapperServiceImpl extends AbstractGokoService implements IMapperService {
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(MapperServiceImpl.class);
 	/** Service ID */
@@ -42,20 +43,15 @@ public class MapperServiceImpl implements IMapperService {
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting "+getServiceId());
+	public void startService() throws GkException {
 		
-		LOG.info("Succesfully started "+getServiceId());
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
-		LOG.info("Stopping "+getServiceId());
-		
-		LOG.info("Succesfully stopped "+getServiceId());
+	public void stopService() throws GkException {
 		
 	}
 

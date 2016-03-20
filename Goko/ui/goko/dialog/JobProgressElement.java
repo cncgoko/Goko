@@ -85,7 +85,6 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	 */
 	@Override
 	public void beginTask(final String name, final int totalWork) {
-		System.err.println("beginTask "+name);
 		sync.asyncExec(new Runnable() {
 
 			@Override
@@ -104,7 +103,7 @@ public class JobProgressElement extends Composite implements IProgressMonitor,IJ
 	 */
 	@Override
 	public void done() {
-		System.err.println("done()");
+
 	}
 
 	/** (inheritDoc)

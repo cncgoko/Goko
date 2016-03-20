@@ -1,4 +1,4 @@
-package org.goko.gcode.rs274ngcv3.ui.workspace.io;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;

@@ -26,6 +26,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
 import org.goko.core.execution.monitor.uiprovider.ExecutionQueueContainerUiProvider;
@@ -49,7 +50,7 @@ import org.goko.core.workspace.service.IWorkspaceUIService;
  * @author PsyKo
  *
  */
-public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGokoService, IGCodeProviderRepositoryListener {
+public class ExecutionServiceImpl extends AbstractGokoService implements IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGokoService, IGCodeProviderRepositoryListener {
 	/** Service ID */
 	public static final String SERVICE_ID = "org.goko.core.execution.monitor.service.GCodeExecutionMonitorServiceImpl";
 	/** LOG */
@@ -91,20 +92,17 @@ public class ExecutionServiceImpl implements IExecutionService<ExecutionTokenSta
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		LOG.info("Starting "+getServiceId());
+	public void startService() throws GkException {		
 		// FIXME : a sortir de ce service pour le mettre dans un service UI ? Nouveau projet ?
 		workspaceUiService.addProjectContainerUiProvider(new ExecutionQueueContainerUiProvider(this));
 		gcodeRepository.addListener(this);
-		LOG.info("Successfully started "+getServiceId());
 
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
-		LOG.info("Stopping  "+getServiceId());
+	public void stopService() throws GkException {
 	}
 
 	/** (inheritDoc)

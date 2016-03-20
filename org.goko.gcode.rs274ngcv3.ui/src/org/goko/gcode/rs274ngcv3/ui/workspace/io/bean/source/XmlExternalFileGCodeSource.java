@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.DerivedType;
@@ -11,7 +11,7 @@ import org.simpleframework.xml.DerivedType;
  * @date 13 déc. 2015
  */
 @DerivedType(parent=XmlGCodeProviderSource.class, name="source:file")
-public class XmlFileGCodeSource extends XmlGCodeProviderSource{
+public class XmlExternalFileGCodeSource extends XmlGCodeProviderSource{
 	/** Paht of the file */
 	@Attribute
 	private String path;

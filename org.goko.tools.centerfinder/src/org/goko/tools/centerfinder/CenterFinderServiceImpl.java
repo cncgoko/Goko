@@ -32,6 +32,7 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
+import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.math.Segment;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.centerfinder.bean.CircleCenterFinderResult;
@@ -40,7 +41,7 @@ import org.goko.tools.viewer.jogl.utils.render.basic.PointRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.measurement.DiameterRenderer;
 
 
-public class CenterFinderServiceImpl implements ICenterFinderService{
+public class CenterFinderServiceImpl extends AbstractGokoService implements ICenterFinderService{
 	private static final String SERVICE_ID = "org.goko.tools.centerfinder";
 	private static final Color4f POINT_COLOR = new Color4f(1f,0.82f,0.16f,1f);
 	private static final Color4f CENTER_COLOR = new Color4f(0f,0.47f,0.62f,1f);
@@ -70,7 +71,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
+	public void startService() throws GkException {
 
 	}
 
@@ -78,7 +79,7 @@ public class CenterFinderServiceImpl implements ICenterFinderService{
 	 * @see org.goko.core.common.service.IGokoService#stop()
 	 */
 	@Override
-	public void stop() throws GkException {
+	public void stopService() throws GkException {
 
 	}
 

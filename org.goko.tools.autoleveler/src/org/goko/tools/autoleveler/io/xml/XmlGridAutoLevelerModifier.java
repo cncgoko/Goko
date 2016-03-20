@@ -4,7 +4,7 @@
 package org.goko.tools.autoleveler.io.xml;
 
 import org.goko.core.common.io.xml.quantity.XmlLength;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.DerivedType;
 import org.simpleframework.xml.Element;

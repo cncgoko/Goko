@@ -6,7 +6,7 @@ package org.goko.core.workspace.service;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.workspace.io.SaveContext;
+import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.io.XmlProjectContainer;
 
 /**
@@ -23,7 +23,7 @@ public interface IProjectSaveParticipant<T> {
 	 * @return the list of nodes that need to be saved
 	 * @throws GkException GkException
 	 */
-    List<XmlProjectContainer> save(SaveContext context) throws GkException;
+    List<XmlProjectContainer> save(IProjectLocation output) throws GkException;
 
     /**
      * Tells this participant to rollback its changes because the save of th eproject failed

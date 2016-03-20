@@ -1,8 +1,8 @@
-package org.goko.gcode.rs274ngcv3.ui.workspace.io;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean;
 
 import java.util.ArrayList;
 
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProviderSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlGCodeProviderSource;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;

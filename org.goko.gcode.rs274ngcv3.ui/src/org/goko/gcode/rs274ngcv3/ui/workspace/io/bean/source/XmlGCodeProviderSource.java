@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source;
 
 /**
  * @author PsyKo

@@ -39,7 +39,6 @@
   <handlers xmi:id="_EaS_EMhwEeWpu_gVhK3ZQg" elementId="goko.handler.0" contributionURI="bundleclass://Goko/goko.handlers.OnlineHelpHandler" command="_Cc_k4MhwEeWpu_gVhK3ZQg"/>
   <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" bindingContext="_wyBcodwYEeKC274TynxXSA">
     <bindings xmi:id="_wyCDsdwYEeKC274TynxXSA" keySequence="M1+Q" command="_wyBcqtwYEeKC274TynxXSA"/>
-    <bindings xmi:id="_wyCDtNwYEeKC274TynxXSA" keySequence="M1+O" command="_wyCDstwYEeKC274TynxXSA"/>
     <bindings xmi:id="_9fdVsDqaEeWfb7Pq7VqslQ" elementId="goko.keybinding.0" keySequence="M1+P" command="_i52IoBAdEeOTXNaDwRiLUA"/>
   </bindingTables>
   <rootContext xmi:id="_wyBcodwYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">

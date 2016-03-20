@@ -1,7 +1,7 @@
-package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean;
+package org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier;
 
 import org.goko.core.common.io.xml.quantity.XmlLength;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.DerivedType;
 
