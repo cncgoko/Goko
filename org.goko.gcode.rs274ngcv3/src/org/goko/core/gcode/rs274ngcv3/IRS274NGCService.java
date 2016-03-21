@@ -2,6 +2,7 @@ package org.goko.core.gcode.rs274ngcv3;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.GCodeLine;
@@ -22,6 +23,8 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 
 	IGCodeProvider parse(String inputString) throws GkException;
 
+	void reload(Integer idGCodeProvider, IProgressMonitor monitor)throws GkException;
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#getInstructions(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IGCodeProvider)
 	 */

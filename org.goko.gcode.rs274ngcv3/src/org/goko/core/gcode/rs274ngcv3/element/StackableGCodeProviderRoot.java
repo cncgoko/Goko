@@ -130,4 +130,13 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 	public IGCodeProviderSource getSource() {
 		return parent.getSource();
 	}
+
+	/**
+	 * @param parent the parent to set
+	 */
+	public void setParent(IGCodeProvider parent) {
+		this.parent = parent;
+	}
+	
+	
 }

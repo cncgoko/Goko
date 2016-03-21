@@ -48,7 +48,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p6ltkKS2EeWtZ4gPa6z3WA" featurename="children" parentElementId="org.goko.application.menu.file" positionInList="before:org.goko.application.menu.file.quitseparator">
     <elements xsi:type="menu:Menu" xmi:id="_MtuEUOnOEeWTGrnu4rwRUg" elementId="org.goko.application.menu.file.open" label="Open" iconURI="platform:/plugin/org.goko.core/icons/folder-horizontal-open.png"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_sLIz4KS2EeWtZ4gPa6z3WA" elementId="org.goko.core.handledmenuitem.save" label="Save" iconURI="platform:/plugin/org.goko.core/icons/disk-black.png"/>
+    <elements xsi:type="menu:Menu" xmi:id="_nSGisO9EEeW9iIV7y2teoQ" elementId="org.goko.application.menu.file.save" label="Save" iconURI="platform:/plugin/org.goko.core/icons/disk-black.png"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_unwnUKS2EeWtZ4gPa6z3WA" elementId="org.goko.core.handledmenuitem.newproject" label="New project" iconURI="platform:/plugin/org.goko.core/icons/document.png" command="_nQ6PMKI9EeWFq9L9la3C_w"/>
   </fragments>
 </fragment:ModelFragments>

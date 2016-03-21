@@ -36,7 +36,6 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
-import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -51,8 +50,7 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 	private ByteCommandBuffer incomingBuffer;
 	/** The connection service */
 	private IConnectionService connectionService;
-	/** Executor used by grbl*/
-	private IExecutor grblExecutor;
+	
 	/**
 	 * Constructor
 	 */
@@ -123,13 +121,17 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 			}else if(StringUtils.defaultString(trimmedData).matches("\\$[0-9]*=.*")){
 				grbl.handleConfigurationReading(trimmedData);
 
-			/* Received an offset position report */
-//			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G5|G28|G30|G92).*\\]")){
-			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G5).*\\]")){
+			/* Received a work position report */
+			}else if(StringUtils.defaultString(trimmedData).matches("\\[G5.*\\]")){
 				Tuple6b targetPoint = new Tuple6b().setNull();
 				String offsetName = parseCoordinateSystem(trimmedData, targetPoint);
 				grbl.setOffsetCoordinate(offsetName, targetPoint);
-
+				
+			/* Received an offset position report */
+			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G92|G28|G30) .*\\]")){	
+//				Tuple6b targetPoint = new Tuple6b().setNull();
+//				String g92Offset = parseCoordinateSystem(trimmedData, targetPoint);
+				// TODO Handle G92
 			/* Parser state report */
 			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G0|G1|G2|G3).*\\]")){
 				grbl.receiveParserState(StringUtils.substringBetween(trimmedData, "[","]"));

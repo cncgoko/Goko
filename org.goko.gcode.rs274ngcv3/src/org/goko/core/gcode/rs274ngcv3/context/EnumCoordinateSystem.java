@@ -58,6 +58,21 @@ public enum EnumCoordinateSystem implements ICoordinateSystem{
 		}
 		throw new GkTechnicalException("No EnumCoordinateSystem for int value ["+intValue+"]");
 	}
+	
+	/**
+	 * Returns the enum for the given code 
+	 * @param code the code  
+	 * @return EnumCoordinateSystem
+	 * @throws GkTechnicalException GkTechnicalException
+	 */
+	public static EnumCoordinateSystem getEnum(String code) throws GkTechnicalException{
+		for (EnumCoordinateSystem enumCS : values()) {
+			if(StringUtils.equalsIgnoreCase(enumCS.getCode(), code)){
+				return enumCS;
+			}
+		}
+		throw new GkTechnicalException("No EnumCoordinateSystem for code ["+code+"]");
+	}
 
 	/**
 	 * @return the intValue

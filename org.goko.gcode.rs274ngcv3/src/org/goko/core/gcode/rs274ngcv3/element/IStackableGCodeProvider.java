@@ -16,4 +16,5 @@ public interface IStackableGCodeProvider extends IGCodeProvider{
 	Integer getIdModifier();
 
 	Date getModificationDate();
+	
 }

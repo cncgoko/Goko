@@ -102,13 +102,6 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 		}
 	}
 
-	/**
-	 * Remove data in this provider
-	 */
-	private void clear(){
-		this.cacheLines.removeAll();
-		this.linesSequence.clear();
-	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#getId()
 	 */
@@ -200,6 +193,5 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 			return false;
 		return true;
 	}
-	
 	
 }

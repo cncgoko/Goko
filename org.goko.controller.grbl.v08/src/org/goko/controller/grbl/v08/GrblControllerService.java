@@ -704,7 +704,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	protected void setOffsetCoordinate(String offsetIdentifier, Tuple6b value) throws GkException{
-		getGrblState().setOffset(EnumCoordinateSystem.valueOf(offsetIdentifier), value);
+		getGrblState().setOffset(EnumCoordinateSystem.getEnum(offsetIdentifier), value);
 		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
 	}
 	/** (inheritDoc)

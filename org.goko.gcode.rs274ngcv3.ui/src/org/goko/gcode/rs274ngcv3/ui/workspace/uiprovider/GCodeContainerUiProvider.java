@@ -28,6 +28,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ReloadGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcoderepository.AddAllGCodeInQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.DeleteModifierAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDisableAction;
@@ -192,6 +193,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 
         contextMenu.add(new Separator());
         contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
+        contextMenu.add(new ReloadGCodeProviderAction(rs274Service, content.getId()));
         contextMenu.add(new Separator());
         contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));
 	}

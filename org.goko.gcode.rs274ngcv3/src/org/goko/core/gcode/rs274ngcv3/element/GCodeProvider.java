@@ -63,6 +63,15 @@ public class GCodeProvider implements IGCodeProvider {
 	}
 
 	/**
+	 * Clear all the data in this provider
+	 * @throws GkException GkException
+	 */
+	public void clear() throws GkException{		
+		cacheLines.removeAll();
+		linesSequence.clear();
+	}
+	
+	/**
 	 * @return the id
 	 */
 	@Override

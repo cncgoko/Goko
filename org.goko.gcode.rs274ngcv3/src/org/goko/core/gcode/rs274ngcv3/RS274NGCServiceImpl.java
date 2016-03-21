@@ -65,10 +65,12 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	private List<IModifierListener> modifierListenerList;
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
+	/** The cache of root providers */
+	private CacheById<StackableGCodeProviderRoot> cacheRootProviders;
 	/** The cache of providers */
-	private CacheById<IStackableGCodeProvider> cacheProviders;
+	private CacheById<IStackableGCodeProvider> cacheStackedProviders;
 	/** The cache of providers */
-	private CacheByCode<IStackableGCodeProvider> cacheProvidersByCode;
+	private CacheByCode<IStackableGCodeProvider> cacheStackedProvidersByCode;
 	/** The cache of modifiers */
 	private CacheById<IModifier<GCodeProvider>> cacheModifiers;
 	/** Boolean allowing to enable/disable gcode update notification */
@@ -79,8 +81,9 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		initializeModalGroups();
 		this.listenerList 	= new ArrayList<IGCodeProviderRepositoryListener>();
 		this.modifierListenerList = new ArrayList<IModifierListener>();
-		this.cacheProviders = new CacheById<IStackableGCodeProvider>(new SequentialIdGenerator());
-		this.cacheProvidersByCode = new UniqueCacheByCode<IStackableGCodeProvider>();
+		this.cacheRootProviders = new CacheById<StackableGCodeProviderRoot>(new SequentialIdGenerator());
+		this.cacheStackedProviders = new CacheById<IStackableGCodeProvider>();
+		this.cacheStackedProvidersByCode = new UniqueCacheByCode<IStackableGCodeProvider>();
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
 		this.gcodeProviderUdateNotificationEnabled = true;
 	}
@@ -108,7 +111,22 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	public void stopService() throws GkException {
 		
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#reload(java.lang.Integer)
+	 */
+	@Override	
+	public void reload(Integer idGCodeProvider, IProgressMonitor monitor)throws GkException{
+		StackableGCodeProviderRoot root = cacheRootProviders.get(idGCodeProvider);
+		// Create the new target provider
+		GCodeProvider provider = new GCodeProvider();		
+		provider.setId(root.getId());
+		provider.setSource(root.getSource());
+		
+		parseProvider(provider.getSource(), provider, monitor);
+		root.setParent(provider);
+		notifyGCodeProviderUpdate(getGCodeProvider(idGCodeProvider));
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#parse(java.io.InputStream)
@@ -116,6 +134,12 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	@Override
 	public IGCodeProvider parse(IGCodeProviderSource source, IProgressMonitor monitor) throws GkException {
 		GCodeProvider provider = new GCodeProvider();
+		parseProvider(source, provider, monitor);
+		return provider;
+	}
+
+	public void parseProvider(IGCodeProviderSource source, GCodeProvider provider, IProgressMonitor monitor) throws GkException {		
+		provider.clear();
 		provider.setSource(source);		
 		GCodeLexer lexer = new GCodeLexer();
 		InputStream stream = source.openInputStream();
@@ -151,9 +175,8 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		if(subMonitor != null){
 			subMonitor.done();
 		}
-		return provider;
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#parse(java.lang.String)
 	 */
@@ -463,7 +486,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
-		return cacheProviders.get(id);
+		return cacheStackedProviders.get(id);
 	}
 
 	/** (inheritDoc)
@@ -471,7 +494,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public IGCodeProvider findGCodeProvider(Integer id) throws GkException {		
-		return cacheProviders.find(id);
+		return cacheStackedProviders.find(id);
 	}
 	
 	/** (inheritDoc)
@@ -479,7 +502,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public IGCodeProvider getGCodeProvider(String code) throws GkException {		
-		return cacheProvidersByCode.get(code);
+		return cacheStackedProvidersByCode.get(code);
 	}
 	
 	/** (inheritDoc)
@@ -487,7 +510,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public List<IGCodeProvider> getGCodeProvider() throws GkException {
-		return new ArrayList<IGCodeProvider>(cacheProviders.get());
+		return new ArrayList<IGCodeProvider>(cacheStackedProviders.get());
 	}
 
 	/** (inheritDoc)
@@ -496,9 +519,10 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	@Override
 	public void addGCodeProvider(IGCodeProvider provider) throws GkException {
 		LOG.info("Adding GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
-		StackableGCodeProviderRoot wrappedProvider = new StackableGCodeProviderRoot(provider);
-		cacheProviders.add(wrappedProvider);
-		cacheProvidersByCode.add(wrappedProvider);
+		StackableGCodeProviderRoot wrappedProvider = new StackableGCodeProviderRoot(provider);		
+		cacheRootProviders.add(wrappedProvider);
+		cacheStackedProviders.add(wrappedProvider);
+		cacheStackedProvidersByCode.add(wrappedProvider);
 		provider.setId(wrappedProvider.getId());	
 		provider.getSource().bind();
 		notifyGCodeProviderCreate(wrappedProvider);
@@ -509,14 +533,14 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public void deleteGCodeProvider(Integer id) throws GkException {
-		IGCodeProvider provider = cacheProviders.get(id);
+		IGCodeProvider provider = cacheStackedProviders.get(id);
 		LOG.info("Deleting GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
 		// Remove attached modifiers 
 		performDeleteByIdGCodeProvider(id);
 		// Update the provider once it's modified
-		provider = cacheProviders.get(id);
-		cacheProviders.remove(id);
-		cacheProvidersByCode.remove(provider.getCode()); 
+		provider = cacheStackedProviders.get(id);
+		cacheStackedProviders.remove(id);
+		cacheStackedProvidersByCode.remove(provider.getCode()); 
 		provider.getSource().delete();		
 		notifyGCodeProviderDelete(provider);
 	}
@@ -526,7 +550,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public void lockGCodeProvider(Integer idGcodeProvider) throws GkException {
-		IGCodeProvider provider = cacheProviders.get(idGcodeProvider);
+		IGCodeProvider provider = cacheStackedProviders.get(idGcodeProvider);
 		if(!provider.isLocked()){
 			provider.setLocked(true);
 			notifyGCodeProviderLocked(provider);
@@ -551,7 +575,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	boolean isGCodeProviderUnlocked(Integer idGcodeProvider) throws GkException {
-		return cacheProviders.get(idGcodeProvider).isLocked();
+		return cacheStackedProviders.get(idGcodeProvider).isLocked();
 	}
 
 	/** (inheritDoc)
@@ -559,7 +583,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public void unlockGCodeProvider(Integer idGcodeProvider) throws GkException {
-		IGCodeProvider provider = cacheProviders.get(idGcodeProvider);
+		IGCodeProvider provider = cacheStackedProviders.get(idGcodeProvider);
 		if(provider.isLocked()){
 			provider.setLocked(false);
 			notifyGCodeProviderUnlocked(provider);
@@ -581,11 +605,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			// FIXME: found how to remove this dirty hack
 			((AbstractModifier) modifier).setRS274NGCService(this);
 		}
-		IStackableGCodeProvider baseProvider = this.cacheProviders.get(modifier.getIdGCodeProvider());
+		IStackableGCodeProvider baseProvider = this.cacheStackedProviders.get(modifier.getIdGCodeProvider());
 		StackableGCodeProviderModifier wrappedProvider = new StackableGCodeProviderModifier(baseProvider, modifier);
 		wrappedProvider.update();
-		this.cacheProviders.remove(baseProvider.getId());
-		this.cacheProviders.add(wrappedProvider);
+		this.cacheStackedProviders.remove(baseProvider.getId());
+		this.cacheStackedProviders.add(wrappedProvider);
 		notifyModifierCreate(modifier);
 		notifyGCodeProviderUpdate(wrappedProvider);		
 	}
@@ -603,7 +627,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		this.cacheModifiers.remove(modifier.getId());
 		modifier.setModificationDate(new Date());
 		this.cacheModifiers.add(modifier);
-		IStackableGCodeProvider provider = this.cacheProviders.get(modifier.getIdGCodeProvider());
+		IStackableGCodeProvider provider = this.cacheStackedProviders.get(modifier.getIdGCodeProvider());
 		provider.update();
 		notifyModifierUpdate(modifier);
 		notifyGCodeProviderUpdate(provider);		
@@ -628,7 +652,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		this.cacheModifiers.remove(idModifier);
 
 		// Let's find the stacked provider with this modifier
-		IStackableGCodeProvider gcode = cacheProviders.get(modifier.getIdGCodeProvider());
+		IStackableGCodeProvider gcode = cacheStackedProviders.get(modifier.getIdGCodeProvider());
 		IStackableGCodeProvider next = null;
 		IStackableGCodeProvider previous = null;
 
@@ -644,14 +668,14 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 				next.setParent(previous);
 			}else{
 				IGCodeProvider tmpProvider = getGCodeProvider(modifier.getIdGCodeProvider());
-				cacheProviders.remove(tmpProvider.getId());
-				cacheProvidersByCode.remove(tmpProvider.getCode());				
-				cacheProviders.add(previous);
-				cacheProvidersByCode.add(previous);
+				cacheStackedProviders.remove(tmpProvider.getId());
+				cacheStackedProvidersByCode.remove(tmpProvider.getCode());				
+				cacheStackedProviders.add(previous);
+				cacheStackedProvidersByCode.add(previous);
 			}
 		//	gcode.setParent(null);
 		}
-		IStackableGCodeProvider targetProvider = cacheProviders.get(modifier.getIdGCodeProvider());
+		IStackableGCodeProvider targetProvider = cacheStackedProviders.get(modifier.getIdGCodeProvider());
 		notifyModifierDelete(modifier);
 		notifyGCodeProviderUpdate(targetProvider);		
 	}
@@ -862,8 +886,8 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			deleteGCodeProvider(gcodeProvider.getId());
 		}
 		cacheModifiers.removeAll();		
-		cacheProviders.removeAll();
-		cacheProvidersByCode.removeAll();
+		cacheStackedProviders.removeAll();
+		cacheStackedProvidersByCode.removeAll();
 	}
 
 	/**
