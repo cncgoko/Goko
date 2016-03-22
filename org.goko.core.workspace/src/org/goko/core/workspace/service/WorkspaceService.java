@@ -254,8 +254,6 @@ public class WorkspaceService extends AbstractGokoService implements IWorkspaceS
 	 */
 	@Override
 	public void createNewProject() throws GkException {
-		project = new GkProject();
-		project.setLocation( new ProjectLocation() );
 		
 		if(CollectionUtils.isNotEmpty(getLoadParticipants())){
 			// Clear stored data first
@@ -264,6 +262,9 @@ public class WorkspaceService extends AbstractGokoService implements IWorkspaceS
 			}
 		}
 		
+		project = new GkProject();
+		project.setLocation( new ProjectLocation() );
+				
 		setProjectDirty(false);
 		// Notify listeners
 		notifyProjectAfterLoad();
