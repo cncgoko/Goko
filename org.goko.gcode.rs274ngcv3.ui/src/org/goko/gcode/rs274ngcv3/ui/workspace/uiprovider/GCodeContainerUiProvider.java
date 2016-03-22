@@ -52,7 +52,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 * @param type
 	 */
 	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService, IExecutionService<?, ?> executionService) {
-		super("TEST");
+		super("GCodeContainerUiProvider");
 		this.rs274Service = rs274Service;
 		this.rs274WorkspaceService = rs274WorkspaceService;
 		this.labelProvider = new GCodeContainerLabelProvider();
