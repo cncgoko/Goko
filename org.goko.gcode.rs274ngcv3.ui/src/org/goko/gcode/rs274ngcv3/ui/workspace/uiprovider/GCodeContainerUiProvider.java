@@ -24,9 +24,11 @@ import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
+import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ExternalEditAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ReloadGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcoderepository.AddAllGCodeInQueueAction;
@@ -44,6 +46,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	/** GCode service */
 	private IRS274NGCService rs274Service;
 	private IRS274WorkspaceService rs274WorkspaceService;
+	private IWorkspaceService workspaceService;
 	private IExecutionService<?, ?> executionService;
 	private IStyledLabelProvider labelProvider;
 
@@ -51,12 +54,13 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 * @param rs274Service
 	 * @param type
 	 */
-	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService, IExecutionService<?, ?> executionService) {
+	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService, IExecutionService<?, ?> executionService, IWorkspaceService workspaceService) {
 		super("GCodeContainerUiProvider");
 		this.rs274Service = rs274Service;
 		this.rs274WorkspaceService = rs274WorkspaceService;
 		this.labelProvider = new GCodeContainerLabelProvider();
 		this.executionService = executionService;
+		this.workspaceService = workspaceService;
 	}
 
 	/** (inheritDoc)
@@ -189,11 +193,12 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {
 		// Submenu for a specific user
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
-        contextMenu.add(subMenu);
-
-        contextMenu.add(new Separator());
-        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
+        
         contextMenu.add(new ReloadGCodeProviderAction(rs274Service, content.getId()));
+        contextMenu.add(new ExternalEditAction(rs274Service, workspaceService, content.getId()));
+        contextMenu.add(subMenu);        
+        contextMenu.add(new Separator());
+        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));        
         contextMenu.add(new Separator());
         contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));
 	}

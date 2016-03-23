@@ -41,6 +41,7 @@ Export-Package: org.goko.core.workspace,
  org.goko.core.workspace.action,
  org.goko.core.workspace.bean,
  org.goko.core.workspace.internal,
+ org.goko.core.workspace.io,
  org.goko.core.workspace.io.xml,
  org.goko.core.workspace.service,
  org.goko.core.workspace.tree

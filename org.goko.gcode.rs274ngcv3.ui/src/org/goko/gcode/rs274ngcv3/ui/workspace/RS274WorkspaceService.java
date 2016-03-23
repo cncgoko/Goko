@@ -69,7 +69,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	@Override
 	public void startService() throws GkException {		
 		// Create the RS274 project container
-		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService));
+		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService, workspaceService));
 		getGcodeService().addListener(this);		
 		getGcodeService().addModifierListener(this);		
 		initModifierUiProvider();		
