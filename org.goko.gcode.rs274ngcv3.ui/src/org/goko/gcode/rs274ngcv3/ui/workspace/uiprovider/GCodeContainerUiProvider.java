@@ -194,11 +194,12 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		// Submenu for a specific user
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
         
+
+        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
+        contextMenu.add(new Separator());
         contextMenu.add(new ReloadGCodeProviderAction(rs274Service, content.getId()));
         contextMenu.add(new ExternalEditAction(rs274Service, workspaceService, content.getId()));
-        contextMenu.add(subMenu);        
-        contextMenu.add(new Separator());
-        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));        
+        contextMenu.add(subMenu);       
         contextMenu.add(new Separator());
         contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));
 	}
