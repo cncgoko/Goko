@@ -14,10 +14,12 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
+import org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
@@ -44,6 +46,8 @@ public class GokoLifeCycleManager {
 	 */
 	@PostContextCreate
 	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context) throws GkException {
+		IWindowCloseHandler closeHandler = new ExitHandlerManager();
+		context.set(IWindowCloseHandler.class, closeHandler);
 		/* ******************************************** */
 		/*            Setting event advisor             */
 		/* ******************************************** */
@@ -75,6 +79,7 @@ public class GokoLifeCycleManager {
 				ViewMenuCreationAddon menuCreator = ContextInjectionFactory.make(ViewMenuCreationAddon.class, context);
 				menuCreator.handleEvent(event);
 				eventBroker.unsubscribe(this);
+				
 			}
 		});
 		
@@ -97,4 +102,28 @@ public class GokoLifeCycleManager {
 			Dialog.setDefaultImage(shell.getImage());
 		}
 	}
+}
+
+class ExitHandlerManager implements IWindowCloseHandler{
+	@Inject
+	@Optional
+	private MWindow window;
+
+	/** (inheritDoc)
+	 * @see org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler#close(org.eclipse.e4.ui.model.application.ui.basic.MWindow)
+	 */
+	@Override
+	public boolean close(MWindow window) {
+		System.err.println("ta race");
+		return true;
+	}
+
+	/**
+	 * 
+	 */
+	public void register() {
+		System.err.println("register");		
+		
+	}
+
 }
