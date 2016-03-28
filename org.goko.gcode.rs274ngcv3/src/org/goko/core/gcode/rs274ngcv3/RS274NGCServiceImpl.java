@@ -122,6 +122,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		GCodeProvider provider = new GCodeProvider();		
 		provider.setId(root.getId());
 		provider.setSource(root.getSource());
+		provider.setCode(root.getCode());
 		
 		parseProvider(provider.getSource(), provider, monitor);
 		root.setParent(provider);
