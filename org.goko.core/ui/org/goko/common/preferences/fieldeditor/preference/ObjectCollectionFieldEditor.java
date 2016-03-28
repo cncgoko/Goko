@@ -114,16 +114,55 @@ public class ObjectCollectionFieldEditor extends PreferenceFieldEditor<Composite
 		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		removeButton.setText("Remove");		
 		
-		Button btnNewButton = new Button(composite, SWT.NONE);
-		btnNewButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));		
-		btnNewButton.setBounds(0, 0, 75, 25);
-		btnNewButton.setText("Up");
+		Button btnMoveUp = new Button(composite, SWT.NONE);
+		btnMoveUp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));		
+		btnMoveUp.setBounds(0, 0, 75, 25);
+		btnMoveUp.setText("Up");
+		
+		btnMoveUp.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				ArrayList<CollectionObject> localSelectedObjects = new ArrayList<CollectionObject>(selectedObjects);
+				IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
+				
+				if(!selection.isEmpty()){
+					CollectionObject selected = (CollectionObject) selection.getFirstElement();
+					int previousIndex = localSelectedObjects.indexOf(selected);
+					if(previousIndex > 0){
+						localSelectedObjects.remove(selected);
+						localSelectedObjects.add(previousIndex - 1, selected);					
+						ObjectCollectionFieldEditor.this.setSelectedObjects(localSelectedObjects);
+						listViewer.setSelection(selection);
+					}
+				}
+				updateButton();
+			}
+		});
 		
 		Button btnMoveDown = new Button(composite, SWT.NONE);
 		btnMoveDown.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));		
 		btnMoveDown.setBounds(0, 0, 75, 25);
 		btnMoveDown.setText("Down");
-		
+		btnMoveDown.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				ArrayList<CollectionObject> localSelectedObjects = new ArrayList<CollectionObject>(selectedObjects);
+				IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
+				
+				if(!selection.isEmpty()){
+					CollectionObject selected = (CollectionObject) selection.getFirstElement();
+					int previousIndex = localSelectedObjects.indexOf(selected);
+					
+					if(previousIndex < CollectionUtils.size(localSelectedObjects) - 1){
+						localSelectedObjects.remove(selected);
+						localSelectedObjects.add(previousIndex + 1, selected);					
+						ObjectCollectionFieldEditor.this.setSelectedObjects(localSelectedObjects);
+						listViewer.setSelection(selection);
+					}
+				}
+				updateButton();
+			}
+		});
 		updateButton();
 	}
 
