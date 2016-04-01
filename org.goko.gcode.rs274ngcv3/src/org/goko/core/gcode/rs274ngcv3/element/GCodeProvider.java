@@ -10,6 +10,7 @@ import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
+import org.goko.core.gcode.rs274ngcv3.element.source.DefaultGCodeProviderSource;
 
 
 public class GCodeProvider implements IGCodeProvider {
@@ -33,6 +34,7 @@ public class GCodeProvider implements IGCodeProvider {
 		this.cacheLines 	= new CacheById<GCodeLine>(new SequentialIdGenerator());
 		this.linesSequence 	= new ArrayList<Integer>();
 		this.modificationDate = new Date();
+		this.source = new DefaultGCodeProviderSource();		
 	}
 
 	/** (inheritDoc)

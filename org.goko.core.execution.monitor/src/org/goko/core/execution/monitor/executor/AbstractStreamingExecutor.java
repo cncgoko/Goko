@@ -102,7 +102,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 */
 	protected final void notifyTokenComplete(){
 		tokenCompleteLock.lock();
-		try{
+		try{			
 			setTokenComplete(true);
 			tokenCompleteCondition.signal();
 		}finally{

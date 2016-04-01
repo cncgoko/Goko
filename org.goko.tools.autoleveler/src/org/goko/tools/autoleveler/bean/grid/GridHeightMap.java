@@ -35,6 +35,8 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	private Length probeLowerHeight;
 	/** The probe feed rate */
 	private Speed probeFeedrate;
+	/** The move feed rate */
+	private Speed moveFeedrate;
 	/** Boolean indicating that the map has been probed */
 	private boolean isProbed;
 		
@@ -445,6 +447,20 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	 */
 	public void setProbed(boolean isProbed) {
 		this.isProbed = isProbed;
+	}
+
+	/**
+	 * @return the moveFeedrate
+	 */
+	public Speed getMoveFeedrate() {
+		return moveFeedrate;
+	}
+
+	/**
+	 * @param moveFeedrate the moveFeedrate to set
+	 */
+	public void setMoveFeedrate(Speed moveFeedrate) {
+		this.moveFeedrate = moveFeedrate;
 	}
 	
 	

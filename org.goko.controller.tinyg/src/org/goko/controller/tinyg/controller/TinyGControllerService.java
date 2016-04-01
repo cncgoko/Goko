@@ -270,6 +270,32 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			|| MachineState.PROGRAM_END.equals(getState())
 			|| MachineState.PROGRAM_STOP.equals(getState());
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#checkReadyToProbe()
+	 */
+	@Override
+	public void checkReadyToProbe() throws GkException {
+		if(!connectionService.isConnected()){
+			throw new GkFunctionalException("TNG-008");
+		}
+		if(!isReadyForFileStreaming()){
+			throw new GkFunctionalException("TNG-003");
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#isReadyToProbe()
+	 */
+	@Override
+	public boolean isReadyToProbe() {		
+		try {
+			return connectionService.isConnected() && isReadyForFileStreaming();
+		} catch (GkException e) {
+			LOG.error(e);
+			return false;
+		}
+	}
 	/**
 	 * Refresh the TinyG configuration by sending all the Groups as empty groups
 	 * Update is done by event handling
@@ -497,7 +523,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	public void setState(MachineState state) throws GkException {
-		tinygState.setState(state);
+		tinygState.setState(state);		
 	}
 
 	public boolean isSpindleOn() throws GkException{
@@ -764,7 +790,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			// Actual probe command
 			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getProbeFeedrate()) );
 			instrProvider.addInstruction( new StraightProbeInstruction(null, null, probeRequest.getProbeEnd(), null, null, null) );
-		}
+			// Move to clearance coordinate 
+			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
+			instrProvider.addInstruction( new StraightFeedInstruction(null, null, probeRequest.getClearance(), null, null, null) );
+		}		
 		return gcodeService.getGCodeProvider(gcodeContext, instrProvider);
 	}
 	
@@ -776,14 +805,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			
 			ProbeCallable callable = lstProbeCallable.remove(0);
 			callable.setProbeResult(probeResult);
-		}
-		
-		if(CollectionUtils.isEmpty(lstProbeCallable)){
-			if(probeGCodeProvider != null){
-				gcodeService.deleteGCodeProvider(probeGCodeProvider.getId());
-				probeGCodeProvider = null;
-			}
-		}
+		}		
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#moveToAbsolutePosition(org.goko.core.math.Tuple6b)

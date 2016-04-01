@@ -18,6 +18,7 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	protected static final String Z_PROBE_START		 = "probeStartHeight";
 	protected static final String Z_PROBE_LOWER		 = "probeLowerHeight";
 	protected static final String PROBE_FEEDRATE	 = "probeFeedrate";
+	protected static final String MOVE_FEEDRATE	 	 = "moveFeedrate";
 	protected static final String MODIFICATION_ALLOWED	 = "modificationAllowed";
 
 	private Length startCoordinateX;
@@ -31,6 +32,7 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	private Length probeStartHeight;
 	private Length probeLowerHeight;
 	private Speed probeFeedrate;
+	private Speed moveFeedrate;
 	private boolean modificationAllowed;
 	/**
 	 * @return the startCoordinateX
@@ -176,5 +178,16 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	public void setModificationAllowed(boolean modificationAllowed) {
 		firePropertyChange(MODIFICATION_ALLOWED, this.modificationAllowed, this.modificationAllowed = modificationAllowed);
 	}
-
+	/**
+	 * @return the moveFeedrate
+	 */
+	public Speed getMoveFeedrate() {
+		return moveFeedrate;
+	}
+	/**
+	 * @param moveFeedrate the moveFeedrate to set
+	 */
+	public void setMoveFeedrate(Speed moveFeedrate) {
+		firePropertyChange(MOVE_FEEDRATE, this.moveFeedrate, this.moveFeedrate = moveFeedrate);
+	}	
 }

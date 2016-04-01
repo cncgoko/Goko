@@ -57,6 +57,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 					setState(ExecutionState.ERROR);
 				}
 			}
+						
 			if(state == ExecutionState.STOPPED){
 				executionService.notifyQueueExecutionCanceled();
 			}else if(state == ExecutionState.ERROR){

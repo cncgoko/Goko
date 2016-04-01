@@ -19,6 +19,7 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 	@Inject
 	private IRS274NGCService rs274NGCService ;
 	private M modifier;
+	private boolean lockModifierUpdateOnPropertyChange;
 	
 	/**
 	 * Constructor
@@ -62,7 +63,8 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 	 * @throws GkException GkException
 	 */
 	public void performUpdateModifier() throws GkException{	
-		if(getDataModel().isDirty()){
+		if(getDataModel().isDirty()){			
+			getDataModel().setDirty(false);
 			Display.getDefault().asyncExec(new Runnable() {
 				
 				@Override
@@ -75,8 +77,7 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 						LOG.error(e);
 					}
 				}
-			});
-			getDataModel().setDirty(false);
+			});			
 		}
 	}
 	
@@ -86,7 +87,7 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		try {
-			if(getDataModel().isDirty()){
+			if(!isLockModifierUpdateOnPropertyChange() && getDataModel().isDirty()){
 				performUpdateModifier();
 			}
 		} catch (GkException e) {
@@ -107,6 +108,20 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 	 */
 	public void setModifier(M modifier) {
 		this.modifier = modifier;
+	}
+
+	/**
+	 * @return the lockModifierUpdateOnPropertyChange
+	 */
+	public boolean isLockModifierUpdateOnPropertyChange() {
+		return lockModifierUpdateOnPropertyChange;
+	}
+
+	/**
+	 * @param lockModifierUpdateOnPropertyChange the lockModifierUpdateOnPropertyChange to set
+	 */
+	public void setLockModifierUpdateOnPropertyChange(boolean lockModifierUpdateOnPropertyChange) {
+		this.lockModifierUpdateOnPropertyChange = lockModifierUpdateOnPropertyChange;
 	}
 
 }

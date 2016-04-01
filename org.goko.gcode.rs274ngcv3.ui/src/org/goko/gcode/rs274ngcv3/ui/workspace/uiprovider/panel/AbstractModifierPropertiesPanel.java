@@ -46,7 +46,9 @@ public class AbstractModifierPropertiesPanel<M extends IModifier<GCodeProvider>,
 	 */
 	@Override
 	public void initializeFromModifier() throws GkException {
-		getController().initializeFromModifier();
+		getController().setLockModifierUpdateOnPropertyChange(true);
+		getController().initializeFromModifier(); 
+		getController().setLockModifierUpdateOnPropertyChange(false);
 	}
 
 }

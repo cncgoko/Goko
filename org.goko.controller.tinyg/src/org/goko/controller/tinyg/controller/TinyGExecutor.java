@@ -35,7 +35,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	/** The underlying gcode service */
 	private IRS274NGCService rs274Service;
 	/** Required space in TinyG planner buffer to send a new command */
-	private int requiredBufferSpace;
+	private int requiredBufferSpace = 3;
 
 	/**
 	 * Constructor
@@ -76,7 +76,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	protected boolean isReadyForNextLine() throws GkException {
-		return pendingCommandCount.intValue() <= 0 && tinygService.getAvailableBuffer() >= requiredBufferSpace;
+		return pendingCommandCount.intValue() <= 5 && ( !tinygService.isPlannerBufferSpaceCheck() || tinygService.getAvailableBuffer() >= requiredBufferSpace);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @throws GkException GkException
 	 */
 	private void notifyTokenCompleteIfRequired() throws GkException {
-		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0){
+		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0){			
 			notifyTokenComplete();
 		}
 	}

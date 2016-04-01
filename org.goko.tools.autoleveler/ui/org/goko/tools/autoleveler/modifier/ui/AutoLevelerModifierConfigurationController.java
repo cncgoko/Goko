@@ -14,8 +14,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
-import org.goko.core.common.measure.quantity.Speed;
-import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeRequest;
@@ -61,6 +59,7 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 		getDataModel().setProbeStartHeight(getModifier().getHeightMap().getProbeStartHeight());
 		getDataModel().setProbeLowerHeight(getModifier().getHeightMap().getProbeLowerHeight());
 		getDataModel().setProbeFeedrate(getModifier().getHeightMap().getProbeFeedrate());
+		getDataModel().setMoveFeedrate(getModifier().getHeightMap().getMoveFeedrate());
 		getDataModel().setModificationAllowed(!getModifier().getHeightMap().isProbed());
 	}
 	
@@ -103,20 +102,23 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 		request.setProbeStart(getDataModel().getProbeStartHeight());
 		request.setProbeEnd(getDataModel().getProbeLowerHeight());
 		request.setProbeFeedrate(getDataModel().getProbeFeedrate());
-		request.setMotionFeedrate(Speed.valueOf(600, SpeedUnit.MILLIMETRE_PER_MINUTE));
+		request.setMotionFeedrate(getDataModel().getMoveFeedrate());
 		request.setProbeCoordinate(tuple6b);
 		return request;
 	}
 	
 	public void startMapProbing() throws GkException{
 		getModifier().getHeightMap().build();
+		probingService.checkReadyToProbe();
+		
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
 			
 			@Override
 			public void run() {
 				GridHeightMap map = getModifier().getHeightMap();
 				List<Tuple6b> mapPoints = map.getOffsets();
-				ArrayList<ProbeRequest> requests = new ArrayList<ProbeRequest>();
+				List<ProbeRequest> requests = new ArrayList<ProbeRequest>();
+				
 				for(int x = 0; x <= map.getxDivisionCount(); x++){
 					if(x%2==0){
 						for(int y = 0; y <= map.getyDivisionCount(); y++){
@@ -131,7 +133,7 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 				
 				try {
 					CompletionService<ProbeResult> result = probingService.probe(requests);
-					int i =0;
+					int i = 0;
 					while(i < mapPoints.size()){
 						Future<ProbeResult> futureProbeResult = result.take();
 						ProbeResult probeResult = futureProbeResult.get();
@@ -139,12 +141,14 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 							LOG.info("Probe result is null. Probably cancelled.");
 							continue;
 						}
+						int x = probeResult.getProbedPosition().getX().subtract(map.getStart().getX()).divide(map.getStepSizeX()).intValue();
+						int y = probeResult.getProbedPosition().getY().subtract(map.getStart().getY()).divide(map.getStepSizeY()).intValue();
 						if(probeResult.isProbed()){
 							LOG.info("Probed "+probeResult.getProbedPosition().getZ());
-							map.getOffsets().get(i).setZ(probeResult.getProbedPosition().getZ());
+							map.getPoint(x, y).setZ(probeResult.getProbedPosition().getZ());
 						}else{
 							LOG.info("Could not find the probed position within range");
-							mapPoints.get(i).setZ(Length.valueOf(BigDecimal.valueOf(Math.random()*5-2), LengthUnit.MILLIMETRE));
+							map.getPoint(x, y).setZ(Length.valueOf(BigDecimal.valueOf(Math.random()*5-2), LengthUnit.MILLIMETRE));
 						}
 						i++;
 					}

@@ -68,6 +68,7 @@ public class AutoLevelerModifierBuilder extends AbstractModifierUiProvider<GridA
 		defaultMap.setProbeFeedrate(Speed.valueOf(30, SpeedUnit.MILLIMETRE_PER_MINUTE));
 		defaultMap.setProbeStartHeight(Length.valueOf(1, LengthUnit.MILLIMETRE));
 		defaultMap.setProbeLowerHeight(Length.valueOf(-1, LengthUnit.MILLIMETRE));
+		defaultMap.setMoveFeedrate(Speed.valueOf(1000, SpeedUnit.MILLIMETRE_PER_MINUTE));
 		modifier.setRS274NGCService(rs274ngcService);
 		modifier.setHeightMap(defaultMap);
 		return modifier;

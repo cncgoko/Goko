@@ -274,7 +274,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	public GCodeProvider getGCodeProvider(GCodeContext context, InstructionProvider instructionProvider) throws GkException {
 		InstructionFactory factory = new InstructionFactory();
 		GCodeProvider provider = new GCodeProvider();
-
+		//provider.setSource(new InstructionProviderSource(instructionProvider));
 		List<InstructionSet> sets = instructionProvider.getInstructionSets();
 		for (InstructionSet instructionSet : sets) {
 			GCodeLine line = factory.getLine(context, instructionSet);

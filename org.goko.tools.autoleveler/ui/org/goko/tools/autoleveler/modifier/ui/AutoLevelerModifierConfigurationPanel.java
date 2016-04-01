@@ -201,7 +201,14 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		probeFeedrate.setWidthInChars(6);
 		probeFeedrate.setUnit(GokoPreference.getInstance().getSpeedUnit());
 		probeFeedrate.setLabel("Probe feedrate");
-
+		
+		UiQuantityFieldEditor<Speed> moveFeedrate = new UiSpeedFieldEditor(grpProbing, SWT.NONE);
+		moveFeedrate.setLabel("Move feedrate");
+		moveFeedrate.setPropertyName(AutoLevelerModifierConfigurationModel.MOVE_FEEDRATE);
+		moveFeedrate.setLabelWidthInChar(12);
+		moveFeedrate.setWidthInChars(6);
+		moveFeedrate.setUnit(GokoPreference.getInstance().getSpeedUnit());
+		
 		getController().addEnableBinding(xStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(yStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(xEndCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
@@ -213,6 +220,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		getController().addEnableBinding(zProbeStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(zProbeLowerCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(probeFeedrate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
+		getController().addEnableBinding(moveFeedrate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		
 		getController().addEnableBinding(btnStartProbing, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(btnMatchBounds, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
@@ -231,5 +239,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		getController().addFieldEditor(zProbeStartCoordinate);
 		getController().addFieldEditor(zProbeLowerCoordinate);
 		getController().addFieldEditor(probeFeedrate);
+		getController().addFieldEditor(moveFeedrate);
+
 	}
 }

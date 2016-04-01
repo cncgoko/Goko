@@ -11,8 +11,8 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
@@ -146,11 +146,11 @@ public class TinyGJoggingRunnable implements Runnable {
 			break;
 		case Z_POSITIVE: target = tinygService.getZ().add(step).value(currentUnit);
 			break;
-		case A_NEGATIVE: //target = tinygService.getA().value().subtract(step.value()); // FIXME : remove crappy subtraction between angle and distance
-						throw new GkTechnicalException("A implémenter");
+		case A_NEGATIVE: target = tinygService.getA().value(AngleUnit.DEGREE_ANGLE).subtract(step.value(step.getUnit())); // FIXME : remove crappy subtraction between angle and distance
+						//throw new GkTechnicalException("A implémenter");
 			//break;
-		case A_POSITIVE: //target = tinygService.getA().value().add(step.value()); // FIXME : remove crappy addition between angle and distance
-						throw new GkTechnicalException("A implémenter");
+		case A_POSITIVE: target = tinygService.getA().value(AngleUnit.DEGREE_ANGLE).add(step.value(step.getUnit())); // FIXME : remove crappy addition between angle and distance
+						//throw new GkTechnicalException("A implémenter");
 			//break;
 		default:
 			break;

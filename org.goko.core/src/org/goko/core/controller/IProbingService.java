@@ -46,4 +46,16 @@ public interface IProbingService extends IGokoService {
 	 * @throws GkException GkException
 	 */
 	CompletionService<ProbeResult> probe(List<ProbeRequest> probeRequest) throws GkException;
+	
+	/**
+	 * Check if this probing service is ready to start a probe sequence. Throws an exception if not ready.
+	 * @throws GkException exception if not ready
+	 */
+	void checkReadyToProbe() throws GkException;
+	
+	/**
+	 * Check if this probing service is ready to start a probe sequence. 
+	 * @return <code>true</code> if the service is ready for a probe sequence, <code>false</code> otherwise
+	 */
+	boolean isReadyToProbe();
 }

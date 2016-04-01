@@ -705,4 +705,20 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	public void resumeMotion() throws GkException {
 		getCurrentService().resumeMotion();
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#checkReadyToProbe()
+	 */
+	@Override
+	public void checkReadyToProbe() throws GkException {
+		getCurrentService().checkReadyToProbe();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IProbingService#isReadyToProbe()
+	 */
+	@Override
+	public boolean isReadyToProbe() {
+		return getCurrentService().isReadyToProbe();
+	}
 }
