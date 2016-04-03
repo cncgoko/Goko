@@ -56,7 +56,7 @@ public class ExternalEditAction extends Action{
 				if(resourceLocation instanceof URIResourceLocation){
 					URIResourceLocation uriResourceLocation = (URIResourceLocation) resourceLocation;		
 					if(URIUtil.isFileURI(uriResourceLocation.getAbsoluteUri())){
-						Desktop.getDesktop().open(new File(uriResourceLocation.getAbsoluteUri()));
+						Desktop.getDesktop().edit(new File(uriResourceLocation.getAbsoluteUri()));
 					}
 				}
 			}
