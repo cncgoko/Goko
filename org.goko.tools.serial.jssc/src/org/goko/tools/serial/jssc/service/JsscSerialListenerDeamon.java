@@ -70,17 +70,7 @@ public class JsscSerialListenerDeamon implements Runnable, SerialPortEventListen
 			} catch (GkException e) {
 				LOG.error(e);
 			}
-		}else if(serialPortEvent.isCTS()){
-			LOG.error(serialPortEvent.toString() + " CTS : " +serialPortEvent.getEventValue());
-			try {
-				if(serialPortEvent.getEventValue() == 0){
-					jsscService.disconnect();
-				}
-			} catch (GkException e) {
-				LOG.error(e);
-			}
-		}
-		
+		}		
 	}
 
 	/** (inheritDoc)
