@@ -70,6 +70,10 @@ public class MachineValue<T> {
 		this.value = value;
 	}
 
+	public MachineValue<T> clone(){
+		return new MachineValue<T>(this);
+	}
+	
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
 	 */

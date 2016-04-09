@@ -6,4 +6,5 @@
    <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
    <reference bind="setCoordinateSystemAdapter" cardinality="1..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="static"/>
    <reference bind="setGCodeContextProvider" cardinality="1..1" interface="org.goko.core.controller.IGCodeContextProvider" name="IGCodeContextProvider" policy="static"/>
+   <reference bind="setFourAxisControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
 </scr:component>

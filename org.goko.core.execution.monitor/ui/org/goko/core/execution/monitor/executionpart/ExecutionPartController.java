@@ -128,6 +128,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	public void onQueueExecutionCanceled() throws GkException {
 		updateButtonState();
 		updateQueueExecutionState();
+		this.getDataModel().setExecutionTimerActive(false);
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)

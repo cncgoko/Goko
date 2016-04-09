@@ -29,7 +29,7 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 		if(feedrate.equals(Speed.ZERO)){
 			return Time.ZERO;
 		}
-		Arc3b arc = InstructionUtils.getArc(context, instruction);		
+		Arc3b arc = InstructionUtils.getArc(context, instruction);	
 		return arc.getLength().divide(feedrate);	
 	}
 }

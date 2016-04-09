@@ -41,6 +41,7 @@ import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
@@ -448,23 +449,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 				applicativeLogService.log(ApplicativeLogEvent.LOG_WARNING, message, "TinyG");
 			}
 		}
-//		if(executionQueue != null){
-//			TinyGExecutionToken currentToken = executionQueue.getCurrentToken();
-//
-//			if(currentToken != null ){
-//				List<GCodeLine> errorsCommand = currentToken.getLineByState(ExecutionState.ERROR);
-//				if(CollectionUtils.isNotEmpty(errorsCommand)){
-//					 // Error occurred during GCode program execution, let's give the source command
-//					GCodeLine line = errorsCommand.get(0);
-//					message += " on command ["+gcodeService.render(line)+"]";
-//				}
-//			}
-//			// Security pause
-//			pauseMotion();
-//			// Still confirm that the command was received
-//			this.currentSendingRunnable.confirmCommand();
-//
-//		}
 	}
 
 
@@ -845,7 +829,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return tinygState.getGCodeContext();
 	}
 	
-	public void setVelocity(BigDecimal velocity) throws GkException {
+	public void setVelocity(Speed velocity) throws GkException {
 		tinygState.setVelocity(velocity);
 	}
 	/** (inheritDoc)
@@ -1127,7 +1111,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
 	 */
 	@Override
-	public void setJogFeedrate(BigDecimal feed) throws GkException {
+	public void setJogFeedrate(Speed feed) throws GkException {
 		jogRunnable.setFeed(feed);
 	}
 
@@ -1135,7 +1119,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
 	 */
 	@Override
-	public BigDecimal getJogFeedrate() throws GkException {
+	public Speed getJogFeedrate() throws GkException {
 		return jogRunnable.getFeed();
 	}
 

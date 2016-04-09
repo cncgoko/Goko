@@ -53,6 +53,7 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
@@ -609,13 +610,13 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		
 		getController().initilizeValues();
 		if(getDataModel().getJogSpeed() != null){
-			jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue() * Math.pow(10, jogSpeedSpinner.getDigits())));
+			jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue(GokoPreference.getInstance().getSpeedUnit()) * Math.pow(10, jogSpeedSpinner.getDigits())));
 		}
 		initCustomBindings(part);
 		enableAdaptiveSpinner();
 	}
 
-	protected void enableAdaptiveSpinner() {
+	protected void enableAdaptiveSpinner() throws GkException {
 		if(jogStepSpinner != null){
 			jogStepSpinner.setSelection((int) (getDataModel().getJogIncrement().doubleValue() * Math.pow(10, jogStepSpinner.getDigits())));
 			jogStepSpinner.addSelectionListener(new SelectionAdapter() {
@@ -634,13 +635,17 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			});
 		}
 		
-		jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue()  * Math.pow(10, jogSpeedSpinner.getDigits())));		
+		jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue(GokoPreference.getInstance().getSpeedUnit())  * Math.pow(10, jogSpeedSpinner.getDigits())));		
 		
 		jogSpeedSpinner.setIncrement(10);		
 		jogSpeedSpinner.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				getDataModel().setJogSpeed(BigDecimal.valueOf(jogSpeedSpinner.getSelection()));
+			public void widgetSelected(SelectionEvent event) {
+				try {
+					getDataModel().setJogSpeed(Speed.valueOf(jogSpeedSpinner.getSelection(), GokoPreference.getInstance().getSpeedUnit()));
+				} catch (GkException e) {
+					LOG.error(e);
+				}
 			}
 		});
 

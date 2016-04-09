@@ -27,7 +27,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
@@ -72,12 +71,12 @@ public class GrblState extends MachineValueStore{
 
 	private void initValues() throws GkException{
 		storeValue(DefaultControllerValues.STATE, "State", "The state of Grbl controller board", GrblMachineState.UNDEFINED);
-		storeValue(Grbl.POSITION_X, "X", "The X work position of the machine", "0");
-		storeValue(Grbl.POSITION_Y, "Y", "The Y work position of the machine", "0");
-		storeValue(Grbl.POSITION_Z, "Z", "The Z work position of the machine", "0");
-		storeValue(Grbl.MACHINE_POSITION_X, "Machine X", "The X position of the machine", "0");
-		storeValue(Grbl.MACHINE_POSITION_Y, "Machine Y", "The Y position of the machine", "0");
-		storeValue(Grbl.MACHINE_POSITION_Z, "Machine Z", "The Z position of the machine", "0");
+		storeValue(Grbl.POSITION_X, "X", "The X work position of the machine", Length.ZERO);
+		storeValue(Grbl.POSITION_Y, "Y", "The Y work position of the machine", Length.ZERO);
+		storeValue(Grbl.POSITION_Z, "Z", "The Z work position of the machine", Length.ZERO);
+		storeValue(Grbl.MACHINE_POSITION_X, "Machine X", "The X position of the machine", Length.ZERO);
+		storeValue(Grbl.MACHINE_POSITION_Y, "Machine Y", "The Y position of the machine", Length.ZERO);
+		storeValue(Grbl.MACHINE_POSITION_Z, "Machine Z", "The Z position of the machine", Length.ZERO);
 		storeValue(Grbl.GRBL_USED_BUFFER, "Grbl Buffer", "The space used in Grbl buffer", 0);
 		storeValue(Grbl.CONTEXT_FEEDRATE, "Feedrate", "The current feedrate", new BigDecimal("0.000"));
 		storeValue(Grbl.CONTEXT_PLANE, "Plane", "The current plane", EnumPlane.XY_PLANE);
@@ -105,13 +104,13 @@ public class GrblState extends MachineValueStore{
 	public void setMachinePosition(Tuple6b position, Unit<Length> unit) throws GkException{
 		if(position != null){			
 			if(position.getX() != null){
-				updateValue(Grbl.MACHINE_POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
+				updateValue(Grbl.MACHINE_POSITION_X, position.getX());
 			}
 			if(position.getY() != null){
-				updateValue(Grbl.MACHINE_POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
+				updateValue(Grbl.MACHINE_POSITION_Y, position.getY());
 			}
 			if(position.getZ() != null){
-				updateValue(Grbl.MACHINE_POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
+				updateValue(Grbl.MACHINE_POSITION_Z, position.getZ());
 			}
 		}
 	}
@@ -135,15 +134,15 @@ public class GrblState extends MachineValueStore{
 			if(position.getX() != null){		
 				workPosition.setX(position.getX());
 				// updateValue(Grbl.POSITION_X, GokoConfig.getInstance().format( position.getX(), true));				
-				updateValue(Grbl.POSITION_X, GokoPreference.getInstance().format( position.getX(), true));
+				updateValue(Grbl.POSITION_X, position.getX());
 			}
 			if(position.getY() != null){
 				workPosition.setY(position.getY());
-				updateValue(Grbl.POSITION_Y, GokoPreference.getInstance().format( position.getY(), true));
+				updateValue(Grbl.POSITION_Y, position.getY());
 			}
 			if(position.getZ() != null){
 				workPosition.setZ(position.getZ());
-				updateValue(Grbl.POSITION_Z, GokoPreference.getInstance().format( position.getZ(), true));
+				updateValue(Grbl.POSITION_Z, position.getZ());
 			}
 		}
 		if(currentContext != null){			

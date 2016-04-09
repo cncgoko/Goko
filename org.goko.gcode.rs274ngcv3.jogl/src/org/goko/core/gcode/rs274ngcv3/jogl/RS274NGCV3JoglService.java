@@ -11,6 +11,7 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheById;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.controller.ICoordinateSystemAdapter;
+import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
@@ -44,7 +45,9 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	/** Execution service */
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
-
+	/** The IFourAxisControllerAdapter */
+	private IFourAxisControllerAdapter fourAxisControllerAdapter;
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -107,7 +110,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	public void createRenderer(Integer idGCodeProvider) throws GkException{
 		getRS274NGCService().getGCodeProvider(idGCodeProvider);
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider, gcodeContextProvider);
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider, gcodeContextProvider, fourAxisControllerAdapter);
 		renderer.setIdGCodeProvider(idGCodeProvider);
 		executionService.addExecutionListener(renderer);
 		this.cacheRenderer.add(renderer);
@@ -247,6 +250,20 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	public void setGCodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
 		this.gcodeContextProvider = gcodeContextProvider;
+	}
+
+	/**
+	 * @return the fourAxisControllerAdapter
+	 */
+	public IFourAxisControllerAdapter getFourAxisControllerAdapter() {
+		return fourAxisControllerAdapter;
+	}
+
+	/**
+	 * @param fourAxisControllerAdapter the fourAxisControllerAdapter to set
+	 */
+	public void setFourAxisControllerAdapter(IFourAxisControllerAdapter fourAxisControllerAdapter) {
+		this.fourAxisControllerAdapter = fourAxisControllerAdapter;
 	}
 
 

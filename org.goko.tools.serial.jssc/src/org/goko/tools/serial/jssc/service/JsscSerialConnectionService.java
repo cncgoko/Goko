@@ -247,6 +247,11 @@ public class JsscSerialConnectionService extends AbstractGokoService implements 
 	public void clearOutputBuffer() throws GkException {
 		if(isConnected()){
 			jsscSender.clearOutputBuffer();
+			try {
+				getSerialPort().purgePort(SerialPort.PURGE_TXCLEAR | SerialPort.PURGE_TXABORT); 
+			} catch (SerialPortException e) {
+				throw new GkTechnicalException(e);
+			}
 		}
 	}
 

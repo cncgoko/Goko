@@ -17,11 +17,8 @@
 
 package org.goko.core.config;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +30,7 @@ import org.goko.core.common.measure.dimension.Dimension;
 import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
+import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
@@ -174,23 +172,12 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 		return format(quantity, keepTraillingZero, displayUnit, null);
 	}
 	
-	public <Q extends Quantity<Q>> String format(Q quantity, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit) throws GkException{
-		String result = StringUtils.EMPTY;
+	public <Q extends Quantity<Q>> String format(Q quantity, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit) throws GkException{		
 		Unit<Q> 	localTargetUnit 	= ptargetUnit;
 		if(ptargetUnit == null){
 			localTargetUnit = getConfiguredUnit(quantity);
-		}		
-		
-		DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-		if(keepTraillingZero){
-			df.setMinimumFractionDigits(getDigitCount());
-		}
-		df.setMaximumFractionDigits(getDigitCount());
-		result = df.format(quantity.doubleValue(localTargetUnit));
-		if(displayUnit){
-			result += quantity.getUnit().getSymbol();
-		}
-		return result;
+		}			
+		return QuantityUtils.format(quantity, getDigitCount(), keepTraillingZero, displayUnit, localTargetUnit);
 	}
 
 	protected <Q extends Quantity<Q>> Unit<Q> getConfiguredUnit(Quantity<Q> quantity) throws GkException{

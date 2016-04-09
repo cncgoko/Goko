@@ -295,8 +295,8 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			MachineState 				 state 			= findState(statusReportObject);
 			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);
 			EnumUnit 		 units 			= findUnits(statusReportObject);
-			BigDecimal 					 velocity 		= findVelocity(statusReportObject);
-			Speed 					 feedrate 		= findFeedrate(statusReportObject);
+			Speed 		 	velocity 		= findVelocity(statusReportObject);
+			Speed 			 feedrate 		= findFeedrate(statusReportObject);
 			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getGCodeContext());
 
@@ -316,10 +316,15 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		}
 	}
 
-	private BigDecimal findVelocity(JsonObject statusReport){
+	private Speed findVelocity(JsonObject statusReport){
 		JsonValue velocityReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_VELOCITY);
 		if(velocityReport != null){
-			return velocityReport.asBigDecimal().setScale(3, BigDecimal.ROUND_HALF_EVEN);
+			Unit<Length> unit = tinyg.getCurrentUnit();
+			Unit<Speed> speedUnit = SpeedUnit.MILLIMETRE_PER_MINUTE;
+			if(LengthUnit.INCH.equals(unit)){
+				speedUnit = SpeedUnit.INCH_PER_MINUTE;
+			}
+			return Speed.valueOf(velocityReport.asBigDecimal(), speedUnit);
 		}
 		return null;
 	}

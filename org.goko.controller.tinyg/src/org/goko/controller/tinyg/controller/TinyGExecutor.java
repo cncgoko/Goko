@@ -35,7 +35,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	/** The underlying gcode service */
 	private IRS274NGCService rs274Service;
 	/** Required space in TinyG planner buffer to send a new command */
-	private int requiredBufferSpace = 3;
+	private int requiredBufferSpace = 6;
 
 	/**
 	 * Constructor
@@ -76,8 +76,9 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	protected boolean isReadyForNextLine() throws GkException {
-		return pendingCommandCount.intValue() <= 5 && ( !tinygService.isPlannerBufferSpaceCheck() || tinygService.getAvailableBuffer() >= requiredBufferSpace);
-	}
+		int actuallyAvailableBuffer = tinygService.getAvailableBuffer() - pendingCommandCount.intValue();
+		return  ( !tinygService.isPlannerBufferSpaceCheck() || actuallyAvailableBuffer >= requiredBufferSpace);		
+	} 
 
 	/**
 	 * Notification method when the available buffer space changed

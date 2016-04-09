@@ -119,7 +119,7 @@ Bundle-ClassPath: libs/vecmath-1.3.1.jar,
  libs/simple-xml/simple-xml-2.7.2.jar
 Service-Component: OSGI-INF/FeatureManagerComponent.xml,
  OSGI-INF/XmlPersistenceServiceComponent.xml
-Require-Bundle: org.eclipse.swt,
+Require-Bundle: org.eclipse.swt;bundle-version="3.104.2",
  org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.ui.di,

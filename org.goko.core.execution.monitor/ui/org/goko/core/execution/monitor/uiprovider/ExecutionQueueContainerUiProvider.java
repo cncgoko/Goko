@@ -24,7 +24,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	private ExecutionQueueContainerLabelProvider labelProvider;
 
 	public ExecutionQueueContainerUiProvider(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
-		super("EXECUTIONQUEUE");
+		super("EXECUTIONQUEUE", 20);
 		this.labelProvider = new ExecutionQueueContainerLabelProvider();
 		this.executionService = executionService;
 	}

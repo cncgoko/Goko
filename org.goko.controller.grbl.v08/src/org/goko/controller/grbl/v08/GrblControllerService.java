@@ -54,6 +54,9 @@ import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.connection.IConnectionService;
@@ -114,7 +117,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/** Event admin object to send topic to UI*/
 	private EventAdmin eventAdmin;
 	/** Jog related fields - Feedrate */
-	private BigDecimal feed;
+	private Speed feed;
 	/** Jog related fields - Step */
 	private Length step;
 	/** Preference store */
@@ -127,8 +130,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private ObservableDelegate<IGCodeContextListener<GCodeContext>> gcodeContextListener;
 	/**
 	 * Constructor
+	 * @throws GkException GkException 
 	 */
-	public GrblControllerService() {
+	public GrblControllerService() throws GkException {
 		communicator	= new GrblCommunicator(this);
 		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
 		usedBufferStack = new LinkedBlockingQueue<Integer>();
@@ -937,7 +941,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
 	 */
 	@Override
-	public void setJogFeedrate(BigDecimal feed) throws GkException {
+	public void setJogFeedrate(Speed feed) throws GkException {
 		this.feed = feed;
 	}
 
@@ -945,7 +949,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
 	 */
 	@Override
-	public BigDecimal getJogFeedrate() throws GkException {
+	public Speed getJogFeedrate() throws GkException {
 		return feed;
 	}
 
@@ -999,22 +1003,22 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		return true; // does not support continuous jog
 	}
 
-	private void initPersistedValues(){
+	private void initPersistedValues() throws GkException{
 		String feedStr = preferenceStore.getString(PERSISTED_FEED);
 		if(StringUtils.isBlank(feedStr)){
-			feedStr = "600";
+			feedStr = GokoPreference.getInstance().format(Speed.valueOf(600, SpeedUnit.MILLIMETRE_PER_MINUTE), true, true);
 		}
-		this.feed = new BigDecimal(feedStr);
+		this.feed = Speed.parse(feedStr);
 		String stepStr = preferenceStore.getString(PERSISTED_STEP);
 		if(StringUtils.isBlank(stepStr)){
-			stepStr = "1";
+			stepStr = GokoPreference.getInstance().format(Length.valueOf(1, LengthUnit.MILLIMETRE), true, true);
 		}
 		this.step = Length.valueOf(new BigDecimal(stepStr), Units.MILLIMETRE);
 	}
 
-	private void persistValues(){
+	private void persistValues() throws GkException{
 		if(feed != null){
-			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
+			preferenceStore.putValue(PERSISTED_FEED, GokoPreference.getInstance().format(feed, true, true));
 		}
 		if(step != null){
 			preferenceStore.putValue(PERSISTED_STEP, step.value(Units.MILLIMETRE).toPlainString());

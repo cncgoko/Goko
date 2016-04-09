@@ -120,9 +120,10 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 			valueTxt.setFont(SWTResourceManager.getFont("Consolas", 14, SWT.BOLD));
 
 			GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-			gridData.widthHint = 120;
+			gridData.grabExcessHorizontalSpace = true;
+			gridData.widthHint = 150;
 			valueTxt.setLayoutData(gridData );
-			getController().enableTextBindingOnValue(valueTxt, definition.getId());			
+			getController().enableTextBindingOnValue(valueTxt, definition.getId());	
 		}
 	}
 

@@ -17,13 +17,16 @@ import org.goko.core.common.exception.GkException;
 public abstract class ProjectContainerUiProvider {
 	/** The type of supported container */
 	private String type;
-		
+	/** The display order */
+	private int order;
+	
 	/**
 	 * @param type
 	 */
-	public ProjectContainerUiProvider(String type) {
+	public ProjectContainerUiProvider(String type, int order) {
 		super();
 		this.type = type;
+		this.order = order;
 	}
 
 	/**
@@ -79,4 +82,18 @@ public abstract class ProjectContainerUiProvider {
 	public abstract boolean providesMenuFor(ISelection selection) throws GkException;
 	
 	public abstract void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException;
+
+	/**
+	 * @return the order
+	 */
+	public int getOrder() {
+		return order;
+	}
+
+	/**
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
 }

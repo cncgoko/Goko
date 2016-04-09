@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 
 /**
@@ -58,6 +59,10 @@ public class MachineValueStore extends EventDispatcher{
 
 	public <T> void storeValue(String id, String name, String description, T value) throws GkException{
 		storeValue(new MachineValueDefinition(id, name, description, value.getClass()), new MachineValue<T>(id, value));
+	}
+	
+	public <Q extends Quantity<Q>> void storeValue(String id, String name, String description, Q quantity) throws GkException{
+		storeValue(new MachineValueDefinition(id, name, description, quantity.getClass()), new MachineQuantityValue<Q>(id, quantity));
 	}
 	/**
 	 * Returns the desired value as an Integer
@@ -99,9 +104,8 @@ public class MachineValueStore extends EventDispatcher{
 		if(machineValue != null){
 			if(machineValue.getValue() == null){
 				return (MachineValue<T>)machineValue;
-			}else if(machineValue.getValue().getClass() == clazz){
-				MachineValue<T> typedValue = (MachineValue<T>) valueStore.get(id);
-				return new MachineValue<T>(typedValue);
+			}else if(machineValue.getValue().getClass() == clazz){				
+				return (MachineValue<T>) valueStore.get(id).clone();
 			}else{
 				throw new GkTechnicalException("ControllerValueStore : unable to get value '"+id+"' for the requested type '"+clazz+"'. Registered as '"+machineValue.getValue().getClass()+"'");
 			}
@@ -151,14 +155,13 @@ public class MachineValueStore extends EventDispatcher{
 			typedValue.setValue(value);
 			// Notify only if the value changed
 			if(!value.equals(oldValue)){
-				super.notifyListeners(new MachineValueUpdateEvent(new MachineValue<T>(typedValue)));
+				super.notifyListeners(new MachineValueUpdateEvent(typedValue.clone()));
 			}
 		}else{
 			throw new GkTechnicalException("ControllerValueStore : unable to store '"+id+"''. Type mismatch. Got "+value.getClass()+"', expecting '"+machineValue.getClass()+"'");
 		}
-
 	}
-
+	
 	public List<MachineValueDefinition> getMachineValueDefinition(){
 		return lstMachineValueDefinition;
 	}

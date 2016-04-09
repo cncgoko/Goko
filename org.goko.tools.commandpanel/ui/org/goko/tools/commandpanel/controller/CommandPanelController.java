@@ -28,6 +28,8 @@ import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Button;
@@ -133,6 +135,23 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			});
 		}
 	}
+	
+	public void bindFocusLostToExecuteAction(Control widget, String actionId, final Object... parameters) throws GkException{
+		if(controllerService.isControllerAction(actionId)){
+			final IGkControllerAction action = controllerService.getControllerAction(actionId);
+			widget.addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					try {
+						System.err.println("Focus lost");
+						action.execute(parameters);
+					} catch (GkException e1) {
+						LOG.error(e1);
+					}
+				}
+			});
+		}
+	}
 
 	public void bindJogButton(Button widget, final EnumControllerAxis axis) throws GkException {
 
@@ -158,6 +177,20 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				try {
 					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
 					getDataModel().setLengthUnit(unit);					
+					jogService.stopJog();					
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+		});
+		
+		widget.addFocusListener(new FocusAdapter() {
+			/** (inheritDoc)
+			 * @see org.eclipse.swt.events.FocusAdapter#focusLost(org.eclipse.swt.events.FocusEvent)
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+				try {						
 					jogService.stopJog();					
 				} catch (GkException e1) {
 					LOG.error(e1);

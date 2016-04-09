@@ -21,7 +21,6 @@ package org.goko.controller.tinyg.service;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
@@ -542,7 +542,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
 	 */
 	@Override
-	public void setJogFeedrate(BigDecimal feed) throws GkException {
+	public void setJogFeedrate(Speed feed) throws GkException {
 		getCurrentService().setJogFeedrate(feed);
 	}
 
@@ -550,7 +550,7 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
 	 */
 	@Override
-	public BigDecimal getJogFeedrate() throws GkException {
+	public Speed getJogFeedrate() throws GkException {
 		return getCurrentService().getJogFeedrate();
 	}
 

@@ -1,6 +1,8 @@
 package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.Time;
@@ -20,23 +22,56 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 	 */
 	@Override
 	protected Time calculateExecutionTime(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
-		Tuple6b 		positionBefore 	= context.getPosition();
-		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
+		Length length = Length.ZERO;
+		if(instruction != null){
+			
+			// The complete angle around the 4th axis
+			Angle deltaAngle = Angle.ZERO;
+			// FIXME Use a setting to define the 4th axis and then do a dynamic angle detection around the axe A,B or C
+			if( instruction.getA() != null){
+				deltaAngle = context.getA().subtract(instruction.getA());
+			}
+			
+			if(deltaAngle.abs().lowerThan(Angle.valueOf("0.0001", AngleUnit.DEGREE_ANGLE))){
+				length = calculateLengthLinearLine(context, instruction);
+			}else{				
+				length = calculateLengthRotaryLine(context, instruction);
+			}
+		}		
 
-		Tuple6b delta = positionBefore.subtract(positionAfter);
-		
-		Length max = delta.length();
-
-		Speed feedrate = Speed.ZERO;
-		if(context.getFeedrate() != null){
-			feedrate = context.getFeedrate();
-		}else{
+		Speed feedrate = context.getFeedrate();
+		if(context.getFeedrate() == null || feedrate.equals(Speed.ZERO)){			
 			return Time.ZERO;
 		}
-		if(feedrate.equals(Speed.ZERO)){
-			return Time.ZERO;
-		}		
-		return max.divide(feedrate);		
+		return length.abs().divide(feedrate);		
+	}
+
+	/**
+	 * @param context
+	 * @param instruction
+	 * @return
+	 * @throws GkException 
+	 */
+	private Length calculateLengthRotaryLine(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
+		Tuple6b 		positionBefore 	= context.getPosition();
+		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
+		Tuple6b delta = positionBefore.subtract(positionAfter);
+		
+		return Length.valueOf(delta.getA().value(AngleUnit.DEGREE_ANGLE), context.getUnit().getUnit());
+	}
+
+	/**
+	 * @param context
+	 * @param instruction
+	 * @return
+	 * @throws GkException 
+	 */
+	private Length calculateLengthLinearLine(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
+		Tuple6b 		positionBefore 	= context.getPosition();
+		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
+		Tuple6b delta = positionBefore.subtract(positionAfter);
+		
+		return delta.length();
 	}
 
 }

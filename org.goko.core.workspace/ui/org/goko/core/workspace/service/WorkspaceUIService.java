@@ -4,6 +4,7 @@
 package org.goko.core.workspace.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
+import org.goko.core.workspace.bean.ProjectContainerUiProviderComparator;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -102,7 +104,9 @@ public class WorkspaceUIService extends AbstractGokoService implements IGokoServ
 	 */
 	@Override
 	public List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException {
-		return new ArrayList<ProjectContainerUiProvider>(mapProjectContainerUiProvider.values());
+		List<ProjectContainerUiProvider> content = new ArrayList<ProjectContainerUiProvider>(mapProjectContainerUiProvider.values());
+		Collections.sort(content, new ProjectContainerUiProviderComparator());
+		return content;
 	}
 
 	public void refreshWorkspaceUi(){

@@ -394,13 +394,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 
 		InstructionIterator iterator = getIterator(instructions, baseContext);
 
-		GCodeContext preContext = null;
-
+		GCodeContext preContext = null;		
 		while(iterator.hasNext()){
 			preContext = new GCodeContext(iterator.getContext());
 			result = result.add( timeFactory.getExecutionTime(preContext, iterator.next()) );
-		}
-
+		}		
 		return result;
 	}
 

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.goko.tinyg.controller;
 
 import java.math.BigDecimal;
@@ -9,16 +6,14 @@ import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.common.measure.SI;
-import org.goko.core.common.measure.US;
 import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.controller.bean.EnumControllerAxis;
-import org.goko.core.gcode.bean.GCodeContext;
-import org.goko.core.gcode.bean.IGCodeProvider;
-import org.goko.core.gcode.bean.commands.EnumCoordinateSystem;
-import org.goko.core.gcode.bean.commands.EnumGCodeCommandDistanceMode;
-import org.goko.core.rs274ngcv3.RS274GCodeService;
+import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
+import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
 import org.goko.junit.tools.connection.AssertSerialEmulator;
 import org.goko.junit.tools.connection.SerialConnectionEmulator;
@@ -51,7 +46,7 @@ import junit.framework.TestCase;
 public class TinyGControllerServiceTestCase extends TestCase {
 	private TinyGControllerService 	 tinyg;
 	private SerialConnectionEmulator serialEmulator;
-	private RS274GCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 	
 	/** {@inheritDoc}
 	 * @see junit.framework.TestCase#setUp()
@@ -62,7 +57,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator = new SerialConnectionEmulator();		
 		tinyg = new TinyGControllerService();		
 		tinyg.setConnectionService(serialEmulator);
-		gcodeService = new RS274GCodeService();
+		gcodeService = new RS274NGCServiceImpl();
 		tinyg.setGCodeService(gcodeService);
 		tinyg.start(); 				  // Start the TinyG service
 		serialEmulator.connect(null, null, null, null, null, null); // Make sure the service is connected

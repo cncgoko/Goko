@@ -19,8 +19,6 @@
  */
 package org.goko.controller.tinyg.controller;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +27,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
-import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
@@ -98,13 +96,13 @@ public class TinyGState extends MachineValueStore{
 		currentUnit = SIPrefix.MILLI(Units.METRE);
 		storeValue(TinyG.STATE, "State", "The state of TinyG controller board", MachineState.UNDEFINED);
 		//storeValue(TinyG.POSITION, "Pos", "The position of the machine", new Point3d());
-		storeValue(TinyG.POSITION_X, "X", "The X position of the machine",  StringUtils.EMPTY);
-		storeValue(TinyG.POSITION_Y, "Y", "The Y position of the machine",  StringUtils.EMPTY);
-		storeValue(TinyG.POSITION_Z, "Z", "The Z position of the machine",  StringUtils.EMPTY);
-		storeValue(TinyG.POSITION_A, "A", "The A position of the machine", new BigDecimal("0.000"));
-		storeValue(TinyG.VELOCITY, "Velocity", "The current velocity of the machine",new BigDecimal("0.000"));
+		storeValue(TinyG.POSITION_X, "X", "The X position of the machine",  Length.ZERO);
+		storeValue(TinyG.POSITION_Y, "Y", "The Y position of the machine",  Length.ZERO);
+		storeValue(TinyG.POSITION_Z, "Z", "The Z position of the machine",  Length.ZERO);
+		storeValue(TinyG.POSITION_A, "A", "The A position of the machine", StringUtils.EMPTY);
+		storeValue(TinyG.VELOCITY, "Velocity", "The current velocity of the machine", StringUtils.EMPTY);
 		storeValue(TinyG.SPINDLE_STATE, "Spindle", "The current state of the spindle", "false");
-		storeValue(TinyG.CONTEXT_UNIT, "Units", "The units in use",StringUtils.EMPTY);
+		storeValue(TinyG.CONTEXT_UNIT, "Units", "The units in use", StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_COORD_SYSTEM, "Coordinates", "The coordinate system",StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);
@@ -201,16 +199,16 @@ public class TinyGState extends MachineValueStore{
 	 * @return the velocity
 	 * @throws GkException
 	 */
-	public BigDecimal getVelocity() throws GkException {
-		return getValue(TinyG.VELOCITY, BigDecimal.class).getValue();
+	public String getVelocity() throws GkException {
+		return getValue(TinyG.VELOCITY, String.class).getValue();
 	}
 
 	/**
 	 * @param velocity the velocity to set
 	 * @throws GkException
 	 */
-	public void setVelocity(BigDecimal velocity) throws GkException {
-		updateValue(TinyG.VELOCITY, velocity);
+	public void setVelocity(Speed velocity) throws GkException {
+		updateValue(TinyG.VELOCITY, GokoPreference.getInstance().format(velocity, true, true));
 	}
 
 	/**
@@ -264,13 +262,11 @@ public class TinyGState extends MachineValueStore{
 	 */
 	public void setWorkPosition(Tuple6b position) throws GkException {
 		this.position = new Tuple6b(position);		
-		String x = GokoPreference.getInstance().format(position.getX(), true, false, currentUnit);
-		String y = GokoPreference.getInstance().format(position.getY(), true, false, currentUnit);
-		String z = GokoPreference.getInstance().format(position.getZ(), true, false, currentUnit);
-		updateValue(TinyG.POSITION_X, x);
-		updateValue(TinyG.POSITION_Y, y);
-		updateValue(TinyG.POSITION_Z, z);
-		updateValue(TinyG.POSITION_A, new BigDecimal(position.getA().doubleValue(AngleUnit.DEGREE_ANGLE)).setScale(3, RoundingMode.HALF_DOWN));
+		String a = QuantityUtils.format(position.getA(), GokoPreference.getInstance().getDigitCount(), true, true);
+		updateValue(TinyG.POSITION_X, position.getX());
+		updateValue(TinyG.POSITION_Y, position.getY());
+		updateValue(TinyG.POSITION_Z, position.getZ());
+		updateValue(TinyG.POSITION_A, a);
 	}
 
 	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {

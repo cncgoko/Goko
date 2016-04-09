@@ -1,5 +1,12 @@
 package org.goko.core.common.measure.quantity;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
+import org.goko.core.common.measure.units.Unit;
+
 public final class QuantityUtils {
 		
 	/**
@@ -69,5 +76,37 @@ public final class QuantityUtils {
 			return a;
 		}
 		return b;
+	}
+	
+	public static <Q extends Quantity<Q>> String format(Q quantity){
+		return format(quantity, 3, false, false, quantity.getUnit());
+	}
+	
+	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount){
+		return format(quantity, digitCount, false, false, quantity.getUnit());
+	}
+	
+	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount, boolean keepTraillingZero){
+		return format(quantity, digitCount, keepTraillingZero, false, quantity.getUnit());
+	}
+	
+	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount, boolean keepTraillingZero, boolean displayUnit){
+		return format(quantity, digitCount, keepTraillingZero, displayUnit, quantity.getUnit());
+	}
+	
+	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit){
+		String result = StringUtils.EMPTY;
+		Unit<Q> 	localTargetUnit 	= ptargetUnit;
+				
+		DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		if(keepTraillingZero){
+			df.setMinimumFractionDigits(digitCount);
+		}
+		df.setMaximumFractionDigits(digitCount);
+		result = df.format(quantity.doubleValue(localTargetUnit));
+		if(displayUnit){
+			result += quantity.getUnit().getSymbol();
+		}
+		return result;
 	}
 }

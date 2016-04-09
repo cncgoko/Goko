@@ -87,10 +87,11 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 * Constructor
 	 * @param gcodeProvider the GCodeProvider to render
 	 */
-	public RS274GCodeRenderer(Integer idGCodeProvider, IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
+	public RS274GCodeRenderer(Integer idGCodeProvider, IGCodeContextProvider<GCodeContext> gcodeContextProvider, IFourAxisControllerAdapter fourAxisControllerAdapter) {
 		super(GL.GL_LINE_STRIP, COLORS | VERTICES);
 		this.idGCodeProvider = idGCodeProvider;
 		this.gcodeContextProvider = gcodeContextProvider;
+		this.fourAxisControllerAdapter = fourAxisControllerAdapter;
 		setLineWidth(1f);
 	}
 	

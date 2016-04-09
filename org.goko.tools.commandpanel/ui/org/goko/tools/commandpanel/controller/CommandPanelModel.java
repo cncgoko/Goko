@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.units.Unit;
 
 /**
@@ -34,7 +35,7 @@ import org.goko.core.common.measure.units.Unit;
  */
 public class CommandPanelModel extends AbstractModelObject{
 	private WritableMap actionState;
-	private BigDecimal jogSpeed;
+	private Speed jogSpeed;
 	private BigDecimal jogIncrement;
 	private boolean preciseJog;	
 	private Unit<Length> lengthUnit;
@@ -57,13 +58,13 @@ public class CommandPanelModel extends AbstractModelObject{
 	/**
 	 * @return the jogSpeed
 	 */
-	public BigDecimal getJogSpeed() {
+	public Speed getJogSpeed() {
 		return jogSpeed;
 	}
 	/**
 	 * @param jogSpeed the jogSpeed to set
 	 */
-	public void setJogSpeed(BigDecimal jogSpeed) {
+	public void setJogSpeed(Speed jogSpeed) {
 		firePropertyChange("jogSpeed", this.jogSpeed, this.jogSpeed = jogSpeed);		
 	}
 

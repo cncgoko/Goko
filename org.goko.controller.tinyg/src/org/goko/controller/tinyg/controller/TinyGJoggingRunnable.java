@@ -11,9 +11,13 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.QuantityUtils;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
+import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
@@ -30,21 +34,23 @@ public class TinyGJoggingRunnable implements Runnable {
 	private static final String PERSISTED_FEED = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.feed";
 	private static final String PERSISTED_STEP = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.step";
 	private static final String PERSISTED_PRECISE = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.precise";
+	private static final BigDecimal WAIT_FACTOR = new BigDecimal("0.6");
 	private boolean jogging;
 	private boolean stopped;
 	private ITinygControllerService tinygService;
 	private TinyGCommunicator tinygCommunicator;
 	private Object lock;
 	private EnumTinyGAxis axis;
-	private BigDecimal feed;
+	private Speed feed;
 	private Length step;
 	private boolean precise;
 	private ScopedPreferenceStore preferenceStore;
 
 	/**
 	 * Constructor
+	 * @throws GkException GkException 
 	 */
-	public TinyGJoggingRunnable(ITinygControllerService tinygService, TinyGCommunicator tinygCommunicator) {
+	public TinyGJoggingRunnable(ITinygControllerService tinygService, TinyGCommunicator tinygCommunicator) throws GkException {
 		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
 		this.initPersistedValues();
 		this.lock = new Object();
@@ -52,17 +58,17 @@ public class TinyGJoggingRunnable implements Runnable {
 		this.tinygService = tinygService;
 	}
 
-	private void initPersistedValues(){
+	private void initPersistedValues() throws GkException{
 		String feedStr = preferenceStore.getString(PERSISTED_FEED);
 		if(StringUtils.isBlank(feedStr)){
-			feedStr = "600";
+			feedStr = GokoPreference.getInstance().format(Speed.valueOf(600, SpeedUnit.MILLIMETRE_PER_MINUTE), true, true);
 		}
-		this.feed = new BigDecimal(feedStr);
+		this.feed = Speed.parse(feedStr);
 		String stepStr = preferenceStore.getString(PERSISTED_STEP);
 		if(StringUtils.isBlank(stepStr)){
-			stepStr = "1";
+			stepStr = GokoPreference.getInstance().format(Length.valueOf(1, LengthUnit.MILLIMETRE), true, true);
 		}
-		this.step = Length.valueOf(new BigDecimal(stepStr), Units.MILLIMETRE); // FIXME : store value between uses
+		this.step = Length.parse(stepStr);
 		String preciseStr = preferenceStore.getString(PERSISTED_PRECISE);
 		if(StringUtils.isBlank(preciseStr)){
 			preciseStr = "false";
@@ -70,14 +76,14 @@ public class TinyGJoggingRunnable implements Runnable {
 		this.precise = Boolean.valueOf(preciseStr);
 	}
 
-	private void persistValues(){
+	private void persistValues() throws GkException{
 		if(feed != null){
-			preferenceStore.putValue(PERSISTED_FEED, feed.toPlainString());
+			preferenceStore.putValue(PERSISTED_FEED, GokoPreference.getInstance().format(feed, true, true));
 		}
 		preferenceStore.putValue(PERSISTED_PRECISE, String.valueOf(precise));
 
 		if(step != null){
-			preferenceStore.putValue(PERSISTED_STEP, step.value(Units.MILLIMETRE).toPlainString());
+			preferenceStore.putValue(PERSISTED_STEP, GokoPreference.getInstance().format(step, true, true));
 		}
 	}
 	/** (inheritDoc)
@@ -90,7 +96,8 @@ public class TinyGJoggingRunnable implements Runnable {
 				waitJoggingActive();
 				if(isReadyToJog()){
 					if(axis != null && feed != null && step != null){
-						String command = "G1F"+feed.toPlainString();
+						Unit<Length> unit = tinygService.getGCodeContext().getUnit().getUnit();
+						String command = "G1F"+ QuantityUtils.format(feed);
 						EnumDistanceMode distanceMode = tinygService.getGCodeContext().getDistanceMode();
 						if(distanceMode == EnumDistanceMode.ABSOLUTE){
 							command = startAbsoluteJog(command);
@@ -119,9 +126,10 @@ public class TinyGJoggingRunnable implements Runnable {
 		if(precise){
 			MachineState tinygState = tinygService.getState();
 			return MachineState.READY.equals(tinygState) || MachineState.PROGRAM_END.equals(tinygState) || MachineState.PROGRAM_STOP.equals(tinygState);
-		}
-		return tinygService.getAvailableBuffer() > 28;
+		}		
+		return tinygService.getAvailableBuffer() > 30;
 	}
+	
 
 	/**
 	 * Generates jogging command when TinyG is in absolute distance mode
@@ -182,7 +190,9 @@ public class TinyGJoggingRunnable implements Runnable {
 		do{
 			synchronized ( lock ) {
 				try {
-					lock.wait(500);
+					// Wait until we reached 80% of the target position so we don't spam  the board. Minimum wait is 10ms. 80% is completely arbitrary value
+					long wait = Math.max(10, step.divide(feed).multiply(WAIT_FACTOR).value(TimeUnit.MILLISECOND).longValue());					
+					lock.wait(wait);
 				} catch (InterruptedException e) {
 					LOG.error(e);
 				}
@@ -240,14 +250,15 @@ public class TinyGJoggingRunnable implements Runnable {
 	/**
 	 * @return the feed
 	 */
-	public BigDecimal getFeed() {
+	public Speed getFeed() {
 		return feed;
 	}
 
 	/**
 	 * @param feed the feed to set
+	 * @throws GkException GkException 
 	 */
-	public void setFeed(BigDecimal feed) {
+	public void setFeed(Speed feed) throws GkException {
 		this.feed = feed;
 		persistValues();
 	}
@@ -261,8 +272,9 @@ public class TinyGJoggingRunnable implements Runnable {
 
 	/**
 	 * @param step the step to set
+	 * @throws GkException GkException
 	 */
-	public void setStep(Length step) {
+	public void setStep(Length step) throws GkException {
 		this.step = step;
 		persistValues();
 	}
@@ -276,8 +288,9 @@ public class TinyGJoggingRunnable implements Runnable {
 
 	/**
 	 * @param precise the precise to set
+	 * @throws GkException GkException
 	 */
-	public void setPrecise(boolean precise) {
+	public void setPrecise(boolean precise) throws GkException {
 		this.precise = precise;
 		persistValues();
 	}
