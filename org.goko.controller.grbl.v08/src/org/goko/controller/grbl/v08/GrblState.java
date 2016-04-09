@@ -1,7 +1,6 @@
 /*
- *
  *   Goko
- *   Copyright (C) 2013  PsyKo
+ *   Copyright (C) 2013, 2016  PsyKo
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

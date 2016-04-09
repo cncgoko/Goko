@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.goko.core.controller.bean;
 
 import org.goko.core.common.exception.GkException;
