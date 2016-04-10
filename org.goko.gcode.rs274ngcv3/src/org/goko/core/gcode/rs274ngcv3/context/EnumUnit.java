@@ -18,6 +18,8 @@ package org.goko.core.gcode.rs274ngcv3.context;
 
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
 
 /**
@@ -27,16 +29,25 @@ import org.goko.core.common.measure.units.Unit;
  *
  */
 public enum EnumUnit {
-	MILLIMETERS(LengthUnit.MILLIMETRE),
-	INCHES(LengthUnit.INCH);
+	MILLIMETERS(LengthUnit.MILLIMETRE, SpeedUnit.MILLIMETRE_PER_MINUTE),
+	INCHES(LengthUnit.INCH, SpeedUnit.INCH_PER_MINUTE);
 	
 	private Unit<Length> unit;
-
-	private EnumUnit(Unit<Length> unit) {
+	private Unit<Speed> feedUnit;
+	
+	private EnumUnit(Unit<Length> unit, Unit<Speed> feedUnit) {
 		this.unit = unit;
+		this.feedUnit = feedUnit;
 	}
 
 	public Unit<Length> getUnit() {
 		return unit;
+	}
+
+	/**
+	 * @return the feedUnit
+	 */
+	public Unit<Speed> getFeedUnit() {
+		return feedUnit;
 	}
 }

@@ -22,6 +22,7 @@ import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.log.GkLog;
 
 /**
@@ -96,8 +97,8 @@ public class TinyGJoggingRunnable implements Runnable {
 				waitJoggingActive();
 				if(isReadyToJog()){
 					if(axis != null && feed != null && step != null){
-						Unit<Length> unit = tinygService.getGCodeContext().getUnit().getUnit();
-						String command = "G1F"+ QuantityUtils.format(feed);
+						EnumUnit contextUnit = tinygService.getGCodeContext().getUnit();
+						String command = "G1F"+ QuantityUtils.format(feed, 0, true, false, contextUnit.getFeedUnit());
 						EnumDistanceMode distanceMode = tinygService.getGCodeContext().getDistanceMode();
 						if(distanceMode == EnumDistanceMode.ABSOLUTE){
 							command = startAbsoluteJog(command);
@@ -105,7 +106,7 @@ public class TinyGJoggingRunnable implements Runnable {
 							command = startRelativeJog(command);
 						}
 						tinygCommunicator.send(GkUtils.toBytesList(command));
-
+						System.err.println("tinygCommunicator.send(GkUtils.toBytesList(command));");
 						if(precise){
 							this.jogging = false;
 						}

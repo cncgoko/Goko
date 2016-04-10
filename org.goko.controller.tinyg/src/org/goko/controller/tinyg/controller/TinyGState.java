@@ -100,14 +100,14 @@ public class TinyGState extends MachineValueStore{
 		storeValue(TinyG.POSITION_Y, "Y", "The Y position of the machine",  Length.ZERO);
 		storeValue(TinyG.POSITION_Z, "Z", "The Z position of the machine",  Length.ZERO);
 		storeValue(TinyG.POSITION_A, "A", "The A position of the machine", StringUtils.EMPTY);
-		storeValue(TinyG.VELOCITY, "Velocity", "The current velocity of the machine", StringUtils.EMPTY);
+		storeValue(TinyG.VELOCITY, "Velocity", "The current velocity of the machine", Speed.ZERO);
 		storeValue(TinyG.SPINDLE_STATE, "Spindle", "The current state of the spindle", "false");
 		storeValue(TinyG.CONTEXT_UNIT, "Units", "The units in use", StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_COORD_SYSTEM, "Coordinates", "The coordinate system",StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
 		storeValue(TinyG.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);
 		storeValue(TinyG.TINYG_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", 0);
-		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", StringUtils.EMPTY);
+		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
 		addListener(this);
 		offsets = new HashMap<ICoordinateSystem, Tuple6b>();
 		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
@@ -192,15 +192,15 @@ public class TinyGState extends MachineValueStore{
 		updateValue(TinyG.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
 		updateValue(TinyG.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
 		updateValue(TinyG.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));		
-		updateValue(TinyG.CONTEXT_FEEDRATE, GokoPreference.getInstance().format(gcodeContext.getFeedrate(), false));		
+		updateValue(TinyG.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());		
 	}
 
 	/**
 	 * @return the velocity
 	 * @throws GkException
 	 */
-	public String getVelocity() throws GkException {
-		return getValue(TinyG.VELOCITY, String.class).getValue();
+	public Speed getVelocity() throws GkException {
+		return getValue(TinyG.VELOCITY, Speed.class).getValue();
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException
 	 */
 	public void setVelocity(Speed velocity) throws GkException {
-		updateValue(TinyG.VELOCITY, GokoPreference.getInstance().format(velocity, true, true));
+		updateValue(TinyG.VELOCITY, velocity);
 	}
 
 	/**

@@ -29,6 +29,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.dimension.Dimension;
 import org.goko.core.common.measure.dimension.QuantityDimension;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
@@ -78,6 +79,9 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	public GokoPreference() throws GkException {
 		super(NODE_ID);
 		mapConfiguredUnits = new HashMap<Dimension, Unit>();
+		// Default units
+		mapConfiguredUnits.put(QuantityDimension.LENGTH, LengthUnit.MILLIMETRE);		
+		mapConfiguredUnits.put(QuantityDimension.SPEED, SpeedUnit.MILLIMETRE_PER_MINUTE);	
 		addPropertyChangeListener(this);
 	}
 		

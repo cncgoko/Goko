@@ -127,12 +127,12 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		mapVerticesGroupByIdLine 	= new HashMap<Integer, VerticesGroupByLine>();
 		
 		GCodeContext context = new GCodeContext(gcodeContextProvider.getGCodeContext());
-		context.setX(null);
-		context.setY(null);
-		context.setZ(null);
-		context.setA(null);
-		context.setB(null);
-		context.setC(null);
+//		context.setX(null);
+//		context.setY(null);
+//		context.setZ(null);
+//		context.setA(null);
+//		context.setB(null);
+//		context.setC(null);
 
 		IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(idGCodeProvider);		
 		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, provider);

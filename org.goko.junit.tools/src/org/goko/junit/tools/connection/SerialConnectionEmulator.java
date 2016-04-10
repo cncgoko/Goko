@@ -93,11 +93,11 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 	 */
 	@Override
 	public void send(List<Byte> data, DataPriority priority) throws GkException {
-		sentBuffer.add(data);
-		notifyOutputListeners(data);
+		sentBuffer.add(data);		
 		if(debugOutputConsole){
 			LOG.info("Out: ["+GkUtils.toString(data)+"]");
 		}
+		notifyOutputListeners(data);
 	}
 
 	/** {@inheritDoc}

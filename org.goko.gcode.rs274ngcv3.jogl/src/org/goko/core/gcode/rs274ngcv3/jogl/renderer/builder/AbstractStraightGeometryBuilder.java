@@ -8,6 +8,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.gcode.element.IInstructionType;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -35,13 +36,13 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 		if(instruction != null){
 			if(settings.isRotaryAxisEnabled()){
 				// The complete angle around the 4th axis
-				double deltaAngle = 0;
+				Angle deltaAngle = Angle.ZERO;
 				// FIXME Use a setting to define the 4th axis and then do a dynamic angle detection around the axe A,B or C
 				if( instruction.getA() != null){
-					deltaAngle = context.getA().doubleValue(AngleUnit.DEGREE_ANGLE) - instruction.getA().doubleValue(AngleUnit.DEGREE_ANGLE);
+					deltaAngle = context.getA().subtract(instruction.getA());
 				}
 
-				if(Math.abs(deltaAngle) <= 0.0001){
+				if(deltaAngle.abs().lowerThan(Angle.valueOf("0.0001", AngleUnit.DEGREE_ANGLE))){
 					return renderLinearLine(context, instruction);
 				}else{
 					return renderRotaryLine(context, instruction);
