@@ -125,7 +125,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @throws GkException GkException
 	 */
 	private void notifyTokenCompleteIfRequired() throws GkException {
-		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0){			
+		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0 && pendingCommandCount.get() <= 0){			
 			notifyTokenComplete();
 		}
 	}
