@@ -109,7 +109,7 @@ public class TinyGConfigurationCommunicationPage extends AbstractTinyGConfigurat
 					{"19200","2"},
 					{"38400","3"},
 					{"57600","4"},
-					{"115200","8"},
+					{"115200","5"},
 					{"230400","6"}					
 				};
 			baudrateFieldEditor.setEntry(baudrate);			
