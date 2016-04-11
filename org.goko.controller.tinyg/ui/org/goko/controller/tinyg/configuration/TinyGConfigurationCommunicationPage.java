@@ -104,7 +104,7 @@ public class TinyGConfigurationCommunicationPage extends AbstractTinyGConfigurat
 //			choicesBaudrate.add(new LabeledValue<BigDecimal>(new BigDecimal("4"), "57600"));
 //			choicesBaudrate.add(new LabeledValue<BigDecimal>(new BigDecimal("5"), "115200"));
 //			choicesBaudrate.add(new LabeledValue<BigDecimal>(new BigDecimal("6"), "230400"));
-			String[][] baudrate = new String[][]{ // 0=off, 1=filtered, 2=verbose
+			String[][] baudrate = new String[][]{ 
 					{"9600","1"},			
 					{"19200","2"},
 					{"38400","3"},
