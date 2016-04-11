@@ -128,9 +128,10 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 				grbl.setOffsetCoordinate(offsetName, targetPoint);
 				
 			/* Received an offset position report */
-			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G92|G28|G30) .*\\]")){	
+			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G92|G28|G30).*\\]")){					
 //				Tuple6b targetPoint = new Tuple6b().setNull();
-//				String g92Offset = parseCoordinateSystem(trimmedData, targetPoint);
+//				String coordinateSystemName = parseCoordinateSystem(trimmedData, targetPoint);
+//				grbl.setOffsetCoordinate(coordinateSystemName, targetPoint);
 				// TODO Handle G92
 			/* Parser state report */
 			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G0|G1|G2|G3).*\\]")){

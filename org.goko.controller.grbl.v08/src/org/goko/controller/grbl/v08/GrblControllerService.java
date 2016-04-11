@@ -22,7 +22,6 @@ package org.goko.controller.grbl.v08;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,6 +37,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.goko.common.preferences.ScopedPreferenceStore;
+import org.goko.controller.grbl.v08.bean.EnumGrblCoordinateSystem;
 import org.goko.controller.grbl.v08.bean.GrblExecutionError;
 import org.goko.controller.grbl.v08.bean.StatusReport;
 import org.goko.controller.grbl.v08.configuration.GrblConfiguration;
@@ -55,6 +55,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
@@ -73,7 +74,6 @@ import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
@@ -234,8 +234,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	private void incrementUsedBufferCount(int amount) throws GkException{
 		usedBufferStack.add(amount);
-		setUsedGrblBuffer(getUsedGrblBuffer() + amount);
-		System.out.println("+"+amount);
+		setUsedGrblBuffer(getUsedGrblBuffer() + amount);		
 	}
 
 	/**
@@ -245,8 +244,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private void decrementUsedBufferCount() throws GkException{
 		if(CollectionUtils.isNotEmpty(usedBufferStack)){
 			Integer amount = usedBufferStack.poll();
-			setUsedGrblBuffer(getUsedGrblBuffer() - amount);
-			System.out.println("-"+amount);
+			setUsedGrblBuffer(getUsedGrblBuffer() - amount);			
 		}
 	}
 	/** (inheritDoc)
@@ -708,7 +706,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	protected void setOffsetCoordinate(String offsetIdentifier, Tuple6b value) throws GkException{
-		getGrblState().setOffset(EnumCoordinateSystem.getEnum(offsetIdentifier), value);
+		getGrblState().setOffset(EnumGrblCoordinateSystem.getEnum(offsetIdentifier), value);
 		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
 	}
 	/** (inheritDoc)
@@ -731,7 +729,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
-		return new ArrayList<ICoordinateSystem>(Arrays.asList(EnumCoordinateSystem.values()));
+		return new ArrayList<ICoordinateSystem>(Arrays.asList(EnumGrblCoordinateSystem.values()));
 	}
 
 	/** (inheritDoc)
@@ -985,9 +983,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(axis.isNegative()){
 			command+="-";
 		}
-		command += step.value(getGCodeContext().getUnit().getUnit());
+		command += QuantityUtils.format(step, 5, true, false, getGCodeContext().getUnit().getUnit());
 		if(feed != null){
-			command += "F"+feed;
+			command += "F"+QuantityUtils.format(feed, 0, true, false, getGCodeContext().getUnit().getFeedUnit());
 		}
 		List<Byte> lstBytes = GkUtils.toBytesList(command);
 		communicator.send(lstBytes);
@@ -1013,7 +1011,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(StringUtils.isBlank(stepStr)){
 			stepStr = GokoPreference.getInstance().format(Length.valueOf(1, LengthUnit.MILLIMETRE), true, true);
 		}
-		this.step = Length.valueOf(new BigDecimal(stepStr), Units.MILLIMETRE);
+		this.step = Length.parse(stepStr);
 	}
 
 	private void persistValues() throws GkException{
