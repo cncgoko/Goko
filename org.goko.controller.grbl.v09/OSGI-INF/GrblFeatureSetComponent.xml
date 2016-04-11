@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.controller.grbl.v09.configuration.featureset.Grblv09FeatureSet">
+   <implementation class="org.goko.controller.grbl.v09.configuration.featureset.Grblv09FeatureSet"/>
+   <service>
+      <provide interface="org.goko.core.feature.IFeatureSet"/>
+   </service>
+   <reference cardinality="1..1" interface="org.goko.core.connection.IConnectionService" name="IConnectionService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
+   <reference cardinality="1..1" interface="org.osgi.service.event.EventAdmin" name="EventAdmin" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.common.applicative.logging.IApplicativeLogService" name="IApplicativeLogService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
+   <reference cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
+</scr:component>

@@ -3,6 +3,7 @@
  */
 package org.goko.core.internal;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +88,12 @@ public class TargetBoardSelectionDialog extends Dialog {
 	}
 
 	private void initComboContent(){
+		lstTargetBoard.sort(new Comparator<TargetBoard>() {
+			@Override
+			public int compare(TargetBoard o1, TargetBoard o2) {
+				return o1.getCode().compareTo(o2.getCode());
+			}
+		});
 		String[][] entry = new String[lstTargetBoard.size()][];
 		int i = 0;
 		for (TargetBoard board : lstTargetBoard) {

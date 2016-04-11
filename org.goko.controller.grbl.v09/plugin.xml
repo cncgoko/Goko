@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition id="org.goko.targetboard.grbl">
+         <with variable="org.goko.targetBoard">
+            <equals value="grbl.v09">
+            </equals>
+         </with>
+      </definition>
+   </extension>
+   <extension
+         id="org.goko.controller.grbl.v09.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            targetBoard="grbl.v08"
+            uri="fragments/GrblFragment.e4xmi">
+      </fragment>
+   </extension>
+</plugin>
