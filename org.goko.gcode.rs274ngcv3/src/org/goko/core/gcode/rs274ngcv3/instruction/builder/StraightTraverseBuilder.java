@@ -26,7 +26,9 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		if(GCodeWordUtils.containsWordByLetter("X", words) 
+		if(GCodeWordUtils.containsWordRegex("G(0?)0", words)){
+			return true; // Explicit G0
+		}else if(GCodeWordUtils.containsWordByLetter("X", words)		
 		|| GCodeWordUtils.containsWordByLetter("Y", words)
 		|| GCodeWordUtils.containsWordByLetter("Z", words)
 		|| GCodeWordUtils.containsWordByLetter("A", words)
@@ -40,9 +42,6 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
-			}else{
-				//Context motion mode is not FEEDRATE, we need an explicit G0
-				return GCodeWordUtils.containsWordRegex("G(0?)0", words);
 			}
 		}
 		return false;
