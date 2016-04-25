@@ -3,7 +3,7 @@
 <plugin>
 	<extension
          point="org.eclipse.core.expressions.definitions">
-      <definition id="org.goko.targetboard.grbl">
+      <definition id="org.goko.targetboard.grbl.v09">
          <with variable="org.goko.targetBoard">
             <equals value="grbl.v09">
             </equals>
@@ -15,7 +15,7 @@
          point="org.eclipse.e4.workbench.model">
       <fragment
             apply="always"
-            targetBoard="grbl.v08"
+            targetBoard="grbl.v09"
             uri="fragments/GrblFragment.e4xmi">
       </fragment>
    </extension>

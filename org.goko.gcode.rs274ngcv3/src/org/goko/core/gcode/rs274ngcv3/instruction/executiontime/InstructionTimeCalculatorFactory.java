@@ -24,6 +24,7 @@ public class InstructionTimeCalculatorFactory {
 		calculators.add(new StraightTraverseTimeCalculator());
 		calculators.add(new ArcFeedTimeCalculator());
 		calculators.add(new StraightProbeTimeCalculator());
+		calculators.add(new DwellTimeCalculator());
 	}
 	
 	/**

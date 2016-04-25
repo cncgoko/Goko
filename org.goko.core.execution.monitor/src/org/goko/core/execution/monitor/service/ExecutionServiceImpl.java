@@ -354,7 +354,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	 */
 	@Override
 	public void pauseQueueExecution() throws GkException {
-		if(getExecutionState() != ExecutionState.PAUSED){
+		if(getExecutionState() != ExecutionState.PAUSED && getExecutionState() != ExecutionState.IDLE){
 			if(executionQueueRunnable != null){
 				executionQueueRunnable.pause();
 			}

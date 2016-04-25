@@ -171,25 +171,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		return tinygState.getWorkPosition();
 	}
 
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.element.IGCodeProvider)
-	 */
-	@Override
-	public ExecutionToken<ExecutionTokenState> executeGCode(IGCodeProvider gcodeProvider) throws GkException{
-		if(!isReadyForFileStreaming()){
-			throw new GkFunctionalException("TNG-003");
-		}
-		checkExecutionControl();
-		checkVerbosity(configuration);
-		updateQueueReport();
-		//ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeService, gcodeProvider, ExecutionTokenState.NONE);
-		//token.setMonitorService(getMonitorService());
-		//executionQueue.add(token);
-
-		throw new GkTechnicalException("To implement or remove");
-	}
-
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()
 	 */
@@ -807,7 +788,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			cmd += "Z"+getPositionAsString(position.getZ());
 		}
 		IGCodeProvider command = gcodeService.parse(cmd);
-		executeGCode(command);
+		//executeGCode(command);
+		throw new GkTechnicalException("To implement or remove");
 	}
 
 	protected String getPositionAsString(Length q) throws GkException{

@@ -41,6 +41,7 @@ public class GrblMachineState extends MachineState{
 	public static final GrblMachineState HOMING 		= new GrblMachineState(9,"Homing");
 	public static final GrblMachineState IDLE 			= new GrblMachineState(100, "Idle");
 	public static final GrblMachineState CHECK 			= new GrblMachineState(10,"Check");
+	public static final GrblMachineState HOLD 			= new GrblMachineState(11,"Hold");
 	
 	public GrblMachineState(int code, String label){
 		super(code,label);

@@ -35,7 +35,7 @@ public class TinyGJoggingRunnable implements Runnable {
 	private static final String PERSISTED_FEED = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.feed";
 	private static final String PERSISTED_STEP = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.step";
 	private static final String PERSISTED_PRECISE = "org.goko.controller.tinyg.controller.TinyGJoggingRunnable.precise";
-	private static final BigDecimal WAIT_FACTOR = new BigDecimal("0.6");
+	private static final BigDecimal WAIT_FACTOR = new BigDecimal("0.5");
 	private boolean jogging;
 	private boolean stopped;
 	private ITinygControllerService tinygService;
@@ -191,7 +191,7 @@ public class TinyGJoggingRunnable implements Runnable {
 		do{
 			synchronized ( lock ) {
 				try {
-					// Wait until we reached 80% of the target position so we don't spam  the board. Minimum wait is 10ms. 80% is completely arbitrary value
+					// Wait until we reached 50% of the target position so we don't spam  the board. Minimum wait is 10ms. 50% is completely arbitrary value
 					long wait = Math.max(10, step.divide(feed).multiply(WAIT_FACTOR).value(TimeUnit.MILLISECOND).longValue());					
 					lock.wait(wait);
 				} catch (InterruptedException e) {

@@ -12,7 +12,6 @@ import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.controller.bean.EnumControllerAxis;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
@@ -96,9 +95,8 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		// Let's check that flow control is enabled
 		assertEquals(new BigDecimal("2"), tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
 		
-		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10");
 		try{
-			tinyg.executeGCode(motionCode);
+			tinyg.verifyReadyForExecution();
 			fail();
 		}catch(GkFunctionalException e){
 			AssertGkFunctionalException.assertException(e, "TNG-002");
@@ -118,10 +116,9 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		tinyg.setPlannerBufferSpaceCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(new BigDecimal("0"), tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
-		
-		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10");
+				
 		try{
-			tinyg.executeGCode(motionCode);
+			tinyg.verifyReadyForExecution();
 			fail();
 		}catch(GkFunctionalException e){
 			AssertGkFunctionalException.assertException(e, "TNG-001");
@@ -141,10 +138,9 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		tinyg.setPlannerBufferSpaceCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(TinyGConfigurationValue.FLOW_CONTROL_RTS_CTS, tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
-		
-		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10");
+				
 		try{
-			tinyg.executeGCode(motionCode);
+			tinyg.verifyReadyForExecution();
 			fail();
 		}catch(GkFunctionalException e){
 			AssertGkFunctionalException.assertException(e, "TNG-005");
@@ -164,10 +160,9 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		tinyg.setPlannerBufferSpaceCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(TinyGConfigurationValue.FLOW_CONTROL_XON_XOFF, tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
-		
-		IGCodeProvider motionCode = gcodeService.parse("G90X10Y10");
+				
 		try{
-			tinyg.executeGCode(motionCode);
+			tinyg.verifyReadyForExecution();
 			fail();
 		}catch(GkFunctionalException e){
 			AssertGkFunctionalException.assertException(e, "TNG-006");

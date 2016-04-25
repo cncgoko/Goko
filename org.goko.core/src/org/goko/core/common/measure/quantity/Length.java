@@ -58,7 +58,7 @@ public class Length extends AbstractQuantity<Length> {
 		return Length.ZERO.parse(value, LengthUnit.getAll());
 	}
 	
-	public Time divide(Speed speed){
+	public Time divide(Speed speed){		
 		return Time.valueOf(this.value(LengthUnit.METRE).divide(speed.value(SpeedUnit.METRE_PER_SECOND), MathContext.DECIMAL64), TimeUnit.SECOND);
 	}
 }

@@ -50,13 +50,13 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 	}
 
 	private void initialize(IEclipseContext context){
-		//IEclipseContext ct = EclipseContextFactory.getServiceContext(FrameworkUtil.getBundle(getClass()).getBundleContext());
+		//IEclipseContext ct = EclipseContextFactory.getServiceContext(FrameworkUtil.getBundle(getClass()).getBundleContext());		
 		ContextInjectionFactory.inject(getController(), context);
 		try {
 			getController().initialize();
 		} catch (GkException e) {
 			LOG.error(e);
-		}
+		}		
 	}
 	public void displayError(GkException e){
 		getController().log(e);

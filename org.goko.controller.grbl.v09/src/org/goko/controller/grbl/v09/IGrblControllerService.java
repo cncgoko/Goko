@@ -26,6 +26,7 @@ import org.goko.core.controller.IControllerConfigurationFileImporter;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IJogService;
+import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
@@ -45,7 +46,8 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 												ICoordinateSystemAdapter<ICoordinateSystem>,
 												IControllerConfigurationFileExporter,
 												IControllerConfigurationFileImporter,
-												GCodeContextProvider{
+												GCodeContextProvider,
+												IProbingService{
 
 	void setConfiguration(GrblConfiguration configuration) throws GkException;
 
@@ -62,6 +64,8 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 	void setCheckModeEnabled(boolean enabled) throws GkException;
 
 	int getUsedGrblBuffer() throws GkException;
+	
+	int getUsedGrblPlannerBuffer() throws GkException;
 
 	void send(GCodeLine gCodeLine) throws GkException;
 	

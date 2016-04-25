@@ -76,7 +76,8 @@ public class GrblState extends MachineValueStore{
 		storeValue(Grbl.MACHINE_POSITION_X, "Machine X", "The X position of the machine", Length.ZERO);
 		storeValue(Grbl.MACHINE_POSITION_Y, "Machine Y", "The Y position of the machine", Length.ZERO);
 		storeValue(Grbl.MACHINE_POSITION_Z, "Machine Z", "The Z position of the machine", Length.ZERO);
-		storeValue(Grbl.GRBL_USED_BUFFER, "Grbl Buffer", "The space used in Grbl buffer", 0);
+		storeValue(Grbl.GRBL_USED_RXTX_BUFFER, "Grbl RX Buffer", "The space used in Grbl RX buffer", 0);
+		storeValue(Grbl.GRBL_PLANNER_BUFFER, "Grbl Planner Buffer", "The space used in Grbl planner buffer", 0);
 		storeValue(Grbl.CONTEXT_FEEDRATE, "Feedrate", "The current feedrate", new BigDecimal("0.000"));
 		storeValue(Grbl.CONTEXT_PLANE, "Plane", "The current plane", EnumPlane.XY_PLANE);
 		storeValue(Grbl.CONTEXT_MOTION_MODE, "Motion mode", "The current motion mode", EnumMotionMode.RAPID);
@@ -149,7 +150,7 @@ public class GrblState extends MachineValueStore{
 		}
 	}
 	public int getUsedBuffer() throws GkException{
-		MachineValue<Integer> buffer = getIntegerValue(Grbl.GRBL_USED_BUFFER);
+		MachineValue<Integer> buffer = getIntegerValue(Grbl.GRBL_USED_RXTX_BUFFER);
 		return buffer.getValue();
 	}
 	/**
@@ -249,11 +250,19 @@ public class GrblState extends MachineValueStore{
 	}
 
 	public void setUsedGrblBuffer(int usedGrblBuffer) throws GkException {
-		updateValue(Grbl.GRBL_USED_BUFFER, usedGrblBuffer);
+		updateValue(Grbl.GRBL_USED_RXTX_BUFFER, usedGrblBuffer);
 	}
 
 	public int getUsedGrblBuffer() throws GkException {
-		return getValue(Grbl.GRBL_USED_BUFFER, Integer.class).getValue();
+		return getValue(Grbl.GRBL_USED_RXTX_BUFFER, Integer.class).getValue();
+	}
+	
+	public void setPlannerBuffer(int usedGrblBuffer) throws GkException {
+		updateValue(Grbl.GRBL_PLANNER_BUFFER, usedGrblBuffer);
+	}
+
+	public int getPlannerBuffer() throws GkException {
+		return getValue(Grbl.GRBL_PLANNER_BUFFER, Integer.class).getValue();
 	}
 
 	public EnumUnit getContextUnit(){

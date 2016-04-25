@@ -29,6 +29,9 @@ public class StatusReport {
 	private Tuple6b machinePosition;
 	/** The work position of the machine */
 	private Tuple6b workPosition;
+	/** The number of used planner buffer slot */
+	private int plannerBuffer;
+	
 	/**
 	 * @return the state
 	 */
@@ -64,5 +67,17 @@ public class StatusReport {
 	 */
 	public void setWorkPosition(Tuple6b workPosition) {
 		this.workPosition = workPosition;
+	}
+	/**
+	 * @return the plannerBuffer
+	 */
+	public Integer getPlannerBuffer() {
+		return plannerBuffer;
+	}
+	/**
+	 * @param plannerBuffer the plannerBuffer to set
+	 */
+	public void setPlannerBuffer(Integer plannerBuffer) {
+		this.plannerBuffer = plannerBuffer;
 	}
 }

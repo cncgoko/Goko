@@ -71,13 +71,13 @@ public abstract class Grbl implements DefaultControllerValues {
 	public class Topic{
 		public class GrblExecutionError{
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String TOPIC		= "topic/grbl/execution/error";
+			public static final String TOPIC		= "topic/grbl/08/execution/error";
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String TITLE		= "prop/grbl/execution/error/title";
+			public static final String TITLE		= "prop/grbl/08/execution/error/title";
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String MESSAGE		= "prop/grbl/execution/error/message";
+			public static final String MESSAGE		= "prop/grbl/08/execution/error/message";
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String ERROR		= "prop/grbl/execution/error/error";
+			public static final String ERROR		= "prop/grbl/08/execution/error/error";
 		}
 	}
 }

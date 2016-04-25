@@ -42,7 +42,6 @@ import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -150,15 +149,6 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public Tuple6b getPosition() throws GkException {
 		return getCurrentService().getPosition();
-	}
-
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.element.IGCodeProvider)
-	 */
-	@Override
-	public IExecutionToken executeGCode(IGCodeProvider gcodeProvider) throws GkException {
-		return getCurrentService().executeGCode(gcodeProvider);
 	}
 
 	/** (inheritDoc)

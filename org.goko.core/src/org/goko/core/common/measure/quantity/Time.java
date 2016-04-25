@@ -40,8 +40,16 @@ public class Time extends AbstractQuantity<Time> {
 		return Time.valueOf(value, unit);
 	}
 	
+	public static Time valueOf(long value, Unit<Time> unit) {		
+		return new Time(new BigDecimal(value), unit);
+	}
+	
 	public static Time valueOf(BigDecimal value, Unit<Time> unit) {		
 		return new Time(value, unit);
+	}
+	
+	public static Time valueOf(int value, Unit<Time> unit) {		
+		return new Time(new BigDecimal(value), unit);
 	}
 	
 	public static Time parse(String value) throws GkException {		

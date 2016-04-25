@@ -44,7 +44,8 @@ public class GrblStartAction extends AbstractGrblControllerAction{
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return ObjectUtils.equals(GrblMachineState.MOTION_HOLDING, getControllerService().getState());
+		return ObjectUtils.equals(GrblMachineState.MOTION_HOLDING, getControllerService().getState())
+			|| ObjectUtils.equals(GrblMachineState.HOLD, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

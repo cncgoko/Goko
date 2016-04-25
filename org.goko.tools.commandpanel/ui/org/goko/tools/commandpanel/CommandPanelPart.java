@@ -685,6 +685,9 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		}else{
 			getController().bindEnableControlWithAction(btnPreciseJog, DefaultControllerAction.JOG_START);
 		}
+		
+		//getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
+		getController().addEnableBinding(jogStepSpinner, CommandPanelModel.PRECISE_JOG_ENABLED);				
 		getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
 		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
 				

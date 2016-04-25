@@ -34,6 +34,8 @@ import org.goko.core.common.measure.units.Unit;
  *
  */
 public class CommandPanelModel extends AbstractModelObject{
+	/** Precise jog enabled property name*/
+	public static final String PRECISE_JOG_ENABLED = "preciseJog";
 	private WritableMap actionState;
 	private Speed jogSpeed;
 	private BigDecimal jogIncrement;
@@ -90,7 +92,7 @@ public class CommandPanelModel extends AbstractModelObject{
 	 * @param incrementalJog the incrementalJog to set
 	 */
 	public void setPreciseJog(boolean preciseJog) {
-		firePropertyChange("preciseJog", this.preciseJog, this.preciseJog = preciseJog);
+		firePropertyChange(PRECISE_JOG_ENABLED, this.preciseJog, this.preciseJog = preciseJog);
 	}
 
 	public void setLengthUnitSymbol(String symbol) {

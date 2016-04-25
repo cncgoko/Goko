@@ -27,8 +27,6 @@ import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.gcode.element.IGCodeContext;
-import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.math.Tuple6b;
 /**
@@ -47,12 +45,6 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	 * @throws GkException an exception
 	 */
 	Tuple6b getPosition() throws GkException;
-	/**
-	 * Executes the GCode contained in the gcodeProvider
-	 * @param gcodeProvider the {@link IGCodeProvider}
-	 * @throws GkException GkException
-	 */
-	IExecutionToken<S> executeGCode(IGCodeProvider gcodeProvider) throws GkException;
 
 	/**
 	 * Determine if the controller is ready to stream a file

@@ -46,7 +46,8 @@ public class GrblStopAction extends AbstractGrblControllerAction{
 	public boolean canExecute() throws GkException {
 		return ObjectUtils.equals(GrblMachineState.MOTION_RUNNING, getControllerService().getState())
 			|| ObjectUtils.equals(GrblMachineState.RUNNING, getControllerService().getState())
-			|| ObjectUtils.equals(GrblMachineState.MOTION_HOLDING, getControllerService().getState());
+			|| ObjectUtils.equals(GrblMachineState.MOTION_HOLDING, getControllerService().getState())
+			|| ObjectUtils.equals(GrblMachineState.HOLD, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

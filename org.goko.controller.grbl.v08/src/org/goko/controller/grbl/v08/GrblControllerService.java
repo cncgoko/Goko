@@ -285,21 +285,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IControllerService#executeGCode(org.goko.core.gcode.bean.IGCodeProvider)
-	 */
-	@Override
-	public ExecutionToken<ExecutionTokenState> executeGCode(IGCodeProvider gcodeProvider) throws GkException {
-//		GrblGCodeExecutionToken token = new GrblGCodeExecutionToken(gcodeProvider, gcodeService);
-//		token.setMonitorService(monitorService);
-//		executionQueue.add(token);
-//		return token;
-		ExecutionToken<ExecutionTokenState> token = new ExecutionToken(gcodeService, gcodeProvider, ExecutionTokenState.NONE);
-		//token.setMonitorService(getMonitorService());
-		//executionQueue.add(token);
-		throw new GkTechnicalException("To implement or remove");
-	}
-
-	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#isReadyForFileStreaming()
 	 */
 	@Override

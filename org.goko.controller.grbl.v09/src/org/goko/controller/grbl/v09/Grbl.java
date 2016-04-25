@@ -51,8 +51,10 @@ public abstract class Grbl implements DefaultControllerValues {
     public static final String HOME_COMMAND = "$H";
     /** Read configuration command */
     public static final String CONFIGURATION = "$$";
-	/** Constant for Grbl used buffer value in value store */
-    public static final String GRBL_USED_BUFFER = "GrblControllerUsedRxBuffer";
+    /** Constant for Grbl used buffer value in value store */
+    public static final String GRBL_USED_RXTX_BUFFER = "GrblControllerUsedRxBuffer";
+    /** Constant for Grbl planner buffer value in value store */
+    public static final String GRBL_PLANNER_BUFFER = "GrblControllerUsedPlannerBuffer";
 	/** Grbl buffer size */
 	public static final int GRBL_BUFFER_SIZE = 120;
 	/** G54 offset name */
@@ -71,13 +73,13 @@ public abstract class Grbl implements DefaultControllerValues {
 	public class Topic{
 		public class GrblExecutionError{
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String TOPIC		= "topic/grbl/execution/error";
+			public static final String TOPIC		= "topic/grbl/09/execution/error";
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String TITLE		= "prop/grbl/execution/error/title";
+			public static final String TITLE		= "prop/grbl/09/execution/error/title";
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String MESSAGE		= "prop/grbl/execution/error/message";
+			public static final String MESSAGE		= "prop/grbl/09/execution/error/message";
 			/** GRBL Topic : Grbl execution was paused due to an error during execution */ 
-			public static final String ERROR		= "prop/grbl/execution/error/error";
+			public static final String ERROR		= "prop/grbl/09/execution/error/error";
 		}
 	}
 }

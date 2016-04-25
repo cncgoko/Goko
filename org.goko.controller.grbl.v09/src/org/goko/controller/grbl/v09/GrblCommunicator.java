@@ -21,6 +21,8 @@ package org.goko.controller.grbl.v09;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -36,6 +38,7 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
+import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -50,7 +53,14 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 	private ByteCommandBuffer incomingBuffer;
 	/** The connection service */
 	private IConnectionService connectionService;
-	
+	private static String NUMBER_PATTERN = "(-?[0-9]*\\.[0-9]*)";
+	private static String INTEGER_PATTERN = "([0-9]*)";
+	/** Pattern for decoding machine position in status report */
+	private static Pattern PATTERN_MPOS = Pattern.compile(".*MPos:"+NUMBER_PATTERN+","+NUMBER_PATTERN+","+NUMBER_PATTERN+".*");
+	/** Pattern for decoding work position in status report */
+	private static Pattern PATTERN_WPOS = Pattern.compile(".*WPos:"+NUMBER_PATTERN+","+NUMBER_PATTERN+","+NUMBER_PATTERN+".*");
+	/** Pattern for decoding planner buffer in status report */
+	private static Pattern PATTERN_BUF = Pattern.compile(".*Buf:"+INTEGER_PATTERN+".*");
 	/**
 	 * Constructor
 	 */
@@ -120,7 +130,12 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 			/* Received a configuration confirmation */
 			}else if(StringUtils.defaultString(trimmedData).matches("\\$[0-9]*=.*")){
 				grbl.handleConfigurationReading(trimmedData);
-
+				
+			/* Received a probe result */
+			}else if(StringUtils.defaultString(trimmedData).matches("\\$[PRB*]")){
+				//[PRB:0.000,0.000,0.000:0]
+				ProbeResult probeResult = parseProbeResult(StringUtils.defaultString(trimmedData));
+				grbl.handleProbeResult(probeResult);
 			/* Received a work position report */
 			}else if(StringUtils.defaultString(trimmedData).matches("\\[G5.*\\]")){
 				Tuple6b targetPoint = new Tuple6b().setNull();
@@ -154,6 +169,25 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 			LOG.info("Grbl version is "+tokens[1]);
 		}
 	}
+	
+	/**
+	 * Create a probe resultfrom the given string
+	 * @param strProbeReport the String representing the probe report
+	 * @return {@link ProbeResult}
+	 * @throws GkException GkException
+	 */
+	private ProbeResult parseProbeResult(String strProbeReport) throws GkException{
+		String[] tokens = StringUtils.split(strProbeReport, ":");
+		int probeSuccess = Integer.valueOf(tokens[2]);
+		String[] pos = StringUtils.split(tokens[1], ",");
+		Length x = Length.valueOf(pos[0], grbl.getConfiguration().getReportUnit());
+		Length y = Length.valueOf(pos[0], grbl.getConfiguration().getReportUnit());
+		Length z = Length.valueOf(pos[0], grbl.getConfiguration().getReportUnit());		
+		ProbeResult result = new ProbeResult();
+		result.setProbed(probeSuccess == 1);
+		result.setProbedPosition(new Tuple6b(x, y,z));
+		return result;
+	}
 	/**
 	 * Create a status report from the given string
 	 * @param strStatusReport the String representing the status report
@@ -167,24 +201,38 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		GrblMachineState grblState = grbl.getGrblStateFromString (state);
 		result.setState(grblState);
 
-		// Looking for MPosition
-		String mpos = StringUtils.substringBetween(strStatusReport, "MPos:", ",WPos");
-		String wpos = StringUtils.substringBetween(strStatusReport, "WPos:",">");
 		Tuple6b machinePosition = new Tuple6b().setNull();
 		Tuple6b workPosition = new Tuple6b().setNull();
-		String[] machineCoordinates = StringUtils.split(mpos,",");
-
-		parseTuple(machineCoordinates, machinePosition);
-		result.setMachinePosition(machinePosition);
-
-		String[] workCoordinates = StringUtils.split(wpos,",");
-		parseTuple(workCoordinates, workPosition);
-		result.setWorkPosition(workPosition);
-
+		// Looking for MPosition
+		Matcher mposMatcher = PATTERN_MPOS.matcher(strStatusReport);
+		if(mposMatcher.matches()){
+			String mposX = mposMatcher.group(1);
+			String mposY = mposMatcher.group(2);
+			String mposZ = mposMatcher.group(3);
+			parseTuple(machinePosition, mposX, mposY, mposZ);
+			result.setMachinePosition(machinePosition);
+		}
+		// Looking for WPosition
+		Matcher wposMatcher = PATTERN_WPOS.matcher(strStatusReport);
+		if(wposMatcher.matches()){
+			int t = wposMatcher.groupCount();
+			String wposX = wposMatcher.group(1);
+			String wposY = wposMatcher.group(2);
+			String wposZ = wposMatcher.group(3);
+			parseTuple(workPosition, wposX, wposY, wposZ);
+			result.setWorkPosition(workPosition);
+		}
+		
+		// Looking for buffer planner occupation		
+		Matcher bufMatcher = PATTERN_BUF.matcher(strStatusReport);
+		if(bufMatcher.matches()){
+			Integer plannerBuffer = Integer.valueOf(bufMatcher.group(1));			
+			result.setPlannerBuffer(plannerBuffer);
+		}
 		return result;
 	}
 
-	private void parseTuple(String[] values, Tuple6b target) throws GkException{
+	private void parseTuple(Tuple6b target, String... values) throws GkException{	
 		if(values != null && values.length >= 3){
 			Unit<Length> unit = grbl.getConfiguration().getReportUnit();
 			if(NumberUtils.isNumber(values[0])){

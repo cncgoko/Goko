@@ -44,10 +44,18 @@ public class BigDecimalUtils {
 	}
 	
 	public static String toString(BigDecimal value){
+		return toString(value, null);
+	}
+	
+	public static String toString(BigDecimal value, Integer decimalCount){
 		DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance();
 		
 		DecimalFormatSymbols sym = df.getDecimalFormatSymbols();
 		sym.setDecimalSeparator('.');
+		if(decimalCount != null){
+			df.setMinimumFractionDigits(decimalCount);
+			df.setMaximumFractionDigits(decimalCount);
+		}
 		df.setDecimalFormatSymbols(sym);
 		df.setGroupingUsed(false);
 		df.setParseBigDecimal(true);		
