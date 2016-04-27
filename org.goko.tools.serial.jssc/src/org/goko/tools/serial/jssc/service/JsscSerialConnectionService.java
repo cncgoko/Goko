@@ -23,6 +23,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -78,8 +79,8 @@ public class JsscSerialConnectionService extends AbstractGokoService implements 
 	 */
 	@Override
 	public void startService() throws GkException {		
-		this.inputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
-		this.outputListeners 	 = new ArrayList<WeakReference<IConnectionDataListener>>();
+		this.inputListeners 	 = new CopyOnWriteArrayList<WeakReference<IConnectionDataListener>>();
+		this.outputListeners 	 = new CopyOnWriteArrayList<WeakReference<IConnectionDataListener>>();
 		this.connectionListeners = new ArrayList<WeakReference<IConnectionListener>>();
 	}
 
@@ -264,9 +265,9 @@ public class JsscSerialConnectionService extends AbstractGokoService implements 
 			}
 		}
 	}
-
+	
 	protected void notifyInputListeners(List<Byte> data){
-		if(CollectionUtils.isNotEmpty(inputListeners)){
+		if(CollectionUtils.isNotEmpty(inputListeners)){					
 			for(WeakReference<IConnectionDataListener> reference : inputListeners){
 				if(reference.get() != null){
 					try {
@@ -276,7 +277,7 @@ public class JsscSerialConnectionService extends AbstractGokoService implements 
 					} 
 				}
 			}
-		}
+		}		
 	}
 
 	protected void notifyOutputListeners(List<Byte> data){
