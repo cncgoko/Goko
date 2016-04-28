@@ -11,7 +11,9 @@ import java.lang.ref.WeakReference;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.AbstractIdBean;
+import org.goko.core.config.GokoPreference;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
+import org.goko.tools.viewer.jogl.service.KeyboardJogAdatper;
 import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 
 public class KeyboardJogOverlay extends AbstractIdBean implements IOverlayRenderer {
@@ -19,10 +21,13 @@ public class KeyboardJogOverlay extends AbstractIdBean implements IOverlayRender
 	private Font jogWarnFont;
 	/** Reference to the canvas */
 	private WeakReference<GokoJoglCanvas> canvasReference;
+	/** Keyboard jog adapter */
+	private WeakReference<KeyboardJogAdatper> keyboardJogAdatper;
 	
-	public KeyboardJogOverlay(GokoJoglCanvas canvas) {
+	public KeyboardJogOverlay(GokoJoglCanvas canvas, KeyboardJogAdatper keyboardJogAdatper) {
 		this.canvasReference = new WeakReference<GokoJoglCanvas>(canvas);
 		this.jogWarnFont = new Font("SansSerif", Font.BOLD, 16);
+		this.keyboardJogAdatper = new WeakReference<KeyboardJogAdatper>(keyboardJogAdatper);
 	}
 	
 	/** (inheritDoc)
@@ -33,7 +38,7 @@ public class KeyboardJogOverlay extends AbstractIdBean implements IOverlayRender
 		if(getCanvas().isKeyboardJogEnabled()){
 			// Draw a big red warning saying jog is enabled
 			FontRenderContext 	frc = g2d.getFontRenderContext();
-			String warn = "Keyboard jog enabled";
+			String warn = "Keyboard jog enabled at "+ GokoPreference.getInstance().format(keyboardJogAdatper.get().getFeedrate());
 			GlyphVector gv = jogWarnFont.createGlyphVector(frc, warn);
 		    Rectangle 	glyphBounds = gv.getPixelBounds(frc, 0, 0);
 		    int x = (bounds.width - glyphBounds.width) / 2;

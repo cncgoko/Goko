@@ -247,7 +247,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		if(jogService != null){
 			this.keyboardJogAdapter = new KeyboardJogAdatper(getCanvas(), jogService);
 			canvas.addKeyListener( keyboardJogAdapter );
-			addOverlayRenderer(new KeyboardJogOverlay(canvas));
+			addOverlayRenderer(new KeyboardJogOverlay(canvas, keyboardJogAdapter));
 		}		
 	}
 	
