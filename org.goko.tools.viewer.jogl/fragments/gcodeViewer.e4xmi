@@ -2,7 +2,7 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_sp-ZcEoGEeOQkqEuzzX4mQ">
   <imports xsi:type="commands:BindingContext" xmi:id="_zPZFEGqzEeW_4J3oW3NGfQ" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_utMOYEoGEeOQkqEuzzX4mQ" featurename="children" parentElementId="goko.application.partstack">
-    <elements xsi:type="basic:Part" xmi:id="_wDer4EoGEeOQkqEuzzX4mQ" elementId="goko.application.parts.viewer" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.GCodeViewer3D" label="GCode viewer" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/layer-shape-polygon.png">
+    <elements xsi:type="basic:Part" xmi:id="_wDer4EoGEeOQkqEuzzX4mQ" elementId="goko.application.parts.viewer" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.GCodeViewer3D" label="GCode viewer" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/layer-shape-polygon.png" bindingContexts="_UfPycA4WEeaGiYxZlMJxsQ">
       <persistedState key="org.goko.tools.viewer.jogl.enabled" value="true"/>
       <persistedState key="org.goko.tools.viewer.jogl.gridEnabled" value="true"/>
       <persistedState key="org.goko.tools.viewer.jogl.lockCameraOnTool" value="false"/>
@@ -58,7 +58,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_JXM7MJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.5" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.SetCameraHandler" command="_HuLH4J5xEeWki_YL0eV3Fg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wuC_IGqyEeW_4J3oW3NGfQ" featurename="bindingTables" parentElementId="goko.application">
-    <elements xsi:type="commands:BindingTable" xmi:id="_yylCsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.bindingtable.0" bindingContext="_zPZFEGqzEeW_4J3oW3NGfQ">
+    <elements xsi:type="commands:BindingTable" xmi:id="_yylCsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.bindingtable.0" bindingContext="_UfPycA4WEeaGiYxZlMJxsQ">
       <bindings xmi:id="_zCcqsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.keybinding.0" keySequence="M1+J" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
       <bindings xmi:id="_Cois8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.2" keySequence="M2+T" command="_HuLH4J5xEeWki_YL0eV3Fg">
         <parameters xmi:id="_EdbK8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.4" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.top"/>
@@ -73,5 +73,8 @@
         <parameters xmi:id="_VLN98M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.7" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.front"/>
       </bindings>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RCqW0A4WEeaGiYxZlMJxsQ" featurename="children" parentElementId="org.eclipse.ui.contexts.dialogAndWindow">
+    <elements xsi:type="commands:BindingContext" xmi:id="_UfPycA4WEeaGiYxZlMJxsQ" elementId="org.goko.tools.viewer.jogl.bindingcontext" name="Jogl Binding context"/>
   </fragments>
 </fragment:ModelFragments>
