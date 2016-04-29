@@ -33,7 +33,7 @@ public class AngleUnit {
 	/**
 	 * Degrees (angular degrees, symbol ï¿½ ) 
 	 */
-	public static final TransformedUnit<Angle> DEGREE_ANGLE = add(new TransformedUnit<Angle>("°", RADIAN, new MultiplyConverter(new BigDecimal("180").divide(BigDecimal.valueOf(Math.PI), RoundingMode.HALF_UP))));
+	public static final TransformedUnit<Angle> DEGREE_ANGLE = add(new TransformedUnit<Angle>("°", RADIAN, new MultiplyConverter(BigDecimal.valueOf(Math.PI).divide(new BigDecimal("180"), RoundingMode.HALF_UP))));
 	
 	/**
 	 * Registers a Unit to the map of handled units

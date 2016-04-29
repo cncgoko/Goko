@@ -105,7 +105,7 @@ public final class QuantityUtils {
 		df.setMaximumFractionDigits(digitCount);
 		result = df.format(quantity.doubleValue(localTargetUnit));
 		if(displayUnit){
-			result += quantity.getUnit().getSymbol();
+			result += ptargetUnit.getSymbol();
 		}
 		return result;
 	}
