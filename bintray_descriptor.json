@@ -1,6 +1,6 @@
 {
     "package": {
-        "name": "auto-upload",
+        "name": "goko",
         "repo": "goko",
         "subject": "goko-0.3.0"
     },
@@ -15,7 +15,7 @@
 
     "files":
         [
-        {"includePattern": "org.goko-(.*).zip"}
+        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/org.goko-(.*).zip"}
         ],
     "publish": true
 }
