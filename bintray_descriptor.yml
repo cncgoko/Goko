@@ -1,0 +1,21 @@
+{
+    "package": {
+        "name": "auto-upload",
+        "repo": "goko",
+        "subject": "goko-0.3.0",
+    },
+
+    "version": {
+        "name": "0.3.0",
+        "desc": "Goko v0.3.0",
+        "released": "2016-05-01",
+        "vcs_tag": "0.3.0",
+        "gpgSign": false
+    },
+
+    "files":
+        [
+        {"includePattern": "org.goko-(.*).zip"},
+        ],
+    "publish": true
+}
