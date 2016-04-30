@@ -513,69 +513,13 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#getJogStep()
+	 * @see org.goko.core.controller.IJogService#jog(org.goko.core.controller.bean.EnumControllerAxis, org.goko.core.common.measure.quantity.Length, org.goko.core.common.measure.quantity.Speed)
 	 */
 	@Override
-	public Length getJogStep() throws GkException {		
-		return getCurrentService().getJogStep();
+	public void jog(EnumControllerAxis axis, Length step, Speed feedrate) throws GkException {
+		getCurrentService().jog(axis, step, feedrate);
 	}
 	
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
-	 */
-	@Override
-	public void setJogStep(Length step) throws GkException {
-		getCurrentService().setJogStep(step);		
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
-	 */
-	@Override
-	public void setJogFeedrate(Speed feed) throws GkException {
-		getCurrentService().setJogFeedrate(feed);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
-	 */
-	@Override
-	public Speed getJogFeedrate() throws GkException {
-		return getCurrentService().getJogFeedrate();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
-	 */
-	@Override
-	public void setJogPrecise(boolean precise) throws GkException {
-		getCurrentService().setJogPrecise(precise);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPrecise()
-	 */
-	@Override
-	public boolean isJogPrecise() throws GkException {
-		return getCurrentService().isJogPrecise();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis)
-	 */
-	@Override
-	public void startJog(EnumControllerAxis axis) throws GkException {
-		getCurrentService().startJog(axis);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
-	 */
-	@Override
-	public boolean isJogPreciseForced() throws GkException {		
-		return getCurrentService().isJogPreciseForced();
-	}
-
 	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#send(org.goko.core.gcode.element.GCodeLine)
 	 */

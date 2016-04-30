@@ -20,15 +20,19 @@
 package org.goko.tools.commandpanel;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -53,7 +57,11 @@ import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
@@ -64,6 +72,9 @@ import org.goko.tools.commandpanel.controller.CommandPanelController;
 import org.goko.tools.commandpanel.controller.CommandPanelModel;
 
 public class CommandPanelPart extends GkUiComponent<CommandPanelController, CommandPanelModel> implements IPropertyChangeListener {
+	private static final String JOG_PRECISE = "org.goko.tools.commandpanel.jogPrecise";
+	private static final String JOG_STEP = "org.goko.tools.commandpanel.jogStep";
+	private static final String JOG_FEEDRATE = "org.goko.tools.commandpanel.jogFeedrate";
 	private static GkLog LOG = GkLog.getLogger(CommandPanelPart.class);
 	private Button btnHome;
 	private Button btnStop;
@@ -608,7 +619,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		gd_btnSpindleOff.heightHint = 35;
 		btnSpindleOff.setLayoutData(gd_btnSpindleOff);
 		
-		getController().initilizeValues();
+		initFromPersistedState(part);
+		
 		if(getDataModel().getJogSpeed() != null){
 			jogSpeedSpinner.setSelection((int) (getDataModel().getJogSpeed().doubleValue(GokoPreference.getInstance().getSpeedUnit()) * Math.pow(10, jogSpeedSpinner.getDigits())));
 		}
@@ -618,10 +630,12 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 	protected void enableAdaptiveSpinner() throws GkException {
 		if(jogStepSpinner != null){
-			jogStepSpinner.setSelection((int) (getDataModel().getJogIncrement().doubleValue() * Math.pow(10, jogStepSpinner.getDigits())));
+			BigDecimal selection = getDataModel().getJogIncrement().multiply(new BigDecimal(10).pow(jogStepSpinner.getDigits())).value(GokoPreference.getInstance().getLengthUnit());
+			
+			jogStepSpinner.setSelection(selection.intValue());
 			jogStepSpinner.addSelectionListener(new SelectionAdapter() {
 				@Override
-				public void widgetSelected(SelectionEvent e) {
+				public void widgetSelected(SelectionEvent event) {
 					int selection = jogStepSpinner.getSelection();								
 					if (selection < 100) {
 						jogStepSpinner.setIncrement(10);
@@ -630,7 +644,12 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 					} else if (selection < 10000) {
 						jogStepSpinner.setIncrement(1000);
 					}
-					getDataModel().setJogIncrement(BigDecimal.valueOf(selection / Math.pow(10, jogStepSpinner.getDigits())));
+					BigDecimal step = new BigDecimal(selection).divide(new BigDecimal(10).pow(jogStepSpinner.getDigits()));
+					try {
+						getDataModel().setJogIncrement(Length.valueOf(step, GokoPreference.getInstance().getLengthUnit()));
+					} catch (GkException e) {
+						LOG.error(e);
+					}
 				}
 			});
 		}
@@ -717,6 +736,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindJogButton(btnJogAPos, EnumControllerAxis.A_POSITIVE);
 		getController().bindJogButton(btnJogANeg, EnumControllerAxis.A_NEGATIVE);
 		GokoPreference.getInstance().addPropertyChangeListener(this);
+		
 	}
 
 	@PreDestroy
@@ -745,5 +765,37 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 				}
 			}
 		});
+	}
+	
+	@PersistState
+	public void persistState(MPart part){
+		if(getDataModel() != null){
+			part.getPersistedState().put(JOG_PRECISE, String.valueOf(getDataModel().isPreciseJog()));
+			part.getPersistedState().put(JOG_STEP, QuantityUtils.format(getDataModel().getJogIncrement(), 4, false, true));
+			part.getPersistedState().put(JOG_FEEDRATE, QuantityUtils.format(getDataModel().getJogSpeed(), 4, false, true));
+		}
+	}
+	
+	private void initFromPersistedState(MPart part) throws GkException{
+		Map<String, String> state = part.getPersistedState();
+		String jogPrecise = state.get(JOG_PRECISE);
+		if(StringUtils.isNotEmpty(jogPrecise)){
+			getDataModel().setPreciseJog(BooleanUtils.toBoolean(jogPrecise));
+		}else{
+			getDataModel().setPreciseJog(false);
+		}
+		String jogStepStr = state.get(JOG_STEP);
+		if(StringUtils.isNotEmpty(jogStepStr)){
+			getDataModel().setJogIncrement(Length.parse(jogStepStr));
+		}else{
+			getDataModel().setJogIncrement(Length.valueOf(1, LengthUnit.MILLIMETRE));
+		}
+
+		String feedrateStr = state.get(JOG_FEEDRATE);
+		if(StringUtils.isNotEmpty(feedrateStr)){
+			getDataModel().setJogSpeed(Speed.parse(feedrateStr));
+		}else{
+			getDataModel().setJogSpeed(Speed.valueOf(1000, SpeedUnit.MILLIMETRE_PER_MINUTE));
+		}
 	}
 }

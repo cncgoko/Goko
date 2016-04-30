@@ -36,9 +36,9 @@ public class ScaleModifierExporter extends AbstractModifierExporter<ScaleModifie
 	@Override
 	protected void exportModifierData(XmlScaleModifier output, ScaleModifier input, IMapperService mapperService) throws GkException {
 		if(input.getScaleFactor() != null){
-			output.setScaleFActor(input.getScaleFactor().toPlainString());				
+			output.setScaleFactor(input.getScaleFactor().toPlainString());				
 		}else{
-			output.setScaleFActor("1");
+			output.setScaleFactor("1");
 		}
 	}
 

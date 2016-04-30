@@ -219,45 +219,6 @@ public class TinyGControllerServiceTestCase extends TestCase {
 	 *  Jogging tests
 	 * ************************************************/
 	
-	public void testJogStartAbsolute() throws Exception{
-		serialEmulator.clearOutputBuffer();
-		serialEmulator.clearSentBuffer();			
-
-		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"posx\":15.031,\"posy\":35.000,\"posz\":-46.462, \"dist\":0, \"stat\":1}},\"f\":[1,0,0,0]}");
-		serialEmulator.receiveDataWithEndChar("{\"qr\":32,\"qi\":1,\"qo\":1}");
-		
-		GCodeContext context = tinyg.getGCodeContext();
-		assertEquals(EnumDistanceMode.ABSOLUTE, context.getDistanceMode());
-		
-		tinyg.setJogStep(Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE));
-		tinyg.setJogFeedrate(Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));
-		tinyg.setJogPrecise(true);
-		
-		tinyg.startJog(EnumControllerAxis.X_POSITIVE);		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X16.03100\n",2000);		
-		
-		
-		tinyg.startJog(EnumControllerAxis.X_NEGATIVE);		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X14.03100\n",2000);
-		
-		
-		tinyg.startJog(EnumControllerAxis.Y_POSITIVE);		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y36.00000\n",2000);
-		
-		
-		tinyg.startJog(EnumControllerAxis.Y_NEGATIVE);		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y34.00000\n",2000);
-		
-		
-		tinyg.startJog(EnumControllerAxis.Z_POSITIVE);		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-45.46200\n",2000);
-		
-		
-		tinyg.startJog(EnumControllerAxis.Z_NEGATIVE);		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-47.46200\n",2000);
-		
-
-	}
 	
 	public void testJogStartRelative() throws Exception{
 		serialEmulator.clearOutputBuffer();
@@ -268,35 +229,29 @@ public class TinyGControllerServiceTestCase extends TestCase {
 				
 		GCodeContext context = tinyg.getGCodeContext();
 		assertEquals(EnumDistanceMode.RELATIVE, context.getDistanceMode());
+
 		
-		tinyg.setJogStep(Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE));
-		tinyg.setJogFeedrate(Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));
-		tinyg.setJogPrecise(true);
-		
-		tinyg.startJog(EnumControllerAxis.X_POSITIVE);		
+		tinyg.jog(EnumControllerAxis.X_POSITIVE, Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X1.000\n",1000);
 		
 		
-		tinyg.startJog(EnumControllerAxis.X_NEGATIVE);		
+		tinyg.jog(EnumControllerAxis.X_NEGATIVE, Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X-1.000\n",1000);
 		
 		
-		tinyg.setJogStep(Length.valueOf("0.01", LengthUnit.MILLIMETRE));
-		tinyg.startJog(EnumControllerAxis.Y_POSITIVE);		
+		tinyg.jog(EnumControllerAxis.Y_POSITIVE, Length.valueOf("0.01", LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y0.010\n",1000);
 		
 		
-		tinyg.startJog(EnumControllerAxis.Y_NEGATIVE);		
+		tinyg.jog(EnumControllerAxis.Y_NEGATIVE, Length.valueOf("0.01", LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y-0.010\n",1000);
 		
 		
-		tinyg.setJogStep(Length.valueOf("2.035", LengthUnit.MILLIMETRE));
-		
-		tinyg.startJog(EnumControllerAxis.Z_POSITIVE);		
+		tinyg.jog(EnumControllerAxis.Z_POSITIVE, Length.valueOf("2.035", LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z2.035\n",1000);
 		
 		
-		tinyg.startJog(EnumControllerAxis.Z_NEGATIVE);		
+		tinyg.jog(EnumControllerAxis.Z_NEGATIVE, Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-2.035\n",1000);
 		
 	}

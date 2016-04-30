@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -108,7 +107,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private IApplicativeLogService applicativeLogService;
 	/** Event admin service */
 	private EventAdmin eventAdmin;
-	private TinyGJoggingRunnable jogRunnable;
+	//private TinyGJoggingRunnable jogRunnable;
+	private TinyGJogging tinyGJogging;
 	private TinyGExecutor tinygExecutor;
 	private CompletionService<ProbeResult> completionService;
 	private List<ProbeCallable> lstProbeCallable;	
@@ -146,10 +146,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 		TinyGPreferences.getInstance();
 
-		jogRunnable = new TinyGJoggingRunnable(this, communicator);
-		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
-		jogExecutor.execute(jogRunnable);
-
+//		jogRunnable = new TinyGJoggingRunnable(this, communicator);
+//		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
+//		jogExecutor.execute(jogRunnable);
+		tinyGJogging = new TinyGJogging(this, communicator);
 		LOG.info("Successfully started "+getServiceId());
 	}
 
@@ -624,6 +624,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			});
 		}else{
 			communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
+			communicator.sendImmediately(GkUtils.toBytesList("G90"));
 		}
 				
 		executionService.stopQueueExecution();
@@ -877,10 +878,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void stopJog() throws GkException {
-//		if(!MachineState.ALARM.equals(getState())){ // Only stop if not alarmed
-//			stopMotion();
-//		}
-		jogRunnable.disableJogging();
+//		Force stop ?
+		stopMotion();
 	}
 
 	/** (inheritDoc)
@@ -1074,70 +1073,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
+	 * @see org.goko.core.controller.IJogService#jog(org.goko.core.controller.bean.EnumControllerAxis, org.goko.core.common.measure.quantity.Length, org.goko.core.common.measure.quantity.Speed)
 	 */
 	@Override
-	public void setJogStep(Length step) throws GkException {
-		jogRunnable.setStep(step);
+	public void jog(EnumControllerAxis axis, Length step, Speed feedrate) throws GkException {
+		tinyGJogging.jog(axis, step, feedrate);
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#getJogStep()
-	 */
-	@Override
-	public Length getJogStep() throws GkException {
-		return jogRunnable.getStep();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
-	 */
-	@Override
-	public void setJogFeedrate(Speed feed) throws GkException {
-		jogRunnable.setFeed(feed);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
-	 */
-	@Override
-	public Speed getJogFeedrate() throws GkException {
-		return jogRunnable.getFeed();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
-	 */
-	@Override
-	public void setJogPrecise(boolean precise) throws GkException {
-		jogRunnable.setPrecise(precise);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPrecise()
-	 */
-	@Override
-	public boolean isJogPrecise() throws GkException {
-		return jogRunnable.isPrecise();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
-	 */
-	@Override
-	public void startJog(EnumControllerAxis axis) throws GkException {
-		jogRunnable.setAxis(EnumTinyGAxis.getEnum(axis.getCode()));
-		jogRunnable.enableJogging();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
-	 */
-	@Override
-	public boolean isJogPreciseForced() throws GkException {
-		return false;
-	}
-
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
 	 */

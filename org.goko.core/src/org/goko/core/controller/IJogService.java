@@ -16,19 +16,8 @@ import org.goko.core.controller.bean.EnumControllerAxis;
  *
  */
 public interface IJogService {
-
-	public void setJogStep(Length step) throws GkException;	
-	public Length getJogStep() throws GkException;
 	
-	public void setJogFeedrate(Speed feed) throws GkException;	
-	public Speed getJogFeedrate() throws GkException;
-	
-	public void setJogPrecise(boolean precise) throws GkException;
-	public boolean isJogPrecise() throws GkException;
-	
-	public boolean isJogPreciseForced() throws GkException;
-	
-	public void startJog(EnumControllerAxis axis) throws GkException;	
+	public void jog(EnumControllerAxis axis, Length step, Speed feedrate) throws GkException;	
 	
 	public void stopJog() throws GkException;
 }

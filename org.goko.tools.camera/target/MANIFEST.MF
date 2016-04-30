@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.goko.tools.camera;singleton:=true
 Bundle-Name: Camera Tool
-Bundle-Version: 0.3.0.201604030859
+Bundle-Version: 0.3.0.201604261750
 Bundle-ClassPath: lib/webcam-capture-0.3.10.jar,lib/bridj-0.6.2.jar,.
 Require-Bundle: org.eclipse.swt,org.eclipse.e4.ui.model.workbench;bund
  le-version="1.1.100.v20150407-1430",org.slf4j.api;bundle-version="1.7

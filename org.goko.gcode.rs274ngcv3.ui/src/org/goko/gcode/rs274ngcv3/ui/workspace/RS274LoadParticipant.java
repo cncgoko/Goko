@@ -25,9 +25,11 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.ResourceLocationGCodeS
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ScaleModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.SegmentizeModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.TranslateModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.WrapModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ScaleModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.SegmentizeModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.TranslateModifierLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.WrapModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.source.ResourceLocationGCodeSourceLoader;
 
 public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS274GContent> implements IGokoService, IProjectLoadParticipant {
@@ -71,11 +73,14 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 		mapperService.addLoader(new SegmentizeModifierLoader());
 		mapperService.addLoader(new TranslateModifierLoader());		
 		mapperService.addLoader(new ScaleModifierLoader());		
+		mapperService.addLoader(new WrapModifierLoader());		
 		
 		mapperService.addExporter(new ResourceLocationGCodeSourceExporter());
-		mapperService.addExporter(new TranslateModifierExporter());
+		mapperService.addExporter(new TranslateModifierExporter());		
 		mapperService.addExporter(new SegmentizeModifierExporter());		
-		mapperService.addExporter(new ScaleModifierExporter());		
+		mapperService.addExporter(new ScaleModifierExporter());
+		mapperService.addExporter(new WrapModifierExporter());
+		
 		LOG.info("Successfully started "+getServiceId());
 	}
 

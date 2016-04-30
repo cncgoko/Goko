@@ -60,6 +60,7 @@ public class GCodeProvider implements IGCodeProvider {
 	 */
 	public void addLine(GCodeLine line) throws GkException{
 		line.setLineNumber(cacheLines.size());
+		line.setId(null); // Let's force the generation of a new id 
 		cacheLines.add(line);
 		linesSequence.add(line.getId());
 	}

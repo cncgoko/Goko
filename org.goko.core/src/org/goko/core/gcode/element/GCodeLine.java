@@ -16,18 +16,7 @@ public class GCodeLine implements IIdBean{
 		this.words 		= new ArrayList<GCodeWord>();
 		this.parameters = new ArrayList<GCodeParameter>();
 	}
-	
-	public GCodeLine(GCodeLine line) {
-		this();
-		this.id = line.id;
-		this.lineNumber = line.lineNumber;
-		
-		for (GCodeWord word : line.words) {
-			addWord(new GCodeWord(word));
-		}
-		
-		// TODO : add parameters copy
-	}
+
 	/**
 	 * @return the lineNumber
 	 */

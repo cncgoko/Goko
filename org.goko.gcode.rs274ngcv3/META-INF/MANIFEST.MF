@@ -15,6 +15,7 @@ Export-Package: org.goko.core.gcode.rs274ngcv3,
  org.goko.core.gcode.rs274ngcv3.modifier.scale,
  org.goko.core.gcode.rs274ngcv3.modifier.segmentize,
  org.goko.core.gcode.rs274ngcv3.modifier.translate,
+ org.goko.core.gcode.rs274ngcv3.modifier.wrap,
  org.goko.core.gcode.rs274ngcv3.parser,
  org.goko.core.gcode.rs274ngcv3.utils
 Service-Component: OSGI-INF/IRS274NGCv3.xml

@@ -33,15 +33,12 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.goko.common.preferences.ScopedPreferenceStore;
 import org.goko.controller.grbl.v09.bean.EnumGrblCoordinateSystem;
 import org.goko.controller.grbl.v09.bean.GrblExecutionError;
 import org.goko.controller.grbl.v09.bean.IGrblStateChangeListener;
@@ -102,7 +99,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public static final String SERVICE_ID = "Grbl v0.9 Controller";
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(GrblControllerService.class);
-	private static final String VALUE_STORE_ID = "org.goko.controller.grbl.v09.GrblControllerService";
 	/** GCode service*/
 	private IRS274NGCService gcodeService;
 	/** Status polling */
@@ -121,8 +117,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	/** Event admin object to send topic to UI*/
 	private EventAdmin eventAdmin;
-	/** Preference store */
-	private ScopedPreferenceStore preferenceStore;
 	/** The Grbl Executor */
 	private GrblExecutor grblExecutor;
 	/** The history of used buffer for the last sent command s*/
@@ -138,7 +132,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	/** The probe generated GCode */
 	private IGCodeProvider probeGCodeProvider;
 	/** Jog runnable */
-	private GrblJoggingRunnable jogRunnable;
+	private GrblJogging grblJogging;
 	
 	/**
 	 * Constructor
@@ -146,7 +140,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	public GrblControllerService() throws GkException {
 		communicator	= new GrblCommunicator(this);
-		preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, VALUE_STORE_ID);
 		usedBufferStack = new LinkedBlockingQueue<Integer>();
 		grblExecutor	= new GrblExecutor(this, gcodeService);
 		gcodeContextListener = new GCodeContextObservable();		
@@ -172,10 +165,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		grblState 			 = new GrblState();
 		grblState.addListener(this);
 		
-		jogRunnable = new GrblJoggingRunnable(this, communicator);
-		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
-		jogExecutor.execute(jogRunnable);
-		
+		grblJogging = new GrblJogging(this, communicator);		
 		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
@@ -619,8 +609,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void stopJog() throws GkException {
-		// Nothing to stop since it's only precise jog
-		jogRunnable.disableJogging();
+		// Nothing. Maybe plan a forced stop
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
@@ -696,7 +685,6 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void moveToAbsolutePosition(Tuple6b position) throws GkException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -952,113 +940,12 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
+	 * @see org.goko.core.controller.IJogService#jog(org.goko.core.controller.bean.EnumControllerAxis, org.goko.core.common.measure.quantity.Length, org.goko.core.common.measure.quantity.Speed)
 	 */
 	@Override
-	public void setJogStep(Length step) throws GkException {
-		this.jogRunnable.setStep(step);
+	public void jog(EnumControllerAxis axis, Length step, Speed feedrate) throws GkException {
+		grblJogging.jog(axis, step, feedrate);
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#getJogStep()
-	 */
-	@Override
-	public Length getJogStep() throws GkException {
-		return this.jogRunnable.getStep();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
-	 */
-	@Override
-	public void setJogFeedrate(Speed feed) throws GkException {
-		this.jogRunnable.setFeed(feed);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
-	 */
-	@Override
-	public Speed getJogFeedrate() throws GkException {
-		return this.jogRunnable.getFeed();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
-	 */
-	@Override
-	public void setJogPrecise(boolean precise) throws GkException {
-		this.jogRunnable.setPrecise(precise);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPrecise()
-	 */
-	@Override
-	public boolean isJogPrecise() throws GkException {
-		return true;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
-	 */
-	@Override
-	public void startJog(EnumControllerAxis axis) throws GkException {
-		jogRunnable.setAxis(EnumGrblAxis.getEnum(axis.getCode()));
-		jogRunnable.enableJogging();
-		if(true){
-			return;
-		}
-//		if(!GrblMachineState.READY.equals(getState())){
-//			return;
-//		}
-//		String oldDistanceMode = "G90";
-//		if(grblState.getDistanceMode() == EnumDistanceMode.RELATIVE){
-//			oldDistanceMode = "G91";
-//		}
-//		String command = "G91G1"+axis.getAxisCode();
-//		if(axis.isNegative()){
-//			command+="-";
-//		}
-//		command += QuantityUtils.format(step, 5, true, false, getGCodeContext().getUnit().getUnit());
-//		if(feed != null){
-//			command += "F"+QuantityUtils.format(feed, 0, true, false, getGCodeContext().getUnit().getFeedUnit());
-//		}
-//		List<Byte> lstBytes = GkUtils.toBytesList(command);
-//		communicator.send(lstBytes);
-//		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
-//		communicator.send(distanceModeBackup);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
-	 */
-	@Override
-	public boolean isJogPreciseForced() throws GkException {
-		return false; // does not support continuous jog
-	}
-
-//	private void initPersistedValues() throws GkException{
-//		String feedStr = preferenceStore.getString(PERSISTED_FEED);
-//		if(StringUtils.isBlank(feedStr)){
-//			feedStr = GokoPreference.getInstance().format(Speed.valueOf(600, SpeedUnit.MILLIMETRE_PER_MINUTE), true, true);
-//		}
-//		this.feed = Speed.parse(feedStr);
-//		String stepStr = preferenceStore.getString(PERSISTED_STEP);
-//		if(StringUtils.isBlank(stepStr)){
-//			stepStr = GokoPreference.getInstance().format(Length.valueOf(1, LengthUnit.MILLIMETRE), true, true);
-//		}
-//		this.step = Length.parse(stepStr);
-//	}
-//
-//	private void persistValues() throws GkException{
-//		if(feed != null){
-//			preferenceStore.putValue(PERSISTED_FEED, GokoPreference.getInstance().format(feed, true, true));
-//		}
-//		if(step != null){
-//			preferenceStore.putValue(PERSISTED_STEP, step.value(Units.MILLIMETRE).toPlainString());
-//		}
-//	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#verifyReadyForExecution()

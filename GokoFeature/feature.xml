@@ -704,6 +704,10 @@ Public License instead of this License.  But first, please read
          id="org.jogamp.jogl.feature"
          version="0.0.0"/>
 
+   <includes
+         id="org.goko.tools.shuttlexpress.feature"
+         version="0.0.0"/>
+
    <plugin
          id="Goko"
          download-size="0"
@@ -892,4 +896,5 @@ Public License instead of this License.  But first, please read
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>

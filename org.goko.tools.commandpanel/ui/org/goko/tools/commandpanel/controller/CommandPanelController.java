@@ -21,6 +21,8 @@ package org.goko.tools.commandpanel.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -38,8 +40,8 @@ import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
@@ -67,19 +69,18 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	private ICoordinateSystemAdapter<EnumCoordinateSystem> coordinateSystemAdapter;	
 	@Inject	
 	private IJogService jogService;
-
+	private Timer timer;
+	
 	public CommandPanelController(CommandPanelModel binding) {
 		super(binding);
 		getDataModel().addPropertyChangeListener(this);
+		
 	}
 
 	@Override
 	public void initialize() throws GkException {
 		controllerService.addListener(this);	
-		getDataModel().setPreciseJogForced(jogService.isJogPreciseForced());
-		if(jogService.isJogPreciseForced()){
-			getDataModel().setPreciseJog(true);
-		}
+		getDataModel().setPreciseJogForced(false);
 	}
 
 	public void bindEnableControlWithAction(Control widget, String actionId) throws GkException{
@@ -143,7 +144,6 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				@Override
 				public void focusLost(FocusEvent e) {
 					try {
-						System.err.println("Focus lost");
 						action.execute(parameters);
 					} catch (GkException e1) {
 						LOG.error(e1);
@@ -153,20 +153,33 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		}
 	}
 
-	public void bindJogButton(Button widget, final EnumControllerAxis axis) throws GkException {
-
+	public void bindJogButton(Button widget, final EnumControllerAxis axis) throws GkException {		
 		widget.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				try {					
 					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
 					getDataModel().setLengthUnit(unit);
-					Length step = Length.valueOf(getDataModel().getJogIncrement(), unit);					
+					Length step = null;					
 					boolean isPrecise = getDataModel().isPreciseJog();
-					jogService.setJogStep(step);
-					jogService.setJogFeedrate(getDataModel().getJogSpeed());
-					jogService.setJogPrecise(isPrecise);
-					jogService.startJog(axis);					
+					final Speed feedrate = getDataModel().getJogSpeed();
+					if(isPrecise){
+						step = getDataModel().getJogIncrement();
+					}
+					final Length taskStep = step;
+					timer = new Timer();					
+					timer.schedule(new TimerTask() {
+						
+						@Override
+						public void run() {
+							try {
+								jogService.jog(axis, taskStep, feedrate);
+							} catch (GkException e) {
+								LOG.error(e);
+							}
+						}
+					}, 0, 100);
+								
 				} catch (GkException e1) {
 					LOG.error(e1);
 				}
@@ -176,7 +189,8 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			public void mouseUp(MouseEvent e) {
 				try {
 					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
-					getDataModel().setLengthUnit(unit);					
+					getDataModel().setLengthUnit(unit);
+					timer.cancel();
 					jogService.stopJog();					
 				} catch (GkException e1) {
 					LOG.error(e1);
@@ -198,15 +212,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			}
 		});
 	}
-
-	public void initilizeValues() throws GkException {
-		Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
-		getDataModel().setLengthUnit(unit);
-		getDataModel().setJogSpeed(jogService.getJogFeedrate());
-		getDataModel().setPreciseJog( jogService.isJogPrecise() );		
-		getDataModel().setJogIncrement( jogService.getJogStep().value(unit) );
-	}
-
+	
 	public void setCoordinateSystem(EnumCoordinateSystem enumCoordinateSystem) throws GkException {
 		coordinateSystemAdapter.setCurrentCoordinateSystem(enumCoordinateSystem);
 	}
@@ -220,17 +226,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		try {			
-			if(getDataModel().getJogIncrement() != null){
-				jogService.setJogStep( Length.valueOf(getDataModel().getJogIncrement(), Units.MILLIMETRE));
-			}
-			if(getDataModel().getJogSpeed() != null){
-				jogService.setJogFeedrate( getDataModel().getJogSpeed() );
-			}
-			jogService.setJogPrecise( getDataModel().isPreciseJog() );
-		} catch (GkException e) {			
-			LOG.error(e);
-		}		
+				
 	}	
 }
 

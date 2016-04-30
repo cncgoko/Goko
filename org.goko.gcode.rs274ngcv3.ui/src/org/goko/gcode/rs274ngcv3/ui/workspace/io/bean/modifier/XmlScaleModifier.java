@@ -7,20 +7,20 @@ import org.simpleframework.xml.DerivedType;
 @DerivedType(parent=XmlGCodeModifier.class, name="modifier:scale")
 public class XmlScaleModifier extends XmlGCodeModifier {
 	@Attribute
-	private String scaleFActor;
+	private String scaleFactor;
 
 	/**
 	 * @return the scaleFActor
 	 */
-	public String getScaleFActor() {
-		return scaleFActor;
+	public String getScaleFactor() {
+		return scaleFactor;
 	}
 
 	/**
 	 * @param scaleFActor the scaleFActor to set
 	 */
-	public void setScaleFActor(String scaleFActor) {
-		this.scaleFActor = scaleFActor;
+	public void setScaleFactor(String scaleFactor) {
+		this.scaleFactor = scaleFactor;
 	}
 	
 }

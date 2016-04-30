@@ -19,8 +19,6 @@
  */
 package org.goko.tools.commandpanel.controller;
 
-import java.math.BigDecimal;
-
 import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.core.common.measure.quantity.Length;
@@ -38,7 +36,7 @@ public class CommandPanelModel extends AbstractModelObject{
 	public static final String PRECISE_JOG_ENABLED = "preciseJog";
 	private WritableMap actionState;
 	private Speed jogSpeed;
-	private BigDecimal jogIncrement;
+	private Length jogIncrement;
 	private boolean preciseJog;	
 	private Unit<Length> lengthUnit;
 	private String lengthUnitSymbol;
@@ -73,13 +71,13 @@ public class CommandPanelModel extends AbstractModelObject{
 	/**
 	 * @return the jogIncrement
 	 */
-	public BigDecimal getJogIncrement() {
+	public Length getJogIncrement() {
 		return jogIncrement;
 	}
 	/**
 	 * @param jogIncrement the jogIncrement to set
 	 */
-	public void setJogIncrement(BigDecimal jogIncrement) {
+	public void setJogIncrement(Length jogIncrement) {
 		firePropertyChange("jogIncrement", this.jogIncrement, this.jogIncrement = jogIncrement);
 	}
 	/**

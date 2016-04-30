@@ -22,6 +22,7 @@ import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.TranslateModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.scale.ScaleModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize.SegmentizeModifierBuilder;
+import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.wrap.WrapModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
@@ -84,6 +85,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 		addModifierBuilder(new TranslateModifierBuilder());
 		addModifierBuilder(new SegmentizeModifierBuilder());
 		addModifierBuilder(new ScaleModifierBuilder());
+		addModifierBuilder(new WrapModifierBuilder());
 	}
 
 	/** (inheritDoc)

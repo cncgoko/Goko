@@ -55,7 +55,6 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
-import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.common.measure.units.Unit;
@@ -74,7 +73,6 @@ import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
@@ -128,6 +126,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private LinkedBlockingQueue<Integer> usedBufferStack;
 	/** GCode context listener delegate */
 	private ObservableDelegate<IGCodeContextListener<GCodeContext>> gcodeContextListener;
+	/** Jogging utility */
+	private GrblJogging grblJogging;
 	/**
 	 * Constructor
 	 * @throws GkException GkException 
@@ -159,6 +159,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		configuration 		 = new GrblConfiguration();
 		grblState 			 = new GrblState();
 		grblState.addListener(this);
+		grblJogging = new GrblJogging(this, communicator);
 		LOG.info("Successfully started " + SERVICE_ID);
 	}
 
@@ -905,85 +906,12 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#setJogStep(org.goko.core.common.measure.quantity.type.BigDecimalQuantity)
+	 * @see org.goko.core.controller.IJogService#jog(org.goko.core.controller.bean.EnumControllerAxis, org.goko.core.common.measure.quantity.Length, org.goko.core.common.measure.quantity.Speed)
 	 */
 	@Override
-	public void setJogStep(Length step) throws GkException {
-		this.step = step;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IStepJogService#getJogStep()
-	 */
-	@Override
-	public Length getJogStep() throws GkException {
-		return step;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogFeedrate(java.math.BigDecimal)
-	 */
-	@Override
-	public void setJogFeedrate(Speed feed) throws GkException {
-		this.feed = feed;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#getJogFeedrate()
-	 */
-	@Override
-	public Speed getJogFeedrate() throws GkException {
-		return feed;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#setJogPrecise(boolean)
-	 */
-	@Override
-	public void setJogPrecise(boolean precise) throws GkException {
-		// Do nothing
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPrecise()
-	 */
-	@Override
-	public boolean isJogPrecise() throws GkException {
-		return true;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#startJog(org.goko.core.controller.bean.EnumControllerAxis, java.math.BigDecimal, boolean)
-	 */
-	@Override
-	public void startJog(EnumControllerAxis axis) throws GkException {
-		if(!GrblMachineState.READY.equals(getState())){
-			return;
-		}
-		String oldDistanceMode = "G90";
-		if(grblState.getDistanceMode() == EnumDistanceMode.RELATIVE){
-			oldDistanceMode = "G91";
-		}
-		String command = "G91G1"+axis.getAxisCode();
-		if(axis.isNegative()){
-			command+="-";
-		}
-		command += QuantityUtils.format(step, 5, true, false, getGCodeContext().getUnit().getUnit());
-		if(feed != null){
-			command += "F"+QuantityUtils.format(feed, 0, true, false, getGCodeContext().getUnit().getFeedUnit());
-		}
-		List<Byte> lstBytes = GkUtils.toBytesList(command);
-		communicator.send(lstBytes);
-		List<Byte> distanceModeBackup = GkUtils.toBytesList(oldDistanceMode);
-		communicator.send(distanceModeBackup);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IJogService#isJogPreciseForced()
-	 */
-	@Override
-	public boolean isJogPreciseForced() throws GkException {
-		return true; // does not support continuous jog
+	public void jog(EnumControllerAxis axis, Length step, Speed feedrate) throws GkException {
+		grblJogging.jog(axis, step, feedrate);
+		
 	}
 
 	private void initPersistedValues() throws GkException{

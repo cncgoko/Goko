@@ -37,7 +37,7 @@ public class ScaleModifierLoader extends AbstractModifierLoader<XmlScaleModifier
 	 */
 	@Override
 	protected void loadModifierData(ScaleModifier output, XmlScaleModifier input, IMapperService mapperService) throws GkException {
-		output.setScaleFactor(new BigDecimal(input.getScaleFActor()));		
+		output.setScaleFactor(new BigDecimal(input.getScaleFactor()));		
 	}
 
 	/** (inheritDoc)
