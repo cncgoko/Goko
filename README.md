@@ -2,6 +2,18 @@
 
 Current dev version  : ```0.3.0```
 
+
+**Changelog**
+
+- Support for **Grbl v0.9**
+- New GCode parsing functionalities,
+- Added GCode modifiers support (Translate, scale, segmentize...),
+- Added **auto-leveler**,
+- Added **wrapper** to convert GCode to 4 axis,
+- Support for **Shuttle XPress** device,
+- Save/ load features,
+- Improved jog functionnality,
+
  **The dev  branch is the work-in-progress for the next release**
 
 Todo :
@@ -16,4 +28,3 @@ Possible improvements :
 - [ ] Include web monitoring (local jetty ??)
 - [x] GCode parser update  
 - [ ] Configurable keys for jog
-
