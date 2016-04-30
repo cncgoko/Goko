@@ -2,7 +2,7 @@
     "package": {
         "name": "goko",
         "repo": "goko",
-        "subject": "goko-0.3.0"
+        "subject": "goko"
     },
 
     "version": {
@@ -15,7 +15,7 @@
 
     "files":
         [
-        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/org.goko-(.*).zip"}
+        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(.*).zip"}
         ],
     "publish": true
 }
