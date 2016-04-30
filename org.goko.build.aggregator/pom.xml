@@ -15,6 +15,7 @@
   	<module>../org.goko.tools.centerfinder</module>
   	<module>../org.goko.tools.camera</module>
   	<module>../org.goko.tools.autoleveler</module>
+  	<module>../org.goko.tools.shuttlexpress</module>
   	<module>../org.goko.tools.shuttlexpress.feature</module>
   	
   	<module>../org.goko.tools.viewer.jogl</module>
