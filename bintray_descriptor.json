@@ -15,7 +15,7 @@
 
     "files":
         [
-        {"includePattern": "org.goko-(.*).zip"},
+        {"includePattern": "org.goko-(.*).zip"}
         ],
     "publish": true
 }
