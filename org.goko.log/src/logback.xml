@@ -1,4 +1,5 @@
 <configuration>
+	<logger name="com.github.sarxos.webcam" level="warn" />
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS}  %-5level %-60logger{36} - %msg%n
@@ -9,7 +10,7 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- Daily rollover -->
-			<fileNamePattern>log/log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>log/slog.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<!-- Keep 7 days' worth of history -->
 			<maxHistory>7</maxHistory>
 		</rollingPolicy>
