@@ -17,5 +17,5 @@
         [
         {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(.*).zip", "uploadPattern": "$1"}
         ],
-    "publish": true
+    "publish": false
 }
