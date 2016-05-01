@@ -12,12 +12,14 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController;
@@ -29,7 +31,8 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 	@Inject
 	@Optional
 	private IProbingService probingService;
-	
+	@Inject	
+	private IExecutionService executionService;
 	
 	public AutoLevelerModifierConfigurationController() {
 		super(new AutoLevelerModifierConfigurationModel());	
@@ -110,7 +113,9 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 	public void startMapProbing() throws GkException{
 		getModifier().getHeightMap().build();
 		probingService.checkReadyToProbe();
-		
+		if(executionService.getExecutionQueue() != null && executionService.getExecutionQueue().hasNext()){
+			throw new GkFunctionalException("Execution queue must be empty before autoleveler probing. Please empty the queue first.");
+		}
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
 			
 			@Override

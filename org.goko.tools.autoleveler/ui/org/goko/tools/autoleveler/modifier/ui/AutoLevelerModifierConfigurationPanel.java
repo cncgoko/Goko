@@ -70,7 +70,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		btnStartProbing.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				try {
+				try {					
 					getController().startMapProbing();
 				} catch (GkException e1) {
 					GkErrorDialog.openDialog(null, e1);

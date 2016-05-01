@@ -848,14 +848,6 @@ Public License instead of this License.  But first, please read
          unpack="false"/>
 
    <plugin
-         id="org.goko.log.logback"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
          id="org.goko.gcode.rs274ngcv3"
          download-size="0"
          install-size="0"
@@ -909,6 +901,14 @@ Public License instead of this License.  But first, please read
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.goko.log.logback"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>

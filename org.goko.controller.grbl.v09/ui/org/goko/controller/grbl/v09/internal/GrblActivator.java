@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.controller.grbl.v08;
+package org.goko.controller.grbl.v09.internal;
 
 import java.util.ResourceBundle;
 
@@ -29,7 +29,7 @@ public class GrblActivator implements BundleActivator{
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		MessageResource.registerResourceBundle(ResourceBundle.getBundle("org.goko.controller.grbl.v08.i18n.Messages"));
+		MessageResource.registerResourceBundle(ResourceBundle.getBundle("org.goko.controller.grbl.v09.i18n.Messages"));
 	}
 
 	@Override

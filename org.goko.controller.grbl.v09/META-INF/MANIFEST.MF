@@ -35,3 +35,4 @@ Import-Package: javax.annotation,
  org.osgi.service.event
 Service-Component: OSGI-INF/GrblFeatureSetComponent.xml
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.goko.controller.grbl.v09.internal.GrblActivator
