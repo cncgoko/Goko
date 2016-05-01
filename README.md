@@ -2,6 +2,24 @@
 
 Current version  : ```0.3.0```
 
+##Description
+
+Goko is a Java based GCode sender and CNC control software. It can be used to control a controller board based CNC machine. 
+
+Supported controllers :
+  * TinyG v0.97 - *[[https://github.com/synthetos/TinyG/wiki|doc]]
+  * Grbl v0.9 - *[[https://github.com/grbl/grbl/wiki|doc]] 
+  * Grbl v0.8c - *[[https://github.com/grbl/grbl/wiki|doc]]
+
+##Getting started
+ 
+See [documentation](http://docs.goko.fr/)
+
+##Report a bug
+
+You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
+
+You can also discuss on [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 
 ##Changelog
 
@@ -15,6 +33,7 @@ Current version  : ```0.3.0```
 - Added save/load project features,
 - Added execution queue for multiple files execution,
 - Improved jog functionnality,
+- Online documentation http://docs.goko.fr/
 
 ###Fixed
 - Fixed Grbl buffering issue, 
