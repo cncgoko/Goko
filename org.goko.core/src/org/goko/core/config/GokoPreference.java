@@ -135,9 +135,21 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	 * @param distanceUnit the distanceUnit to set
 	 * @throws GkTechnicalException GkTechnicalException 
 	 */
-	public void setDistanceUnit(EnumGokoUnit distanceUnit) throws GkTechnicalException {
-		getPreferenceStore().setValue(KEY_DISTANCE_UNIT, distanceUnit.getCode());
+	public void setDistanceUnit(EnumGokoUnit distanceUnit) throws GkException {
+		getPreferenceStore().putValue(KEY_DISTANCE_UNIT, distanceUnit.getCode());
 		mapConfiguredUnits.put(QuantityDimension.LENGTH, distanceUnit.getUnit());
+		figureOutSpeedUnit(distanceUnit);
+	}
+	
+	/**
+	 * Getter for the distanceUnit 
+	 * @throws GkTechnicalException GkTechnicalException 
+	 */
+	public EnumGokoUnit getDistanceUnit() throws GkException {
+		return EnumGokoUnit.getEnum(getPreferenceStore().getString(KEY_DISTANCE_UNIT));
+	}
+	
+	protected void figureOutSpeedUnit(EnumGokoUnit distanceUnit) throws GkException{
 		if(distanceUnit == EnumGokoUnit.MILLIMETERS){
 			mapConfiguredUnits.put(QuantityDimension.SPEED, SpeedUnit.MILLIMETRE_PER_MINUTE);	
 		}else if(distanceUnit == EnumGokoUnit.INCHES){
@@ -146,18 +158,17 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 			throw new GkTechnicalException("Unsupported distance unit ["+distanceUnit.getCode()+"]");
 		}
 	}
-	
 	/**
 	 * @return the digitCount
 	 */
 	public int getDigitCount() {
-		return getPreferenceStore().getInt(KEY_DISTANCE_DIGIT_COUNT);
+		return getInt(KEY_DISTANCE_DIGIT_COUNT);
 	}
 	/**
 	 * @param digitCount the digitCount to set
 	 */
 	public void setDigitCount(int digitCount) {
-		getPreferenceStore().setValue(KEY_DISTANCE_DIGIT_COUNT, String.valueOf(digitCount));
+		putValue(KEY_DISTANCE_DIGIT_COUNT, String.valueOf(digitCount));
 	}
 
 	public boolean isCheckForUpdate(){
@@ -224,7 +235,8 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 			// Update the map of selected units
 			String unit = getPreferenceStore().getString(KEY_DISTANCE_UNIT);
 			mapConfiguredUnits.put(QuantityDimension.LENGTH, EnumGokoUnit.getEnum(unit).getUnit());
-		} catch (GkTechnicalException e) {
+			figureOutSpeedUnit(EnumGokoUnit.getEnum(unit));
+		} catch (GkException e) {
 			LOG.error(e);
 		}		
 	}
