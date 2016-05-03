@@ -3,6 +3,7 @@
  */
 package org.goko.tools.camera.part;
 
+import java.awt.Dimension;
 import java.util.List;
 
 import org.goko.common.bindings.AbstractModelObject;
@@ -19,14 +20,22 @@ public class CameraDisplayPartModel extends AbstractModelObject {
 	public static final String DEVICE = "device";
 	/** Device list property */
 	public static final String DEVICE_LIST = "deviceList";
+	/** Supported resolution list property */
+	public static final String RESOLUTION_LIST = "resolutionList";
+	/** Selected resolution list property */
+	public static final String RESOLUTION = "resolution";
 	/** Display state */
-	public static final String VIDEO_DISPLAY_STARTED = "videoDisplayStarted";
+	public static final String VIDEO_DISPLAY_STARTED = "videoDisplayStarted";	
 	/** Name of the selected device */
 	private LabeledValue<Webcam> deviceName;
 	/** Available webcam */
 	private List<LabeledValue<Webcam>> deviceList;
+	/** Available webcam */
+	private List<LabeledValue<Dimension>> resolutionList;
 	/** Display state */
 	private boolean videoDisplayStarted;
+	/** Selected resolution */
+	private LabeledValue<Dimension> resolution;
 	
 	/**
 	 * @return the deviceName
@@ -56,6 +65,7 @@ public class CameraDisplayPartModel extends AbstractModelObject {
 		firePropertyChange(DEVICE_LIST,this.deviceList, this.deviceList = lstWebcam);
 	}
 
+	
 	/**
 	 * @return the videoDisplayStarted
 	 */
@@ -70,6 +80,33 @@ public class CameraDisplayPartModel extends AbstractModelObject {
 		firePropertyChange(VIDEO_DISPLAY_STARTED,this.videoDisplayStarted, this.videoDisplayStarted = videoDisplayStarted);
 	}
 
-	
+	/**
+	 * @return the resolutionList
+	 */
+	public List<LabeledValue<Dimension>> getResolutionList() {
+		return resolutionList;
+	}
+
+	/**
+	 * @param resolutionList the resolutionList to set
+	 */
+	public void setResolutionList(List<LabeledValue<Dimension>> resolutionList) {
+		firePropertyChange(RESOLUTION_LIST,this.resolutionList, this.resolutionList = resolutionList);	
+	}
+
+	/**
+	 * @return the resolution
+	 */
+	public LabeledValue<Dimension> getResolution() {
+		return resolution;
+	}
+
+	/**
+	 * @param resolution the resolution to set
+	 */
+	public void setResolution(LabeledValue<Dimension> resolution) {
+		firePropertyChange(RESOLUTION,this.resolution, this.resolution = resolution);
+	}
+
 	
 }

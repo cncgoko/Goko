@@ -1,9 +1,11 @@
 package org.goko.tools.camera.part;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.goko.common.GkUiUtils;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
@@ -29,6 +31,14 @@ public class CameraDisplayPartController extends AbstractController<CameraDispla
 	@Override
 	public void initialize() throws GkException {
 		updateDeviceCombo();
+		
+		List<LabeledValue<Dimension>> lstResolution = new ArrayList<LabeledValue<Dimension>>();
+		lstResolution.add( new LabeledValue<Dimension>(new Dimension(320,240), "320x240"));
+		lstResolution.add( new LabeledValue<Dimension>(new Dimension(640,480), "640x480"));
+		lstResolution.add( new LabeledValue<Dimension>(new Dimension(1024,768), "1024x768"));
+		lstResolution.add( new LabeledValue<Dimension>(new Dimension(1280,720), "1280x720"));
+		getDataModel().setResolutionList(lstResolution);
+		getDataModel().setResolution(GkUiUtils.getLabelledValueByKey(new Dimension(1280,720), lstResolution));
 	}
 
 

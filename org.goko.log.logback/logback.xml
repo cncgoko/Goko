@@ -1,4 +1,5 @@
 <configuration>
+	<logger name="com.github.sarxos.webcam" level="warn" />
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS}  %-5level %-60logger{36} - %msg%n

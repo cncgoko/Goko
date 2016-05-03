@@ -1,5 +1,6 @@
 package org.goko.tools.camera;
 
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -36,6 +39,7 @@ public class CameraDisplayPart extends GkUiComponent<CameraDisplayPartController
 	private static final GkLog LOG = GkLog.getLogger(CameraDisplayPart.class);	
 	private WebcamComposite webcamComposite;
 	private GkCombo<LabeledValue<Webcam>> comboDevice;
+	private GkCombo<LabeledValue<Dimension>> comboResolution;
 	
 	@Inject
 	public CameraDisplayPart(IEclipseContext context) {
@@ -57,38 +61,59 @@ public class CameraDisplayPart extends GkUiComponent<CameraDisplayPartController
 		
 		Composite ToolbarComposite = new Composite(composite_1, SWT.NONE);
 		ToolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		ToolbarComposite.setLayout(new GridLayout(2, false));
+		ToolbarComposite.setLayout(new GridLayout(4, false));
 		
 		comboDevice = new GkCombo(ToolbarComposite, SWT.READ_ONLY);
 		Combo combo = comboDevice.getCombo();
 		GridData gd_combo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_combo.widthHint = 100;
+		gd_combo.widthHint = 130;
 		combo.setLayoutData(gd_combo);
+
+		comboResolution = new GkCombo<LabeledValue<Dimension>>(ToolbarComposite, SWT.READ_ONLY);
+		Combo comboResolution2 = comboResolution.getCombo();
+		GridData gd_comboResolution = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_comboResolution.widthHint = 80;
+		comboResolution2.setLayoutData(gd_comboResolution);
 		
+		Button btnStartVideo = new Button(ToolbarComposite, SWT.NONE);
+		btnStartVideo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				getDataModel().setVideoDisplayStarted(true);
+			}
+		});
 		
-		Button btnStartVideo = new Button(ToolbarComposite, SWT.TOGGLE);
+		Button btnStopVideo = new Button(ToolbarComposite, SWT.NONE);
+		btnStopVideo.setImage(ResourceManager.getPluginImage("org.goko.tools.camera", "resources/icons/stop.gif"));
+		btnStopVideo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				getDataModel().setVideoDisplayStarted(false);
+			}
+		});
+		getController().addEnableBinding(btnStopVideo, CameraDisplayPartModel.VIDEO_DISPLAY_STARTED);
 		
 		btnStartVideo.setImage(ResourceManager.getPluginImage("org.goko.tools.camera", "resources/icons/control.png"));
 		
 		final Composite composite = new Composite(composite_1, SWT.BORDER | SWT.EMBEDDED);
 		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
-//		webcam = Webcam.getDefault();
-//		webcam.setViewSize( WebcamResolution.VGA.getSize() );
-//		
+				
 		webcamComposite = new WebcamComposite(composite, SWT.NONE);		
 		webcamComposite.setFPS(20.0);
-//		webcamComposite.setWebcam(webcam);
+
 		webcamComposite.setFillArea(true);
-//		webcamComposite.pack();
-//		webcamComposite.layout();
-//		webcamComposite.start();		
 		
-		getController().addItemsBinding(comboDevice, CameraDisplayPartModel.DEVICE_LIST);
+		getController().addItemsBinding(comboDevice, CameraDisplayPartModel.DEVICE_LIST);		
 		getController().addItemSelectionBinding(comboDevice, CameraDisplayPartModel.DEVICE);		
-		getController().addSelectionBinding(btnStartVideo, CameraDisplayPartModel.VIDEO_DISPLAY_STARTED);
+		getController().addEnableReverseBinding(comboDevice, CameraDisplayPartModel.VIDEO_DISPLAY_STARTED);
 		
+		getController().addItemsBinding(comboResolution, CameraDisplayPartModel.RESOLUTION_LIST);
+		getController().addItemSelectionBinding(comboResolution, CameraDisplayPartModel.RESOLUTION);
+		getController().addEnableReverseBinding(comboResolution, CameraDisplayPartModel.VIDEO_DISPLAY_STARTED);
+		
+		getController().addEnableReverseBinding(btnStartVideo, CameraDisplayPartModel.VIDEO_DISPLAY_STARTED);
+				
 		Webcam.addDiscoveryListener(this);
 		
 		getDataModel().addPropertyChangeListener(this);
@@ -125,8 +150,12 @@ public class CameraDisplayPart extends GkUiComponent<CameraDisplayPartController
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+
 		if(CameraDisplayPartModel.VIDEO_DISPLAY_STARTED.equals(evt.getPropertyName())){
-			if(getDataModel().isVideoDisplayStarted()){
+			if(getDataModel().isVideoDisplayStarted()){				
+				Webcam webcam = webcamComposite.getWebcam();
+				webcam.setCustomViewSizes(new Dimension[] { getDataModel().getResolution().getValue() }); // register custom resolution
+				webcam.setViewSize(getDataModel().getResolution().getValue()); // set it
 				webcamComposite.start();
 			}else{
 				webcamComposite.stop();				
@@ -138,6 +167,7 @@ public class CameraDisplayPart extends GkUiComponent<CameraDisplayPartController
 			
 			if(getDataModel().getDevice() != null){				
 				webcamComposite.setWebcam(getDataModel().getDevice().getValue());
+				
 				if(getDataModel().isVideoDisplayStarted()){
 					webcamComposite.start();	
 				}				

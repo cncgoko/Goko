@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -110,7 +111,7 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 					}
 				});
 
-				while (starting) {
+				while (starting) {					
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException e) {
@@ -318,6 +319,10 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 		}
 		this.webcam = webcam;
 	}
+	
+	public Webcam getWebcam() {
+		return this.webcam;
+	}
 
 	@Override
 	public void dispose() {
@@ -330,6 +335,20 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 
 	@Override
 	public void paintControl(PaintEvent e) {
+		System.err.println("paintControl");
+		if(isStarting()){
+			e.gc.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			Font font = new Font(e.gc.getDevice(),"Arial",14,SWT.BOLD | SWT.ITALIC);			
+			e.gc.setFont(font);
+			e.gc.drawText("Starting...", 10, 10);	
+			System.err.println("Starting");
+			return;
+		}
+		if(!isStarted()){						
+			e.gc.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));	         
+			e.gc.fillRectangle(e.x, e.y, e.width, e.height);
+			return;
+		}
 		if(image != null){
 			int x = 0;
 			int y = 0;
@@ -355,7 +374,7 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 			}
 			
 			drawCrosshair(e.gc,  x, y, width, height);
-		}
+		}		
 	}
 
 	/**
@@ -414,7 +433,7 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 		LOG.debug("Starting panel rendering and trying to open attached webcam");
 
 		starting = true;
-
+		
 		if (updater == null) {
 			updater = new ImageUpdater();
 		}
