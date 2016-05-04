@@ -31,14 +31,14 @@ exportRepository(){
 
 # Export the built binaries to destination
 exportBinaries(){
-  echo "Exporting binaries..."
+#  echo "Exporting binaries..."
   
-  cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/products/
+#  cd $TRAVIS_BUILD_DIR/org.goko.build.product/target/products/
   
-  curl --ftp-create-dirs -T org.goko-win32.win32.x86_64.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86_64.zip
-  curl --ftp-create-dirs -T org.goko-win32.win32.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86.zip
-  curl --ftp-create-dirs -T org.goko-linux.gtk.x86_64.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86_64.zip
-  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86.zip
+#  curl --ftp-create-dirs -T org.goko-win32.win32.x86_64.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86_64.zip
+#  curl --ftp-create-dirs -T org.goko-win32.win32.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-win32.win32.x86.zip
+#  curl --ftp-create-dirs -T org.goko-linux.gtk.x86_64.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86_64.zip
+#  curl --ftp-create-dirs -T org.goko-linux.gtk.x86.zip -u $VAR1:$VAR2 $TARGET/$gokoVersion/org.goko-linux.gtk.x86.zip
   
 }
 # Let's do it
@@ -50,9 +50,9 @@ else
   echo "Skipped repository export..."
 fi
 
-if [ $updateBinaries == 'true' ]
-then
-	exportBinaries
-else
-  echo "Skipped binaries export..."
-fi
+#if [ $updateBinaries == 'true' ]
+#then
+#	exportBinaries
+#else
+# echo "Skipped binaries export..."
+#fi
