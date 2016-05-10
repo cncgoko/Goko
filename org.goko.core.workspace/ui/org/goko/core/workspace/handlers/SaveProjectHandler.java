@@ -40,13 +40,20 @@ public class SaveProjectHandler {
 			dialog.setText("Save Goko project...");
 			dialog.setFilterNames(new String[]{"Goko projects (*.goko) "});
 			dialog.setFilterExtensions(new String[]{"*.goko"});
-			String filePath = dialog.open();
+			String targetFile = dialog.open();
 			
-			if(StringUtils.isNotEmpty(filePath)){
-				String fileName = FilenameUtils.getBaseName(filePath);
-				String fileBaseName = FilenameUtils.removeExtension(fileName);
-				projectLocation.setName( fileBaseName );
-				URI projectUri = URIUtil.append(new File(filePath).getParentFile().toURI(), fileBaseName);
+			if(StringUtils.isNotEmpty(targetFile)){
+				String fileName 	= FilenameUtils.getBaseName(targetFile);
+				String projectName  = FilenameUtils.removeExtension(fileName);
+				String path 		= FilenameUtils.getPathNoEndSeparator(targetFile);
+				projectLocation.setName( projectName );
+				
+				URI projectUri = null;
+				if(StringUtils.endsWith(path, projectName)){
+					projectUri = new File(targetFile).getParentFile().toURI();
+				}else{
+					projectUri = URIUtil.append(new File(targetFile).getParentFile().toURI(), projectName);
+				}
 				new File(projectUri).mkdirs();
 				projectLocation.setLocation(projectUri);
 			}
