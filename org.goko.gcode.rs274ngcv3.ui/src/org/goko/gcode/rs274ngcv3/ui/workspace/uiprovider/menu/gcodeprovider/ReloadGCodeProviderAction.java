@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.log.GkLog;
 
@@ -38,13 +39,16 @@ public class ReloadGCodeProviderAction extends Action {
 	 */
 	@Override
 	public boolean isEnabled() {
-		boolean locked = true;
+		boolean enabled = false;
 		try {
-			locked = rs274Service.getGCodeProvider(idGCodeProvider).isLocked();
+			IGCodeProvider provider = rs274Service.getGCodeProvider(idGCodeProvider);
+			if(provider.getSource() != null && !provider.isLocked()){
+				enabled = true;
+			}
 		} catch (GkException e) {
 			LOG.error(e);			
 		}
-		return !locked;
+		return enabled;
 	}
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.action.Action#run()
