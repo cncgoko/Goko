@@ -14,6 +14,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.execution.IExecutor;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
@@ -25,7 +26,7 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  * @date 20 nov. 2015
  */
-public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
+public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>, IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(TinyGExecutor.class);
 	/** The number of command sent but not confirmed */
@@ -52,7 +53,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @see org.goko.core.gcode.execution.IExecutor#createToken(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public ExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
+	public IExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
 		return new ExecutionToken<ExecutionTokenState>(rs274Service, provider, ExecutionTokenState.NONE);
 	}
 
@@ -194,25 +195,25 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {}
+	public void onExecutionStart(IExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {}
+	public void onExecutionCanceled(IExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {}
+	public void onExecutionPause(IExecutionToken<ExecutionTokenState> token) throws GkException {}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {
+	public void onExecutionResume(IExecutionToken<ExecutionTokenState> token) throws GkException {
 		// We confirm commands in error state:
 		//   - if it's a non blocking warning, it's fine
 		//   - if it's an error and the user continue the execution, it assumes the error can be ignored
@@ -224,7 +225,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {	}
+	public void onExecutionComplete(IExecutionToken<ExecutionTokenState> token) throws GkException {	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
@@ -244,7 +245,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
+	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		// TODO Auto-generated method stub
 
 	}

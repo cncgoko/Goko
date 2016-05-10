@@ -582,7 +582,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void stopJog() throws GkException {
-		// Nothing to stop since it's only precise jog
+		grblJogging.stopJog();
 	}
 
 	public void resetZero(List<String> axes) throws GkException{

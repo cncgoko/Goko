@@ -60,14 +60,15 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
-import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
+import org.goko.core.gcode.rs274ngcv3.instruction.SetDistanceModeInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.SetFeedRateInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightProbeInstruction;
@@ -96,7 +97,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/** GCode service */
 	private IRS274NGCService gcodeService;
 	/** The monitor service */
-	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
+	private IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService;			
 	/** Action factory */
 	private TinyGActionFactory actionFactory;
 	/** Storage object for machine values (speed, position, etc...) */
@@ -149,6 +150,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 //		jogRunnable = new TinyGJoggingRunnable(this, communicator);
 //		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
 //		jogExecutor.execute(jogRunnable);
+		executionService.addExecutionListener(this);
 		tinyGJogging = new TinyGJogging(this, communicator);
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -399,8 +401,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			if(status == TinyGStatusCode.TG_OK){
 				tinygExecutor.confirmNextLineExecution();
 			}else{
-				handleNonOkStatus(status, receivedCommand);
+				notifyNonOkStatus(status, receivedCommand);
 				tinygExecutor.handleNonOkStatus(status);
+			}
+		}else{
+			if(status != TinyGStatusCode.TG_OK){
+				notifyNonOkStatus(status, receivedCommand);
 			}
 		}
 	}
@@ -411,7 +417,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param receivedCommand the received command
 	 * @throws GkException GkException
 	 */
-	protected void handleNonOkStatus(TinyGStatusCode status, String receivedCommand) throws GkException {
+	protected void notifyNonOkStatus(TinyGStatusCode status, String receivedCommand) throws GkException {
 		String message = StringUtils.EMPTY;
 
 		if(status == null){
@@ -745,6 +751,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 	private IGCodeProvider getZProbingCode(List<ProbeRequest> lstProbeRequest, GCodeContext gcodeContext) throws GkException{		
 		InstructionProvider instrProvider = new InstructionProvider();
+		// Force distance mode to absolute
+		instrProvider.addInstruction( new SetDistanceModeInstruction(EnumDistanceMode.ABSOLUTE) );
 		for (ProbeRequest probeRequest : lstProbeRequest) {
 			// Move to clearance coordinate 
 			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
@@ -878,8 +886,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void stopJog() throws GkException {
-//		Force stop ?
-		stopMotion();
+		tinyGJogging.stopJog();
 	}
 
 	/** (inheritDoc)
@@ -926,14 +933,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	/**
 	 * @return the monitorService
 	 */
-	public IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getMonitorService() {
+	public IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> getMonitorService() {
 		return executionService;
 	}
 	/**
 	 * @param monitorService the monitorService to set
 	 * @throws GkException GkException
 	 */
-	public void setMonitorService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
+	public void setMonitorService(IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
 		this.executionService.setExecutor(tinygExecutor);
 		this.executionService.addExecutionListener(tinygExecutor);

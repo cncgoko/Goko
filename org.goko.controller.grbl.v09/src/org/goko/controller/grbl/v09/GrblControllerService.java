@@ -76,9 +76,11 @@ import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
+import org.goko.core.gcode.rs274ngcv3.instruction.SetDistanceModeInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.SetFeedRateInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightProbeInstruction;
@@ -609,7 +611,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void stopJog() throws GkException {
-		// Nothing. Maybe plan a forced stop
+		grblJogging.stopJog();
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
@@ -984,6 +986,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	
 	private IGCodeProvider getZProbingCode(List<ProbeRequest> lstProbeRequest, GCodeContext gcodeContext) throws GkException{		
 		InstructionProvider instrProvider = new InstructionProvider();
+		// Force distance mode to absolute
+		instrProvider.addInstruction( new SetDistanceModeInstruction(EnumDistanceMode.ABSOLUTE) );
+		
 		for (ProbeRequest probeRequest : lstProbeRequest) {
 			// Move to clearance coordinate 
 			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );

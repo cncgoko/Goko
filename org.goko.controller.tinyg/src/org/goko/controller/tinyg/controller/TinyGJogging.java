@@ -30,6 +30,8 @@ public class TinyGJogging {
 	private TinyGCommunicator tinygCommunicator;
 	/** The estimated jog interval */
 	private long period = 100; // 100ms aka 10Hz
+	/** The active distance mode before jog */
+	private EnumDistanceMode previousDistanceMode;
 	
 	/**
 	 * Constructor
@@ -43,20 +45,23 @@ public class TinyGJogging {
 		Length localStep = step;				
 		EnumTinyGAxis tinygAxis = EnumTinyGAxis.getEnum(axis.getCode());
 		if(isReadyToJog()){
-			if(axis != null){						
+			if(axis != null){			
+				if(previousDistanceMode == null){
+					previousDistanceMode = tinygService.getGCodeContext().getDistanceMode();	
+				}
 				EnumUnit contextUnit = tinygService.getGCodeContext().getUnit();
 				String command = "G91G1";
 				if(feedrate != null){
 					command += "F"+ QuantityUtils.format(feedrate, 0, true, false, contextUnit.getFeedUnit());	
 				}				
-				EnumDistanceMode distanceMode = tinygService.getGCodeContext().getDistanceMode();
+				
 				if(step == null){
 					localStep = feedrate.multiply(Time.valueOf(period, TimeUnit.MILLISECOND).multiply(2));					
 				}
 											
-				command = startRelativeJog(command, tinygAxis, localStep);
-				tinygCommunicator.send(GkUtils.toBytesList(command));
-				if(distanceMode == EnumDistanceMode.ABSOLUTE){
+				command = getRelativeJogCommand(command, tinygAxis, localStep);
+				tinygCommunicator.send(GkUtils.toBytesList(command));				
+				if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){					
 					tinygCommunicator.send(GkUtils.toBytesList("G90"));
 				}								
 			}
@@ -77,12 +82,24 @@ public class TinyGJogging {
 	}
 	
 	/**
+	 * Stops jogging
+	 * @throws GkException GkException 
+	 */
+	protected void stopJog() throws GkException{
+		tinygService.stopMotion();
+		// Restore previous distance mode		
+		if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){
+			tinygCommunicator.send(GkUtils.toBytesList("G90"));
+		}
+		previousDistanceMode  = null;
+	}
+	/**
 	 * Generates jogging command when Grbl is in relative distance mode
 	 * @param command the base command
 	 * @return a String
 	 * @throws GkException GkException
 	 */
-	public String startRelativeJog(String command, EnumTinyGAxis axis, Length step) throws GkException{
+	public String getRelativeJogCommand(String command, EnumTinyGAxis axis, Length step) throws GkException{
 		command += axis.getAxisCode();
 		Unit<Length> currentUnit = tinygService.getGCodeContext().getUnit().getUnit();
 		if(axis.isNegative()){

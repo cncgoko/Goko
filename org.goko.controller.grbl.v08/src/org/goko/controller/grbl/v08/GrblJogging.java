@@ -26,7 +26,8 @@ public class GrblJogging {
 	private IGrblControllerService grblService;
 	private GrblCommunicator grblCommunicator;	
 	private long period = 100; // 100ms aka 10Hz
-	
+	/** The active distance mode before jog */
+	private EnumDistanceMode previousDistanceMode;
 	/**
 	 * Constructor
 	 * @throws GkException GkException 
@@ -43,21 +44,23 @@ public class GrblJogging {
 		Length localStep = step;				
 		EnumGrblAxis tinygAxis = EnumGrblAxis.getEnum(axis.getCode());
 		if(isReadyToJog()){
-			if(axis != null){						
+			if(axis != null){	
+				if(previousDistanceMode == null){
+					previousDistanceMode = grblService.getGCodeContext().getDistanceMode();
+				}
 				EnumUnit contextUnit = grblService.getGCodeContext().getUnit();
 				String command = "G91G1";
 				if(feedrate != null){
 					command += "F"+ QuantityUtils.format(feedrate, 0, true, false, contextUnit.getFeedUnit());	
 				}				
-				EnumDistanceMode distanceMode = grblService.getGCodeContext().getDistanceMode();
 				if(step == null){
 					localStep = feedrate.multiply(Time.valueOf(period, TimeUnit.MILLISECOND));					
 				}
 												
-				command = startRelativeJog(command, tinygAxis, localStep);
+				command = getRelativeJogCommand(command, tinygAxis, localStep);
 				
 				grblCommunicator.send(GkUtils.toBytesList(command));
-				if(distanceMode == EnumDistanceMode.ABSOLUTE){
+				if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){
 					grblCommunicator.send(GkUtils.toBytesList("G90"));	
 				}
 			}
@@ -83,7 +86,7 @@ public class GrblJogging {
 	 * @return a String
 	 * @throws GkException GkException
 	 */
-	public String startRelativeJog(String command, EnumGrblAxis axis, Length step) throws GkException{
+	public String getRelativeJogCommand(String command, EnumGrblAxis axis, Length step) throws GkException{
 		command += axis.getAxisCode();
 		Unit<Length> currentUnit = grblService.getGCodeContext().getUnit().getUnit();
 		if(axis.isNegative()){
@@ -91,5 +94,16 @@ public class GrblJogging {
 		}
 		command += GokoPreference.getInstance().format(step, true, false, currentUnit);
 		return command;
+	}
+	
+	/**
+	 * Stops the jog
+	 * @throws GkException 
+	 */
+	public void stopJog() throws GkException {
+		if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){
+			grblCommunicator.send(GkUtils.toBytesList("G90"));
+		}
+		previousDistanceMode  = null;
 	}
 }
