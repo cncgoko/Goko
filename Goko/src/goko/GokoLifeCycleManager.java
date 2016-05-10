@@ -48,6 +48,14 @@ public class GokoLifeCycleManager {
 	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context) throws GkException {
 		IWindowCloseHandler closeHandler = new ExitHandlerManager();
 		context.set(IWindowCloseHandler.class, closeHandler);
+		/*
+		 * Performing model update if required
+		 */
+		if(GokoPreference.getInstance().isSystemClearPersistedState()){
+			GokoPreference.getInstance().setSystemClearPersistedState(false);
+			System.getProperties().put(IWorkbench.CLEAR_PERSISTED_STATE, "true");	
+		}	
+		
 		/* ******************************************** */
 		/*            Setting event advisor             */
 		/* ******************************************** */
@@ -83,11 +91,7 @@ public class GokoLifeCycleManager {
 			}
 		});
 		
-		// Does the model require a refresh ?
-		if(GokoPreference.getInstance().isSystemClearPersistedState()){
-			GokoPreference.getInstance().setSystemClearPersistedState(false);
-			System.getProperties().put(IWorkbench.CLEAR_PERSISTED_STATE, "true");	
-		}	
+
 		
 	}
 

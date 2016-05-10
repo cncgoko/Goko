@@ -28,9 +28,11 @@ public class InstructionProvider implements IInstructionProvider<AbstractInstruc
 	 * Adds the given Instruction set
 	 * @param set the set to add
 	 */
-	public void addInstruction(AbstractInstruction instruction){
+	public void addInstruction(AbstractInstruction... instruction){
 		InstructionSet set = new InstructionSet();
-		set.addInstruction(instruction);
+		for (AbstractInstruction abstractInstruction : instruction) {
+			set.addInstruction(abstractInstruction);	
+		}		
 		lstInstructionSet.add(set);
 	}
 	

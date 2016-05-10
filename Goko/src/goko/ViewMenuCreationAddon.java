@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -61,36 +62,38 @@ public class ViewMenuCreationAddon implements EventHandler{
 		}	
 		
 		List<MCommand> commands = modelService.findElements(application, "goko.command.toggleView", MCommand.class, null);
-		MCommand modeledCommand = commands.get(0);
 		
-		while (iterator.hasNext()) {
-			MPart mPart = iterator.next();
-			if(mPart.getTags().contains(VIEW_MENU_ENTRY_TAG)){
-				String menuItemId = "goko.menu.window.view.menuitem."+mPart.getElementId();
-				// Only creates the button if it doesn't exist yet
-				
-				if(!existingChidlrenIds.contains(menuItemId)){ 
-					MHandledMenuItem item = MMenuFactory.INSTANCE.createHandledMenuItem();
-					item.setElementId(menuItemId);
-					item.setLabel(mPart.getLabel());
-					item.setTooltip(mPart.getLabel());					
-					item.setIconURI(mPart.getIconURI());
-					Map<String, Object> parameters = new HashMap<String, Object>();
-					parameters.put(VIEW_NAME_PARAMETER, mPart.getElementId());
-					ParameterizedCommand command = commandService.createCommand("goko.command.toggleView", parameters);
-					MParameter parameter = MCommandsFactory.INSTANCE.createParameter();
-					parameter.setName(VIEW_NAME_PARAMETER);
-					parameter.setValue(mPart.getElementId());
-					item.getParameters().add(parameter);
-					item.setCommand(modeledCommand);
-					children.add(item);
+		if(CollectionUtils.isNotEmpty(commands)){
+			MCommand modeledCommand = commands.get(0);
+			
+			while (iterator.hasNext()) {
+				MPart mPart = iterator.next();
+				if(mPart.getTags().contains(VIEW_MENU_ENTRY_TAG)){
+					String menuItemId = "goko.menu.window.view.menuitem."+mPart.getElementId();
+					// Only creates the button if it doesn't exist yet
+					
+					if(!existingChidlrenIds.contains(menuItemId)){ 
+						MHandledMenuItem item = MMenuFactory.INSTANCE.createHandledMenuItem();
+						item.setElementId(menuItemId);
+						item.setLabel(mPart.getLabel());
+						item.setTooltip(mPart.getLabel());					
+						item.setIconURI(mPart.getIconURI());
+						Map<String, Object> parameters = new HashMap<String, Object>();
+						parameters.put(VIEW_NAME_PARAMETER, mPart.getElementId());
+						ParameterizedCommand command = commandService.createCommand("goko.command.toggleView", parameters);
+						MParameter parameter = MCommandsFactory.INSTANCE.createParameter();
+						parameter.setName(VIEW_NAME_PARAMETER);
+						parameter.setValue(mPart.getElementId());
+						item.getParameters().add(parameter);
+						item.setCommand(modeledCommand);
+						children.add(item);
+					}
 				}
 			}
+			
+			Collections.sort(children, new MenuLabelComparator());
+			viewSubmenu.getChildren().addAll(children);
 		}
-		
-		Collections.sort(children, new MenuLabelComparator());
-		viewSubmenu.getChildren().addAll(children);
-		
 	}
 }
 

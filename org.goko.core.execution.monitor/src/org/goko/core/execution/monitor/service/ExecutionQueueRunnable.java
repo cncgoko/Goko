@@ -144,7 +144,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	 */
 	@Override
 	public void resume() throws GkException {
-		if(getState() != ExecutionState.RUNNING){
+		if(getState() == ExecutionState.PAUSED){
 			setState(ExecutionState.RUNNING);
 			executor.resume();		
 			executionService.notifyExecutionResume(executionQueue.getCurrentToken());
@@ -156,7 +156,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	 */
 	@Override
 	public void pause() throws GkException {
-		if(getState() != ExecutionState.PAUSED){
+		if(getState() == ExecutionState.RUNNING){
 			setState(ExecutionState.PAUSED);
 			executor.pause();		
 			executionService.notifyExecutionPause(executionQueue.getCurrentToken());
@@ -168,8 +168,8 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	 */
 	@Override
 	public void stop() throws GkException {
-		if(getState() != ExecutionState.STOPPED){
-			T token = executionQueue.getCurrentToken();
+		if(getState() == ExecutionState.RUNNING || getState() == ExecutionState.PAUSED){			
+			T token = executionQueue.getCurrentToken();			
 			setState(ExecutionState.STOPPED);
 			executor.stop();		
 			executionService.notifyExecutionCanceled(token);			

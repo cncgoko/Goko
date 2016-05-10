@@ -244,8 +244,9 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	/**
 	 * @return the systemClearPersistedState
 	 */
-	public boolean isSystemClearPersistedState() {
-		return getPreferenceStore().getBoolean(KEY_SYSTEM_CLEAR_PERSISTED_STATE);
+	public boolean isSystemClearPersistedState() {		
+		// Not exist means the previous version did not support this param
+		return !getPreferenceStore().contains(KEY_SYSTEM_CLEAR_PERSISTED_STATE) || getPreferenceStore().getBoolean(KEY_SYSTEM_CLEAR_PERSISTED_STATE);
 	}
 
 	/**
