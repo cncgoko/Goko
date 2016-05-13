@@ -22,10 +22,12 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.ResourceLocationGCodeSourceExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.RotateModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ScaleModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.SegmentizeModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.TranslateModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.WrapModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.RotateModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ScaleModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.SegmentizeModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.TranslateModifierLoader;
@@ -74,12 +76,14 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 		mapperService.addLoader(new TranslateModifierLoader());		
 		mapperService.addLoader(new ScaleModifierLoader());		
 		mapperService.addLoader(new WrapModifierLoader());		
+		mapperService.addLoader(new RotateModifierLoader());		
 		
 		mapperService.addExporter(new ResourceLocationGCodeSourceExporter());
 		mapperService.addExporter(new TranslateModifierExporter());		
 		mapperService.addExporter(new SegmentizeModifierExporter());		
 		mapperService.addExporter(new ScaleModifierExporter());
 		mapperService.addExporter(new WrapModifierExporter());
+		mapperService.addExporter(new RotateModifierExporter());
 		
 		LOG.info("Successfully started "+getServiceId());
 	}

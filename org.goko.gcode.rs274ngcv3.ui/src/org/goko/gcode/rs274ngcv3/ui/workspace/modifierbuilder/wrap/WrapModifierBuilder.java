@@ -39,7 +39,7 @@ public class WrapModifierBuilder extends AbstractModifierUiProvider<WrapModifier
 	 */
 	@Override
 	public boolean providesConfigurationPanelFor(IModifier<?> modifier) throws GkException {
-		return true;
+		return modifier instanceof WrapModifier;
 	}
 
 	/** (inheritDoc)

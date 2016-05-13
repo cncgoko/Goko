@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
 
 import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.Units;
@@ -306,6 +307,10 @@ public class Tuple6b {
 
 	public Point3d toPoint3d(Unit<Length> unit){
 		return new Point3d(getX().value(unit).doubleValue(), getY().value(unit).doubleValue(), getZ().value(unit).doubleValue());
+	}
+	
+	public Vector3d toVector3d(Unit<Length> unit){
+		return new Vector3d(getX().value(unit).doubleValue(), getY().value(unit).doubleValue(), getZ().value(unit).doubleValue());
 	}
 
 	public Point3d angleToPoint3d(Unit<Angle> unit){

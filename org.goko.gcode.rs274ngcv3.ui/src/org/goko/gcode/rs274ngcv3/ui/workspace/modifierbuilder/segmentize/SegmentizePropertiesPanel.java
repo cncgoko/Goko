@@ -9,7 +9,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.core.common.exception.GkException;
@@ -44,7 +43,6 @@ public class SegmentizePropertiesPanel extends AbstractModifierPropertiesPanel<S
 		composite.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
 		composite.setText("Properties");
 		composite.setLayout(new GridLayout(1, false));
-		new Label(composite, SWT.NONE);
 		
 		UiLengthFieldEditor lengthFieldEditor = new UiLengthFieldEditor(composite, SWT.NONE);
 		lengthFieldEditor.setEmptyStringAllowed(false);
