@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RS274NGCv3 GCode UI Bundle
 Bundle-SymbolicName: org.goko.gcode.rs274ngcv3.ui;singleton:=true
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.3.1.qualifier
 Require-Bundle: org.goko.core,
- org.goko.core.workspace;bundle-version="0.3.0",
+ org.goko.core.workspace,
  org.eclipse.swt,
  org.eclipse.jface,
  org.goko.gcode.rs274ngcv3,

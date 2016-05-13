@@ -63,7 +63,7 @@ public class AboutDialog extends Dialog {
 
 		Label lblAlphaVersion = new Label(composite_1, SWT.NONE);
 		lblAlphaVersion.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
-		lblAlphaVersion.setText("Version 0.3.0");
+		lblAlphaVersion.setText("Version 0.3.1");
 		new Label(composite_1, SWT.NONE);
 
 		Composite composite = new Composite(composite_1, SWT.NONE);

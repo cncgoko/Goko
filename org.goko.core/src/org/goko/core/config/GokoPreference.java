@@ -47,8 +47,8 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	private static GokoPreference instance;
 	/** Key to set the clear persisted state option at runtime */
 	public static final String KEY_SYSTEM_CLEAR_PERSISTED_STATE = "systemClearPersistedState";
-	/** Default value of the clear persisted state option  */
-	public static final boolean DEFAULT_SYSTEM_CLEAR_PERSISTED_STATE = false;
+	/** Default value of the clear persisted state option  - It's set to true so it's explicitly written in file when false. When not in preference file, it is assumed to be true*/
+	public static final boolean DEFAULT_SYSTEM_CLEAR_PERSISTED_STATE = true;
 	/** The target board id */
 	public static final String KEY_TARGET_BOARD = "targetBoard";
 	/** Default target board */
