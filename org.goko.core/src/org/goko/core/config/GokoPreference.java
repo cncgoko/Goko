@@ -254,5 +254,7 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	 */
 	public void setSystemClearPersistedState(boolean systemClearPersistedState) {
 		getPreferenceStore().setValue(KEY_SYSTEM_CLEAR_PERSISTED_STATE, systemClearPersistedState);
+		//FIXME check set vs put regarding preferences persistence
+		putValue(KEY_SYSTEM_CLEAR_PERSISTED_STATE, String.valueOf(systemClearPersistedState));
 	}
 }
