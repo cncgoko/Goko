@@ -17,6 +17,7 @@
 
 package org.goko.core.config;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -253,6 +254,13 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	 * @param systemClearPersistedState the systemClearPersistedState to set
 	 */
 	public void setSystemClearPersistedState(boolean systemClearPersistedState) {
-		getPreferenceStore().setValue(KEY_SYSTEM_CLEAR_PERSISTED_STATE, systemClearPersistedState);
+		//setValue(KEY_SYSTEM_CLEAR_PERSISTED_STATE, systemClearPersistedState);
+		//FIXME check set vs put regarding preferences persistence
+		putValue(KEY_SYSTEM_CLEAR_PERSISTED_STATE, String.valueOf(systemClearPersistedState));
+		try {
+			save();
+		} catch (IOException e) {
+			LOG.error(e);
+		}
 	}
 }
