@@ -11,6 +11,10 @@ public interface IStackableGCodeProvider extends IGCodeProvider{
 
 	void setParent(IStackableGCodeProvider parent);
 
+	IStackableGCodeProvider getChild();
+
+	void setChild(IStackableGCodeProvider parent);
+	
 	void update() throws GkException;
 
 	Integer getIdModifier();

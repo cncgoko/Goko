@@ -34,6 +34,8 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.Relo
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcoderepository.AddAllGCodeInQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.DeleteModifierAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDisableAction;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.ModifierMoveDownAction;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.ModifierMoveUpAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.IModifierPropertiesPanel;
 
 /**
@@ -182,6 +184,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	private void createMenuForGCodeModifier(IMenuManager contextMenu, IModifier<?> modifier) {
 		contextMenu.add(new EnableDisableAction(rs274Service, modifier.getId()));
+		contextMenu.add(new ModifierMoveUpAction(rs274Service, modifier.getId()));
+		contextMenu.add(new ModifierMoveDownAction(rs274Service, modifier.getId()));
 		contextMenu.add(new Separator());
 		contextMenu.add(new DeleteModifierAction(rs274Service, modifier.getId()));
 	}

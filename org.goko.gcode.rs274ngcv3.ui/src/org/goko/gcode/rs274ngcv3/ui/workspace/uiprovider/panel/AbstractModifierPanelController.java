@@ -34,7 +34,7 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 	 * @see org.goko.common.bindings.AbstractController#initialize()
 	 */
 	@Override
-	public void initialize() throws GkException {}
+	public final void initialize() throws GkException {}
 	
 	/**
 	 * Initialize the content of the data model with data from the modifier

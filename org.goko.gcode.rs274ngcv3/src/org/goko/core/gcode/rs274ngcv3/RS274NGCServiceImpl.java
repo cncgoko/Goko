@@ -613,8 +613,98 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		notifyGCodeProviderUpdate(wrappedProvider);		
 	}
 	
-
+	@Override
+	public void setModifierOrder(IModifier<GCodeProvider> modifier, int order) throws GkException {
+		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
+		
+		IStackableGCodeProvider stackableModifier = unchainModifier(modifier);
+		
+		// Let's find the current modifier at the given order
+		IStackableGCodeProvider target = findStackableProviderForModifier(modifier.getIdGCodeProvider(), order);
+		boolean chainBefore = true;
+		if(target == null){
+			target = findStackableProviderForModifier(modifier.getIdGCodeProvider(), order - 1);
+			chainBefore = false;
+		}
+						
+		if(chainBefore){
+			chainModifierBefore(stackableModifier, target);
+		}else{			
+			chainModifierAfter(stackableModifier, target);
+		}
+		updateModifier(modifier);
+		updateModifiersOrder(modifier.getIdGCodeProvider());
+		notifyGCodeProviderUpdate(getGCodeProvider(modifier.getIdGCodeProvider()));
+		notifyModifierUpdate(modifier);
+	}
 	
+	private void updateModifiersOrder(Integer idGCodeProvider) throws GkException{	
+		assertGCodeProviderUnlocked(idGCodeProvider);		
+		IStackableGCodeProvider stackedProvider = cacheStackedProviders.get(idGCodeProvider);
+		if(stackedProvider.getIdModifier() != null){
+			recursiveOrderUpdate( getModifier( stackedProvider.getIdModifier() ) );
+		}
+	}
+	
+	private int recursiveOrderUpdate(IModifier<GCodeProvider> modifier) throws GkException{	
+		IStackableGCodeProvider target = findStackableProviderForModifier(modifier.getId());
+		if(target.getParent() == null || target.getParent().getIdModifier() == null){
+			modifier.setOrder(0);
+			return 0;
+		}
+		
+		IModifier<GCodeProvider> parentModifier = getModifier( target.getParent().getIdModifier() );
+		int parentOrder = recursiveOrderUpdate(parentModifier);
+		modifier.setOrder(parentOrder + 1);
+		return modifier.getOrder();		
+	}
+	
+	private void chainModifierAfter(IStackableGCodeProvider stackedModifier, IStackableGCodeProvider afterModifier) throws GkException{		
+		IStackableGCodeProvider child = afterModifier.getChild();
+		afterModifier.setChild(stackedModifier);
+		stackedModifier.setChild(child);
+		stackedModifier.setParent(afterModifier);
+		if(child != null){
+			child.setParent(stackedModifier);
+		}else{
+			// There is no child. It means this was the latest modifier that was used as reference in the cacheStackedProviders			
+			cacheStackedProviders.remove(afterModifier);
+			cacheStackedProviders.add(stackedModifier);	
+		}
+	}
+	
+	private void chainModifierBefore(IStackableGCodeProvider modifier, IStackableGCodeProvider beforeModifier) throws GkException{		
+		IStackableGCodeProvider parent = beforeModifier.getParent();
+		modifier.setChild(beforeModifier);
+		beforeModifier.setParent(modifier);
+		modifier.setParent(parent);
+		if(parent != null){
+			parent.setChild(modifier);
+		}
+	}
+	
+	private IStackableGCodeProvider unchainModifier(IModifier<GCodeProvider> modifier) throws GkException{
+		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
+		IStackableGCodeProvider stackedModifier = findStackableProviderForModifier(modifier.getId());
+		
+		IStackableGCodeProvider parent = stackedModifier.getParent();
+		IStackableGCodeProvider child = stackedModifier.getChild();
+		if(parent != null){
+			parent.setChild(child);
+		}
+		if(child != null){
+			child.setParent(parent);
+		}else{
+			// There is no child. It means this was the latest modifier that was used as reference in the cacheStackedProviders
+			IGCodeProvider provider = getGCodeProvider(modifier.getIdGCodeProvider());
+			cacheStackedProviders.remove(provider.getId());			
+			cacheStackedProviders.add(parent);		
+		}
+		stackedModifier.setParent(null);
+		stackedModifier.setChild(null);
+		updateModifiersOrder(modifier.getIdGCodeProvider());
+		return stackedModifier;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#updateModifier(org.goko.core.gcode.rs274ngcv3.element.IModifier)
 	 */
@@ -647,38 +737,81 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	public void deleteModifier(Integer idModifier) throws GkException {
 		IModifier<GCodeProvider> modifier = this.cacheModifiers.get(idModifier);
 		assertGCodeProviderUnlocked(modifier.getIdGCodeProvider());
-
+		
+		// Remove the link of the modifier in the chain		
+		IStackableGCodeProvider stackableModifier = findStackableProviderForModifier(idModifier);
+		IStackableGCodeProvider parent = stackableModifier.getParent();
+		IStackableGCodeProvider child = stackableModifier.getChild();
+		unchainModifier(modifier);
+		
+		// Force a refresh from the parent modifier
+		IModifier<GCodeProvider> forceRefreshModifier = null;
+		if(parent != null && parent.getIdModifier() != null){
+			forceRefreshModifier = getModifier(parent.getIdModifier());
+			
+		}else if(child != null){ // Or child modifier
+			forceRefreshModifier = getModifier(child.getIdModifier());
+		}
+		if(forceRefreshModifier != null){
+			forceRefreshModifier.setModificationDate(new Date());
+		}
+		// Definitely remove the modifier
 		this.cacheModifiers.remove(idModifier);
-
-		// Let's find the stacked provider with this modifier
-		IStackableGCodeProvider gcode = cacheStackedProviders.get(modifier.getIdGCodeProvider());
-		IStackableGCodeProvider next = null;
-		IStackableGCodeProvider previous = null;
-
-		while(gcode != null && !ObjectUtils.equals(gcode.getIdModifier(), modifier.getId())){
-			next = gcode;
-			gcode = gcode.getParent();
-		}
-
-		// Original --...-> previous -->  gcode  --> next
-		if(gcode != null){
-			previous = gcode.getParent();
-			if(next != null){
-				next.setParent(previous);
-			}else{
-				IGCodeProvider tmpProvider = getGCodeProvider(modifier.getIdGCodeProvider());
-				cacheStackedProviders.remove(tmpProvider.getId());
-				cacheStackedProvidersByCode.remove(tmpProvider.getCode());				
-				cacheStackedProviders.add(previous);
-				cacheStackedProvidersByCode.add(previous);
-			}
-		//	gcode.setParent(null);
-		}
+		
 		IStackableGCodeProvider targetProvider = cacheStackedProviders.get(modifier.getIdGCodeProvider());
+		//Force update
+		targetProvider.update();
 		notifyModifierDelete(modifier);
 		notifyGCodeProviderUpdate(targetProvider);		
 	}
-
+	
+	/**
+	 * Returns the IStackableGCodeProvider for the given modifier
+	 * @param idModifier id of the modifier
+	 * @return IStackableGCodeProvider or <code>null</code> if none found
+	 * @throws GkException GkException
+	 */
+	private IStackableGCodeProvider findStackableProviderForModifier(Integer idModifier) throws GkException{
+		IModifier<GCodeProvider> modifier = getModifier(idModifier);		
+		// Let's start at the bottom most modifier on the gcode provider
+		IStackableGCodeProvider currentModifier = cacheStackedProviders.get(modifier.getIdGCodeProvider());
+		
+		while(currentModifier.getParent() != null){			
+			if(ObjectUtils.equals(currentModifier.getIdModifier(), idModifier)){
+				// The id of the parent match the modifier we want the child for. We have our match
+				return currentModifier;				
+			}else{
+				// We have a parent, but the id don't match.
+				currentModifier = currentModifier.getParent();
+			}
+		}		
+		return null;
+	}
+	
+	/**
+	 * Returns the IStackableGCodeProvider for the given gcode provider and the given order
+	 * @param idGCodeProvider id of the gcode provider
+	 * 
+	 * @return IStackableGCodeProvider or <code>null</code> if none found
+	 * @throws GkException GkException
+	 */
+	private IStackableGCodeProvider findStackableProviderForModifier(Integer idGCodeProvider, int order) throws GkException{				
+		// Let's start at the bottom most modifier on the gcode provider
+		IStackableGCodeProvider stackedProvider = cacheStackedProviders.get(idGCodeProvider);
+		
+		while(stackedProvider.getParent() != null){			
+			if(stackedProvider.getIdModifier() != null){
+				IModifier<GCodeProvider> modifier = getModifier(stackedProvider.getIdModifier());
+				if(modifier.getOrder() == order){
+					return stackedProvider;
+				}		
+			}
+			// We have a parent, but the id don't match.
+			stackedProvider = stackedProvider.getParent();			
+		}		
+		return null;
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#getModifier(java.lang.Integer)
 	 */

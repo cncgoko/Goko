@@ -3,8 +3,6 @@
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.scale;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.modifier.scale.ScaleModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController;
@@ -20,13 +18,6 @@ public class ScaleModifierPropertiesController extends AbstractModifierPanelCont
 	 */
 	public ScaleModifierPropertiesController() {
 		super(new ScaleModifierPropertiesModel());
-	}
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#initialize()
-	 */
-	@Override
-	public void initialize() throws GkException {		
-		getDataModel().setScaleFactor(new BigDecimal("100"));
 	}
 	
 	/** (inheritDoc)

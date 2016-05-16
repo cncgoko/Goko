@@ -10,6 +10,7 @@ import org.goko.core.gcode.element.IGCodeProviderSource;
 
 public class StackableGCodeProviderModifier extends GCodeProvider implements IGCodeProvider, IStackableGCodeProvider{
 	private IStackableGCodeProvider parent;
+	private IStackableGCodeProvider child;
 	private IModifier<GCodeProvider> modifier;
 	private Date lastUpdateDate;
 
@@ -28,6 +29,7 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	public StackableGCodeProviderModifier(IStackableGCodeProvider parent, IModifier<GCodeProvider> modifier) {
 		super();
 		this.parent = parent;
+		this.parent.setChild(this);
 		this.modifier = modifier;
 	}
 
@@ -107,7 +109,10 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 	 */
 	@Override
 	public Integer getId() {
-		return parent.getId();
+		if(parent!= null){
+			return parent.getId();
+		}
+		return null;
 	}
 
 	/** (inheritDoc)
@@ -192,6 +197,18 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 		} else if (!parent.equals(other.parent))
 			return false;
 		return true;
+	}
+	/**
+	 * @return the child
+	 */
+	public IStackableGCodeProvider getChild() {
+		return child;
+	}
+	/**
+	 * @param child the child to set
+	 */
+	public void setChild(IStackableGCodeProvider child) {
+		this.child = child;
 	}
 	
 }

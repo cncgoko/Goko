@@ -170,7 +170,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	 */
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
-	//	workspaceUIService.refreshWorkspaceUi();
+		workspaceUIService.refreshWorkspaceUi();
 		markProjectDirty();
 	}
 
@@ -232,6 +232,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	@Override
 	public void onModifierUpdate(Integer idModifier) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
+		workspaceUIService.select(gcodeService.getModifier(idModifier));
 		markProjectDirty();
 	}
 	/** (inheritDoc)

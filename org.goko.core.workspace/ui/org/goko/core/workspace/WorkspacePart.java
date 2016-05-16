@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.IMenuListener;
@@ -52,7 +53,8 @@ public class WorkspacePart implements Listener {
 	/** The currently displayed properties panel */
 	private IPropertiesPanel currentPropertiesPanel;
 	private ScrolledComposite scrolledComposite;
-	
+	/** Previous selection in the tree */
+	private Object previousSelection;
 	@Inject	
 	public WorkspacePart() {
 
@@ -116,6 +118,13 @@ public class WorkspacePart implements Listener {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				try{
+					
+					Object newSelection = ((StructuredSelection)event.getSelection()).getFirstElement();
+					if(ObjectUtils.equals(previousSelection, newSelection)){
+						return;
+					}
+					previousSelection = newSelection;
+					
 					if(currentPropertiesPanel != null){					
 						currentPropertiesPanel.beforeDiscard();
 						currentPropertiesPanel.discard();

@@ -48,6 +48,7 @@ public class AbstractModifierPropertiesPanel<M extends IModifier<GCodeProvider>,
 	public void initializeFromModifier() throws GkException {
 		getController().setLockModifierUpdateOnPropertyChange(true);
 		getController().initializeFromModifier(); 
+		getDataModel().setDirty(false);
 		getController().setLockModifierUpdateOnPropertyChange(false);
 	}
 

@@ -4,7 +4,6 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.rotate;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.gcode.rs274ngcv3.modifier.rotate.RotateModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController;
 
@@ -19,13 +18,6 @@ public class RotateModifierPropertiesController extends AbstractModifierPanelCon
 	 */
 	public RotateModifierPropertiesController() {
 		super(new RotateModifierPropertiesModel());
-	}
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#initialize()
-	 */
-	@Override
-	public void initialize() throws GkException {		
-		getDataModel().setRotationAngle(Angle.ZERO);
 	}
 	
 	/** (inheritDoc)

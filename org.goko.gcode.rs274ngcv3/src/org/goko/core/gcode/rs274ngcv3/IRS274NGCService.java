@@ -41,6 +41,8 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 
 	void addModifier(IModifier<GCodeProvider> modifier) throws GkException;
 
+	void setModifierOrder(IModifier<GCodeProvider> modifier, int order) throws GkException;
+	
 	void updateModifier(IModifier<GCodeProvider> modifier) throws GkException;
 
 	void deleteModifier(IModifier<GCodeProvider> modifier) throws GkException;

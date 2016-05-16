@@ -39,14 +39,6 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.bindings.AbstractController#initialize()
-	 */
-	@Override
-	public void initialize() throws GkException {
-		
-	}
-
-	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#initializeFromModifier()
 	 */
 	@Override

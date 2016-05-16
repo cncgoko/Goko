@@ -10,7 +10,8 @@ import org.goko.core.gcode.element.IGCodeProviderSource;
 
 public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeProvider, IStackableGCodeProvider{
 	private IGCodeProvider parent;
-
+	private IStackableGCodeProvider child; 
+	
 	/**
 	 * Constructor
 	 * @param parent the parent IGCodeProvider
@@ -136,6 +137,20 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 	 */
 	public void setParent(IGCodeProvider parent) {
 		this.parent = parent;
+	}
+
+	/**
+	 * @return the child
+	 */
+	public IStackableGCodeProvider getChild() {
+		return child;
+	}
+
+	/**
+	 * @param child the child to set
+	 */
+	public void setChild(IStackableGCodeProvider child) {
+		this.child = child;
 	}
 	
 	

@@ -3,11 +3,7 @@
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize;
 
-import java.math.BigDecimal;
-
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.gcode.rs274ngcv3.modifier.segmentize.SegmentizeModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController;
 
@@ -22,13 +18,6 @@ public class SegmentizeModifierPropertiesController extends AbstractModifierPane
 	 */
 	public SegmentizeModifierPropertiesController() {
 		super(new SegmentizeModifierPropertiesModel());
-	}
-	/** (inheritDoc)
-	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#initialize()
-	 */
-	@Override
-	public void initialize() throws GkException {		
-		getDataModel().setChordalTolerance(Length.valueOf(new BigDecimal("0.1"), LengthUnit.MILLIMETRE));
 	}
 	
 	/** (inheritDoc)
