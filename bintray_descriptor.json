@@ -6,8 +6,8 @@
     },
 
     "version": {
-        "name": "0.3.0",
-        "desc": "Goko v0.3.0",
+        "name": "0.3.1",
+        "desc": "Goko v0.3.1",
         "released": "2016-05-01",
         "vcs_tag": "0.3.0",
         "gpgSign": false
