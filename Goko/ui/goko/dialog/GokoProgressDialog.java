@@ -46,8 +46,8 @@ public class GokoProgressDialog extends Dialog {
 	 */
 	public GokoProgressDialog() {
 		super((Shell)null);
-		setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
-		setBlockOnOpen(false);
+		setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.ON_TOP | SWT.MODELESS);
+		setBlockOnOpen(false);		
 		mapProgressElement = new HashMap<Job, JobProgressElement>();
 	}
 
