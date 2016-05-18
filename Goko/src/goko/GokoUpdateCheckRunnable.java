@@ -16,6 +16,7 @@ import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.goko.core.config.GokoPreference;
@@ -36,28 +37,13 @@ public class GokoUpdateCheckRunnable {
 		UpdateOperation operation = new UpdateOperation(session);
 		
 		final SubMonitor sub = SubMonitor.convert(monitor, "Checking for application updates...", 200);
-		IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
-		URI[] lstRepositories = manager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
+		IMetadataRepositoryManager metadataManager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+		IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService(IArtifactRepositoryManager.SERVICE_NAME);
 		
-		boolean updateSiteFound = false;
+		traceUsedRepositories(metadataManager, artifactManager);
 		
-		if(lstRepositories != null && lstRepositories.length > 0){
-			LOG.info("Checking updates from the following repositories :");
-			for (URI uri : lstRepositories) {
-				LOG.info("  + "+uri.toString());
-				if(StringUtils.contains(uri.toString(), UPDATE_SITE_URL)){
-					updateSiteFound = true;
-				}
-			}			
-		}
+		addGokoDefaultRepositories(metadataManager, artifactManager);
 		
-		if(!updateSiteFound){ // It looks like the update site isn't always checked for unknown reasons. This is a hack to prevent this
-			try {
-				manager.addRepository(new URI(UPDATE_SITE_URL));
-			} catch (URISyntaxException e) {
-				LOG.error(e);
-			}
-		}
         //check if updates are available
         IStatus status = operation.resolveModal(sub.newChild(100));
         
@@ -163,5 +149,79 @@ public class GokoUpdateCheckRunnable {
                 MessageDialog.openError(null, "Error", message);
             }
         });
+    }
+    
+    /**
+     * Traces the list of known repositories
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void traceUsedRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+		URI[] lstMetadataRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);		
+		URI[] lstArtifactRepositories = artifactManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
+		
+		// Logging known metadata repositories
+		if(lstMetadataRepositories != null && lstMetadataRepositories.length > 0){
+			LOG.info("Checking updates from the following metadata repositories :");
+			for (URI uri : lstMetadataRepositories) {
+				LOG.info("  - "+uri.toString());				
+			}			
+		}
+		// Logging known artifact repositories
+		if(lstArtifactRepositories != null && lstArtifactRepositories.length > 0){
+			LOG.info("Checking updates from the following artifact repositories :");
+			for (URI uri : lstArtifactRepositories) {
+				LOG.info("  - "+uri.toString());				
+			}			
+		}
+    }
+    
+    /**
+     * Adds Goko default repository if not found in the known repositories list 
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void addGokoDefaultRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+    	URI[] lstMetadataRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);		
+		URI[] lstArtifactRepositories = artifactManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
+		
+		boolean metadataRepositoryFound = false;
+		boolean artifactRepositoryFound = false;
+		// Looking through known metadata repositories
+		if(lstMetadataRepositories != null && lstMetadataRepositories.length > 0){			
+			for (URI uri : lstMetadataRepositories) {
+				if(StringUtils.contains(uri.toString(), UPDATE_SITE_URL)){
+					metadataRepositoryFound = true;
+					break;
+				}				
+			}			
+		}
+		// Looking through known artifact repositories
+		if(lstArtifactRepositories != null && lstArtifactRepositories.length > 0){			
+			for (URI uri : lstArtifactRepositories) {
+				if(StringUtils.contains(uri.toString(), UPDATE_SITE_URL)){
+					artifactRepositoryFound = true;
+					break;
+				}				
+			}			
+		}
+		
+		if(!metadataRepositoryFound){
+			LOG.info("Adding Goko default repository ("+UPDATE_SITE_URL+") to metadata repositories.");
+			try {
+				metadataManager.addRepository(new URI(UPDATE_SITE_URL));
+			} catch (URISyntaxException e) {
+				LOG.error(e);
+			}
+		}
+		
+		if(!artifactRepositoryFound){
+			LOG.info("Adding Goko default repository ("+UPDATE_SITE_URL+") to artifact repositories.");
+			try {
+				artifactManager.addRepository(new URI(UPDATE_SITE_URL));
+			} catch (URISyntaxException e) {
+				LOG.error(e);
+			}
+		}
     }
 }
