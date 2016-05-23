@@ -14,17 +14,6 @@
 		<version>0.3.1-SNAPSHOT</version>
 		<relativePath>../org.goko.build.parent</relativePath>
 	</parent>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<version>0.23.1</version>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

@@ -7,16 +7,6 @@
   <version>0.3.1-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
   
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>0.23.1</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
-  </build>
   <parent>
   	<groupId>org.goko</groupId>
   	<artifactId>org.goko.build.parent</artifactId>
