@@ -14,11 +14,22 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.core.databinding.property;bundle-version="1.5.0",
  org.eclipse.jface;bundle-version="3.11.0",
  org.goko.gcode.rs274ngcv3,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.ui.workbench,
+ org.eclipse.osgi.services,
+ org.eclipse.e4.core.services,
+ org.goko.gcode.rs274ngcv3.ui,
+ org.eclipse.core.runtime;bundle-version="3.11.1",
+ Goko
 Import-Package: javax.annotation;version="1.0.0";resolution:=optional,
  javax.inject;version="1.0.0",
  org.eclipse.core.runtime;version="3.5.0",
  org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.di.annotations,
  org.eclipse.jface.text,
  org.eclipse.jface.text.source
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: org.goko.tools.editor.component.provider
+Service-Component: OSGI-INF/GCodeEditContributionItemComponent.xml
+Bundle-ActivationPolicy: lazy

@@ -7,13 +7,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.element.IGCodeProviderSource;
+import org.goko.core.gcode.element.AbstractGCodeProviderSource;
 
 /**
  * @author PsyKo
- * @date 13 déc. 2015
+ * @date 13 dï¿½c. 2015
  */
-public class StringGCodeSource implements IGCodeProviderSource {
+public class StringGCodeSource extends AbstractGCodeProviderSource {
 	/** The source array */
 	private String source; 
 		
@@ -48,5 +48,21 @@ public class StringGCodeSource implements IGCodeProviderSource {
 	@Override
 	public void bind() throws GkException {
 		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProviderSource#canWrite()
+	 */
+	@Override
+	public boolean canWrite() {		
+		return false;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProviderSource#write(java.io.InputStream)
+	 */
+	@Override
+	public void write(InputStream input) throws GkException {
+		throw new UnsupportedOperationException();		
 	}
 }

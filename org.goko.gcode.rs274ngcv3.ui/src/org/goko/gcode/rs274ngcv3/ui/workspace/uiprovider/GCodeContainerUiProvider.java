@@ -4,6 +4,7 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.action.IMenuManager;
@@ -29,6 +30,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ExternalEditAction;
+import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ReloadGCodeProviderAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcoderepository.AddAllGCodeInQueueAction;
@@ -37,6 +39,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.EnableDis
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.ModifierMoveDownAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier.ModifierMoveUpAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.IModifierPropertiesPanel;
+import org.osgi.service.event.EventAdmin;
 
 /**
  * @author PsyKo
@@ -51,18 +54,18 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	private IWorkspaceService workspaceService;
 	private IExecutionService<?, ?> executionService;
 	private IStyledLabelProvider labelProvider;
-
+	private EventAdmin eventAdmin;
+	private List<IGCodeProviderContributionItem> lstGCodeProviderContributionItem;
+	
 	/**
 	 * @param rs274Service
 	 * @param type
 	 */
-	public GCodeContainerUiProvider(IRS274NGCService rs274Service, IRS274WorkspaceService rs274WorkspaceService, IExecutionService<?, ?> executionService, IWorkspaceService workspaceService) {
+	public GCodeContainerUiProvider() {		
 		super("GCodeContainerUiProvider", 10);
-		this.rs274Service = rs274Service;
-		this.rs274WorkspaceService = rs274WorkspaceService;
 		this.labelProvider = new GCodeContainerLabelProvider();
-		this.executionService = executionService;
-		this.workspaceService = workspaceService;
+		this.lstGCodeProviderContributionItem = new CopyOnWriteArrayList<IGCodeProviderContributionItem>();
+		LOG.info("Creating GCodeContainerUiProvider");
 	}
 
 	/** (inheritDoc)
@@ -203,7 +206,13 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
         contextMenu.add(new Separator());
         contextMenu.add(new ReloadGCodeProviderAction(rs274Service, content.getId()));
         contextMenu.add(new ExternalEditAction(rs274Service, workspaceService, content.getId()));
-        contextMenu.add(subMenu);       
+        contextMenu.add(subMenu);
+        if(CollectionUtils.isNotEmpty(lstGCodeProviderContributionItem)){
+        	contextMenu.add(new Separator());
+	        for (IGCodeProviderContributionItem contributionItem : lstGCodeProviderContributionItem) {
+	        	contextMenu.add(contributionItem.getItem(content));
+			}
+        }
         contextMenu.add(new Separator());
         contextMenu.add(new DeleteGCodeProviderAction(rs274Service, content.getId()));
 	}
@@ -255,6 +264,80 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return the rs274Service
+	 */
+	public IRS274NGCService getRs274Service() {
+		return rs274Service;
+	}
+
+	/**
+	 * @param rs274Service the rs274Service to set
+	 */
+	public void setRs274Service(IRS274NGCService rs274Service) {
+		this.rs274Service = rs274Service;
+	}
+
+	/**
+	 * @return the rs274WorkspaceService
+	 */
+	public IRS274WorkspaceService getRs274WorkspaceService() {
+		return rs274WorkspaceService;
+	}
+
+	/**
+	 * @param rs274WorkspaceService the rs274WorkspaceService to set
+	 */
+	public void setRs274WorkspaceService(IRS274WorkspaceService rs274WorkspaceService) {
+		this.rs274WorkspaceService = rs274WorkspaceService;
+	}
+
+	/**
+	 * @return the workspaceService
+	 */
+	public IWorkspaceService getWorkspaceService() {
+		return workspaceService;
+	}
+
+	/**
+	 * @param workspaceService the workspaceService to set
+	 */
+	public void setWorkspaceService(IWorkspaceService workspaceService) {
+		this.workspaceService = workspaceService;
+	}
+
+	/**
+	 * @return the executionService
+	 */
+	public IExecutionService<?, ?> getExecutionService() {
+		return executionService;
+	}
+
+	/**
+	 * @param executionService the executionService to set
+	 */
+	public void setExecutionService(IExecutionService<?, ?> executionService) {
+		this.executionService = executionService;
+	}
+
+	/**
+	 * @return the eventAdmin
+	 */
+	public EventAdmin getEventAdmin() {
+		return eventAdmin;
+	}
+
+	/**
+	 * @param eventAdmin the eventAdmin to set
+	 */
+	public void setEventAdmin(EventAdmin eventAdmin) {
+		this.eventAdmin = eventAdmin;
+	}
+
+	public void addGCodeProviderContributionItem(IGCodeProviderContributionItem contributionItem){
+		this.lstGCodeProviderContributionItem.add(contributionItem);
 	}
 
 }

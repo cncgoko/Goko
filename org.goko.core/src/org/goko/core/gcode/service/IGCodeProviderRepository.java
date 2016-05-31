@@ -29,4 +29,10 @@ public interface IGCodeProviderRepository extends IGokoService{
 	void removeListener(IGCodeProviderRepositoryListener listener) throws GkException;
 
 	void clearAll() throws GkException;
+
+	void addDeleteListener(IGCodeProviderDeleteListener listener) throws GkException;
+
+	void removeDeleteListener(IGCodeProviderDeleteListener listener) throws GkException;
+
+	
 }

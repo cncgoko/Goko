@@ -6,13 +6,13 @@ package org.goko.core.gcode.rs274ngcv3.element.source;
 import java.io.InputStream;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.element.IGCodeProviderSource;
+import org.goko.core.gcode.element.AbstractGCodeProviderSource;
 
 /**
  * @author PsyKo
  * @date 30 mars 2016
  */
-public class DefaultGCodeProviderSource implements IGCodeProviderSource{
+public class DefaultGCodeProviderSource extends AbstractGCodeProviderSource{
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IGCodeProviderSource#openInputStream()
@@ -36,6 +36,22 @@ public class DefaultGCodeProviderSource implements IGCodeProviderSource{
 	@Override
 	public void bind() throws GkException {
 		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProviderSource#canWrite()
+	 */
+	@Override
+	public boolean canWrite() {		
+		return false;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProviderSource#write(java.io.InputStream)
+	 */
+	@Override
+	public void write(InputStream input) throws GkException {
+		throw new UnsupportedOperationException();
 	}
 
 }

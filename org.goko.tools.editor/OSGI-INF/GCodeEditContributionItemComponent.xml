@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.tools.editor.GCodeEditContributionItem">
+   <implementation class="org.goko.tools.editor.handlers.GCodeEditContributionItem"/>
+   <service>
+      <provide interface="org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem"/>
+   </service>
+   <reference bind="setEventAdmin" cardinality="1..1" interface="org.osgi.service.event.EventAdmin" name="EventAdmin" policy="static"/>
+   <reference bind="setGcodeProviderRepository" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeProviderRepository" name="IGCodeProviderRepository" policy="static"/>
+</scr:component>

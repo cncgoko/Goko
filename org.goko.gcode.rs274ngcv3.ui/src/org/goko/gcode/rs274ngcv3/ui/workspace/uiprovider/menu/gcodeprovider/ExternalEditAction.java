@@ -31,6 +31,7 @@ public class ExternalEditAction extends Action{
 	private IGCodeProviderRepository gcodeProviderRepository;
 	/** IWorkspaceService  */
 	private IWorkspaceService workspaceService;
+	
 	/**
 	 * Constructor
 	 * @param gcodeProviderRepository the {@link IGCodeProviderRepository}

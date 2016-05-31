@@ -16,7 +16,8 @@ Require-Bundle: org.goko.core,
  org.eclipse.e4.ui.model.workbench;bundle-version="1.1.100.v20150407-1430",
  org.eclipse.e4.ui.workbench;bundle-version="1.3.0",
  org.eclipse.osgi.services,
- org.eclipse.e4.core.contexts
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.services
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.inject;version="1.0.0",
  org.eclipse.core.runtime;version="3.5.0",
@@ -26,7 +27,10 @@ Import-Package: javax.inject;version="1.0.0",
  org.goko.core.gcode.rs274ngcv3,
  org.osgi.framework;version="1.8.0"
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/RS274WorkspaceComponant.xml,OSGI-INF/RS274SaveParticipantComponent.xml,OSGI-INF/RS274LoadParticipantComponent.xml
+Service-Component: OSGI-INF/RS274WorkspaceComponant.xml,
+ OSGI-INF/RS274SaveParticipantComponent.xml, 
+ OSGI-INF/RS274LoadParticipantComponent.xml,
+ OSGI-INF/GCodeContainerUiProviderComponent.xml
 Export-Package: org.goko.gcode.rs274ngcv3.ui.workspace,
  org.goko.gcode.rs274ngcv3.ui.workspace.io,
  org.goko.gcode.rs274ngcv3.ui.workspace.io.bean,
@@ -34,4 +38,5 @@ Export-Package: org.goko.gcode.rs274ngcv3.ui.workspace,
  org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier,
  org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier,
  org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider,
+ org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider,
  org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel

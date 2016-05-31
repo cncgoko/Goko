@@ -1,8 +1,53 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_ZnB68CD2EeaE5tEZ9hDWwQ">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_ZnB68CD2EeaE5tEZ9hDWwQ">
+  <imports xsi:type="commands:BindingContext" xmi:id="_XSpHECTTEea0AecVK9JjWA" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_bRht4CD2EeaE5tEZ9hDWwQ" featurename="children" parentElementId="goko.application.partstack">
-    <elements xsi:type="basic:Part" xmi:id="_c4V6sCD2EeaE5tEZ9hDWwQ" elementId="org.goko.tools.editor.part.editor" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.GCodeEditorPart" label="Editor" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/editor-part-icon.png">
+    <elements xsi:type="basic:Part" xmi:id="_c4V6sCD2EeaE5tEZ9hDWwQ" elementId="org.goko.tools.editor.part.editor" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.GCodeEditorPart" label="Editor" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/editor-part-icon.png" bindingContexts="__4EvgCTREea0AecVK9JjWA">
       <tags>view</tags>
+      <toolbar xmi:id="_z1OMcCQzEear6IDwQ2UHsw" elementId="org.goko.tools.editor.toolbar.0">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_1E_yQCQzEear6IDwQ2UHsw" elementId="org.goko.tools.editor.handledtoolitem.saveactivedocument" label="Save active document" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/disk-black.png" command="_efPQ4CQ0Eear6IDwQ2UHsw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_bB5AQCQ0Eear6IDwQ2UHsw" elementId="org.goko.tools.editor.handledtoolitem.saveall" label="Save all" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/disks-black.png" command="_gRi8ACQ0Eear6IDwQ2UHsw"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_0LlEcCTXEea0AecVK9JjWA" elementId="org.goko.tools.editor.toolbarseparator.0"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="__2m4gCaVEea_retAav4xvw" elementId="org.goko.tools.editor.handledtoolitem.findreplace" label="Find/Replace" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/clipboard-search-result.png" command="_7Y7MQCaVEea_retAav4xvw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_iUuwICdzEearz8b692nHvA" elementId="org.goko.tools.editor.handledtoolitem.undo" label="Undo" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/arrow-curve-180.png" command="_bhilECdzEearz8b692nHvA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_SPNooCd0Eearz8b692nHvA" elementId="org.goko.tools.editor.handledtoolitem.redo" label="Redo" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/arrow-curve.png" command="_UJfkACd0Eearz8b692nHvA"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_hMU9oCdzEearz8b692nHvA" elementId="org.goko.tools.editor.toolbarseparator.1"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_0e5CACTXEea0AecVK9JjWA" elementId="org.goko.tools.editor.handledtoolitem.settings" label="Settings" iconURI="platform:/plugin/org.goko.tools.editor/resources/icons/gear.png" tooltip="Configure editor preferences" command="_1q3F4CTXEea0AecVK9JjWA">
+          <parameters xmi:id="_Hqi6ICV-Eea9pPgvyqQWhg" elementId="" name="goko.org.ui.page.id" value="org.goko.tools.editor.preferencePage"/>
+        </children>
+      </toolbar>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_i0zasCK6EeaptayiwWbAMg" featurename="addons" parentElementId="goko.application">
+    <elements xsi:type="application:Addon" xmi:id="_nGLJQCK6EeaptayiwWbAMg" elementId="org.goko.tools.editor.addon.0" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.GCodeEditorPartOpenerAddon"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_c_qUgCQ0Eear6IDwQ2UHsw" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_efPQ4CQ0Eear6IDwQ2UHsw" elementId="org.goko.tools.editor.command.saveactivedocument" commandName="Save active document"/>
+    <elements xsi:type="commands:Command" xmi:id="_gRi8ACQ0Eear6IDwQ2UHsw" elementId="org.goko.tools.editor.command.savealldocuments" commandName="Save all documents"/>
+    <elements xsi:type="commands:Command" xmi:id="_1q3F4CTXEea0AecVK9JjWA" elementId="org.goko.tools.editor.command.editorpreferences" commandName="Editor Preferences" description="Open Editor preferences page">
+      <parameters xmi:id="_A8PTgCTYEea0AecVK9JjWA" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
+    </elements>
+    <elements xsi:type="commands:Command" xmi:id="_7Y7MQCaVEea_retAav4xvw" elementId="org.goko.tools.editor.command.findreplace" commandName="Find/Replace" description="Find/Replace"/>
+    <elements xsi:type="commands:Command" xmi:id="_bhilECdzEearz8b692nHvA" elementId="org.goko.tools.editor.command.undo" commandName="Undo"/>
+    <elements xsi:type="commands:Command" xmi:id="_UJfkACd0Eearz8b692nHvA" elementId="org.goko.tools.editor.command.redo" commandName="Redo"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vZgZoCQ0Eear6IDwQ2UHsw" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_3sb5ICQ0Eear6IDwQ2UHsw" elementId="org.goko.tools.editor.handler.0" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.handlers.GCodeEditorSaveActiveHandler" command="_efPQ4CQ0Eear6IDwQ2UHsw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_8u9-4CQ0Eear6IDwQ2UHsw" elementId="org.goko.tools.editor.handler.1" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.handlers.GCodeEditorSaveAllHandler" command="_gRi8ACQ0Eear6IDwQ2UHsw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_4Uid4CTXEea0AecVK9JjWA" elementId="org.goko.tools.editor.handler.2" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_1q3F4CTXEea0AecVK9JjWA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_4NmfwCaVEea_retAav4xvw" elementId="org.goko.tools.editor.handler.3" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.handlers.GCodeEditorFindReplaceHandler" command="_7Y7MQCaVEea_retAav4xvw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_cly3YCdzEearz8b692nHvA" elementId="org.goko.tools.editor.handler.4" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.handlers.GCodeEditorUndoHandler" command="_bhilECdzEearz8b692nHvA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_VMdc4Cd0Eearz8b692nHvA" elementId="org.goko.tools.editor.handler.5" contributionURI="bundleclass://org.goko.tools.editor/org.goko.tools.editor.handlers.GCodeEditorRedoHandler" command="_UJfkACd0Eearz8b692nHvA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7i438CTREea0AecVK9JjWA" featurename="children" parentElementId="org.eclipse.ui.contexts.dialogAndWindow">
+    <elements xsi:type="commands:BindingContext" xmi:id="__4EvgCTREea0AecVK9JjWA" elementId="org.goko.tools.editor.bindingcontext" name="Editor binding context"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_D-2XoCTSEea0AecVK9JjWA" featurename="bindingTables" parentElementId="goko.application">
+    <elements xsi:type="commands:BindingTable" xmi:id="_ExWLkCTSEea0AecVK9JjWA" elementId="org.goko.tools.editor.bindingtable.0" bindingContext="__4EvgCTREea0AecVK9JjWA">
+      <bindings xmi:id="_FzmSwCTSEea0AecVK9JjWA" elementId="org.goko.tools.editor.keybinding.0" keySequence="M1+S" command="_efPQ4CQ0Eear6IDwQ2UHsw"/>
+      <bindings xmi:id="_ucN1gCamEea_retAav4xvw" elementId="org.goko.tools.editor.keybinding.1" keySequence="M1+F" command="_7Y7MQCaVEea_retAav4xvw"/>
+      <bindings xmi:id="_YQbkMCd0Eearz8b692nHvA" elementId="org.goko.tools.editor.keybinding.2" keySequence="M1+Z" command="_bhilECdzEearz8b692nHvA"/>
+      <bindings xmi:id="_ZnTQgCd0Eearz8b692nHvA" elementId="org.goko.tools.editor.keybinding.3" keySequence="M1+Y" command="_UJfkACd0Eearz8b692nHvA"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>

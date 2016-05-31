@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.gcode.rs274ngcv3.ui.GCodeContainerUiProvider">
+   <implementation class="org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider"/>
+   <reference bind="setRs274Service" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
+   <reference bind="setRs274WorkspaceService" cardinality="1..1" interface="org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService" name="IRS274WorkspaceService" policy="static"/>
+   <reference bind="setWorkspaceService" cardinality="0..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="dynamic"/>
+   <reference bind="setExecutionService" cardinality="0..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="dynamic"/>
+   <reference bind="setEventAdmin" cardinality="0..n" interface="org.osgi.service.event.EventAdmin" name="IEventBroker" policy="dynamic"/>
+   <service>
+      <provide interface="org.goko.core.workspace.bean.ProjectContainerUiProvider"/>
+   </service>
+   <reference bind="addGCodeProviderContributionItem" cardinality="0..n" interface="org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem" name="IGCodeProviderContributionItem" policy="dynamic"/>
+</scr:component>

@@ -6,4 +6,7 @@
    <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
    <reference bind="setWorkspaceService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceService" name="IWorkspaceService" policy="static"/>
    <reference bind="addModifierBuilder" cardinality="0..n" interface="org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider" name="IModifierUiProvider" policy="dynamic"/>
+   <service>
+      <provide interface="org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService"/>
+   </service>
 </scr:component>

@@ -24,7 +24,7 @@ public class FWordDetector implements IWordDetector {
 	 */
 	@Override
 	public boolean isWordPart(char c) {		
-		return false;
+		return false; //Character.isDigit(c) || c == '.';
 	}
 
 }

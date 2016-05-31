@@ -20,4 +20,10 @@ public interface IResourceLocation {
 	void release() throws GkException;
 	
 	int getReferenceCount();
+	
+	boolean canWrite();
+	
+	void write(InputStream input) throws GkException;
+	
+	void addListener(IResourceLocationListener listener);
 }

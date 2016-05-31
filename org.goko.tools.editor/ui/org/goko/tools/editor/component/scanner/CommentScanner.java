@@ -17,7 +17,7 @@ public class CommentScanner extends SingleTokenScanner{
 	 * @param attribute
 	 */
 	public CommentScanner() {
-		super(new TextAttribute(SWTResourceManager.getColor(SWT.COLOR_GRAY), null, SWT.ITALIC));		
+		super(new TextAttribute(SWTResourceManager.getColor(SWT.COLOR_GRAY), null, SWT.NORMAL));		
 	}
 
 }

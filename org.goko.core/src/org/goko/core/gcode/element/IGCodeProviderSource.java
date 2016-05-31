@@ -9,13 +9,19 @@ import org.goko.core.common.exception.GkException;
 
 /**
  * @author PsyKo
- * @date 13 déc. 2015
+ * @date 13 dï¿½c. 2015
  */
 public interface IGCodeProviderSource {
 	
 	InputStream openInputStream() throws GkException;
 	
+	boolean canWrite();
+	
+	void write(InputStream input) throws GkException;
+	
 	void delete() throws GkException;
 	
 	void bind() throws GkException;
+	
+	void addListener(IGCodeProviderSourceListener listener);
 }

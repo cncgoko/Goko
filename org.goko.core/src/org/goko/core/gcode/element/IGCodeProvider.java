@@ -58,6 +58,10 @@ public interface IGCodeProvider extends IIdBean, ICodeBean{
 	 * @param locked <code>true</code> if it's locked, <code>false</code> otherwise
 	 */
 	void setLocked(boolean locked);
-		
+	
+	/**
+	 * Return the source of this provider
+	 * @return IGCodeProviderSource
+	 */
 	IGCodeProviderSource getSource();
 }

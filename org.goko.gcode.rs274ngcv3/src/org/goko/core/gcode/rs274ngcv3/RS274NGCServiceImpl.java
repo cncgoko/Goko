@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -25,6 +26,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
+import org.goko.core.gcode.element.IGCodeProviderSourceListener;
 import org.goko.core.gcode.element.IInstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -49,6 +51,8 @@ import org.goko.core.gcode.rs274ngcv3.parser.GCodeLexer;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeToken;
 import org.goko.core.gcode.rs274ngcv3.parser.GCodeTokenType;
 import org.goko.core.gcode.rs274ngcv3.parser.ModalGroup;
+import org.goko.core.gcode.service.GCodeProviderDeleteEvent;
+import org.goko.core.gcode.service.IGCodeProviderDeleteListener;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
@@ -63,6 +67,8 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	private List<IGCodeProviderRepositoryListener> listenerList;
 	/** The list of modifier listener */
 	private List<IModifierListener> modifierListenerList;
+	/** The list of modifier listener */
+	private List<IGCodeProviderDeleteListener> gcodeProviderDeleteListenerList;
 	/** The list of modal groups */
 	private List<ModalGroup> modalGroups;
 	/** The cache of root providers */
@@ -86,6 +92,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		this.cacheStackedProvidersByCode = new UniqueCacheByCode<IStackableGCodeProvider>();
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
 		this.gcodeProviderUdateNotificationEnabled = true;
+		this.gcodeProviderDeleteListenerList = new CopyOnWriteArrayList<IGCodeProviderDeleteListener>();
 	}
 
 	/** (inheritDoc)
@@ -126,6 +133,9 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		
 		parseProvider(provider.getSource(), provider, monitor);
 		root.setParent(provider);
+		root.setModificationDate(new Date());
+		// Force to update the modifiers stack
+		cacheStackedProviders.get(idGCodeProvider).update();
 		notifyGCodeProviderUpdate(getGCodeProvider(idGCodeProvider));
 	}
 
@@ -524,6 +534,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		cacheStackedProvidersByCode.add(wrappedProvider);
 		provider.setId(wrappedProvider.getId());	
 		provider.getSource().bind();
+		provider.getSource().addListener(new GCodeSourceWatcher(provider.getId()));
 		notifyGCodeProviderCreate(wrappedProvider);
 	}
 	
@@ -533,15 +544,18 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	@Override
 	public void deleteGCodeProvider(Integer id) throws GkException {
 		IGCodeProvider provider = cacheStackedProviders.get(id);
-		LOG.info("Deleting GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
-		// Remove attached modifiers 
-		performDeleteByIdGCodeProvider(id);
-		// Update the provider once it's modified
-		provider = cacheStackedProviders.get(id);
-		cacheStackedProviders.remove(id);
-		cacheStackedProvidersByCode.remove(provider.getCode()); 
-		provider.getSource().delete();		
-		notifyGCodeProviderDelete(provider);
+		boolean canDelete = checkDeleteGCodeProvider(id);
+		if(canDelete){
+			LOG.info("Deleting GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
+			// Remove attached modifiers 
+			performDeleteByIdGCodeProvider(id);
+			// Update the provider once it's modified
+			provider = cacheStackedProviders.get(id);
+			cacheStackedProviders.remove(id);
+			cacheStackedProvidersByCode.remove(provider.getCode()); 
+			provider.getSource().delete();		
+			notifyGCodeProviderDelete(provider);
+		}
 	}
 
 	/** (inheritDoc)
@@ -896,6 +910,41 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		modifierListenerList.add(listener);
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#addDeleteListener(org.goko.core.gcode.service.IGCodeProviderDeleteListener)
+	 */
+	@Override
+	public void addDeleteListener(IGCodeProviderDeleteListener listener) throws GkException {
+		if(!gcodeProviderDeleteListenerList.contains(listener)){
+			gcodeProviderDeleteListenerList.add(listener);
+		}		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#removeDeleteListener(org.goko.core.gcode.service.IGCodeProviderDeleteListener)
+	 */
+	@Override
+	public void removeDeleteListener(IGCodeProviderDeleteListener listener) throws GkException {
+		if(gcodeProviderDeleteListenerList.contains(listener)){
+			gcodeProviderDeleteListenerList.remove(listener);
+		}
+	}
+	/**
+	 * Calls every delete listener to make sure the GCodeProvider can be deleted
+	 * @param idGCodeProvider the id of the provider to delete
+	 * @return <code>true</code> if it can be deleted, <code>false</code> otherwise
+	 */
+	protected boolean checkDeleteGCodeProvider(Integer idGCodeProvider){
+		GCodeProviderDeleteEvent event = new GCodeProviderDeleteEvent(idGCodeProvider);
+		for (IGCodeProviderDeleteListener deleteListener : gcodeProviderDeleteListenerList) {
+			deleteListener.beforeDelete(event);
+			if(!event.isDoIt()){
+				break;
+			}
+		}
+		return event.isDoIt();
+	}
+	
 	 /** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#removeListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener)
 	 */
@@ -1043,4 +1092,36 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	protected void enableGcodeProviderUdateNotification(){
 		setGcodeProviderUdateNotificationEnabled(true);
 	}
+	
+	/**
+	 * Listener class in charge of propagating source change events
+	 */
+	class GCodeSourceWatcher implements IGCodeProviderSourceListener{
+		/** The target provider */
+		private Integer idGCodeProvider;
+		
+		
+		/**
+		 * @param idGCodeProvider the id of the target provider
+		 */
+		public GCodeSourceWatcher(Integer idGCodeProvider) {
+			super();
+			this.idGCodeProvider = idGCodeProvider;
+		}
+
+
+		/** (inheritDoc)
+		 * @see org.goko.core.gcode.element.IGCodeProviderSourceListener#onSourceChanged(org.goko.core.gcode.element.IGCodeProviderSource)
+		 */
+		@Override
+		public void onSourceChanged(IGCodeProviderSource taget) {
+			try {				
+				RS274NGCServiceImpl.this.reload(idGCodeProvider, null);
+			} catch (GkException e) {
+				LOG.error(e);
+			}
+		}
+		
+	}
 }
+

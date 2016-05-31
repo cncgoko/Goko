@@ -6,7 +6,14 @@ package org.goko.core.workspace.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.io.IOUtils;
+import org.eclipse.core.runtime.URIUtil;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 
@@ -21,15 +28,14 @@ public class URIResourceLocation implements IResourceLocation {
 	private URI absoluteUri;
 	/** The number of references to this location */
 	private int referenceCount;	
+	/** The listeners */
+	private List<IResourceLocationListener> listeners;
 	
 	/**
 	 * @param uri
 	 */
 	public URIResourceLocation(URI uri) {
-		super();
-		this.uri = uri;
-		this.referenceCount = 0;
-		this.absoluteUri = null;
+		this(uri, null);
 	}
 	
 	/**
@@ -40,6 +46,7 @@ public class URIResourceLocation implements IResourceLocation {
 		this.uri = uri;
 		this.referenceCount = 0;
 		this.absoluteUri = absoluteUri;
+		this.listeners = new CopyOnWriteArrayList<IResourceLocationListener>();
 	}
 
 
@@ -55,6 +62,27 @@ public class URIResourceLocation implements IResourceLocation {
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.io.IResourceLocation#canWrite()
+	 */
+	@Override
+	public boolean canWrite() {		
+		return URIUtil.isFileURI(absoluteUri);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.io.IResourceLocation#write(java.io.InputStream)
+	 */
+	@Override
+	public void write(InputStream input) throws GkException {		
+		try {
+			Files.write(Paths.get(absoluteUri), IOUtils.toByteArray(input), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			notifyChange();
+		} catch (IOException e) {
+			throw new GkTechnicalException(e);
+		}
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.io.IResourceLocation#bind()
 	 */
@@ -108,4 +136,22 @@ public class URIResourceLocation implements IResourceLocation {
 		this.absoluteUri = absoluteUri;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.io.IResourceLocation#addListener(org.goko.core.workspace.io.IResourceLocationListener)
+	 */
+	@Override
+	public void addListener(IResourceLocationListener listener) {
+		if(!listeners.contains(listener)){
+			listeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Notifies registered listener for changes on this resource
+	 */
+	protected void notifyChange(){
+		for (IResourceLocationListener listener : listeners) {
+			listener.onResourceChanged(this);
+		}
+	}
 }

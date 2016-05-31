@@ -3,6 +3,7 @@
 
 <product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.3.1.qualifier" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -18,12 +19,14 @@
    <splash
       location="Goko" />
    <launcher name="Goko">
+      <macosx icon="../Goko/icons/launch/goko256.icns"/>
       <solaris/>
       <win useIco="true">
          <ico path="../Goko/icons/launch/goko.ico"/>
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>

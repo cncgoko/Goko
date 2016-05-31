@@ -24,7 +24,6 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.rotate.RotateModif
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.scale.ScaleModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize.SegmentizeModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.wrap.WrapModifierBuilder;
-import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.GCodeContainerUiProvider;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
 /**
@@ -71,7 +70,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	@Override
 	public void startService() throws GkException {		
 		// Create the RS274 project container
-		getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService, workspaceService));
+		//getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService, workspaceService));
 		getGcodeService().addListener(this);		
 		getGcodeService().addModifierListener(this);		
 		initModifierUiProvider();		

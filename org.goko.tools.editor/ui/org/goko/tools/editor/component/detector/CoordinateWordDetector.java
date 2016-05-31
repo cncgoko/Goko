@@ -21,7 +21,10 @@ public class CoordinateWordDetector implements IWordDetector {
 			|| c == 'z' || c == 'Z'
 			|| c == 'a' || c == 'A'
 			|| c == 'b' || c == 'B'
-			|| c == 'c' || c == 'C';
+			|| c == 'c' || c == 'C'
+			|| c == 'i' || c == 'I'
+			|| c == 'j' || c == 'J'
+			|| c == 'k' || c == 'K';
 	}
 
 	/** (inheritDoc)

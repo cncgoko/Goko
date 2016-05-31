@@ -5,8 +5,30 @@
          id="org.goko.tools.editor.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
+            apply="initial"
             uri="resources/fragments/fragment.e4xmi">
       </fragment>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.tools.editor.preferences.EditorPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePage">
+      <page
+            class="org.goko.tools.editor.preferences.EditorPreferencePage"
+            id="org.goko.tools.editor.preferencePage"
+            name="Editor">
+      </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.tools.editor.preferences.EditorPreferenceStoreProvider"
+            id="org.goko.tools.editor.provider1">
+      </provider>
    </extension>
 
 </plugin>

@@ -18,7 +18,7 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 	 */
 	public StackableGCodeProviderRoot(IGCodeProvider parent) {
 		super();
-		this.parent = parent;
+		this.parent = parent;		
 	}
 
 	/** (inheritDoc)
@@ -152,6 +152,5 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 	public void setChild(IStackableGCodeProvider child) {
 		this.child = child;
 	}
-	
-	
+		
 }

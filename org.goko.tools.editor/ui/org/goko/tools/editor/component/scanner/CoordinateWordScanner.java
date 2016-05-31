@@ -23,7 +23,7 @@ public class CoordinateWordScanner extends RuleBasedScanner implements ITokenSca
     {
 
         //Token gword = new Token(GCODE_G_WORD);
-    	TextAttribute coordTextAttribute = new TextAttribute(SWTResourceManager.getColor(200,0,225));
+    	TextAttribute coordTextAttribute = new TextAttribute(SWTResourceManager.getColor(186,139,175));
         Token coordWord = new Token(coordTextAttribute);
         
         WordRule wr = new WordRule(new CoordinateWordDetector());                
@@ -39,6 +39,12 @@ public class CoordinateWordScanner extends RuleBasedScanner implements ITokenSca
         wr.addWord("B", coordWord);
         wr.addWord("c", coordWord);
         wr.addWord("C", coordWord);
+        wr.addWord("i", coordWord);
+        wr.addWord("I", coordWord);
+        wr.addWord("j", coordWord);
+        wr.addWord("J", coordWord);
+        wr.addWord("k", coordWord);
+        wr.addWord("K", coordWord);
         
         setRules(new IRule[]{ wr });//PredicateRules(rules);
     }

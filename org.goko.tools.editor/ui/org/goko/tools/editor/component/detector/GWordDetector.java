@@ -24,7 +24,7 @@ public class GWordDetector implements IWordDetector {
 	 */
 	@Override
 	public boolean isWordPart(char c) {		
-		return Character.isDigit(c);
+		return Character.isDigit(c) || c == '.';
 	}
 
 }
