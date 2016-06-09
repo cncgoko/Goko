@@ -230,7 +230,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 			this.getController().addTextDisplayBinding(lblTotalTokens, ExecutionPartModel.PROPERTY_TOTAL_TOKEN_COUNT);
 			
 			this.getController().addTextDisplayBinding(lblLineProgress , ExecutionPartModel.PROPERTY_COMPLETED_LINE_COUNT );
-			this.getController().addTextDisplayBinding(lblTotalLines , ExecutionPartModel.PROPERTY_TOKEN_LINE_COUNT );
+			this.getController().addTextDisplayBinding(lblTotalLines , ExecutionPartModel.PROPERTY_TOTAL_LINE_COUNT );
 			
 			this.getController().addTextDisplayBinding(lblElapsedTime  , ExecutionPartModel.PROPERTY_ELAPSED_TIME_STRING );			
 			this.getController().addTextDisplayBinding(lblEstimatedTime  , ExecutionPartModel.PROPERTY_ESTIMATED_TIME_STRING );			

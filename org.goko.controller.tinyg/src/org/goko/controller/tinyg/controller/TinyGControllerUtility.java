@@ -41,16 +41,16 @@ public class TinyGControllerUtility {
 	public TinyGControllerUtility() {
 
 	}
-
-	public final static TinyGConfiguration getConfigurationCopy(final TinyGConfiguration baseCfg) throws GkException{
-		TinyGConfiguration copy = new TinyGConfiguration();
-		for(TinyGGroupSettings group : baseCfg.getGroups()){
-			for(TinyGSetting<?> setting : group.getSettings()){
-				copy.setSetting(group.getGroupIdentifier(), setting.getIdentifier(), setting.getValue());
-			}
-		}
-		return copy;
-	}
+//
+//	public final static TinyGConfiguration getConfigurationCopy(final TinyGConfiguration baseCfg) throws GkException{
+//		TinyGConfiguration copy = new TinyGConfiguration();
+//		for(TinyGGroupSettings group : baseCfg.getGroups()){
+//			for(TinyGSetting<?> setting : group.getSettings()){
+//				copy.setSetting(group.getGroupIdentifier(), setting.getIdentifier(), setting.getValue());
+//			}
+//		}
+//		return copy;
+//	}
 
 	/**
 	 * Handling configuration response from TinyG

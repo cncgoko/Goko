@@ -32,17 +32,30 @@ public abstract class TinyGSetting<T> {
 	private T value;
 	/** Read only mode */
 	private boolean readOnly;
-
+	/** Assigned boolean, indicating that this value was actually assigned from a set statement*/
+	private boolean assigned;
+	
 	/**
 	 * @param identifier  string identifier of the setting
 	 * @param value value of the setting
 	 * @param readonly is the parameter read only
 	 */
 	public TinyGSetting(String identifier, T value, boolean readonly) {
+		this(identifier, value, readonly, false);
+	}
+	
+	/**
+	 * @param identifier  string identifier of the setting
+	 * @param value value of the setting
+	 * @param readonly the parameter read only
+	 * @param assigned the assigned value
+	 */
+	protected TinyGSetting(String identifier, T value, boolean readonly, boolean assigned) {
 		super();
 		this.identifier = identifier;
 		this.value = value;
 		this.readOnly = readonly;
+		this.assigned = assigned;
 	}
 
 	/**
@@ -79,6 +92,7 @@ public abstract class TinyGSetting<T> {
 	 */
 	public void setValue(T value) {
 		this.value = clone(value);
+		this.setAssigned(true);
 	}
 
 	public Class getType(){
@@ -100,4 +114,20 @@ public abstract class TinyGSetting<T> {
 	}
 
 	protected abstract T clone(T value);
+
+	/**
+	 * @return the assigned
+	 */
+	public boolean isAssigned() {
+		return assigned;
+	}
+
+	/**
+	 * @param assigned the assigned to set
+	 */
+	public void setAssigned(boolean assigned) {
+		this.assigned = assigned;
+	}
+	
+	protected abstract TinyGSetting<T> copy();
 }

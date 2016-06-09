@@ -257,6 +257,7 @@ public class TinyGJsonUtils {
 					if(StringUtils.equals(setting.getIdentifier(),settingIdentifier)){
 						LOG.debug("Setting parameter "+settingIdentifier+" of group '"+groupIdentifier+"' to value '"+String.valueOf(value)+"'");
 						setting.setValue(value);
+						return;
 					}
 				}
 			}

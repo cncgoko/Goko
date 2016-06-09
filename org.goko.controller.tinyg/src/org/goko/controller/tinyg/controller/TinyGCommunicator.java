@@ -87,7 +87,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	@Override
 	public void onDataReceived(List<Byte> data) throws GkException {
 		incomingBuffer.addAll(data);
-		//Dépiler dans un thread ?
+		//Dï¿½piler dans un thread ?
 //		if(incomingBuffer.hasNext()){
 //			executor.execute(new Runnable() {
 //				@Override
@@ -117,12 +117,15 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		if(event == EnumConnectionEvent.CONNECTED){
 			incomingBuffer.clear();
 			getConnectionService().addInputDataListener(this);
+			// Force strict GCode mode
+			send(GkUtils.toBytesList("{\"js\":1}"));			
 			tinyg.refreshStatus();
 			tinyg.refreshConfiguration();
 			updateCoordinateSystem();			
 		}else if(event == EnumConnectionEvent.DISCONNECTED){
 			getConnectionService().removeInputDataListener(this);
 			tinyg.setState(MachineState.UNDEFINED);
+			tinyg.setConfiguration(new TinyGConfiguration());
 			incomingBuffer.clear();
 		}		
 	}
@@ -135,7 +138,9 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 				try{
 					response = JsonObject.readFrom(trimmedData);
 				}catch(Exception e){
-					LOG.error("Error while parsing JSon for string '"+trimmedData+"'"+System.lineSeparator()+e.getMessage());
+					String msg = "Error while parsing JSon for string '"+trimmedData+"'"+System.lineSeparator()+e.getMessage();
+					applicativeLogService.error(msg, "Goko");
+					LOG.error(msg);					
 					return;
 				}
 

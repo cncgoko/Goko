@@ -2,6 +2,7 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.modifier;
 
 import org.eclipse.jface.action.Action;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
@@ -27,6 +28,21 @@ public class EnableDisableAction extends Action {
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.action.Action#isEnabled()
+	 */
+	@Override
+	public boolean isEnabled() {
+		try {
+			IModifier<GCodeProvider> modifier = rs274Service.getModifier(idModifier);
+			IGCodeProvider provider = rs274Service.getGCodeProvider(modifier.getIdGCodeProvider());
+			return !provider.isLocked();
+		} catch (GkException e) {
+			LOG.error(e);
+			return false;
+		}
+		
+	}
 	/**
 	 * (inheritDoc)
 	 * 

@@ -33,6 +33,10 @@ public class TinyGBigDecimalToStringSetting extends TinyGSetting<String>{
 		super(identifier, value, readonly);
 	}
 
+	protected TinyGBigDecimalToStringSetting(String identifier, String value, boolean readonly, boolean assigned) {
+		super(identifier, value, readonly, assigned);
+	}
+	
 	@Override
 	public Class<String> getType() {
 		return String.class;
@@ -47,4 +51,11 @@ public class TinyGBigDecimalToStringSetting extends TinyGSetting<String>{
 		return value;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#copy()
+	 */
+	@Override
+	protected TinyGSetting<String> copy() {		
+		return new TinyGBigDecimalToStringSetting(getIdentifier(), getValue(), isReadOnly(), isAssigned());
+	}
 }

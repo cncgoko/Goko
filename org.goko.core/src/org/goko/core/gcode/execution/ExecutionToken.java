@@ -203,11 +203,13 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 		this.mapLineByExecutionState.put(initialState, new ArrayList<Integer>());
 		this.currentIndex = -1;
 		this.setState(ExecutionState.IDLE);
-
-		if(CollectionUtils.isNotEmpty(getGCodeProvider().getLines())){
-			for (GCodeLine gCodeLine : getGCodeProvider().getLines()) {
+				
+		IGCodeProvider provider = getGCodeProvider();
+		this.lineCount = CollectionUtils.size(provider.getLines());
+		if(CollectionUtils.isNotEmpty(provider.getLines())){
+			for (GCodeLine gCodeLine : provider.getLines()) {
 				this.mapLineByExecutionState.get(initialState).add(gCodeLine.getId());
-				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);
+				this.mapExecutionStateById.put(gCodeLine.getId(), initialState);				
 			}
 		}
 	}

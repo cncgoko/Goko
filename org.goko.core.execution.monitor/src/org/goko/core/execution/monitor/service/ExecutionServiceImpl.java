@@ -17,8 +17,8 @@
 
 package org.goko.core.execution.monitor.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,6 +36,7 @@ import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
+import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
@@ -55,8 +56,10 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	public static final String SERVICE_ID = "org.goko.core.execution.monitor.service.GCodeExecutionMonitorServiceImpl";
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(ExecutionServiceImpl.class);
-	/** The list of listener */
+	/** The list of execution listener */
 	private List<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>> listenerList;
+	/** The list of execution queue listener */
+	private List<IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>> executionQueuelistenerList;
 	/** The current executor */
 	private IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executor;
 	/** The execution queue */
@@ -76,8 +79,9 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	 * Constructor
 	 */
 	public ExecutionServiceImpl() {
-		listenerList 	= new ArrayList<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>>();
+		listenerList 	= new CopyOnWriteArrayList<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>>();		
 		executionQueue 	= new ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>();
+		executionQueuelistenerList 	= new CopyOnWriteArrayList<IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>>();
 	}
 
 	/** (inheritDoc)
@@ -112,6 +116,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	public void addToExecutionQueue(ExecutionToken<ExecutionTokenState> executionToken) throws GkException {
 		executionQueue.add(executionToken);
 		workspaceService.notifyWorkspaceEvent(ExecutionServiceWorkspaceEvent.getCreateEvent(executionToken));
+		notifyTokenCreate(executionToken);
 	}
 
 	/** (inheritDoc)
@@ -146,6 +151,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	public void removeFromExecutionQueue(ExecutionToken<ExecutionTokenState> executionToken) throws GkException {
 		executionQueue.delete(executionToken.getId());
 		workspaceService.notifyWorkspaceEvent(ExecutionServiceWorkspaceEvent.getDeleteEvent(executionToken));
+		notifyTokenDelete(executionToken);
 	}
 
 	/** (inheritDoc)
@@ -176,6 +182,24 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#addExecutionQueueListener(org.goko.core.gcode.service.IExecutionQueueListener)
+	 */
+	@Override
+	public void addExecutionQueueListener(IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener) throws GkException {
+		if(!executionQueuelistenerList.contains(listener)){
+			executionQueuelistenerList.add(listener);
+		}		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#removeExecutionQueueListener(org.goko.core.gcode.service.IExecutionQueueListener)
+	 */
+	@Override
+	public void removeExecutionQueueListener( IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener) throws GkException {
+		executionQueuelistenerList.remove(listener);
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyExecutionStart(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken)
 	 */
@@ -226,7 +250,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		}
 		unlockGCodeProvider();
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#notifyCommandStateChanged(org.goko.core.gcode.execution.IExecutionToken.execution.IGCodeExecutionToken, java.lang.Integer)
 	 */
@@ -291,6 +315,34 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		}
 	}
 
+	/**
+	 * Notifies the registered listener for a token create event 
+	 * @param token the created token
+	 */
+	protected void notifyTokenCreate(ExecutionToken<ExecutionTokenState> token){
+		for (IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener : executionQueuelistenerList) {
+			listener.onTokenCreate(token);
+		}
+	}
+	/**
+	 * Notifies the registered listener for a token delete event 
+	 * @param token the deleted token
+	 */
+	protected void notifyTokenDelete(ExecutionToken<ExecutionTokenState> token){
+		for (IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener : executionQueuelistenerList) {
+			listener.onTokenDelete(token);
+		}
+	}
+	
+	/**
+	 * Notifies the registered listener for a token update event 
+	 * @param token the updated token
+	 */
+	protected void notifyTokenUpdate(ExecutionToken<ExecutionTokenState> token){
+		for (IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> listener : executionQueuelistenerList) {
+			listener.onTokenUpdate(token);
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IExecutionService#setExecutor(org.goko.core.gcode.execution.IExecutor)
 	 */
@@ -462,8 +514,18 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	 */
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
-		// TODO Auto-generated method stub
-
+		// Reset the data for the updated token
+		List<ExecutionToken<ExecutionTokenState>> lstToken = executionQueue.getExecutionToken();
+		
+		if(CollectionUtils.isNotEmpty(lstToken)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+				if(ObjectUtils.equals(provider.getId(), executionToken.getIdGCodeProvider())){
+					executionToken.reset();
+					notifyTokenUpdate(executionToken);					
+					break;
+				}
+			}
+		}
 	}
 
 	/** (inheritDoc)

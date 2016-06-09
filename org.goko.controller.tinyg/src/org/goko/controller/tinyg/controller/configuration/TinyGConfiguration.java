@@ -65,11 +65,12 @@ public class TinyGConfiguration {
 
 	public static final String JSON_MODE 				= "ej";
 	public static final String JSON_VERBOSITY 			= "jv";
+	public static final String JSON_SYNTAX	 			= "js";
 	public static final String TEXT_MODE_VERBOSITY 		= "tv";
 	public static final String QUEUE_REPORT_VERBOSITY	= "qv";
 	public static final String STATUS_REPORT_VERBOSITY 	= "sv";
 	public static final String STATUS_REPORT_INTERVAL 	= "si";
-	public static final String IGNORE_CR_LF_ON_RX 		= "ic";
+	//public static final String IGNORE_CR_LF_ON_RX 		= "ic";
 	public static final String ENABLE_CR_ON_TX 			= "ec";
 	public static final String ENABLE_CHARACTER_ECHO 	= "ee";
 	public static final String ENABLE_FLOW_CONTROL 		= "ex";
@@ -111,6 +112,13 @@ public class TinyGConfiguration {
 		groups   = new ArrayList<TinyGGroupSettings>();
 		initSettings();
 	}
+	
+	private TinyGConfiguration(boolean initializeGroups){
+		groups   = new ArrayList<TinyGGroupSettings>();
+		if(initializeGroups){
+			initSettings();
+		}
+	}
 
 	private void initSettings() {
 		groups.add(new TinyGMotorSettings("1"));
@@ -138,11 +146,12 @@ public class TinyGConfiguration {
 
 		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_MODE 					,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_VERBOSITY 				,BigDecimal.ZERO));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(JSON_SYNTAX	 				,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(TEXT_MODE_VERBOSITY 			,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(QUEUE_REPORT_VERBOSITY		,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_VERBOSITY 		,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(STATUS_REPORT_INTERVAL 		,BigDecimal.ZERO));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(IGNORE_CR_LF_ON_RX 			,BigDecimal.ZERO));
+	//	sysgroup.addSetting(new TinyGBigDecimalSetting(IGNORE_CR_LF_ON_RX 			,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CR_ON_TX 				,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_CHARACTER_ECHO 		,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(ENABLE_FLOW_CONTROL 			,BigDecimal.ZERO));
@@ -313,5 +322,28 @@ public class TinyGConfiguration {
 				return;
 			}
 		}
+	}
+	
+	/**
+	 * Determines if this configuration was completely assigned using at least once the setValue(..) method on every setting
+	 * @return <code>true</code> if all settings were assigned, <code>false</code> otherwise
+	 */
+	public boolean isCompletelyLoaded(){
+		for (TinyGGroupSettings tinyGGroupSettings : groups) {
+			if(!tinyGGroupSettings.isCompletelyLoaded()){				
+				return false;
+			}
+		}		
+		return true;
+	}
+	
+	public TinyGConfiguration copy(){
+		TinyGConfiguration copy = new TinyGConfiguration(false);
+		
+		for (TinyGGroupSettings tinyGGroupSettings : groups) {
+			copy.groups.add(tinyGGroupSettings.copy());
+		}	
+		
+		return copy;
 	}
 }

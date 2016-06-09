@@ -79,5 +79,24 @@ public class TinyGGroupSettings {
 	public void setSettings(List<TinyGSetting> settings) {
 		this.settings = settings;
 	}
-
+	/**
+	 * Determines if this group was completely assigned using at least once the setValue(..) method on every setting
+	 * @return <code>true</code> if all settings were assigned, <code>false</code> otherwise
+	 */
+	public boolean isCompletelyLoaded(){
+		for (TinyGSetting tinyGSetting : settings) {
+			if(!tinyGSetting.isReadOnly() && !tinyGSetting.isAssigned()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	protected  TinyGGroupSettings copy(){
+		TinyGGroupSettings group = new TinyGGroupSettings(groupIdentifier);
+		for (TinyGSetting tinyGSetting : settings) {			
+			group.addSetting(tinyGSetting.copy());
+		}
+		return group;
+	}
 }

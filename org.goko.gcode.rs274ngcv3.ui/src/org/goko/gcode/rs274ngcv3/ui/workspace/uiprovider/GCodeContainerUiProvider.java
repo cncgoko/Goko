@@ -26,6 +26,7 @@ import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.core.workspace.service.IWorkspaceService;
+import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
@@ -56,6 +57,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	private IStyledLabelProvider labelProvider;
 	private EventAdmin eventAdmin;
 	private List<IGCodeProviderContributionItem> lstGCodeProviderContributionItem;
+	private IWorkspaceUIService workspaceUIService;
 	
 	/**
 	 * @param rs274Service
@@ -291,7 +293,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 * @param rs274WorkspaceService the rs274WorkspaceService to set
 	 */
 	public void setRs274WorkspaceService(IRS274WorkspaceService rs274WorkspaceService) {
-		this.rs274WorkspaceService = rs274WorkspaceService;
+		this.rs274WorkspaceService = rs274WorkspaceService;		
 	}
 
 	/**
@@ -338,6 +340,22 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 
 	public void addGCodeProviderContributionItem(IGCodeProviderContributionItem contributionItem){
 		this.lstGCodeProviderContributionItem.add(contributionItem);
+	}
+
+	/**
+	 * @return the workspaceUIService
+	 */
+	public IWorkspaceUIService getWorkspaceUIService() {
+		return workspaceUIService;
+	}
+
+	/**
+	 * @param workspaceUIService the workspaceUIService to set
+	 * @throws GkException 
+	 */
+	public void setWorkspaceUIService(IWorkspaceUIService workspaceUIService) throws GkException {
+		this.workspaceUIService = workspaceUIService;
+		this.workspaceUIService.addProjectContainerUiProvider(this);
 	}
 
 }

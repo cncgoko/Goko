@@ -75,4 +75,7 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	
 	ExecutionQueue<S, T> getExecutionQueue() throws GkException;
 	
+	void addExecutionQueueListener(IExecutionQueueListener<S, T> listener) throws GkException;
+	
+	void removeExecutionQueueListener(IExecutionQueueListener<S, T> listener) throws GkException;
 }

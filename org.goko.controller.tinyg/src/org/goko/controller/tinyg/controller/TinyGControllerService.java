@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
@@ -17,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
+import org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
@@ -89,9 +91,11 @@ import com.eclipsesource.json.JsonValue;
 public class TinyGControllerService extends EventDispatcher implements ITinyGControllerFirmwareService, ITinygControllerService{
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
-	public static final String SERVICE_ID = "Controller for TinyG v0.97";
+	public static final String SERVICE_ID = "Controller for TinyG v0.97";	
 	/** Stored configuration */
 	private TinyGConfiguration configuration;
+	/** The configuration listeners */
+	private List<ITinyGConfigurationListener> configurationListener;
 	/** Connection service */
 	private ISerialConnectionService connectionService;
 	/** GCode service */
@@ -108,7 +112,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	private IApplicativeLogService applicativeLogService;
 	/** Event admin service */
 	private EventAdmin eventAdmin;
-	//private TinyGJoggingRunnable jogRunnable;
 	private TinyGJogging tinyGJogging;
 	private TinyGExecutor tinygExecutor;
 	private CompletionService<ProbeResult> completionService;
@@ -124,6 +127,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		tinygState   = new TinyGState();
 		tinygExecutor = new TinyGExecutor(this, null);		
 		gcodeContextListener = new GCodeContextObservable();
+		configurationListener = new CopyOnWriteArrayList<ITinyGConfigurationListener>();
 	}
 
 	/** (inheritDoc)
@@ -195,7 +199,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		BigDecimal qrVerbosity = cfg.getSetting(TinyGConfiguration.SYSTEM_SETTINGS, TinyGConfiguration.QUEUE_REPORT_VERBOSITY, BigDecimal.class);
 
 		if(isPlannerBufferSpaceCheck()){
-			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_OFF)){
+			if(ObjectUtils.equals(qrVerbosity, TinyGConfigurationValue.QUEUE_REPORT_SILENT)){
 				throw new GkFunctionalException("TNG-002");
 			}
 		}
@@ -371,7 +375,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public TinyGConfiguration getConfiguration() throws GkException{
-		return TinyGControllerUtility.getConfigurationCopy(configuration);
+		return configuration.copy();
 	}
 
 	/**
@@ -438,7 +442,6 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}
 	}
 
-
 	@EventListener(MachineValueUpdateEvent.class)
 	public void onMachineValueUpdate(MachineValueUpdateEvent evt){
 		notifyListeners(evt);
@@ -449,7 +452,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void setConfiguration(TinyGConfiguration cfg) throws GkException{
-		this.configuration = TinyGControllerUtility.getConfigurationCopy(cfg);
+		this.configuration = cfg.copy();
+		notifyConfigurationChanged();
 	}
 
 	/** (inheritDoc)
@@ -470,8 +474,35 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			}
 		}
 	}
-
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#addConfigurationListener(org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener)
+	 */
+	@Override
+	public void addConfigurationListener(ITinyGConfigurationListener listener) {
+		if(!configurationListener.contains(listener)){
+			configurationListener.add(listener);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#removeConfigurationListener(org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener)
+	 */
+	@Override
+	public void removeConfigurationListener(ITinyGConfigurationListener listener) {
+		configurationListener.remove(listener);
+	}
+	
+	/**
+	 * Notifies the registered listeners for a configuration change
+	 * @throws GkException GkException 
+	 */
+	private void notifyConfigurationChanged() throws GkException{
+		TinyGConfiguration cfg = configuration.copy();
+		for (ITinyGConfigurationListener listener : configurationListener) {
+			listener.onConfigurationChanged(cfg);
+		}
+	}
 	/**
 	 * @return the gcodeService
 	 */

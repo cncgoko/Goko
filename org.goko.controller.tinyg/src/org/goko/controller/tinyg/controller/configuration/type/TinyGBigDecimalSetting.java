@@ -32,15 +32,32 @@ public class TinyGBigDecimalSetting extends TinyGSetting<BigDecimal>{
 	public TinyGBigDecimalSetting(String identifier, BigDecimal value, boolean readonly) {
 		super(identifier, value, readonly);
 	}
+	
+	protected TinyGBigDecimalSetting(String identifier, BigDecimal value, boolean readonly, boolean assigned) {
+		super(identifier, value, readonly, assigned);
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#getType()
+	 */
 	@Override
-	public Class getType() {
+	public Class<BigDecimal> getType() {
 		return BigDecimal.class;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#clone(java.lang.Object)
+	 */
 	@Override
 	protected BigDecimal clone(BigDecimal value) {
 		return  value;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#copy()
+	 */
+	@Override
+	protected TinyGSetting<BigDecimal> copy() {		
+		return new TinyGBigDecimalSetting(getIdentifier(), getValue(), isReadOnly(), isAssigned());
+	}
 }

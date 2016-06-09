@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -23,36 +22,33 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
-import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
-import org.goko.core.gcode.service.IGCodeProviderRepository;
-import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
-import org.goko.core.workspace.service.IWorkspaceEvent;
-import org.goko.core.workspace.service.IWorkspaceListener;
-import org.goko.core.workspace.service.IWorkspaceService;
 
 /**
  * Part displaying execution state and allowing to control it
  *
  * @author Psyko
  */
-public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>, IWorkspaceListener, IGCodeProviderRepositoryListener{
+public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements 	IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>,
+																								//IWorkspaceListener, 
+																								//IGCodeProviderRepositoryListener,
+																								IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	private static final GkLog LOG = GkLog.getLogger(ExecutionPartController.class);
 	/** The execution service */
 	@Inject
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
-	/** The underlying workspace service */
-	@Inject
-	private IWorkspaceService workspaceService;
-	/** The repository for GCode providers*/
-	@Inject
-	private IGCodeProviderRepository gcodeProviderRepository;
+//	/** The underlying workspace service */
+//	@Inject
+//	private IWorkspaceService workspaceService;
+//	/** The repository for GCode providers*/
+//	@Inject
+//	private IGCodeProviderRepository gcodeProviderRepository;
 	/** The optional execution time evaluation service */
 	@Inject
 	@Optional
@@ -73,11 +69,11 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void initialize() throws GkException {
 		executionService.addExecutionListener(this);
-		workspaceService.addWorkspaceListener(this);
-		gcodeProviderRepository.addListener(this);
+		executionService.addExecutionQueueListener(this);
+	//	workspaceService.addWorkspaceListener(this);
+	//	gcodeProviderRepository.addListener(this);
 		updateTokenQueueData();
 		updateButtonState();
-		workspaceService.addWorkspaceListener(this);
 		executionTimeByToken = new HashMap<Integer, Time>();
 	}
 
@@ -165,17 +161,17 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		this.getDataModel().setCompletedLineCount(executedLineCount);
 	}
 
-	/**
-	 * @param event
-	 * @throws GkException
-	 */
-	@Override
-	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
-		updateButtonState();
-		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
-			updateTokenQueueData();
-		}
-	}
+//	/**
+//	 * @param event
+//	 * @throws GkException
+//	 */
+//	@Override
+//	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
+//		updateButtonState();
+//		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
+//			updateTokenQueueData();
+//		}
+//	}
 
 	/**
 	 * Starts the execution queue
@@ -211,33 +207,40 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * Update the state of the buttons according to the execution state
 	 * @throws GkException GkException
 	 */
-	private void updateButtonState() throws GkException{
-		boolean buttonStopEnabled = false;
-		boolean buttonStartEnabled= false;
-		boolean buttonPauseEnabled = false;
-
-		switch(executionService.getExecutionState()){
-		case IDLE:
-		case STOPPED:
-		case COMPLETE:  buttonStartEnabled = true;
-					buttonPauseEnabled = false;
-					buttonStopEnabled = false;
-				break;
-		case PAUSED:
-		case ERROR:
-		case RUNNING: buttonStartEnabled = false;
-					  buttonPauseEnabled = true;
-					  buttonStopEnabled = true;
-				break;
+	private void updateButtonState(){
+		try{
+			boolean buttonStopEnabled = false;
+			boolean buttonStartEnabled= false;
+			boolean buttonPauseEnabled = false;
+	
+			switch(executionService.getExecutionState()){
+			case IDLE:
+			case STOPPED:
+			case COMPLETE:  buttonStartEnabled = true;
+						buttonPauseEnabled = false;
+						buttonStopEnabled = false;
+					break;
+			case PAUSED:
+			case ERROR:
+			case RUNNING: buttonStartEnabled = false;
+						  buttonPauseEnabled = true;
+						  buttonStopEnabled = true;
+					break;
+			}
+	
+			if(executionService.getExecutionQueue() == null
+			|| CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
+				buttonStartEnabled = false;
+			}
+			getDataModel().setButtonStartEnabled(buttonStartEnabled);
+			getDataModel().setButtonPauseEnabled(buttonPauseEnabled);
+			getDataModel().setButtonStopEnabled( buttonStopEnabled);
+		}catch(GkException e){
+			LOG.error(e);
+			getDataModel().setButtonStartEnabled(false);
+			getDataModel().setButtonPauseEnabled(false);
+			getDataModel().setButtonStopEnabled( true );
 		}
-
-		if(executionService.getExecutionQueue() == null
-		|| CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
-			buttonStartEnabled = false;
-		}
-		getDataModel().setButtonStartEnabled(buttonStartEnabled);
-		getDataModel().setButtonPauseEnabled(buttonPauseEnabled);
-		getDataModel().setButtonStopEnabled( buttonStopEnabled);
 	}
 	/**
 	 * Update the data about the execution of the queue
@@ -266,7 +269,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		scheduleExecutionTimeEstimationJob(null);
 	}
 	
-	private void scheduleExecutionTimeEstimationJob(final Integer idToken) throws GkException{
+	private void scheduleExecutionTimeEstimationJob(final Integer idToken) {
 		executionUpdater = new Job("Updating execution time..."){
 			/** (inheritDoc)
 			 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
@@ -282,7 +285,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 							// Refresh the unitary times first
 							for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
 								Time tokenTime = executionTimeByToken.get(executionToken.getId());
-								if(tokenTime == null || idToken == null ||ObjectUtils.equals(idToken, executionToken.getId())){
+								if(tokenTime == null || idToken == null || ObjectUtils.equals(idToken, executionToken.getId())){
 									tokenTime = executionTimeService.evaluateExecutionTime(executionToken.getGCodeProvider());
 									executionTimeByToken.put(executionToken.getId(), tokenTime);
 								}
@@ -308,26 +311,30 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * Update the data about the execution queue
 	 * @throws GkException GkException
 	 */
-	private void updateTokenQueueData() throws GkException {
-		List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
-		int tokenCount = CollectionUtils.size(lstToken);
-		this.getDataModel().setTotalTokenCount(tokenCount);
-
-		int totalTokenCount 	= 0;
-		int completedTokenCount = 0;
-		int totalLineCount		= 0;
-
-		for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-			totalTokenCount += 1;
-			totalLineCount += executionToken.getLineCount();
-			if(executionToken.getState() == ExecutionState.COMPLETE){
-				completedTokenCount += 1;
+	private void updateTokenQueueData() {
+		try{
+			List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+			int tokenCount = CollectionUtils.size(lstToken);
+			this.getDataModel().setTotalTokenCount(tokenCount);
+	
+			int totalTokenCount 	= 0;
+			int completedTokenCount = 0;
+			int totalLineCount		= 0;
+	
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
+				totalTokenCount += 1;
+				totalLineCount += executionToken.getLineCount();
+				if(executionToken.getState() == ExecutionState.COMPLETE){
+					completedTokenCount += 1;
+				}
 			}
+			this.getDataModel().setCompletedTokenCount(completedTokenCount);
+			this.getDataModel().setTotalTokenCount(totalTokenCount);
+			this.getDataModel().setTotalLineCount(totalLineCount);
+			updateEstimatedExecutionTime();
+		}catch(GkException e){
+			LOG.error(e);
 		}
-		this.getDataModel().setCompletedTokenCount(completedTokenCount);
-		this.getDataModel().setTotalTokenCount(totalTokenCount);
-		this.getDataModel().setTotalLineCount(totalLineCount);
-		updateEstimatedExecutionTime();
 	}
 
 	/**
@@ -337,58 +344,36 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		return executionService;
 	}
 
-	private Integer getExecutionTokenByGCodeProvider(Integer idGCodeProvider) throws GkException{
-		List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
-		
-		if(CollectionUtils.isNotEmpty(lstToken)){			
-			// Refresh the unitary times first
-			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {				
-				if(ObjectUtils.equals(idGCodeProvider, executionToken.getIdGCodeProvider())){
-					return executionToken.getId();
-				}
-			}	
-		}
-		return null;
-	}
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderCreate(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenCreate(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUpdate(org.goko.core.gcode.element.IGCodeProvider)
-	 */
-	@Override
-	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
-		Integer idToken = getExecutionTokenByGCodeProvider(provider.getId());
-		if(idToken != null){
-			scheduleExecutionTimeEstimationJob( idToken );
-		}
+	public void onTokenCreate(ExecutionToken<ExecutionTokenState> token) {
+		updateButtonState();
+		updateTokenQueueData();
+		scheduleExecutionTimeEstimationJob(token.getId());
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenDelete(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
-		Integer idToken = getExecutionTokenByGCodeProvider(provider.getId());
-		if(idToken != null){
-			executionTimeByToken.remove(idToken);
-			scheduleExecutionTimeEstimationJob(idToken);
-		}
+	public void onTokenDelete(ExecutionToken<ExecutionTokenState> token) {
+		updateButtonState();
+		updateTokenQueueData();
+		executionTimeByToken.remove(token.getId());
+		scheduleExecutionTimeEstimationJob(token.getId());
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenUpdate(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onGCodeProviderLocked(IGCodeProvider provider) throws GkException {}
+	public void onTokenUpdate(ExecutionToken<ExecutionTokenState> token) {		
+		System.out.println("ExecutionPartController.onTokenUpdate()");
+		updateTokenQueueData();
+		scheduleExecutionTimeEstimationJob(token.getId());
+	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUnlocked(org.goko.core.gcode.element.IGCodeProvider)
-	 */
-	@Override
-	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {}
-
+	
 }

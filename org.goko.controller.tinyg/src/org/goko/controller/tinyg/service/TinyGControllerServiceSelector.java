@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionService;
 
+import org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.event.Event;
 import org.goko.core.common.exception.GkException;
@@ -654,5 +655,21 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	@Override
 	public boolean isReadyToProbe() {
 		return getCurrentService().isReadyToProbe();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#addConfigurationListener(org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener)
+	 */
+	@Override
+	public void addConfigurationListener(ITinyGConfigurationListener listener) {
+		getCurrentService().addConfigurationListener(listener);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#removeConfigurationListener(org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener)
+	 */
+	@Override
+	public void removeConfigurationListener(ITinyGConfigurationListener listener) {
+		getCurrentService().removeConfigurationListener(listener);
 	}
 }

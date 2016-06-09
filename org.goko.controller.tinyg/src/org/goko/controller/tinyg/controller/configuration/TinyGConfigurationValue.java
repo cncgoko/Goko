@@ -22,12 +22,17 @@ package org.goko.controller.tinyg.controller.configuration;
 import java.math.BigDecimal;
 
 public class TinyGConfigurationValue {
-	public static final BigDecimal QUEUE_REPORT_OFF			= BigDecimal.ZERO;
-	public static final BigDecimal QUEUE_REPORT_FILTERED	= new BigDecimal("1");
-	public static final BigDecimal QUEUE_REPORT_VERBOSE		= new BigDecimal("2");
+	public static final BigDecimal QUEUE_REPORT_SILENT		= BigDecimal.ZERO;
+	public static final BigDecimal QUEUE_REPORT_SINGLE	    = new BigDecimal("1");
+	public static final BigDecimal QUEUE_REPORT_TRIPLE		= new BigDecimal("2");
 
-	public static final BigDecimal JSON_VERBOSITY_VERBOSE			= new BigDecimal("5");
+	public static final BigDecimal JSON_VERBOSITY_VERBOSE	= new BigDecimal("5");
 	
+	public static final BigDecimal JSON_MODE_DISABLE		= new BigDecimal("0");
+	public static final BigDecimal JSON_MODE_ENABLE			= new BigDecimal("1");
+	
+	public static final BigDecimal JSON_SYNTAX_RELAXED		= new BigDecimal("0");
+	public static final BigDecimal JSON_SYNTAX_STRICT		= new BigDecimal("1");
 	
 	public static final BigDecimal FLOW_CONTROL_OFF			= BigDecimal.ZERO;
 	public static final BigDecimal FLOW_CONTROL_XON_XOFF	= new BigDecimal("1");

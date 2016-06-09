@@ -31,14 +31,31 @@ public class TinyGStringSetting extends TinyGSetting<String>{
 		super(identifier, value, readonly);
 	}
 
+	protected TinyGStringSetting(String identifier, String value, boolean readonly, boolean assigned) {
+		super(identifier, value, readonly, assigned);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#getType()
+	 */
 	@Override
-	public Class getType() {
+	public Class<String> getType() {
 		return String.class;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#clone(java.lang.Object)
+	 */
 	@Override
 	protected String clone(String value) {
 		return value;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.configuration.TinyGSetting#copy()
+	 */
+	@Override
+	protected TinyGSetting<String> copy() {
+		return new TinyGStringSetting(getIdentifier(), getValue(), isReadOnly(), isAssigned());
+	}
 }

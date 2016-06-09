@@ -19,6 +19,7 @@
  */
 package org.goko.controller.tinyg.controller;
 
+import org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerConfigurationFileExporter;
@@ -63,6 +64,18 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 	 */
 	void setConfiguration(TinyGConfiguration configuration) throws GkException;
 
+	/**
+	 * Adds the given {@link ITinyGConfigurationListener} as a listener to this service configuration event
+	 * @param listener the listener to add
+	 */
+	void addConfigurationListener(ITinyGConfigurationListener listener);
+	
+	/**
+	 * Removes the given {@link ITinyGConfigurationListener} from the listener ofthis service configuration event
+	 * @param listener the listener to remove
+	 */
+	void removeConfigurationListener(ITinyGConfigurationListener listener);
+	
 	/**
 	 * Set this controller configuration. This method SHOULD send back the configuration to the tinyG board
 	 * @param configuration the configuration to set
