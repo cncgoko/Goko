@@ -5,17 +5,24 @@ package org.goko.tools.editor.component.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.swing.ProgressMonitor;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
+import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.tools.editor.component.annotation.ErrorAnnotation;
 
 /**
  * @author Psyko
@@ -23,8 +30,7 @@ import org.goko.core.gcode.element.IGCodeProviderSource;
  */
 public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 	private IGCodeProvider provider;
-	private IDocument document;
-		
+	
 	/**
 	 * @param source
 	 */
@@ -47,26 +53,44 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 	@Override
 	public void performSaveDocument(ProgressMonitor monitor) throws GkException {
 		if(isModifiable()){			
-			getSource().write(IOUtils.toInputStream(document.get()));		
+			getSource().write(IOUtils.toInputStream(getDocument().get()));		
 		}
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.editor.component.provider.AbstractGCodeDocumentProvider#addAnnotations(org.eclipse.jface.text.source.IAnnotationModel)
+	 */
+	@Override
+	protected void addAnnotations(IAnnotationModel annotationModel) throws GkException {
+		List<IValidationElement> elements = provider.getValidationElements();
+		if(CollectionUtils.isNotEmpty(elements)){
+			for (IValidationElement elt : elements) {
+				ErrorAnnotation error = new ErrorAnnotation(elt.getDescription());
+				int lineOffset = 0;
+				try {
+					lineOffset = getDocument().getLineOffset(elt.getLocation().getLine());
+				} catch (BadLocationException e) {					
+				}
+				Position position = new Position(lineOffset + elt.getLocation().getColumn(), elt.getLength());
+				annotationModel.addAnnotation(error, position);
+			}
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.tools.editor.component.provider.AbstractGCodeDocumentProvider#getGCodeDocument()
 	 */
 	@Override
-	public IDocument getGCodeDocument() throws GkException {
-		if(document == null){
-			if(getSource() != null){
-				InputStream inputStream = getSource().openInputStream();
-				try {
-					document = new Document(IOUtils.toString(inputStream));
-				} catch (IOException e) {
-					throw new GkTechnicalException(e);
-				}
+	public IDocument getGCodeDocument() throws GkException {		
+		if(getSource() != null){
+			InputStream inputStream = getSource().openInputStream();
+			try {
+				IDocument document = new Document(IOUtils.toString(inputStream));
+				return document;
+			} catch (IOException e) {
+				throw new GkTechnicalException(e);
 			}
-		}
-		return document;
+		}		
+		return null;
 	}
 
 	/** (inheritDoc)

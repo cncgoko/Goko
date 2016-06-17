@@ -4,18 +4,22 @@
 package org.goko.tools.editor.component;
 
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.SWT;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.tools.editor.component.scanner.CommentScanner;
 import org.goko.tools.editor.component.scanner.CoordinateWordScanner;
 import org.goko.tools.editor.component.scanner.FWordScanner;
 import org.goko.tools.editor.component.scanner.GWordScanner;
 import org.goko.tools.editor.component.scanner.MWordScanner;
 import org.goko.tools.editor.component.scanner.NWordScanner;
+import org.goko.tools.editor.component.scanner.SingleTokenScanner;
 
 /**
  * @author Psyko
@@ -72,10 +76,15 @@ public class GCodeSourceConfiguration extends SourceViewerConfiguration {
 	    DefaultDamagerRepairer mWordDamageRepairer = new DefaultDamagerRepairer(new MWordScanner());
 	    reconciler.setDamager( mWordDamageRepairer, GCodePartitionScanner.GCODE_M_WORD);
 	    reconciler.setRepairer(mWordDamageRepairer, GCodePartitionScanner.GCODE_M_WORD);
+	    	    
+	    DefaultDamagerRepairer textDamageRepairer = new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(SWTResourceManager.getColor(SWT.COLOR_GRAY), null, SWT.NORMAL | SWT.UNDERLINE_SQUIGGLE)));
+	    reconciler.setDamager( textDamageRepairer, GCodePartitionScanner.TEXT);
+	    reconciler.setRepairer(textDamageRepairer, GCodePartitionScanner.TEXT);
 	  //  a continuer avec les commentaires
 		return reconciler;
 	}
 
+	
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getUndoManager(org.eclipse.jface.text.source.ISourceViewer)
 	 */
@@ -83,4 +92,5 @@ public class GCodeSourceConfiguration extends SourceViewerConfiguration {
 	public IUndoManager getUndoManager(ISourceViewer sourceViewer) {
 		return new TextViewerUndoManager(40);
 	}
+	
 }

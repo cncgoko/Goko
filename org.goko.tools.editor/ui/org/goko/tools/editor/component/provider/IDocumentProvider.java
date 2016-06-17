@@ -6,6 +6,7 @@ package org.goko.tools.editor.component.provider;
 import javax.swing.ProgressMonitor;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.goko.core.common.exception.GkException;
 
 /**
@@ -27,4 +28,6 @@ public interface IDocumentProvider {
 	void setDirty(boolean dirty);
 	
 	void addDocumentProviderListener(IDocumentProviderListener listener);
+	
+	IAnnotationModel getAnnotationModel() throws GkException;
 }

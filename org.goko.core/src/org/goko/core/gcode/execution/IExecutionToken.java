@@ -21,13 +21,14 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.validation.IValidationTarget;
 
 /**
  * A standard execution pattern
  * @author PsyKo
  *
  */
-public interface IExecutionToken<T extends IExecutionTokenState> extends IIdBean {	
+public interface IExecutionToken<T extends IExecutionTokenState> extends IIdBean, IValidationTarget {	
 	
 	/**
 	 * Returns the execution order of this execution token

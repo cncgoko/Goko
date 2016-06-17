@@ -5,6 +5,7 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider;
 
 import org.eclipse.jface.action.Action;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
@@ -32,7 +33,21 @@ public class AddExecutionQueueAction extends Action{
 		super("Add to execution queue");
 		this.executionService = executionService;
 		this.idGCodeProvider = idGCodeProvider;
-		this.gcodeProviderRepository = gcodeProviderRepository;
+		this.gcodeProviderRepository = gcodeProviderRepository;		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.action.Action#isEnabled()
+	 */
+	@Override
+	public boolean isEnabled() {		
+		try {
+			IGCodeProvider provider = gcodeProviderRepository.getGCodeProvider(idGCodeProvider);
+			return provider.hasErrors() == false;
+		} catch (GkException e) {
+			LOG.error(e);
+		}		
+		return false;
 	}
 
 	/** (inheritDoc)

@@ -33,22 +33,25 @@ public class GCodePartitionScanner extends RuleBasedPartitionScanner
     public final static String GCODE_LINE_WORD 		= "__line_word";
     public final static String GCODE_FEEDRATE_WORD 	= "__feedrate_word";
     public final static String GCODE_DEFAULT 	= "__default";
+    public final static String TEXT 	= "__text";
 
     
     public GCodePartitionScanner()
-    {
-
-        Token xmlComment = new Token(GCODE_G_COMMENT);
+    {    	
+        Token Comment = new Token(GCODE_G_COMMENT);
         
         Token gword 	 = new Token(GCODE_G_WORD);              
         Token coordinate = new Token(GCODE_COORD_WORD);
         Token line 		 = new Token(GCODE_LINE_WORD);
         Token feedrate 	 = new Token(GCODE_FEEDRATE_WORD);
         Token mword 	 = new Token(GCODE_M_WORD);
+        Token text	 	 = new Token(TEXT);
+        
+        setDefaultReturnToken(text);
         
         List<IPredicateRule> rules = new ArrayList<IPredicateRule>();        
-        rules.add(new MultiLineRule("(", ")", xmlComment));
-        rules.add(new EndOfLineRule(";", xmlComment));
+        rules.add(new MultiLineRule("(", ")", Comment));
+        rules.add(new EndOfLineRule(";", Comment));
         rules.add(new WordPatternRule(new GWordDetector(), "G", null, gword));
         rules.add(new WordPatternRule(new GWordDetector(), "g", null, gword));
         

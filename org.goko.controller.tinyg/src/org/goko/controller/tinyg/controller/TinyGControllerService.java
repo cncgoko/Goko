@@ -23,6 +23,7 @@ import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
+import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
 import org.goko.controller.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.controller.tinyg.controller.probe.ProbeCallable;
 import org.goko.controller.tinyg.controller.topic.TinyGExecutionErrorTopic;
@@ -468,6 +469,10 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 
 		// TODO : perform sending in communicator
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
+			for(TinyGSetting<?> setting: group.getSettings()){
+				// Mark as not assigned so we can track exactly if we receive a confirmation
+				setting.setAssigned(false);
+			}
 			JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
 			if(jsonGroup != null){
 				communicator.send( GkUtils.toBytesList(jsonGroup.toString()) );

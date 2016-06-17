@@ -27,6 +27,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.element.validation.IValidationElement;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 
@@ -244,5 +245,64 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	@Override
 	public void setExecutionOrder(int executionOrder) {
 		this.executionOrder = executionOrder;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasErrors()
+	 */
+	@Override
+	public boolean hasErrors() {		
+		try {
+			return getGCodeProvider().hasErrors();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return true;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasWarnings()
+	 */
+	@Override
+	public boolean hasWarnings() {
+		try {
+			return getGCodeProvider().hasWarnings();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return true;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.validation.IValidationTarget#getValidationElements()
+	 */
+	@Override
+	public List<IValidationElement> getValidationElements() {
+		try {
+			return getGCodeProvider().getValidationElements();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return new ArrayList<IValidationElement>();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.validation.IValidationTarget#clearValidationElements()
+	 */
+	@Override
+	public void clearValidationElements() {
+		try {
+			getGCodeProvider().clearValidationElements();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.validation.IValidationTarget#addValidationElement(org.goko.core.gcode.element.validation.IValidationElement)
+	 */
+	@Override
+	public void addValidationElement(IValidationElement element) {
+		throw new UnsupportedOperationException("addValidationElement not supported on ExecutionToken");
 	}
 }

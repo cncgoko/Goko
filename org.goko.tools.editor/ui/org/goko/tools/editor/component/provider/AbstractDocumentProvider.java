@@ -11,6 +11,7 @@ import javax.swing.ProgressMonitor;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.goko.core.common.exception.GkException;
 
 /**
@@ -48,7 +49,7 @@ public abstract class AbstractDocumentProvider implements IDocumentProvider, IDo
 	 */
 	@Override
 	public void saveDocument(ProgressMonitor monitor) throws GkException {
-		performSaveDocument(monitor);
+		performSaveDocument(monitor);		
 		setDirty(false);
 	}
 	
@@ -103,6 +104,13 @@ public abstract class AbstractDocumentProvider implements IDocumentProvider, IDo
 		setDirty(true);		
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.editor.component.provider.IDocumentProvider#getAnnotationModel()
+	 */
+	@Override
+	public IAnnotationModel getAnnotationModel() throws GkException{		
+		return null;
+	}
 	/**
 	 * @return the dirty
 	 */

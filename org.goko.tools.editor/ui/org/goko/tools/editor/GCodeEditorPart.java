@@ -23,16 +23,23 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IFindReplaceTarget;
 import org.eclipse.jface.text.IUndoManager;
+import org.eclipse.jface.text.source.IAnnotationAccess;
+import org.eclipse.jface.text.source.IOverviewRuler;
+import org.eclipse.jface.text.source.ISharedTextColors;
+import org.eclipse.jface.text.source.OverviewRuler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.tools.editor.component.GCodeSourceViewer;
+import org.goko.tools.editor.component.annotation.BasicAnnotationAccess;
 import org.goko.tools.editor.component.provider.DocumentProviderAdapter;
 import org.goko.tools.editor.component.provider.IDocumentProvider;
 import org.goko.tools.editor.component.provider.IDocumentProviderListener;
@@ -84,11 +91,29 @@ public class GCodeEditorPart{
 			targetTab.setText(provider.getDocumentName());
 			targetTab.setImage(ResourceManager.getPluginImage("org.goko.tools.editor", "resources/icons/document-attribute-g.png"));
 			targetTab.setData(provider);
-			GCodeSourceViewer viewer = new GCodeSourceViewer(mainTabFolder, SWT.V_SCROLL | SWT.H_SCROLL);
+			
+			ISharedTextColors sharedColors = new ISharedTextColors(){
+
+				@Override
+				public Color getColor(RGB rgb) {				
+					return ResourceManager.getColor(rgb);
+				}
+
+				@Override
+				public void dispose() {
+					ResourceManager.dispose();
+				}
+				
+			};
+			IAnnotationAccess access = (IAnnotationAccess) new BasicAnnotationAccess();
+			IOverviewRuler overviewRuler = new OverviewRuler(access, 12, sharedColors);
+			
+			GCodeSourceViewer viewer = new GCodeSourceViewer(mainTabFolder, overviewRuler, access, SWT.V_SCROLL | SWT.H_SCROLL);
 			mapSourceViewerByDocumentProvider.put(provider, viewer);
 			IDocument document = provider.getDocument();
-			viewer.setDocument(document);
-			viewer.setEditable(provider.isModifiable());			
+			//viewer.setDocument(document);
+			viewer.setDocumentProvider(provider);
+		//	viewer.setEditable(provider.isModifiable());			
 			targetTab.setControl(viewer.getControl());
 			final CTabItem finalTargetTab = targetTab;		
 		

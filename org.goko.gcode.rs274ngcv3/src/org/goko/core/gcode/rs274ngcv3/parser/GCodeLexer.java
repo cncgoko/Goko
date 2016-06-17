@@ -17,6 +17,7 @@
 package org.goko.core.gcode.rs274ngcv3.parser;
 
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -26,6 +27,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
+import org.goko.core.common.i18n.MessageResource;
+import org.goko.core.common.utils.Location;
+import org.goko.core.gcode.element.validation.IValidationElement.ValidationSeverity;
+import org.goko.core.gcode.element.validation.IValidationTarget;
+
+import IValidationElement.ValidationElement;
 
 /**
  * GCode file tokenizer
@@ -62,9 +69,9 @@ public class GCodeLexer {
 	 * @return a list of {@link GCodeToken}
 	 * @throws GkException GkException
 	 */
-	public List<GCodeToken> tokenize(String stringCommand) throws GkException{
+	public List<GCodeToken> tokenize(String stringCommand, IValidationTarget validationTarget, int lineNumber) throws GkException{
 		List<GCodeToken> lstTokens = new ArrayList<GCodeToken>();
-		return createTokens(stringCommand, lstTokens);
+		return createTokens(stringCommand, lstTokens, validationTarget, lineNumber, 0);
 	}
 	
 	/**
@@ -73,17 +80,18 @@ public class GCodeLexer {
 	 * @return a list of {@link GCodeToken}
 	 * @throws GkException GkException
 	 */
-	public List<List<GCodeToken>> tokenize(InputStream inStream) throws GkException{
+	public List<List<GCodeToken>> tokenize(InputStream inStream, IValidationTarget validationTarget) throws GkException{
 		Scanner scanner = new Scanner(inStream);
 
 		List<List<GCodeToken>> lstFileTokens = new ArrayList<List<GCodeToken>>();
 		String line = null;
 		
 		List<GCodeToken> tokens = null;
-		
+		int lineNumber = 0;
 		while(scanner.hasNextLine()){
 			line = scanner.nextLine();
-			tokens = tokenize(line);			
+			tokens = tokenize(line, validationTarget, lineNumber);
+			lineNumber++;
 			lstFileTokens.add(tokens);
 		}
 
@@ -97,48 +105,56 @@ public class GCodeLexer {
 	 * @param tokens the list of token
 	 * @throws GkException GkException
 	 */
-	protected List<GCodeToken> createTokens(String pStringCommand, List<GCodeToken> tokens) throws GkException{
+	protected List<GCodeToken> createTokens(String pStringCommand, List<GCodeToken> tokens, IValidationTarget validationTarget, int lineNumber, int columnNumber) throws GkException{
 		String stringCommand = pStringCommand;
+		int totalColumn = columnNumber + StringUtils.length(stringCommand);
 		if(StringUtils.isBlank(stringCommand)){
 			return tokens;
 		}
 		Matcher spaceMatcher    = spacePattern.matcher(stringCommand);
 		if(spaceMatcher.find()){
 			String remainingString = spaceMatcher.replaceFirst(StringUtils.EMPTY);
-			return createTokens(remainingString,tokens);
+			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
 		Matcher multilineCommentMatcher = multilineCommentPattern.matcher(stringCommand);
 		if(multilineCommentMatcher.find()){
 			String remainingString = extractToken(multilineCommentMatcher, tokens, GCodeTokenType.MULTILINE_COMMENT);
-			return createTokens(remainingString,tokens);
+			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
 		Matcher simpleCommentMatcher    = simpleCommentPattern.matcher(stringCommand);
 		if(simpleCommentMatcher.find()){
 			String remainingString = extractToken(simpleCommentMatcher, tokens,GCodeTokenType.SIMPLE_COMMENT);
-			return createTokens(remainingString,tokens);
+			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
 		// Remove all white spaces ( comments already removed )
-		stringCommand = stringCommand.replaceAll("\\s", StringUtils.EMPTY);
-		
+		while(StringUtils.startsWith(stringCommand, " ")){
+			stringCommand = stringCommand.replaceFirst("\\s", StringUtils.EMPTY);
+			columnNumber += 1;
+		}
 		Matcher lineNumberMatcher    = lineNumberPattern.matcher(stringCommand);
 		if(lineNumberMatcher.find()){
 			String remainingString = extractToken(lineNumberMatcher, tokens, GCodeTokenType.LINE_NUMBER);
-			return createTokens(remainingString,tokens);
+			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
 		
 		Matcher wordMatcher    = wordPattern.matcher(stringCommand);
 		if(wordMatcher.find()){
 			String remainingString = extractToken(wordMatcher, tokens, GCodeTokenType.WORD);
-			return createTokens(remainingString,tokens);
+			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
 		
 		Matcher percentMatcher    = percentPattern.matcher(stringCommand);
 		if(percentMatcher.find()){
 			String remainingString = extractToken(percentMatcher, tokens, GCodeTokenType.PERCENT);
-			return createTokens(remainingString,tokens);
+			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
-		
-		throw new GkFunctionalException("GCO-101",stringCommand);
+		if(validationTarget != null){
+			ValidationElement vElement = new ValidationElement(ValidationSeverity.ERROR, new Location(lineNumber, columnNumber), MessageFormat.format(MessageResource.getMessage("GCO-101"), stringCommand));
+			validationTarget.addValidationElement(vElement);
+			return tokens;
+		}else{
+			throw new GkFunctionalException("GCO-101",stringCommand);
+		}
 	}
 	/**
 	 * Extract the first token from the given matcher

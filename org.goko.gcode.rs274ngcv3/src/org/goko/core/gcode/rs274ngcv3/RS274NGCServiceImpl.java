@@ -154,37 +154,38 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		provider.setSource(source);		
 		GCodeLexer lexer = new GCodeLexer();
 		InputStream stream = source.openInputStream();
-		List<List<GCodeToken>> tokens = lexer.tokenize(stream);
+		List<List<GCodeToken>> tokens = lexer.tokenize(stream, provider);
 		
 		try {
 			stream.close();
 		} catch (IOException e) {
 			throw new GkTechnicalException(e);
 		}
-		
-		SubMonitor subMonitor = null;
-		if(monitor != null){
-			subMonitor = SubMonitor.convert(monitor,"Reading file", tokens.size());
-		}
-
-		for (List<GCodeToken> lstToken : tokens) {
-			verifyModality(lstToken);
-			GCodeLine line = buildLine(lstToken);
-			provider.addLine(line);
-			if(subMonitor != null){
-				subMonitor.worked(1);
+		if(!provider.hasErrors()){
+			SubMonitor subMonitor = null;
+			if(monitor != null){
+				subMonitor = SubMonitor.convert(monitor,"Reading file", tokens.size());
 			}
-		}
-		if(subMonitor != null){
-			subMonitor.done();
-		}
-
-		if(monitor != null){
-			subMonitor = SubMonitor.convert(monitor,"Veryfying file", 1);
-		}
-		getInstructions(new GCodeContext(), provider);
-		if(subMonitor != null){
-			subMonitor.done();
+			
+			for (List<GCodeToken> lstToken : tokens) {
+				verifyModality(lstToken);
+				GCodeLine line = buildLine(lstToken);
+				provider.addLine(line);
+				if(subMonitor != null){
+					subMonitor.worked(1);
+				}
+			}
+			if(subMonitor != null){
+				subMonitor.done();
+			}
+	
+			if(monitor != null){
+				subMonitor = SubMonitor.convert(monitor,"Veryfying file", 1);
+			}
+			getInstructions(new GCodeContext(), provider);
+			if(subMonitor != null){
+				subMonitor.done();
+			}
 		}
 	}
 	

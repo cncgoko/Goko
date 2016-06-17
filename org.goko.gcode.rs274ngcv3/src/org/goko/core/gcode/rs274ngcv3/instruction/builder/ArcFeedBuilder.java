@@ -109,16 +109,16 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 			if(x == null && z == null){
 				throw new GkFunctionalException("GCO-130", "X", "Z");
 			}
-			if(i == null && k == null){
-				throw new GkFunctionalException("GCO-130", "I", "K");
+			if(j == null && k == null){
+				throw new GkFunctionalException("GCO-130", "J", "K");
 			}
 			break;
 		case XZ_PLANE:
 			if(z == null && y == null){
 				throw new GkFunctionalException("GCO-130", "Y", "Z");
 			}
-			if(k == null && j == null){
-				throw new GkFunctionalException("GCO-130", "J", "K");
+			if(k == null && i == null){
+				throw new GkFunctionalException("GCO-130", "I", "K");
 			}
 			break;
 		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			

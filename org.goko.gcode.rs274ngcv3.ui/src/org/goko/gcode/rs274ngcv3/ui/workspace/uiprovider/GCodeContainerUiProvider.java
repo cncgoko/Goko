@@ -30,7 +30,6 @@ import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.AddExecutionQueueAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.DeleteGCodeProviderAction;
-import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ExternalEditAction;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ModifierSubMenu;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.ReloadGCodeProviderAction;
@@ -207,7 +206,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
         contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
         contextMenu.add(new Separator());
         contextMenu.add(new ReloadGCodeProviderAction(rs274Service, content.getId()));
-        contextMenu.add(new ExternalEditAction(rs274Service, workspaceService, content.getId()));
+      //  contextMenu.add(new ExternalEditAction(rs274Service, workspaceService, content.getId()));
         contextMenu.add(subMenu);
         if(CollectionUtils.isNotEmpty(lstGCodeProviderContributionItem)){
         	contextMenu.add(new Separator());
