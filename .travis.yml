@@ -9,7 +9,7 @@ env:
    - TARGET: ftp://ftp.goko.fr//www/download/
    - UPDATE_FOLDER: update
    - updateRepository: true
-   - updateBinaries: false
+   - updateBinaries: true
    - gokoVersion: 0.3.1
 
 cache:
@@ -31,7 +31,7 @@ deploy:
   provider: bintray
   file: "/home/travis/build/cncgoko/Goko/bintray_descriptor.json"
   on: 
-    branch: master
+    branch: dev
     condition: $updateBinaries = true
   user:
     secure: "G2usVWNBz0jgF94xCLUYS5goZ4Qkalm8nGaJVcbaVgAOnnt1+atCGqVfh7CxTdYOBqD2z0kZOEZ+DEfywo/3Eew8P92I0XAJmw4uXSYhXMCr4N8GED6bUMYCVOnoTHMifK1GiBjznAjIp++Uu6xFD0d+YBskECp+os/ZvA27UYp2OT4iknkDpkPATEJjDHRgzwf+F8E8b6YPXwA2AErVzdJ5kj6PqO9jsbQ8CJJgCNPGp/YxZ+2cFIJzuTcvViWwUjTsBfSRm5NhtnHmkii+INIfFnQSt7wZgcaA0pPuoGb85BCS8OGGrHDcinAVe/eL1wUITdoq876SdwteDQfq4fqThbNvaq/uxi6spURFWkE+5JVwF/XoHlEp+tRL9jKgo2sgHYBfNvI54cPznEae5dB/vgUWPAfm+UYLNiDXsgrll9lONZrAjelqb97VJq8h2G7CpjY3RmXYOR9jVeMKRS06Zpf1RXeL/GIBO5ITK/Omcv3pDG1vJ7lJ+TTScZ46tQ7Eiddnr5CdiVr3ILAJ/s8U1HNPTOV+a90YwmuIGdKYFXXFDObP8MLt0lHhEcECsa2mKMF0Dx1vQ/jX5fPiDHqVxULhLh+upZvaMfg0Va0bSuNkmUfRj/5g56wthvFDk1ZTluc8XwvG64kfBXQueC3w1RItBuPZAdi91l0br8E="
