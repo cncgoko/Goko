@@ -35,7 +35,7 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem#getItem(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public IContributionItem getItem(IGCodeProvider provider) {
+	public IContributionItem getItem(final IGCodeProvider provider) {
 		return new ActionContributionItem(new Action(){
 			/** (inheritDoc)
 			 * @see org.eclipse.jface.action.Action#getText()
