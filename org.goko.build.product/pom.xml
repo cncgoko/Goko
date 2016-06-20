@@ -34,7 +34,7 @@
             <configuration>
               <products>
                 <product>
-                  <id>org.goko</id>
+                  <id>org.goko</id>                  
                    <rootFolders>
                      <macosx>Goko.app</macosx>
                    </rootFolders>
@@ -46,21 +46,48 @@
             <id>archive-products</id>
             <goals>
               <goal>archive-products</goal>
-            </goals>
+            </goals> 
+            <configuration>
+              <products>
+                <product>
+                  <id>org.goko</id>                  
+                  <ttach>mouette</ttach>
+                </product>
+              </products>
+            </configuration>              
           </execution>
-        </executions>
-        <configuration>
-		    <products>
-		      <product>
-		        <!-- select product with ID product.id; the archives get the classifiers "<os>.<ws>.<arch>" -->
-		        <id>org.goko</id>
-		        <attachId>org.goko.v0.3.1</attachId>
-		      </product>		      
-		    </products>
-		  </configuration>
+          <execution>
+            <id>rename-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>execute-mojo</goal>
+            </goals>
+            <configuration>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.7</version>
+                </plugin>
+                <goal>run</goal>
+                <configuration>
+                    <target name="Rename archives with version numbers">
+                        <move file="${basedir}/target/products/org.goko.macosx.cocoa.x86_64.zip" 
+                              tofile="${basedir}/target/products/Goko-${project.version}-macosx.cocoa.x86_64.zip" />
+                        <move file="${basedir}/target/products/org.goko-linux.gtk.x86.zip" 
+                              tofile="${basedir}/target/products/Goko-${project.version}-linux.gtk.x86.zip" />
+                        <move file="${basedir}/target/products/org.goko-linux.gtk.x86_64.zip" 
+                              tofile="${basedir}/target/products/Goko-${project.version}-linux.gtk.x86_64.zip" />
+                        <move file="${basedir}/target/products/org.goko-win32.win32.x86.zip" 
+                              tofile="${basedir}/target/products/Goko-${project.version}-win32.win32.x86.zip" />
+                        <move file="${basedir}/target/products/org.goko-win32.win32.x86_64.zip" 
+                              tofile="${basedir}/target/products/Goko-${project.version}-win32.win32.x86_64.zip" />
+                    </target>
+                </configuration>
+            </configuration>
+</execution>
+        </executions>            
       </plugin>
     </plugins>
   </build>
-
 </project> 
 

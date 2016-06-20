@@ -46,8 +46,8 @@ public class GCodeSourceViewer extends SourceViewer implements IPropertyChangeLi
 		configure(gcodeSourceConfiguration);
 		
 		lineRuler = new LineNumberRulerColumn();
-		lineRuler.setBackground(SWTResourceManager.getColor(0xFD, 0xFD, 0xFD)); // SWT.COLOR_INFO_BACKGROUND));
-		lineRuler.setForeground(SWTResourceManager.getColor(0xA0, 0xA0, 0xA0)); // SWT.COLOR_INFO_FOREGROUND));		
+		lineRuler.setBackground(SWTResourceManager.getColor(0xFD, 0xFD, 0xFD)); 
+		lineRuler.setForeground(SWTResourceManager.getColor(0xA0, 0xA0, 0xA0)); 		
 						
 		annotationRuler = new AnnotationRulerColumn(12,annotationAccess);
 		annotationRuler.addAnnotationType(BulletAnnotation.TYPE);
@@ -66,13 +66,14 @@ public class GCodeSourceViewer extends SourceViewer implements IPropertyChangeLi
 		
 
 		AnnotationPainter painter = new AnnotationPainter(this, annotationAccess);
-		painter.addTextStyleStrategy(ErrorAnnotation.TYPE, new AnnotationPainter.UnderlineStrategy(SWT.UNDERLINE_SINGLE));
-//		
-		//painter.addDrawingStrategy(BulletAnnotation.TYPE, new AnnotationPainter.SquigglesStrategy());		
+		painter.addTextStyleStrategy(ErrorAnnotation.TYPE, new AnnotationPainter.UnderlineStrategy(SWT.UNDERLINE_SQUIGGLE));
+		painter.addHighlightAnnotationType(ErrorAnnotation.TYPE);
+		painter.addDrawingStrategy(ErrorAnnotation.TYPE, new AnnotationPainter.SquigglesStrategy());
 		painter.addAnnotationType(ErrorAnnotation.TYPE, ErrorAnnotation.TYPE);
 		painter.setAnnotationTypeColor(ErrorAnnotation.TYPE, ResourceManager.getColor(SWT.COLOR_RED));
-		//addPainter(painter);
+		addPainter(painter);
 		addTextPresentationListener(painter);
+		
 	}
 
 	/** (inheritDoc)

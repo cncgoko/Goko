@@ -17,6 +17,7 @@ import org.goko.tools.editor.component.detector.FWordDetector;
 import org.goko.tools.editor.component.detector.GWordDetector;
 import org.goko.tools.editor.component.detector.MWordDetector;
 import org.goko.tools.editor.component.detector.NWordDetector;
+import org.goko.tools.editor.component.scanner.GCodeDecimalRule;
 
 /**
  * @author Psyko
@@ -30,10 +31,12 @@ public class GCodePartitionScanner extends RuleBasedPartitionScanner
     public final static String GCODE_G0_WORD 		= "__g0_word";
     public final static String GCODE_G1_WORD		= "__g1_word";    
     public final static String GCODE_COORD_WORD 	= "__coord_word";
+    public final static String GCODE_DECIMAL 		= "__decimal";
     public final static String GCODE_LINE_WORD 		= "__line_word";
     public final static String GCODE_FEEDRATE_WORD 	= "__feedrate_word";
     public final static String GCODE_DEFAULT 	= "__default";
     public final static String TEXT 	= "__text";
+    public final static String DFTL 	= "__dftl_partition_content_type";
 
     
     public GCodePartitionScanner()
@@ -45,9 +48,10 @@ public class GCodePartitionScanner extends RuleBasedPartitionScanner
         Token line 		 = new Token(GCODE_LINE_WORD);
         Token feedrate 	 = new Token(GCODE_FEEDRATE_WORD);
         Token mword 	 = new Token(GCODE_M_WORD);
-        Token text	 	 = new Token(TEXT);
+        Token decimal 	 = new Token(GCODE_DECIMAL);
+        Token dftl	 	 = new Token(DFTL);
         
-        setDefaultReturnToken(text);
+        setDefaultReturnToken(dftl);
         
         List<IPredicateRule> rules = new ArrayList<IPredicateRule>();        
         rules.add(new MultiLineRule("(", ")", Comment));
@@ -88,6 +92,8 @@ public class GCodePartitionScanner extends RuleBasedPartitionScanner
         rules.add(new WordPatternRule(new FWordDetector(), "F", null, gword));
         rules.add(new WordPatternRule(new FWordDetector(), "f", null, gword));
         
+        rules.add(new GCodeDecimalRule(decimal));
+                
         setPredicateRules(rules.toArray(new IPredicateRule[]{}));//PredicateRules(rules);
     }
 }

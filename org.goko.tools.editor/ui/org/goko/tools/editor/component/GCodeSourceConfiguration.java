@@ -35,7 +35,9 @@ public class GCodeSourceConfiguration extends SourceViewerConfiguration {
 			GCodePartitionScanner.GCODE_COORD_WORD,
 			GCodePartitionScanner.GCODE_LINE_WORD,
 			GCodePartitionScanner.GCODE_FEEDRATE_WORD,
-			GCodePartitionScanner.GCODE_M_WORD
+			GCodePartitionScanner.GCODE_M_WORD,
+			GCodePartitionScanner.TEXT,
+			GCodePartitionScanner.DFTL
 	};
 	
 	/** (inheritDoc)
@@ -76,10 +78,14 @@ public class GCodeSourceConfiguration extends SourceViewerConfiguration {
 	    DefaultDamagerRepairer mWordDamageRepairer = new DefaultDamagerRepairer(new MWordScanner());
 	    reconciler.setDamager( mWordDamageRepairer, GCodePartitionScanner.GCODE_M_WORD);
 	    reconciler.setRepairer(mWordDamageRepairer, GCodePartitionScanner.GCODE_M_WORD);
+	    
+	    DefaultDamagerRepairer decimalDamageRepairer = new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(SWTResourceManager.getColor(SWT.COLOR_BLACK), null, SWT.NORMAL)));
+	    reconciler.setDamager( decimalDamageRepairer, GCodePartitionScanner.GCODE_DECIMAL);
+	    reconciler.setRepairer(decimalDamageRepairer, GCodePartitionScanner.GCODE_DECIMAL);
 	    	    
-	    DefaultDamagerRepairer textDamageRepairer = new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(SWTResourceManager.getColor(SWT.COLOR_GRAY), null, SWT.NORMAL | SWT.UNDERLINE_SQUIGGLE)));
-	    reconciler.setDamager( textDamageRepairer, GCodePartitionScanner.TEXT);
-	    reconciler.setRepairer(textDamageRepairer, GCodePartitionScanner.TEXT);
+	 //   DefaultDamagerRepairer textDamageRepairer = new DefaultDamagerRepairer(new SingleTokenScanner(new TextAttribute(SWTResourceManager.getColor(SWT.COLOR_GRAY), null, SWT.NORMAL | SWT.UNDERLINE_SQUIGGLE)));
+//	    reconciler.setDamager( textDamageRepairer, GCodePartitionScanner.DFTL);
+//	    reconciler.setRepairer(textDamageRepairer, GCodePartitionScanner.DFTL);
 	  //  a continuer avec les commentaires
 		return reconciler;
 	}

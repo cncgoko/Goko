@@ -30,7 +30,7 @@ public class GCodeEditorFindReplaceHandler {
 	@Execute	
 	public void execute(Shell shell, @Optional GCodeEditorPart part) throws GkException{
 		if(part != null){			
-			GCodeFindReplaceDialog dialog = new GCodeFindReplaceDialog(shell, part.getFindReplaceTargetSupplier());
+			GCodeFindReplaceDialog dialog = new GCodeFindReplaceDialog(shell, part.getFindReplaceTargetSupplier());			
 			dialog.open();
 		}
 	}

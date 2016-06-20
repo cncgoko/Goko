@@ -99,7 +99,9 @@ public class GCodeFindReplaceDialog extends Dialog {
 		
 		findString = new Text(composite, SWT.BORDER);		
 		findString.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+		if(findReplaceTargetSupplier != null && findReplaceTargetSupplier.get() != null){
+			findString.setText(findReplaceTargetSupplier.get().getSelectionText());
+		}
 		Label lblReplace = new Label(composite, SWT.NONE);
 		lblReplace.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblReplace.setText("Replace:");

@@ -149,7 +149,7 @@ public class GCodeLexer {
 			return createTokens(remainingString,tokens, validationTarget, lineNumber, totalColumn - StringUtils.length(remainingString));
 		}
 		if(validationTarget != null){
-			ValidationElement vElement = new ValidationElement(ValidationSeverity.ERROR, new Location(lineNumber, columnNumber), MessageFormat.format(MessageResource.getMessage("GCO-101"), stringCommand));
+			ValidationElement vElement = new ValidationElement(ValidationSeverity.ERROR, new Location(lineNumber, columnNumber), StringUtils.length(stringCommand), MessageFormat.format(MessageResource.getMessage("GCO-101"), stringCommand));
 			validationTarget.addValidationElement(vElement);
 			return tokens;
 		}else{

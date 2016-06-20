@@ -19,8 +19,11 @@ public class GCodeEditorUndoHandler {
 	@CanExecute
 	public boolean canExecute(@Optional GCodeEditorPart part){
 		if(part != null){			
-			return part.getUndoManager() != null 
-					&& part.getUndoManager().undoable();
+			System.err.println(part.getUndoManager() != null);
+			if( part.getUndoManager() != null ){
+				System.err.println("+ "  + part.getUndoManager().undoable());
+			}
+			return part.getUndoManager() != null && part.getUndoManager().undoable();
 		}
 		return false;
 	}

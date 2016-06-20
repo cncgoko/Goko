@@ -20,7 +20,9 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IFindReplaceTarget;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.source.IAnnotationAccess;
@@ -144,7 +146,23 @@ public class GCodeEditorPart{
 					closeByDocumentProvider(provider);				
 				}
 			};
-			provider.addDocumentProviderListener(listener);			
+			provider.addDocumentProviderListener(listener);	
+			document.addDocumentListener(new IDocumentListener() {
+				
+				/** (inheritDoc)
+				 * @see org.eclipse.jface.text.IDocumentListener#documentChanged(org.eclipse.jface.text.DocumentEvent)
+				 */
+				@Override
+				public void documentChanged(DocumentEvent event) {
+					forceHandlerUpdate();					
+				}
+				
+				/** (inheritDoc)
+				 * @see org.eclipse.jface.text.IDocumentListener#documentAboutToBeChanged(org.eclipse.jface.text.DocumentEvent)
+				 */
+				@Override
+				public void documentAboutToBeChanged(DocumentEvent event) { }
+			});
 			mapTabItemByDocumentProvider.put(provider, targetTab);
 		}
 		mainTabFolder.setSelection(targetTab);
@@ -152,9 +170,11 @@ public class GCodeEditorPart{
 	}
 	
 	public void closeByDocumentProvider(IDocumentProvider provider) {
-		mapSourceViewerByDocumentProvider.remove(provider);	
-		CTabItem tabItem = mapTabItemByDocumentProvider.remove(provider);
-		tabItem.dispose();	
+		if(mapSourceViewerByDocumentProvider.containsKey(provider)){
+			mapSourceViewerByDocumentProvider.remove(provider);	
+			CTabItem tabItem = mapTabItemByDocumentProvider.remove(provider);
+			tabItem.dispose();
+		}
 	}
 			
 	public IDocumentProvider getActiveDocumentProvider(){

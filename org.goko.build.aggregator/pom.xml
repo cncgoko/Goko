@@ -17,7 +17,7 @@
   	<module>../org.goko.tools.autoleveler</module>
   	<module>../org.goko.tools.shuttlexpress</module>
   	<module>../org.goko.tools.shuttlexpress.feature</module>
-  	
+  	<module>../org.goko.tools.editor</module>
   	<module>../org.goko.tools.viewer.jogl</module>
 
   	<module>../org.goko.gcode.rs274ngcv3</module>
