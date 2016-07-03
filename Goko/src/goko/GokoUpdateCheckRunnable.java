@@ -19,6 +19,7 @@ import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
 import org.goko.core.log.LogUtils;
@@ -109,9 +110,9 @@ public class GokoUpdateCheckRunnable {
 									@Override
 									public void run() {
 										GokoPreference.getInstance().setSystemClearPersistedState(true);
-										boolean restart = MessageDialog.openQuestion(null,
+										boolean restart = MessageDialog.open(MessageDialog.QUESTION, null,
 		                                        "Updates installed, restart?",
-		                                        "Updates have been installed successfully, do you want to restart?");
+		                                        "Updates have been installed successfully, do you want to restart?", SWT.MODELESS);
 		                                if (restart) {
 		                                	workbench.restart();
 		                                }
