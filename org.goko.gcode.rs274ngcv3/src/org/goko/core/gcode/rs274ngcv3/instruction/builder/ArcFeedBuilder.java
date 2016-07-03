@@ -89,7 +89,9 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		}
 		
 		GCodeWord rWord = GCodeWordUtils.findAndRemoveWordByLetter("R", words);
-		if( rWord != null ) r = Integer.valueOf(rWord.getValue());
+		if( rWord != null ){
+			r = Integer.valueOf(rWord.getValue());
+		}
 		
 		ArcFeedInstruction instruction = null;
 		if(plane == null){
@@ -143,7 +145,9 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		i = NumberQuantity.add(i, context.getX());
 		j = NumberQuantity.add(j, context.getY());
 		k = NumberQuantity.add(k, context.getZ());
-		
+		if(clockwise){
+			
+		}
 		switch (plane) {
 		// public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
 		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);

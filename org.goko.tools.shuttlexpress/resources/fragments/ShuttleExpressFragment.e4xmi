@@ -91,6 +91,15 @@
       <bindings xmi:id="_CnETUAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.19" keySequence="M1+M2+M3+W" command="_Z8d0oAkqEeaRWvu7LUfYSg">
         <parameters xmi:id="_EjnfkAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.35" name="org.goko.tools.shuttlexpress.parameter.action" value="zaxis"/>
       </bindings>
+      <bindings xmi:id="_6HOQoDyKEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.21" keySequence="M1+M2+M3+L" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+        <parameters xmi:id="_FtTi8DyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.37" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.Home"/>
+      </bindings>
+      <bindings xmi:id="_PDE_gDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.22" keySequence="M1+M2+M3+K" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+        <parameters xmi:id="_Q9v8cDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.38" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.ResetZero"/>
+      </bindings>
+      <bindings xmi:id="_eaz-gDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.23" keySequence="M1+M2+M3+M" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+        <parameters xmi:id="_iKpGQDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.39" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.KillAlarm"/>
+      </bindings>
     </elements>
   </fragments>
 </fragment:ModelFragments>

@@ -30,4 +30,33 @@ public class SetMotionControlModeInstruction extends AbstractInstruction {
 		return controlMode;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((controlMode == null) ? 0 : controlMode.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SetMotionControlModeInstruction other = (SetMotionControlModeInstruction) obj;
+		if (controlMode != other.controlMode)
+			return false;
+		return true;
+	}
+
+	
 }

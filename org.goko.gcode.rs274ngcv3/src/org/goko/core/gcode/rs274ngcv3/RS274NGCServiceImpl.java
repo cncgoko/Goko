@@ -41,6 +41,7 @@ import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderRoot;
 import org.goko.core.gcode.rs274ngcv3.element.source.StringGCodeSource;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
+import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
@@ -485,6 +486,9 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 				Tuple6b endpoint = new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
 				min = min.min(endpoint);
 				max = max.max(endpoint);
+			}else if(instruction.getType() == InstructionType.ARC_FEED){
+				ArcFeedInstruction arcfeedInstruction = (ArcFeedInstruction) instruction;
+				
 			}
 		}
 
@@ -495,7 +499,19 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#getGCodeProvider(java.lang.Integer)
 	 */
 	@Override
-	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
+	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {	
+		// Make sure the required id exists
+		internalGetGCodeProvider(id);
+		return new GCodeProviderPointer(this, id);//cacheStackedProviders.get(id);
+	}
+	
+	/**
+	 * Internal method that provides access to the raw GCodeProvider 
+	 * @param id id of the provider 
+	 * @return IGCodeProvider 
+	 * @throws GkException GkException
+	 */
+	protected IGCodeProvider internalGetGCodeProvider(Integer id) throws GkException {
 		return cacheStackedProviders.get(id);
 	}
 
@@ -520,7 +536,12 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public List<IGCodeProvider> getGCodeProvider() throws GkException {
-		return new ArrayList<IGCodeProvider>(cacheStackedProviders.get());
+		List<IGCodeProvider> result = new ArrayList<IGCodeProvider>();
+		List<IStackableGCodeProvider> lstProviders = cacheStackedProviders.get();
+		for (IGCodeProvider provider : lstProviders) {
+			result.add(new GCodeProviderPointer(this, provider.getId()));
+		}
+		return result;
 	}
 
 	/** (inheritDoc)

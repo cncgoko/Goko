@@ -37,11 +37,14 @@ public class SpeedUnit {
      */
 	public static final Unit<Speed> MILLIMETRE_PER_MINUTE = add(new ComposedUnit<Speed, Length, Time>("mm/min", QuantityDimension.SPEED, LengthUnit.MILLIMETRE, TimeUnit.MINUTE));
 	
-	 /**
+	/**
      * Inches per minute speed unit
      */
 	public static final Unit<Speed> INCH_PER_MINUTE = add(new ComposedUnit<Speed, Length, Time>("in/min", QuantityDimension.SPEED, LengthUnit.INCH, TimeUnit.MINUTE));
-	
+	/**
+     * Inches per second speed unit
+     */
+	public static final Unit<Speed> INCH_PER_SECOND = add(new ComposedUnit<Speed, Length, Time>("in/s", QuantityDimension.SPEED, LengthUnit.INCH, TimeUnit.SECOND));
 	
 	/**
 	 * Registers a Unit to the map of handled units

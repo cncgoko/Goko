@@ -15,7 +15,10 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.IJogService;
+import org.goko.core.controller.action.DefaultControllerAction;
+import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.log.GkLog;
 import org.goko.tools.shuttlxpress.preferences.ShuttleXPressPreferences;
@@ -50,13 +53,15 @@ public class ShuttleXpressHandler {
 	
 	@Inject IJogService jogService;
 	
+	@Inject IControllerService controllerService;
+	
 	/**
 	 * Constructor
 	 */
 	public ShuttleXpressHandler() {
 		super();
 		this.currentPositiveAxis = EnumControllerAxis.X_POSITIVE;
-		this.currentNegativeAxis = EnumControllerAxis.X_NEGATIVE;
+		this.currentNegativeAxis = EnumControllerAxis.X_NEGATIVE;		
 	}
 	
 	/**
@@ -82,18 +87,22 @@ public class ShuttleXpressHandler {
 			break;
 		case ENABLE_X_AXIS:	this.currentPositiveAxis = EnumControllerAxis.X_POSITIVE;
 							this.currentNegativeAxis = EnumControllerAxis.X_NEGATIVE;			
-					break;
+			break;
 		case ENABLE_Y_AXIS:	this.currentPositiveAxis = EnumControllerAxis.Y_POSITIVE;
 							this.currentNegativeAxis = EnumControllerAxis.Y_NEGATIVE;			
-					break;
+			break;
 		case ENABLE_Z_AXIS:	this.currentPositiveAxis = EnumControllerAxis.Z_POSITIVE;
 							this.currentNegativeAxis = EnumControllerAxis.Z_NEGATIVE;			
-					break;
+			break;
 		case ENABLE_A_AXIS:	this.currentPositiveAxis = EnumControllerAxis.A_POSITIVE;
 							this.currentNegativeAxis = EnumControllerAxis.A_NEGATIVE;			
 					break;
-
+		case DefaultControllerAction.RESET_ZERO: resetZero();
+			break;
 		default:
+			if(isControllerAction(action)){
+				executeControllerAction(action);
+			}
 			break;
 		}
 	}
@@ -140,4 +149,47 @@ public class ShuttleXpressHandler {
 		}
 		previousOffset = offset;
 	}
+	
+	/**
+	 * Determine if the given ID matches an action ID of the current controller
+	 * @param actionId the ID of the action
+	 * @return <code>true</code> if the given ID matches an action, <code>false</code> otherwise
+	 */
+	private boolean isControllerAction(String actionId){
+		try {
+			return controllerService.isControllerAction(actionId);
+		} catch (GkException e) {
+			LOG.error(e);
+			return false;
+		}
+	}
+	
+	/**
+	 * Execute the given action
+	 * @param actionId the ID of the action
+	 */
+	private void executeControllerAction(String actionId){
+		try {
+			IGkControllerAction action = controllerService.getControllerAction(actionId);
+			action.execute(null);
+		} catch (GkException e) {
+			LOG.error(e);			
+		}
+	}
+	
+
+	/**
+	 * Reset zero on current selected axis 
+	 */
+	private void resetZero() {
+		try {
+			if(currentAxis != null){
+				IGkControllerAction action = controllerService.getControllerAction(DefaultControllerAction.RESET_ZERO);
+				action.execute(new String[]{currentAxis.getAxisCode()});
+			}
+		} catch (GkException e) {
+			LOG.error(e);			
+		}
+	}
+
 }

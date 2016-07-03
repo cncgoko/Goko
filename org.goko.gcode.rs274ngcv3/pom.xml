@@ -14,4 +14,8 @@
 		<version>0.3.1-SNAPSHOT</version>
 		<relativePath>../org.goko.build.parent</relativePath>
 	</parent>
+	
+	<build>
+		<testSourceDirectory>junit</testSourceDirectory>		
+	</build>
 </project>

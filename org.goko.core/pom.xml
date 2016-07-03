@@ -30,4 +30,8 @@
 			<version>0.9.10</version>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<testSourceDirectory>junit</testSourceDirectory>		
+	</build>
 </project>

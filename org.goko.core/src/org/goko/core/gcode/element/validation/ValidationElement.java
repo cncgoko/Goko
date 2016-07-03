@@ -1,10 +1,9 @@
 /**
  * 
  */
-package IValidationElement;
+package org.goko.core.gcode.element.validation;
 
 import org.goko.core.common.utils.Location;
-import org.goko.core.gcode.element.validation.IValidationElement;
 
 /**
  * @author Psyko

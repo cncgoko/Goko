@@ -33,4 +33,32 @@ public class SetCoordinateSystemInstruction extends AbstractInstruction {
 		return targetCoordinateSystem;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((targetCoordinateSystem == null) ? 0 : targetCoordinateSystem.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SetCoordinateSystemInstruction other = (SetCoordinateSystemInstruction) obj;
+		if (targetCoordinateSystem != other.targetCoordinateSystem)
+			return false;
+		return true;
+	}
+
 }

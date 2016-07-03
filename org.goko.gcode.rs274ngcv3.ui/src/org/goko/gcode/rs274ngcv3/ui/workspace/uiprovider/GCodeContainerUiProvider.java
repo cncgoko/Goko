@@ -100,7 +100,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public boolean providesContentFor(Object content) throws GkException {
-		return this.equals(content) || content instanceof GCodeProvider;
+		return this.equals(content) || content instanceof IGCodeProvider;
 	}
 
 	/** (inheritDoc)
@@ -108,8 +108,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public boolean hasChildren(Object content) throws GkException {
-		if(content instanceof GCodeProvider){
-			List<IModifier<GCodeProvider>> lst = rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId());
+		if(content instanceof IGCodeProvider){
+			List<IModifier<GCodeProvider>> lst = rs274Service.getModifierByGCodeProvider(((IGCodeProvider) content).getId());
 			return CollectionUtils.isNotEmpty(lst);
 		}else if(this.equals(content)){
 			return CollectionUtils.isNotEmpty(rs274Service.getGCodeProvider());
@@ -123,8 +123,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public Object[] getChildren(Object content) throws GkException {
-		if(content instanceof GCodeProvider){
-			return rs274Service.getModifierByGCodeProvider(((GCodeProvider) content).getId()).toArray();
+		if(content instanceof IGCodeProvider){
+			return rs274Service.getModifierByGCodeProvider(((IGCodeProvider) content).getId()).toArray();
 		}else if(this.equals(content)){
 			return rs274Service.getGCodeProvider().toArray();
 		}
@@ -136,7 +136,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 */
 	@Override
 	public Object getParent(Object content) throws GkException {
-		if(content instanceof GCodeProvider){
+		if(content instanceof IGCodeProvider){
 			return this;
 		}else if(content instanceof IModifier){
 			IModifier<?> modifier = (IModifier<?>)content;
@@ -153,7 +153,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
 		return this.equals(content)
-			|| (content instanceof GCodeProvider)
+			|| (content instanceof IGCodeProvider)
 			|| (content instanceof IModifier);
 	}
 
@@ -167,8 +167,8 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 
 		if(this.equals(content)){
 			createMenuForGCodeRepository(contextMenu);
-		}else if(content instanceof GCodeProvider){
-			createMenuForGCodeProvider(contextMenu, (GCodeProvider)content);
+		}else if(content instanceof IGCodeProvider){
+			createMenuForGCodeProvider(contextMenu, (IGCodeProvider)content);
 		}else if(content instanceof IModifier<?>){
 			createMenuForGCodeModifier(contextMenu, (IModifier<?>)content);
 		}
@@ -198,7 +198,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 * Creates the menu for a GCode provider node of the tree
 	 * @param contextMenu the target context menu
 	 */
-	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final GCodeProvider content) throws GkException {
+	protected void createMenuForGCodeProvider(IMenuManager contextMenu, final IGCodeProvider content) throws GkException {
 		// Submenu for a specific user
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
         

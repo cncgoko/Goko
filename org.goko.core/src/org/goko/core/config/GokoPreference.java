@@ -76,7 +76,9 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 		
 	/** Used units */
 	private Map<Dimension, Unit> mapConfiguredUnits;
-
+	/** Developer mode */
+	private boolean developerMode = false;
+	
 	public GokoPreference() throws GkException {
 		super(NODE_ID);
 		mapConfiguredUnits = new HashMap<Dimension, Unit>();
@@ -263,4 +265,19 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 			LOG.error(e);
 		}
 	}
+
+	/**
+	 * @return the developerMode
+	 */
+	public boolean isDeveloperMode() {
+		return developerMode;
+	}
+
+	/**
+	 * @param developerMode the developerMode to set
+	 */
+	public void setDeveloperMode(boolean developerMode) {
+		this.developerMode = developerMode;
+	}
+
 }

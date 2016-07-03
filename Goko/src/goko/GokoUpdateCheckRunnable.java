@@ -30,6 +30,8 @@ public class GokoUpdateCheckRunnable {
 	public static final IStatus NOTHING_TO_UPDATE = new Status(Status.OK, "Goko", 10000, "", null);
 	/** Default update site location */
 	private static final String UPDATE_SITE_URL = "http://update.goko.fr/";
+	/** Developer mode update site location */
+	private static final String DEV_UPDATE_SITE_URL = "http://update.goko.fr/dev/";
 	
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		ProvisioningSession session = new ProvisioningSession(agent);
@@ -44,6 +46,9 @@ public class GokoUpdateCheckRunnable {
 		
 		addGokoDefaultRepositories(metadataManager, artifactManager);
 		
+		if(GokoPreference.getInstance().isDeveloperMode()){
+			addGokoDeveloperRepositories(metadataManager, artifactManager);
+		}
         //check if updates are available
         IStatus status = operation.resolveModal(sub.newChild(100));
         
@@ -74,7 +79,9 @@ public class GokoUpdateCheckRunnable {
                 cancelled = true;
         	}
         }
-        
+        if(GokoPreference.getInstance().isDeveloperMode()){
+        	removeGokoDeveloperRepositories(metadataManager, artifactManager);
+        }
 		if (cancelled) {
 			// reset cancelled flag
 			cancelled = false;
@@ -130,6 +137,7 @@ public class GokoUpdateCheckRunnable {
                 }
             }
         });
+
 		if (cancelled) {
 			// reset cancelled flag
 			cancelled = false;
@@ -222,6 +230,34 @@ public class GokoUpdateCheckRunnable {
 			} catch (URISyntaxException e) {
 				LOG.error(e);
 			}
+		}
+    }
+    
+    /**
+     * Adds Goko developer's mode repository  
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+		try {
+			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+		} catch (URISyntaxException e) {
+			LOG.error(e);
+		}
+    }
+    
+    /**
+     * Removes Goko developer's mode repository  
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void removeGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+		try {
+			metadataManager.removeRepository(new URI(DEV_UPDATE_SITE_URL));
+			artifactManager.removeRepository(new URI(DEV_UPDATE_SITE_URL));
+		} catch (URISyntaxException e) {
+			LOG.error(e);
 		}
     }
 }

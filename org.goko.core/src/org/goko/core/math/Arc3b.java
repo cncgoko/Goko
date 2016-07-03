@@ -142,6 +142,11 @@ public class Arc3b {
 		return new Tuple6b(res.x, res.y, res.z, unit);
 	}
 
+	public BoundingTuple6b getBound(){
+		
+		return null;		
+	}
+	
 	/**
 	 * @return the start
 	 */

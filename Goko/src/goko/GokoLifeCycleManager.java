@@ -6,6 +6,7 @@ package goko;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.ProgressProvider;
@@ -20,6 +21,7 @@ import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler;
+import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
 import org.goko.core.common.exception.GkException;
@@ -45,7 +47,10 @@ public class GokoLifeCycleManager {
 	 * @throws GkException GkException
 	 */
 	@PostContextCreate
-	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context) throws GkException {
+	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context, IApplicationContext appContext) throws GkException {
+		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
+		enableDevModeIfRequired(args);
+		
 		IWindowCloseHandler closeHandler = new ExitHandlerManager();
 		context.set(IWindowCloseHandler.class, closeHandler);
 		/*
@@ -89,12 +94,19 @@ public class GokoLifeCycleManager {
 				eventBroker.unsubscribe(this);
 				
 			}
-		});
-		
-
-		
+		});		
 	}
 
+	private void enableDevModeIfRequired(String[] args){
+		GokoPreference.getInstance().setDeveloperMode(false);
+		if(args != null && args.length > 0){
+			for (String key : args) {
+				if(StringUtils.equals(key, "-goko.devMode=true")){
+					GokoPreference.getInstance().setDeveloperMode(true);
+				}
+			}
+		}
+	}
 	/**
 	 * Sets the JFace dialog default image to the icon of the main shell
 	 * @param shell the active shell
@@ -117,8 +129,7 @@ class ExitHandlerManager implements IWindowCloseHandler{
 	 * @see org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler#close(org.eclipse.e4.ui.model.application.ui.basic.MWindow)
 	 */
 	@Override
-	public boolean close(MWindow window) {
-		System.err.println("ta race");
+	public boolean close(MWindow window) {		
 		return true;
 	}
 
@@ -126,7 +137,6 @@ class ExitHandlerManager implements IWindowCloseHandler{
 	 * 
 	 */
 	public void register() {
-		System.err.println("register");		
 		
 	}
 

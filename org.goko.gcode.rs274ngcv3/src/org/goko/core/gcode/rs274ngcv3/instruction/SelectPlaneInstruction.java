@@ -46,4 +46,32 @@ public class SelectPlaneInstruction extends AbstractInstruction {
 		context.setPlane(plane);
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((plane == null) ? 0 : plane.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SelectPlaneInstruction other = (SelectPlaneInstruction) obj;
+		if (plane != other.plane)
+			return false;
+		return true;
+	}
+
 }

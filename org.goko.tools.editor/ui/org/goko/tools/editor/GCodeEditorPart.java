@@ -249,7 +249,7 @@ public class GCodeEditorPart{
 		eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 	}
 	
-	protected void askForSave(IDocumentProvider provider){
+	protected void askForSave(final IDocumentProvider provider){
 		if(provider.isDirty()){
 			uiSynchronize.syncExec(new Runnable() {
 				

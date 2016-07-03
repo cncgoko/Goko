@@ -40,4 +40,6 @@ public interface Quantity<Q extends Quantity<Q>> {
 	boolean greaterThan(Q quantity);
 
 	boolean greaterThanOrEqualTo(Q quantity);
+	
+	boolean almostEquals(Q quantity, double error);
 }

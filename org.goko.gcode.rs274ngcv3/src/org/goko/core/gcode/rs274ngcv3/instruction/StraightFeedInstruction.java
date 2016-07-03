@@ -39,4 +39,5 @@ public class StraightFeedInstruction extends AbstractStraightInstruction {
 		super.apply(context);
 	}
 
+	
 }

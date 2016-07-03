@@ -39,7 +39,7 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
  *	illegal. Rotational axis motion is handled as follows, if there is rotational motion.
  *
  */
-public class ArcFeedInstruction extends AbstractInstruction {
+public class ArcFeedInstruction extends AbstractInstruction {	
 	/** The first coordinate of the end of the arc */
 	private Length firstEnd;
 	/** The second coordinate of the end of the arc */
@@ -88,7 +88,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	@Override
 	public void apply(GCodeContext context) throws GkException {
-		if(rotation < 0){
+		if(clockwise){
 			context.setMotionMode(EnumMotionMode.ARC_CLOCKWISE);
 		}else{
 			context.setMotionMode(EnumMotionMode.ARC_COUNTERCLOCKWISE);
@@ -224,5 +224,88 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		this.clockwise = clockwise;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((a == null) ? 0 : a.hashCode());
+		result = prime * result + ((axisEndPoint == null) ? 0 : axisEndPoint.hashCode());
+		result = prime * result + ((b == null) ? 0 : b.hashCode());
+		result = prime * result + ((c == null) ? 0 : c.hashCode());
+		result = prime * result + (clockwise ? 1231 : 1237);
+		result = prime * result + ((firstAxis == null) ? 0 : firstAxis.hashCode());
+		result = prime * result + ((firstEnd == null) ? 0 : firstEnd.hashCode());
+		result = prime * result + ((rotation == null) ? 0 : rotation.hashCode());
+		result = prime * result + ((secondAxis == null) ? 0 : secondAxis.hashCode());
+		result = prime * result + ((secondEnd == null) ? 0 : secondEnd.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ArcFeedInstruction other = (ArcFeedInstruction) obj;
+		if (a == null) {
+			if (other.a != null)
+				return false;
+		} else if (!a.equals(other.a))
+			return false;
+		if (axisEndPoint == null) {
+			if (other.axisEndPoint != null)
+				return false;
+		} else if (!axisEndPoint.equals(other.axisEndPoint))
+			return false;
+		if (b == null) {
+			if (other.b != null)
+				return false;
+		} else if (!b.equals(other.b))
+			return false;
+		if (c == null) {
+			if (other.c != null)
+				return false;
+		} else if (!c.equals(other.c))
+			return false;
+		if (clockwise != other.clockwise)
+			return false;
+		if (firstAxis == null) {
+			if (other.firstAxis != null)
+				return false;
+		} else if (!firstAxis.equals(other.firstAxis))
+			return false;
+		if (firstEnd == null) {
+			if (other.firstEnd != null)
+				return false;
+		} else if (!firstEnd.equals(other.firstEnd))
+			return false;
+		if (rotation == null) {
+			if (other.rotation != null)
+				return false;
+		} else if (!rotation.equals(other.rotation))
+			return false;
+		if (secondAxis == null) {
+			if (other.secondAxis != null)
+				return false;
+		} else if (!secondAxis.equals(other.secondAxis))
+			return false;
+		if (secondEnd == null) {
+			if (other.secondEnd != null)
+				return false;
+		} else if (!secondEnd.equals(other.secondEnd))
+			return false;
+		return true;
+	}
+
+	
 	
 }

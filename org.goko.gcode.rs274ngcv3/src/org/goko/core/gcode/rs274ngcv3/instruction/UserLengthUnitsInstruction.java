@@ -30,4 +30,33 @@ public class UserLengthUnitsInstruction extends AbstractInstruction {
 		return unit;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserLengthUnitsInstruction other = (UserLengthUnitsInstruction) obj;
+		if (unit != other.unit)
+			return false;
+		return true;
+	}
+
+	
 }

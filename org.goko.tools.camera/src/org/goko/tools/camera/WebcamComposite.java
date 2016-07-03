@@ -334,14 +334,12 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 
 
 	@Override
-	public void paintControl(PaintEvent e) {
-		System.err.println("paintControl");
+	public void paintControl(PaintEvent e) {		
 		if(isStarting()){
 			e.gc.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			Font font = new Font(e.gc.getDevice(),"Arial",14,SWT.BOLD | SWT.ITALIC);			
 			e.gc.setFont(font);
-			e.gc.drawText("Starting...", 10, 10);	
-			System.err.println("Starting");
+			e.gc.drawText("Starting...", 10, 10);
 			return;
 		}
 		if(!isStarted()){						

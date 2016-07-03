@@ -49,7 +49,7 @@ public class LengthUnit {
 	 * A unit of length equal to <code>0.3048 m</code> (standard name
 	 * <code>ft</code>).
 	 */
-	public static final Unit<Length> 	 FOOT = add(new TransformedUnit<Length>("ft", METRE, new MultiplyConverter("0.3048")));
+	public static final Unit<Length> 	 FOOT = add(new TransformedUnit<Length>("ft", METRE, new MultiplyConverter("0.304800")));
 	/**
 	 * A unit of length equal to <code>0.0254 m</code> (standard name
 	 * <code>in</code>).

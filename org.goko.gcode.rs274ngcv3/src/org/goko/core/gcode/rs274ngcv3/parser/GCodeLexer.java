@@ -31,8 +31,7 @@ import org.goko.core.common.i18n.MessageResource;
 import org.goko.core.common.utils.Location;
 import org.goko.core.gcode.element.validation.IValidationElement.ValidationSeverity;
 import org.goko.core.gcode.element.validation.IValidationTarget;
-
-import IValidationElement.ValidationElement;
+import org.goko.core.gcode.element.validation.ValidationElement;
 
 /**
  * GCode file tokenizer

@@ -25,7 +25,7 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 	public ExecutionQueueContainerLabelProvider() {
 		super();
 		warningImageDescriptor = ResourceManager.getPluginImageDescriptor("org.goko.gcode.rs274ngcv3.ui", "resources/icons/warn_ovr.png");
-		errorImageDescriptor   = ResourceManager.getPluginImageDescriptor("org.goko.gcode.rs274ngcv3.ui", "resources/icons/error_ovr.png");
+		errorImageDescriptor   = ResourceManager.getPluginImageDescriptor("org.goko.core.execution.monitor", "resources/icons/error_ovr.png");
 	}
 	
 	/** (inheritDoc)
@@ -61,7 +61,9 @@ public class ExecutionQueueContainerLabelProvider extends LabelProvider implemen
 		}else if(element instanceof ExecutionToken){
 			ExecutionToken<?> token = (ExecutionToken<?>) element;
 			Image image = null;
-			if(token.getState() == ExecutionState.COMPLETE){
+			if(token.hasErrors()){
+				image =  ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/error_ovr.png");
+			}else if(token.getState() == ExecutionState.COMPLETE){
 				image = ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/tick.png");
 			}else if(token.getState() == ExecutionState.RUNNING){
 				image = ResourceManager.getPluginImage("org.goko.core.execution.monitor", "resources/icons/control-running.png");

@@ -22,6 +22,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
+import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
@@ -35,20 +36,12 @@ import org.goko.core.log.GkLog;
  *
  * @author Psyko
  */
-public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements 	IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>,
-																								//IWorkspaceListener, 
-																								//IGCodeProviderRepositoryListener,
+public class ExecutionPartController extends AbstractController<ExecutionPartModel> implements 	IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>,																								
 																								IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	private static final GkLog LOG = GkLog.getLogger(ExecutionPartController.class);
 	/** The execution service */
 	@Inject
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
-//	/** The underlying workspace service */
-//	@Inject
-//	private IWorkspaceService workspaceService;
-//	/** The repository for GCode providers*/
-//	@Inject
-//	private IGCodeProviderRepository gcodeProviderRepository;
 	/** The optional execution time evaluation service */
 	@Inject
 	@Optional
@@ -70,8 +63,6 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	public void initialize() throws GkException {
 		executionService.addExecutionListener(this);
 		executionService.addExecutionQueueListener(this);
-	//	workspaceService.addWorkspaceListener(this);
-	//	gcodeProviderRepository.addListener(this);
 		updateTokenQueueData();
 		updateButtonState();
 		executionTimeByToken = new HashMap<Integer, Time>();
@@ -227,10 +218,13 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 						  buttonStopEnabled = true;
 					break;
 			}
-	
-			if(executionService.getExecutionQueue() == null
-			|| CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
-				buttonStartEnabled = false;
+				
+			if(executionService.getExecutionQueue() != null){
+				if(CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
+					buttonStartEnabled = false;
+				}else{
+					buttonStartEnabled = !isErrorInQueue(executionService.getExecutionQueue());
+				}
 			}
 			getDataModel().setButtonStartEnabled(buttonStartEnabled);
 			getDataModel().setButtonPauseEnabled(buttonPauseEnabled);
@@ -241,6 +235,27 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			getDataModel().setButtonPauseEnabled(false);
 			getDataModel().setButtonStopEnabled( true );
 		}
+	}
+	
+	/**
+	 * Detects error in the given queue
+	 * @param queue the queue to check
+	 * @return <code>true</code> if there is any error in the queue, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
+	private boolean isErrorInQueue(ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue) throws GkException{
+		if(queue == null){
+			return false;
+		}
+		List<ExecutionToken<ExecutionTokenState>> tokens = queue.getExecutionToken();
+		if(CollectionUtils.isNotEmpty(tokens)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : tokens) {
+				if(executionToken.hasErrors()){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	/**
 	 * Update the data about the execution of the queue
@@ -369,9 +384,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenUpdate(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onTokenUpdate(ExecutionToken<ExecutionTokenState> token) {		
-		System.out.println("ExecutionPartController.onTokenUpdate()");
-		updateTokenQueueData();
+	public void onTokenUpdate(ExecutionToken<ExecutionTokenState> token) {
+		updateButtonState();
 		scheduleExecutionTimeEstimationJob(token.getId());
 	}
 

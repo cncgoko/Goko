@@ -37,4 +37,33 @@ public class SetDistanceModeInstruction extends AbstractInstruction {
 		context.setDistanceMode(distanceMode);
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((distanceMode == null) ? 0 : distanceMode.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SetDistanceModeInstruction other = (SetDistanceModeInstruction) obj;
+		if (distanceMode != other.distanceMode)
+			return false;
+		return true;
+	}
+
+	
 }

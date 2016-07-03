@@ -30,4 +30,36 @@ public class SetFeedRateInstruction extends AbstractInstruction {
 		return feedrate;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((feedrate == null) ? 0 : feedrate.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SetFeedRateInstruction other = (SetFeedRateInstruction) obj;
+		if (feedrate == null) {
+			if (other.feedrate != null)
+				return false;
+		} else if (!feedrate.equals(other.feedrate))
+			return false;
+		return true;
+	}
+
+	
 }

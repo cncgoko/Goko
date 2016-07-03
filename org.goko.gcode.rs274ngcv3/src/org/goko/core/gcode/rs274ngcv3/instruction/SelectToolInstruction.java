@@ -34,4 +34,36 @@ public class SelectToolInstruction extends AbstractInstruction {
 		this.toolNumber = toolNumber;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((toolNumber == null) ? 0 : toolNumber.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SelectToolInstruction other = (SelectToolInstruction) obj;
+		if (toolNumber == null) {
+			if (other.toolNumber != null)
+				return false;
+		} else if (!toolNumber.equals(other.toolNumber))
+			return false;
+		return true;
+	}
+
+	
 }

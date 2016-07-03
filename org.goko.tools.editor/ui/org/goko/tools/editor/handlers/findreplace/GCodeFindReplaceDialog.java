@@ -184,8 +184,7 @@ public class GCodeFindReplaceDialog extends Dialog {
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.err.println("blah");
+			public void widgetSelected(SelectionEvent e) {				
 				performFind();
 			}
 		});
@@ -239,8 +238,7 @@ public class GCodeFindReplaceDialog extends Dialog {
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.err.println("close");
+			public void widgetSelected(SelectionEvent e) {				
 				close();
 			}
 		});

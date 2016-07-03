@@ -72,8 +72,12 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		this.unit = unit;
 	}
 
-	public boolean equals(Q obj) {
+	public boolean equals(Q obj) {		
 		return value.compareTo(obj.value(getUnit())) == 0;
+	}
+	
+	public boolean almostEquals(Q obj, double error) {		
+		return value.subtract(obj.value(getUnit())).abs().doubleValue() <= error;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#value(org.goko.core.common.measure.units.Unit)
@@ -253,5 +257,13 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		} else if (!value.equals(other.value))
 			return false;
 		return true;
+	}
+	
+	/** (inheritDoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {		
+		return QuantityUtils.format((Q)this);
 	}
 }
