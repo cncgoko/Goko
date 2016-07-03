@@ -7,6 +7,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.config.GokoPreference;
 import org.goko.core.feature.IFeatureSetManager;
 import org.goko.core.feature.TargetBoard;
 import org.goko.core.workspace.element.GkProject;
@@ -22,7 +23,7 @@ public class ProjectNameTitleUpdater extends AbstractProjectLifecycleListenerAda
 	private MApplication application;
 	private EModelService modelService;
 	private IFeatureSetManager featureSetManager;
-	
+	 
 	/**
 	 * Update the title of the application to display project name
 	 * @throws GkException GkException
@@ -38,8 +39,9 @@ public class ProjectNameTitleUpdater extends AbstractProjectLifecycleListenerAda
 			if(project.isDirty()){
 				projectName += "*";
 			}
-			TargetBoard targetBoard = featureSetManager.getCurrentTargetBoard();
-			mainMTrimmedWindow.setLabel("Goko - "+targetBoard.getLabel()+" - "+projectName);
+			TargetBoard targetBoard = featureSetManager.getCurrentTargetBoard();			
+			mainMTrimmedWindow.setLabel("Goko - "+targetBoard.getLabel()+" - "+projectName+ (GokoPreference.getInstance().isDeveloperMode() ? "(Dev mode)":""));
+			
 		}
 	}
 

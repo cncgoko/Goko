@@ -73,7 +73,9 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	public static final String DEFAULT_CHECK_UPDATE_FREQUENCY  = EnumUpdateCheckFrequency.ONCE_A_DAY.getCode();
 	/** The default precision to display after coma for distance values  */
 	public static final int DEFAULT_DISTANCE_DIGIT_COUNT = 3;
-		
+	/** Developer mode boolean */
+	private boolean developerMode;
+	
 	/** Used units */
 	private Map<Dimension, Unit> mapConfiguredUnits;
 
@@ -262,5 +264,19 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 		} catch (IOException e) {
 			LOG.error(e);
 		}
+	}
+
+	/**
+	 * @return the developerMode
+	 */
+	public boolean isDeveloperMode() {
+		return developerMode;
+	}
+
+	/**
+	 * @param developerMode the developerMode to set
+	 */
+	public void setDeveloperMode(boolean developerMode) {
+		this.developerMode = developerMode;
 	}
 }

@@ -16,6 +16,7 @@ import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.goko.core.config.GokoPreference;
@@ -29,6 +30,8 @@ public class GokoUpdateCheckRunnable {
 	public static final IStatus NOTHING_TO_UPDATE = new Status(Status.OK, "Goko", 10000, "", null);
 	/** Default update site location */
 	private static final String UPDATE_SITE_URL = "http://update.goko.fr/";
+	/** Developer mode update site location */
+	private static final String DEV_UPDATE_SITE_URL = "http://update.goko.fr/dev/";
 	
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		ProvisioningSession session = new ProvisioningSession(agent);
@@ -36,8 +39,10 @@ public class GokoUpdateCheckRunnable {
 		UpdateOperation operation = new UpdateOperation(session);
 		
 		final SubMonitor sub = SubMonitor.convert(monitor, "Checking for application updates...", 200);
-		IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
-		URI[] lstRepositories = manager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
+		IMetadataRepositoryManager metadataManager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+		IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService(IArtifactRepositoryManager.SERVICE_NAME);
+		
+		URI[] lstRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
 		
 		boolean updateSiteFound = false;
 		
@@ -51,9 +56,13 @@ public class GokoUpdateCheckRunnable {
 			}			
 		}
 		
+		if(GokoPreference.getInstance().isDeveloperMode()){
+			addGokoDeveloperRepositories(metadataManager, artifactManager);
+		}
+		
 		if(!updateSiteFound){ // It looks like the update site isn't always checked for unknown reasons. This is a hack to prevent this
 			try {
-				manager.addRepository(new URI(UPDATE_SITE_URL));
+				metadataManager.addRepository(new URI(UPDATE_SITE_URL));
 			} catch (URISyntaxException e) {
 				LOG.error(e);
 			}
@@ -151,7 +160,21 @@ public class GokoUpdateCheckRunnable {
 		}
 		return Status.OK_STATUS;
 	}
-	    
+	 
+    /**
+     * Adds Goko developer's mode repository  
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+		try {
+			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+		} catch (URISyntaxException e) {
+			LOG.error(e);
+		}
+    }
+    
     private void showError(UISynchronize sync, final String message) {
         // as the provision needs to be executed in a background thread
         // we need to ensure that the message dialog is executed in 
