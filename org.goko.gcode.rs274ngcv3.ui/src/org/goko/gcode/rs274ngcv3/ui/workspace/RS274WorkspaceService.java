@@ -153,7 +153,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	public void setExecutionService(IExecutionService<?, ?> executionService) {
 		this.executionService = executionService;
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderCreate(org.goko.core.gcode.element.IGCodeProvider)
 	 */
@@ -174,14 +174,22 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#beforeGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {		
+	public void beforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		// Nothing yet
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#afterGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void afterGCodeProviderDelete(IGCodeProvider provider) throws GkException {
 		workspaceUIService.refreshWorkspaceUi();
 		markProjectDirty();
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
 	 */

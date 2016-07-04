@@ -218,10 +218,18 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#afterGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+	public void afterGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		// Nothing yet
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#beforeGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void beforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {
 		removeRenderer(provider.getId());
 		updateContentBounds();
 	}

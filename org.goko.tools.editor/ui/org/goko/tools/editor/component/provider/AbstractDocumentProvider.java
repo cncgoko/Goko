@@ -66,7 +66,11 @@ public abstract class AbstractDocumentProvider implements IDocumentProvider, IDo
 			documentProviderListeners.add(listener);
 		}
 	}
-
+	
+	public void removeAllDocumentProviderListener(){
+		documentProviderListeners.clear();
+	}
+	
 	protected void notifyAboutToClose(){
 		for (IDocumentProviderListener listener : documentProviderListeners) {
 			listener.aboutToClose(this);

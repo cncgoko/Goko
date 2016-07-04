@@ -14,7 +14,7 @@ import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.service.GCodeProviderDeleteEvent;
-import org.goko.core.gcode.service.IGCodeProviderDeleteListener;
+import org.goko.core.gcode.service.IGCodeProviderDeleteVetoableListener;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.tools.editor.component.GCodePartitionScanner;
 import org.goko.tools.editor.component.GCodeSourceConfiguration;
@@ -23,7 +23,7 @@ import org.goko.tools.editor.component.GCodeSourceConfiguration;
  * @author Psyko
  * @date 26 mai 2016
  */
-public abstract class AbstractGCodeDocumentProvider extends AbstractDocumentProvider implements IGCodeProviderDeleteListener, IGCodeProviderRepositoryListener{
+public abstract class AbstractGCodeDocumentProvider extends AbstractDocumentProvider implements IGCodeProviderDeleteVetoableListener, IGCodeProviderRepositoryListener{
 	/** The associated annotation model */
 	private IAnnotationModel annotationModel;
 	
@@ -38,7 +38,6 @@ public abstract class AbstractGCodeDocumentProvider extends AbstractDocumentProv
 		partitioner.connect(document);
 		document.setDocumentPartitioner(partitioner);
 		
-	//	http://help.eclipse.org/mars/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Feditors_annotations.htm
 		return document;
 	}
 	
@@ -75,12 +74,12 @@ public abstract class AbstractGCodeDocumentProvider extends AbstractDocumentProv
 	protected abstract IDocument getGCodeDocument() throws GkException;
 		
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderDeleteListener#beforeDelete(org.goko.core.gcode.service.GCodeProviderDeleteEvent)
+	 * @see org.goko.core.gcode.service.IGCodeProviderDeleteVetoableListener#beforeDelete(org.goko.core.gcode.service.GCodeProviderDeleteEvent)
 	 */
 	@Override
 	public void beforeDelete(GCodeProviderDeleteEvent event) {
 		notifyAboutToClose();
-		event.setDoIt(!isDirty());
+		event.setDoIt(!isDirty());	
 	}
 	
 }

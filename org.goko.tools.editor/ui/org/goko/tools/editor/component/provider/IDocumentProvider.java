@@ -29,5 +29,10 @@ public interface IDocumentProvider {
 	
 	void addDocumentProviderListener(IDocumentProviderListener listener);
 	
+	/**
+	 * Removes all the registered document provider listeners
+	 */	
+	public void removeAllDocumentProviderListener();
+		
 	IAnnotationModel getAnnotationModel() throws GkException;
 }

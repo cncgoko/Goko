@@ -22,6 +22,8 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.log.GkLog;
 import org.goko.tools.editor.component.annotation.ErrorAnnotation;
 
 /**
@@ -29,14 +31,23 @@ import org.goko.tools.editor.component.annotation.ErrorAnnotation;
  * @date 26 mai 2016
  */
 public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
+	private static final GkLog LOG = GkLog.getLogger(GCodeProviderSourceDocument.class);
 	private IGCodeProvider provider;
+	private IGCodeProviderRepository gcodeRepository;
 	
 	/**
 	 * @param source
 	 */
-	public GCodeProviderSourceDocument(IGCodeProvider provider) {
+	public GCodeProviderSourceDocument(IGCodeProviderRepository gcodeRepository, IGCodeProvider provider) {
 		super();
 		this.provider = provider;
+		this.gcodeRepository = gcodeRepository;
+		try {					
+			this.gcodeRepository.addDeleteVetoableListener(this);
+			this.gcodeRepository.addListener(this);
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 
 	/** (inheritDoc)
@@ -110,7 +121,6 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 		return provider.getSource();
 	}	
 	
-
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderCreate(org.goko.core.gcode.element.IGCodeProvider)
 	 */
@@ -118,16 +128,24 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException { }
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#afterGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
-		if(ObjectUtils.equals(provider.getId(),  this.provider.getId())){
-			notifyClosed();
-		}
+	public void afterGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		this.gcodeRepository.removeDeleteVetoableListener(this);
+		this.gcodeRepository.removeListener(this);
 	}
 	
-	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#beforeGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void beforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		if(ObjectUtils.equals(provider.getId(),  this.provider.getId())){
+			notifyClosed();
+		}		
+	}
+		
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
 	 */

@@ -10,7 +10,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
-import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
@@ -51,13 +50,7 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 			@Override
 			public void run() {
 				Map<String, Object> map = new HashMap<String, Object>();
-				GCodeProviderSourceDocument documentProvider = new GCodeProviderSourceDocument(provider);
-				try {
-					gcodeProviderRepository.addDeleteListener(documentProvider);
-					gcodeProviderRepository.addListener(documentProvider);
-				} catch (GkException e) {
-					LOG.error(e);
-				}
+				GCodeProviderSourceDocument documentProvider = new GCodeProviderSourceDocument(gcodeProviderRepository, provider);				
 				map.put(IEventBroker.DATA, documentProvider);
 				eventAdmin.sendEvent(new Event(GCodeEditorTopic.TOPIC_OPEN_EDITOR, map));	
 			}

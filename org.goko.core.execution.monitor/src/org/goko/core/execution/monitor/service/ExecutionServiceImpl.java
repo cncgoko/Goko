@@ -506,9 +506,8 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	@Override
 	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {
 		// TODO Auto-generated method stub
-
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUpdate(org.goko.core.gcode.element.IGCodeProvider)
 	 */
@@ -529,10 +528,10 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#beforeGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+	public void beforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {
 		List<ExecutionToken<ExecutionTokenState>> lstToken = executionQueue.getExecutionToken();
 		ExecutionToken<ExecutionTokenState> tokenToRemove = null;
 		if(CollectionUtils.isNotEmpty(lstToken)){
@@ -545,9 +544,17 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		}
 		if(tokenToRemove != null){
 			removeFromExecutionQueue(tokenToRemove);
-		}
+		}		
 	}
-
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#afterGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
+	 */
+	@Override
+	public void afterGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+		// Nothing yet
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
 	 */

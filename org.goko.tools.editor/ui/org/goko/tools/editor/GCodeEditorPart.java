@@ -63,7 +63,7 @@ public class GCodeEditorPart{
 	@Inject
 	private UISynchronize uiSynchronize;
 	@Inject
-	private IEventBroker eventBroker;
+	private IEventBroker eventBroker;	
 	/** Supplier for IFindReplaceTarget */
 	private Supplier<IFindReplaceTarget> findReplaceTargetSupplier;
 	
@@ -135,7 +135,13 @@ public class GCodeEditorPart{
 				 */
 				@Override
 				public void aboutToClose(IDocumentProvider provider) {
-					askForSave(getActiveDocumentProvider());					
+					uiSynchronize.syncExec(new Runnable() {						
+						@Override
+						public void run() {
+							askForSave(getActiveDocumentProvider());							
+						}
+					});
+										
 				}
 				
 				/** (inheritDoc)
@@ -143,10 +149,15 @@ public class GCodeEditorPart{
 				 */
 				@Override
 				public void onClosed(IDocumentProvider provider) {
-					closeByDocumentProvider(provider);				
+					uiSynchronize.syncExec(new Runnable() {						
+						@Override
+						public void run() {
+							closeByDocumentProvider(provider);							
+						}
+					});							
 				}
 			};
-			provider.addDocumentProviderListener(listener);	
+			provider.addDocumentProviderListener(listener);			
 			document.addDocumentListener(new IDocumentListener() {
 				
 				/** (inheritDoc)
@@ -170,10 +181,11 @@ public class GCodeEditorPart{
 	}
 	
 	public void closeByDocumentProvider(IDocumentProvider provider) {
-		if(mapSourceViewerByDocumentProvider.containsKey(provider)){
+		if(provider != null && mapSourceViewerByDocumentProvider.containsKey(provider)){
 			mapSourceViewerByDocumentProvider.remove(provider);	
 			CTabItem tabItem = mapTabItemByDocumentProvider.remove(provider);
 			tabItem.dispose();
+			provider.removeAllDocumentProviderListener();
 		}
 	}
 			
