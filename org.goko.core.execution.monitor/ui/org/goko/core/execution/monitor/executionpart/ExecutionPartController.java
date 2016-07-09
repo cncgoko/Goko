@@ -22,10 +22,10 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
-import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
@@ -72,10 +72,12 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		this.getDataModel().setCompletedLineCount(0);
+	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {		
+		this.getDataModel().setCompletedLineCount(0);		
 		this.getDataModel().setTokenLineCount(token.getLineCount());
+		this.getDataModel().setLineCompleteInCurrentToken(0);
 		updateButtonState();
+		updateCompletedLineCount();
 	}
 
 	/** (inheritDoc)
@@ -95,6 +97,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		updateEstimatedExecutionTime();
 		updateButtonState();
 		this.getDataModel().setExecutionQueueStartDate(new Date());
+		this.getDataModel().setLineCompleteFromCompleteToken(0);
 		this.getDataModel().setExecutionTimerActive(true);
 		updateQueueExecutionState();
 	}
@@ -103,7 +106,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
 	 */
 	@Override
-	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {
+	public void onExecutionCanceled(ExecutionToken<ExecutionTokenState> token) throws GkException {		
 		updateButtonState();
 		updateQueueExecutionState();
 	}
@@ -139,6 +142,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		getDataModel().setLineCompleteInCurrentToken(0);		
 		updateTokenQueueData();
 		updateButtonState();
 	}
@@ -147,22 +151,22 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		int executedLineCount = token.getLineCountByState(ExecutionTokenState.EXECUTED);
+	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {		
+		if(token.getState() == ExecutionState.RUNNING){
+			getDataModel().setLineCompleteInCurrentToken(token.getLineCountByState(ExecutionTokenState.EXECUTED));
+		}else if(token.getState() == ExecutionState.COMPLETE){
+			getDataModel().setLineCompleteInCurrentToken(0);
+		}
+		updateCompletedLineCount();
+	}
+	
+	/**
+	 * Updates the total number of completed lines 
+	 */
+	protected void updateCompletedLineCount(){
+		int executedLineCount = getDataModel().getLineCompleteInCurrentToken() + getDataModel().getLineCompleteFromCompleteToken();
 		this.getDataModel().setCompletedLineCount(executedLineCount);
 	}
-
-//	/**
-//	 * @param event
-//	 * @throws GkException
-//	 */
-//	@Override
-//	public void onWorkspaceEvent(IWorkspaceEvent event) throws GkException {
-//		updateButtonState();
-//		if(StringUtils.equalsIgnoreCase(event.getType(), ExecutionServiceWorkspaceEvent.TYPE)){
-//			updateTokenQueueData();
-//		}
-//	}
 
 	/**
 	 * Starts the execution queue
@@ -239,15 +243,15 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	
 	/**
 	 * Detects error in the given queue
-	 * @param queue the queue to check
+	 * @param iExecutionQueue the queue to check
 	 * @return <code>true</code> if there is any error in the queue, <code>false</code> otherwise
 	 * @throws GkException GkException
 	 */
-	private boolean isErrorInQueue(ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue) throws GkException{
-		if(queue == null){
+	private boolean isErrorInQueue(IExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> iExecutionQueue) throws GkException{
+		if(iExecutionQueue == null){
 			return false;
 		}
-		List<ExecutionToken<ExecutionTokenState>> tokens = queue.getExecutionToken();
+		List<ExecutionToken<ExecutionTokenState>> tokens = iExecutionQueue.getExecutionToken();
 		if(CollectionUtils.isNotEmpty(tokens)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : tokens) {
 				if(executionToken.hasErrors()){
@@ -264,10 +268,13 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	private void updateQueueExecutionState() throws GkException{
 		if(executionService.getExecutionState() == ExecutionState.RUNNING){
 			getDataModel().setProgressBarState(SWT.NORMAL);
+			getDataModel().setTokenProgressBarState(SWT.NORMAL);
 		}else if(executionService.getExecutionState() == ExecutionState.PAUSED){
 			getDataModel().setProgressBarState(SWT.PAUSED);
+			getDataModel().setTokenProgressBarState(SWT.PAUSED);
 		}else if(executionService.getExecutionState() == ExecutionState.STOPPED){
 			getDataModel().setProgressBarState(SWT.ERROR);
+			getDataModel().setTokenProgressBarState(SWT.ERROR);
 		}
 	}
 	/**
@@ -335,17 +342,21 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			int totalTokenCount 	= 0;
 			int completedTokenCount = 0;
 			int totalLineCount		= 0;
-	
+			int completedLineCount  = 0;
+			
 			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
 				totalTokenCount += 1;
 				totalLineCount += executionToken.getLineCount();
 				if(executionToken.getState() == ExecutionState.COMPLETE){
 					completedTokenCount += 1;
-				}
+					completedLineCount += executionToken.getLineCount();					
+				}				
 			}
 			this.getDataModel().setCompletedTokenCount(completedTokenCount);
 			this.getDataModel().setTotalTokenCount(totalTokenCount);
 			this.getDataModel().setTotalLineCount(totalLineCount);
+			this.getDataModel().setLineCompleteFromCompleteToken(completedLineCount);
+			updateCompletedLineCount();
 			updateEstimatedExecutionTime();
 		}catch(GkException e){
 			LOG.error(e);

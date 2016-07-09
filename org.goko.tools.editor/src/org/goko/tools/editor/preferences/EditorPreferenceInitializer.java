@@ -13,6 +13,7 @@ public class EditorPreferenceInitializer extends GkPreferenceInitializer{
 		EditorPreference prefs = EditorPreference.getInstance();
 		//prefs.setDefault(JoglViewerPreference.ROTARY_AXIS_ENABLED, true);
 		
+		prefs.setFontSize(11);		
 	}
 
 }

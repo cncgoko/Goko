@@ -90,8 +90,11 @@ public abstract class AutoLevelerModifier<T extends IHeightMap> extends Abstract
 	 */
 	private List<InstructionSet> applyModifier(GCodeContext localContext, AbstractStraightInstruction source) throws GkException{
 		Tuple6b start = new Tuple6b(Units.MILLIMETRE, localContext.getX(), localContext.getY(), localContext.getZ() );
-		Tuple6b end   = new Tuple6b(Units.MILLIMETRE, source.getX(), source.getY(), source.getZ() );
-
+		//Tuple6b end   = new Tuple6b(Units.MILLIMETRE, source.getX(), source.getY(), source.getZ() );
+		GCodeContext postContext = new GCodeContext(localContext);
+		source.apply(postContext);
+		Tuple6b end	=  postContext.getPosition();
+		
 		List<InstructionSet> sets = new ArrayList<InstructionSet>();
 		List<Tuple6b> lstPoints = heightMap.splitSegment(start, end);
 		int nbPoints = lstPoints.size();

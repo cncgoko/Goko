@@ -54,7 +54,10 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 	 */
 	private Length calculateLengthRotaryLine(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
 		Tuple6b 		positionBefore 	= context.getPosition();
-		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
+		GCodeContext postContext = new GCodeContext(context);
+		instruction.apply(postContext);
+		Tuple6b 		positionAfter 	=  postContext.getPosition();
+		
 		Tuple6b delta = positionBefore.subtract(positionAfter);
 		
 		return Length.valueOf(delta.getA().value(AngleUnit.DEGREE_ANGLE), context.getUnit().getUnit());
@@ -68,7 +71,9 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 	 */
 	private Length calculateLengthLinearLine(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
 		Tuple6b 		positionBefore 	= context.getPosition();
-		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
+		GCodeContext postContext = new GCodeContext(context);
+		instruction.apply(postContext);
+		Tuple6b 		positionAfter 	=  postContext.getPosition();
 		Tuple6b delta = positionBefore.subtract(positionAfter);
 		
 		return delta.length();

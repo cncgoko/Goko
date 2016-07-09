@@ -20,7 +20,8 @@ public class ExecutionPartModel extends AbstractModelObject {
 	public static final String PROPERTY_STOP_BUTTON_ENABLED		= "buttonStopEnabled";
 	public static final String PROPERTY_ELAPSED_TIME_STRING		= "elapsedTimeString";
 	public static final String PROPERTY_ESTIMATED_TIME_STRING	= "estimatedTimeString";
-	public static final String PROPERTY_PROGRESS_BAR_STATE		= "progressBarState";
+	public static final String PROPERTY_TOTAL_PROGRESS_BAR_STATE= "progressBarState";
+	public static final String PROPERTY_TOKEN_PROGRESS_BAR_STATE= "tokenProgressBarState";
 		
 	/** The number of completed token in the current execution queue */
 	private int completedTokenCount;
@@ -48,6 +49,12 @@ public class ExecutionPartModel extends AbstractModelObject {
 	private String estimatedTimeString;
 	/** Displayed state of the progress bar */
 	private int progressBarState;
+	/** Displayed state of the current token progress bar */
+	private int tokenProgressBarState;
+	/** Store the number of line completed during execution of all tokens before the current one */
+	private int lineCompleteFromCompleteToken;
+	/** Number of line complete in the current token */
+	private int lineCompleteInCurrentToken;
 	
 	/**
 	 * @return the completedTokenCount
@@ -203,8 +210,43 @@ public class ExecutionPartModel extends AbstractModelObject {
 	 * @param progressBarState the progressBarState to set
 	 */
 	public void setProgressBarState(int progressBarState) {
-		firePropertyChange(PROPERTY_PROGRESS_BAR_STATE	, this.progressBarState, this.progressBarState = progressBarState);
+		firePropertyChange(PROPERTY_TOTAL_PROGRESS_BAR_STATE	, this.progressBarState, this.progressBarState = progressBarState);
 	}
-	
+	/**
+	 * @return the tokenProgressBarState
+	 */
+	public int getTokenProgressBarState() {
+		return tokenProgressBarState;
+	}
+	/**
+	 * @param tokenProgressBarState the tokenProgressBarState to set
+	 */
+	public void setTokenProgressBarState(int tokenProgressBarState) {
+		firePropertyChange(PROPERTY_TOKEN_PROGRESS_BAR_STATE	, this.tokenProgressBarState, this.tokenProgressBarState = tokenProgressBarState);
+	}
+	/**
+	 * @return the lineCompleteFromCompleteToken
+	 */
+	public int getLineCompleteFromCompleteToken() {
+		return lineCompleteFromCompleteToken;
+	}
+	/**
+	 * @param lineCompleteFromCompleteToken the lineCompleteFromCompleteToken to set
+	 */
+	public void setLineCompleteFromCompleteToken(int lineCompleteFromCompleteToken) {
+		this.lineCompleteFromCompleteToken = lineCompleteFromCompleteToken;
+	}
+	/**
+	 * @return the lineCompleteInCurrentToken
+	 */
+	public int getLineCompleteInCurrentToken() {
+		return lineCompleteInCurrentToken;
+	}
+	/**
+	 * @param lineCompleteInCurrentToken the lineCompleteInCurrentToken to set
+	 */
+	public void setLineCompleteInCurrentToken(int lineCompleteInCurrentToken) {
+		this.lineCompleteInCurrentToken = lineCompleteInCurrentToken;
+	}	
 	
 }

@@ -30,6 +30,14 @@ public class StraightFeedInstruction extends AbstractStraightInstruction {
 		super(InstructionType.STRAIGHT_FEED, x, y, z, a, b, c);
 	}
 
+	/**
+	 * Copy constructor
+	 * @param instr the instruction to copy
+	 */
+	public StraightFeedInstruction(AbstractStraightInstruction instr) {
+		super(InstructionType.STRAIGHT_FEED, instr);
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
 	 */

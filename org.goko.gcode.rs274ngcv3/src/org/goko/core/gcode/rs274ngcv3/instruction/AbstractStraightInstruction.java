@@ -3,8 +3,11 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.math.Tuple6b;
 
 /**
  * Abstract class for a straight instruction 
@@ -24,7 +27,7 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 	private Angle b;
 	/** C coordinate in the current coordinate system  */
 	private Angle c;
-
+				
 	/**
 	 * Constructor 
 	 * @param x X coordinate
@@ -43,13 +46,44 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 		this.b = b;
 		this.c = c;
 	}
+	
+	/**
+	 * Copy constructor 
+	 * @param instr the instruction to copy
+	 */
+	public AbstractStraightInstruction(InstructionType type, AbstractStraightInstruction instr) {		
+		super(type);
+		this.x = instr.getX();
+		this.y = instr.getY();
+		this.z = instr.getZ();
+		this.a = instr.getA();
+		this.b = instr.getB();
+		this.c = instr.getC();
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
 	 */
 	@Override
-	public void apply(GCodeContext context) throws GkException {		
-		context.setPosition(x, y, z, a, b, c);
+	public void apply(GCodeContext context) throws GkException {
+		Tuple6b position = context.getPosition();
+		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+			position.setX(NumberQuantity.add(x, context.getX()));
+			position.setY(NumberQuantity.add(y, context.getY()));
+			position.setZ(NumberQuantity.add(z, context.getZ()));
+			position.setA(NumberQuantity.add(a, context.getA()));
+			position.setB(NumberQuantity.add(b, context.getB()));
+			position.setC(NumberQuantity.add(c, context.getC()));
+		}else{		
+			if(x != null) position.setX(x);// = context.getX();
+			if(y != null) position.setY(y);// = context.getY();
+			if(z != null) position.setZ(z);// = context.getZ();
+			if(a != null) position.setA(a);// = context.getA();
+			if(b != null) position.setB(b);// = context.getB();
+			if(c != null) position.setC(c);// = context.getC();
+		}
+//		context.setPosition(x, y, z, a, b, c);
+		context.setPosition(position);
 	}
 
 	/**

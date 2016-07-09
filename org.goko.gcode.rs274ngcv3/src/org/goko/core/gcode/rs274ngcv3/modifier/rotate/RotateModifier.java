@@ -53,6 +53,7 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 		super("Rotate");
 	}
 
+//	fix wrap and autolevel modifier ?
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.element.IModifier#isConfigured()
 	 */
@@ -95,8 +96,19 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 	 */
 	private void rotateStraightInstruction(AbstractStraightInstruction instr, GCodeContext preContext)  throws GkException{
 		Unit<Length> unit = preContext.getUnit().getUnit();
-		Tuple6b tuple = new Tuple6b(instr.getX(),instr.getY(),instr.getZ(),instr.getA(),instr.getB(),instr.getC());
-		
+		GCodeContext postContext = new GCodeContext(preContext);
+		instr.apply(postContext);
+		Tuple6b tuple = postContext.getPosition();//new Tuple6b().setZero();//.instr.getX(),instr.getY(),instr.getZ(),instr.getA(),instr.getB(),instr.getC());
+//		if(instr.getX() != null){
+//			tuple.setX(instr.getX());
+//		}
+//		if(instr.getY() != null){
+//			tuple.setY(instr.getY());
+//		}
+//		if(instr.getZ() != null){
+//			tuple.setZ(instr.getZ());
+//		}
+//		ca marche pas du tout :)
 		Vector3d tuple3d = tuple.toVector3d(unit);
 		rotate(tuple3d);
 		

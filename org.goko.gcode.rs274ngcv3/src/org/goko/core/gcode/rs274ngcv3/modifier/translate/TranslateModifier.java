@@ -6,6 +6,7 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
@@ -51,14 +52,23 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 		while(iterator.hasNext()){
 			GCodeContext preContext = iterator.getContext();
 			AbstractInstruction instr = iterator.next();
-			if(instr.getType() == InstructionType.STRAIGHT_FEED
-				|| instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
-				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instr;
-				straightInstruction.setX(straightInstruction.getX().add(translationX));
-				straightInstruction.setY(straightInstruction.getY().add(translationY));
-				straightInstruction.setZ(straightInstruction.getZ().add(translationZ));
-			}else if(instr.getType() == InstructionType.ARC_FEED){
-				translateArcFeed((ArcFeedInstruction)instr, preContext);
+			// We only translate in relative distance
+			if(preContext.getDistanceMode() == EnumDistanceMode.ABSOLUTE){
+				if(instr.getType() == InstructionType.STRAIGHT_FEED
+					|| instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
+					AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instr;
+					if(straightInstruction.getX() != null){
+						straightInstruction.setX(straightInstruction.getX().add(translationX));
+					}
+					if(straightInstruction.getY() != null){
+						straightInstruction.setY(straightInstruction.getY().add(translationY));
+					}
+					if(straightInstruction.getZ() != null){
+						straightInstruction.setZ(straightInstruction.getZ().add(translationZ));
+					}
+				}else if(instr.getType() == InstructionType.ARC_FEED){
+					translateArcFeed((ArcFeedInstruction)instr, preContext);
+				}
 			}
 		}
 		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);

@@ -128,8 +128,8 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		lblTotal.setLayoutData(gd_lblTotal);
 		lblTotal.setText("Total ");
 		
-		ProgressBar tokenProgressBar = new ProgressBar(composite_2, SWT.SMOOTH);
-		tokenProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		ProgressBar totalProgressBar = new ProgressBar(composite_2, SWT.SMOOTH);
+		totalProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Composite composite_3 = new Composite(composite, SWT.NONE);
 		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -141,8 +141,8 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		lblCurrent.setLayoutData(gd_lblCurrent);
 		lblCurrent.setText("Current token");
 		
-		ProgressBar lineProgressBar = new ProgressBar(composite_3, SWT.SMOOTH);
-		lineProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		ProgressBar currentTokenProgressBar = new ProgressBar(composite_3, SWT.SMOOTH);
+		currentTokenProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gd_label = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -238,37 +238,43 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 			LOG.error(e1);
 		}		
 		{ // Binding of line progress
-			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "state");
-			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_PROGRESS_BAR_STATE).observe(getDataModel());
+			IObservableValue widgetObserver = PojoObservables.observeValue( currentTokenProgressBar, "state");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_PROGRESS_BAR_STATE).observe(getDataModel());
 			
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}		
 		{
-			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "maximum");
+			IObservableValue widgetObserver = PojoObservables.observeValue( currentTokenProgressBar, "maximum");
 			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOKEN_LINE_COUNT).observe(getDataModel());
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
 		{
-			IObservableValue widgetObserver = PojoObservables.observeValue( lineProgressBar, "selection");
+			IObservableValue widgetObserver = PojoObservables.observeValue( currentTokenProgressBar, "selection");
 			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_COMPLETED_LINE_COUNT).observe(getDataModel());
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
+		{
+			IObservableValue widgetObserver = PojoObservables.observeValue( currentTokenProgressBar, "state");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOKEN_PROGRESS_BAR_STATE).observe(getDataModel());
+	
+			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		}		
 		{ // Binding of tokenprogress
-			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "state");
-			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_PROGRESS_BAR_STATE).observe(getDataModel());
+			IObservableValue widgetObserver = PojoObservables.observeValue( totalProgressBar, "state");
+			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_PROGRESS_BAR_STATE).observe(getDataModel());
 			
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}		
 		{
-			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "maximum");
+			IObservableValue widgetObserver = PojoObservables.observeValue( totalProgressBar, "maximum");
 			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_TOTAL_TOKEN_COUNT).observe(getDataModel());
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
 		}
 		{
-			IObservableValue widgetObserver = PojoObservables.observeValue( tokenProgressBar, "selection");
+			IObservableValue widgetObserver = PojoObservables.observeValue( totalProgressBar, "selection");
 			IObservableValue modelObserver = BeanProperties.value(ExecutionPartModel.PROPERTY_COMPLETED_TOKEN_COUNT).observe(getDataModel());
 	
 			getController().getBindingContext().bindValue( widgetObserver, modelObserver, null, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));

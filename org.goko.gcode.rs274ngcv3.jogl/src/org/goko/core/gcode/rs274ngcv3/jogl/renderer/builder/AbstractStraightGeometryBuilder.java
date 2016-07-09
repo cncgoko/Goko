@@ -60,8 +60,11 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		List<Point3d> vertices = new ArrayList<Point3d>();
 		Tuple6b offset = context.getCoordinateSystemData(context.getCoordinateSystem());
-		Tuple6b startTuple = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
-		Tuple6b endTuple   = new Tuple6b(instruction.getX(), instruction.getY(), instruction.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
+		Tuple6b startTuple = context.getPosition();//new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
+		GCodeContext postContext = new GCodeContext(context);
+		instruction.apply(postContext);
+		Tuple6b 		endTuple 	=  postContext.getPosition();
+		//Tuple6b endTuple   = new Tuple6b(instruction.getX(), instruction.getY(), instruction.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
 
 		startTuple = startTuple.add(offset);
 		endTuple = endTuple.add(offset);
@@ -112,9 +115,11 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 		JoglViewerPreference settings = JoglViewerPreference.getInstance();
 		ArrayList<Point3d> vertices = new ArrayList<Point3d>();
 
-		Tuple6b startTuple = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
-		Tuple6b endTuple   = new Tuple6b(instruction.getX(), instruction.getY(), instruction.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
-
+		Tuple6b startTuple = context.getPosition();//new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
+		GCodeContext postContext = new GCodeContext(context);
+		instruction.apply(postContext);
+		Tuple6b 		endTuple 	=  postContext.getPosition();
+		
 		Point3d startPoint 	= startTuple.toPoint3d(JoglUtils.JOGL_UNIT);
 		Point3d endPoint 	=   endTuple.toPoint3d(JoglUtils.JOGL_UNIT);
 

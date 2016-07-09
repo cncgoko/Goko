@@ -2,6 +2,7 @@ package org.goko.core.execution.monitor.executor;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -43,6 +44,8 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	private final Lock tokenCompleteLock = new ReentrantLock();
 	/** The condition indicating that the executor is waiting for the token execution to be complete */
 	private final Condition tokenCompleteCondition  = tokenCompleteLock.newCondition();
+	/** The total number of commands */
+	private AtomicInteger remainingCommands;
 	/** Token complete indicator */
 	private boolean tokenComplete;
 	/** The state of the execution */
@@ -58,7 +61,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 
 		updateState(ExecutionState.RUNNING);
 		getExecutionService().notifyExecutionStart(token);
-
+		remainingCommands = new AtomicInteger(token.getLineCount());
 		while(token.hasMoreLine()){
 			waitReadyForNextLine();
 			waitExecutionUnpaused(token);
@@ -84,7 +87,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 * @see org.goko.core.gcode.execution.IExecutor#waitTokenComplete()
 	 */
 	@Override
-	public void waitTokenComplete() throws GkException {
+	public void waitTokenComplete() throws GkException {		
 		while(!tokenComplete && state != ExecutionState.STOPPED){
 			tokenCompleteLock.lock();
 			try{
@@ -101,6 +104,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 * Notify this object that the token is completely executed
 	 */
 	protected final void notifyTokenComplete(){
+		LOG.info("!!! Token complete !!!");
 		tokenCompleteLock.lock();
 		try{			
 			setTokenComplete(true);
@@ -266,5 +270,19 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 */
 	public void setState(ExecutionState state) {
 		this.state = state;
+	}
+
+	/**
+	 * @return the remainingCommands
+	 */
+	public int getRemainingCommands() {
+		return remainingCommands.get();
+	}
+	
+	/**
+	 * Decrement the number of remaining command by 1
+	 */
+	protected void decrementRemainingCommandCount(){
+		remainingCommands.decrementAndGet();
 	}
 }

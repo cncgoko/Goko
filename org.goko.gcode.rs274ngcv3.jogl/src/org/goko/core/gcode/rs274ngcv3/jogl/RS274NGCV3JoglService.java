@@ -108,8 +108,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 * @param idGCodeProvider the id of the GCodeProvider
 	 * @throws GkException GkException
 	 */
-	public void createRenderer(Integer idGCodeProvider) throws GkException{
-		getRS274NGCService().getGCodeProvider(idGCodeProvider);
+	public void createRenderer(Integer idGCodeProvider) throws GkException{		
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(idGCodeProvider, gcodeContextProvider, fourAxisControllerAdapter);
 		renderer.setIdGCodeProvider(idGCodeProvider);
 		executionService.addExecutionListener(renderer);

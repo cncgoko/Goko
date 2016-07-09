@@ -1,5 +1,6 @@
 package org.goko.common.preferences.fieldeditor.ui.converter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.AbstractQuantity;
@@ -21,7 +22,10 @@ public class QuantityToStringConverter extends Converter {
 	@Override
 	public Object convert(Object fromObject) {
 		try {
-			return GokoPreference.getInstance().format((AbstractQuantity) fromObject, false, false);
+			if(fromObject != null){
+				return GokoPreference.getInstance().format((AbstractQuantity) fromObject, false, false);
+			}
+			return StringUtils.EMPTY;
 		} catch (GkException e) {
 			LOG.error(e);
 			return "ERROR";

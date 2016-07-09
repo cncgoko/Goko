@@ -6,9 +6,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeWord;
-import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -63,21 +61,21 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 		// Consume g0 if present
 		GCodeWordUtils.findAndRemoveWordRegex("G(0?)0", words);
 		
-		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-			x = NumberQuantity.add(x, context.getX());
-			y = NumberQuantity.add(y, context.getY());
-			z = NumberQuantity.add(z, context.getZ());
-			a = NumberQuantity.add(a, context.getA());
-			b = NumberQuantity.add(b, context.getB());
-			c = NumberQuantity.add(c, context.getC());
-		}
-		
-		if(x == null) x = context.getX();
-		if(y == null) y = context.getY();
-		if(z == null) z = context.getZ();
-		if(a == null) a = context.getA();
-		if(b == null) b = context.getB();
-		if(c == null) c = context.getC();
+//		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+//			x = NumberQuantity.add(x, context.getX());
+//			y = NumberQuantity.add(y, context.getY());
+//			z = NumberQuantity.add(z, context.getZ());
+//			a = NumberQuantity.add(a, context.getA());
+//			b = NumberQuantity.add(b, context.getB());
+//			c = NumberQuantity.add(c, context.getC());
+//		}
+//		
+//		if(x == null) x = context.getX();
+//		if(y == null) y = context.getY();
+//		if(z == null) z = context.getZ();
+//		if(a == null) a = context.getA();
+//		if(b == null) b = context.getB();
+//		if(c == null) c = context.getC();
 		
 		return new StraightTraverseInstruction(x, y, z, a, b, c);
 	}

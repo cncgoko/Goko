@@ -57,9 +57,15 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 			if(instr.getType() == InstructionType.STRAIGHT_FEED
 				|| instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
 				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instr;
-				straightInstruction.setX(straightInstruction.getX().multiply(scaleFactor));
-				straightInstruction.setY(straightInstruction.getY().multiply(scaleFactor));
-				straightInstruction.setZ(straightInstruction.getZ().multiply(scaleFactor));
+				if(straightInstruction.getX() != null){
+					straightInstruction.setX(straightInstruction.getX().multiply(scaleFactor));
+				}
+				if(straightInstruction.getY() != null){
+					straightInstruction.setY(straightInstruction.getY().multiply(scaleFactor));
+				}
+				if(straightInstruction.getZ() != null){
+					straightInstruction.setZ(straightInstruction.getZ().multiply(scaleFactor));
+				}
 			}else if(instr.getType() == InstructionType.ARC_FEED){
 				scaleArcFeed((ArcFeedInstruction)instr, preContext);
 			}

@@ -19,4 +19,11 @@ public class StraightProbeInstruction extends AbstractStraightInstruction {
 		super(InstructionType.STRAIGHT_PROBE, x, y, z, a, b, c);
 	}
 		
+	/**
+	 * Copy constructor
+	 * @param instr the instruction to copy
+	 */
+	public StraightProbeInstruction(AbstractStraightInstruction instr) {
+		super(InstructionType.STRAIGHT_PROBE, instr);
+	}
 }

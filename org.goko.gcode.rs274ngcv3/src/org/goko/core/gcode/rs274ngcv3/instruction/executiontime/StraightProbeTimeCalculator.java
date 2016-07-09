@@ -21,7 +21,10 @@ public class StraightProbeTimeCalculator extends AbstractInstructionTimeCalculat
 	@Override
 	protected Time calculateExecutionTime(GCodeContext context, StraightProbeInstruction instruction) throws GkException {
 		Tuple6b 		positionBefore 	= context.getPosition();
-		Tuple6b 		positionAfter 	= new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
+		GCodeContext postContext = new GCodeContext(context);
+		instruction.apply(postContext);
+		Tuple6b 		positionAfter 	=  postContext.getPosition();
+				//new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
 
 		Tuple6b delta = positionBefore.subtract(positionAfter);
 		

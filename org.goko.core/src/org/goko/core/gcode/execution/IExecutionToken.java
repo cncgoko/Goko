@@ -21,6 +21,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.gcode.element.GCodeLine;
+import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.validation.IValidationTarget;
 
 /**
@@ -29,6 +30,12 @@ import org.goko.core.gcode.element.validation.IValidationTarget;
  *
  */
 public interface IExecutionToken<T extends IExecutionTokenState> extends IIdBean, IValidationTarget {	
+	
+	/**
+	 * Returns the GCode provider for this token
+	 * @return the {@link IGCodeProvider}
+	 */
+	IGCodeProvider getGCodeProvider() throws GkException;
 	
 	/**
 	 * Returns the execution order of this execution token
@@ -107,7 +114,15 @@ public interface IExecutionToken<T extends IExecutionTokenState> extends IIdBean
 	 */
 	void reset() throws GkException;
 	
+	/**
+	 * Set the state of this token
+	 * @param state the state to set
+	 */
 	void setState(ExecutionState state);
 	
+	/**
+	 * Returns the state of this token
+	 * @return the current state
+	 */
 	ExecutionState getState();
 }

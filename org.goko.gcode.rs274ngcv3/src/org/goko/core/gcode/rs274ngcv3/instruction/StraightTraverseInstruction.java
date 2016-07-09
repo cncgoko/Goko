@@ -22,6 +22,16 @@ public class StraightTraverseInstruction extends AbstractStraightInstruction {
 		super(InstructionType.STRAIGHT_TRAVERSE, x, y, z, a, b, c);
 	}
 	
+	
+	/**
+	 * Copy constructor
+	 * @param instr the instruction to copy
+	 */
+	public StraightTraverseInstruction(AbstractStraightInstruction instr) {
+		super(InstructionType.STRAIGHT_TRAVERSE, instr);
+	}
+
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
 	 */

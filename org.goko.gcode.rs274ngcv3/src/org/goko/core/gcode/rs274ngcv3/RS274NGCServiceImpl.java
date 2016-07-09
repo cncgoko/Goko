@@ -35,13 +35,10 @@ import org.goko.core.gcode.rs274ngcv3.element.IStackableGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionIterator;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
-import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderModifier;
 import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderRoot;
 import org.goko.core.gcode.rs274ngcv3.element.source.StringGCodeSource;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
-import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
-import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
 import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
@@ -480,16 +477,20 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();
 
-			if(instruction.getType() == InstructionType.STRAIGHT_TRAVERSE
-			|| instruction.getType() == InstructionType.STRAIGHT_FEED){
-				AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instruction;
-				Tuple6b endpoint = new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
-				min = min.min(endpoint);
-				max = max.max(endpoint);
-			}else if(instruction.getType() == InstructionType.ARC_FEED){
-				ArcFeedInstruction arcfeedInstruction = (ArcFeedInstruction) instruction;
-				
-			}
+			Tuple6b endpoint = iterator.getContext().getPosition();//new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
+			min = min.min(endpoint);
+			max = max.max(endpoint);
+//			FIXME : add bound support for Arcs
+//			if(instruction.getType() == InstructionType.STRAIGHT_TRAVERSE
+//			|| instruction.getType() == InstructionType.STRAIGHT_FEED){
+//				//AbstractStraightInstruction straightInstruction = (AbstractStraightInstruction) instruction;
+//				Tuple6b endpoint = iterator.getContext().getPosition();//new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
+//				min = min.min(endpoint);
+//				max = max.max(endpoint);
+//			}else if(instruction.getType() == InstructionType.ARC_FEED){
+//				ArcFeedInstruction arcfeedInstruction = (ArcFeedInstruction) instruction;
+//				
+//			}
 		}
 
 		return new BoundingTuple6b(min, max);

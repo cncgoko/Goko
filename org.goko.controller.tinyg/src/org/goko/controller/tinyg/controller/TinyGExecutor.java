@@ -68,7 +68,8 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 			tinygService.send(line);
 			getToken().setLineState(line.getId(), ExecutionTokenState.SENT);
 		}else{
-			getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+			confirmLineExecution(line);
+			//getToken().masetLineState(line.getId(), ExecutionTokenState.EXECUTED);
 		}
 	}
 
@@ -97,18 +98,23 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @throws GkException
 	 */
 	protected void confirmNextLineExecution() throws GkException{
-		pendingCommandCount.decrementAndGet();
 		List<GCodeLine> lstLines = getToken().getLineByState(ExecutionTokenState.SENT);
 
 		if(CollectionUtils.isNotEmpty(lstLines)){
 			GCodeLine line = lstLines.get(0);
-			getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
-			getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
-			notifyReadyForNextLineIfRequired();
-			notifyTokenCompleteIfRequired();
+			confirmLineExecution(line);
 		}
 	}
 
+	protected void confirmLineExecution(GCodeLine line) throws GkException{		
+		pendingCommandCount.decrementAndGet();
+		decrementRemainingCommandCount();
+		
+		getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+		getExecutionService().notifyCommandStateChanged(getToken(), line.getId());
+		notifyReadyForNextLineIfRequired();
+		notifyTokenCompleteIfRequired();
+	}
 	/**
 	 * Notification method called when a line is throwing error by TinyG
 	 * @throws GkException
@@ -126,7 +132,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @throws GkException GkException
 	 */
 	private void notifyTokenCompleteIfRequired() throws GkException {
-		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0 && pendingCommandCount.get() <= 0){			
+		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0 && pendingCommandCount.get() <= 0 && getRemainingCommands() <= 0){			
 			notifyTokenComplete();
 		}
 	}

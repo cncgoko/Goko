@@ -60,7 +60,7 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 
 
 		while(iterator.hasNext()){
-			localContext = new GCodeContext(iterator.getContext()); // Get the context before applying the command
+			//localContext = new GCodeContext(iterator.getContext()); // Get the context before applying the command
 			AbstractInstruction instr = iterator.next();
 
 			if(instr.getType() == InstructionType.STRAIGHT_FEED){
@@ -87,42 +87,47 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 	 * @param localContext
 	 * @param instr
 	 * @return
+	 * @throws GkException 
 	 */
-	private InstructionSet applyModifier(GCodeContext localContext, StraightFeedInstruction instr) {		
-		return applyModifier(localContext, instr, new StraightFeedInstruction(Length.ZERO, Length.ZERO, Length.ZERO, Angle.ZERO, Angle.ZERO, Angle.ZERO));
+	private InstructionSet applyModifier(GCodeContext localContext, StraightFeedInstruction instr) throws GkException {		
+		return applyModifier(localContext, instr, new StraightFeedInstruction(instr));
 	}
 	
 	/**
 	 * @param localContext
 	 * @param instr
 	 * @return
+	 * @throws GkException 
 	 */
-	private InstructionSet applyModifier(GCodeContext localContext, StraightTraverseInstruction instr) {		
-		return applyModifier(localContext, instr, new StraightTraverseInstruction(Length.ZERO, Length.ZERO, Length.ZERO, Angle.ZERO, Angle.ZERO, Angle.ZERO));
+	private InstructionSet applyModifier(GCodeContext localContext, StraightTraverseInstruction instr) throws GkException {		
+		return applyModifier(localContext, instr, new StraightTraverseInstruction(instr));
 	}
 
-	private InstructionSet applyModifier(GCodeContext localContext, AbstractStraightInstruction src, AbstractStraightInstruction target) {
+	private InstructionSet applyModifier(GCodeContext localContext, AbstractStraightInstruction src, AbstractStraightInstruction target) throws GkException {
 		InstructionSet set = new InstructionSet();
+		src.apply(localContext);
 		Length aValue = Length.ZERO;
 		switch (axis) {
-		case Y_TO_A_AXIS:
-			aValue = src.getY();
-			target.setX(src.getX());
-			target.setY(Length.ZERO);	
+		case Y_TO_A_AXIS:			
+			aValue = localContext.getY();	
+			target.setY(null);
 			break;
 		default:
-			aValue = src.getX();
-			target.setX(Length.ZERO);
-			target.setY(src.getY());
+			aValue = localContext.getX();
+			target.setX(null);
 			break;
 		}
+				
+		target.setA( Angle.valueOf(aValue.value(localContext.getUnit().getUnit()), AngleUnit.DEGREE_ANGLE) );
 		
-		target.setZ(radius.add(src.getZ()));
-		if(!radius.equals(Length.ZERO)){
-			target.setA( Angle.valueOf(aValue.divide(radius), AngleUnit.RADIAN) );
-		}else{
-			target.setA( Angle.valueOf(aValue.value(localContext.getUnit().getUnit()), AngleUnit.DEGREE_ANGLE) );
-		}
+//		target.setZ(radius.add(localContext.getZ()));
+//			
+//		if(!radius.equals(Length.ZERO)){
+//			target.setA( Angle.valueOf(aValue.divide(radius), AngleUnit.RADIAN) );
+//		}else{
+//			target.setA( Angle.valueOf(aValue.value(localContext.getUnit().getUnit()), AngleUnit.DEGREE_ANGLE) );
+//		}
+		
 		set.addInstruction(target);
 		return set;
 	}
