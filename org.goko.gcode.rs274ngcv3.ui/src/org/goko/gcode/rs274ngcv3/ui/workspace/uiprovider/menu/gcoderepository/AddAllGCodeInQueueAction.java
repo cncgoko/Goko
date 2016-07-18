@@ -60,7 +60,9 @@ public class AddAllGCodeInQueueAction extends Action {
 			List<IGCodeProvider> lstProvider = gcodeRepository.getGCodeProvider();
 			if(CollectionUtils.isNotEmpty(lstProvider)){
 				for (IGCodeProvider gcodeProvider : lstProvider) {
-					executionService.addToExecutionQueue(gcodeProvider);
+					if(executionService.findExecutionTokenByIdGCodeProvider(gcodeProvider.getId()) == null){
+						executionService.addToExecutionQueue(gcodeProvider);
+					}
 				}
 			}
 		} catch (GkException e) {

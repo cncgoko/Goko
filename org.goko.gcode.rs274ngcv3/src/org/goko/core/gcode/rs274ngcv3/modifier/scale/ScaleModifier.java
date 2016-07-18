@@ -6,7 +6,6 @@ package org.goko.core.gcode.rs274ngcv3.modifier.scale;
 import java.math.BigDecimal;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
@@ -51,8 +50,8 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 		GCodeContext localContext = new GCodeContext();
 		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
-		while(iterator.hasNext()){
-			GCodeContext preContext = iterator.getContext();
+		GCodeContext modifiedContext = new GCodeContext();
+		while(iterator.hasNext()){			
 			AbstractInstruction instr = iterator.next();
 			if(instr.getType() == InstructionType.STRAIGHT_FEED
 				|| instr.getType() == InstructionType.STRAIGHT_TRAVERSE){
@@ -67,8 +66,9 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 					straightInstruction.setZ(straightInstruction.getZ().multiply(scaleFactor));
 				}
 			}else if(instr.getType() == InstructionType.ARC_FEED){
-				scaleArcFeed((ArcFeedInstruction)instr, preContext);
+				scaleArcFeed((ArcFeedInstruction)instr, modifiedContext);
 			}
+			instr.apply(modifiedContext);
 		}
 		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
 		for (GCodeLine line : result.getLines()) {
@@ -82,28 +82,26 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 	 * @param preContext the context in which the instruction is evaluated
 	 * @throws GkException GkException
 	 */
-	private void scaleArcFeed(ArcFeedInstruction instr, GCodeContext preContext) throws GkException {
-		switch (preContext.getPlane()) {
-		case XY_PLANE:	instr.setFirstEnd( instr.getFirstEnd().multiply(scaleFactor));
-						instr.setSecondEnd( instr.getSecondEnd().multiply(scaleFactor));
-						instr.setFirstAxis( instr.getFirstAxis().multiply(scaleFactor));
-						instr.setSecondAxis( instr.getSecondAxis().multiply(scaleFactor));
-						instr.setAxisEndPoint( instr.getAxisEndPoint().multiply(scaleFactor));
-			break;
-		case XZ_PLANE:	instr.setFirstEnd( instr.getFirstEnd().multiply(scaleFactor));
-						instr.setSecondEnd( instr.getSecondEnd().multiply(scaleFactor));
-						instr.setFirstAxis( instr.getFirstAxis().multiply(scaleFactor));
-						instr.setSecondAxis( instr.getSecondAxis().multiply(scaleFactor));
-						instr.setAxisEndPoint( instr.getAxisEndPoint().multiply(scaleFactor));
-			break;
-		case YZ_PLANE:	instr.setFirstEnd( instr.getFirstEnd().multiply(scaleFactor));
-						instr.setSecondEnd( instr.getSecondEnd().multiply(scaleFactor));
-						instr.setFirstAxis( instr.getFirstAxis().multiply(scaleFactor));
-						instr.setSecondAxis( instr.getSecondAxis().multiply(scaleFactor));
-						instr.setAxisEndPoint( instr.getAxisEndPoint().multiply(scaleFactor));
-			break;
-		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+preContext.getPlane()+"]");
+	private void scaleArcFeed(ArcFeedInstruction instr, GCodeContext preContext) throws GkException {		
+		if(instr.getX() != null){
+			instr.setX(instr.getX().multiply(scaleFactor));
 		}
+		if(instr.getY() != null){
+			instr.setY(instr.getY().multiply(scaleFactor));
+		}
+		if(instr.getZ() != null){
+			instr.setZ(instr.getZ().multiply(scaleFactor));
+		}
+		if(instr.getI() != null){
+			instr.setI(instr.getI().multiply(scaleFactor));
+		}
+		if(instr.getJ() != null){
+			instr.setJ(instr.getJ().multiply(scaleFactor));
+		}
+		if(instr.getK() != null){
+			instr.setK(instr.getK().multiply(scaleFactor));
+		}
+		
 	}
 
 	/**

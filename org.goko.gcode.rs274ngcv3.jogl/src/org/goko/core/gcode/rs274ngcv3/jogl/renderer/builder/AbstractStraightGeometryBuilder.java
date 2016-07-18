@@ -32,14 +32,16 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 	 */
 	@Override
 	public List<Point3d> buildInstructionGeometry(GCodeContext context, T instruction) throws GkException {
-		JoglViewerPreference settings = JoglViewerPreference.getInstance();
-		if(instruction != null){
+		JoglViewerPreference settings = JoglViewerPreference.getInstance();		
+		if(instruction != null){			
 			if(settings.isRotaryAxisEnabled()){
+				GCodeContext postContext = new GCodeContext(context);
+				instruction.apply(postContext);
 				// The complete angle around the 4th axis
 				Angle deltaAngle = Angle.ZERO;
 				// FIXME Use a setting to define the 4th axis and then do a dynamic angle detection around the axe A,B or C
-				if( instruction.getA() != null){
-					deltaAngle = context.getA().subtract(instruction.getA());
+				if( postContext.getA() != null){
+					deltaAngle = context.getA().subtract(postContext.getA());
 				}
 
 				if(deltaAngle.abs().lowerThan(Angle.valueOf("0.0001", AngleUnit.DEGREE_ANGLE))){
@@ -74,7 +76,7 @@ public abstract class AbstractStraightGeometryBuilder<T extends AbstractStraight
 
 		if(settings.isRotaryAxisEnabled()){
 			// It's a simple line, but it doesn't mean the rotary (A, B or C) value is at 0
-			if(instruction.getA() != null){
+			if(postContext.getA() != null){
 				Point3d endAngle 	=   endTuple.angleToPoint3d(AngleUnit.DEGREE_ANGLE);
 
 				Matrix4d rotationMatrix = new Matrix4d();

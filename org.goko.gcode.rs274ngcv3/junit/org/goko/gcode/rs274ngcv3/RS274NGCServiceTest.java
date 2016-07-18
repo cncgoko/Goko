@@ -104,7 +104,7 @@ public class RS274NGCServiceTest {
 		distanceInstr.setIdGCodeLine(line.getId());
 		set.addInstruction(distanceInstr);
 		
-		StraightTraverseInstruction traverserInstr = new StraightTraverseInstruction(Length.valueOf("12.5", LengthUnit.MILLIMETRE), Length.valueOf("36.8", LengthUnit.MILLIMETRE),Length.valueOf("45.3", LengthUnit.MILLIMETRE), Angle.ZERO, Angle.ZERO, Angle.ZERO); 
+		StraightTraverseInstruction traverserInstr = new StraightTraverseInstruction(Length.valueOf("12.5", LengthUnit.MILLIMETRE), Length.valueOf("36.8", LengthUnit.MILLIMETRE),Length.valueOf("45.3", LengthUnit.MILLIMETRE), null, null, null); 
 		traverserInstr.setIdGCodeLine(line.getId());
 		set.addInstruction(traverserInstr);
 				
@@ -129,7 +129,17 @@ public class RS274NGCServiceTest {
 		InstructionProvider instructionProvider = service.getInstructions(context, provider);
 		InstructionSet set = new InstructionSet();
 		
-		ArcFeedInstruction instr = new ArcFeedInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE), Length.valueOf("12", LengthUnit.MILLIMETRE), Length.valueOf("5", LengthUnit.MILLIMETRE), Length.valueOf("6", LengthUnit.MILLIMETRE), Length.valueOf("-8.32", LengthUnit.MILLIMETRE), 1, Angle.ZERO, Angle.ZERO, Angle.ZERO, true);
+		ArcFeedInstruction instr = new ArcFeedInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE),
+															Length.valueOf("12", LengthUnit.MILLIMETRE),
+															Length.valueOf("-8.32", LengthUnit.MILLIMETRE),
+															Length.valueOf("5", LengthUnit.MILLIMETRE),
+															Length.valueOf("6", LengthUnit.MILLIMETRE),															
+															null,
+															null,
+															null,
+															null,
+															1,
+															true);
 		instr.setIdGCodeLine(line.getId());
 		set.addInstruction(instr);
 		
@@ -164,7 +174,17 @@ public class RS274NGCServiceTest {
 		InstructionProvider instructionProvider = service.getInstructions(context, provider);
 		InstructionSet set = new InstructionSet();
 		
-		ArcFeedInstruction instr = new ArcFeedInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE), Length.valueOf("12", LengthUnit.MILLIMETRE), Length.valueOf("5", LengthUnit.MILLIMETRE), Length.valueOf("6", LengthUnit.MILLIMETRE), Length.valueOf("42", LengthUnit.MILLIMETRE), 1, Angle.ZERO, Angle.ZERO, Angle.ZERO, false);
+		ArcFeedInstruction instr = new ArcFeedInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE), 
+															Length.valueOf("12", LengthUnit.MILLIMETRE),															 
+															Length.valueOf("42", LengthUnit.MILLIMETRE),
+															Length.valueOf("5", LengthUnit.MILLIMETRE), 
+															Length.valueOf("6", LengthUnit.MILLIMETRE),
+															null,
+															null,
+															null,
+															null,
+															1, 
+															false);
 		instr.setIdGCodeLine(line.getId());
 		set.addInstruction(instr);
 					

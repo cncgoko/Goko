@@ -108,7 +108,7 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 		Arc3b arc = InstructionUtils.getArc(context, instruction);
 		
 		int division = 0;
-		// We only subdivide if the arc raidus is greater than the chordal tolerance
+		// We only subdivide if the arc radius is greater than the chordal tolerance
 		if(arc.getRadius().greaterThan(chordalTolerance)){
 			// Get the arc angle for the given tolerance using h = R ( 1 - cos (A/2)) (aka  A = 2*acos(1  - (h / R))
 			double angle = 2 * Math.acos( 1 - chordalTolerance.divide(arc.getRadius()).doubleValue() );

@@ -3,6 +3,8 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.QuantityUtils;
+import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -52,6 +54,18 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	private Length axisEndPoint;
 	/** The rotation count (1 for an arc, N+1 for N turns */
 	private Integer rotation;
+	/** X coordinate */
+	private Length x;
+	/** Y coordinate */
+	private Length y;
+	/** Z coordinate */
+	private Length z;
+	/** I coordinate */
+	private Length i;
+	/** J coordinate */
+	private Length j;
+	/** K coordinate */
+	private Length k;
 	/** A coordinate */
 	private Angle a;
 	/** B coordinate */
@@ -61,27 +75,38 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	/** Rotation direction */
 	private boolean clockwise;
 	
+
 	/** Constructor */
 	public ArcFeedInstruction() {
 		super(InstructionType.ARC_FEED);
 	}
 
-	/** Constructor */	
-	public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param i
+	 * @param j
+	 * @param k
+	 * @param a
+	 * @param b
+	 * @param c
+	 */
+	public ArcFeedInstruction(Length x, Length y, Length z, Length i, Length j, Length k, Angle a, Angle b, Angle c, Integer rotation, boolean clockwise) {
 		super(InstructionType.ARC_FEED);
-		this.firstEnd = firstEnd;
-		this.secondEnd = secondEnd;
-		this.firstAxis = firstAxis;
-		this.secondAxis = secondAxis;
-		this.axisEndPoint = axisEndPoint;
-		this.rotation = rotation;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.i = i;
+		this.j = j;
+		this.k = k;
 		this.a = a;
 		this.b = b;
 		this.c = c;
+		this.rotation = rotation;		
 		this.clockwise = clockwise;
 	}
-
-
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IInstruction#apply(org.goko.core.gcode.rs274ngcv3.context.GCodeContext)
@@ -94,17 +119,93 @@ public class ArcFeedInstruction extends AbstractInstruction {
 			context.setMotionMode(EnumMotionMode.ARC_COUNTERCLOCKWISE);
 		}
 		switch (context.getPlane()) {
-		case XY_PLANE: context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
+		case XY_PLANE: applyXyPlane(context);//context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
 			break;
-		case XZ_PLANE: context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);			
+		case XZ_PLANE: applyXzPlane(context);//context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);			
 			break;
-		case YZ_PLANE: context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
+		case YZ_PLANE: applyYzPlane(context);//context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
 			break;
 		default:
 			break;
 		}		
 	}
 
+	private void applyXyPlane(GCodeContext context) throws GkException {
+		/*
+		 *	If the selected plane is the XY-plane:
+		 *	 	1. first_end is the X coordinate of the end of the arc.
+		 *	 	2.second_end is the Y coordinate of the end of the arc.
+		 *	 	3.first_axis is the X coordinate of the axis (center) of the arc.
+		 *	 	4.second_axis is the Y coordinate of the axis (center) of the arc.
+		 *	 	5.axis_end_point is the Z coordinate of the end of the arc.
+		 */
+		// Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint
+		// x, y, i, j, z
+		if(firstEnd == null){
+			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+				firstEnd = QuantityUtils.add(context.getX(), x);
+				secondEnd = QuantityUtils.add(context.getY(), y);
+				axisEndPoint = QuantityUtils.add(context.getZ(), z);
+			}else{				
+				firstEnd = (x != null) ? x : context.getX();				
+				secondEnd = (y != null) ? y : context.getY();
+				axisEndPoint = (z != null) ? z : context.getZ();
+			}
+			firstAxis = QuantityUtils.add(context.getX(), i);
+			secondAxis = QuantityUtils.add(context.getY(), j);
+		}
+		context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);	
+	}
+	
+	private void applyXzPlane(GCodeContext context) throws GkException {
+		/*
+		 *	If the selected plane is the XZ-plane:
+		 *	 	1.first_end is the Z coordinate of the end of the arc.
+		 *	 	2.second_end is the X coordinate of the end of the arc.
+		 *	 	3.first_axis is the Z coordinate of the axis (center) of the arc.
+		 *	 	4.second_axis is the X coordinate of the axis (center) of the arc.
+		 *	 	5.axis_end_point is the Y coordinate of the end of the arc.
+		 */
+		if(firstEnd == null){
+			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+				firstEnd = QuantityUtils.add(context.getZ(), z);
+				secondEnd = QuantityUtils.add(context.getX(), x);				
+				axisEndPoint = QuantityUtils.add(context.getY(), y);				
+			}else{
+				firstEnd = (z != null) ? z : context.getZ();
+				secondEnd = (x != null) ? x : context.getX();
+				axisEndPoint = (y != null) ? y : context.getY();
+			}
+			firstAxis = QuantityUtils.add(context.getZ(), k);
+			secondAxis = QuantityUtils.add(context.getX(), i);
+		}
+		context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);	
+	}
+	
+	private void applyYzPlane(GCodeContext context) throws GkException {
+		/*
+		 *	If the selected plane is the YZ-plane:
+		 *	 	1.first_end is the Y coordinate of the end of the arc.
+		 *	 	2second_end is the Z coordinate of the end of the arc.
+		 *	 	3.first_axis is the Y coordinate of the axis (center) of the arc.
+		 *	 	4.second_axis is the Z coordinate of the axis (center) of the arc.
+		 *	 	5.axis_end_point is the X coordinate of the end of the arc.
+		 */
+		if(firstEnd == null){
+			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+				firstEnd = QuantityUtils.add(context.getY(), y);
+				secondEnd = QuantityUtils.add(context.getZ(), z);				
+				axisEndPoint = QuantityUtils.add(context.getX(), x);				
+			}else{
+				firstEnd = (y != null) ? y : context.getY();
+				secondEnd = (z != null) ? z : context.getZ();
+				axisEndPoint = (x != null) ? x : context.getX();
+			}
+			firstAxis = QuantityUtils.add(context.getY(), j);
+			secondAxis = QuantityUtils.add(context.getX(), i);
+		}
+		context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);
+	}
 	/**
 	 * @return the firstEnd
 	 */
@@ -224,6 +325,118 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		this.clockwise = clockwise;
 	}
 
+	/**
+	 * @return the x
+	 */
+	public Length getX() {
+		return x;
+	}
+
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(Length x) {
+		this.x = x;
+		this.firstEnd = null;
+	}
+
+	/**
+	 * @return the y
+	 */
+	public Length getY() {
+		return y;
+	}
+
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(Length y) {
+		this.y = y;
+		this.firstEnd = null;
+	}
+
+	/**
+	 * @return the z
+	 */
+	public Length getZ() {
+		return z;
+	}
+
+	/**
+	 * @param z the z to set
+	 */
+	public void setZ(Length z) {
+		this.z = z;
+		this.firstEnd = null;
+	}
+
+	/**
+	 * @return the i
+	 */
+	public Length getI() {
+		return i;
+	}
+
+	/**
+	 * @param i the i to set
+	 */
+	public void setI(Length i) {
+		this.i = i;
+		this.firstEnd = null;
+	}
+
+	/**
+	 * @return the j
+	 */
+	public Length getJ() {
+		return j;		
+	}
+
+	/**
+	 * @param j the j to set
+	 */
+	public void setJ(Length j) {
+		this.j = j;
+		this.firstEnd = null;
+	}
+
+	/**
+	 * @return the k
+	 */
+	public Length getK() {
+		return k;
+	}
+
+	/**
+	 * @param k the k to set
+	 */
+	public void setK(Length k) {
+		this.k = k;
+		this.firstEnd = null;
+	}
+
+	/**
+	 * @param a the a to set
+	 */
+	public void setA(Angle a) {
+		this.a = a;
+	}
+
+	/**
+	 * @param b the b to set
+	 */
+	public void setB(Angle b) {
+		this.b = b;
+	}
+
+	/**
+	 * @param c the c to set
+	 */
+	public void setC(Angle c) {
+		this.c = c;
+	}
+
+
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -232,17 +445,18 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((a == null) ? 0 : a.hashCode());
-		result = prime * result + ((axisEndPoint == null) ? 0 : axisEndPoint.hashCode());
 		result = prime * result + ((b == null) ? 0 : b.hashCode());
 		result = prime * result + ((c == null) ? 0 : c.hashCode());
 		result = prime * result + (clockwise ? 1231 : 1237);
-		result = prime * result + ((firstAxis == null) ? 0 : firstAxis.hashCode());
-		result = prime * result + ((firstEnd == null) ? 0 : firstEnd.hashCode());
-		result = prime * result + ((rotation == null) ? 0 : rotation.hashCode());
-		result = prime * result + ((secondAxis == null) ? 0 : secondAxis.hashCode());
-		result = prime * result + ((secondEnd == null) ? 0 : secondEnd.hashCode());
+		result = prime * result + ((i == null) ? 0 : i.hashCode());
+		result = prime * result + ((j == null) ? 0 : j.hashCode());
+		result = prime * result + ((k == null) ? 0 : k.hashCode());
+		result = prime * result + ((x == null) ? 0 : x.hashCode());
+		result = prime * result + ((y == null) ? 0 : y.hashCode());
+		result = prime * result + ((z == null) ? 0 : z.hashCode());
 		return result;
 	}
+
 
 	/** (inheritDoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -261,11 +475,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 				return false;
 		} else if (!a.equals(other.a))
 			return false;
-		if (axisEndPoint == null) {
-			if (other.axisEndPoint != null)
-				return false;
-		} else if (!axisEndPoint.equals(other.axisEndPoint))
-			return false;
 		if (b == null) {
 			if (other.b != null)
 				return false;
@@ -278,30 +487,35 @@ public class ArcFeedInstruction extends AbstractInstruction {
 			return false;
 		if (clockwise != other.clockwise)
 			return false;
-		if (firstAxis == null) {
-			if (other.firstAxis != null)
+		if (i == null) {
+			if (other.i != null)
 				return false;
-		} else if (!firstAxis.equals(other.firstAxis))
+		} else if (!i.equals(other.i))
 			return false;
-		if (firstEnd == null) {
-			if (other.firstEnd != null)
+		if (j == null) {
+			if (other.j != null)
 				return false;
-		} else if (!firstEnd.equals(other.firstEnd))
+		} else if (!j.equals(other.j))
 			return false;
-		if (rotation == null) {
-			if (other.rotation != null)
+		if (k == null) {
+			if (other.k != null)
 				return false;
-		} else if (!rotation.equals(other.rotation))
+		} else if (!k.equals(other.k))
 			return false;
-		if (secondAxis == null) {
-			if (other.secondAxis != null)
+		if (x == null) {
+			if (other.x != null)
 				return false;
-		} else if (!secondAxis.equals(other.secondAxis))
+		} else if (!x.equals(other.x))
 			return false;
-		if (secondEnd == null) {
-			if (other.secondEnd != null)
+		if (y == null) {
+			if (other.y != null)
 				return false;
-		} else if (!secondEnd.equals(other.secondEnd))
+		} else if (!y.equals(other.y))
+			return false;
+		if (z == null) {
+			if (other.z != null)
+				return false;
+		} else if (!z.equals(other.z))
 			return false;
 		return true;
 	}

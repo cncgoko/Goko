@@ -127,6 +127,10 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		if(executor == null){
 			throw new GkTechnicalException("ExecutionServiceImpl : cannot add provider to execution queue. Executor is not set.");
 		}
+		ExecutionToken<ExecutionTokenState> existingToken = findExecutionTokenByIdGCodeProvider(gcodeProvider.getId());
+		if(existingToken != null){
+			throw new GkTechnicalException("ExecutionServiceImpl : the given GCode provider is already in the execution queue.") ;
+		}
 		ExecutionToken<ExecutionTokenState> token = executor.createToken(gcodeProvider);
 		addToExecutionQueue(token);
 		return token;
@@ -572,4 +576,73 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		// TODO Auto-generated method stub
 
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#getExecutionTokenByIdGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public ExecutionToken<ExecutionTokenState> getExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException {
+		ExecutionToken<ExecutionTokenState> token = findExecutionTokenByIdGCodeProvider(idGCodeProvider);
+		if(token == null){
+			throw new GkTechnicalException("No Execution token for GCode Provider ["+idGCodeProvider+"]");
+		}
+		return token;
+	}
+
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#findExecutionTokenByIdGCodeProvider(java.lang.Integer)
+	 */
+	@Override
+	public ExecutionToken<ExecutionTokenState> findExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstTokens = executionQueue.getExecutionToken();
+		if(CollectionUtils.isNotEmpty(lstTokens)){
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstTokens) {
+				if(ObjectUtils.equals(idGCodeProvider, executionToken.getIdGCodeProvider())){
+					return executionToken;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#findExecutionTokenAfter(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public ExecutionToken<ExecutionTokenState> findExecutionTokenAfter(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstTokens = executionQueue.getExecutionToken();
+		if(CollectionUtils.isNotEmpty(lstTokens)){
+			boolean isNext = false;
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstTokens) {
+				if(isNext){
+					return executionToken;
+				}
+				if(ObjectUtils.equals(token.getId(), executionToken.getId())){
+					isNext = true;
+				}				
+			}
+		}
+		return null;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionService#findExecutionTokenBefore(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public ExecutionToken<ExecutionTokenState> findExecutionTokenBefore(ExecutionToken<ExecutionTokenState> token) throws GkException {
+		List<ExecutionToken<ExecutionTokenState>> lstTokens = executionQueue.getExecutionToken();
+		if(CollectionUtils.isNotEmpty(lstTokens)){
+			ExecutionToken<ExecutionTokenState> previous = null;
+			for (ExecutionToken<ExecutionTokenState> executionToken : lstTokens) {				
+				if(ObjectUtils.equals(token.getId(), executionToken.getId())){
+					return previous;
+				}				
+				previous = executionToken;
+			}
+		}
+		return null;
+	}
+	
+	
 }

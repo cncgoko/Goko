@@ -286,7 +286,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		//provider.setSource(new InstructionProviderSource(instructionProvider));
 		List<InstructionSet> sets = instructionProvider.getInstructionSets();
 		for (InstructionSet instructionSet : sets) {
-			GCodeLine line = factory.getLine(context, instructionSet);
+			GCodeLine line = factory.getLine(context, instructionSet, RenderingFormat.DEFAULT);
 
 			provider.addLine(line);
 		}

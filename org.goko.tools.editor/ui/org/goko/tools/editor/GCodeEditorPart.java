@@ -79,6 +79,7 @@ public class GCodeEditorPart{
 	@PostConstruct
 	public void postConstruct(Composite parent) throws FileNotFoundException {		
 		mainTabFolder = new CTabFolder(parent, SWT.FLAT);
+		mainTabFolder.setUnselectedCloseVisible(false);
 		mainTabFolder.addCTabFolder2Listener(new TabItemCloseListener());
 	}
 

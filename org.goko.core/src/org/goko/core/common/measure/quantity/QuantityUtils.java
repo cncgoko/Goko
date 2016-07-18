@@ -79,30 +79,32 @@ public final class QuantityUtils {
 	}
 	
 	public static <Q extends Quantity<Q>> String format(Q quantity){
-		return format(quantity, 3, false, false, quantity.getUnit());
+		return format(quantity, null, false, false, quantity.getUnit());
 	}
 	
-	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount){
+	public static <Q extends Quantity<Q>> String format(Q quantity, Integer digitCount){
 		return format(quantity, digitCount, false, false, quantity.getUnit());
 	}
 	
-	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount, boolean keepTraillingZero){
+	public static <Q extends Quantity<Q>> String format(Q quantity, Integer digitCount, boolean keepTraillingZero){
 		return format(quantity, digitCount, keepTraillingZero, false, quantity.getUnit());
 	}
 	
-	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount, boolean keepTraillingZero, boolean displayUnit){
+	public static <Q extends Quantity<Q>> String format(Q quantity, Integer digitCount, boolean keepTraillingZero, boolean displayUnit){
 		return format(quantity, digitCount, keepTraillingZero, displayUnit, quantity.getUnit());
 	}
 	
-	public static <Q extends Quantity<Q>> String format(Q quantity, int digitCount, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit){
+	public static <Q extends Quantity<Q>> String format(Q quantity, Integer digitCount, boolean keepTraillingZero, boolean displayUnit, Unit<Q> ptargetUnit){
 		String result = StringUtils.EMPTY;
 		Unit<Q> 	localTargetUnit 	= ptargetUnit;
 				
 		DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-		if(keepTraillingZero){
-			df.setMinimumFractionDigits(digitCount);
+		if(digitCount != null){	
+			df.setMaximumFractionDigits(digitCount);
+			if(keepTraillingZero){
+				df.setMinimumFractionDigits(digitCount);
+			}
 		}
-		df.setMaximumFractionDigits(digitCount);
 		result = df.format(quantity.doubleValue(localTargetUnit));
 		if(displayUnit){
 			result += ptargetUnit.getSymbol();

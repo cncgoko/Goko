@@ -181,6 +181,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		try {
 			zeroRenderer.setDisplayRotaryAxis(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 			zeroRenderer.setRotationAxis(JoglViewerPreference.getInstance().getRotaryAxisDirection());
+			zeroRenderer.update();
 			// Update the grid
 			if(StringUtils.startsWith(event.getProperty(), JoglViewerPreference.GROUP_GRID)){
 				boolean xyDisplay = xyGridRenderer.isEnabled();

@@ -58,6 +58,7 @@ public class FourAxisOriginRenderer extends AbstractCoreJoglMultipleRenderer {
 	 */
 	public void setRotationAxis(EnumRotaryAxisDirection rotationAxis) throws GkException {
 		axisRenderer.setRotationAxis(rotationAxis);
+		axisRenderer.updateGeometry();
 	}
 
 	/**

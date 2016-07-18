@@ -31,5 +31,5 @@ Import-Package: javax.annotation;version="1.0.0";resolution:=optional,
  org.eclipse.jface.text.source
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.goko.tools.editor.component.provider
-Service-Component: OSGI-INF/GCodeEditContributionItemComponent.xml
+Service-Component: OSGI-INF/GCodeEditContributionItemComponent.xml, OSGI-INF/GCodeViewContributionItemComponent.xml
 Bundle-ActivationPolicy: lazy

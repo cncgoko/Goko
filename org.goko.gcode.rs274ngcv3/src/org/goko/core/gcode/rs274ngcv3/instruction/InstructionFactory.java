@@ -7,6 +7,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
+import org.goko.core.gcode.rs274ngcv3.RenderingFormat;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.ArcFeedBuilder;
@@ -199,14 +200,14 @@ public class InstructionFactory {
 	 * @return GCodeLine
 	 * @throws GkException GkException
 	 */
-	public GCodeLine getLine(GCodeContext context, InstructionSet instructionSet) throws GkException{		
+	public GCodeLine getLine(GCodeContext context, InstructionSet instructionSet, RenderingFormat format) throws GkException{		
 		List<GCodeWord> lstWords = new ArrayList<GCodeWord>();
 		List<AbstractInstruction> localInstructions = instructionSet.getInstructions();
 		
 		while(CollectionUtils.isNotEmpty(localInstructions)){
 			for (IInstructionExporter exporter : exporters) {			
 				if(exporter.match(context, instructionSet.getInstructions())){
-					AbstractInstruction instruction = exporter.toWords(context, localInstructions, lstWords);
+					AbstractInstruction instruction = exporter.toWords(context, localInstructions, format, lstWords);
 					instruction.apply(context);
 					break;
 				}

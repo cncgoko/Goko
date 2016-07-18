@@ -78,4 +78,14 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	void addExecutionQueueListener(IExecutionQueueListener<S, T> listener) throws GkException;
 	
 	void removeExecutionQueueListener(IExecutionQueueListener<S, T> listener) throws GkException;
+	
+	// Accessibility
+	
+	T getExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException;
+	
+	T findExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException;
+	
+	T findExecutionTokenAfter(T token) throws GkException;
+	
+	T findExecutionTokenBefore(T token) throws GkException;
 }

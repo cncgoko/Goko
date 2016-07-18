@@ -8,7 +8,6 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
@@ -127,37 +126,38 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		}
 		
 		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-			x = NumberQuantity.add(x, context.getX());
-			y = NumberQuantity.add(y, context.getY());
-			z = NumberQuantity.add(z, context.getZ());
-			a = NumberQuantity.add(a, context.getA());
-			b = NumberQuantity.add(b, context.getB());
-			c = NumberQuantity.add(c, context.getC());
-		}else{
-			if(x == null) x = context.getX();
-			if(y == null) y = context.getY();
-			if(z == null) z = context.getZ();
-			if(a == null) a = context.getA();
-			if(b == null) b = context.getB();
-			if(c == null) c = context.getC();
+//			x = NumberQuantity.add(x, context.getX());
+//			y = NumberQuantity.add(y, context.getY());
+//			z = NumberQuantity.add(z, context.getZ());
+//			a = NumberQuantity.add(a, context.getA());
+//			b = NumberQuantity.add(b, context.getB());
+//			c = NumberQuantity.add(c, context.getC());
 		}
+//		else{
+//			if(x == null) x = context.getX();
+//			if(y == null) y = context.getY();
+//			if(z == null) z = context.getZ();
+//			if(a == null) a = context.getA();
+//			if(b == null) b = context.getB();
+//			if(c == null) c = context.getC();
+//		}
 		// Compute the center of the arc 
-		i = NumberQuantity.add(i, context.getX());
-		j = NumberQuantity.add(j, context.getY());
-		k = NumberQuantity.add(k, context.getZ());
-		if(clockwise){
-			
-		}
-		switch (plane) {
-		// public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
-		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
-			break;		
-		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);
-			break;
-		case YZ_PLANE:	instruction	= new ArcFeedInstruction(y, z, j, k, x, r, a, b, c, clockwise);
-			break;
-		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
-		}
+//		i = NumberQuantity.add(i, context.getX());
+//		j = NumberQuantity.add(j, context.getY());
+//		k = NumberQuantity.add(k, context.getZ());
+
+		instruction	= new ArcFeedInstruction(x, y, z, i, j, k, a, b, c, r, clockwise);
+		
+//		switch (plane) {
+//		// public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
+//		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
+//			break;		
+//		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);
+//			break;
+//		case YZ_PLANE:	instruction	= new ArcFeedInstruction(y, z, j, k, x, r, a, b, c, clockwise);
+//			break;
+//		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
+//		}
 		return instruction;
 	}
 

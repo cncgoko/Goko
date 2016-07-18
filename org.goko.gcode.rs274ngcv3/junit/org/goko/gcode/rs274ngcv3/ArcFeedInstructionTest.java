@@ -24,13 +24,14 @@ public class ArcFeedInstructionTest {
 	public void contextXyPlaneUpdate() throws GkException{
 		ArcFeedInstruction instr = new ArcFeedInstruction(  Length.valueOf("10", LengthUnit.MILLIMETRE),
 														 	Length.valueOf("12", LengthUnit.MILLIMETRE),
+														 	Length.valueOf("-8.32", LengthUnit.MILLIMETRE),
 														 	Length.valueOf("5", LengthUnit.MILLIMETRE),
 														 	Length.valueOf("6", LengthUnit.MILLIMETRE),
-														 	Length.valueOf("-8.32", LengthUnit.MILLIMETRE),
-														 	1,
-														 	Angle.ZERO,
-														 	Angle.ZERO,
-														 	Angle.ZERO,
+														 	null,
+														 	null,
+														 	null,
+														 	null,
+														 	1,														 	
 														 	true);
 		
 		GCodeContext context = new GCodeContext();
@@ -50,15 +51,16 @@ public class ArcFeedInstructionTest {
 	
 	@Test
 	public void contextYzPlaneUpdate() throws GkException{
-		ArcFeedInstruction instr = new ArcFeedInstruction(  Length.valueOf("10", LengthUnit.MILLIMETRE),
+		ArcFeedInstruction instr = new ArcFeedInstruction(  Length.valueOf("-8.32", LengthUnit.MILLIMETRE),
 														 	Length.valueOf("12", LengthUnit.MILLIMETRE),
+														 	Length.valueOf("10", LengthUnit.MILLIMETRE),
+														 	null,
 														 	Length.valueOf("5", LengthUnit.MILLIMETRE),
-														 	Length.valueOf("6", LengthUnit.MILLIMETRE),
-														 	Length.valueOf("-8.32", LengthUnit.MILLIMETRE),
-														 	1,
-														 	Angle.ZERO,
-														 	Angle.ZERO,
-														 	Angle.ZERO,
+														 	Length.valueOf("6", LengthUnit.MILLIMETRE),														 	
+														 	null,
+														 	null,
+														 	null,
+														 	1,														 	
 														 	true);
 		
 		GCodeContext context = new GCodeContext();
@@ -70,8 +72,8 @@ public class ArcFeedInstructionTest {
 		instr.apply(context);
 		
 		assertEquals(Length.valueOf("-8.32", LengthUnit.MILLIMETRE), context.getX());
-		assertEquals(Length.valueOf("10", LengthUnit.MILLIMETRE), context.getY());
-		assertEquals(Length.valueOf("12", LengthUnit.MILLIMETRE), context.getZ());		
+		assertEquals(Length.valueOf("12", LengthUnit.MILLIMETRE), context.getY());
+		assertEquals(Length.valueOf("10", LengthUnit.MILLIMETRE), context.getZ());		
 		assertEquals(Angle.ZERO, context.getA());
 		assertEquals(Angle.ZERO, context.getB());
 		assertEquals(Angle.ZERO, context.getC());
@@ -79,15 +81,16 @@ public class ArcFeedInstructionTest {
 	
 	@Test
 	public void contextXzPlaneUpdate() throws GkException{
-		ArcFeedInstruction instr = new ArcFeedInstruction(  Length.valueOf("10", LengthUnit.MILLIMETRE),
-														 	Length.valueOf("12", LengthUnit.MILLIMETRE),
-														 	Length.valueOf("5", LengthUnit.MILLIMETRE),
+		ArcFeedInstruction instr = new ArcFeedInstruction(  Length.valueOf("12", LengthUnit.MILLIMETRE),
+															Length.valueOf("-8.32", LengthUnit.MILLIMETRE),														 	
+														 	Length.valueOf("10", LengthUnit.MILLIMETRE),
 														 	Length.valueOf("6", LengthUnit.MILLIMETRE),
-														 	Length.valueOf("-8.32", LengthUnit.MILLIMETRE),
-														 	1,
-														 	Angle.ZERO,
-														 	Angle.ZERO,
-														 	Angle.ZERO,
+														 	null,														 	
+														 	Length.valueOf("5", LengthUnit.MILLIMETRE),														 	
+														 	null,
+														 	null,
+														 	null,
+														 	1,														 	
 														 	true);
 		
 		GCodeContext context = new GCodeContext();

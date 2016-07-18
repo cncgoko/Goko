@@ -102,7 +102,7 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 	 * @see org.goko.core.common.measure.quantity.Quantity#add(org.goko.core.common.measure.quantity.Quantity)
 	 */
 	@Override
-	public Q add(Q q) {
+	public Q add(Q q) {		
 		return createQuantity(value.add(q.value(this.unit)), unit);
 	}
 

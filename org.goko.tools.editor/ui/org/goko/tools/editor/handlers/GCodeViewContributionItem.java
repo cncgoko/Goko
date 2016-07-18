@@ -16,7 +16,7 @@ import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem;
 import org.goko.tools.editor.GCodeEditorTopic;
-import org.goko.tools.editor.component.provider.GCodeProviderSourceDocument;
+import org.goko.tools.editor.component.provider.GCodeProviderDocument;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
@@ -24,8 +24,8 @@ import org.osgi.service.event.EventAdmin;
  * @author Psyko
  * @date 28 mai 2016
  */
-public class GCodeEditContributionItem implements IGCodeProviderContributionItem{
-	private static final GkLog LOG = GkLog.getLogger(GCodeEditContributionItem.class);
+public class GCodeViewContributionItem implements IGCodeProviderContributionItem{
+	private static final GkLog LOG = GkLog.getLogger(GCodeViewContributionItem.class);
 	/** Event admin */
 	private EventAdmin eventAdmin;
 	/** GCode repository */
@@ -43,7 +43,7 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 			 */
 			@Override
 			public String getText() {				
-				return "Edit source";
+				return "View final";
 			}
 			
 			/** (inheritDoc)
@@ -51,8 +51,8 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 			 */
 			@Override
 			public void run() {
-				Map<String, Object> map = new HashMap<String, Object>();
-				GCodeProviderSourceDocument documentProvider = new GCodeProviderSourceDocument(gcodeProviderRepository, provider);
+				Map<String, Object> map = new HashMap<String, Object>();								
+				GCodeProviderDocument documentProvider = new GCodeProviderDocument(gcodeProviderRepository, gcodeService, provider);
 				map.put(IEventBroker.DATA, documentProvider);
 				eventAdmin.sendEvent(new Event(GCodeEditorTopic.TOPIC_OPEN_EDITOR, map));	
 			}

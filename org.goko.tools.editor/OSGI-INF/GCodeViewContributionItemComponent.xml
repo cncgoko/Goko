@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.tools.editor.GCodeEditContributionItem">
-   <implementation class="org.goko.tools.editor.handlers.GCodeEditContributionItem"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.tools.editor.GCodeViewContributionItem">
+   <implementation class="org.goko.tools.editor.handlers.GCodeViewContributionItem"/>
    <service>
       <provide interface="org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem"/>
    </service>

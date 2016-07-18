@@ -7,7 +7,6 @@ import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
-import org.goko.core.math.Tuple6b;
 
 /**
  * Abstract class for a straight instruction 
@@ -15,18 +14,31 @@ import org.goko.core.math.Tuple6b;
  * @author Psyko
  */
 public abstract class AbstractStraightInstruction extends AbstractInstruction {
-	/** X coordinate in the current coordinate system */
+	/** X coordinate  */
 	private Length x;
-	/** Y coordinate in the current coordinate system */
+	/** Y coordinate  */
 	private Length y;
-	/** Z coordinate in the current coordinate system */
+	/** Z coordinate  */
 	private Length z;
-	/** A coordinate in the current coordinate system */
+	/** A coordinate  */
 	private Angle a;
-	/** B coordinate in the current coordinate system */
+	/** B coordinate  */
 	private Angle b;
-	/** C coordinate in the current coordinate system  */
+	/** C coordinate   */
 	private Angle c;
+	
+	/** Cached final X coordinate in the current coordinate system */
+	private Length cachedX;
+	/** Cached final Y coordinate in the current coordinate system */
+	private Length cachedY;
+	/** Cached final Z coordinate in the current coordinate system */
+	private Length cachedZ;
+	/** Cached final A coordinate in the current coordinate system */
+	private Angle cachedA;
+	/** Cached final B coordinate in the current coordinate system */
+	private Angle cachedB;
+	/** Cached final C coordinate in the current coordinate system  */
+	private Angle cachedC;
 				
 	/**
 	 * Constructor 
@@ -66,24 +78,23 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 	 */
 	@Override
 	public void apply(GCodeContext context) throws GkException {
-		Tuple6b position = context.getPosition();
 		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-			position.setX(NumberQuantity.add(x, context.getX()));
-			position.setY(NumberQuantity.add(y, context.getY()));
-			position.setZ(NumberQuantity.add(z, context.getZ()));
-			position.setA(NumberQuantity.add(a, context.getA()));
-			position.setB(NumberQuantity.add(b, context.getB()));
-			position.setC(NumberQuantity.add(c, context.getC()));
+			if(cachedX == null) cachedX = NumberQuantity.add(x, context.getX());
+			if(cachedY == null) cachedY = NumberQuantity.add(y, context.getY());
+			if(cachedZ == null) cachedZ = NumberQuantity.add(z, context.getZ());
+			if(cachedA == null) cachedA = NumberQuantity.add(a, context.getA());
+			if(cachedB == null) cachedB = NumberQuantity.add(b, context.getB());
+			if(cachedC == null) cachedC = NumberQuantity.add(c, context.getC());			
 		}else{		
-			if(x != null) position.setX(x);// = context.getX();
-			if(y != null) position.setY(y);// = context.getY();
-			if(z != null) position.setZ(z);// = context.getZ();
-			if(a != null) position.setA(a);// = context.getA();
-			if(b != null) position.setB(b);// = context.getB();
-			if(c != null) position.setC(c);// = context.getC();
+			if(cachedX == null) cachedX = x;
+			if(cachedY == null) cachedY = y;
+			if(cachedZ == null) cachedZ = z;
+			if(cachedA == null) cachedA = a;
+			if(cachedB == null) cachedB = b;
+			if(cachedC == null) cachedC = c;
 		}
 //		context.setPosition(x, y, z, a, b, c);
-		context.setPosition(position);
+		context.setPosition(cachedX, cachedY, cachedZ, cachedA, cachedB, cachedC);
 	}
 
 	/**

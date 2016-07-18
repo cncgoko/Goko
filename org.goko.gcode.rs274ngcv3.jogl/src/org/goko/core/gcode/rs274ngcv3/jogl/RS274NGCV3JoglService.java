@@ -20,7 +20,11 @@ import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
+import org.goko.core.gcode.rs274ngcv3.jogl.internal.BaseGCodeContextProvider;
+import org.goko.core.gcode.rs274ngcv3.jogl.internal.GCodeContextProviderLinkedList;
+import org.goko.core.gcode.rs274ngcv3.jogl.internal.LinkedGCodeContextProvider;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
+import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
@@ -28,7 +32,7 @@ import org.goko.core.math.BoundingTuple6b;
 import org.goko.tools.viewer.jogl.utils.render.basic.BoundsRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;
 
-public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoService, IGCodeProviderRepositoryListener{
+public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoService, IGCodeProviderRepositoryListener, IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCV3JoglService.class);
 	/** ID of the service */
@@ -47,12 +51,15 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	/** The IFourAxisControllerAdapter */
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
+	/** The linked list of Context provider */
+	//private LinkedList<LinkedGCodeContextProvider> lstContextProvider;
+	private GCodeContextProviderLinkedList lstContextProvider;
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
 	@Override
-	public String getServiceId() throws GkException {
+	public String getServiceId() throws GkException {		
 		return SERVICE_ID;
 	}
 
@@ -61,10 +68,11 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	@Override
 	public void startService() throws GkException {		
+		this.lstContextProvider = new GCodeContextProviderLinkedList();
 		this.cacheRenderer = new CacheById<RS274GCodeRenderer>(new SequentialIdGenerator());
 		CoordinateSystemSetRenderer csrenderer = new CoordinateSystemSetRenderer();
 		csrenderer.setAdapter(coordinateSystemAdapter);
-		Activator.getJoglViewerService().addRenderer(csrenderer);
+		Activator.getJoglViewerService().addRenderer(csrenderer);		
 	}
 
 	/** (inheritDoc)
@@ -143,12 +151,26 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 * @throws GkException GkException
 	 */
 	public RS274GCodeRenderer getRendererByGCodeProvider(Integer idGCodeProvider) throws GkException{
+		RS274GCodeRenderer renderer = findRendererByGCodeProvider(idGCodeProvider);
+		if(renderer == null){
+			throw new GkTechnicalException("Renderer for GCodeProvider with internal id ["+idGCodeProvider+"] does not exist");
+		}
+		return renderer;
+	}
+	
+	/**
+	 * Returns the renderer for the given gcodeProvider
+	 * @param idGCodeProvider the id of the gcode provider
+	 * @return an RS274GCodeRenderer or <code>null</code> if none found
+	 * @throws GkException GkException
+	 */
+	public RS274GCodeRenderer findRendererByGCodeProvider(Integer idGCodeProvider) throws GkException{
 		for (RS274GCodeRenderer renderer : cacheRenderer.get()) {
 			if(ObjectUtils.equals(idGCodeProvider, renderer.getIdGCodeProvider())){
 				return renderer;
 			}
 		}
-		throw new GkTechnicalException("Renderer for GCodeProvider with internal id ["+idGCodeProvider+"] does not exist");
+		return null;
 	}
 
 	/**
@@ -177,9 +199,11 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 
 	/**
 	 * @param executionService the executionService to set
+	 * @throws GkException GkException 
 	 */
-	public void setExecutionService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
+	public void setExecutionService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) throws GkException {
 		this.executionService = executionService;
+		executionService.addExecutionQueueListener(this);
 	}
 
 	/**
@@ -245,6 +269,118 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	@Override
 	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException { }
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenCreate(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onTokenCreate(ExecutionToken<ExecutionTokenState> token) {
+		try{
+			RS274GCodeRenderer renderer = getRendererByGCodeProvider(token.getIdGCodeProvider());
+			if(renderer != null){
+				// Make sure we get the updated context from latest executed token
+				if(lstContextProvider.isEmpty()){					
+					lstContextProvider.add(new BaseGCodeContextProvider(gcodeContextProvider, token, rs274Service));
+				}
+								
+				// We link the GCodeContext to the context right after the previous token execution
+				renderer.setGCodeContextProvider(lstContextProvider.getLast());
+				LinkedGCodeContextProvider contextProvider = new LinkedGCodeContextProvider(lstContextProvider.getLast(), token, rs274Service);
+				lstContextProvider.addLast(contextProvider);
+				renderer.updateGeometry();
+			}
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenDelete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onTokenDelete(ExecutionToken<ExecutionTokenState> token) {
+		try{											
+			LinkedGCodeContextProvider contextProvider = lstContextProvider.findExecutionTokenByIdExecutionToken(token.getId());
+			LinkedGCodeContextProvider childContextProvider = lstContextProvider.findExecutionTokenAfter(token.getId());
+			// Search the matching context provider
+//			Iterator<LinkedGCodeContextProvider> iter = lstContextProvider.descendingIterator();
+//			while (iter.hasNext()) {
+//				LinkedGCodeContextProvider lclContextProvider = (LinkedGCodeContextProvider) iter.next();
+//				if(contextProvider == null){ // Search the parent provider first
+//					if(ObjectUtils.equals(lclContextProvider.getToken().getId(), token.getId())){
+//						contextProvider = lclContextProvider;
+//						break;
+//					}else{
+//						childContextProvider = lclContextProvider;
+//					}
+//				}
+//			}
+			
+			if(contextProvider != null){
+				lstContextProvider.remove(contextProvider);
+				if(childContextProvider != null){
+					RS274GCodeRenderer childRenderer = getRendererByGCodeProvider(childContextProvider.getToken().getIdGCodeProvider());					
+					childContextProvider.setPrevious(contextProvider.getPrevious());
+					// Remap the renderer of the child token to link on the new parent
+					childRenderer.setGCodeContextProvider(childContextProvider.getPrevious());
+					childContextProvider.update();
+				}			
+			}
+			// Update the rendering of the GCodeProvider 
+			RS274GCodeRenderer renderer = findRendererByGCodeProvider(token.getIdGCodeProvider());
+			if(renderer != null){
+				// Set the deleted token's renderer provider back to default
+				renderer.setGCodeContextProvider(gcodeContextProvider);
+				renderer.updateGeometry();
+			}
+			updateGeometryRendererInExecutionQueue();			
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IExecutionQueueListener#onTokenUpdate(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onTokenUpdate(ExecutionToken<ExecutionTokenState> token) {
+		try{
+			LinkedGCodeContextProvider contextProvider = lstContextProvider.findExecutionTokenByIdExecutionToken(token.getId());		
+		// Search the matching context provider
+//		Iterator<LinkedGCodeContextProvider> iter = lstContextProvider.descendingIterator();
+//		while (iter.hasNext()) {
+//			LinkedGCodeContextProvider lclContextProvider = (LinkedGCodeContextProvider) iter.next();			
+//			if(ObjectUtils.equals(lclContextProvider.getToken().getId(), token.getId())){
+//				contextProvider = lclContextProvider;
+//				break;
+//			}
+//		}
+		
+			if(contextProvider != null){
+				contextProvider.update();				
+				updateGeometryRendererInExecutionQueue();				
+			}		
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
+	
+	/**
+	 * Force a redraw of the renderer in the execution queue
+	 * @throws GkException GkException
+	 */
+	public void updateGeometryRendererInExecutionQueue() throws GkException {
+		if(executionService.getExecutionQueue() != null){
+			List<ExecutionToken<ExecutionTokenState>> lstTokens = executionService.getExecutionQueue().getExecutionToken();
+			if(CollectionUtils.isNotEmpty(lstTokens)){
+				for (ExecutionToken<ExecutionTokenState> token : lstTokens) {
+					RS274GCodeRenderer renderer = getRendererByGCodeProvider(token.getIdGCodeProvider());
+					renderer.updateGeometry();
+				}
+			}
+		}
+	}
+	
 	/**
 	 * @return the gcodeContextProvider
 	 */

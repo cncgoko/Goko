@@ -8,6 +8,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IInstruction;
+import org.goko.core.gcode.rs274ngcv3.RenderingFormat;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
@@ -42,13 +43,13 @@ public abstract class AbstractInstructionExporter<T extends AbstractInstruction>
 	 * @see org.goko.core.gcode.rs274ngcv3.instruction.IInstructionExporter#toWords(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, java.util.List)
 	 */
 	@Override
-	public AbstractInstruction toWords(GCodeContext context, List<AbstractInstruction> instructions, List<GCodeWord> targetList) throws GkException{		
+	public AbstractInstruction toWords(GCodeContext context, List<AbstractInstruction> instructions, RenderingFormat format, List<GCodeWord> targetList) throws GkException{		
 		T instruction = getAndRemoveInstruction(instructions);
-		targetList.addAll(getWords(context, instruction));
+		targetList.addAll(getWords(context, instruction, format));
 		return instruction;
 	}
 	
-	protected abstract List<GCodeWord> getWords(GCodeContext context, T instruction) throws GkException;
+	protected abstract List<GCodeWord> getWords(GCodeContext context, T instruction, RenderingFormat format) throws GkException;
 	
 	@SuppressWarnings("unchecked")
 	protected T getAndRemoveInstruction(List<AbstractInstruction> instructions) throws GkTechnicalException{

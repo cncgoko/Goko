@@ -209,7 +209,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	public void updateGeometry() throws GkException {
 		super.updateGeometry();		
 	};
-	
+
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#initializeAdditionalBufferObjects(javax.media.opengl.GL3)
 	 */
@@ -356,6 +356,20 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 				}	
 			}
 		}
+	}
+
+	/**
+	 * @return the gcodeContextProvider
+	 */
+	public IGCodeContextProvider<GCodeContext> getGCodeContextProvider() {
+		return gcodeContextProvider;
+	}
+
+	/**
+	 * @param gcodeContextProvider the gcodeContextProvider to set
+	 */
+	public void setGCodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
+		this.gcodeContextProvider = gcodeContextProvider;
 	}
 
 
