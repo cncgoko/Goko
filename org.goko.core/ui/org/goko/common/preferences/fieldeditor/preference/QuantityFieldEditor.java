@@ -65,6 +65,16 @@ public abstract class QuantityFieldEditor<Q extends Quantity<Q>> extends BigDeci
 	}	
 	
 	/** (inheritDoc)
+	 * @see org.goko.common.preferences.fieldeditor.preference.StringFieldEditor#setDefaultValue()
+	 */
+	@Override
+	protected void setDefaultValue() throws GkException {
+		quantity =  createQuantity(getPreferenceStore().getDefaultString(getPreferenceName()));
+		getControl().setText( GokoPreference.getInstance().format(quantity.to(getUnit()), false, false));
+		refreshValidState();
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.common.preferences.fieldeditor.preference.BigDecimalFieldEditor#storeValue()
 	 */
 	@Override
