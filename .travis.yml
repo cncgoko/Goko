@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk7
+  - oraclejdk8 #jdk 8 required by tycho
 
 env:
  global:
