@@ -135,7 +135,7 @@ public class GCodeEditorPart{
 				 * @see org.goko.tools.editor.component.provider.DocumentProviderAdapter#aboutToClose(org.goko.tools.editor.component.provider.IDocumentProvider)
 				 */
 				@Override
-				public void aboutToClose(IDocumentProvider targetProvider) {
+				public void aboutToClose(final IDocumentProvider targetProvider) {
 					uiSynchronize.syncExec(new Runnable() {						
 						@Override
 						public void run() {
@@ -149,7 +149,7 @@ public class GCodeEditorPart{
 				 * @see org.goko.tools.editor.component.provider.DocumentProviderAdapter#onClosed(org.goko.tools.editor.component.provider.IDocumentProvider)
 				 */
 				@Override
-				public void onClosed(IDocumentProvider targetProvider) {
+				public void onClosed(final IDocumentProvider targetProvider) {					
 					uiSynchronize.syncExec(new Runnable() {						
 						@Override
 						public void run() {
