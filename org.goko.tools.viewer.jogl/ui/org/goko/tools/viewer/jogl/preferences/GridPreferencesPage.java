@@ -57,7 +57,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		Group grpSettings = new Group(parent, SWT.NONE);
 		grpSettings.setText("Settings");
 		grpSettings.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		grpSettings.setLayout(new GridLayout(1, false));
+		grpSettings.setLayout(new GridLayout(2, false));
 		
 		majorSpacingFieldEditor = new LengthFieldEditor(grpSettings, SWT.NONE);
 		majorSpacingFieldEditor.setLabelWidthInChar(15);
@@ -67,6 +67,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		majorSpacingFieldEditor.setEmptyStringAllowed(false);
 		majorSpacingFieldEditor.setPreferenceName(JoglViewerPreference.MAJOR_GRID_SPACING);
 		majorSpacingFieldEditor.setUnit(lengthUnit);
+		new Label(grpSettings, SWT.NONE);
 		
 		minorSpacingFieldEditor = new LengthFieldEditor(grpSettings, SWT.NONE);
 		minorSpacingFieldEditor.setLabelWidthInChar(15);
@@ -76,21 +77,29 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		minorSpacingFieldEditor.setLabel("Minor grid spacing");
 		minorSpacingFieldEditor.setPreferenceName(JoglViewerPreference.MINOR_GRID_SPACING);
 		minorSpacingFieldEditor.setUnit(lengthUnit);
+		new Label(grpSettings, SWT.NONE);
 		
-		ColorFieldEditor majorColorFieldEditor = new ColorFieldEditor(grpSettings, SWT.NONE);
+		ColorFieldEditor majorColorFieldEditor = new ColorFieldEditor(grpSettings, SWT.NONE);		
 		majorColorFieldEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));		
 		majorColorFieldEditor.setLabel("Major grid color");
 		majorColorFieldEditor.setPreferenceName(JoglViewerPreference.MAJOR_GRID_COLOR);
 		
+		IntegerFieldEditor majorGridOpacityFieldEditor = new IntegerFieldEditor(grpSettings, SWT.NONE);
+		majorGridOpacityFieldEditor.setLabel("Opacity");
+		majorGridOpacityFieldEditor.setWidthInChars(4);
+		majorGridOpacityFieldEditor.setLabelWidthInChar(6);
+		majorGridOpacityFieldEditor.setPreferenceName(JoglViewerPreference.MAJOR_GRID_OPACITY);
+		addField(majorGridOpacityFieldEditor);
+		
 		ColorFieldEditor minorColorFieldEditor = new ColorFieldEditor(grpSettings, SWT.NONE);		
-		minorColorFieldEditor.setLabel("Minor grid color");
+		minorColorFieldEditor.setLabel("Minor grid color");		
 		minorColorFieldEditor.setPreferenceName(JoglViewerPreference.MINOR_GRID_COLOR);
 		
-		IntegerFieldEditor gridOpacityFieldEditor = new IntegerFieldEditor(grpSettings, SWT.NONE);
-		gridOpacityFieldEditor.setLabel("Grid opacity");
-		gridOpacityFieldEditor.setWidthInChars(4);
-		gridOpacityFieldEditor.setLabelWidthInChar(12);
-		gridOpacityFieldEditor.setPreferenceName(JoglViewerPreference.GRID_OPACITY);
+		IntegerFieldEditor minorGridOpacityFieldEditor = new IntegerFieldEditor(grpSettings, SWT.NONE);
+		minorGridOpacityFieldEditor.setWidthInChars(4);
+		minorGridOpacityFieldEditor.setPreferenceName(JoglViewerPreference.MINOR_GRID_OPACITY);
+		minorGridOpacityFieldEditor.setLabelWidthInChar(6);
+		minorGridOpacityFieldEditor.setLabel("Opacity");
 		
 		Group grpLimits = new Group(parent, SWT.NONE);
 		grpLimits.setLayout(new GridLayout(1, false));
@@ -165,13 +174,25 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		endZFieldEditor.setPreferenceName(JoglViewerPreference.GRID_END_Z);
 		endZFieldEditor.setUnit(lengthUnit);
 		
+
+		IntegerFieldEditor axisGridOpacityFieldEditor = new IntegerFieldEditor(grpSettings, SWT.NONE);
+		axisGridOpacityFieldEditor.setWidthInChars(4);
+		axisGridOpacityFieldEditor.setPreferenceName(JoglViewerPreference.GRID_AXIS_OPACITY);
+		axisGridOpacityFieldEditor.setLabelWidthInChar(13);
+		axisGridOpacityFieldEditor.setLabel("Axis opacity");
+		
 		// Adding fields
 		addField(majorSpacingFieldEditor);
 		addField(minorSpacingFieldEditor);
 		
 		addField(majorColorFieldEditor);
-		addField(minorColorFieldEditor);
-		addField(gridOpacityFieldEditor);
+		addField(minorColorFieldEditor);		
+		
+		addField(minorGridOpacityFieldEditor);
+		addField(majorGridOpacityFieldEditor);
+		addField(axisGridOpacityFieldEditor);
+		
+		new Label(grpSettings, SWT.NONE);
 		addField(startXFieldEditor);
 		addField(startYFieldEditor);
 		addField(startZFieldEditor);

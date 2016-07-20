@@ -6,6 +6,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
+import org.goko.common.preferences.fieldeditor.preference.BooleanFieldEditor;
+import org.goko.common.preferences.fieldeditor.preference.ColorFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
@@ -46,8 +48,22 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 		comboFieldEditor.setEntry(lstMultiSampling);
 		
 		GokoPreference.getInstance().getLengthUnit();
+				
+		BooleanFieldEditor showFpsFieldEditor = new BooleanFieldEditor(grpPerformances, SWT.NONE);
+		showFpsFieldEditor.setPreferenceName(JoglViewerPreference.SHOW_FPS);
+		showFpsFieldEditor.setLabel("Show FPS");
+		
+		Group grpMisc = new Group(parent, SWT.NONE);
+		grpMisc.setLayout(new GridLayout(1, false));
+		grpMisc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		grpMisc.setText("Misc.");
+		
+		ColorFieldEditor backgroundColorFieldEditor = new ColorFieldEditor(grpMisc, SWT.NONE);
+		backgroundColorFieldEditor.setPreferenceName(JoglViewerPreference.BACKGROUND_COLOR);
+		backgroundColorFieldEditor.setLabel("Background");
+		
 		addField(comboFieldEditor);
-	}
-
-	
+		addField(showFpsFieldEditor);
+		addField(backgroundColorFieldEditor);
+	}	
 }

@@ -63,7 +63,9 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	private Color4f originColor		= new Color4f(0.8f, 0.8f, 0.8f,1f);
 	private Tuple6b start;
 	private Tuple6b end;
-	private float opacity;
+	private float majorOpacity;
+	private float minorOpacity;
+	private float axisOpacity;
 	private Matrix4f axisTransformMatrix; 
 	private Vector4f normal; 
 	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
@@ -75,7 +77,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 				 Length.valueOf(1, JoglUtils.JOGL_UNIT),
 				 new Color3f(0.4f, 0.4f, 0.4f),
 				 new Color3f(0.4f, 0.4f, 0.4f),
-				 0.5f, new Vector4f(0f,0f,1f,0f));
+				 0.5f, 0.5f, 0.5f, new Vector4f(0f,0f,1f,0f));
 		this.gcodeContextProvider = gcodeContextProvider;
 		if(this.gcodeContextProvider != null){
 			gcodeContextProvider.addObserver(this);
@@ -85,7 +87,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	/**
 	 * Constructor
 	 */
-	public GridRenderer(String id, Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float opacity, Vector4f normal) {
+	public GridRenderer(String id, Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float minorOpacity, float majorOpacity, float axisOpacity, Vector4f normal) {
 		super(GL.GL_LINES,  COLORS | VERTICES);
 		this.id = id;
 		this.setLayerId(Layer.LAYER_GRIDS);		
@@ -95,10 +97,12 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		this.end.max(start, end);
 		this.majorIncrement = majorIncrement.to(JoglUtils.JOGL_UNIT);
 		this.minorIncrement = minorIncrement.to(JoglUtils.JOGL_UNIT);
-		this.majorUnitColor = new Color4f(majorColor.x,majorColor.y,majorColor.z,opacity);
-		this.minorUnitColor = new Color4f(minorColor.x,minorColor.y,minorColor.z,opacity);
-		this.originColor.w = opacity;
-		this.opacity = opacity;
+		this.majorUnitColor = new Color4f(majorColor.x,majorColor.y,majorColor.z,majorOpacity);
+		this.minorUnitColor = new Color4f(minorColor.x,minorColor.y,minorColor.z,minorOpacity);
+		this.originColor.w = axisOpacity;
+		this.minorOpacity = minorOpacity;
+		this.majorOpacity = majorOpacity;
+		this.axisOpacity = axisOpacity;
 		this.normal = new Vector4f(normal);
 		buildMatrix();
 		setUseAlpha(true);
@@ -139,7 +143,6 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		Matrix4d invAxisTransformMatrix = new Matrix4d(axisTransformMatrix);
 		invAxisTransformMatrix.invert();
 
-	//	prendre en compte les préférences dans le scene manager (objet grid reste générique)
 		
 		addVertice(new Point4d(lclCenter.x, lclStart.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
 		addVertice(new Point4d(lclCenter.x, lclEnd.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
@@ -241,13 +244,38 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 			lstColors.add(minorUnitColor);
 		}
 		
+		// Add X Zero red axis
+		if(normal.dot(new Vector4f(1,0,0,0)) == 0 ){
+			addVertice(new Point4d(lclStart.x, 0, 0,1), lstVertices, null);
+			addVertice(new Point4d(lclEnd.x, 0, 0,1), lstVertices, null);		
+			lstColors.add(new Color4f(1,0,0,axisOpacity));
+			lstColors.add(new Color4f(1,0,0,axisOpacity));
+		}
+		
+		// Add Y Zero green axis
+		if(normal.dot(new Vector4f(0,1,0,0)) == 0 ){
+			addVertice(new Point4d(0, lclStart.y , 0,1), lstVertices, null);
+			addVertice(new Point4d(0, lclEnd.y,  0,1), lstVertices, null);		
+			lstColors.add(new Color4f(0,1,0,axisOpacity));
+			lstColors.add(new Color4f(0,1,0,axisOpacity));
+		}
+
+		// Add Z Zero Blue axis
+		if(normal.dot(new Vector4f(0,0,1,0)) == 0 ){
+			addVertice(new Point4d(0, 0, lclStart.z ,1), lstVertices, null);
+			addVertice(new Point4d(0, 0, lclEnd.z,  1), lstVertices, null);		
+			lstColors.add(new Color4f(0,0,1,axisOpacity));
+			lstColors.add(new Color4f(0,0,1,axisOpacity));
+		}
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		setColorsBuffer(JoglUtils.buildFloatBuffer4f(lstColors));
 		setVerticesBuffer(JoglUtils.buildFloatBuffer4d(lstVertices));		
 	}
 	
 	private void addVertice(Point4d p, List<Point4d> buffer, Matrix4d invMatrix){
-		invMatrix.transform(p);
+		if(invMatrix != null){
+			invMatrix.transform(p);
+		}
 		buffer.add(p);
 	}
 	/** (inheritDoc)
@@ -287,17 +315,45 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	/**
 	 * @return the opacity
 	 */
-	public float getOpacity() {
-		return opacity;
+	public float getMinorOpacity() {
+		return minorOpacity;
 	}
 
 	/**
 	 * @param opacity the opacity to set
 	 */
-	public void setOpacity(float opacity) {
-		this.opacity = opacity;
+	public void setMinorOpacity(float opacity) {
+		this.minorOpacity = opacity;		
+		this.minorUnitColor.w = opacity;		
+	}
+	
+	/**
+	 * @return the opacity
+	 */
+	public float getMajorOpacity() {
+		return majorOpacity;
+	}
+
+	/**
+	 * @param opacity the opacity to set
+	 */
+	public void setMajorOpacity(float opacity) {
+		this.majorOpacity = opacity;
 		this.majorUnitColor.w = opacity;
-		this.minorUnitColor.w = opacity;
+	}
+	
+	/**
+	 * @return the opacity
+	 */
+	public float getAxisOpacity() {
+		return axisOpacity;
+	}
+
+	/**
+	 * @param opacity the opacity to set
+	 */
+	public void setAxisOpacity(float opacity) {
+		this.axisOpacity = opacity;
 		this.originColor.w = opacity;
 	}
 

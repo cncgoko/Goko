@@ -41,13 +41,17 @@ import org.goko.core.math.Tuple6b;
 public class JoglViewerPreference extends GkPreference{	
 	public static final String NODE = "org.goko.tools.viewer.jogl";
 
-	public static final String MULTISAMPLING 	= "performances.multisampling";
+	public static final String MULTISAMPLING 		= "performances.multisampling";
+	public static final String BACKGROUND_COLOR 	= "viewer.backgroundColor";
+	public static final String SHOW_FPS			 	= "viewer.showFps";
 	public static final String GROUP_GRID 			= "grid.";
 	public static final String MAJOR_GRID_SPACING 	= "grid.majorSpacing";
 	public static final String MINOR_GRID_SPACING 	= "grid.minorSpacing";
 	public static final String MAJOR_GRID_COLOR 	= "grid.majorColor";
 	public static final String MINOR_GRID_COLOR 	= "grid.minorColor";
-	public static final String GRID_OPACITY 		= "grid.opacity";
+	public static final String MAJOR_GRID_OPACITY 	= "grid.major.opacity";
+	public static final String MINOR_GRID_OPACITY 	= "grid.minor.opacity";
+	public static final String GRID_AXIS_OPACITY 	= "grid.axis.opacity";
 	public static final String GRID_START_X 		= "grid.start.x";
 	public static final String GRID_START_Y 		= "grid.start.y";
 	public static final String GRID_START_Z 		= "grid.start.z";
@@ -207,8 +211,16 @@ public class JoglViewerPreference extends GkPreference{
 		return new Color3f((float)(color.red/255.0), (float)(color.green/255.0), (float)(color.blue/255.0));
 	}
 	
-	public float getGridOpacity(){
-		return (float) (getInt(GRID_OPACITY) / 100.0);
+	public float getMajorGridOpacity(){
+		return (float) (getInt(MAJOR_GRID_OPACITY) / 100.0);
+	}
+	
+	public float getMinorGridOpacity(){
+		return (float) (getInt(MINOR_GRID_OPACITY) / 100.0);
+	}
+	
+	public float getAxisGridOpacity(){
+		return (float) (getInt(GRID_AXIS_OPACITY) / 100.0);
 	}
 	
 	public Tuple6b getGridStart() throws GkException{
@@ -228,4 +240,14 @@ public class JoglViewerPreference extends GkPreference{
 		end.setZ(Length.parse(getString(GRID_END_Z)));
 		return end;
 	}	
+	
+	public Color3f getBackgroundColor(){
+		String value = getString(BACKGROUND_COLOR);
+		RGB color = StringConverter.asRGB(value);
+		return new Color3f((float)(color.red/255.0), (float)(color.green/255.0), (float)(color.blue/255.0));	
+	}
+	
+	public boolean isShowFps(){
+		return getBoolean(SHOW_FPS);
+	}
 }

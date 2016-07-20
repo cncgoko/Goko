@@ -36,6 +36,10 @@
         </children>
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_cLgc0J5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.toolbarseparator.1"/>
         <children xsi:type="menu:HandledToolItem" xmi:id="_WTx0cJ5zEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handledtoolitem.enablekeyboardjog" label="Enable keyboard jog" iconURI="platform:/plugin/org.goko.tools.viewer.jogl/resources/icons/keyboard--arrow.png" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_pl15YE6bEeaD5_1I0jz3kA" elementId="org.goko.tools.viewer.jogl.toolbarseparator.2"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_sWPZ4E6aEeaD5_1I0jz3kA" elementId="org.goko.tools.viewer.jogl.handledtoolitem.settings" label="Settings" iconURI="platform:/plugin/org.goko.core/icons/gear_20.png" tooltip="Configure viewer settings" command="_02KMgE6aEeaD5_1I0jz3kA">
+          <parameters xmi:id="_-lJaUE6aEeaD5_1I0jz3kA" elementId="" name="goko.org.ui.page.id" value="org.goko.jogl.viewer.preferences.viewer"/>
+        </children>
       </toolbar>
     </elements>
   </fragments>
@@ -48,6 +52,9 @@
     <elements xsi:type="commands:Command" xmi:id="_HuLH4J5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.command.setactivecamera" commandName="Set active camera">
       <parameters xmi:id="_L4CgQJ5xEeWki_YL0eV3Fg" elementId="jogl.camera.id" name="jogl.camera.id" optional="false"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_02KMgE6aEeaD5_1I0jz3kA" elementId="org.goko.tools.viewer.jogl.command.joglviewersettings" commandName="Jogl Viewer settings">
+      <parameters xmi:id="_33oZcE6aEeaD5_1I0jz3kA" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ln3U4GqyEeW_4J3oW3NGfQ" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_nKch8GqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.handler.0" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.EnableViewerJogHandler" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
@@ -56,6 +63,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_BeMJ0J5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.3" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.ToggleBoundsDisplayHandler" command="_AMobUJ5sEeWki_YL0eV3Fg"/>
     <elements xsi:type="commands:Handler" xmi:id="_15ErYJ5sEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.4" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.ZoomToFitHandler" command="_0Z9pEJ5sEeWki_YL0eV3Fg"/>
     <elements xsi:type="commands:Handler" xmi:id="_JXM7MJ5xEeWki_YL0eV3Fg" elementId="org.goko.tools.viewer.jogl.handler.5" contributionURI="bundleclass://org.goko.tools.viewer.jogl/org.goko.tools.viewer.jogl.command.SetCameraHandler" command="_HuLH4J5xEeWki_YL0eV3Fg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_6IBuwE6aEeaD5_1I0jz3kA" elementId="org.goko.tools.viewer.jogl.handler.6" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_02KMgE6aEeaD5_1I0jz3kA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wuC_IGqyEeW_4J3oW3NGfQ" featurename="bindingTables" parentElementId="goko.application">
     <elements xsi:type="commands:BindingTable" xmi:id="_yylCsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.bindingtable.0" bindingContext="_UfPycA4WEeaGiYxZlMJxsQ">

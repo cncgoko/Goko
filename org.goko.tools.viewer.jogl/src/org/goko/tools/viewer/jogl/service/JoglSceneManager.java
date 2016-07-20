@@ -33,6 +33,7 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3f;
 
@@ -97,7 +98,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private Map<Integer, Boolean> layerVisibility;
 	private Light light0;
 	private Light light1;
-
+	private Color3f backgroundColor;
+	private boolean updateBackgroundColor;
+	
 	public JoglSceneManager() {
 		getRenderers();
 		initLayers();
@@ -158,7 +161,10 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	@Override
 	public void display(GLAutoDrawable gLAutoDrawable) {
 		GL3 gl = new DebugGL3( gLAutoDrawable.getGL().getGL3());
-
+		if(updateBackgroundColor){
+			gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); // reset background (clear) color
+			updateBackgroundColor = false;
+		}
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         if(!isEnabled()){
@@ -278,7 +284,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	@Override
 	public void init(GLAutoDrawable gLAutoDrawable) {
 		GL3 gl = gLAutoDrawable.getGL().getGL3(); // get the OpenGL graphics context
-		gl.glClearColor(.19f, .19f, .23f, 1.0f); // set background (clear) color
+		//gl.glClearColor(.19f, .19f, .23f, 1.0f); // set background (clear) color
+		backgroundColor = JoglViewerPreference.getInstance().getBackgroundColor();
+		gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); 
 		gl.glClearDepth(1.0f); // set clear depth value to farthest
 
 		// Enable blending
@@ -412,9 +420,12 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
+		// Property change listener
 		if(canvasCapabilities != null){
 			canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 		}
+		
+		setBackgroundColor(JoglViewerPreference.getInstance().getBackgroundColor());
 	}
 
 	public void addCamera(AbstractCamera camera) throws GkException{
@@ -488,5 +499,20 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * @return the backgroundColor
+	 */
+	public Color3f getBackgroundColor() {
+		return backgroundColor;
+	}
+
+	/**
+	 * @param backgroundColor the backgroundColor to set
+	 */
+	public void setBackgroundColor(Color3f backgroundColor) {
+		this.backgroundColor = backgroundColor;
+		this.updateBackgroundColor = true;
 	}
 }
