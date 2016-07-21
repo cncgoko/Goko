@@ -79,6 +79,8 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	private CacheById<IModifier<GCodeProvider>> cacheModifiers;
 	/** Boolean allowing to enable/disable gcode update notification */
 	private boolean gcodeProviderUdateNotificationEnabled;
+	/** The active rendering format */
+	private RenderingFormat renderingFormat;
 	
 	/** Constructor */
 	public RS274NGCServiceImpl() {
@@ -91,6 +93,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
 		this.gcodeProviderUdateNotificationEnabled = true;
 		this.gcodeProviderDeleteListenerList = new CopyOnWriteArrayList<IGCodeProviderDeleteVetoableListener>();
+		this.renderingFormat = RenderingFormat.COMPLETE;
 	}
 
 	/** (inheritDoc)
@@ -286,7 +289,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		//provider.setSource(new InstructionProviderSource(instructionProvider));
 		List<InstructionSet> sets = instructionProvider.getInstructionSets();
 		for (InstructionSet instructionSet : sets) {
-			GCodeLine line = factory.getLine(context, instructionSet, RenderingFormat.DEFAULT);
+			GCodeLine line = factory.getLine(context, instructionSet, renderingFormat);
 
 			provider.addLine(line);
 		}
@@ -417,14 +420,18 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public String render(GCodeLine line) throws GkException {
-		return render(line, RenderingFormat.DEFAULT);
+		return render(line, renderingFormat);
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#render(org.goko.core.gcode.element.GCodeLine, org.goko.core.gcode.rs274ngcv3.RenderingFormat)
 	 */
 	@Override
-	public String render(GCodeLine line, RenderingFormat format) throws GkException {
+	public String render(GCodeLine line, RenderingFormat customRenderingFormat) throws GkException {
+		RenderingFormat localFormat = customRenderingFormat;
+		if(localFormat == null){
+			localFormat = renderingFormat;
+		}
 		StringBuffer buffer = new StringBuffer();
 		// FIXME find a better way to classify GCode words or describe a GCodeLine within the rs274 service
 		GCodeWord commentWord = null;
@@ -432,7 +439,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		// Add words
 		for (GCodeWord word : line.getWords()) {
 			if(StringUtils.equals(word.getLetter(), "N")){
-				if(!format.isSkipLineNumbers()){
+				if(!localFormat.isSkipLineNumbers()){
 					buffer.insert(0, word.getValue());
 					buffer.insert(0, word.getLetter());
 				}
@@ -440,7 +447,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			}
 
 			if(StringUtils.equals(word.getLetter(), ";")){
-				if(!format.isSkipComments()){
+				if(!localFormat.isSkipComments()){
 					commentWord = word;
 				}
 				continue;
@@ -1162,6 +1169,20 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			}
 		}
 		
+	}
+
+	/**
+	 * @return the renderingFormat
+	 */
+	public RenderingFormat getRenderingFormat() {
+		return renderingFormat;
+	}
+
+	/**
+	 * @param renderingFormat the renderingFormat to set
+	 */
+	public void setRenderingFormat(RenderingFormat renderingFormat) {
+		this.renderingFormat = renderingFormat;
 	}
 }
 

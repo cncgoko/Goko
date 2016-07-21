@@ -10,5 +10,26 @@
             uri="resources/fragments/RS274UIOpenFragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePage">
+      <page
+            class="org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat.RenderingFormatPreferencePage"
+            id="org.goko.gcode.rs274ngcv3.ui.gcode.rendering"
+            name="GCode">
+      </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat.RenderingFormatPreferenceStoreProvider"
+            id="org.goko.gcode.rs274ngcv3.ui.gcode.rendering.provider">
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat.RenderingFormatPreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

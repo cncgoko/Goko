@@ -13,7 +13,7 @@ import org.goko.core.common.measure.units.Unit;
  */
 public class RenderingFormat {
 	public static final RenderingFormat DEFAULT = new RenderingFormat(true, false, false,5);
-	public static final RenderingFormat COMPLETE = new RenderingFormat(false, false, false, null);
+	public static final RenderingFormat COMPLETE = new RenderingFormat(false, false, false, null);	
 	private boolean skipComments;
 	private boolean skipLineNumbers;
 	private boolean truncateDecimals;
@@ -24,7 +24,7 @@ public class RenderingFormat {
 	 * @param skipLineNumbers
 	 * @param truncateDecimals
 	 */
-	public RenderingFormat(boolean skipComments, boolean skipLineNumbers, boolean truncateDecimals, Integer decimalCount) {
+	public RenderingFormat(boolean skipComments, boolean skipLineNumbers, boolean truncateDecimals, Integer decimalCount) {		
 		super();
 		this.skipComments = skipComments;
 		this.skipLineNumbers = skipLineNumbers;

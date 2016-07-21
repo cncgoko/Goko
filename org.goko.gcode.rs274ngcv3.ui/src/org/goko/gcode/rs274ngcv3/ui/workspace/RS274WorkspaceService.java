@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.RenderingFormat;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
@@ -24,6 +27,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.rotate.RotateModif
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.scale.ScaleModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize.SegmentizeModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.wrap.WrapModifierBuilder;
+import org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat.RenderingFormatPreference;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
 /**
@@ -34,7 +38,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
  * @author Psyko
  *
  */
-public class RS274WorkspaceService extends AbstractGokoService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener, IModifierListener{
+public class RS274WorkspaceService extends AbstractGokoService implements IRS274WorkspaceService, IGCodeProviderRepositoryListener, IModifierListener, IPropertyChangeListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(RS274WorkspaceService.class);
 	/** Service ID */
@@ -72,8 +76,10 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 		// Create the RS274 project container
 		//getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService, workspaceService));
 		getGcodeService().addListener(this);		
-		getGcodeService().addModifierListener(this);		
+		getGcodeService().addModifierListener(this);	
+		RenderingFormatPreference.getInstance().addPropertyChangeListener(this);
 		initModifierUiProvider();		
+		updateRenderingFormat();
 	}
 
 	/**
@@ -258,4 +264,22 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 		markProjectDirty();
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		updateRenderingFormat();		
+	}
+
+	/**
+	 * Update the rendering format using preferences
+	 */
+	private void updateRenderingFormat(){
+		RenderingFormat format = new RenderingFormat( RenderingFormatPreference.getInstance().isSkipComment(),
+				RenderingFormatPreference.getInstance().isSkipLineNumber(),
+				RenderingFormatPreference.getInstance().isTruncateDecimal(), 
+				RenderingFormatPreference.getInstance().getDecimalDigitCount());
+		gcodeService.setRenderingFormat(format);
+	}
 }

@@ -56,4 +56,6 @@ public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCo
 	List<IModifier<GCodeProvider>> getModifierByGCodeProvider(Integer idGcodeProvider) throws GkException;
 
 	String render(GCodeLine line, RenderingFormat format) throws GkException;
+	
+	void setRenderingFormat(RenderingFormat format);
 }
