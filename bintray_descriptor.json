@@ -14,7 +14,7 @@
 
     "files":
         [
-        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(.*\.zip)", "uploadPattern": "$1",
+        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(goko-0.3.1.*\.zip)", "uploadPattern": "$1",
         "matrixParams": {
             "override": 1 }
         }
