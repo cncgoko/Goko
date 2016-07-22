@@ -826,7 +826,7 @@ Public License instead of this License.  But first, please read
    </configurations>
 
    <repositories>
-      <repository location="http://update.goko.fr/0.3.0" enabled="true" />
+      <repository location="http://update.goko.fr/0.3.1" enabled="true" />
    </repositories>
 
 </product>
