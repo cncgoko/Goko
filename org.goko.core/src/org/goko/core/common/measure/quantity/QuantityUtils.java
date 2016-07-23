@@ -99,13 +99,18 @@ public final class QuantityUtils {
 		Unit<Q> 	localTargetUnit 	= ptargetUnit;
 				
 		DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-		if(digitCount != null){	
+		
+		if(digitCount != null){			
 			df.setMaximumFractionDigits(digitCount);
 			if(keepTraillingZero){
 				df.setMinimumFractionDigits(digitCount);
 			}
+		}else{
+			df.setMaximumFractionDigits(10);
+			df.setMinimumFractionDigits(0);
 		}
 		result = df.format(quantity.doubleValue(localTargetUnit));
+		
 		if(displayUnit){
 			result += ptargetUnit.getSymbol();
 		}
