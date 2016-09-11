@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_nqKJkC60EeOmU_SY2Ov9KA">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-_Cv4C61EeOmU_SY2Ov9KA" featurename="children" parentElementId="goko.application.partstack">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-_Cv4C61EeOmU_SY2Ov9KA" featurename="children" parentElementId="goko.partstack.e">
     <elements xsi:type="basic:Part" xmi:id="_AVJAIC62EeOmU_SY2Ov9KA" elementId="goko.application.parts.base.commandpanel" contributionURI="bundleclass://org.goko.tools.commandpanel/org.goko.tools.commandpanel.CommandPanelPart" label="Command panel" iconURI="platform:/plugin/org.goko.tools.commandpanel/icons/joystick.png" closeable="true">
       <persistedState key="org.goko.tools.commandpanel.jog.feedrate" value="1000"/>
       <tags>view</tags>

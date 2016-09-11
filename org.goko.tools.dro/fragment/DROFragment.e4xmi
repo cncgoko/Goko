@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_6HRN0BsbEeOU8qLhR-YcdQ">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9yneMBsbEeOU8qLhR-YcdQ" featurename="children" parentElementId="goko.application.partstack">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9yneMBsbEeOU8qLhR-YcdQ" featurename="children" parentElementId="goko.partstack.a">
     <elements xsi:type="basic:Part" xmi:id="_-9Z2UBsbEeOU8qLhR-YcdQ" elementId="org.goko.tools.dro.part" contributionURI="bundleclass://org.goko.tools.dro/org.goko.tools.dro.DisplayReadOut" label="DRO" iconURI="platform:/plugin/org.goko.tools.dro/icons/compass.png" closeable="true">
       <tags>view</tags>
       <toolbar xmi:id="_KPKAkDqbEeOE7ee0Ogu8Dw" elementId="org.goko.tools.dro.toolbar.0">

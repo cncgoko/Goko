@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_wyBcoNwYEeKC274TynxXSA" elementId="goko.application" bindingContexts="_wyBcodwYEeKC274TynxXSA">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_wyCDu9wYEeKC274TynxXSA" elementId="goko.application.window" label="Goko" iconURI="platform:/plugin/Goko/icons/launch/goko16.png" width="500" height="400">
+    <tags>shellMaximized</tags>
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_wyCDw9wYEeKC274TynxXSA" elementId="goko.perspectivestack.main">
       <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main" label="Test">
         <children xsi:type="basic:PartSashContainer" xmi:id="_wyCDxdwYEeKC274TynxXSA" elementId="goko.partsashcontainer.main">
-          <children xsi:type="basic:PartStack" xmi:id="_wyCDxtwYEeKC274TynxXSA" elementId="goko.application.partstack"/>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_3IxXQHg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.0" containerData="60" horizontal="true">
+            <children xsi:type="basic:PartStack" xmi:id="_4pvawHg6EeaDZe-MYeyetw" elementId="goko.partstack.a" containerData="20"/>
+            <children xsi:type="basic:PartSashContainer" xmi:id="_5FPD8Hg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.1" containerData="80" horizontal="true">
+              <children xsi:type="basic:PartStack" xmi:id="_5a-DYHg6EeaDZe-MYeyetw" elementId="goko.application.partstack" containerData="75"/>
+              <children xsi:type="basic:PartStack" xmi:id="_50jBAHg6EeaDZe-MYeyetw" elementId="goko.partstack.c" containerData="25"/>
+            </children>
+          </children>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_8mTW8Hg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.2" containerData="40" horizontal="true">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_A3EokHg7EeaDZe-MYeyetw" elementId="goko.partsashcontainer.3" containerData="80" horizontal="true">
+              <children xsi:type="basic:PartStack" xmi:id="_CDibsHg7EeaDZe-MYeyetw" elementId="goko.partstack.d" containerData="65"/>
+              <children xsi:type="basic:PartStack" xmi:id="_CU3cQHg7EeaDZe-MYeyetw" elementId="goko.partstack.e" containerData="35"/>
+            </children>
+            <children xsi:type="basic:PartStack" xmi:id="_BohToHg7EeaDZe-MYeyetw" elementId="goko.partstack.f" containerData="20"/>
+          </children>
         </children>
       </children>
     </children>

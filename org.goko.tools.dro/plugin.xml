@@ -8,6 +8,12 @@
       </fragment>
    </extension>
    <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.tools.dro.preferences.DROPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
          point="Goko.org.goko.ui.gkPreferencePage">
       <page
             class="org.goko.tools.dro.preferences.DROPreferencesPage"

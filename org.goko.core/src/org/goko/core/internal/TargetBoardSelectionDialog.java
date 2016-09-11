@@ -36,9 +36,7 @@ public class TargetBoardSelectionDialog extends Dialog {
 	 */
 	public TargetBoardSelectionDialog() {
 		super((Shell)null);
-		setShellStyle(SWT.CLOSE | SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
-		
-		
+		setShellStyle(SWT.CLOSE | SWT.BORDER | SWT.TITLE);	
 	}
 
 	/**
