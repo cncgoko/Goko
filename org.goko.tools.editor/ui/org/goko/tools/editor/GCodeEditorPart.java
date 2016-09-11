@@ -90,9 +90,15 @@ public class GCodeEditorPart{
 		CTabItem targetTab = mapTabItemByDocumentProvider.get(provider);
 		
 		if(targetTab == null){			
-			targetTab = new CTabItem(mainTabFolder, SWT.CLOSE);
-			targetTab.setText(provider.getDocumentName());
-			targetTab.setImage(ResourceManager.getPluginImage("org.goko.tools.editor", "resources/icons/document-attribute-g.png"));
+			targetTab = new CTabItem(mainTabFolder, SWT.CLOSE);			
+			if(provider.isModifiable()){
+				targetTab.setText(provider.getDocumentName());
+				targetTab.setImage(ResourceManager.getPluginImage("org.goko.tools.editor", "resources/icons/document-attribute-g.png"));	
+			}else{
+				targetTab.setText(provider.getDocumentName()+" (Read only)");
+				targetTab.setImage(ResourceManager.getPluginImage("org.goko.tools.editor", "resources/icons/lock-small.png"));
+			}
+			
 			targetTab.setData(provider);
 			
 			ISharedTextColors sharedColors = new ISharedTextColors(){

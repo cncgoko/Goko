@@ -36,8 +36,8 @@ public class WrapModifierLoader extends AbstractModifierLoader<XmlWrapModifier, 
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.AbstractModifierLoader#loadModifierData(org.goko.core.gcode.rs274ngcv3.element.IModifier, org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier, org.goko.core.workspace.service.IMapperService)
 	 */
 	@Override
-	protected void loadModifierData(WrapModifier output, XmlWrapModifier input, IMapperService mapperService) throws GkException {
-		output.setRadius( input.getRadius().getQuantity() );
+	protected void loadModifierData(WrapModifier output, XmlWrapModifier input, IMapperService mapperService) throws GkException {		
+		output.setRatio( input.getRatio().getValue() );
 		output.setAxis(WrapModifierAxis.getEnum(input.getAxis()));
 	}
 

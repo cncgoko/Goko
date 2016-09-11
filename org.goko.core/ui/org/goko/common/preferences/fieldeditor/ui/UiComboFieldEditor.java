@@ -116,6 +116,6 @@ public class UiComboFieldEditor extends UiLabeledFieldEditor<Combo> {
 	@Override
 	protected Binding getFieldEditorBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented");
 	}
 }

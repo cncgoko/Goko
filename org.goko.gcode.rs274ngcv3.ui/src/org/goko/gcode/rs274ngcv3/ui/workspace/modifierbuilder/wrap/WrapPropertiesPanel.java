@@ -10,10 +10,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
+import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiRadioGroupFieldEditor;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.rs274ngcv3.modifier.wrap.WrapModifier;
 import org.goko.core.gcode.rs274ngcv3.modifier.wrap.WrapModifierAxis;
 import org.goko.core.workspace.bean.IPropertiesPanel;
@@ -58,15 +57,14 @@ public class WrapPropertiesPanel extends AbstractModifierPropertiesPanel<WrapMod
 		
 		radioGroupFieldEditor.setPropertyName(WrapModifierPropertiesModel.AXIS);		
 		
-		UiLengthFieldEditor lengthFieldEditor = new UiLengthFieldEditor(composite, SWT.NONE);
-		lengthFieldEditor.setEmptyStringAllowed(false);
-		lengthFieldEditor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		lengthFieldEditor.setWidthInChars(5);
-		lengthFieldEditor.setUnit(GokoPreference.getInstance().getLengthUnit());
-		lengthFieldEditor.setPropertyName(WrapModifierPropertiesModel.RADIUS);
-		lengthFieldEditor.setLabel("Radius");
+		UiBigDecimalFieldEditor ratio = new UiBigDecimalFieldEditor(composite, SWT.NONE);
+		ratio.setEmptyStringAllowed(false);
+		ratio.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		ratio.setWidthInChars(8);		
+		ratio.setPropertyName(WrapModifierPropertiesModel.RATIO);
+		ratio.setLabel("Unit ratio");
 		
 		getController().addFieldEditor(radioGroupFieldEditor);
-		getController().addFieldEditor(lengthFieldEditor);
+		getController().addFieldEditor(ratio);
 	}
 }

@@ -88,6 +88,7 @@ public class GCodeSourceViewer extends SourceViewer implements IPropertyChangeLi
 		setDocument(provider.getDocument(), provider.getAnnotationModel());		
 		setEditable(provider.isModifiable());		
 	}
+
 	/**
 	 * Set the font according to the preferences
 	 */

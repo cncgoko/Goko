@@ -3,11 +3,12 @@
  */
 package org.goko.core.gcode.rs274ngcv3.modifier.wrap;
 
+import java.math.BigDecimal;
+
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IInstructionSetIterator;
@@ -29,7 +30,7 @@ import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
  * @date 28 avr. 2016
  */
 public class WrapModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {	
-	private Length radius = Length.valueOf(1, LengthUnit.MILLIMETRE);
+	private BigDecimal ratio = BigDecimal.ONE;
 	private WrapModifierAxis axis = WrapModifierAxis.X_TO_A_AXIS;
 	
 	/**
@@ -44,7 +45,8 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 	 */
 	@Override
 	public boolean isConfigured() {
-		return true;
+		// Ratio should be non zero
+		return !BigDecimal.ZERO.equals(ratio);
 	}
 
 	/** (inheritDoc)
@@ -118,32 +120,10 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 			break;
 		}
 				
-		target.setA( Angle.valueOf(aValue.value(localContext.getUnit().getUnit()), AngleUnit.DEGREE_ANGLE) );
-		
-//		target.setZ(radius.add(localContext.getZ()));
-//			
-//		if(!radius.equals(Length.ZERO)){
-//			target.setA( Angle.valueOf(aValue.divide(radius), AngleUnit.RADIAN) );
-//		}else{
-//			target.setA( Angle.valueOf(aValue.value(localContext.getUnit().getUnit()), AngleUnit.DEGREE_ANGLE) );
-//		}
+		target.setA( Angle.valueOf(aValue.value(localContext.getUnit().getUnit()).multiply(ratio), AngleUnit.DEGREE_ANGLE) );
 		
 		set.addInstruction(target);
 		return set;
-	}
-
-	/**
-	 * @return the radius
-	 */
-	public Length getRadius() {
-		return radius;
-	}
-
-	/**
-	 * @param radius the radius to set
-	 */
-	public void setRadius(Length radius) {
-		this.radius = radius;
 	}
 
 	/**
@@ -158,6 +138,20 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 	 */
 	public void setAxis(WrapModifierAxis axis) {
 		this.axis = axis;
+	}
+
+	/**
+	 * @return the ratio
+	 */
+	public BigDecimal getRatio() {
+		return ratio;
+	}
+
+	/**
+	 * @param ratio the ratio to set
+	 */
+	public void setRatio(BigDecimal ratio) {
+		this.ratio = ratio;
 	}
 	
 }

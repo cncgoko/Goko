@@ -78,8 +78,8 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
     	control.setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, true, false, 1, 1));
     	control.addKeyListener(new KeyAdapter() {
     		@Override
-    		public void keyReleased(KeyEvent e) {    			
-    			valueChanged();
+    		public void keyReleased(KeyEvent e) {
+    			valueChanged();    			
     		}
 		});
     	control.pack();
@@ -275,4 +275,5 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
 		super.setEnabled(enabled);
 		getControl().setEnabled(enabled);
 	}
+
 }

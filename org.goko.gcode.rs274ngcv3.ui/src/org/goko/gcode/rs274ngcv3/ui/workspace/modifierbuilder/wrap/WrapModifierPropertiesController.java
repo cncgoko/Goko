@@ -27,7 +27,7 @@ public class WrapModifierPropertiesController extends AbstractModifierPanelContr
 	public void initializeFromModifier() throws GkException {
 		WrapModifier lclModifier = getModifier();
 		getDataModel().setAxis(lclModifier.getAxis());
-		getDataModel().setRadius(lclModifier.getRadius());
+		getDataModel().setRatio(lclModifier.getRatio());
 	}
 
 	/** (inheritDoc)
@@ -36,7 +36,7 @@ public class WrapModifierPropertiesController extends AbstractModifierPanelContr
 	@Override
 	protected WrapModifier updateModifier() throws GkException {
 		WrapModifier lclModifier = getModifier();
-		lclModifier.setRadius(getDataModel().getRadius());
+		lclModifier.setRatio(getDataModel().getRatio());
 		lclModifier.setAxis(getDataModel().getAxis());		
 		return lclModifier;
 	}

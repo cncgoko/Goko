@@ -8,9 +8,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.goko.common.preferences.fieldeditor.ui.UiAngleFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
@@ -48,7 +51,7 @@ public class TranslateModifierConfigurationPanel extends AbstractModifierPropert
 		translationX.setLabel("X");
 		translationX.setUnit(GokoPreference.getInstance().getLengthUnit());
 		translationX.setEmptyStringAllowed(false);
-		
+				
 		getController().addFieldEditor(translationX);	
 		
 		UiQuantityFieldEditor<Length> translationY = new UiLengthFieldEditor(composite, SWT.NONE);
@@ -69,6 +72,36 @@ public class TranslateModifierConfigurationPanel extends AbstractModifierPropert
 		translationZ.setUnit(GokoPreference.getInstance().getLengthUnit());
 		translationZ.setEmptyStringAllowed(false);
 		
-		getController().addFieldEditor(translationZ);			
+		getController().addFieldEditor(translationZ);
+		
+		UiQuantityFieldEditor<Angle> translationA = new UiAngleFieldEditor(composite, SWT.NONE);
+		translationA.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		translationA.setWidthInChars(8);
+		translationA.setPropertyName("translationA");
+		translationA.setLabel("A");
+		translationA.setUnit(AngleUnit.DEGREE_ANGLE);
+		translationA.setEmptyStringAllowed(false);
+		
+		getController().addFieldEditor(translationA);
+		
+		UiQuantityFieldEditor<Angle> translationB = new UiAngleFieldEditor(composite, SWT.NONE);
+		translationB.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		translationB.setWidthInChars(8);
+		translationB.setPropertyName("translationB");
+		translationB.setLabel("B");
+		translationB.setUnit(AngleUnit.DEGREE_ANGLE);
+		translationB.setEmptyStringAllowed(false);
+		
+		getController().addFieldEditor(translationB);
+		
+		UiQuantityFieldEditor<Angle> translationC = new UiAngleFieldEditor(composite, SWT.NONE);
+		translationC.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		translationC.setWidthInChars(8);
+		translationC.setPropertyName("translationC");
+		translationC.setLabel("C");
+		translationC.setUnit(AngleUnit.DEGREE_ANGLE);
+		translationC.setEmptyStringAllowed(false);
+		
+		getController().addFieldEditor(translationC);
 	}
 }

@@ -3,7 +3,8 @@
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.wrap;
 
-import org.goko.core.common.measure.quantity.Length;
+import java.math.BigDecimal;
+
 import org.goko.core.gcode.rs274ngcv3.modifier.wrap.WrapModifierAxis;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierModelObject;
 
@@ -13,22 +14,22 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierM
  */
 public class WrapModifierPropertiesModel extends AbstractModifierModelObject{
 	public static final String AXIS = "axis";
-	public static final String RADIUS = "radius";
-	private Length radius;
+	public static final String RATIO = "ratio";
+	private BigDecimal ratio;
 	private WrapModifierAxis axis;
 
 	/**
 	 * @return the radius
 	 */
-	public Length getRadius() {
-		return radius;
+	public BigDecimal getRatio() {
+		return ratio;
 	}
 
 	/**
 	 * @param radius the radius to set
 	 */
-	public void setRadius(Length radius) {
-		firePropertyChange(RADIUS, this.radius, this.radius = radius);
+	public void setRatio(BigDecimal ratio) {
+		firePropertyChange(RATIO, this.ratio, this.ratio = ratio);
 	}
 
 	/**

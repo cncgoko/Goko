@@ -4,7 +4,7 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.io.xml.quantity.XmlLength;
+import org.goko.core.common.io.xml.math.XmlBigDecimal;
 import org.goko.core.gcode.rs274ngcv3.modifier.wrap.WrapModifier;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlWrapModifier;
@@ -37,8 +37,8 @@ public class WrapModifierExporter extends AbstractModifierExporter<WrapModifier,
 	 */
 	@Override
 	protected void exportModifierData(XmlWrapModifier output, WrapModifier input, IMapperService mapperService) throws GkException {
-		output.setAxis( input.getAxis().getCode() );
-		output.setRadius( new XmlLength(input.getRadius()) );
+		output.setAxis( input.getAxis().getCode() );		
+		output.setRatio( new XmlBigDecimal(input.getRatio()));
 	}
 
 	/** (inheritDoc)

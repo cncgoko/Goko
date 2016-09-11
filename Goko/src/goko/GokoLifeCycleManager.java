@@ -31,6 +31,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import goko.dialog.GokoProgressDialog;
+import goko.splashscreen.GokoSplashscreen;
 
 /**
  * Life cycle manager
@@ -48,6 +49,8 @@ public class GokoLifeCycleManager {
 	 */
 	@PostContextCreate
 	public void postContextCreate(final IEventBroker eventBroker, final IEclipseContext context, IApplicationContext appContext) throws GkException {
+		final GokoSplashscreen splash = new GokoSplashscreen();
+		splash.open();
 		String[] args = (String[]) appContext.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 		enableDevModeIfRequired(args);
 		
@@ -68,14 +71,7 @@ public class GokoLifeCycleManager {
 		context.set(IEventLoopAdvisor.class, advisor);
 		
 		final GokoProgressDialog dialog = ContextInjectionFactory.make(GokoProgressDialog.class, context);
-		dialog.open();
-		dialog.getShell().setVisible(false);
-		Job.getJobManager().setProgressProvider(new ProgressProvider() {
-			@Override
-			public IProgressMonitor createMonitor(Job job) {
-				return dialog.addJob(job);
-			}
-		});
+		
 		// Create target board tracker
 		TargetBoardTracker tracker = ContextInjectionFactory.make(TargetBoardTracker.class, context);
 		tracker.checkTargetBoardDefined(context);
@@ -92,7 +88,17 @@ public class GokoLifeCycleManager {
 				ViewMenuCreationAddon menuCreator = ContextInjectionFactory.make(ViewMenuCreationAddon.class, context);
 				menuCreator.handleEvent(event);
 				eventBroker.unsubscribe(this);
+				splash.close();
 				
+				// Activate progress dialog
+				dialog.open();
+				dialog.getShell().setVisible(false);
+				Job.getJobManager().setProgressProvider(new ProgressProvider() {
+					@Override
+					public IProgressMonitor createMonitor(Job job) {
+						return dialog.addJob(job);
+					}
+				});
 			}
 		});		
 	}

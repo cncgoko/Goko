@@ -22,6 +22,9 @@ public class TranslateModifierConfigurationController extends AbstractModifierPa
 		getDataModel().setTranslationX(lclModifier.getTranslationX());
 		getDataModel().setTranslationY(lclModifier.getTranslationY());
 		getDataModel().setTranslationZ(lclModifier.getTranslationZ());
+		getDataModel().setTranslationA(lclModifier.getTranslationA());
+		getDataModel().setTranslationB(lclModifier.getTranslationB());
+		getDataModel().setTranslationC(lclModifier.getTranslationC());
 	}
 
 	/** (inheritDoc)
@@ -33,6 +36,9 @@ public class TranslateModifierConfigurationController extends AbstractModifierPa
 		lclModifier.setTranslationX(getDataModel().getTranslationX());
 		lclModifier.setTranslationY(getDataModel().getTranslationY());
 		lclModifier.setTranslationZ(getDataModel().getTranslationZ());
+		lclModifier.setTranslationA(getDataModel().getTranslationA());
+		lclModifier.setTranslationB(getDataModel().getTranslationB());
+		lclModifier.setTranslationC(getDataModel().getTranslationC());
 		return lclModifier;
 	}
 	
