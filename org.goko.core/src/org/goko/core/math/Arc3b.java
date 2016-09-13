@@ -9,6 +9,7 @@ import javax.vecmath.Vector3d;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.common.measure.units.Unit;
 
 public class Arc3b {
@@ -142,6 +143,26 @@ public class Arc3b {
 		return new Tuple6b(res.x, res.y, res.z, unit);
 	}
 
+	public static void main(String[] args) {
+		Tuple6b start = new Tuple6b(Length.valueOf(-3, LengthUnit.MILLIMETRE), Length.ZERO, Length.ZERO);
+		Tuple6b center = new Tuple6b(Length.ZERO, Length.ZERO, Length.ZERO);
+		Tuple6b end = new Tuple6b(Length.valueOf(3, LengthUnit.MILLIMETRE), Length.ZERO, Length.ZERO);
+		
+		Tuple6b startx = new Tuple6b(Length.ZERO, Length.valueOf(-3, LengthUnit.MILLIMETRE),  Length.ZERO);		
+		Tuple6b endx = new Tuple6b(Length.ZERO, Length.valueOf(3, LengthUnit.MILLIMETRE), Length.ZERO);
+		
+		Vector3d axisx = new  Vector3d(1,0,0);
+		Vector3d axisy = new  Vector3d(0,1,0);
+		Vector3d axisz = new  Vector3d(0,0,1);
+		Arc3b arcx = new Arc3b(startx, center, endx, axisx, true);
+		Arc3b arcy = new Arc3b(start, center, end, axisy, true);
+		Arc3b arcz = new Arc3b(start, center, end, axisz, true);
+		Tuple6b px = arcx.point(0.5);
+		Tuple6b py = arcy.point(0.5);
+		Tuple6b pz = arcz.point(0.5);
+		System.err.println();
+	}
+	
 	public BoundingTuple6b getBound(){
 		
 		return null;		

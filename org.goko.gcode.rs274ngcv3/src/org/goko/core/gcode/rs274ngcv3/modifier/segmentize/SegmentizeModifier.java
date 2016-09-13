@@ -123,17 +123,18 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 			result.add(set);
 		}
 		
-		// Add the very end point of the instruction so it always ends at the exact location 
-		StraightFeedInstruction straightInstruction = null;
-		switch (context.getPlane()) {		
-		case XZ_PLANE:	straightInstruction = new StraightFeedInstruction(instruction.getSecondEnd(), instruction.getAxisEndPoint(), instruction.getFirstEnd(), instruction.getA(), instruction.getB(), instruction.getC()); 
-			break;
-		case YZ_PLANE: straightInstruction = new StraightFeedInstruction(instruction.getAxisEndPoint(), instruction.getFirstEnd(), instruction.getSecondEnd(), instruction.getA(), instruction.getB(), instruction.getC()); 
-			break;		
-		case XY_PLANE:	straightInstruction = new StraightFeedInstruction(instruction.getFirstEnd(), instruction.getSecondEnd(), instruction.getAxisEndPoint(), instruction.getA(), instruction.getB(), instruction.getC());	
-		default:
-			break;
-		}	
+		// Add the very end point of the instruction so it always ends at the exact location		
+		Tuple6b pt = arc.point( 1.0f );			 
+		StraightFeedInstruction straightInstruction = new StraightFeedInstruction(pt.getX(), pt.getY(), pt.getZ(), instruction.getA(), instruction.getB(), instruction.getC());
+//		switch (context.getPlane()) {		
+//		case XZ_PLANE:	straightInstruction = new StraightFeedInstruction(instruction.getSecondEnd(), instruction.getAxisEndPoint(), instruction.getFirstEnd(), instruction.getA(), instruction.getB(), instruction.getC()); 
+//			break;
+//		case YZ_PLANE: straightInstruction = new StraightFeedInstruction(instruction.getAxisEndPoint(), instruction.getFirstEnd(), instruction.getSecondEnd(), instruction.getA(), instruction.getB(), instruction.getC()); 
+//			break;		
+//		case XY_PLANE:	straightInstruction = new StraightFeedInstruction(instruction.getFirstEnd(), instruction.getSecondEnd(), instruction.getAxisEndPoint(), instruction.getA(), instruction.getB(), instruction.getC());	
+//		default:
+//			break;
+//		}	
 		InstructionSet set = new InstructionSet();
 		set.addInstruction(straightInstruction);
 		result.add(set);

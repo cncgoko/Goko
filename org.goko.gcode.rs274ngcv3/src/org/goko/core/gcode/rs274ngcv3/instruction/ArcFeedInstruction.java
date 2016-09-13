@@ -3,7 +3,7 @@ package org.goko.core.gcode.rs274ngcv3.instruction;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.QuantityUtils;
+import org.goko.core.common.measure.quantity.type.NumberQuantity;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -42,35 +42,35 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
  *
  */
 public class ArcFeedInstruction extends AbstractInstruction {	
-	/** The first coordinate of the end of the arc */
-	private Length firstEnd;
-	/** The second coordinate of the end of the arc */
-	private Length secondEnd;
-	/** The first coordinate of the center of the arc */
-	private Length firstAxis;
-	/** The second coordinate of the center of the arc */
-	private Length secondAxis;
-	/** The third coordinate of the end of the arc */
-	private Length axisEndPoint;
+//	/** The first coordinate of the end of the arc */
+//	private Length firstEnd;
+//	/** The second coordinate of the end of the arc */
+//	private Length secondEnd;
+//	/** The first coordinate of the center of the arc */
+//	private Length firstAxis;
+//	/** The second coordinate of the center of the arc */
+//	private Length secondAxis;
+//	/** The third coordinate of the end of the arc */
+//	private Length axisEndPoint;
 	/** The rotation count (1 for an arc, N+1 for N turns */
 	private Integer rotation;
-	/** X coordinate */
+	/** Raw X coordinate in command, context independent */
 	private Length x;
-	/** Y coordinate */
+	/** Raw Y coordinate in command, context independent */
 	private Length y;
-	/** Z coordinate */
+	/** Raw Z coordinate in command, context independent */
 	private Length z;
-	/** I coordinate */
+	/** Raw I coordinate in command, context independent */
 	private Length i;
-	/** J coordinate */
+	/** Raw J coordinate in command, context independent */
 	private Length j;
-	/** K coordinate */
+	/** Raw K coordinate in command, context independent */
 	private Length k;
-	/** A coordinate */
+	/** Raw A coordinate in command, context independent */
 	private Angle a;
-	/** B coordinate */
+	/** Raw B coordinate in command, context independent */
 	private Angle b;
-	/** C coordinate */
+	/** Raw C coordinate in command, context independent */
 	private Angle c;
 	/** Rotation direction */
 	private boolean clockwise;
@@ -118,163 +118,182 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		}else{
 			context.setMotionMode(EnumMotionMode.ARC_COUNTERCLOCKWISE);
 		}
-		switch (context.getPlane()) {
-		case XY_PLANE: applyXyPlane(context);//context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
-			break;
-		case XZ_PLANE: applyXzPlane(context);//context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);			
-			break;
-		case YZ_PLANE: applyYzPlane(context);//context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
-			break;
-		default:
-			break;
-		}		
-	}
-
-	private void applyXyPlane(GCodeContext context) throws GkException {
-		/*
-		 *	If the selected plane is the XY-plane:
-		 *	 	1. first_end is the X coordinate of the end of the arc.
-		 *	 	2.second_end is the Y coordinate of the end of the arc.
-		 *	 	3.first_axis is the X coordinate of the axis (center) of the arc.
-		 *	 	4.second_axis is the Y coordinate of the axis (center) of the arc.
-		 *	 	5.axis_end_point is the Z coordinate of the end of the arc.
-		 */
-		// Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint
-		// x, y, i, j, z
-		if(firstEnd == null){
-			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-				firstEnd = QuantityUtils.add(context.getX(), x);
-				secondEnd = QuantityUtils.add(context.getY(), y);
-				axisEndPoint = QuantityUtils.add(context.getZ(), z);
-			}else{				
-				firstEnd = (x != null) ? x : context.getX();				
-				secondEnd = (y != null) ? y : context.getY();
-				axisEndPoint = (z != null) ? z : context.getZ();
-			}
-			firstAxis = QuantityUtils.add(context.getX(), i);
-			secondAxis = QuantityUtils.add(context.getY(), j);
+		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+			context.setX(NumberQuantity.add(x, context.getX()));
+			context.setY(NumberQuantity.add(y, context.getY()));
+			context.setZ(NumberQuantity.add(z, context.getZ()));
+			context.setA(NumberQuantity.add(a, context.getA()));
+			context.setB(NumberQuantity.add(b, context.getB()));
+			context.setC(NumberQuantity.add(c, context.getC()));			
+		}else{		
+			if( x != null ) context.setX(x);
+			if( y != null ) context.setY(y);
+			if( z != null ) context.setZ(z);
+			if( a != null ) context.setA(a);
+			if( b != null ) context.setB(b);
+			if( c != null ) context.setC(c);
 		}
-		context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);	
-	}
-	
-	private void applyXzPlane(GCodeContext context) throws GkException {
-		/*
-		 *	If the selected plane is the XZ-plane:
-		 *	 	1.first_end is the Z coordinate of the end of the arc.
-		 *	 	2.second_end is the X coordinate of the end of the arc.
-		 *	 	3.first_axis is the Z coordinate of the axis (center) of the arc.
-		 *	 	4.second_axis is the X coordinate of the axis (center) of the arc.
-		 *	 	5.axis_end_point is the Y coordinate of the end of the arc.
-		 */
-		if(firstEnd == null){
-			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-				firstEnd = QuantityUtils.add(context.getZ(), z);
-				secondEnd = QuantityUtils.add(context.getX(), x);				
-				axisEndPoint = QuantityUtils.add(context.getY(), y);				
-			}else{
-				firstEnd = (z != null) ? z : context.getZ();
-				secondEnd = (x != null) ? x : context.getX();
-				axisEndPoint = (y != null) ? y : context.getY();
-			}
-			firstAxis = QuantityUtils.add(context.getZ(), k);
-			secondAxis = QuantityUtils.add(context.getX(), i);
-		}
-		context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);	
-	}
-	
-	private void applyYzPlane(GCodeContext context) throws GkException {
-		/*
-		 *	If the selected plane is the YZ-plane:
-		 *	 	1.first_end is the Y coordinate of the end of the arc.
-		 *	 	2second_end is the Z coordinate of the end of the arc.
-		 *	 	3.first_axis is the Y coordinate of the axis (center) of the arc.
-		 *	 	4.second_axis is the Z coordinate of the axis (center) of the arc.
-		 *	 	5.axis_end_point is the X coordinate of the end of the arc.
-		 */
-		if(firstEnd == null){
-			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-				firstEnd = QuantityUtils.add(context.getY(), y);
-				secondEnd = QuantityUtils.add(context.getZ(), z);				
-				axisEndPoint = QuantityUtils.add(context.getX(), x);				
-			}else{
-				firstEnd = (y != null) ? y : context.getY();
-				secondEnd = (z != null) ? z : context.getZ();
-				axisEndPoint = (x != null) ? x : context.getX();
-			}
-			firstAxis = QuantityUtils.add(context.getY(), j);
-			secondAxis = QuantityUtils.add(context.getX(), i);
-		}
-		context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);
-	}
-	/**
-	 * @return the firstEnd
-	 */
-	public Length getFirstEnd() {
-		return firstEnd;
+		
+//		le renderer des arcs n'est probablement plus bon sur les plans différents de XY depuis le changement (à revoir)
+//		context.setPosition(x, y, z, a, b, c);
+		
+//		switch (context.getPlane()) {
+//		case XY_PLANE: applyXyPlane(context);//context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
+//			break;
+//		case XZ_PLANE: applyXzPlane(context);//context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);			
+//			break;
+//		case YZ_PLANE: applyYzPlane(context);//context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
+//			break;
+//		default:
+//			break;
+//		}		
 	}
 
-	/**
-	 * @param firstEnd the firstEnd to set
-	 */
-	public void setFirstEnd(Length firstEnd) {
-		this.firstEnd = firstEnd;
-	}
-
-	/**
-	 * @return the secondEnd
-	 */
-	public Length getSecondEnd() {
-		return secondEnd;
-	}
-
-	/**
-	 * @param secondEnd the secondEnd to set
-	 */
-	public void setSecondEnd(Length secondEnd) {
-		this.secondEnd = secondEnd;
-	}
-
-	/**
-	 * @return the firstAxis
-	 */
-	public Length getFirstAxis() {
-		return firstAxis;
-	}
-
-	/**
-	 * @param firstAxis the firstAxis to set
-	 */
-	public void setFirstAxis(Length firstAxis) {
-		this.firstAxis = firstAxis;
-	}
-
-	/**
-	 * @return the secondAxis
-	 */
-	public Length getSecondAxis() {
-		return secondAxis;
-	}
-
-	/**
-	 * @param secondAxis the secondAxis to set
-	 */
-	public void setSecondAxis(Length secondAxis) {
-		this.secondAxis = secondAxis;
-	}
-
-	/**
-	 * @return the axisEndPoint
-	 */
-	public Length getAxisEndPoint() {
-		return axisEndPoint;
-	}
-
-	/**
-	 * @param axisEndPoint the axisEndPoint to set
-	 */
-	public void setAxisEndPoint(Length axisEndPoint) {
-		this.axisEndPoint = axisEndPoint;
-	}
+//	private void applyXyPlane(GCodeContext context) throws GkException {
+//		/*
+//		 *	If the selected plane is the XY-plane:
+//		 *	 	1. first_end is the X coordinate of the end of the arc.
+//		 *	 	2.second_end is the Y coordinate of the end of the arc.
+//		 *	 	3.first_axis is the X coordinate of the axis (center) of the arc.
+//		 *	 	4.second_axis is the Y coordinate of the axis (center) of the arc.
+//		 *	 	5.axis_end_point is the Z coordinate of the end of the arc.
+//		 */
+//		// Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint
+//		// x, y, i, j, z
+//		if(firstEnd == null){
+//			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+//				firstEnd = QuantityUtils.add(context.getX(), x);
+//				secondEnd = QuantityUtils.add(context.getY(), y);
+//				axisEndPoint = QuantityUtils.add(context.getZ(), z);
+//			}else{				
+//				firstEnd = (x != null) ? x : context.getX();				
+//				secondEnd = (y != null) ? y : context.getY();
+//				axisEndPoint = (z != null) ? z : context.getZ();
+//			}
+//			firstAxis = QuantityUtils.add(context.getX(), i);
+//			secondAxis = QuantityUtils.add(context.getY(), j);
+//		}
+//		context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);	
+//	}
+//	
+//	private void applyXzPlane(GCodeContext context) throws GkException {
+//		/*
+//		 *	If the selected plane is the XZ-plane:
+//		 *	 	1.first_end is the Z coordinate of the end of the arc.
+//		 *	 	2.second_end is the X coordinate of the end of the arc.
+//		 *	 	3.first_axis is the Z coordinate of the axis (center) of the arc.
+//		 *	 	4.second_axis is the X coordinate of the axis (center) of the arc.
+//		 *	 	5.axis_end_point is the Y coordinate of the end of the arc.
+//		 */
+//		if(firstEnd == null){
+//			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+//				firstEnd = QuantityUtils.add(context.getZ(), z);
+//				secondEnd = QuantityUtils.add(context.getX(), x);				
+//				axisEndPoint = QuantityUtils.add(context.getY(), y);				
+//			}else{
+//				firstEnd = (z != null) ? z : context.getZ();
+//				secondEnd = (x != null) ? x : context.getX();
+//				axisEndPoint = (y != null) ? y : context.getY();
+//			}
+//			firstAxis = QuantityUtils.add(context.getZ(), k);
+//			secondAxis = QuantityUtils.add(context.getX(), i);
+//		}
+//		context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);	
+//	}
+//	
+//	private void applyYzPlane(GCodeContext context) throws GkException {
+//		/*
+//		 *	If the selected plane is the YZ-plane:
+//		 *	 	1.first_end is the Y coordinate of the end of the arc.
+//		 *	 	2second_end is the Z coordinate of the end of the arc.
+//		 *	 	3.first_axis is the Y coordinate of the axis (center) of the arc.
+//		 *	 	4.second_axis is the Z coordinate of the axis (center) of the arc.
+//		 *	 	5.axis_end_point is the X coordinate of the end of the arc.
+//		 */
+//		if(firstEnd == null){
+//			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
+//				firstEnd = QuantityUtils.add(context.getY(), y);
+//				secondEnd = QuantityUtils.add(context.getZ(), z);				
+//				axisEndPoint = QuantityUtils.add(context.getX(), x);				
+//			}else{
+//				firstEnd = (y != null) ? y : context.getY();
+//				secondEnd = (z != null) ? z : context.getZ();
+//				axisEndPoint = (x != null) ? x : context.getX();
+//			}
+//			firstAxis = QuantityUtils.add(context.getY(), j);
+//			secondAxis = QuantityUtils.add(context.getX(), i);
+//		}
+//		context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);
+//	}
+//	/**
+//	 * @return the firstEnd
+//	 */
+//	public Length getFirstEnd() {
+//		return firstEnd;
+//	}
+//
+//	/**
+//	 * @param firstEnd the firstEnd to set
+//	 */
+//	public void setFirstEnd(Length firstEnd) {
+//		this.firstEnd = firstEnd;
+//	}
+//
+//	/**
+//	 * @return the secondEnd
+//	 */
+//	public Length getSecondEnd() {
+//		return secondEnd;
+//	}
+//
+//	/**
+//	 * @param secondEnd the secondEnd to set
+//	 */
+//	public void setSecondEnd(Length secondEnd) {
+//		this.secondEnd = secondEnd;
+//	}
+//
+//	/**
+//	 * @return the firstAxis
+//	 */
+//	public Length getFirstAxis() {
+//		return firstAxis;
+//	}
+//
+//	/**
+//	 * @param firstAxis the firstAxis to set
+//	 */
+//	public void setFirstAxis(Length firstAxis) {
+//		this.firstAxis = firstAxis;
+//	}
+//
+//	/**
+//	 * @return the secondAxis
+//	 */
+//	public Length getSecondAxis() {
+//		return secondAxis;
+//	}
+//
+//	/**
+//	 * @param secondAxis the secondAxis to set
+//	 */
+//	public void setSecondAxis(Length secondAxis) {
+//		this.secondAxis = secondAxis;
+//	}
+//
+//	/**
+//	 * @return the axisEndPoint
+//	 */
+//	public Length getAxisEndPoint() {
+//		return axisEndPoint;
+//	}
+//
+//	/**
+//	 * @param axisEndPoint the axisEndPoint to set
+//	 */
+//	public void setAxisEndPoint(Length axisEndPoint) {
+//		this.axisEndPoint = axisEndPoint;
+//	}
 
 	/**
 	 * @return the rotation
@@ -337,7 +356,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setX(Length x) {
 		this.x = x;
-		this.firstEnd = null;
+	//	this.firstEnd = null;
 	}
 
 	/**
@@ -352,7 +371,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setY(Length y) {
 		this.y = y;
-		this.firstEnd = null;
+	//	this.firstEnd = null;
 	}
 
 	/**
@@ -367,7 +386,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setZ(Length z) {
 		this.z = z;
-		this.firstEnd = null;
+	//	this.firstEnd = null;
 	}
 
 	/**
@@ -382,7 +401,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setI(Length i) {
 		this.i = i;
-		this.firstEnd = null;
+	//	this.firstEnd = null;
 	}
 
 	/**
@@ -397,7 +416,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setJ(Length j) {
 		this.j = j;
-		this.firstEnd = null;
+	//	this.firstEnd = null;
 	}
 
 	/**
@@ -412,7 +431,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setK(Length k) {
 		this.k = k;
-		this.firstEnd = null;
+	//	this.firstEnd = null;
 	}
 
 	/**

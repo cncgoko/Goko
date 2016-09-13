@@ -107,16 +107,16 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 				}
 			break;
 		case YZ_PLANE:	
-			if(x == null && z == null){
-				throw new GkFunctionalException("GCO-130", "X", "Z");
+			if(y == null && z == null){
+				throw new GkFunctionalException("GCO-130", "Y", "Z");
 			}
 			if(j == null && k == null){
 				throw new GkFunctionalException("GCO-130", "J", "K");
 			}
 			break;
 		case XZ_PLANE:
-			if(z == null && y == null){
-				throw new GkFunctionalException("GCO-130", "Y", "Z");
+			if(z == null && x == null){
+				throw new GkFunctionalException("GCO-130", "X", "Z");
 			}
 			if(k == null && i == null){
 				throw new GkFunctionalException("GCO-130", "I", "K");

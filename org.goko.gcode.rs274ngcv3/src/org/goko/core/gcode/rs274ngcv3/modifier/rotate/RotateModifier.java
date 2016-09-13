@@ -108,7 +108,6 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 //		if(instr.getZ() != null){
 //			tuple.setZ(instr.getZ());
 //		}
-//		ca marche pas du tout :)
 		Vector3d tuple3d = tuple.toVector3d(unit);
 		rotate(tuple3d);
 		
@@ -170,31 +169,49 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 		rotate(start);
 		rotate(end);
 		rotate(center);
-		
-		switch(preContext.getPlane()){
-			case XY_PLANE: 
-				instr.setFirstEnd(Length.valueOf(BigDecimal.valueOf(end.x), unit));
-				instr.setSecondEnd(Length.valueOf(BigDecimal.valueOf(end.y), unit));
-				instr.setFirstAxis(Length.valueOf(BigDecimal.valueOf(center.x), unit));
-				instr.setSecondAxis(Length.valueOf(BigDecimal.valueOf(center.y), unit));
-				instr.setAxisEndPoint(Length.valueOf(BigDecimal.valueOf(end.z), unit));
-				break;
-			case YZ_PLANE: 
-				instr.setFirstEnd(Length.valueOf(BigDecimal.valueOf(end.y), unit));
-				instr.setSecondEnd(Length.valueOf(BigDecimal.valueOf(end.z), unit));
-				instr.setFirstAxis(Length.valueOf(BigDecimal.valueOf(center.y), unit));
-				instr.setSecondAxis(Length.valueOf(BigDecimal.valueOf(center.z), unit));
-				instr.setAxisEndPoint(Length.valueOf(BigDecimal.valueOf(end.x), unit));
-				break;
-			case XZ_PLANE: 
-				instr.setFirstEnd(Length.valueOf(BigDecimal.valueOf(end.z), unit));
-				instr.setSecondEnd(Length.valueOf(BigDecimal.valueOf(end.x), unit));
-				instr.setFirstAxis(Length.valueOf(BigDecimal.valueOf(center.z), unit));
-				instr.setSecondAxis(Length.valueOf(BigDecimal.valueOf(center.x), unit));
-				instr.setAxisEndPoint(Length.valueOf(BigDecimal.valueOf(end.y), unit));
-				break;
-			default: throw new GkTechnicalException("Not supported "+preContext.getPlane());
+	//pas bon
+		switch(preContext.getDistanceMode()){
+			case ABSOLUTE:
+				instr.setX(Length.valueOf(BigDecimal.valueOf(end.x), unit));
+				instr.setY(Length.valueOf(BigDecimal.valueOf(end.y), unit));
+				instr.setZ(Length.valueOf(BigDecimal.valueOf(end.z), unit));				
+			break;
+			case RELATIVE:
+				instr.setX(Length.valueOf(BigDecimal.valueOf(end.x - start.x), unit));
+				instr.setY(Length.valueOf(BigDecimal.valueOf(end.y - start.y), unit));
+				instr.setZ(Length.valueOf(BigDecimal.valueOf(end.z - start.z), unit));
+			break;
+			default: throw new GkTechnicalException("Not supported "+preContext.getDistanceMode());
 		}
+		
+		instr.setI(Length.valueOf(BigDecimal.valueOf(center.x - start.x), unit));
+		instr.setJ(Length.valueOf(BigDecimal.valueOf(center.y - start.y), unit));
+		instr.setK(Length.valueOf(BigDecimal.valueOf(center.z - start.z), unit));
+//		
+//		switch(preContext.getPlane()){
+//			case XY_PLANE: 
+//				instr.setFirstEnd(Length.valueOf(BigDecimal.valueOf(end.x), unit));
+//				instr.setSecondEnd(Length.valueOf(BigDecimal.valueOf(end.y), unit));
+//				instr.setFirstAxis(Length.valueOf(BigDecimal.valueOf(center.x), unit));
+//				instr.setSecondAxis(Length.valueOf(BigDecimal.valueOf(center.y), unit));
+//				instr.setAxisEndPoint(Length.valueOf(BigDecimal.valueOf(end.z), unit));
+//				break;
+//			case YZ_PLANE: 
+//				instr.setFirstEnd(Length.valueOf(BigDecimal.valueOf(end.y), unit));
+//				instr.setSecondEnd(Length.valueOf(BigDecimal.valueOf(end.z), unit));
+//				instr.setFirstAxis(Length.valueOf(BigDecimal.valueOf(center.y), unit));
+//				instr.setSecondAxis(Length.valueOf(BigDecimal.valueOf(center.z), unit));
+//				instr.setAxisEndPoint(Length.valueOf(BigDecimal.valueOf(end.x), unit));
+//				break;
+//			case XZ_PLANE: 
+//				instr.setFirstEnd(Length.valueOf(BigDecimal.valueOf(end.z), unit));
+//				instr.setSecondEnd(Length.valueOf(BigDecimal.valueOf(end.x), unit));
+//				instr.setFirstAxis(Length.valueOf(BigDecimal.valueOf(center.z), unit));
+//				instr.setSecondAxis(Length.valueOf(BigDecimal.valueOf(center.x), unit));
+//				instr.setAxisEndPoint(Length.valueOf(BigDecimal.valueOf(end.y), unit));
+//				break;
+//			default: throw new GkTechnicalException("Not supported "+preContext.getPlane());
+//		}
 	}
 
 	/**
