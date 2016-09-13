@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -13,6 +14,7 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
@@ -43,13 +45,16 @@ public class GokoUpdateCheckRunnable {
 		IMetadataRepositoryManager metadataManager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
 		IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService(IArtifactRepositoryManager.SERVICE_NAME);
 		
-		traceUsedRepositories(metadataManager, artifactManager);
-		
 		addGokoDefaultRepositories(metadataManager, artifactManager);
 		
 		if(GokoPreference.getInstance().isDeveloperMode()){
 			addGokoDeveloperRepositories(metadataManager, artifactManager);
 		}
+		
+		refreshUsedRepositories(metadataManager, artifactManager, monitor);
+		
+		traceUsedRepositories(metadataManager, artifactManager);
+		
         //check if updates are available
         IStatus status = operation.resolveModal(sub.newChild(100));
         
@@ -186,6 +191,42 @@ public class GokoUpdateCheckRunnable {
     }
     
     /**
+     * Traces the list of known repositories
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void refreshUsedRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager,final IProgressMonitor monitor){
+		URI[] lstMetadataRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);		
+		URI[] lstArtifactRepositories = artifactManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
+		
+		// Logging known metadata repositories
+		if(lstMetadataRepositories != null && lstMetadataRepositories.length > 0){
+			LOG.info("Refreshing metadata repositories :");
+			for (URI uri : lstMetadataRepositories) {						
+				LOG.info("  - "+uri.toString());
+				try {
+					metadataManager.refreshRepository(uri, monitor);
+				} catch (ProvisionException | OperationCanceledException e) {
+					LOG.error(e);
+				}
+						
+			}			
+		}
+		// Logging known artifact repositories
+		if(lstArtifactRepositories != null && lstArtifactRepositories.length > 0){
+			LOG.info("Refreshing artifact repositories :");
+			for (URI uri : lstArtifactRepositories) {
+				LOG.info("  - "+uri.toString());
+				try {
+					artifactManager.refreshRepository(uri, monitor);
+				} catch (ProvisionException | OperationCanceledException e) {
+					LOG.error(e);
+				}
+			}			
+		}
+    }
+    
+    /**
      * Adds Goko default repository if not found in the known repositories list 
      * @param metadataManager the used IMetadataRepositoryManager
      * @param artifactManager the used IArtifactRepositoryManager
@@ -242,7 +283,11 @@ public class GokoUpdateCheckRunnable {
     private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
 		try {
 			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			LOG.info("Adding Goko dev repository ("+UPDATE_SITE_URL+") to metadata repositories.");
+			
 			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			LOG.info("Adding Goko dev repository ("+UPDATE_SITE_URL+") to artifact repositories.");
+			
 		} catch (URISyntaxException e) {
 			LOG.error(e);
 		}
