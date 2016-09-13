@@ -201,7 +201,7 @@ public class GokoUpdateCheckRunnable {
 		
 		// Logging known metadata repositories
 		if(lstMetadataRepositories != null && lstMetadataRepositories.length > 0){
-			LOG.info("Refreshing metadata repositories :");
+			LOG.info("Refreshing metadata repositories : ");
 			for (URI uri : lstMetadataRepositories) {						
 				LOG.info("  - "+uri.toString());
 				try {
@@ -214,7 +214,7 @@ public class GokoUpdateCheckRunnable {
 		}
 		// Logging known artifact repositories
 		if(lstArtifactRepositories != null && lstArtifactRepositories.length > 0){
-			LOG.info("Refreshing artifact repositories :");
+			LOG.info("Refreshing artifact repositories : ");
 			for (URI uri : lstArtifactRepositories) {
 				LOG.info("  - "+uri.toString());
 				try {
