@@ -13,45 +13,16 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
  *  Move in a helical arc from the current position at the existing feed rate. The axis of the helix is
  *	parallel to the X, Y, or Z-axis, according to which one is perpendicular to the selected plane. The
  *	helical arc may degenerate to a circular arc if there is no motion parallel to the axis of the helix.
- *	If the selected plane is the XY-plane:
- *	 	1. first_end is the X coordinate of the end of the arc.
- *	 	2.second_end is the Y coordinate of the end of the arc.
- *	 	3.first_axis is the X coordinate of the axis (center) of the arc.
- *	 	4.second_axis is the Y coordinate of the axis (center) of the arc.
- *	 	5.axis_end_point is the Z coordinate of the end of the arc.
- *	If the selected plane is the YZ-plane:
- *	 	1.first_end is the Y coordinate of the end of the arc.
- *	 	2second_end is the Z coordinate of the end of the arc.
- *	 	3.first_axis is the Y coordinate of the axis (center) of the arc.
- *	 	4.second_axis is the Z coordinate of the axis (center) of the arc.
- *	 	5.axis_end_point is the X coordinate of the end of the arc.
- *	If the selected plane is the XZ-plane:
- *	 	1.first_end is the Z coordinate of the end of the arc.
- *	 	2.second_end is the X coordinate of the end of the arc.
- *	 	3.first_axis is the Z coordinate of the axis (center) of the arc.
- *	 	4.second_axis is the X coordinate of the axis (center) of the arc.
- *	 	5.axis_end_point is the Y coordinate of the end of the arc.
- *	If rotation is positive, the arc is traversed counterclockwise as viewed from the positive end of the coordinate axis perpendicular to the currently selected plane. 
- *	If rotation is negative, the arc is traversed clockwise. If rotation is 0, first_end and second_end must be the same as the  corresponding  coordinates  of  the  current  position  and  no  arc  is  made  (but  there  may  be
- *	translation parallel to the axis perpendicular to the selected plane and rotational axis motion).
- *	If rotation is 1, more than 0 but not more than 360 degrees of arc should be made. In general, if rotation is n, n is not 0, and we let N be the absolute value of n, the absolute value of the
- *	amount of rotation in the arc should be more than ([N-1] x 360) but not more than (N x 360). The radius of the helix is determined by the distance from the current position to the axis of helix
- *	or by the distance from the end location to the axis of the helix. It is an error if the two radii are not the same (within some tolerance, to be set by the implementation). The feed rate applies to the distance traveled along the helix. This differs from many existing
- *	systems, which apply the feed rate to the distance traveled by a point on a circle which is the projection of the helix on a plane perpendicular to the axis of the helix. Rotational  axis  motion  along  with  helical  XYZ  motion  has  no  known  applications,  but  is  not
- *	illegal. Rotational axis motion is handled as follows, if there is rotational motion.
+ *	 - If rotation is positive, the arc is traversed counterclockwise as viewed from the positive end of the coordinate axis perpendicular to the currently selected plane. 
+ *	 - If rotation is negative, the arc is traversed clockwise. If rotation is 0, first_end and second_end must be the same as the  corresponding  coordinates  of  the  current  position  and  no  arc  is  made  (but  there  may  be translation parallel to the axis perpendicular to the selected plane and rotational axis motion).
+ *	 - If rotation is 1, more than 0 but not more than 360 degrees of arc should be made. In general, if rotation is n, n is not 0, and we let N be the absolute value of n, the absolute value of the
+ *		amount of rotation in the arc should be more than ([N-1] x 360) but not more than (N x 360). The radius of the helix is determined by the distance from the current position to the axis of helix
+ *		or by the distance from the end location to the axis of the helix. It is an error if the two radii are not the same (within some tolerance, to be set by the implementation). The feed rate applies to the distance traveled along the helix. This differs from many existing
+ *		systems, which apply the feed rate to the distance traveled by a point on a circle which is the projection of the helix on a plane perpendicular to the axis of the helix. Rotational  axis  motion  along  with  helical  XYZ  motion  has  no  known  applications,  but  is  not
+ *		illegal. Rotational axis motion is handled as follows, if there is rotational motion.
  *
  */
 public class ArcFeedInstruction extends AbstractInstruction {	
-//	/** The first coordinate of the end of the arc */
-//	private Length firstEnd;
-//	/** The second coordinate of the end of the arc */
-//	private Length secondEnd;
-//	/** The first coordinate of the center of the arc */
-//	private Length firstAxis;
-//	/** The second coordinate of the center of the arc */
-//	private Length secondAxis;
-//	/** The third coordinate of the end of the arc */
-//	private Length axisEndPoint;
 	/** The rotation count (1 for an arc, N+1 for N turns */
 	private Integer rotation;
 	/** Raw X coordinate in command, context independent */
@@ -132,168 +103,8 @@ public class ArcFeedInstruction extends AbstractInstruction {
 			if( a != null ) context.setA(a);
 			if( b != null ) context.setB(b);
 			if( c != null ) context.setC(c);
-		}
-		
-//		le renderer des arcs n'est probablement plus bon sur les plans différents de XY depuis le changement (à revoir)
-//		context.setPosition(x, y, z, a, b, c);
-		
-//		switch (context.getPlane()) {
-//		case XY_PLANE: applyXyPlane(context);//context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);			
-//			break;
-//		case XZ_PLANE: applyXzPlane(context);//context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);			
-//			break;
-//		case YZ_PLANE: applyYzPlane(context);//context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);			
-//			break;
-//		default:
-//			break;
-//		}		
+		}		
 	}
-
-//	private void applyXyPlane(GCodeContext context) throws GkException {
-//		/*
-//		 *	If the selected plane is the XY-plane:
-//		 *	 	1. first_end is the X coordinate of the end of the arc.
-//		 *	 	2.second_end is the Y coordinate of the end of the arc.
-//		 *	 	3.first_axis is the X coordinate of the axis (center) of the arc.
-//		 *	 	4.second_axis is the Y coordinate of the axis (center) of the arc.
-//		 *	 	5.axis_end_point is the Z coordinate of the end of the arc.
-//		 */
-//		// Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint
-//		// x, y, i, j, z
-//		if(firstEnd == null){
-//			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-//				firstEnd = QuantityUtils.add(context.getX(), x);
-//				secondEnd = QuantityUtils.add(context.getY(), y);
-//				axisEndPoint = QuantityUtils.add(context.getZ(), z);
-//			}else{				
-//				firstEnd = (x != null) ? x : context.getX();				
-//				secondEnd = (y != null) ? y : context.getY();
-//				axisEndPoint = (z != null) ? z : context.getZ();
-//			}
-//			firstAxis = QuantityUtils.add(context.getX(), i);
-//			secondAxis = QuantityUtils.add(context.getY(), j);
-//		}
-//		context.setPosition(firstEnd, secondEnd, axisEndPoint, a, b, c);	
-//	}
-//	
-//	private void applyXzPlane(GCodeContext context) throws GkException {
-//		/*
-//		 *	If the selected plane is the XZ-plane:
-//		 *	 	1.first_end is the Z coordinate of the end of the arc.
-//		 *	 	2.second_end is the X coordinate of the end of the arc.
-//		 *	 	3.first_axis is the Z coordinate of the axis (center) of the arc.
-//		 *	 	4.second_axis is the X coordinate of the axis (center) of the arc.
-//		 *	 	5.axis_end_point is the Y coordinate of the end of the arc.
-//		 */
-//		if(firstEnd == null){
-//			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-//				firstEnd = QuantityUtils.add(context.getZ(), z);
-//				secondEnd = QuantityUtils.add(context.getX(), x);				
-//				axisEndPoint = QuantityUtils.add(context.getY(), y);				
-//			}else{
-//				firstEnd = (z != null) ? z : context.getZ();
-//				secondEnd = (x != null) ? x : context.getX();
-//				axisEndPoint = (y != null) ? y : context.getY();
-//			}
-//			firstAxis = QuantityUtils.add(context.getZ(), k);
-//			secondAxis = QuantityUtils.add(context.getX(), i);
-//		}
-//		context.setPosition(secondEnd, axisEndPoint, firstEnd, a, b, c);	
-//	}
-//	
-//	private void applyYzPlane(GCodeContext context) throws GkException {
-//		/*
-//		 *	If the selected plane is the YZ-plane:
-//		 *	 	1.first_end is the Y coordinate of the end of the arc.
-//		 *	 	2second_end is the Z coordinate of the end of the arc.
-//		 *	 	3.first_axis is the Y coordinate of the axis (center) of the arc.
-//		 *	 	4.second_axis is the Z coordinate of the axis (center) of the arc.
-//		 *	 	5.axis_end_point is the X coordinate of the end of the arc.
-//		 */
-//		if(firstEnd == null){
-//			if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-//				firstEnd = QuantityUtils.add(context.getY(), y);
-//				secondEnd = QuantityUtils.add(context.getZ(), z);				
-//				axisEndPoint = QuantityUtils.add(context.getX(), x);				
-//			}else{
-//				firstEnd = (y != null) ? y : context.getY();
-//				secondEnd = (z != null) ? z : context.getZ();
-//				axisEndPoint = (x != null) ? x : context.getX();
-//			}
-//			firstAxis = QuantityUtils.add(context.getY(), j);
-//			secondAxis = QuantityUtils.add(context.getX(), i);
-//		}
-//		context.setPosition(axisEndPoint, firstEnd, secondEnd, a, b, c);
-//	}
-//	/**
-//	 * @return the firstEnd
-//	 */
-//	public Length getFirstEnd() {
-//		return firstEnd;
-//	}
-//
-//	/**
-//	 * @param firstEnd the firstEnd to set
-//	 */
-//	public void setFirstEnd(Length firstEnd) {
-//		this.firstEnd = firstEnd;
-//	}
-//
-//	/**
-//	 * @return the secondEnd
-//	 */
-//	public Length getSecondEnd() {
-//		return secondEnd;
-//	}
-//
-//	/**
-//	 * @param secondEnd the secondEnd to set
-//	 */
-//	public void setSecondEnd(Length secondEnd) {
-//		this.secondEnd = secondEnd;
-//	}
-//
-//	/**
-//	 * @return the firstAxis
-//	 */
-//	public Length getFirstAxis() {
-//		return firstAxis;
-//	}
-//
-//	/**
-//	 * @param firstAxis the firstAxis to set
-//	 */
-//	public void setFirstAxis(Length firstAxis) {
-//		this.firstAxis = firstAxis;
-//	}
-//
-//	/**
-//	 * @return the secondAxis
-//	 */
-//	public Length getSecondAxis() {
-//		return secondAxis;
-//	}
-//
-//	/**
-//	 * @param secondAxis the secondAxis to set
-//	 */
-//	public void setSecondAxis(Length secondAxis) {
-//		this.secondAxis = secondAxis;
-//	}
-//
-//	/**
-//	 * @return the axisEndPoint
-//	 */
-//	public Length getAxisEndPoint() {
-//		return axisEndPoint;
-//	}
-//
-//	/**
-//	 * @param axisEndPoint the axisEndPoint to set
-//	 */
-//	public void setAxisEndPoint(Length axisEndPoint) {
-//		this.axisEndPoint = axisEndPoint;
-//	}
 
 	/**
 	 * @return the rotation
@@ -356,7 +167,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setX(Length x) {
 		this.x = x;
-	//	this.firstEnd = null;
 	}
 
 	/**
@@ -370,8 +180,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 * @param y the y to set
 	 */
 	public void setY(Length y) {
-		this.y = y;
-	//	this.firstEnd = null;
+		this.y = y;	
 	}
 
 	/**
@@ -386,7 +195,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setZ(Length z) {
 		this.z = z;
-	//	this.firstEnd = null;
 	}
 
 	/**
@@ -401,7 +209,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setI(Length i) {
 		this.i = i;
-	//	this.firstEnd = null;
 	}
 
 	/**
@@ -416,7 +223,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setJ(Length j) {
 		this.j = j;
-	//	this.firstEnd = null;
 	}
 
 	/**
@@ -431,7 +237,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 */
 	public void setK(Length k) {
 		this.k = k;
-	//	this.firstEnd = null;
 	}
 
 	/**
