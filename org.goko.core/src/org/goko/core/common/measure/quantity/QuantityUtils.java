@@ -24,7 +24,7 @@ public final class QuantityUtils {
 		}
 		return a.add(b);
 	}
-	
+		
 	/**
 	 * Performs the subtraction of the two given quantity and make sure the type of quantity remains the same 
 	 * Unit conversion is used to make sure the sum is made in the corresponding units
@@ -40,6 +40,21 @@ public final class QuantityUtils {
 		}
 		return a.subtract(b);
 	}
+	
+	/**
+	 * Performs the multiplication of the given quantity and the given factor and make sure the type of quantity remains the same 
+	 * Unit conversion is used to make sure the sum is made in the corresponding units
+	 * @param a quantity A
+	 * @param factor multiply factor
+	 * @return the sum of the two values 
+	 */
+	public static <Q extends Quantity<Q>> Q multiply(Q a, int factor){
+		if(a == null){
+			return null;
+		}
+		return a.multiply(factor);
+	}
+	
 	/**
 	 * Returns the minimum quantity between the 2 given Quantity. Unit conversion
 	 * is used to make sure the comparison is made in the corresponding units

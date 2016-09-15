@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.eclipse.swt.widgets.Display;
 import org.goko.common.bindings.AbstractController;
+import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -75,6 +76,7 @@ public abstract class AbstractModifierPanelController<T extends AbstractModifier
 						}
 					} catch (GkException e) {
 						LOG.error(e);
+						GkDialog.openDialog(e);
 					}
 				}
 			});			

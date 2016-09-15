@@ -344,6 +344,22 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		return true;
 	}
 
-	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#clone()
+	 */
+	@Override
+	public ArcFeedInstruction clone() {		
+		ArcFeedInstruction instr = (ArcFeedInstruction) super.clone();
+		if(x != null) instr.x = Length.clone(x);
+		if(y != null) instr.y = Length.clone(y);
+		if(z != null) instr.z = Length.clone(z);
+		if(a != null) instr.a = Angle.clone(a);
+		if(b != null) instr.b = Angle.clone(b);
+		if(c != null) instr.c = Angle.clone(c);
+		if(i != null) instr.i = Length.clone(i);
+		if(j != null) instr.j = Length.clone(j);
+		if(k != null) instr.k = Length.clone(k);		
+		return instr;
+	}	
 	
 }

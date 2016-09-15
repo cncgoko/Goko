@@ -242,5 +242,24 @@ public abstract class AbstractStraightInstruction extends AbstractInstruction {
 		return true;
 	}
 	
-	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#clone()
+	 */
+	@Override
+	public AbstractStraightInstruction clone() {		
+		AbstractStraightInstruction instr = (AbstractStraightInstruction) super.clone();
+		if(x != null) instr.x = Length.clone(x);
+		if(y != null) instr.y = Length.clone(y);
+		if(z != null) instr.z = Length.clone(z);
+		if(a != null) instr.a = Angle.clone(a);
+		if(b != null) instr.b = Angle.clone(b);
+		if(c != null) instr.c = Angle.clone(c);
+		instr.cachedA = null;
+		instr.cachedB = null;
+		instr.cachedC = null;
+		instr.cachedX = null;
+		instr.cachedY = null;
+		instr.cachedZ = null;
+		return instr;
+	}
 }

@@ -213,6 +213,17 @@ public class Tuple6b {
 		return result;
 	}
 
+	public Tuple6b scale(int factor){
+		Tuple6b result = new Tuple6b(this);
+		result.x = QuantityUtils.multiply(x, factor);
+		result.y = QuantityUtils.multiply(y, factor);
+		result.z = QuantityUtils.multiply(z, factor);
+		result.a = QuantityUtils.multiply(a, factor);
+		result.b = QuantityUtils.multiply(b, factor);
+		result.c = QuantityUtils.multiply(c, factor);
+		return result;
+	}
+	
 	public void updateAbsolute(Tuple6b position){
 		this.x = atomUpdateAbsolute(x, position.x);
 		this.y = atomUpdateAbsolute(y, position.y);

@@ -4,14 +4,16 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.io.xml.quantity.XmlAngle;
 import org.goko.core.common.io.xml.quantity.XmlLength;
+import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlTranslateModifier;
 
 /**
  * @author PsyKo
- * @date 16 févr. 2016
+ * @date 16 fï¿½vr. 2016
  */
 public class TranslateModifierLoader extends AbstractModifierLoader<XmlTranslateModifier, TranslateModifier> {
 
@@ -39,6 +41,24 @@ public class TranslateModifierLoader extends AbstractModifierLoader<XmlTranslate
 		output.setTranslationX(XmlLength.valueOf(input.getX()));
 		output.setTranslationY(XmlLength.valueOf(input.getY()));
 		output.setTranslationZ(XmlLength.valueOf(input.getZ()));
+		// Null check for backward compatibility
+		if(input.getA() != null){
+			output.setTranslationA(XmlAngle.valueOf(input.getA()));
+		}else{
+			output.setTranslationA(Angle.ZERO);
+		}
+		// Null check for backward compatibility
+		if(input.getB() != null){
+			output.setTranslationB(XmlAngle.valueOf(input.getB()));
+		}else{
+			output.setTranslationB(Angle.ZERO);
+		}
+		// Null check for backward compatibility
+		if(input.getC() != null){
+			output.setTranslationC(XmlAngle.valueOf(input.getC()));
+		}else{
+			output.setTranslationC(Angle.ZERO);
+		}
 	}
 
 	/** (inheritDoc)

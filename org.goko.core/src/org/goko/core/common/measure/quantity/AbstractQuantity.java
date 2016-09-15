@@ -38,7 +38,13 @@ public abstract class AbstractQuantity<Q extends Quantity<Q>> implements Quantit
 		this.value = value;
 		this.unit = unit;
 	}
-
+	
+	protected AbstractQuantity(Q quantity) {
+		super();
+		this.value = quantity.value(quantity.getUnit());
+		this.unit = quantity.getUnit();
+	}
+		
 	protected UnitConverter getConverterTo(Unit<Q> unit) throws GkTechnicalException{
 		if(unit instanceof AbstractUnit<?>){
 			throw new GkTechnicalException("Incompatible units...");

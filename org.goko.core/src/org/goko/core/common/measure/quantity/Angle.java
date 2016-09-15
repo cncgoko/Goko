@@ -29,6 +29,10 @@ public class Angle extends AbstractQuantity<Angle>{
 		return new Angle(value, unit);
 	}
 	
+	public static Angle clone(Angle angle) {		
+		return new Angle(angle.value(angle.getUnit()), angle.getUnit());
+	}
+	
 	public static Angle valueOf(String value, Unit<Angle> unit) {		
 		return new Angle(new BigDecimal(value), unit);
 	}

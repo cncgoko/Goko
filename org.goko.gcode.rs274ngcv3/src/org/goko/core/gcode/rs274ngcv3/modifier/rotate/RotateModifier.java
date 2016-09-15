@@ -98,16 +98,7 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 		Unit<Length> unit = preContext.getUnit().getUnit();
 		GCodeContext postContext = new GCodeContext(preContext);
 		instr.apply(postContext);
-		Tuple6b tuple = postContext.getPosition();//new Tuple6b().setZero();//.instr.getX(),instr.getY(),instr.getZ(),instr.getA(),instr.getB(),instr.getC());
-//		if(instr.getX() != null){
-//			tuple.setX(instr.getX());
-//		}
-//		if(instr.getY() != null){
-//			tuple.setY(instr.getY());
-//		}
-//		if(instr.getZ() != null){
-//			tuple.setZ(instr.getZ());
-//		}
+		Tuple6b tuple = postContext.getPosition();
 		Vector3d tuple3d = tuple.toVector3d(unit);
 		rotate(tuple3d);
 		
@@ -159,7 +150,7 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 	
 	private void rotateArcInstruction(ArcFeedInstruction instr, GCodeContext preContext) throws GkException {
 		// Make sure the arc is in a plane that can be rotated
-		//checkRotationPlane(preContext);
+		checkRotationPlane(preContext);
 		
 		Arc3b arc = InstructionUtils.getArc(preContext, instr);
 		Unit<Length> unit = preContext.getUnit().getUnit();

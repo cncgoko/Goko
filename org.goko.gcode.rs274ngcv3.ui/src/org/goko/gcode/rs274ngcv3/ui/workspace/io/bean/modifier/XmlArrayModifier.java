@@ -6,22 +6,21 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.DerivedType;
 
-@DerivedType(parent=XmlGCodeModifier.class, name="modifier:translate")
-public class XmlTranslateModifier extends XmlGCodeModifier {
+@DerivedType(parent=XmlGCodeModifier.class, name="modifier:array")
+public class XmlArrayModifier extends XmlGCodeModifier {
+	@Attribute
+	private int copyCount;
 	@Attribute
 	private XmlLength x;
 	@Attribute
 	private XmlLength y;
 	@Attribute
 	private XmlLength z;
-	/** A translation (not required for backward compatibility with 0.3.0 project files) */
-	@Attribute(required=false)
+	@Attribute
 	private XmlAngle a;
-	/** B translation (not required for backward compatibility with 0.3.0 project files) */
-	@Attribute(required=false)
+	@Attribute
 	private XmlAngle b;
-	/** C translation (not required for backward compatibility with 0.3.0 project files) */
-	@Attribute(required=false)
+	@Attribute
 	private XmlAngle c;
 
 	/**
@@ -95,6 +94,18 @@ public class XmlTranslateModifier extends XmlGCodeModifier {
 	 */
 	public void setC(XmlAngle c) {
 		this.c = c;
+	}
+	/**
+	 * @return the copyCount
+	 */
+	public int getCopyCount() {
+		return copyCount;
+	}
+	/**
+	 * @param copyCount the copyCount to set
+	 */
+	public void setCopyCount(int copyCount) {
+		this.copyCount = copyCount;
 	}
 
 }

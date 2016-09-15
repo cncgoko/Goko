@@ -4,6 +4,8 @@ import org.eclipse.jface.action.Action;
 import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
@@ -48,9 +50,18 @@ public class CreateModifierAction extends Action{
 	 */
 	@Override
 	public void run() {
+		IModifier<GCodeProvider> modifier = null;
 		try {
-			rs274Service.addModifier(modifierUiProvider.createDefaultModifier(idGCodeProvider));
+			modifier = modifierUiProvider.createDefaultModifier(idGCodeProvider);
+			rs274Service.addModifier(modifier);
 		} catch (GkException e) {
+			if(modifier != null){
+				try {
+					rs274Service.deleteModifier(modifier);
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
 			LOG.error(e);
 			GkDialog.openDialog(null, e);			 
 		}

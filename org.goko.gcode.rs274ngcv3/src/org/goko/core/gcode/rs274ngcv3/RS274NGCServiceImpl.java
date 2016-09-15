@@ -654,9 +654,12 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		}
 		IStackableGCodeProvider baseProvider = this.cacheStackedProviders.get(modifier.getIdGCodeProvider());
 		StackableGCodeProviderModifier wrappedProvider = new StackableGCodeProviderModifier(baseProvider, modifier);
-		wrappedProvider.update();
+		
 		this.cacheStackedProviders.remove(baseProvider.getId());
 		this.cacheStackedProviders.add(wrappedProvider);
+		
+		wrappedProvider.update();
+		
 		notifyModifierCreate(modifier);
 		notifyGCodeProviderUpdate(wrappedProvider);		
 	}

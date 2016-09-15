@@ -4,6 +4,7 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.io.xml.quantity.XmlAngle;
 import org.goko.core.common.io.xml.quantity.XmlLength;
 import org.goko.core.gcode.rs274ngcv3.modifier.translate.TranslateModifier;
 import org.goko.core.workspace.service.IMapperService;
@@ -11,7 +12,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlTranslateModif
 
 /**
  * @author PsyKo
- * @date 13 déc. 2015
+ * @date 13 dï¿½c. 2015
  */
 public class TranslateModifierExporter extends AbstractModifierExporter<TranslateModifier, XmlTranslateModifier>{
 
@@ -39,6 +40,9 @@ public class TranslateModifierExporter extends AbstractModifierExporter<Translat
 		output.setX( new XmlLength(input.getTranslationX()) );
 		output.setY( new XmlLength(input.getTranslationY()) );
 		output.setZ( new XmlLength(input.getTranslationZ()) );		
+		output.setA( new XmlAngle(input.getTranslationA()) );
+		output.setB( new XmlAngle(input.getTranslationB()) );
+		output.setC( new XmlAngle(input.getTranslationC()) );		
 	}
 
 	/** (inheritDoc)

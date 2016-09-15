@@ -4,8 +4,11 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.log.GkLog;
 
-public abstract class AbstractInstruction implements IInstruction {
+public abstract class AbstractInstruction implements IInstruction, Cloneable {
+	/** LOG */
+	private static final GkLog LOG = GkLog.getLogger(AbstractInstruction.class);
 	/** Internal ID */
 	private Integer id;
 	/** Id of the GCode line that generated this instruction */
@@ -105,5 +108,19 @@ public abstract class AbstractInstruction implements IInstruction {
 		return true;
 	}
 	
-	
+	/** (inheritDoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public AbstractInstruction clone() {		
+		AbstractInstruction clone = null;
+		try {
+			clone = (AbstractInstruction) super.clone();
+			clone.setId(null);
+			clone.setIdGCodeLine(null);
+		} catch (CloneNotSupportedException e) {
+			LOG.error(e);
+		}		
+		return clone;
+	}
 }

@@ -21,12 +21,14 @@ import org.goko.core.workspace.service.IProjectLoadParticipant;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.ResourceLocationGCodeSourceExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ArrayModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.RotateModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ScaleModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.SegmentizeModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.TranslateModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.WrapModifierExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.source.ResourceLocationGCodeSourceExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ArrayModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.RotateModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ScaleModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.SegmentizeModifierLoader;
@@ -76,7 +78,9 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 		mapperService.addLoader(new TranslateModifierLoader());		
 		mapperService.addLoader(new ScaleModifierLoader());		
 		mapperService.addLoader(new WrapModifierLoader());		
-		mapperService.addLoader(new RotateModifierLoader());		
+		mapperService.addLoader(new RotateModifierLoader());
+		mapperService.addLoader(new ArrayModifierLoader());
+		
 		
 		mapperService.addExporter(new ResourceLocationGCodeSourceExporter());
 		mapperService.addExporter(new TranslateModifierExporter());		
@@ -84,6 +88,7 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 		mapperService.addExporter(new ScaleModifierExporter());
 		mapperService.addExporter(new WrapModifierExporter());
 		mapperService.addExporter(new RotateModifierExporter());
+		mapperService.addExporter(new ArrayModifierExporter());
 		
 		LOG.info("Successfully started "+getServiceId());
 	}

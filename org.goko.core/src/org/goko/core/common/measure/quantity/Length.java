@@ -26,20 +26,26 @@ import org.goko.core.common.measure.units.Unit;
 
 public class Length extends AbstractQuantity<Length> {
 	public static final Length ZERO = new Length(BigDecimal.ZERO, Units.MILLIMETRE);
+	
 	/**
-	 * @param value
-	 * @param unit
+	 * Default constructor
+	 * @param value the value of the length
+	 * @param unit the unit
 	 */
 	protected Length(BigDecimal value, Unit<Length> unit) {
 		super(value, unit);		
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.measure.quantity.Quantity#valueOf(java.math.BigDecimal, org.goko.core.common.measure.units.Unit)
 	 */
 	@Override
 	public Length createQuantity(BigDecimal value, Unit<Length> unit) {		
 		return Length.valueOf(value, unit);
+	}
+	
+	public static Length clone(Length length) {		
+		return new Length(length.value(length.getUnit()), length.getUnit());
 	}
 	
 	public static Length valueOf(BigDecimal value, Unit<Length> unit) {		
