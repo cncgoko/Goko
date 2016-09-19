@@ -41,6 +41,25 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		prefs.setDefault(JoglViewerPreference.GRID_END_Y, "100mm");
 		prefs.setDefault(JoglViewerPreference.GRID_END_Z, "100mm");
 		
+		
+		prefs.setDefault(JoglViewerPreference.ORBIT_INVERT_X_AXIS 	, false);
+		prefs.setDefault(JoglViewerPreference.ORBIT_INVERT_Y_AXIS	, false);
+		prefs.setDefault(JoglViewerPreference.ORBIT_SENSITIVITY 	, "50");
+		prefs.setDefault(JoglViewerPreference.PAN_INVERT_X_AXIS 	, false);
+		prefs.setDefault(JoglViewerPreference.PAN_INVERT_Y_AXIS		, false);
+		prefs.setDefault(JoglViewerPreference.PAN_SENSITIVITY 		, "50");
+		prefs.setDefault(JoglViewerPreference.ZOOM_INVERT_AXIS		, false);
+		prefs.setDefault(JoglViewerPreference.ZOOM_SENSITIVITY 		, "50");
+		
+			
+		
+		 
+		
+		
+		 
+			
+		
+		
 		Tuple6b position = new Tuple6b();
 		position.setX( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X)));
 		position.setY( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Y)));

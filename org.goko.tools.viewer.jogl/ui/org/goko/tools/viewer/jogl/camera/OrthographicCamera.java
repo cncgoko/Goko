@@ -24,6 +24,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -34,12 +36,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
+import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
-public abstract class OrthographicCamera extends AbstractCamera implements MouseMoveListener, MouseListener, FocusListener, Listener {
+public abstract class OrthographicCamera extends AbstractCamera implements MouseMoveListener, MouseListener, FocusListener, Listener, IPropertyChangeListener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.OrthographicCamera";
 	protected Point2i last;
 	protected Point3f eye;
@@ -50,6 +53,13 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 	protected double spaceWidth;
 	protected double spaceHeight;
 
+	protected int panX;
+	protected int panY;
+	protected float panSensitivity;
+	
+	protected int zoomFactor;
+	protected float zoomSensitivity;
+	
 	public OrthographicCamera(final GLCanvas canvas) {
 		super();
 		this.glCanvas = canvas;
@@ -65,8 +75,18 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 		up 		= new Vector3f(0,1,0);
 		zoomOffset = 1;
 		pmvMatrix = new PMVMatrix();
+
+		addPreferenceListener();
+		// Force init of the values 
+		this.propertyChange(null);		
 	}
 
+	/**
+	 * 
+	 */
+	private void addPreferenceListener() {
+		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
+	}
 	/**
 	 * @return
 	 */
@@ -136,7 +156,7 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 
 	protected void zoomMouse(MouseEvent e){
 		if(glCanvas.isFocusControl() && isActivated()){
-			zoomOffset = Math.max(0.1, zoomOffset+ (e.y-last.y) / 50.0);
+			zoomOffset = Math.max(0.1, zoomOffset+ (zoomFactor*zoomSensitivity*(e.y-last.y)) / 50.0);
 		}
 	}
 
@@ -250,4 +270,18 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 		last = null;
 	}
 
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		this.panX = JoglViewerPreference.getInstance().isCameraPanInvertXAxis() ? -1 : 1;
+		this.panY = JoglViewerPreference.getInstance().isCameraPanInvertYAxis() ? -1 : 1;
+		float panSensitivityPref = JoglViewerPreference.getInstance().getCameraPanSensitivity().floatValue();		
+		this.panSensitivity  = (float) (1 + (panSensitivityPref - 50) / 100.0);
+		
+		this.zoomFactor = JoglViewerPreference.getInstance().isCameraZoomInvertAxis() ? -1 : 1;
+		float zoomSensitivityPref = JoglViewerPreference.getInstance().getCameraZoomSensitivity().floatValue();		
+		this.zoomSensitivity  = (float) (1 + (zoomSensitivityPref - 50) / 100.0);
+	}
 }

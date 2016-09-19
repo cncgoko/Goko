@@ -52,8 +52,8 @@ public class TopCamera extends OrthographicCamera implements MouseMoveListener,M
 	 */
 	@Override
 	protected void panMouse(MouseEvent e){
-		float dx = (float) (-(e.x-last.x) / zoomOffset);
-		float dy = (float) ((e.y-last.y) / zoomOffset);
+		float dx = (float) (-panX*panSensitivity*(e.x-last.x) / zoomOffset);
+		float dy = (float) (panY*panSensitivity*(e.y-last.y) / zoomOffset);
 		Vector3f cameraRelativeMove = new Vector3f(2*dx, 2*dy, 0f);
 
 		eye.add(cameraRelativeMove);
@@ -69,7 +69,7 @@ public class TopCamera extends OrthographicCamera implements MouseMoveListener,M
 		int yMouse = event.y;
 		double xWorld = 2*((xMouse - (width / 2)) / zoomOffset) + eye.x;
 		double yWorld = -2*((yMouse - (height/ 2)) / zoomOffset) + eye.y;
-		zoomOffset = Math.max(0.1, zoomOffset * (1+event.count/30.0) );
+		zoomOffset = Math.max(0.1, zoomOffset * (1+(event.count*zoomFactor*zoomSensitivity)/30.0) );
 		eye.x = (float) (xWorld - 2*((xMouse - (width / 2)) / zoomOffset));
 		eye.y = (float) (yWorld + 2*((yMouse - (height/ 2)) / zoomOffset));
 	}

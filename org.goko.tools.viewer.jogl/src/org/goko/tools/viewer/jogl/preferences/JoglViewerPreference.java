@@ -19,6 +19,8 @@
  */
 package org.goko.tools.viewer.jogl.preferences;
 
+import java.math.BigDecimal;
+
 import javax.vecmath.Color3f;
 import javax.vecmath.Vector3f;
 
@@ -59,15 +61,25 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String GRID_END_Y 			= "grid.end.y";
 	public static final String GRID_END_Z 			= "grid.end.z";	
 	
-	public static final String ROTARY_AXIS_ENABLED 	= "rotaryAxisEnabled";
+	public static final String ROTARY_AXIS_ENABLED 		= "rotaryAxisEnabled";
 	public static final String ROTARY_AXIS_DIRECTION 	= "rotaryAxisDirection";
 	public static final String ROTARY_AXIS_POSITION_X 	= "rotaryAxisPositionX";
 	public static final String ROTARY_AXIS_POSITION_Y 	= "rotaryAxisPositionY";
 	public static final String ROTARY_AXIS_POSITION_Z 	= "rotaryAxisPositionZ";
 
+	public static final String ORBIT_INVERT_X_AXIS 	= "cameraOrbitInvertXAxis";
+	public static final String ORBIT_INVERT_Y_AXIS	= "cameraOrbitInvertYAxis";
+	public static final String ORBIT_SENSITIVITY 	= "cameraOrbitSensitivity";
+	
+	public static final String PAN_INVERT_X_AXIS 	= "cameraPanInvertXAxis";
+	public static final String PAN_INVERT_Y_AXIS	= "cameraPanInvertYAxis";
+	public static final String PAN_SENSITIVITY 		= "cameraPanSensitivity";
+	
+	public static final String ZOOM_INVERT_AXIS		= "cameraZoomInvertAxis";
+	public static final String ZOOM_SENSITIVITY 	= "cameraZoomSensitivity";
+	
 	private static JoglViewerPreference instance;
 	private Tuple6b rotaryAxisPosition;
-
 
 	public enum EnumRotaryAxisDirection{
 		X(1,0,0),
@@ -249,5 +261,117 @@ public class JoglViewerPreference extends GkPreference{
 	
 	public boolean isShowFps(){
 		return getBoolean(SHOW_FPS);
+	}
+
+	/**
+	 * @return the cameraOrbitInvertXAxis
+	 */
+	public boolean isCameraOrbitInvertXAxis() {
+		return getBoolean(ORBIT_INVERT_X_AXIS);
+	}
+
+	/**
+	 * @param cameraOrbitInvertXAxis the cameraOrbitInvertXAxis to set
+	 */
+	public void setCameraOrbitInvertXAxis(boolean cameraOrbitInvertXAxis) {
+		setValue(ORBIT_INVERT_X_AXIS, cameraOrbitInvertXAxis);
+	}
+
+	/**
+	 * @return the cameraOrbitInvertYAxis
+	 */
+	public boolean isCameraOrbitInvertYAxis() {
+		return getBoolean(ORBIT_INVERT_Y_AXIS);
+	}
+
+	/**
+	 * @param cameraOrbitInvertYAxis the cameraOrbitInvertYAxis to set
+	 */
+	public void setCameraOrbitInvertYAxis(boolean cameraOrbitInvertYAxis) {
+		setValue(ORBIT_INVERT_Y_AXIS, cameraOrbitInvertYAxis);
+	}
+
+	/**
+	 * @return the cameraOrbitSensitivity
+	 */
+	public BigDecimal getCameraOrbitSensitivity() {
+		return new BigDecimal(getString(ORBIT_SENSITIVITY));
+	}
+
+	/**
+	 * @param cameraOrbitSensitivity the cameraOrbitSensitivity to set
+	 */
+	public void setCameraOrbitSensitivity(BigDecimal cameraOrbitSensitivity) {
+		setValue(ORBIT_SENSITIVITY, cameraOrbitSensitivity.toPlainString());
+	}
+
+	/**
+	 * @return the cameraPanInvertXAxis
+	 */
+	public boolean isCameraPanInvertXAxis() {
+		return getBoolean(PAN_INVERT_X_AXIS);
+	}
+
+	/**
+	 * @param cameraPanInvertXAxis the cameraPanInvertXAxis to set
+	 */
+	public void setCameraPanInvertXAxis(boolean cameraPanInvertXAxis) {
+		setValue(PAN_INVERT_X_AXIS, cameraPanInvertXAxis);
+	}
+
+	/**
+	 * @return the cameraPanInvertYAxis
+	 */
+	public boolean isCameraPanInvertYAxis() {
+		return getBoolean(PAN_INVERT_Y_AXIS);
+	}
+
+	/**
+	 * @param cameraPanInvertYAxis the cameraPanInvertYAxis to set
+	 */
+	public void setCameraPanInvertYAxis(boolean cameraPanInvertYAxis) {
+		setValue(PAN_INVERT_Y_AXIS, cameraPanInvertYAxis);
+	}
+
+	/**
+	 * @return the cameraPanSensitivity
+	 */
+	public BigDecimal getCameraPanSensitivity() {
+		return new BigDecimal(getString(PAN_SENSITIVITY));
+	}
+
+	/**
+	 * @param cameraPanSensitivity the cameraPanSensitivity to set
+	 */
+	public void setCameraPanSensitivity(BigDecimal cameraPanSensitivity) {
+		setValue(PAN_SENSITIVITY, cameraPanSensitivity.toPlainString());
+	}
+
+	/**
+	 * @return the cameraZoomInvertAxis
+	 */
+	public boolean isCameraZoomInvertAxis() {
+		return getBoolean(ZOOM_INVERT_AXIS);
+	}
+
+	/**
+	 * @param cameraZoomInvertAxis the cameraZoomInvertAxis to set
+	 */
+	public void setCameraZoomInvertAxis(boolean cameraZoomInvertAxis) {
+		setValue(ZOOM_INVERT_AXIS, cameraZoomInvertAxis);
+	}
+
+	/**
+	 * @return the cameraZoomSensitivity
+	 */
+	public BigDecimal getCameraZoomSensitivity() {
+		return new BigDecimal(getString(ZOOM_SENSITIVITY));
+	}
+
+	/**
+	 * @param cameraZoomSensitivity the cameraZoomSensitivity to set
+	 */
+	public void setCameraZoomSensitivity(BigDecimal cameraZoomSensitivity) {
+		setValue(ZOOM_SENSITIVITY, cameraZoomSensitivity.toPlainString());
 	}
 }

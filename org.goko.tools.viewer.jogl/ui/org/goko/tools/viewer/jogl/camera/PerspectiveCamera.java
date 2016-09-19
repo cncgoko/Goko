@@ -28,6 +28,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -39,12 +41,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.math.Tuple6b;
+import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
-public class PerspectiveCamera extends AbstractCamera implements MouseMoveListener,MouseListener,Listener,FocusListener {
+public class PerspectiveCamera extends AbstractCamera implements MouseMoveListener,MouseListener,Listener,FocusListener, IPropertyChangeListener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.PerspectiveCamera";
 
 	protected Point2i last;
@@ -64,6 +67,18 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	public Point2i screenMin;
 	public Point2i screenMax;
 	public Point2i screenCenter;
+	
+	private int orbitX;
+	private int orbitY;
+	private float orbitSensitivity;
+	
+	private int panX;
+	private int panY;
+	private float panSensitivity;
+	
+	private int zoomFactor;
+	private float zoomSensitivity;
+	
 	/**
 	 * Constructor
 	 * @param canvas the canvas
@@ -90,8 +105,17 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		angleHorizontal = -Math.PI/4;
 		distance 		= 120;
 
-
+		addPreferenceListener();
+		// Force init of the values 
+		this.propertyChange(null);
 		update();
+	}
+
+	/**
+	 * 
+	 */
+	private void addPreferenceListener() {
+		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
 	}
 
 	/** (inheritDoc)
@@ -205,16 +229,16 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		Vector3f xCameraRelative = new Vector3f();
 		xCameraRelative.cross(yCameraRelative, up);
 		float factor = (float) (distance / 600);
-		xCameraRelative.scale( -(e.x-last.x) * factor);
+		xCameraRelative.scale( -panX*(e.x-last.x) * factor * panSensitivity);
 		yCameraRelative.z = 0;
-		yCameraRelative.scale((e.y-last.y)* factor);
+		yCameraRelative.scale(panY*(e.y-last.y)* factor * panSensitivity);
 		xCameraRelative.add(yCameraRelative);
 		target.add(xCameraRelative);
 	}
 
 	protected void orbitMouse(MouseEvent e){
-		angleHorizontal += (float) ((e.x-last.x) / 100.0)%Math.PI;
-		angleVertical += (float) ((e.y-last.y) / 100.0)%Math.PI;
+		angleHorizontal += (float) orbitSensitivity * (orbitX * (e.x-last.x) / 100.0)%Math.PI;
+		angleVertical += (float) orbitSensitivity * (orbitY *(e.y-last.y) / 100.0)%Math.PI;
 		angleVertical = Math.min(Math.PI-maxAngleLimit, Math.max(+maxAngleLimit, angleVertical));
 	}
 
@@ -248,7 +272,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	public void handleEvent(Event event) {
 		// Zoom on scroll
 		if(glCanvas.isFocusControl() && isActivated()){
-			distance =  distance * (1 - event.count/20.0);
+			distance =  distance *  (1 - (zoomFactor * zoomSensitivity *event.count)/20.0);
 			distance = Math.min(1000, Math.max(1, distance));
 			update();
 		}
@@ -280,9 +304,6 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 										0,
 										worldCenter,
 										0);
-
-//			target.x = worldCenter[0];
-//			target.y = worldCenter[1];
 			update();
 			updatePMVMatrix();
 		}
@@ -351,7 +372,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	protected boolean isBoundInScreen(BoundingTuple6b bounds){
 		float xMx = (float) bounds.getMax().getX().doubleValue(JoglUtils.JOGL_UNIT);
 		float yMx = (float) bounds.getMax().getY().doubleValue(JoglUtils.JOGL_UNIT);
-		//float zMx = (float) bounds.getMax().getZ().doubleValue(JoglUtils.JOGL_UNIT);
+
 		float xMn = (float) bounds.getMin().getX().doubleValue(JoglUtils.JOGL_UNIT);
 		float yMn = (float) bounds.getMin().getY().doubleValue(JoglUtils.JOGL_UNIT);
 		float zMn = (float) bounds.getMin().getZ().doubleValue(JoglUtils.JOGL_UNIT);
@@ -361,10 +382,6 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		lstAabbPoints.add(new Point3f(xMx, yMn, zMn));
 		lstAabbPoints.add(new Point3f(xMx, yMx, zMn));
 		lstAabbPoints.add(new Point3f(xMn, yMx, zMn));
-//		lstAabbPoints.add(new Point3f(xMn, yMn, zMx));
-//		lstAabbPoints.add(new Point3f(xMx, yMn, zMx));
-//		lstAabbPoints.add(new Point3f(xMx, yMx, zMx));
-//		lstAabbPoints.add(new Point3f(xMn, yMx, zMx));
 
 		Point3f screen = new Point3f();
 
@@ -435,7 +452,6 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 			height = 1; // prevent divide by zero
 		}
 
-
 		// Set the view port (display area) to cover the entire window
 		gl.glViewport(0, 0, width, height);
 
@@ -449,21 +465,8 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		pmvMatrix.gluPerspective(fov, aspect, zNear, zFar);
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 		pmvMatrix.glLoadIdentity();
-//		pmvMatrix.gluLookAt(eye.x, eye.y, eye.z,
-//      			target.x, target.y, target.z,
-//      			up.x, up.y, up.z);
+
 		pmvMatrix.update();
-
-		// Setup perspective projection, with aspect ratio matches viewport
-//		gl.glMatrixMode(GL2.GL_PROJECTION); // choose projection matrix
-//		gl.glLoadIdentity(); // reset projection matrix
-//		glu.gluPerspective(45.0, aspect, 0.1, 1000.0); // fovy, aspect, zNear,
-//														// zFar
-//
-//		// Enable the model-view transform
-//		gl.glMatrixMode(GL2.GL_MODELVIEW);
-//		gl.glLoadIdentity(); // reset
-
 	}
 
 	/** (inheritDoc)
@@ -504,6 +507,26 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	@Override
 	public void focusLost(FocusEvent e) {
 		last = null;
+	}
+
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		this.orbitX = JoglViewerPreference.getInstance().isCameraOrbitInvertXAxis() ? -1 : 1;
+		this.orbitY = JoglViewerPreference.getInstance().isCameraOrbitInvertYAxis() ? -1 : 1;
+		float orbitSensitivityPref = JoglViewerPreference.getInstance().getCameraOrbitSensitivity().floatValue();		
+		this.orbitSensitivity  = (float) (1 + (orbitSensitivityPref - 50) / 100.0);
+		
+		this.panX = JoglViewerPreference.getInstance().isCameraPanInvertXAxis() ? -1 : 1;
+		this.panY = JoglViewerPreference.getInstance().isCameraPanInvertYAxis() ? -1 : 1;
+		float panSensitivityPref = JoglViewerPreference.getInstance().getCameraPanSensitivity().floatValue();		
+		this.panSensitivity  = (float) (1 + (panSensitivityPref - 50) / 100.0);
+		
+		this.zoomFactor = JoglViewerPreference.getInstance().isCameraZoomInvertAxis() ? -1 : 1;
+		float zoomSensitivityPref = JoglViewerPreference.getInstance().getCameraZoomSensitivity().floatValue();		
+		this.zoomSensitivity  = (float) (1 + (zoomSensitivityPref - 50) / 100.0);
 	}
 		
 }
