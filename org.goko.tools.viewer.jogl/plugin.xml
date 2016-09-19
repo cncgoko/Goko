@@ -28,6 +28,12 @@
             id="org.goko.jogl.viewer.preferences.grid"
             name="Grid">
       </page>
+      <page
+            category="org.goko.jogl.viewer.preferences.viewer"
+            class="org.goko.tools.viewer.jogl.preferences.camera.CameraPreferencePage"
+            id="org.goko.jogl.viewer.preferences.camera"
+            name="Camera">
+      </page>
    </extension>
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
