@@ -22,6 +22,12 @@ public interface IDocumentProviderListener {
 	void onClosed(IDocumentProvider provider);
 	
 	void onDirtyChanged(IDocumentProvider provider);
-	
+
 	void onModifiableChanged(IDocumentProvider provider);
+	
+	/**
+	 * Notify that this document was modifier from the model domain
+	 * @param provider the provider
+	 */
+	void onModified(IDocumentProvider provider);
 }

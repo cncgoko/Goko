@@ -32,4 +32,11 @@ public class DocumentProviderAdapter implements IDocumentProviderListener{
 	 */
 	@Override
 	public void onClosed(IDocumentProvider provider) { }
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.editor.component.provider.IDocumentProviderListener#onModified(org.goko.tools.editor.component.provider.IDocumentProvider)
+	 */
+	@Override
+	public void onModified(IDocumentProvider provider) { }
+	
 }

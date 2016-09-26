@@ -33,6 +33,7 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	private IGCodeProvider provider;
 	private IGCodeProviderRepository gcodeRepository;
 	private IGCodeService gcodeService;
+	private Document document;
 	
 	/**
 	 * @param source
@@ -63,7 +64,7 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	 */
 	@Override
 	public void performSaveDocument(ProgressMonitor monitor) throws GkException {
-		
+		// Final document cannot be saved
 	}
 	
 	/** (inheritDoc)
@@ -99,8 +100,13 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 				buffer.append(strLine);
 				buffer.append(System.lineSeparator());
 			}
+		}		
+		if(document == null){
+			document = new Document(buffer.toString());
+		}else{
+			document.set(buffer.toString());
 		}
-		return new Document(buffer.toString());		
+		return document;		
 	}
 
 	/** (inheritDoc)
@@ -135,6 +141,14 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 			notifyClosed();
 		}		
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.editor.component.provider.AbstractDocumentProvider#isDirty()
+	 */
+	@Override
+	public boolean isDirty() {
+		return false;
+	}
 		
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderLocked(org.goko.core.gcode.element.IGCodeProvider)
@@ -155,7 +169,9 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUpdate(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException { }
+	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
+		getGCodeDocument();
+	}
 
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
