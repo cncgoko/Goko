@@ -466,6 +466,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			}
 			buffer.append(commentWord.getValue());
 		}
+	//	utiliser un post processeur pour afficher le gcode ou voir pourquoi les decimales ne sont pas tronquées
 		return buffer.toString();
 	}
 

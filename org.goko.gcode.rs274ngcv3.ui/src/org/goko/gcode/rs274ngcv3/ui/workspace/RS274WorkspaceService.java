@@ -95,6 +95,8 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 		addModifierBuilder(new WrapModifierBuilder());
 		addModifierBuilder(new RotateModifierBuilder());
 		addModifierBuilder(new ArrayModifierBuilder());
+		
+		//addModifierBuilder(new TruncateDecimalsModifierBuilder());
 	}
 
 	/** (inheritDoc)

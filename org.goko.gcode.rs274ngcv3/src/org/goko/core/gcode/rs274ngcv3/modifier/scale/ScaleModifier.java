@@ -17,7 +17,6 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
-import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 
 /**
@@ -48,8 +47,8 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 	@Override
 	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		GCodeContext localContext = new GCodeContext();
-		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
-		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
+		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
+		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 		GCodeContext modifiedContext = new GCodeContext();
 		while(iterator.hasNext()){			
 			AbstractInstruction instr = iterator.next();
@@ -70,7 +69,7 @@ public class ScaleModifier extends AbstractModifier<GCodeProvider> implements IM
 			}
 			instr.apply(modifiedContext);
 		}
-		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
+		GCodeProvider result = getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
 		for (GCodeLine line : result.getLines()) {
 			target.addLine(line);
 		}

@@ -22,7 +22,6 @@ import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightTraverseInstruction;
-import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 
 /**
@@ -58,7 +57,7 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
 		InstructionProvider resultInstructionProvider = new InstructionProvider();
 
-		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
+		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 
 
 		while(iterator.hasNext()){
@@ -79,7 +78,7 @@ public class WrapModifier extends AbstractModifier<GCodeProvider> implements IMo
 			}
 			
 		}
-		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(new GCodeContext(), resultInstructionProvider);
+		GCodeProvider result = getRS274NGCService().getGCodeProvider(new GCodeContext(), resultInstructionProvider);
 		for (GCodeLine line : result.getLines()) {
 			target.addLine(line);			
 		}

@@ -29,7 +29,6 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
-import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.gcode.rs274ngcv3.utils.InstructionUtils;
 import org.goko.core.math.Arc3b;
@@ -69,8 +68,8 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		rotationMatrix = null;
 		GCodeContext localContext = new GCodeContext();
-		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
-		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
+		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
+		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 	
 		while(iterator.hasNext()){
 			GCodeContext preContext = iterator.getContext();
@@ -84,7 +83,7 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 				rotateArcInstruction((ArcFeedInstruction)instr, preContext);				
 			}
 		}
-		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
+		GCodeProvider result = getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
 		for (GCodeLine line : result.getLines()) {
 			target.addLine(line);
 		}

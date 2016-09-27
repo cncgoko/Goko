@@ -13,7 +13,6 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
-import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 
 public class TestModifier extends AbstractModifier<GCodeProvider> implements IModifier<GCodeProvider> {
 
@@ -37,8 +36,8 @@ public class TestModifier extends AbstractModifier<GCodeProvider> implements IMo
 	@Override
 	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		GCodeContext localContext = new GCodeContext();
-		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
-		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
+		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
+		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 		while(iterator.hasNext()){
 			AbstractInstruction instr = iterator.next();
 			if(instr.getType() == InstructionType.STRAIGHT_FEED){
@@ -48,7 +47,7 @@ public class TestModifier extends AbstractModifier<GCodeProvider> implements IMo
 				sfi.setZ(sfi.getZ().add(Length.valueOf(strNumber, Units.MILLIMETRE)));
 			}
 		}
-		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
+		GCodeProvider result = getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
 		for (GCodeLine line : result.getLines()) {
 			target.addLine(line);
 		}

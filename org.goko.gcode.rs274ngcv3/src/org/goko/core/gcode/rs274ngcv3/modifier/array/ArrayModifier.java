@@ -19,7 +19,6 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractStraightInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
-import org.goko.core.gcode.rs274ngcv3.internal.Activator;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.math.Tuple6b;
 
@@ -58,7 +57,7 @@ public class ArrayModifier extends AbstractModifier<GCodeProvider> implements IM
 	@Override
 	protected void applyModifier(IGCodeProvider source, GCodeProvider target) throws GkException {
 		GCodeContext localContext = new GCodeContext();
-		InstructionProvider sourceInstructionSet = Activator.getRS274NGCService().getInstructions(localContext, source);
+		InstructionProvider sourceInstructionSet = getRS274NGCService().getInstructions(localContext, source);
 		List<InstructionProvider> arrayInstructionSet = new ArrayList<InstructionProvider>();
 		List<Tuple6b> lstOffsets = new ArrayList<Tuple6b>();
 		// initialize the target instruction providers 
@@ -69,7 +68,7 @@ public class ArrayModifier extends AbstractModifier<GCodeProvider> implements IM
 		
 		// Let's cache offset so they are not computed each time
 		
-		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(sourceInstructionSet, localContext);
+		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 		while(iterator.hasNext()){
 			GCodeContext preContext = iterator.getContext();
 			AbstractInstruction instr = iterator.next();
@@ -97,7 +96,7 @@ public class ArrayModifier extends AbstractModifier<GCodeProvider> implements IM
 			sourceInstructionSet.addInstructionSet(arrayInstructionSet.get(i).getInstructionSets());
 		}
 		
-		GCodeProvider result = Activator.getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
+		GCodeProvider result = getRS274NGCService().getGCodeProvider(localContext, sourceInstructionSet);
 		for (GCodeLine line : result.getLines()) {
 			target.addLine(line);
 		}		

@@ -3,10 +3,7 @@ package org.goko.core.gcode.rs274ngcv3.internal;
 import java.util.ResourceBundle;
 
 import org.goko.core.common.i18n.MessageResource;
-import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
-import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -16,7 +13,6 @@ public class Activator implements BundleActivator{
 	
 	public Activator() {
 		instance = this;
-		rs274ngcService = new RS274NGCServiceImpl();
 	}
 	
 	/** (inheritDoc)
@@ -26,10 +22,7 @@ public class Activator implements BundleActivator{
 	public void start(BundleContext context) throws Exception {	
 		MessageResource.registerResourceBundle(ResourceBundle.getBundle("org.goko.core.gcode.rs274ngcv3.Messages"));
 	//	ServiceReference<IRS274NGCService> rs274Servicereference = context.getServiceReference(IRS274NGCService.class);
-		context.registerService(IRS274NGCService.class, rs274ngcService, null);
-		context.registerService(IGCodeExecutionTimeService.class, rs274ngcService, null);
-		context.registerService(IGCodeProviderRepository.class, rs274ngcService, null);
-		rs274ngcService.start();
+	//	rs274ngcService = context.getService(rs274Servicereference);		
 	}
 
 	/** (inheritDoc)
@@ -41,9 +34,9 @@ public class Activator implements BundleActivator{
 		
 	}
 
-	public static IRS274NGCService getRS274NGCService(){
-		return getInstance().rs274ngcService;
-	}
+//	public static IRS274NGCService getRS274NGCService(){
+//		return getInstance().rs274ngcService;
+//	}
 
 	/**
 	 * @return the instance of this activator
