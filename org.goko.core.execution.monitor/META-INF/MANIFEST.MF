@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Gcodeexecutionmonitor
 Bundle-SymbolicName: org.goko.core.execution.monitor;singleton:=true
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.3.1.qualifier
 Bundle-Activator: org.goko.core.execution.monitor.Activator
 Export-Package: org.goko.core.execution.monitor.executor
 Require-Bundle: org.goko.core;bundle-version="0.0.2",

@@ -9,8 +9,8 @@ env:
    - TARGET: ftp://ftp.goko.fr//www/download/
    - UPDATE_FOLDER: update
    - updateRepository: true
-   - updateBinaries: true
-   - gokoVersion: 0.3.0
+   - updateBinaries: false
+   - gokoVersion: 0.3.1
 
 cache:
   directories:
@@ -39,9 +39,9 @@ deploy:
     secure: "aovA/OwB1eJ/qtj6xagkb2hk+vgCkobPRFl9bP+fWOmKZ1riWOZvXYAraG8lpIjqKQQPZUiCv/R0nJuJjnp5jk22GhiXF7KhlDG+SlaN3gLd2lTEXYbHYGdUo06OceN5BfcW/AlEY9w10NDGvl7O1t9Wt0HAHei+OdPljN/xeqgbldK+1eN31ouqmnLhDJw/KA7ljYAoFkJNisq4qba7WaglwlFeqDaq5H5uYqs29y+aJyoOYS9/3zAvPuV5j/x/TdInUgOa+KUuCHI6W49sU6b2mTzBMgW5RaaqGLjPwttfSg6qVxjOYBNQsWpFwsde8siNMon536AHZjW7a+pJS+UugtnknAy8nL+/856nIWNjqI6Ihk30B7SVDtE/19WnbsfGu57JE4QaofppFL4zmFgK0iiAmY5c4NfPe2C9pEECQbH3bKGgJLZSXQqq1aocEXEhdUoiJlMZwlGxe6dT/AEOiEdmsXe3sH5ntIaZDbcAmVkGO/j1Z6oLmiOo9s4RrquBkFBM+YJKLZWJPE1/cVtcvPUvauv/76nxqGCA8V+jQ2iUQUXWx72xKMmqUDorHForIBONv0/YY7wNCdy9I+u63659S5k2MH84vtReEtUQuGWrUTjlVO7X/K6oxP5Zsza+J1Wy64xr4Jl/BIqdSlM1wvF4EH6eEhdEelgy3Pw="
   dry-run: false
   
-after_deploy:
+after_success:
  - chmod a+x ./../deploy.sh
  - ./../deploy.sh
  # - cd /home/travis/build/cncgoko/Goko/org.goko.build.product/target/repository
-# - "find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/"
+# - "find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/" 
  #- "curl --ftp-create-dirs -T /home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/org.goko-win32.win32.x86_64.zip -u $VAR1:$VAR2 $TARGET/org.goko-win32.win32.x86_64.zip"
