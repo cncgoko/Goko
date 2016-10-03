@@ -13,6 +13,9 @@ import org.goko.core.gcode.rs274ngcv3.element.InstructionSet;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.ArcFeedBuilder;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.ChangeToolBuilder;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.CommentBuilder;
+import org.goko.core.gcode.rs274ngcv3.instruction.builder.CutterCompensationLeftInstructionBuilder;
+import org.goko.core.gcode.rs274ngcv3.instruction.builder.CutterCompensationRightInstructionBuilder;
+import org.goko.core.gcode.rs274ngcv3.instruction.builder.DisableCutterCompensationInstructionBuilder;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.DwellBuilder;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.FloodOffBuilder;
 import org.goko.core.gcode.rs274ngcv3.instruction.builder.FloodOnBuilder;
@@ -40,6 +43,9 @@ import org.goko.core.gcode.rs274ngcv3.instruction.builder.UserLengthUnitsBuilder
 import org.goko.core.gcode.rs274ngcv3.instruction.exporter.ArcFeedExporter;
 import org.goko.core.gcode.rs274ngcv3.instruction.exporter.ChangeToolExporter;
 import org.goko.core.gcode.rs274ngcv3.instruction.exporter.CommentExporter;
+import org.goko.core.gcode.rs274ngcv3.instruction.exporter.CutterCompensationLeftInstructionExporter;
+import org.goko.core.gcode.rs274ngcv3.instruction.exporter.CutterCompensationRightInstructionExporter;
+import org.goko.core.gcode.rs274ngcv3.instruction.exporter.DisableCutterCompensationInstructionExporter;
 import org.goko.core.gcode.rs274ngcv3.instruction.exporter.DwellExporter;
 import org.goko.core.gcode.rs274ngcv3.instruction.exporter.FloodOffExporter;
 import org.goko.core.gcode.rs274ngcv3.instruction.exporter.FloodOnExporter;
@@ -101,6 +107,10 @@ public class InstructionFactory {
 		builders.add(new FloodOnBuilder());
 		builders.add(new FloodOffBuilder());		
 		
+		builders.add(new CutterCompensationLeftInstructionBuilder());
+		builders.add(new CutterCompensationRightInstructionBuilder());
+		builders.add(new DisableCutterCompensationInstructionBuilder());				
+		
 		builders.add(new DwellBuilder());
 		
 		builders.add(new SelectPlaneBuilder());		
@@ -145,6 +155,10 @@ public class InstructionFactory {
 		exporters.add(new MistOnExporter());
 		exporters.add(new FloodOnExporter());
 		exporters.add(new FloodOffExporter());		
+		
+		exporters.add(new CutterCompensationLeftInstructionExporter());
+		exporters.add(new CutterCompensationRightInstructionExporter());
+		exporters.add(new DisableCutterCompensationInstructionExporter());	
 		
 		exporters.add(new DwellExporter());
 		

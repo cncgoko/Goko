@@ -43,7 +43,7 @@ public class SetOriginOffsetsBuilder extends AbstractInstructionBuilder<SetOrigi
 		Angle c = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
 		
 		if(x == null && y == null && z == null && a == null && b == null && c == null){
-			throw new GkFunctionalException("GCO-110", "G92");
+			throw new GkFunctionalException("GCO-110", "G92");			
 		}
 		if(x == null) x = context.getX();
 		if(y == null) y = context.getY();
