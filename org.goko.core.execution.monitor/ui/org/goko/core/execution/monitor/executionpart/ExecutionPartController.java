@@ -397,6 +397,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onTokenUpdate(ExecutionToken<ExecutionTokenState> token) {
 		updateButtonState();
+		updateTokenQueueData();
 		scheduleExecutionTimeEstimationJob(token.getId());
 	}
 
