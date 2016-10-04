@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.goko </groupId>
   <artifactId>org.goko.tools.centerfinder</artifactId>
-  <version>0.3.1-SNAPSHOT</version>
+  <version>0.3.1</version>
   <packaging>eclipse-plugin</packaging>
   
   <parent>
   	<groupId>org.goko</groupId>
   	<artifactId>org.goko.build.parent</artifactId>
-  	<version>0.3.1-SNAPSHOT</version>
+  	<version>0.3.1</version>
   	<relativePath>../org.goko.build.parent</relativePath>
   </parent>
 </project>
