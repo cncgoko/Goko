@@ -20,7 +20,7 @@ before_script:
   - cd org.goko.build.aggregator
  
 script: 
-  - mvn clean verify
+  - mvn deploy
 
 after_failure:
    - "curl --ftp-create-dirs -T ../org.goko.build.parent/target/site/surefire-report.html -u $VAR1:$VAR2 $TARGET/$gokoVersion/surefire.html"
