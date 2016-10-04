@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.goko</groupId>
 		<artifactId>org.goko.build.parent</artifactId>
-		<version>0.3.1</version>
+		<version>0.3.1-SNAPSHOT</version>
 		<relativePath>../org.goko.build.parent</relativePath>
 	</parent>
 
 	<artifactId>org.goko.junit.tools</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<groupId>org.goko</groupId>
-	<version>0.3.1</version>
+	<version>0.3.1-SNAPSHOT</version>
 </project>

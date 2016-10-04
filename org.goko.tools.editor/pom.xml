@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.goko </groupId>
   <artifactId>org.goko.tools.editor</artifactId>
-  <version>0.3.1</version>
+  <version>0.3.1-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
   
   <parent>
   	<groupId>org.goko</groupId>
   	<artifactId>org.goko.build.parent</artifactId>
-  	<version>0.3.1</version>
+  	<version>0.3.1-SNAPSHOT</version>
   	<relativePath>../org.goko.build.parent</relativePath>
   </parent>
 </project>
