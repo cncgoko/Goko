@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jogl
 Bundle-SymbolicName: org.goko.gcode.rs274ngcv3.jogl
-Bundle-Version: 0.3.1.qualifier
+Bundle-Version: 0.3.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.goko.core;bundle-version="0.0.2",
  org.goko.gcode.rs274ngcv3;bundle-version="0.0.1",

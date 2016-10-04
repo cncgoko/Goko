@@ -13,5 +13,5 @@
 	<artifactId>org.goko.junit.tools</artifactId>
 	<packaging>eclipse-plugin</packaging>
 	<groupId>org.goko</groupId>
-	<version>0.3.1-SNAPSHOT</version>
+	<version>0.3.2-SNAPSHOT</version>
 </project>
