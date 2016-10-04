@@ -6,9 +6,9 @@
     },
 
     "version": {
-        "name": "0.3.1-beta",
+        "name": "0.3.1",
         "desc": "Goko v0.3.1",
-        "released": "2016-06-17",
+        "released": "2016-10-04",
         "gpgSign": false
     },
 
