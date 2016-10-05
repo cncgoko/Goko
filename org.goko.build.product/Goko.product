@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.3.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.3.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -827,7 +827,7 @@ Public License instead of this License.  But first, please read
    </configurations>
 
    <repositories>
-      <repository location="http://update.goko.fr/0.3.1" enabled="true" />
+      <repository location="http://update.goko.fr/0.3.2" enabled="true" />
    </repositories>
 
    <preferencesInfo>

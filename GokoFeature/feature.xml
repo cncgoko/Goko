@@ -683,7 +683,7 @@ Public License instead of this License.  But first, please read
    </license>
 
    <url>
-      <update label="Goko Update site" url="http://update.goko.fr/0.3.1"/>
+      <update label="Goko Update site" url="http://update.goko.fr/0.3.2"/>
       <discovery label="Goko" url="http://www.goko.fr/"/>
    </url>
 

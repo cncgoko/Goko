@@ -1,82 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.goko</groupId>
-    <artifactId>org.goko.build.parent</artifactId>
-    <relativePath>../org.goko.build.parent</relativePath>
-    <version>0.3.1-SNAPSHOT</version>
-  </parent>  
-  <artifactId>org.goko.build.product</artifactId>
-  <packaging>eclipse-repository</packaging>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-p2-repository-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <configuration>
-          <includeAllDependencies>true</includeAllDependencies>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-p2-director-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <executions>
-          <execution>
-            <id>materialize-products</id>
-            <goals>
-              <goal>materialize-products</goal>
-            </goals>
-            <configuration>
-              <products>
-                <product>
-                  <id>org.goko</id>                  
-                   <rootFolders>
-                     <macosx>Goko.app</macosx>
-                   </rootFolders>
-                </product>
-              </products>
-            </configuration>            
-          </execution>
-          <execution>
-            <id>archive-products</id>
-            <goals>
-              <goal>archive-products</goal>
-            </goals>                     
-          </execution>         
-        </executions>            
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <configuration>              
-	              <target name="rename-archive">
-					<copy file="${basedir}/target/products/org.goko-win32.win32.x86_64.zip" 
-						tofile="${basedir}/target/products/goko-${project.version}-win32.win32.x86_64.zip" />
-					<copy file="${basedir}/target/products/org.goko-win32.win32.x86.zip" 
-						tofile="${basedir}/target/products/goko-${project.version}-win32.win32.x86.zip" />
-					<copy file="${basedir}/target/products/org.goko-linux.gtk.x86_64.zip" 
-						tofile="${basedir}/target/products/goko-${project.version}-linux.gtk.x86_64.zip" />
-					<copy file="${basedir}/target/products/org.goko-linux.gtk.x86.zip" 
-						tofile="${basedir}/target/products/goko-${project.version}-linux.gtk.x86.zip" />
-					<copy file="${basedir}/target/products/org.goko-macosx.cocoa.x86_64.zip" 
-						tofile="${basedir}/target/products/goko-${project.version}-macosx.cocoa.x86_64.zip" />
-				  </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+	<artifactId>org.goko.build.product</artifactId>
+	<packaging>eclipse-repository</packaging>
+
+	<parent>
+		<groupId>org.goko</groupId>
+		<artifactId>org.goko.build.parent</artifactId>
+		<relativePath>../org.goko.build.parent</relativePath>
+		<version>0.3.2-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<includeAllDependencies>true</includeAllDependencies>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-director-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<id>materialize-products</id>
+						<goals>
+							<goal>materialize-products</goal>
+						</goals>
+						<configuration>
+							<products>
+								<product>
+									<id>org.goko</id>
+									<rootFolders>
+										<macosx>Goko.app</macosx>
+									</rootFolders>
+								</product>
+							</products>
+						</configuration>
+					</execution>
+					<execution>
+						<id>archive-products</id>
+						<goals>
+							<goal>archive-products</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<target name="rename-archive">
+								<copy
+									file="${basedir}/target/products/org.goko-win32.win32.x86_64.zip"
+									tofile="${basedir}/target/products/goko-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-win32.win32.x86_64.zip" />
+								<copy file="${basedir}/target/products/org.goko-win32.win32.x86.zip"
+									tofile="${basedir}/target/products/goko-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-win32.win32.x86.zip" />
+								<copy file="${basedir}/target/products/org.goko-linux.gtk.x86_64.zip"
+									tofile="${basedir}/target/products/goko-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-linux.gtk.x86_64.zip" />
+								<copy file="${basedir}/target/products/org.goko-linux.gtk.x86.zip"
+									tofile="${basedir}/target/products/goko-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-linux.gtk.x86.zip" />
+								<copy
+									file="${basedir}/target/products/org.goko-macosx.cocoa.x86_64.zip"
+									tofile="${basedir}/target/products/goko-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-macosx.cocoa.x86_64.zip" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											buildnumber-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.4,)
+										</versionRange>
+										<goals>
+											<goal>
+												create-timestamp
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project> 
 

@@ -6,8 +6,9 @@
 	<artifactId>org.goko.build.parent</artifactId>
 	<version>0.3.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<properties>		
-		<tycho.version>0.26.0</tycho.version>
+
+	<properties>
+		<tycho.version>0.25.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mars-repo.url>http://download.eclipse.org/releases/mars</mars-repo.url>
 		<goko.repo>http://p2.goko.fr/</goko.repo>
@@ -32,6 +33,39 @@
 	</repositories>
 	<build>
 		<plugins>
+			<!-- Generates build number -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>create-timestamp-id</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>create-timestamp</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<timestampFormat>yyyy-MM-dd HH:mm:ss</timestampFormat>
+					<timestampPropertyName>goko.build.timestamp</timestampPropertyName>
+				</configuration>
+			</plugin>
+			<!-- Generates version in properties file -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.12</version>
+				<executions>
+					<execution>
+						<id>parse-version</id>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
@@ -110,7 +144,7 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>		
+		</plugins>
 	</build>
 
 	<dependencies>

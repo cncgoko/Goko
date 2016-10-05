@@ -2,7 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.goko </groupId>
+  <groupId>org.goko</groupId>
   <artifactId>org.goko.log</artifactId>
   <version>0.3.2-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
@@ -10,7 +10,7 @@
   <parent>
   	<groupId>org.goko</groupId>
   	<artifactId>org.goko.build.parent</artifactId>
-  	<version>0.3.1-SNAPSHOT</version>
+  	<version>0.3.2-SNAPSHOT</version>
   	<relativePath>../org.goko.build.parent</relativePath>
   </parent>
 </project>

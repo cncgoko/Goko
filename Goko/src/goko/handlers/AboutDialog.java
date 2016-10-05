@@ -1,5 +1,9 @@
 package goko.handlers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -10,14 +14,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.goko.core.log.GkLog;
 
 public class AboutDialog extends Dialog {
-
+	private static final GkLog LOG = GkLog.getLogger(AboutDialog.class);
 	protected Object result;
 	protected Shell shlAboutGoko;
 
 	/**
 	 * Create the dialog.
+	 * 
 	 * @param parent
 	 * @param style
 	 */
@@ -27,6 +33,7 @@ public class AboutDialog extends Dialog {
 
 	/**
 	 * Open the dialog.
+	 * 
 	 * @return the result
 	 */
 	public Object open() {
@@ -61,14 +68,44 @@ public class AboutDialog extends Dialog {
 		lblGokoIsA.setLayoutData(gd_lblGokoIsA);
 		lblGokoIsA.setText("Goko is an open source desktop application for CNC control and operation");
 
-		Label lblAlphaVersion = new Label(composite_1, SWT.NONE);
+		Composite composite_2 = new Composite(composite_1, SWT.NONE);
+		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		composite_2.setLayout(new GridLayout(2, false));
+
+		Label lblAlphaVersion = new Label(composite_2, SWT.NONE);
+		lblAlphaVersion.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblAlphaVersion.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
-		lblAlphaVersion.setText("Version 0.3.1");
+		lblAlphaVersion.setText("Version");
+
+		Label lblVersion = new Label(composite_2, SWT.NONE);
+		lblVersion.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		new Label(composite_1, SWT.NONE);
 
+		Label lblDate = new Label(composite_2, SWT.NONE);
+		lblDate.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDate.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.ITALIC));
+		lblDate.setText("Build");
+		
+		Label lblBuild = new Label(composite_2, SWT.NONE);
+		lblBuild.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+				
+		Properties prop = new Properties();
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();           
+		InputStream stream = loader.getResourceAsStream("/version.properties");
+		try {
+			prop.load(stream);
+			String version = prop.getProperty("goko.version");
+			String build = prop.getProperty("goko.build.timestamp");
+			lblVersion.setText(version);
+			lblBuild.setText(build);	
+			
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+		
 		Composite composite = new Composite(composite_1, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
-		
+
 		Label lblMoreInformationOn = new Label(composite, SWT.NONE);
 		lblMoreInformationOn.setText("More information on");
 

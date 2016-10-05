@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.3.1.qualifier" useFeatures="true" includeLaunchers="true">
-
+<product name="Goko" uid="org.goko" id="Goko.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.3.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -16,7 +15,6 @@
 
    <windowImages i16="icons/launch/goko16.png" i32="icons/launch/goko32.png" i48="icons/launch/goko48.png" i64="icons/launch/goko64.png" i128="icons/launch/goko128.png" i256="icons/launch/goko256.png"/>
 
-
    <launcher name="Goko">
       <solaris/>
       <win useIco="true">
@@ -24,7 +22,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
@@ -827,7 +824,7 @@ Public License instead of this License.  But first, please read
    </configurations>
 
    <repositories>
-      <repository location="http://update.goko.fr/0.3.1" enabled="true" />
+      <repository location="http://update.goko.fr/0.3.2" enabled="true" />
    </repositories>
 
    <preferencesInfo>
