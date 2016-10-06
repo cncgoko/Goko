@@ -1,6 +1,6 @@
 # Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
 
-Current version  : ```0.3.0```
+Current version  : ```0.3.1```
 
 ##Description
 
@@ -23,18 +23,18 @@ You can also discuss on [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](ht
 
 ##Changelog
 
-###Added
-- Support for **Grbl v0.9**
-- New GCode parsing functionalities,
-- Added GCode modifiers support (Translate, scale, segmentize...),
-- Added **auto-leveler**,
-- Added **wrapper** to convert GCode to 4 axis,
-- Added support for **Shuttle XPress** device,
-- Added save/load project features,
-- Added execution queue for multiple files execution,
-- Improved jog functionnality,
-- Online documentation http://docs.goko.fr/
+### Added
+ * GCode text editor with syntax highlighting and error detection,,
+ * Added keybinding for Shuttle Xpress for _Homing Sequence_, and _Reset Zero_,
+ * Finer control over grid opacity,
+ * Customizable background color in 3D preview,
+ * Customizable camera controls (https://github.com/cncgoko/Goko/issues/29[Issue #29])
+ * More documentation http://docs.goko.fr/
+ * Added array modifier
 
-###Fixed
-- Fixed Grbl buffering issue, 
-- Fixed High CPU while connected to serial - [Issue #22](https://github.com/cncgoko/Goko/issues/22)
+### Fixed
+ * Fixed Translate modifier to apply translation to motion only if they are affected on one axis at least,
+ * Fixed execution monitor sometimes missing the few last commands of a file.
+ * Fixed Restore Defaults for Quantity fields in preferences. It no longer writes unit in quantity field.
+
+[Full changelog](http://docs.goko.fr/master/documentation/changelog.html)
