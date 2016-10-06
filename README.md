@@ -32,7 +32,7 @@ You can also discuss on [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](ht
  * Added keybinding for Shuttle Xpress for _Homing Sequence_, and _Reset Zero_,
  * Finer control over grid opacity,
  * Customizable background color in 3D preview,
- * Customizable camera controls (https://github.com/cncgoko/Goko/issues/29[Issue #29])
+ * Customizable camera controls [Issue #29](https://github.com/cncgoko/Goko/issues/29)
  * More documentation http://docs.goko.fr/
  * Added array modifier
 
