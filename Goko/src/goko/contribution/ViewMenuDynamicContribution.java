@@ -1,4 +1,5 @@
-package goko;
+ 
+package goko.contribution;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,26 +16,24 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.AboutToHide;
+import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
 import org.eclipse.e4.ui.model.application.commands.MCommandsFactory;
 import org.eclipse.e4.ui.model.application.commands.MParameter;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
-@Creatable
-public class ViewMenuCreationAddon implements EventHandler{
+public class ViewMenuDynamicContribution {
 	public static final String VIEW_MENU_ENTRY_TAG = "view";
 	public static final String VIEW_NAME_PARAMETER = "org.goko.commands.toggleView.viewName";
+	
 	@Inject
 	private EPartService partService;
 	@Inject
@@ -44,22 +43,21 @@ public class ViewMenuCreationAddon implements EventHandler{
 	private MApplication application;
 	@Inject
 	private ECommandService commandService;
+	
+	@AboutToHide
+	public void aboutToHide(List<MMenuElement> items) {
+		
+	}
+	
+	@AboutToShow
+	public void aboutToShow(List<MMenuElement> items) {
+		
+		Collection<MPart> parts = partService.getParts(); 
 
-	@Override
-	public void handleEvent(Event event) {
-		List<MMenu> lstViewSubmenu = modelService.findElements(application, "goko.menu.window.view", MMenu.class, new ArrayList<String>(), EModelService.IN_MAIN_MENU);
-		MMenu viewSubmenu = lstViewSubmenu.get(0);
-		
-		
-		Collection<MPart> parts = partService.getParts();
 		Iterator<MPart> iterator = parts.iterator();
 				
-		List<MMenuElement> children = new ArrayList<MMenuElement>();
-		List<MMenuElement> existingChidlren = viewSubmenu.getChildren();
-		List<String> existingChidlrenIds = new ArrayList<String>();
-		for (MMenuElement mMenuElement : existingChidlren) {
-			existingChidlrenIds.add(mMenuElement.getElementId());
-		}	
+		List<MMenuElement> children = new ArrayList<MMenuElement>();		
+		List<String> existingChidlrenIds = new ArrayList<String>();	
 		
 		List<MCommand> commands = modelService.findElements(application, "goko.command.toggleView", MCommand.class, null);
 		
@@ -73,11 +71,12 @@ public class ViewMenuCreationAddon implements EventHandler{
 					// Only creates the button if it doesn't exist yet
 					
 					if(!existingChidlrenIds.contains(menuItemId)){ 
-						MHandledMenuItem item = MMenuFactory.INSTANCE.createHandledMenuItem();
+						MHandledMenuItem item = MMenuFactory.INSTANCE.createHandledMenuItem();						
 						item.setElementId(menuItemId);
 						item.setLabel(mPart.getLabel());
 						item.setTooltip(mPart.getLabel());					
 						item.setIconURI(mPart.getIconURI());
+						item.setContributorURI("platform:/plugin/Goko");
 						Map<String, Object> parameters = new HashMap<String, Object>();
 						parameters.put(VIEW_NAME_PARAMETER, mPart.getElementId());
 						ParameterizedCommand command = commandService.createCommand("goko.command.toggleView", parameters);
@@ -92,10 +91,12 @@ public class ViewMenuCreationAddon implements EventHandler{
 			}
 			
 			Collections.sort(children, new MenuLabelComparator());
-			viewSubmenu.getChildren().addAll(children);
+			items.addAll(children);
+			//viewSubmenu.getChildren().addAll(children);
 		}
-	}
+	}		
 }
+
 
 class MenuLabelComparator implements Comparator<MMenuElement>{
 

@@ -84,12 +84,6 @@ public class GokoLifeCycleManager {
 
 			@Override
 			public void handleEvent(Event event) {
-				// Create auto update check
-				ViewMenuCreationAddon menuCreator = ContextInjectionFactory.make(ViewMenuCreationAddon.class, context);
-				menuCreator.handleEvent(event);
-				eventBroker.unsubscribe(this);
-				splash.close();
-				
 				// Activate progress dialog
 				dialog.open();
 				dialog.getShell().setVisible(false);
@@ -99,6 +93,8 @@ public class GokoLifeCycleManager {
 						return dialog.addJob(job);
 					}
 				});
+				// Close splashscreen
+				splash.close();
 			}
 		});		
 	}

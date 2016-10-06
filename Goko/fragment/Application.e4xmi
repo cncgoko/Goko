@@ -28,7 +28,9 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_wyCDwNwYEeKC274TynxXSA" elementId="org.goko.application.menu.file.quit" label="Quit" command="_wyBcqtwYEeKC274TynxXSA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_tvXhAAxJEeOHAtsV431cHw" elementId="goko.menu.window" label="Window">
-        <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View"/>
+        <children xsi:type="menu:Menu" xmi:id="_9qQO0D8qEeOV84c-W_LF1A" elementId="goko.menu.window.view" label="View">
+          <children xsi:type="menu:DynamicMenuContribution" xmi:id="_0TqLwItIEeabFILVlNnY1Q" elementId="goko.dynamicmenucontribution.0" contributionURI="bundleclass://Goko/goko.contribution.ViewMenuDynamicContribution"/>
+        </children>
         <children xsi:type="menu:Menu" xmi:id="_kjdkYAxEEeOHAtsV431cHw" elementId="goko.menu.window.tools" label="Tools"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_4jfc8NViEeOx56hryHQKyQ" elementId="goko.menuseparator.1"/>
       </children>
