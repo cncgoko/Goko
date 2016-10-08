@@ -36,14 +36,14 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		|| GCodeWordUtils.containsWordByLetter("C", words)){
 			if(context.getMotionMode() == EnumMotionMode.ARC_CLOCKWISE || context.getMotionMode() == EnumMotionMode.ARC_COUNTERCLOCKWISE ){
 				// Make sure there is no other motion mode word
-				if(!GCodeWordUtils.containsWord("G0", words) 
-				&& !GCodeWordUtils.containsWord("G1", words)
+				if(!GCodeWordUtils.containsWordRegex("G(0?)0", words) 
+				&& !GCodeWordUtils.containsWordRegex("G(0?)1", words)
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
 			}else{
 				//Context motion mode is not ARC, we need an explicit G2 or G3
-				return GCodeWordUtils.containsWord("G2", words) || GCodeWordUtils.containsWord("G3", words);
+				return GCodeWordUtils.containsWordRegex("G(0?)2", words) || GCodeWordUtils.containsWordRegex("G(0?)3", words);
 			}
 		}
 		return false;
@@ -77,9 +77,9 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 			clockwise = false;
 		}
 
-		GCodeWord gWord = GCodeWordUtils.findAndRemoveWord("G2", words);
+		GCodeWord gWord = GCodeWordUtils.findAndRemoveWordRegex("G(0?)2", words);
 		if(gWord == null){			
-			gWord = GCodeWordUtils.findAndRemoveWord("G3", words);
+			gWord = GCodeWordUtils.findAndRemoveWordRegex("G(0?)3", words);
 			if(gWord != null){
 				clockwise = false;
 			}
