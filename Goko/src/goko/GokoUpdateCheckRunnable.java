@@ -45,10 +45,12 @@ public class GokoUpdateCheckRunnable {
 		IMetadataRepositoryManager metadataManager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
 		IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService(IArtifactRepositoryManager.SERVICE_NAME);
 		
-		addGokoDefaultRepositories(metadataManager, artifactManager);
-		
-		if(GokoPreference.getInstance().isDeveloperMode()){
+		if(GokoPreference.getInstance().isDeveloperMode()){			
+			LOG.info("********** DEV MODE UPDATE **********");
+			removeDistantRepositories(metadataManager, artifactManager);
 			addGokoDeveloperRepositories(metadataManager, artifactManager);
+		}else{
+			addGokoDefaultRepositories(metadataManager, artifactManager);	
 		}
 		
 		refreshUsedRepositories(metadataManager, artifactManager, monitor);
@@ -164,6 +166,7 @@ public class GokoUpdateCheckRunnable {
             }
         });
     }
+    
     
     /**
      * Traces the list of known repositories
@@ -290,6 +293,33 @@ public class GokoUpdateCheckRunnable {
 			
 		} catch (URISyntaxException e) {
 			LOG.error(e);
+		}
+    }
+    
+    /**
+     * Removes any update site that is not "dev"
+     * @param metadataManager the used IMetadataRepositoryManager
+     * @param artifactManager the used IArtifactRepositoryManager
+     */
+    private void removeDistantRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+		URI[] lstMetadataRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_NON_LOCAL);		
+		URI[] lstArtifactRepositories = artifactManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_NON_LOCAL);
+		
+		// Logging known metadata repositories
+		if(lstMetadataRepositories != null && lstMetadataRepositories.length > 0){			
+			LOG.info("Removing distant updates site from the following metadata repositories :");
+			for (URI uri : lstMetadataRepositories) {
+				metadataManager.removeRepository(uri);
+				LOG.info("  - Removing  "+uri.toString());				
+			}			
+		}
+		// Logging known artifact repositories
+		if(lstArtifactRepositories != null && lstArtifactRepositories.length > 0){
+			LOG.info("Removing distant updates site from the following artifact repositories :");
+			for (URI uri : lstArtifactRepositories) {
+				artifactManager.removeRepository(uri);
+				LOG.info("  - Removing  "+uri.toString());				
+			}			
 		}
     }
     
