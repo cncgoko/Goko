@@ -274,8 +274,8 @@ public class GCodeFindReplaceDialog extends Dialog {
 			}
 			setLastFoundMatch(null);
 			getShell().getDisplay().beep();
-			if(isWrapSearch()){
-				findIndex(-1, getLastFoundMatch() != null);
+			if(isWrapSearch() && !wrapped){
+				findIndex(-1, true);
 			}
 		}
 	}
@@ -318,6 +318,10 @@ public class GCodeFindReplaceDialog extends Dialog {
 	 * Perform the actual replace all
 	 */
 	private void performReplaceAll(){
+		// Initiate first find
+		if(lastFoundMatch == null){
+			performFind();
+		}
 		while (isReplacePossible()) {
 			performReplaceFind();
 		}
