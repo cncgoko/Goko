@@ -74,6 +74,7 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 		String sLength = GokoPreference.getInstance().format(length);
 		double dLength = length.doubleValue(JoglUtils.JOGL_UNIT);
 		textRenderer = new TextRenderer(sLength, 3, new Point3d(startPoint.x + direction.x * dLength/2,startPoint.y + direction.y * dLength/2,startPoint.z + direction.z * dLength/2), this.direction, new Vector3d(-baseDirection.x,-baseDirection.y,-baseDirection.z), TextRenderer.CENTER | verticalAlignement);
+		textRenderer.setPadding(Length.valueOf("0.2", JoglUtils.JOGL_UNIT));
 		addRenderer(lineRenderer);
 		addRenderer(endArrowRenderer);
 		addRenderer(startArrowRenderer);

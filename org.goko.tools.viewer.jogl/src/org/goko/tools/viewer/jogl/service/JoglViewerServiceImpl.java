@@ -103,12 +103,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(toolRenderer);
 		addRenderer(new ToolLinePrintRenderer(controllerAdapter, gcodeContextProvider));
 		
-		addRenderer(new TextRenderer("-BR", 1, new Point3d(-10,-10,0), new Vector3d(-0,-1,0), new Vector3d(1,0,0),TextRenderer.BOTTOM | TextRenderer.RIGHT));
-		addRenderer(new TextRenderer("-BR", 1, new Point3d(-10,-10,0), new Vector3d(-0,1,0), new Vector3d(1,0,0),TextRenderer.BOTTOM | TextRenderer.RIGHT));
 		
-//		addRenderer(bl);
-//		addRenderer(new TextRenderer("BR", 1, new Point3d(-10,-10,0), TextRenderer.BOTTOM | TextRenderer.RIGHT));
-//		addRenderer(new TextRenderer("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 1, new Point3d(10,10,0), TextRenderer.LEFT | TextRenderer.TOP));
 		updateGridRenderer(xyGridRenderer);
 		updateGridRenderer(xzGridRenderer);
 		updateGridRenderer(yzGridRenderer);

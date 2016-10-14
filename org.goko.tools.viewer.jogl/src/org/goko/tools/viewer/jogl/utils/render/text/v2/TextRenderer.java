@@ -284,8 +284,8 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		//adapter la taille des polygones générés
 		Point3d p1 = new Point3d(position.x-baselineOffset.x                    ,position.y-baselineOffset.y                     ,position.z-baselineOffset.z);
 		Point3d p2 = new Point3d(position.x-baselineOffset.x+wVector.x          ,position.y-baselineOffset.y+wVector.y           ,position.z-baselineOffset.z+wVector.z);
-		Point3d p3 = new Point3d(position.x-baselineOffset.x+hVector.x          ,position.y-baselineOffset.y-hVector.y           ,position.z-baselineOffset.z+hVector.z);
-		Point3d p4 = new Point3d(position.x-baselineOffset.x+hVector.x+wVector.x,position.y-baselineOffset.y-hVector.y+wVector.y ,position.z-baselineOffset.z+hVector.z+wVector.z);
+		Point3d p3 = new Point3d(position.x-baselineOffset.x-hVector.x          ,position.y-baselineOffset.y-hVector.y           ,position.z-baselineOffset.z-hVector.z);
+		Point3d p4 = new Point3d(position.x-baselineOffset.x-hVector.x+wVector.x,position.y-baselineOffset.y-hVector.y+wVector.y ,position.z-baselineOffset.z-hVector.z+wVector.z);
 
 		int[] channel = {0,0,0};
 		channel[charInfo.getChannel()] = 1;
@@ -411,6 +411,11 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		return verticalPadding;
 	}
 
+	public TextRenderer setPadding(Length padding){
+		setVerticalPadding(padding);
+		setHorizontalPadding(padding);
+		return this;
+	}
 	/**
 	 * @param verticalPadding the verticalPadding to set
 	 */
