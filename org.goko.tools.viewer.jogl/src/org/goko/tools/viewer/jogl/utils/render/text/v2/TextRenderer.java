@@ -11,13 +11,18 @@ import javax.vecmath.Vector4f;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.texture.Texture;
 
 public class TextRenderer extends AbstractVboJoglRenderer {
+	/** Channel for each char layout */
+	private static final int CHAR_CHANNEL_LAYOUT = 5;	
 	public static final int LEFT 	= 0;
 	public static final int CENTER 	= 1 << 1;
 	public static final int RIGHT 	= 1 << 2;
@@ -37,6 +42,12 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	private BitmapFontFile bff;
 	private int alignement;
 	private int textureSize;
+	/** The image channel of each char buffer object*/
+	private Integer charChannelBufferObject;
+	/** Int buffer for char channel*/
+	private IntBuffer charChannelBuffer;	
+	private Length verticalPadding;
+	private Length horizontalPadding;
 	
 	public TextRenderer(String text, double size, Point3d position) {
 		this(text, size, position, new Vector3d(1,0,0), new Vector3d(0,1,0));
@@ -48,7 +59,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	public TextRenderer(String text, double size, Point3d position, Vector3d widthVector, Vector3d heightVector) {
 		this(text, size, position, widthVector, heightVector, CENTER | MIDDLE);
 	}
-
+ //le text renderer a du mal sur les plans autres que XY
 	public TextRenderer(String text, double size, Point3d position, Vector3d widthVector, Vector3d heightVector, int alignement) {
 		super(GL.GL_TRIANGLES, VERTICES | COLORS | UVS);
 		this.text = text;		
@@ -59,15 +70,17 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		this.enumBitmapFont = EnumBitmapFont.CONSOLAS;
 		this.color = new Vector4f(1,1,1,1);
 		this.alignement = alignement;
+		this.verticalPadding = Length.ZERO;
+		this.horizontalPadding = Length.ZERO;
 	}
 
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#buildGeometry()
 	 */
 	@Override
-	protected void buildGeometry() throws GkException {
+	protected void buildGeometry() throws GkException {		
 		setVerticesCount(StringUtils.length(text)*6);
-		
+		charChannelBuffer = IntBuffer.allocate(3*6*getText().length());
 		
 		generateVertices();
 	}
@@ -101,6 +114,29 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		gl.glActiveTexture(GL3.GL_TEXTURE0);
 		texture.enable(gl);
 		texture.bind(gl);	
+		
+		// Initialize the channelbuffer object
+		if(this.charChannelBufferObject == null){
+			int[] vbo = new int[1];
+			gl.glGenBuffers(1, vbo, 0);
+			this.charChannelBufferObject = vbo[0];
+		}
+		// Make sure we take everything		
+		charChannelBuffer.rewind();
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, charChannelBufferObject);
+		gl.glBufferData(GL.GL_ARRAY_BUFFER, getText().length()*6*3*Buffers.SIZEOF_INT, charChannelBuffer, GL.GL_STATIC_DRAW);
+		gl.glEnableVertexAttribArray(CHAR_CHANNEL_LAYOUT);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#enableAdditionalVertexAttribArray(javax.media.opengl.GL3)
+	 */
+	@Override
+	protected void enableAdditionalVertexAttribArray(GL3 gl) throws GkException {
+		texture.enable(gl);
+		gl.glEnableVertexAttribArray(CHAR_CHANNEL_LAYOUT);
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, charChannelBufferObject);
+		gl.glVertexAttribPointer(CHAR_CHANNEL_LAYOUT, 3, GL3.GL_INT, false, 0, 0);
 	}
 	
 	/** (inheritDoc)
@@ -110,6 +146,8 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	protected void disableAdditionalVertexAttribArray(GL3 gl) throws GkException {
 		super.disableAdditionalVertexAttribArray(gl);
 		texture.disable(gl);
+
+		gl.glDisableVertexAttribArray(CHAR_CHANNEL_LAYOUT);
 	}
 	
 	/** (inheritDoc)
@@ -126,7 +164,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		FloatBuffer uvsBuffer 	 	= FloatBuffer.allocate(2*getVerticesCount());
 		FloatBuffer colorsBuffer    = FloatBuffer.allocate(4*getVerticesCount());
 
-		Point3d lowerLeft = computeLowerLeftCorner();
+		Point3d lowerLeft = computeTopLeftCorner();
 		Point3d p1 = new Point3d(lowerLeft);
 
 		int length = StringUtils.length(text);
@@ -138,81 +176,127 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		setUvsBuffer(uvsBuffer);
 	}
 	
-	private Point3d computeLowerLeftCorner() {
-		Point3d lowerLeft = new Point3d(position);
+	private Point3d computeTopLeftCorner() {
+		Point3d topLeft = new Point3d(position);
+		
 		int length = StringUtils.length(text);
-		double textWidth = 0;		
-		// Compute width
+		double textWidth 	 = 0;	
+		
+		double ratio			= size / bff.getLineHeight();
+		double minYOffset = Double.MAX_VALUE; 
+		// Compute width by summing the width of each char
 		for (int i = 0; i < length; i++) {
 			char letter = text.charAt(i);
 			CharBlock info = bff.getCharacterInfo(letter);			
-			float cw = info.getWidth();
-			float ch = info.getHeight();
-			float ratio = (float) (cw*size / ch); // The actual width of the letter
-
-			textWidth += ratio;
+			textWidth += info.getWidth();
+			minYOffset = Math.min(minYOffset, info.getYoffset());
 		}
-		Vector3d wVector = new Vector3d(widthVector);
-		wVector.scale((float) textWidth);
+		textWidth = ratio * textWidth;
+		Vector3d wVector = new Vector3d(widthVector);		
 		Vector3d hVector = new Vector3d(heightVector);
-		hVector.scale((float) size);
 
+		Vector3d hPadding = new Vector3d(widthVector);
+		hPadding.scale(horizontalPadding.doubleValue(JoglUtils.JOGL_UNIT));
+		
+		Vector3d vPadding = new Vector3d(heightVector);
+		vPadding.scale(verticalPadding.doubleValue(JoglUtils.JOGL_UNIT));
+		
 		switch(this.alignement & HORIZONTAL_MASK ){
-		case RIGHT: lowerLeft.sub(wVector);
+		case RIGHT:  
+			wVector.scale((float) textWidth);
+			wVector.add(hPadding);
+			topLeft.sub(wVector);
 		break;
-		case CENTER: wVector.scale(0.5f);
-					lowerLeft.sub(wVector);
-			break;
-		default: // Nothing here
+		case CENTER: 
+			wVector.scale(0.5 * textWidth);
+			topLeft.sub(wVector);
+		break;
+		default: 
+			topLeft.add(hPadding);
 		break;
 		}
 
 		switch(this.alignement & VERTICAL_MASK ){
-		case TOP: lowerLeft.sub(hVector);
+		case BOTTOM:
+			hVector.scale(ratio * bff.getBase());//ratio*bff.getLineHeight());// * (1 - (lineHeight - base) / lineHeight));
+			hVector.add(vPadding);
+			topLeft.add(hVector);
+		break;
+		case TOP:
+			hVector.scale(ratio*minYOffset);//* ( (base - maxCharHeight) / lineHeight));
+			hVector.sub(vPadding);
+			topLeft.add(hVector);
 		break;
 		case MIDDLE: hVector.scale(0.5f);
-					lowerLeft.sub(hVector);
+					topLeft.add(hVector);
 			break;
 		default: // Nothing here
 		break;
 		}
 
-		return lowerLeft;
+		return topLeft;
 	}
 
-	private void generateBuffers(char letter, Point3d position, FloatBuffer vertices, FloatBuffer colors, FloatBuffer uvs){
-		CharBlock info = bff.getCharacterInfo(letter);		
-		float w = bff.getTextureWidth();
-		float h = bff.getTextureHeight();
-		Vector3d wVector = new Vector3d(widthVector);
-		float cw = info.getWidth();
-		float ch = info.getHeight();
-		float ratio = (float) (cw*size / ch);
-		wVector.scale(ratio);
-		Vector3d hVector = new Vector3d(heightVector);
-		hVector.scale((float) size);
-		//   3----4
-		//   |    |
-		//   |    |
-		//   1----2
-		float u1 = (info.getX())/w;
-		float v1 = (bff.getTextureHeight() - (info.getY()))/h;
+	private void generateBuffers(char letter, Point3d position, FloatBuffer vertices, FloatBuffer colors, FloatBuffer uvs){		
+		CharBlock charInfo 	= bff.getCharacterInfo(letter);		
+		float textureWidth 	= bff.getTextureWidth();
+		float textureHeight = bff.getTextureHeight();
+		
+		float fontBase 		= bff.getBase();
+		float fontLineHeight= bff.getLineHeight();
+		double ratio			= size / bff.getLineHeight();
+				
+		float charTextureWidth 	= charInfo.getWidth();
+		float charTextureHeight = charInfo.getHeight();
+		float charYOffset 		= charInfo.getYoffset();
+		float charXOffset 		= charInfo.getXoffset();
+		
+		 
+		Vector3d wVector 	= new Vector3d(widthVector);
+		Vector3d hVector 	= new Vector3d(heightVector);
+				
+		// Let's calculate the vector from the top to the base line of the font
+		Vector3d baselineOffset = new Vector3d(heightVector);
+		baselineOffset.scale( charYOffset * ratio);
+		 
+		wVector.scale(charTextureWidth * ratio);
+		
+		hVector.scale(charTextureHeight * ratio);
+		//   +y   
+		//   |   1----2      1 = top left of image (0,0)     2 = top right (1,0) 
+		//   |   |    |      3 = bottom left (0, 1)          4 = bottom right (1,1)
+		//   |   |    |
+		//   |   3----4
+		//   +----------> +x
+		//
+		float u1 = (charInfo.getX())/textureWidth;
+		float v1 = charInfo.getY()/textureHeight;
 
-		float u2 = (info.getX() + cw)/w;
-		float v2 = (bff.getTextureHeight() - (info.getY()))/h;
+		float u2 = (charInfo.getX() + charTextureWidth)/textureWidth;
+		float v2 = charInfo.getY()/textureHeight;
 
-		float u3 = (info.getX())/w;
-		float v3 = (bff.getTextureHeight() - (info.getY() - info.getHeight()))/h;
+		float u3 = (charInfo.getX())/textureWidth;
+		float v3 = (charInfo.getY() + charTextureHeight)/textureHeight;
 
-		float u4 = (info.getX() + cw)/w;
-		float v4 = (bff.getTextureHeight() - (info.getY() - info.getHeight()))/h;
+		float u4 = (charInfo.getX() + charTextureWidth)/textureWidth;
+		float v4 = (charInfo.getY() + charTextureHeight )/textureHeight;
+		
+		//adapter la taille des polygones générés
+		Point3d p1 = new Point3d(position.x-baselineOffset.x                    ,position.y-baselineOffset.y                     ,position.z-baselineOffset.z);
+		Point3d p2 = new Point3d(position.x-baselineOffset.x+wVector.x          ,position.y-baselineOffset.y+wVector.y           ,position.z-baselineOffset.z+wVector.z);
+		Point3d p3 = new Point3d(position.x-baselineOffset.x+hVector.x          ,position.y-baselineOffset.y-hVector.y           ,position.z-baselineOffset.z+hVector.z);
+		Point3d p4 = new Point3d(position.x-baselineOffset.x+hVector.x+wVector.x,position.y-baselineOffset.y-hVector.y+wVector.y ,position.z-baselineOffset.z+hVector.z+wVector.z);
 
-		Point3d p1 = new Point3d(position);
-		Point3d p2 = new Point3d(position.x+wVector.x,position.y+wVector.y,position.z+wVector.z);
-		Point3d p3 = new Point3d(position.x+hVector.x,position.y+hVector.y,position.z+hVector.z);
-		Point3d p4 = new Point3d(position.x+hVector.x+wVector.x,position.y+hVector.y+wVector.y,position.z+hVector.z+wVector.z);
-
-
+		int[] channel = {0,0,0};
+		channel[charInfo.getChannel()] = 1;
+		// One for each vertice
+		charChannelBuffer.put(channel);
+		charChannelBuffer.put(channel);
+		charChannelBuffer.put(channel);
+		charChannelBuffer.put(channel);
+		charChannelBuffer.put(channel);
+		charChannelBuffer.put(channel);
+		
 		vertices.put(new float[]{(float)p1.x, (float)p1.y, (float)p1.z, 1});
 		colors.put(new float[]{color.x,color.y,color.z,color.w});
 		uvs.put(new float[]{u1, v1});
@@ -237,6 +321,7 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 		colors.put(new float[]{color.x,color.y,color.z,color.w});
 		uvs.put(new float[]{u4, v4});
 
+		// We do not use XAdvance on purpose
 		position.add(wVector);
 	}
 	
@@ -317,5 +402,33 @@ public class TextRenderer extends AbstractVboJoglRenderer {
 	 */
 	protected void setColor(Vector4f color) {
 		this.color = color;
+	}
+
+	/**
+	 * @return the verticalPadding
+	 */
+	public Length getVerticalPadding() {
+		return verticalPadding;
+	}
+
+	/**
+	 * @param verticalPadding the verticalPadding to set
+	 */
+	public void setVerticalPadding(Length verticalPadding) {
+		this.verticalPadding = verticalPadding;
+	}
+
+	/**
+	 * @return the horizontalPadding
+	 */
+	public Length getHorizontalPadding() {
+		return horizontalPadding;
+	}
+
+	/**
+	 * @param horizontalPadding the horizontalPadding to set
+	 */
+	public void setHorizontalPadding(Length horizontalPadding) {
+		this.horizontalPadding = horizontalPadding;
 	}
 }

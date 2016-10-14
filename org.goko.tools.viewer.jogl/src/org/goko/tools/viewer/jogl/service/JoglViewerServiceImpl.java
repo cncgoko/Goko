@@ -17,6 +17,8 @@
 package org.goko.tools.viewer.jogl.service;
 
 import javax.media.opengl.GLAutoDrawable;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -36,8 +38,10 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.overlay.KeyboardJogOverlay;
-import org.goko.tools.viewer.jogl.utils.render.GridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
+import org.goko.tools.viewer.jogl.utils.render.grid.GraduatedGridRenderer;
+import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
+import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
 
@@ -59,9 +63,9 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	/** Bind camera on tool position ? */
 	private boolean lockCameraOnTool;
 		
-	private GridRenderer xyGridRenderer;
-	private GridRenderer xzGridRenderer;
-	private GridRenderer yzGridRenderer;
+	private IGridRenderer xyGridRenderer;
+	private IGridRenderer xzGridRenderer;
+	private IGridRenderer yzGridRenderer;
 	private FourAxisOriginRenderer zeroRenderer;	
 	private KeyboardJogAdatper keyboardJogAdapter;
 	private ToolRenderer toolRenderer;	
@@ -87,9 +91,9 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 				
 		zeroRenderer = new FourAxisOriginRenderer(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 		addRenderer(zeroRenderer);			
-		this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);		
-		this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
-		this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
+		this.xyGridRenderer = new GraduatedGridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);		
+		this.xzGridRenderer = new GraduatedGridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
+		this.yzGridRenderer = new GraduatedGridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
 		this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
 		this.xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
 		this.yzGridRenderer.setNormal(JoglUtils.X_AXIS);
@@ -99,6 +103,12 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(toolRenderer);
 		addRenderer(new ToolLinePrintRenderer(controllerAdapter, gcodeContextProvider));
 		
+		addRenderer(new TextRenderer("-BR", 1, new Point3d(-10,-10,0), new Vector3d(-0,-1,0), new Vector3d(1,0,0),TextRenderer.BOTTOM | TextRenderer.RIGHT));
+		addRenderer(new TextRenderer("-BR", 1, new Point3d(-10,-10,0), new Vector3d(-0,1,0), new Vector3d(1,0,0),TextRenderer.BOTTOM | TextRenderer.RIGHT));
+		
+//		addRenderer(bl);
+//		addRenderer(new TextRenderer("BR", 1, new Point3d(-10,-10,0), TextRenderer.BOTTOM | TextRenderer.RIGHT));
+//		addRenderer(new TextRenderer("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 1, new Point3d(10,10,0), TextRenderer.LEFT | TextRenderer.TOP));
 		updateGridRenderer(xyGridRenderer);
 		updateGridRenderer(xzGridRenderer);
 		updateGridRenderer(yzGridRenderer);
@@ -183,18 +193,20 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 			zeroRenderer.setRotationAxis(JoglViewerPreference.getInstance().getRotaryAxisDirection());
 			zeroRenderer.update();
 			// Update the grid
-			if(StringUtils.startsWith(event.getProperty(), JoglViewerPreference.GROUP_GRID)){
+			if(StringUtils.startsWith(event.getProperty(), JoglViewerPreference.GROUP_GRID)
+				|| StringUtils.startsWith(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
 				boolean xyDisplay = xyGridRenderer.isEnabled();
 				boolean xzDisplay = xzGridRenderer.isEnabled();
 				boolean yzDisplay = yzGridRenderer.isEnabled();
 				this.xyGridRenderer.destroy();
 				this.xzGridRenderer.destroy();
 				this.yzGridRenderer.destroy();
-				this.xyGridRenderer = new GridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);
+				
+				this.xyGridRenderer = new GraduatedGridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);
 				this.xyGridRenderer.setNormal(JoglUtils.Z_AXIS);
-				this.xzGridRenderer = new GridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
+				this.xzGridRenderer = new GraduatedGridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
 				this.xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
-				this.yzGridRenderer = new GridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
+				this.yzGridRenderer = new GraduatedGridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
 				this.yzGridRenderer.setNormal(JoglUtils.X_AXIS);
 				updateGridRenderer(xyGridRenderer);
 				updateGridRenderer(xzGridRenderer);
@@ -252,7 +264,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}		
 	}
 	
-	private void updateGridRenderer(GridRenderer gridRenderer) throws GkException{		
+	private void updateGridRenderer(IGridRenderer gridRenderer) throws GkException{		
 		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
 		gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
 		

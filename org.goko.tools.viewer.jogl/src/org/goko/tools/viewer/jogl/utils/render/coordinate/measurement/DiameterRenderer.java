@@ -31,7 +31,7 @@ import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.basic.CircleRenderer;
 import org.goko.tools.viewer.jogl.utils.render.basic.PointRenderer;
 import org.goko.tools.viewer.jogl.utils.render.basic.PolylineRenderer;
-import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
+import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 
 public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	/** The center of the diameter*/

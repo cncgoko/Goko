@@ -1,0 +1,55 @@
+# AngelCode Bitmap Font Generator configuration file
+fileVersion=1
+
+# font settings
+fontName=Y14.5M-2009
+fontFile=
+charSet=0
+fontSize=-440
+aa=4
+scaleH=80
+useSmoothing=1
+isBold=0
+isItalic=0
+useUnicode=1
+disableBoxChars=1
+outputInvalidCharGlyph=0
+dontIncludeKerningPairs=0
+useHinting=1
+renderFromOutline=0
+useClearType=0
+
+# character alignment
+paddingDown=0
+paddingUp=0
+paddingRight=2
+paddingLeft=2
+spacingHoriz=2
+spacingVert=2
+useFixedHeight=0
+forceZero=0
+
+# output file
+outWidth=2048
+outHeight=2048
+outBitDepth=8
+fontDescFormat=2
+fourChnlPacked=0
+textureFormat=png
+textureCompression=0
+alphaChnl=1
+redChnl=0
+greenChnl=0
+blueChnl=0
+invA=0
+invR=0
+invG=0
+invB=0
+
+# outline
+outlineThickness=0
+
+# selected chars
+chars=32-94,97-122,164,171,175-177,180,188-191,202,215-216,956,960,963
+
+# imported icon images

@@ -36,13 +36,9 @@ public class BitmapFontFile {
 	private int textureHeight;
 	private Texture texture;
 	private ByteBuffer buffer;
-	
-	public static void main(String[] args) throws Exception {
-		int t = -1496;
-		byte[] b = { (byte) (t >> 24), (byte) (t >> 16), (byte) (t >> 8), (byte) (t)};
-		int t1 = getInt32(ByteBuffer.wrap(b));
-		new BitmapFontFile().load("");
-	}
+	private int lineHeight;
+	private int base;
+	private int size;
 	
 	protected CharBlock getCharacterInfo(char character){
 		return mapChars.get((int)character);
@@ -53,10 +49,11 @@ public class BitmapFontFile {
 		//BufferedReader reader = new BufferedReader(new FileReader("c:/test.ttf"));
 	//	InputStream inputStream = url.openConnection().getInputStream();
 		try{
-			File f = new File("C:/Users/PsyKo/test.fnt");
+			File f = new File("G:/Git/Goko/org.goko.tools.viewer.jogl/resources/font/Y145M-2009.fnt");
+			//File f = new File("G:/Git/Goko/org.goko.tools.viewer.jogl/resources/font/Consolas_1024.fnt");
 			String prefix = FilenameUtils.getFullPath(f.getAbsolutePath());
 			InputStream inputStream = new FileInputStream(f);
-			
+			//voir pourquoi ca marche avec consolas mais pas les autres
 			mapChars = new HashMap<Integer, CharBlock>();
 			mapPages = new HashMap<Integer, PageBlock>();
 			
@@ -74,6 +71,7 @@ public class BitmapFontFile {
 	}
 	
 	protected void loadBuffer(String imageFile) throws IOException{
+		System.out.println("Loading image "+imageFile);
 		 // open image
 		 File imgPath = new File(imageFile);
 		 BufferedImage bufferedImage = ImageIO.read(imgPath);
@@ -107,6 +105,8 @@ public class BitmapFontFile {
 	 */
 	private void loadInfoBlock(InputStream inputStream) throws IOException {
 		ByteBuffer data = getBlockData(inputStream);
+		size = Math.abs(getInt16(data));
+		System.out.println("Font size :"+size);
 	}
 
 	/**
@@ -126,10 +126,10 @@ public class BitmapFontFile {
 //		redChnl 1 uint 12  
 //		greenChnl 1 uint 13  
 //		blueChnl 1 uint 14 
-		int lineHeight = getUint16(data);
-		int base = getUint16(data);
-		textureWidth  = getUint32(data);
-		textureHeight = getUint32(data);
+		lineHeight = getUint16(data);
+		base = getUint16(data);
+		textureWidth  = getUint16(data);
+		textureHeight = getUint16(data);
 	}
 	
 	/**
@@ -165,20 +165,20 @@ public class BitmapFontFile {
 	private void loadCharsBlock(InputStream inputStream) throws IOException {
 		ByteBuffer data = getBlockData(inputStream);
 		int nbChars = data.limit() / 20;
-		
+		System.out.println("Font line height : "+lineHeight);
 		for (int i = 0; i < nbChars; i++) {
 			int id = getUint32(data);
 			int x = getUint16(data);
 			int y = getUint16(data);
 			int width  = getUint16(data);
 			int height = getUint16(data);
-			int xOffset = getInt16(data);
-			int yOffset = getInt16(data);
-			int xAdvance= getInt16(data);
+			int xOffset = getUint16(data);
+			int yOffset = getUint16(data);
+			int xAdvance= getUint16(data);
 			int page = getUint8(data);
 			int chnl = getUint8(data);
-			mapChars.put(id, new CharBlock(id, x, y, width, height, xOffset, yOffset, xAdvance, page));
-			System.out.println((char)id+","+id+", "+x+", "+ y+", "+ width+", "+ height+", "+ xOffset+", "+ yOffset+", "+ xAdvance+", "+page);
+			mapChars.put(id, new CharBlock(id, x, y, width, height, xOffset, yOffset, xAdvance, page, chnl));
+			System.out.println((char)id+", id:"+id+", x:"+x+", y:"+ y+", width:"+ width+", height:"+ height+", xOffset:"+ xOffset+", yOffset:"+ yOffset+", xAdvance:"+ xAdvance+", page:"+page+", chnl:"+chnl);
 		}
 	}
 	
@@ -246,7 +246,7 @@ public class BitmapFontFile {
 		buffer.get(val);
 		return (val[1]& 0xFFFF) << 8 | (val[0] & 0xFF);		
 	}
-	
+
 	/**
 	 * Extract a signed int in this buffer using the 1 first byte
 	 * @param buffer the buffer to extract data from
@@ -331,5 +331,47 @@ public class BitmapFontFile {
 	 */
 	public ByteBuffer getBuffer() {
 		return buffer;
+	}
+
+	/**
+	 * @return the lineHeight
+	 */
+	public int getLineHeight() {
+		return lineHeight;
+	}
+
+	/**
+	 * @param lineHeight the lineHeight to set
+	 */
+	public void setLineHeight(int lineHeight) {
+		this.lineHeight = lineHeight;
+	}
+
+	/**
+	 * @return the base
+	 */
+	public int getBase() {
+		return base;
+	}
+
+	/**
+	 * @param base the base to set
+	 */
+	public void setBase(int base) {
+		this.base = base;
+	}
+
+	/**
+	 * @return the size
+	 */
+	public int getSize() {
+		return size;
+	}
+
+	/**
+	 * @param size the size to set
+	 */
+	public void setSize(int size) {
+		this.size = size;
 	}
 }

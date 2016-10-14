@@ -11,7 +11,7 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxisDirection;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.measurement.ArrowRenderer;
-import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
+import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 
 public class FourAxisOriginRenderer extends AbstractCoreJoglMultipleRenderer {
 

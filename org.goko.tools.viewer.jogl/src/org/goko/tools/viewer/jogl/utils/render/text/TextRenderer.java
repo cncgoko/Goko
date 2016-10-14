@@ -17,6 +17,12 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 
 import com.jogamp.opengl.util.texture.Texture;
 
+/**
+ * @deprecated use {@link org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer} instead
+ * @author Psyko
+ * @date 11 oct. 2016
+ */
+@Deprecated
 public class TextRenderer extends AbstractVboJoglRenderer {
 	public static final int LEFT 	= 0;
 	public static final int CENTER 	= 1 << 1;

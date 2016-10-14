@@ -10,8 +10,9 @@ public class CharBlock {
 	private int yoffset;
 	private int xadvance;
 	private int page;
+	private int channel;
 	
-	public CharBlock(int id, int x, int y, int width, int height, int xoffset, int yoffset, int xadvance, int page) {
+	public CharBlock(int id, int x, int y, int width, int height, int xoffset, int yoffset, int xadvance, int page, int channel) {
 		super();
 		this.id = id;
 		this.x = x;
@@ -22,6 +23,7 @@ public class CharBlock {
 		this.yoffset = yoffset;
 		this.xadvance = xadvance;
 		this.page = page;
+		this.channel = channel;
 	}
 	/**
 	 * @return the page
@@ -130,6 +132,18 @@ public class CharBlock {
 	 */
 	public void setXadvance(int xadvance) {
 		this.xadvance = xadvance;
+	}
+	/**
+	 * @return the channel
+	 */
+	public int getChannel() {
+		return channel;
+	}
+	/**
+	 * @param channel the channel to set
+	 */
+	public void setChannel(int channel) {
+		this.channel = channel;
 	}
 	
 	

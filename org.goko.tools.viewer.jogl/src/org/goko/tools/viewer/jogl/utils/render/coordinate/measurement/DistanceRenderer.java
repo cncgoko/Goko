@@ -33,7 +33,7 @@ import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.basic.PolylineRenderer;
-import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
+import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 
 /**
  * Simple rule display

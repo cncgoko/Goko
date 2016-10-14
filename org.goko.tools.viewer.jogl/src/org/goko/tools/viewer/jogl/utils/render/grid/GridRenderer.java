@@ -17,7 +17,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.tools.viewer.jogl.utils.render;
+package org.goko.tools.viewer.jogl.utils.render.grid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +53,8 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
  * @author PsyKo
  *
  */
-public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeContextListener<GCodeContext> {
+public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeContextListener<GCodeContext>, IGridRenderer {
 	private static final GkLog LOG = GkLog.getLogger(GridRenderer.class);
-	private String id;
 	private Length majorIncrement;
 	private Length minorIncrement;
 	private Color4f majorUnitColor	= new Color4f(0.4f, 0.4f, 0.4f,1f);
@@ -70,14 +69,14 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	private Vector4f normal; 
 	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	 
-	public GridRenderer(String id, IGCodeContextProvider<GCodeContext> gcodeContextProvider){		
-		this(id, new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
-				 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT),
-				 Length.valueOf(10, JoglUtils.JOGL_UNIT),
-				 Length.valueOf(1, JoglUtils.JOGL_UNIT),
-				 new Color3f(0.4f, 0.4f, 0.4f),
-				 new Color3f(0.4f, 0.4f, 0.4f),
-				 0.5f, 0.5f, 0.5f, new Vector4f(0f,0f,1f,0f));
+	public GridRenderer(IGCodeContextProvider<GCodeContext> gcodeContextProvider){		
+		this(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
+			 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT),
+			 Length.valueOf(10, JoglUtils.JOGL_UNIT),
+			 Length.valueOf(1, JoglUtils.JOGL_UNIT),
+			 new Color3f(0.4f, 0.4f, 0.4f),
+			 new Color3f(0.4f, 0.4f, 0.4f),
+			 0.5f, 0.5f, 0.5f, new Vector4f(0f,0f,1f,0f));
 		this.gcodeContextProvider = gcodeContextProvider;
 		if(this.gcodeContextProvider != null){
 			gcodeContextProvider.addObserver(this);
@@ -87,9 +86,8 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	/**
 	 * Constructor
 	 */
-	public GridRenderer(String id, Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float minorOpacity, float majorOpacity, float axisOpacity, Vector4f normal) {
+	public GridRenderer(Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float minorOpacity, float majorOpacity, float axisOpacity, Vector4f normal) {
 		super(GL.GL_LINES,  COLORS | VERTICES);
-		this.id = id;
 		this.setLayerId(Layer.LAYER_GRIDS);		
 		this.start 			= new Tuple6b();
 		this.start.min(start, end);
@@ -106,14 +104,6 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		this.normal = new Vector4f(normal);
 		buildMatrix();
 		setUseAlpha(true);
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.viewer.renderer.IViewer3DRenderer#getId()
-	 */
-	@Override
-	public String getCode() {
-		return id;
 	}
 
 	private void buildGrid() throws GkException{
@@ -290,7 +280,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	 * @see org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer#loadShaderProgram(javax.media.opengl.GL3)
 	 */
 	@Override
-	protected int loadShaderProgram(GL3 gl) throws GkException {
+	protected int loadShaderProgram(GL3 gl) throws GkException {		
 		return ShaderLoader.loadShader(gl, EnumGokoShaderProgram.LINE_SHADER);
 	}
 
@@ -312,82 +302,93 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 			LOG.error(e);
 		}
 	}
-	/**
-	 * @return the opacity
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getMinorOpacity()
 	 */
+	@Override
 	public float getMinorOpacity() {
 		return minorOpacity;
 	}
 
-	/**
-	 * @param opacity the opacity to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setMinorOpacity(float)
 	 */
+	@Override
 	public void setMinorOpacity(float opacity) {
 		this.minorOpacity = opacity;		
 		this.minorUnitColor.w = opacity;		
 	}
 	
-	/**
-	 * @return the opacity
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getMajorOpacity()
 	 */
+	@Override
 	public float getMajorOpacity() {
 		return majorOpacity;
 	}
 
-	/**
-	 * @param opacity the opacity to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setMajorOpacity(float)
 	 */
+	@Override
 	public void setMajorOpacity(float opacity) {
 		this.majorOpacity = opacity;
 		this.majorUnitColor.w = opacity;
 	}
 	
-	/**
-	 * @return the opacity
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getAxisOpacity()
 	 */
+	@Override
 	public float getAxisOpacity() {
 		return axisOpacity;
 	}
 
-	/**
-	 * @param opacity the opacity to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setAxisOpacity(float)
 	 */
+	@Override
 	public void setAxisOpacity(float opacity) {
 		this.axisOpacity = opacity;
 		this.originColor.w = opacity;
 	}
 
-	/**
-	 * @return the majorIncrement
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getMajorIncrement()
 	 */
+	@Override
 	public Length getMajorIncrement() {
 		return majorIncrement;
 	}
 
-	/**
-	 * @param majorIncrement the majorIncrement to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setMajorIncrement(org.goko.core.common.measure.quantity.Length)
 	 */
+	@Override
 	public void setMajorIncrement(Length majorIncrement) {
 		this.majorIncrement = majorIncrement;
 	}
 
-	/**
-	 * @return the minorIncrement
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getMinorIncrement()
 	 */
+	@Override
 	public Length getMinorIncrement() {
 		return minorIncrement;
 	}
 
-	/**
-	 * @param minorIncrement the minorIncrement to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setMinorIncrement(org.goko.core.common.measure.quantity.Length)
 	 */
+	@Override
 	public void setMinorIncrement(Length minorIncrement) {
 		this.minorIncrement = minorIncrement;
 	}
 
-	/**
-	 * @param majorUnitColor the majorUnitColor to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setMajorUnitColor(javax.vecmath.Color3f)
 	 */
+	@Override
 	public void setMajorUnitColor(Color3f majorUnitColor) {
 		this.majorUnitColor.x = majorUnitColor.x;
 		this.majorUnitColor.y = majorUnitColor.y;
@@ -395,53 +396,60 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	}
 
 
-	/**
-	 * @param minorUnitColor the minorUnitColor to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setMinorUnitColor(javax.vecmath.Color3f)
 	 */
+	@Override
 	public void setMinorUnitColor(Color3f minorUnitColor) {
 		this.minorUnitColor.x = minorUnitColor.x;
 		this.minorUnitColor.y = minorUnitColor.y;
 		this.minorUnitColor.z = minorUnitColor.z;
 	}
 
-	/**
-	 * @return the originColor
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getOriginColor()
 	 */
+	@Override
 	public Color4f getOriginColor() {
 		return originColor;
 	}
 
-	/**
-	 * @param originColor the originColor to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setOriginColor(javax.vecmath.Color4f)
 	 */
+	@Override
 	public void setOriginColor(Color4f originColor) {
 		this.originColor = originColor;
 	}
 
-	/**
-	 * @return the start
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getStart()
 	 */
+	@Override
 	public Tuple6b getStart() {
 		return start;
 	}
 
-	/**
-	 * @param start the start to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setStart(org.goko.core.math.Tuple6b)
 	 */
+	@Override
 	public void setStart(Tuple6b start) {
 		this.start = start;
 	}
 
-	/**
-	 * @return the end
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getEnd()
 	 */
+	@Override
 	public Tuple6b getEnd() {
 		return end;
 	}
 
-	/**
-	 * @param end the end to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setEnd(org.goko.core.math.Tuple6b)
 	 */
+	@Override
 	public void setEnd(Tuple6b end) {
 		this.end = end;
 	}
@@ -466,18 +474,62 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		}
 	}
 
-	/**
-	 * @return the normal
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getNormal()
 	 */
+	@Override
 	public Vector4f getNormal() {
 		return normal;
 	}
 
-	/**
-	 * @param normal the normal to set
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setNormal(javax.vecmath.Vector4f)
 	 */
+	@Override
 	public void setNormal(Vector4f normal) {
 		this.normal = normal;
+	}
+
+	/**
+	 * @return the majorUnitColor
+	 */
+	public Color4f getMajorUnitColor() {
+		return majorUnitColor;
+	}
+
+	/**
+	 * @param majorUnitColor the majorUnitColor to set
+	 */
+	public void setMajorUnitColor(Color4f majorUnitColor) {
+		this.majorUnitColor = majorUnitColor;
+	}
+
+	/**
+	 * @return the minorUnitColor
+	 */
+	public Color4f getMinorUnitColor() {
+		return minorUnitColor;
+	}
+
+	/**
+	 * @param minorUnitColor the minorUnitColor to set
+	 */
+	public void setMinorUnitColor(Color4f minorUnitColor) {
+		this.minorUnitColor = minorUnitColor;
+	}
+
+	/**
+	 * @return the axisTransformMatrix
+	 */
+	public Matrix4f getAxisTransformMatrix() {
+		return axisTransformMatrix;
+	}
+
+	/**
+	 * @param axisTransformMatrix the axisTransformMatrix to set
+	 */
+	public void setAxisTransformMatrix(Matrix4f axisTransformMatrix) {
+		this.axisTransformMatrix = axisTransformMatrix;
 	}
 	
 }

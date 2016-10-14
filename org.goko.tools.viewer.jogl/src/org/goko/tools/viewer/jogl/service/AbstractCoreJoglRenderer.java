@@ -49,6 +49,8 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	private boolean useAlpha;
 	/** The bounds of this renderer */
 	private BoundingTuple6b bounds;
+	/** The code of this renderer */
+	private String code;
 	
 	/**
 	 * Constructor
@@ -61,6 +63,7 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 		this.modelMatrix.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 		this.modelMatrix.glLoadIdentity();
 		this.layerId= Layer.LAYER_DEFAULT;
+		this.code = this.toString();
 	}
 
 	public AbstractCoreJoglRenderer() {
@@ -72,7 +75,7 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	 */
 	@Override
 	public String getCode(){
-		return this.toString();
+		return code;
 	}
 
 	/**
@@ -237,5 +240,12 @@ public abstract class AbstractCoreJoglRenderer implements ICoreJoglRenderer {
 	 */
 	public void setBounds(BoundingTuple6b bounds) {
 		this.bounds = bounds;
+	}
+
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(String code) {
+		this.code = code;
 	}
 }

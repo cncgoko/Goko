@@ -26,7 +26,7 @@ import javax.vecmath.Point3d;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
-import org.goko.tools.viewer.jogl.utils.render.text.TextRenderer;
+import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 
 /**
  * Draw the XYZ axis

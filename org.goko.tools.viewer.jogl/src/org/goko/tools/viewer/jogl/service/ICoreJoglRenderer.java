@@ -27,6 +27,8 @@ import com.jogamp.opengl.util.PMVMatrix;
 public interface ICoreJoglRenderer {
 
 	String getCode();
+	
+	void setCode(String code);
 
 	int getLayerId();
 	
@@ -34,6 +36,8 @@ public interface ICoreJoglRenderer {
 
 	void setEnabled(boolean enabled);
 
+	boolean isEnabled();
+	
 	void destroy() throws GkException;
 
 	boolean shouldDestroy() throws GkException;
@@ -45,4 +49,7 @@ public interface ICoreJoglRenderer {
 	BoundingTuple6b getBounds();
 	
 	void update();
+		
+	
+
 }

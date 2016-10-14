@@ -3,6 +3,7 @@
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec4 vColor;
+in vec3 vCharChannel;
 
 // Ouput data
 out vec4 color;
@@ -12,11 +13,13 @@ vec4 tmpColor;
 uniform sampler2D fontTextureSampler;
 
 void main(){
-	tmpColor =  vColor * texture2D( fontTextureSampler, UV ).rgba;
+	tmpColor = vec4(vCharChannel * texture2D( fontTextureSampler, UV ).rgb, 1);
+	tmpColor.a = tmpColor.r + tmpColor.g + tmpColor.b; 	
 	
-	if(tmpColor.a < 0.15){		
+	if(tmpColor.a < 0.01){		
 		discard;		
 	}else{
-		color = tmpColor;
+		color = vColor;
 	}	
+	color.a = tmpColor.a * vColor.a;
 }
