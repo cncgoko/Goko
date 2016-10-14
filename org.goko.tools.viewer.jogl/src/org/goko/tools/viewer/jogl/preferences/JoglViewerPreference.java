@@ -54,6 +54,7 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String MAJOR_GRID_OPACITY 	= "grid.major.opacity";
 	public static final String MINOR_GRID_OPACITY 	= "grid.minor.opacity";
 	public static final String GRID_AXIS_OPACITY 	= "grid.axis.opacity";
+	public static final String GRID_GRADUATION_SIZE	= "grid.graduation.size";
 	public static final String GRID_START_X 		= "grid.start.x";
 	public static final String GRID_START_Y 		= "grid.start.y";
 	public static final String GRID_START_Z 		= "grid.start.z";
@@ -80,7 +81,7 @@ public class JoglViewerPreference extends GkPreference{
 	
 	private static JoglViewerPreference instance;
 	private Tuple6b rotaryAxisPosition;
-
+		
 	public enum EnumRotaryAxisDirection{
 		X(1,0,0),
 		Y(0,1,0),
@@ -373,5 +374,21 @@ public class JoglViewerPreference extends GkPreference{
 	 */
 	public void setCameraZoomSensitivity(BigDecimal cameraZoomSensitivity) {
 		setValue(ZOOM_SENSITIVITY, cameraZoomSensitivity.toPlainString());
+	}
+
+	/**
+	 * @return the graduationSize
+	 * @throws GkException GkException 
+	 */
+	public Length getGraduationSize() throws GkException {
+		return Length.parse(getString(GRID_GRADUATION_SIZE));
+	}
+
+	/**
+	 * @param graduationSize the graduationSize to set
+	 * @throws GkException GkException 
+	 */
+	public void setGraduationSize(Length graduationSize) throws GkException {
+		setValue(GRID_GRADUATION_SIZE, GokoPreference.getInstance().format(graduationSize));
 	}
 }

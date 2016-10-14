@@ -50,15 +50,8 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		prefs.setDefault(JoglViewerPreference.PAN_SENSITIVITY 		, "50");
 		prefs.setDefault(JoglViewerPreference.ZOOM_INVERT_AXIS		, false);
 		prefs.setDefault(JoglViewerPreference.ZOOM_SENSITIVITY 		, "50");
-		
-			
-		
-		 
-		
-		
-		 
-			
-		
+
+		prefs.setDefault(JoglViewerPreference.GRID_GRADUATION_SIZE, "1mm");
 		
 		Tuple6b position = new Tuple6b();
 		position.setX( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X)));

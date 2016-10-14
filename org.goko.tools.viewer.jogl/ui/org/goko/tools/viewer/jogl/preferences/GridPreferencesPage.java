@@ -38,6 +38,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 	private LengthFieldEditor endXFieldEditor;
 	private LengthFieldEditor endYFieldEditor;
 	private LengthFieldEditor endZFieldEditor;
+	private LengthFieldEditor graduationSizeFieldEditor;
 	@Inject
 	@Optional
 	private IWorkVolumeProvider workVolumeProvider;
@@ -193,12 +194,22 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 		addField(axisGridOpacityFieldEditor);
 		
 		new Label(grpSettings, SWT.NONE);
+		
+		graduationSizeFieldEditor = new LengthFieldEditor(grpSettings, SWT.NONE);
+		graduationSizeFieldEditor.setWidthInChars(4);
+		graduationSizeFieldEditor.setLabel("Graduation size");
+		graduationSizeFieldEditor.setLabelWidthInChar(13);
+		graduationSizeFieldEditor.setUnit(lengthUnit);
+		graduationSizeFieldEditor.setPreferenceName(JoglViewerPreference.GRID_GRADUATION_SIZE);
+		
+		new Label(grpSettings, SWT.NONE);
 		addField(startXFieldEditor);
 		addField(startYFieldEditor);
 		addField(startZFieldEditor);
 		addField(endXFieldEditor);
 		addField(endYFieldEditor);
 		addField(endZFieldEditor);
+		addField(graduationSizeFieldEditor);
 		
 	}
 	
@@ -215,6 +226,7 @@ public class GridPreferencesPage extends GkFieldEditorPreferencesPage {
 				endXFieldEditor.setUnit(lengthUnit);
 				endYFieldEditor.setUnit(lengthUnit);
 				endZFieldEditor.setUnit(lengthUnit);
+				graduationSizeFieldEditor.setUnit(lengthUnit);
 			}
 		} catch (GkException e) {
 			LOG.error(e);
