@@ -37,6 +37,10 @@ public class GokoUpdateCheckRunnable {
 	private static final String DEV_UPDATE_SITE_URL = "http://update.goko.fr/dev/";
 	
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
+		if(GokoPreference.getInstance().isDevEnvironment()){
+			// Don't perform update check in development environment
+			return NOTHING_TO_UPDATE;
+		}
 		ProvisioningSession session = new ProvisioningSession(agent);
 		// update the whole running profile, otherwise specify IUs
 		UpdateOperation operation = new UpdateOperation(session);

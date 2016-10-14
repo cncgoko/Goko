@@ -108,6 +108,14 @@ public class GokoLifeCycleManager {
 				}
 			}
 		}
+		GokoPreference.getInstance().setDevEnvironment(false);
+		if(args != null && args.length > 0){
+			for (String key : args) {
+				if(StringUtils.equals(key, "-goko.devEnvironment=true")){
+					GokoPreference.getInstance().setDevEnvironment(true);
+				}
+			}
+		}
 	}
 	/**
 	 * Sets the JFace dialog default image to the icon of the main shell
