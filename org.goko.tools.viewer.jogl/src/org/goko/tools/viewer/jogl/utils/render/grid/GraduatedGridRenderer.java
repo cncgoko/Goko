@@ -14,6 +14,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
@@ -51,7 +52,14 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		
 		addRenderer(gridRenderer);
 	}
-	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#setEnabled(boolean)
+	 */
+	@Override
+	public void setEnabled(boolean enabled) {
+		// TODO Auto-generated method stub
+		super.setEnabled(enabled);
+	}
 	protected void buildRenderers() throws GkException{
 		destroyAnnotations();
 		createAnnotations();
@@ -71,7 +79,40 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		}
 	}
 	
+	protected Vector3d getWidthVector(){
+		Vector3d width = new Vector3d();
+		// Add Y Zero green axis
+		if(getNormal().dot(new Vector4f(0,0,1,0)) == 1 ){	// XY plane 				
+			width = new Vector3d(1,0,0);
+
+		}else if(getNormal().dot(new Vector4f(0,1,0,0)) == 1 ){ // XZ plane
+			width = new Vector3d(1,0,0);
+			
+		}else{ // YZ Plane
+			width = new Vector3d(0,-1,0);
+		}
+		
+		return width;
+	}
+	
+	protected Vector3d getHeightVector(){
+		Vector3d height = new Vector3d();
+		// Add Y Zero green axis
+		if(getNormal().dot(new Vector4f(0,0,1,0)) == 1 ){	// XY plane 				
+			height = new Vector3d(0,1,0);
+		}else if(getNormal().dot(new Vector4f(0,1,0,0)) == 1 ){ // XZ plane
+			height = new Vector3d(0,0,1);
+		}else{ // YZ Plane
+			height = new Vector3d(0,0,1);
+		}
+		return height;
+	}
+	
 	protected void createAnnotations() throws GkException{
+		// Let's compute the width and height vector of the texts
+		Vector3d width = getWidthVector();
+		Vector3d height = getHeightVector();
+		
 		Tuple6b lclStart6b 			= new Tuple6b();
 		lclStart6b.min(getStart(), getEnd());		
 		Tuple6b lclEnd6b 			= new Tuple6b();
@@ -115,8 +156,8 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		double majorIncrementJoglUnit = getMajorIncrement().doubleValue(JoglUtils.JOGL_UNIT);		
 		for (int i = 1; i <= nbStepPlusMajor.x; i++) {
 			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x+i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit, lclCenter.y , lclCenter.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, TextRenderer.TOP | TextRenderer.LEFT);
+			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit*width.x, lclCenter.y+i*majorIncrementJoglUnit*width.y , lclCenter.z+i*majorIncrementJoglUnit*width.z);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, width, height, TextRenderer.TOP | TextRenderer.LEFT);
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);
@@ -125,8 +166,8 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
  		
  		for (int i = 1; i <= nbStepMinusMajor.x; i++) {
  			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x-i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit, lclCenter.y , lclCenter.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, TextRenderer.TOP | TextRenderer.RIGHT);
+ 			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit*width.x, lclCenter.y-i*majorIncrementJoglUnit*width.y , lclCenter.z-i*majorIncrementJoglUnit*width.z);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, width, height,TextRenderer.TOP | TextRenderer.RIGHT);
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);
@@ -135,8 +176,8 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		
 		for (int i = 1; i <= nbStepPlusMajor.y; i++) {
 			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.y+i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x, lclCenter.y+i*majorIncrementJoglUnit, lclCenter.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, TextRenderer.BOTTOM | TextRenderer.RIGHT);
+			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit*height.x, lclCenter.y+i*majorIncrementJoglUnit*height.y , lclCenter.z+i*majorIncrementJoglUnit*height.z);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, width, height,TextRenderer.BOTTOM | TextRenderer.RIGHT);
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);			
@@ -145,8 +186,8 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		
 		for (int i = 1; i <= nbStepMinusMajor.y; i++) {
 			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.y-i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x , lclCenter.y-i*majorIncrementJoglUnit, lclCenter.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, TextRenderer.BOTTOM | TextRenderer.RIGHT);
+			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit*height.x, lclCenter.y-i*majorIncrementJoglUnit*height.y , lclCenter.z-i*majorIncrementJoglUnit*height.z);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), 1, position, width, height,TextRenderer.BOTTOM | TextRenderer.RIGHT);
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);	

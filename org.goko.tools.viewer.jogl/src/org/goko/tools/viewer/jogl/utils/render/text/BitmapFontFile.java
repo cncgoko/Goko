@@ -28,13 +28,21 @@ import com.jogamp.opengl.util.texture.TextureData;
  * @author Psyko
  */
 public class BitmapFontFile {
+	/** Character info */
 	private Map<Integer, CharBlock> mapChars;
+	/** Pages */
 	private Map<Integer, PageBlock> mapPages;
+	/** Total width of the texture */
 	private int textureWidth;
+	/** Total height of the texture */
 	private int textureHeight;
+	/** The texture itself */
 	private Texture texture;
+	/** Byte buffer for the texture*/
 	private ByteBuffer buffer;
+	/** Base height of the font */
 	private int base;
+	/** Lineheight of the font */
 	private int lineHeight;
 		
 	protected CharBlock getCharacterInfo(char character){

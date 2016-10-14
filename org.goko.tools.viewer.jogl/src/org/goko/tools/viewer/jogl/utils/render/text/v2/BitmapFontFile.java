@@ -17,6 +17,7 @@ import javax.media.opengl.GL3;
 import org.apache.commons.io.FilenameUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.log.GkLog;
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
@@ -30,6 +31,7 @@ import com.jogamp.opengl.util.texture.TextureData;
  * @author Psyko
  */
 public class BitmapFontFile {
+	private static final GkLog LOG = GkLog.getLogger(BitmapFontFile.class);
 	private Map<Integer, CharBlock> mapChars;
 	private Map<Integer, PageBlock> mapPages;
 	private int textureWidth;
@@ -71,7 +73,7 @@ public class BitmapFontFile {
 	}
 	
 	protected void loadBuffer(String imageFile) throws IOException{
-		System.out.println("Loading image "+imageFile);
+		LOG.debug("Loading image "+imageFile);
 		 // open image
 		 File imgPath = new File(imageFile);
 		 BufferedImage bufferedImage = ImageIO.read(imgPath);
@@ -92,10 +94,10 @@ public class BitmapFontFile {
 	private void loadFileIdentifier(InputStream inputStream) throws IOException {
 		byte[] identifier = new byte[3];
 		inputStream.read(identifier);
-		System.out.println("File identifier : "+ String.valueOf(identifier));
+		LOG.debug("File identifier : "+ String.valueOf(identifier));
 		byte[] version = new byte[1];
 		inputStream.read(version);
-		System.out.println("File version : "+ String.valueOf((int)version[0]));
+		LOG.debug("File version : "+ String.valueOf((int)version[0]));
 	}
 
 	/**
@@ -106,7 +108,7 @@ public class BitmapFontFile {
 	private void loadInfoBlock(InputStream inputStream) throws IOException {
 		ByteBuffer data = getBlockData(inputStream);
 		size = Math.abs(getInt16(data));
-		System.out.println("Font size :"+size);
+		LOG.debug("Font size :"+size);
 	}
 
 	/**
@@ -147,7 +149,7 @@ public class BitmapFontFile {
 			if(c == 0){
 				// Page detected
 				mapPages.put(id, new PageBlock(id, buffer.toString()));
-				System.out.println("Detected image "+buffer.toString());
+				LOG.debug("Detected image "+buffer.toString());
 				loadBuffer(prefix+mapPages.get(id).getFile());
 				id++;
 				buffer.setLength(0);
@@ -165,7 +167,7 @@ public class BitmapFontFile {
 	private void loadCharsBlock(InputStream inputStream) throws IOException {
 		ByteBuffer data = getBlockData(inputStream);
 		int nbChars = data.limit() / 20;
-		System.out.println("Font line height : "+lineHeight);
+		LOG.debug("Font line height : "+lineHeight);
 		for (int i = 0; i < nbChars; i++) {
 			int id = getUint32(data);
 			int x = getUint16(data);
@@ -178,7 +180,7 @@ public class BitmapFontFile {
 			int page = getUint8(data);
 			int chnl = getUint8(data);
 			mapChars.put(id, new CharBlock(id, x, y, width, height, xOffset, yOffset, xAdvance, page, chnl));
-			System.out.println((char)id+", id:"+id+", x:"+x+", y:"+ y+", width:"+ width+", height:"+ height+", xOffset:"+ xOffset+", yOffset:"+ yOffset+", xAdvance:"+ xAdvance+", page:"+page+", chnl:"+chnl);
+			LOG.debug((char)id+", id:"+id+", x:"+x+", y:"+ y+", width:"+ width+", height:"+ height+", xOffset:"+ xOffset+", yOffset:"+ yOffset+", xAdvance:"+ xAdvance+", page:"+page+", chnl:"+chnl);
 		}
 	}
 	
@@ -192,11 +194,11 @@ public class BitmapFontFile {
 		byte[] blockHeader = new byte[5];
 		inputStream.read(blockHeader);
 		ByteBuffer data = ByteBuffer.wrap(blockHeader);		;
-		System.out.println("Block id : "+ String.valueOf(getUint8(data)));		
+		LOG.debug("Block id : "+ String.valueOf(getUint8(data)));		
 		
 		
 		int length = getUint32(data);
-		System.out.println("Block length : "+ String.valueOf(length));
+		LOG.debug("Block length : "+ String.valueOf(length));
 		
 		byte[] blockData = new byte[length];
 		inputStream.read(blockData); 

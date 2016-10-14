@@ -39,6 +39,7 @@ public class GokoUpdateCheckRunnable {
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		if(GokoPreference.getInstance().isDevEnvironment()){
 			// Don't perform update check in development environment
+			LOG.info("Update check disabled in dev environment");			
 			return NOTHING_TO_UPDATE;
 		}
 		ProvisioningSession session = new ProvisioningSession(agent);
