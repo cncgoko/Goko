@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -54,12 +53,6 @@ public class TargetBoardSelectionDialog extends Dialog {
 		gl_container.marginHeight = 0;
 		gl_container.horizontalSpacing = 0;
 		container.setLayout(gl_container);
-		
-		Label lblNewLabel = new Label(container, SWT.NONE);
-		lblNewLabel.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/boardDialogImage.png"));
-		
-		Label label = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		
 		Composite composite_1 = new Composite(container, SWT.NONE);
@@ -129,14 +122,6 @@ public class TargetBoardSelectionDialog extends Dialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-	}
-
-	/**
-	 * Return the initial size of the dialog.
-	 */
-	@Override
-	protected Point getInitialSize() {
-		return new Point(356, 287);
 	}
 
 	/**
