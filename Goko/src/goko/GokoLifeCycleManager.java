@@ -24,6 +24,7 @@ import org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.internal.TargetBoardTracker;
@@ -139,15 +140,9 @@ class ExitHandlerManager implements IWindowCloseHandler{
 	 * @see org.eclipse.e4.ui.workbench.modeling.IWindowCloseHandler#close(org.eclipse.e4.ui.model.application.ui.basic.MWindow)
 	 */
 	@Override
-	public boolean close(MWindow window) {		
+	public boolean close(MWindow window) {
+		// Probably not the best location for this "dispoe"....
+		ResourceManager.dispose();
 		return true;
 	}
-
-	/**
-	 * 
-	 */
-	public void register() {
-		
-	}
-
 }

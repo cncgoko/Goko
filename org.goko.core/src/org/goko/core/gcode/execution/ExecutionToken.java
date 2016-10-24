@@ -28,7 +28,6 @@ import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.validation.IValidationElement;
-import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 
 /**
@@ -44,9 +43,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/** The map of lines id by state */
 	protected Map<T, List<Integer>> mapLineByExecutionState;
 	/** The current command index */
-	protected int currentIndex;
-	/** Id of the executed GCodeProvider */
-	protected Integer idGCodeProvider;
+	protected int currentIndex;	
 	/** Initial state of the lines */
 	protected T initialState;
 	/** State of the token */
@@ -54,18 +51,17 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	/** The number of line in the provider */
 	private int lineCount;
 	/** The execution order */
-	private int executionOrder;
-	/** The gcode repository where the GCodeProvider is located */
-	private IGCodeProviderRepository gcodeRepository;
-
+	private int executionOrder;	
+	/** The underlying GCodeProvider */
+	private IGCodeProvider gcodeProvider;
+	
 	/**
 	 * Constructor
 	 * @param provider the provider to build this execution token from
 	 * @throws GkException GkException
 	 */
-	public ExecutionToken(IGCodeProviderRepository gcodeRepository, IGCodeProvider provider, T initState) throws GkException {
-		this.gcodeRepository = gcodeRepository;
-		this.idGCodeProvider = provider.getId();
+	public ExecutionToken(IGCodeProvider provider, T initState) throws GkException {
+		this.gcodeProvider = provider;
 		this.initialState = initState;
 		this.lineCount = provider.getLinesCount();
 		reset();
@@ -183,15 +179,7 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	 * @throws GkException GkException
 	 */
 	public IGCodeProvider getGCodeProvider() throws GkException{
-		return gcodeRepository.getGCodeProvider(idGCodeProvider);
-	}
-
-	/**
-	 * Return the identifier of the wrapped IGCodeProvider
-	 * @return an Integer
-	 */
-	public Integer getIdGCodeProvider() {
-		return idGCodeProvider;
+		return gcodeProvider;
 	}
 
 	/** (inheritDoc)

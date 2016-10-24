@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_aEp1wIMvEeW0efnRG-EnSQ">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cj77oIMvEeW0efnRG-EnSQ" featurename="children" parentElementId="goko.partstack.d">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cj77oIMvEeW0efnRG-EnSQ" featurename="children" parentElementId="goko.partstack.d" positionInList="">
     <elements xsi:type="basic:Part" xmi:id="_datyoIMvEeW0efnRG-EnSQ" elementId="org.goko.tools.camera.part.camera" contributionURI="bundleclass://org.goko.tools.camera/org.goko.tools.camera.CameraDisplayPart" label="Camera" iconURI="platform:/plugin/org.goko.tools.camera/resources/icons/camera-lens.png">
       <tags>view</tags>
     </elements>

@@ -248,4 +248,20 @@ public class GCodeProvider implements IGCodeProvider {
 	public void addValidationElement(IValidationElement element) {
 		validationAdapter.addValidationElement(element);
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#lock()
+	 */
+	@Override
+	public void lock() {
+		setLocked(true);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#unlock()
+	 */
+	@Override
+	public void unlock() {
+		setLocked(false);
+	}
 }

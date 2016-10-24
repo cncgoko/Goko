@@ -1,5 +1,8 @@
 package org.goko.core.execution.monitor.uiprovider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -9,26 +12,60 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.service.IGokoService;
 import org.goko.core.execution.monitor.uiprovider.menu.executionqueue.ClearExecutionQueueAction;
+import org.goko.core.execution.monitor.uiprovider.menu.executionqueue.IExecutionQueueContributionItem;
 import org.goko.core.execution.monitor.uiprovider.menu.executiontoken.DeleteExecutionTokenAction;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
+import org.goko.core.workspace.service.IWorkspaceUIService;
 
-public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvider {
+public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvider implements IGokoService {
+	/** Service ID */
+	private static final String SERVICE_ID = "org.goko.core.execution.monitor.uiprovider.ExecutionQueueContainerUiProvider";
 	/** The underlying ExecutionService */
 	private IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService;
 	/** The label provider */
 	private ExecutionQueueContainerLabelProvider labelProvider;
-
-	public ExecutionQueueContainerUiProvider(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
+	/** List of execution queue provider */
+	private List<IExecutionQueueContributionItem> lstExecutionQueueContributionItem;
+	/** Workspace UI Service */
+	private IWorkspaceUIService workspaceUiService;
+	
+	public ExecutionQueueContainerUiProvider() {
 		super("EXECUTIONQUEUE", 20);
-		this.labelProvider = new ExecutionQueueContainerLabelProvider();
-		this.executionService = executionService;
+		this.labelProvider = new ExecutionQueueContainerLabelProvider();	
+		this.lstExecutionQueueContributionItem = new ArrayList<IExecutionQueueContributionItem>();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#getServiceId()
+	 */
+	@Override
+	public String getServiceId() throws GkException {		
+		return SERVICE_ID;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#start()
+	 */
+	@Override
+	public void start() throws GkException {
+		workspaceUiService.addProjectContainerUiProvider(this);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.service.IGokoService#stop()
+	 */
+	@Override
+	public void stop() throws GkException {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#providesLabelFor(java.lang.Object)
 	 */
@@ -151,6 +188,30 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 		contextMenu.add(new Separator());
 		contextMenu.add(new ClearExecutionQueueAction(executionService));
 		contextMenu.add(new Separator());
+        if(CollectionUtils.isNotEmpty(lstExecutionQueueContributionItem)){
+        	contextMenu.add(new Separator());
+	        for (IExecutionQueueContributionItem contributionItem : lstExecutionQueueContributionItem) {
+	        	contextMenu.add(contributionItem.getItem());
+			}
+        }
+	}
+	
+	public void addExecutionQueueContributionItem(IExecutionQueueContributionItem contribution){
+		lstExecutionQueueContributionItem.add(contribution);
+	}
+
+	/**
+	 * @param executionService the executionService to set
+	 */
+	public void setExecutionService(IExecutionService<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionService) {
+		this.executionService = executionService;
+	}
+
+	/**
+	 * @param workspaceUiService the workspaceUiService to set
+	 */
+	public void setWorkspaceUiService(IWorkspaceUIService workspaceUiService) {
+		this.workspaceUiService = workspaceUiService;		
 	}
 
 }

@@ -70,7 +70,7 @@ public class LinkedGCodeContextProvider implements IGCodeContextProvider<GCodeCo
 		try{
 			previous.getGCodeContext();
 			if(updateDate == null || cachedContext == null || previous.getUpdateDate().getTime() > updateDate.getTime()){			
-				InstructionProvider instrProvider = gcodeService.getInstructions(previous.getGCodeContext(), gcodeService.getGCodeProvider(token.getIdGCodeProvider()));
+				InstructionProvider instrProvider = gcodeService.getInstructions(previous.getGCodeContext(), token.getGCodeProvider());
 				IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = gcodeService.getIterator(instrProvider, previous.getGCodeContext());
 				while (iterator.hasNext()) {
 					iterator.next();

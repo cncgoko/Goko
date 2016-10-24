@@ -33,13 +33,12 @@ public class ColorFieldEditor extends LabeledFieldEditor<Button> {
 		super.createControls(parent, style);
 		colorSelector = new ColorSelector(this);
 		getControl().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		
-		final ColorFieldEditor that = this;		
+						
 		colorSelector.addListener(new IPropertyChangeListener() {
 			// forward the property change of the color selector
 			@Override
 			public void propertyChange(PropertyChangeEvent event) {
-				that.fireValueChanged(event.getProperty(), event.getOldValue(), event.getNewValue());			
+				ColorFieldEditor.this.fireValueChanged(event.getProperty(), event.getOldValue(), event.getNewValue());			
 			}
 		});
 		this.pack();

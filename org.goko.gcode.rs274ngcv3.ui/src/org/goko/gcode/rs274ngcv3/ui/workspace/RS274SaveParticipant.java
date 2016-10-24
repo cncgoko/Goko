@@ -28,6 +28,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlWrapModifier;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlExternalFileGCodeSource;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlGCodeProviderSource;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlResourceLocationGCodeSource;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlStringGCodeSource;
 
 public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GContent> , IGokoService {
 	/** LOG */
@@ -64,7 +65,8 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 		LOG.info("Starting  "+getServiceId());	
 		xmlPersistenceService.register(XmlRS274GContent.class);		
 		xmlPersistenceService.register(XmlExternalFileGCodeSource.class);		
-		xmlPersistenceService.register(XmlResourceLocationGCodeSource.class);		
+		xmlPersistenceService.register(XmlResourceLocationGCodeSource.class);
+		xmlPersistenceService.register(XmlStringGCodeSource.class);
 		xmlPersistenceService.register(XmlSegmentizeModifier.class);		
 		xmlPersistenceService.register(XmlTranslateModifier.class);		
 		xmlPersistenceService.register(XmlWrapModifier.class);		

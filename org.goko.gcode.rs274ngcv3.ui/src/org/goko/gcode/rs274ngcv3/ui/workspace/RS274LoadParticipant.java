@@ -28,6 +28,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.SegmentizeMod
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.TranslateModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.WrapModifierExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.source.ResourceLocationGCodeSourceExporter;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.source.StringGCodeSourceExporter;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ArrayModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.RotateModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ScaleModifierLoader;
@@ -35,6 +36,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.SegmentizeModif
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.TranslateModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.WrapModifierLoader;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.source.ResourceLocationGCodeSourceLoader;
+import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.source.StringGCodeSourceLoader;
 
 public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS274GContent> implements IGokoService, IProjectLoadParticipant {
 	/** LOG */
@@ -74,6 +76,7 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
 		mapperService.addLoader(new ResourceLocationGCodeSourceLoader());
+		mapperService.addLoader(new StringGCodeSourceLoader());
 		mapperService.addLoader(new SegmentizeModifierLoader());
 		mapperService.addLoader(new TranslateModifierLoader());		
 		mapperService.addLoader(new ScaleModifierLoader());		
@@ -83,6 +86,7 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 		
 		
 		mapperService.addExporter(new ResourceLocationGCodeSourceExporter());
+		mapperService.addExporter(new StringGCodeSourceExporter());
 		mapperService.addExporter(new TranslateModifierExporter());		
 		mapperService.addExporter(new SegmentizeModifierExporter());		
 		mapperService.addExporter(new ScaleModifierExporter());

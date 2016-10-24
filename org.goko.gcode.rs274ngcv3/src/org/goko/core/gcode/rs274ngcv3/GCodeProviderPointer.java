@@ -10,30 +10,34 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 
 /**
+ * Delegates the retrieval of the GCode provider from a repo and an id
  * @author Psyko
  * @date 26 juin 2016
  */
 public class GCodeProviderPointer implements IGCodeProvider{
 	private static final GkLog LOG = GkLog.getLogger(GCodeProviderPointer.class);
-	private RS274NGCServiceImpl rs274Service;
+	/** The repo where the provider can be found */
+	private IGCodeProviderRepository gcodeProviderRepository;
+	/** The id of the provider */
 	private Integer idGCodeProvider;
 	
 	/**
 	 * @param rs274Service
 	 * @param idGCodeProvider
 	 */
-	public GCodeProviderPointer(RS274NGCServiceImpl rs274Service, Integer idGCodeProvider) {
+	public GCodeProviderPointer(IGCodeProviderRepository gcodeProviderRepository, Integer idGCodeProvider) {
 		super();
-		this.rs274Service = rs274Service;
+		this.gcodeProviderRepository = gcodeProviderRepository;
 		this.idGCodeProvider = idGCodeProvider;
 	}
 	
 	private IGCodeProvider getProvider(){
 		try {
-			return rs274Service.internalGetGCodeProvider(idGCodeProvider);
+			return gcodeProviderRepository.internalGetGCodeProvider(idGCodeProvider);
 		} catch (GkException e) {
 			LOG.error(e);
 		}
@@ -160,10 +164,11 @@ public class GCodeProviderPointer implements IGCodeProvider{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((gcodeProviderRepository == null) ? 0 : gcodeProviderRepository.hashCode());
 		result = prime * result + ((idGCodeProvider == null) ? 0 : idGCodeProvider.hashCode());
 		return result;
 	}
- 
+
 	/** (inheritDoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -176,12 +181,35 @@ public class GCodeProviderPointer implements IGCodeProvider{
 		if (getClass() != obj.getClass())
 			return false;
 		GCodeProviderPointer other = (GCodeProviderPointer) obj;
+		if (gcodeProviderRepository == null) {
+			if (other.gcodeProviderRepository != null)
+				return false;
+		} else if (!gcodeProviderRepository.equals(other.gcodeProviderRepository))
+			return false;
 		if (idGCodeProvider == null) {
 			if (other.idGCodeProvider != null)
 				return false;
 		} else if (!idGCodeProvider.equals(other.idGCodeProvider))
 			return false;
 		return true;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#lock()
+	 */
+	@Override
+	public void lock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.element.IGCodeProvider#unlock()
+	 */
+	@Override
+	public void unlock() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

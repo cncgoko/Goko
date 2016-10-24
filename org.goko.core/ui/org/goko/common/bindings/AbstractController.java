@@ -46,11 +46,14 @@ import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.ISWTObservable;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
@@ -208,7 +211,21 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		Binding binding = bindingContext.bindList(itemsComboSerialPortObserveWidget, comPortListBindingsObserveList, null, null);
 		bindings.add(binding);
 	}
-
+	/**
+	 * Binding between an object and a property, based on items list
+	 * @param source the UI object
+	 * @param property the name of the property
+	 * @throws GkException GkException
+	 */
+	public void addItemsBinding(Viewer source, String property) throws GkException{
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+		IViewerObservableValue itemsComboSerialPortObserveWidget = ViewerProperties.input().observe(source);
+		IObservableValue comPortListBindingsObserveList = BeanProperties.value(property).observe(dataModel);
+		Binding binding = bindingContext.bindValue(itemsComboSerialPortObserveWidget, comPortListBindingsObserveList, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE));
+		bindings.add(binding);
+	}
+	
 	/**
 	 * Binding between an GkCombo and a property, based on items list
 	 * @param source the UI object

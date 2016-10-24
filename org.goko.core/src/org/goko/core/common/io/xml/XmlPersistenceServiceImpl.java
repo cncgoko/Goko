@@ -5,6 +5,8 @@ import java.io.OutputStream;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.io.xml.bean.XmlColor;
+import org.goko.core.common.io.xml.bean.XmlColorTransform;
 import org.goko.core.common.io.xml.quantity.XmlAngle;
 import org.goko.core.common.io.xml.quantity.XmlAngleTransform;
 import org.goko.core.common.io.xml.quantity.XmlLength;
@@ -45,6 +47,7 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 		matcher.bind(XmlLength.class, new XmlLengthTransform());
 		matcher.bind(XmlSpeed.class, new XmlSpeedTransform());
 		matcher.bind(XmlAngle.class, new XmlAngleTransform());
+		matcher.bind(XmlColor.class, new XmlColorTransform());
 		this.registry = new TypedRegistry();		
 		this.persister = new Persister(new TypedTreeStrategy(registry), matcher);
 		

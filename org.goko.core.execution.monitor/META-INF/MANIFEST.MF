@@ -4,7 +4,8 @@ Bundle-Name: Gcodeexecutionmonitor
 Bundle-SymbolicName: org.goko.core.execution.monitor;singleton:=true
 Bundle-Version: 0.3.2.qualifier
 Bundle-Activator: org.goko.core.execution.monitor.Activator
-Export-Package: org.goko.core.execution.monitor.executor
+Export-Package: org.goko.core.execution.monitor.executor,
+ org.goko.core.execution.monitor.uiprovider.menu.executionqueue
 Require-Bundle: org.goko.core;bundle-version="0.0.2",
  org.eclipse.swt,
  org.eclipse.e4.ui.model.workbench;bundle-version="1.1.100.v20150407-1430",
@@ -24,6 +25,6 @@ Import-Package: javax.annotation;version="1.0.0";resolution:=optional,
  org.eclipse.core.runtime.jobs,
  org.eclipse.e4.core.contexts,
  org.osgi.framework;version="1.3.0"
-Service-Component: OSGI-INF/GCodeExecutionMonitorServiceImplComponant.xml,OSGI-INF/ExecutionServiceSaveParticipant.xml,
- OSGI-INF/ExecutionServiceLoadParticipant.xml
+Service-Component: OSGI-INF/GCodeExecutionMonitorServiceImplComponant.xml,OSGI-INF/ExecutionServiceSaveParticipant.xml,OSGI-INF/ExecutionServiceLoadParticipant.xml,
+ OSGI-INF/ExecutionQueueContainerUiProviderComponent.xml
 Bundle-ActivationPolicy: lazy

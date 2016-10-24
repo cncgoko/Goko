@@ -60,6 +60,9 @@ public interface IGCodeProvider extends IIdBean, ICodeBean, IValidationTarget{
 	 */
 	void setLocked(boolean locked);
 	
+	void lock();
+	
+	void unlock();
 	/**
 	 * Return the source of this provider
 	 * @return IGCodeProviderSource

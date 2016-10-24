@@ -79,7 +79,8 @@ public class GWordScanner extends RuleBasedScanner implements ITokenScanner {
         wr.addWord("G93", feedrateMotionWord);
         wr.addWord("G94", feedrateMotionWord);
         wr.addWord("G98", feedrateMotionWord);
-        wr.addWord("G99", feedrateMotionWord);   
+        wr.addWord("G99", feedrateMotionWord);
+        wr.addWord("G28.2", feedrateMotionWord);   
         
         wr.addWord("G91.1", feedrateMotionWord);
         

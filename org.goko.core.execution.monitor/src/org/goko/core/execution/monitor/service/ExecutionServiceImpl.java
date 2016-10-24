@@ -29,7 +29,6 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.execution.monitor.event.ExecutionServiceWorkspaceEvent;
-import org.goko.core.execution.monitor.uiprovider.ExecutionQueueContainerUiProvider;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
@@ -73,7 +72,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	/** Workspace UI Service */
 	private IWorkspaceUIService workspaceUiService;
 	/** GCode provider repository */
-	private IGCodeProviderRepository gcodeRepository;
+	private List<IGCodeProviderRepository> lstGCcodeRepository;
 
 	/**
 	 * Constructor
@@ -82,6 +81,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		listenerList 	= new CopyOnWriteArrayList<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>>();		
 		executionQueue 	= new ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>();
 		executionQueuelistenerList 	= new CopyOnWriteArrayList<IExecutionQueueListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>>();
+		lstGCcodeRepository = new CopyOnWriteArrayList<IGCodeProviderRepository>();
 	}
 
 	/** (inheritDoc)
@@ -97,9 +97,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	 */
 	@Override
 	public void startService() throws GkException {		
-		// FIXME : a sortir de ce service pour le mettre dans un service UI ? Nouveau projet ?
-		workspaceUiService.addProjectContainerUiProvider(new ExecutionQueueContainerUiProvider(this));
-		gcodeRepository.addListener(this);
+		
 
 	}
 	/** (inheritDoc)
@@ -127,7 +125,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		if(executor == null){
 			throw new GkTechnicalException("ExecutionServiceImpl : cannot add provider to execution queue. Executor is not set.");
 		}
-		ExecutionToken<ExecutionTokenState> existingToken = findExecutionTokenByIdGCodeProvider(gcodeProvider.getId());
+		ExecutionToken<ExecutionTokenState> existingToken = findExecutionTokenByGCodeProvider(gcodeProvider);
 		if(existingToken != null){
 			throw new GkTechnicalException("ExecutionServiceImpl : the given GCode provider is already in the execution queue.") ;
 		}
@@ -387,7 +385,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		List<ExecutionToken<ExecutionTokenState>> lstToken = getExecutionQueue().getExecutionToken();
 		if(CollectionUtils.isNotEmpty(lstToken)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-				gcodeRepository.lockGCodeProvider(executionToken.getGCodeProvider().getId());
+				executionToken.getGCodeProvider().lock();
 			}
 		}
 	}
@@ -400,7 +398,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		List<ExecutionToken<ExecutionTokenState>> lstToken = getExecutionQueue().getExecutionToken();
 		if(CollectionUtils.isNotEmpty(lstToken)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-				gcodeRepository.unlockGCodeProvider(executionToken.getGCodeProvider().getId());
+				executionToken.getGCodeProvider().unlock();
 			}
 		}
 	}
@@ -491,17 +489,12 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	}
 
 	/**
-	 * @return the gcodeRepository
-	 */
-	public IGCodeProviderRepository getGCodeRepository() {
-		return gcodeRepository;
-	}
-
-	/**
 	 * @param gcodeRepository the gcodeRepository to set
+	 * @throws GkException GkException 
 	 */
-	public void setGCodeRepository(IGCodeProviderRepository gcodeRepository) {
-		this.gcodeRepository = gcodeRepository;
+	public void addGCodeRepository(IGCodeProviderRepository gcodeRepository) throws GkException {
+		this.lstGCcodeRepository.add(gcodeRepository);
+		gcodeRepository.addListener(this);
 	}
 
 	/** (inheritDoc)
@@ -522,7 +515,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		
 		if(CollectionUtils.isNotEmpty(lstToken)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-				if(ObjectUtils.equals(provider.getId(), executionToken.getIdGCodeProvider())){
+				if(ObjectUtils.equals(provider, executionToken.getGCodeProvider())){
 					executionToken.reset();
 					notifyTokenUpdate(executionToken);					
 					break;
@@ -540,7 +533,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		ExecutionToken<ExecutionTokenState> tokenToRemove = null;
 		if(CollectionUtils.isNotEmpty(lstToken)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : lstToken) {
-				if(ObjectUtils.equals(provider.getId(), executionToken.getIdGCodeProvider())){
+				if(ObjectUtils.equals(provider, executionToken.getGCodeProvider())){
 					tokenToRemove = executionToken;
 					break;
 				}
@@ -577,28 +570,24 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IExecutionService#getExecutionTokenByIdGCodeProvider(java.lang.Integer)
-	 */
+	
 	@Override
-	public ExecutionToken<ExecutionTokenState> getExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException {
-		ExecutionToken<ExecutionTokenState> token = findExecutionTokenByIdGCodeProvider(idGCodeProvider);
+	public ExecutionToken<ExecutionTokenState> getExecutionTokenByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException {
+		ExecutionToken<ExecutionTokenState> token = findExecutionTokenByGCodeProvider(gcodeProvider);
 		if(token == null){
-			throw new GkTechnicalException("No Execution token for GCode Provider ["+idGCodeProvider+"]");
+			throw new GkTechnicalException("No Execution token for GCode Provider ["+gcodeProvider.getId()+"]");
 		}
 		return token;
 	}
 
 	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IExecutionService#findExecutionTokenByIdGCodeProvider(java.lang.Integer)
-	 */
+
 	@Override
-	public ExecutionToken<ExecutionTokenState> findExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException {
+	public ExecutionToken<ExecutionTokenState> findExecutionTokenByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException {
 		List<ExecutionToken<ExecutionTokenState>> lstTokens = executionQueue.getExecutionToken();
 		if(CollectionUtils.isNotEmpty(lstTokens)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : lstTokens) {
-				if(ObjectUtils.equals(idGCodeProvider, executionToken.getIdGCodeProvider())){
+				if(ObjectUtils.equals(gcodeProvider, executionToken.getGCodeProvider())){
 					return executionToken;
 				}
 			}

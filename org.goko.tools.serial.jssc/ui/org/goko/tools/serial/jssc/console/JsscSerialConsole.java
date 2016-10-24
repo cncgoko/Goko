@@ -143,6 +143,8 @@ public class JsscSerialConsole extends GkUiComponent<JsscSerialConsoleController
 		String consoleEnabledStr = state.get(CONSOLE_ENABLED);
 		if(StringUtils.isNotEmpty(consoleEnabledStr)){
 			getDataModel().setConsoleEnabled(BooleanUtils.toBoolean(consoleEnabledStr));
+		}else{
+			getDataModel().setConsoleEnabled(true); // Default is enabled
 		}
 		String consoleScrollStr = state.get(CONSOLE_SCROLL_LOCKED);
 		if(StringUtils.isNotEmpty(consoleScrollStr)){

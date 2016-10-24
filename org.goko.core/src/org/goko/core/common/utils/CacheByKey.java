@@ -103,7 +103,7 @@ public class CacheByKey<K, T> {
 	 */
 	public void add(K key, T element) throws GkException{		
 		if(exist(key)){
-			throw new GkTechnicalException("Duplicate entry : an object already exists for the ky ["+String.valueOf(key)+"]");
+			throw new GkTechnicalException("Duplicate entry : an object already exists for the key ["+String.valueOf(key)+"]");
 		}
 		cacheByKey.put(key, element);
 	}

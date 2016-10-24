@@ -13,7 +13,7 @@ import org.goko.core.log.GkLog;
 
 /**
  * @author PsyKo
- * @date 10 févr. 2016
+ * @date 10 fï¿½vr. 2016
  */
 public class MapperServiceImpl extends AbstractGokoService implements IMapperService {
 	/** Log */
@@ -61,7 +61,7 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 	@Override
 	public void addLoader(ILoader<?, ?> loader) throws GkException {
 		if(loaders.containsKey(loader.getInputClass())){
-			throw new GkTechnicalException("A loder for input class ["+loader.getInputClass()+"] already exist (registered is ["+loaders.get(loader.getInputClass()).getClass()+"]).");
+			throw new GkTechnicalException("A loader for input class ["+loader.getInputClass()+"] already exist (registered is ["+loaders.get(loader.getInputClass()).getClass()+"]).");
 		}
 		loaders.put(loader.getInputClass(), loader);
 		LOG.info("Added loader "+loader.getClass());

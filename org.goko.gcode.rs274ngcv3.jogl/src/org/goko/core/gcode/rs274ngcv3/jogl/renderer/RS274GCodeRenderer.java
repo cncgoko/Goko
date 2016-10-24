@@ -69,8 +69,8 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	private static final GkLog LOG = GkLog.getLogger(RS274GCodeRenderer.class);
 	/** Internal ID */
 	private Integer id;
-	/** Id of the generating GCodeProvider*/
-	private Integer idGCodeProvider;
+	/** The  GCodeProvider*/
+	private IGCodeProvider gcodeProvider;
 	/** Command state layout */
 	private static final int STATE_LAYOUT = 2;
 	/** TEST : the map of vertices by ID */
@@ -87,9 +87,9 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 * Constructor
 	 * @param gcodeProvider the GCodeProvider to render
 	 */
-	public RS274GCodeRenderer(Integer idGCodeProvider, IGCodeContextProvider<GCodeContext> gcodeContextProvider, IFourAxisControllerAdapter fourAxisControllerAdapter) {
+	public RS274GCodeRenderer(IGCodeProvider gcodeProvider, IGCodeContextProvider<GCodeContext> gcodeContextProvider, IFourAxisControllerAdapter fourAxisControllerAdapter) {
 		super(GL.GL_LINE_STRIP, COLORS | VERTICES);
-		this.idGCodeProvider = idGCodeProvider;
+		this.gcodeProvider = gcodeProvider;
 		this.gcodeContextProvider = gcodeContextProvider;
 		this.fourAxisControllerAdapter = fourAxisControllerAdapter;
 		setLineWidth(1f);
@@ -127,9 +127,8 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		mapVerticesGroupByIdLine 	= new HashMap<Integer, VerticesGroupByLine>();
 		
 		GCodeContext context = new GCodeContext(gcodeContextProvider.getGCodeContext());
-
-		IGCodeProvider provider = Activator.getRS274NGCService().getGCodeProvider(idGCodeProvider);		
-		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, provider);
+		
+		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, gcodeProvider);
 		
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, context);		
 		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new MotionModeColorizer();
@@ -260,20 +259,6 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		this.id = id;
 	}
 
-	/**
-	 * @return the idGCodeProvider
-	 */
-	public Integer getIdGCodeProvider() {
-		return idGCodeProvider;
-	}
-
-	/**
-	 * @param idGCodeProvider the idGCodeProvider to set
-	 */
-	public void setIdGCodeProvider(Integer idGCodeProvider) {
-		this.idGCodeProvider = idGCodeProvider;
-	}
-
 	void reinitializeStateBuffer(){
 		if(stateBuffer != null){
 			int capacity = stateBuffer.capacity();
@@ -288,7 +273,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 */
 	@Override
 	public void onExecutionStart(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		if(ObjectUtils.equals(token.getGCodeProvider().getId(), getIdGCodeProvider())){
+		if(ObjectUtils.equals(token.getGCodeProvider(), gcodeProvider)){
 			reinitializeStateBuffer();
 		}
 	}
@@ -342,7 +327,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		if(ObjectUtils.equals(token.getGCodeProvider().getId(), idGCodeProvider)){
+		if(ObjectUtils.equals(token.getGCodeProvider(), gcodeProvider)){
 			if(mapVerticesGroupByIdLine != null){		
 				if(mapVerticesGroupByIdLine.containsKey(idLine)){
 					VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
@@ -370,6 +355,13 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 */
 	public void setGCodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
 		this.gcodeContextProvider = gcodeContextProvider;
+	}
+
+	/**
+	 * @return the gcodeProvider
+	 */
+	public IGCodeProvider getGCodeProvider() {
+		return gcodeProvider;
 	}
 
 

@@ -54,7 +54,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	public IExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
-		return new ExecutionToken<ExecutionTokenState>(rs274Service, provider, ExecutionTokenState.NONE);
+		return new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
 	}
 
 	/** (inheritDoc)

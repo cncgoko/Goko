@@ -60,7 +60,7 @@ public class AddAllGCodeInQueueAction extends Action {
 			List<IGCodeProvider> lstProvider = gcodeRepository.getGCodeProvider();
 			if(CollectionUtils.isNotEmpty(lstProvider)){
 				for (IGCodeProvider gcodeProvider : lstProvider) {
-					if(executionService.findExecutionTokenByIdGCodeProvider(gcodeProvider.getId()) == null){
+					if(executionService.findExecutionTokenByGCodeProvider(gcodeProvider) == null){
 						executionService.addToExecutionQueue(gcodeProvider);
 					}
 				}

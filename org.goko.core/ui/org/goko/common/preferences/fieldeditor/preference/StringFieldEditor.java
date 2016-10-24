@@ -18,11 +18,12 @@ import org.goko.core.common.exception.GkException;
  * </p>
  */
 public class StringFieldEditor extends LabeledFieldEditor<Text> {
-    /**
+	/**
      * Text limit constant (value <code>-1</code>) indicating unlimited
      * text limit and width.
      */
     public static int UNLIMITED = -1;
+    
     /**
      * Width of text field in characters; initially unlimited.
      */
@@ -65,7 +66,11 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 		super.createControls(parent, style);
 		control = new Text(this, SWT.BORDER |  style);    	
     	control.setText("Text");
-    	control.setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, true, false, 1, 1));
+    	int horizontalAlign = SWT.LEFT;
+    	if( (style & SWT.FILL) == SWT.FILL){
+    		horizontalAlign = SWT.FILL;
+    	}
+    	control.setLayoutData(new GridData(horizontalAlign, SWT.RIGHT, true, false, 1, 1));
     	control.addKeyListener(new KeyAdapter() {
     		@Override
     		public void keyReleased(KeyEvent e) {    			

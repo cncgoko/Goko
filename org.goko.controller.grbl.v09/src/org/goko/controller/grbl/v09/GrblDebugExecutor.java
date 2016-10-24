@@ -23,20 +23,16 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
-import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 
 public class GrblDebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	private Object lock = new Object();
-	/** RS274 GCode service */
-	private IRS274NGCService gcodeService;
-
+	
 	/**
 	 * Constructor
 	 * @param gcodeService the gcode service
 	 */
-	public GrblDebugExecutor(IRS274NGCService gcodeService) {
+	public GrblDebugExecutor() {
 		super();
-		this.gcodeService = gcodeService;
 	}
 
 	/** (inheritDoc)
@@ -52,7 +48,7 @@ public class GrblDebugExecutor extends AbstractStreamingExecutor<ExecutionTokenS
 	 */
 	@Override
 	public ExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
-		return new ExecutionToken<ExecutionTokenState>(gcodeService,provider, ExecutionTokenState.NONE);
+		return new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
 	}
 
 	/** (inheritDoc)
@@ -96,20 +92,6 @@ public class GrblDebugExecutor extends AbstractStreamingExecutor<ExecutionTokenS
 	@Override
 	protected boolean isReadyForNextLine() throws GkException {
 		return true;
-	}
-
-	/**
-	 * @return the gcodeService
-	 */
-	public IRS274NGCService getGcodeService() {
-		return gcodeService;
-	}
-
-	/**
-	 * @param gcodeService the gcodeService to set
-	 */
-	public void setGcodeService(IRS274NGCService gcodeService) {
-		this.gcodeService = gcodeService;
 	}
 
 }

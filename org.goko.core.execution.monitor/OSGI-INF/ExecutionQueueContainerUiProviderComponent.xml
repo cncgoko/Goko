@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.core.execution.monitor.ExecutionQueueContainerUiProvider">
+   <implementation class="org.goko.core.execution.monitor.uiprovider.ExecutionQueueContainerUiProvider"/>
+   <reference bind="addExecutionQueueContributionItem" cardinality="0..n" interface="org.goko.core.execution.monitor.uiprovider.menu.executionqueue.IExecutionQueueContributionItem" name="IExecutionQueueContributionItem" policy="dynamic"/>
+   <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
+   <reference bind="setWorkspaceUiService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceUIService" name="IWorkspaceUIService" policy="static"/>
+</scr:component>

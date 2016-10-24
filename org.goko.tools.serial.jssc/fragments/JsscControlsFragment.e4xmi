@@ -33,7 +33,7 @@
       <children xsi:type="menu:ToolControl" xmi:id="_bXMMUAQ9EeSKrZ87v5iHbA" elementId="org.goko.tools.serial.jssc.toolcontrol.1" contributionURI="bundleclass://Goko/goko.toolbar.SeparatorToolControl"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iUKDwAn2EeS08MVRlzsAnw" featurename="children" parentElementId="goko.partstack.d">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iUKDwAn2EeS08MVRlzsAnw" featurename="children" parentElementId="goko.partstack.d" positionInList="first">
     <elements xsi:type="basic:Part" xmi:id="_jYHbIAn2EeS08MVRlzsAnw" elementId="org.goko.tools.serial.jssc.part.0" contributionURI="bundleclass://org.goko.tools.serial.jssc/org.goko.tools.serial.jssc.console.JsscSerialConsole" label="Serial console" iconURI="platform:/plugin/org.goko.tools.serial.jssc/resources/icons/terminal.png">
       <tags>view</tags>
       <toolbar xmi:id="_YSxFgLTAEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.toolbar.0">

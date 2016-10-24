@@ -81,9 +81,9 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	
 	// Accessibility
 	
-	T getExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException;
+	T getExecutionTokenByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException;
 	
-	T findExecutionTokenByIdGCodeProvider(Integer idGCodeProvider) throws GkException;
+	T findExecutionTokenByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException;
 	
 	T findExecutionTokenAfter(T token) throws GkException;
 	

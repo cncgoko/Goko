@@ -43,7 +43,7 @@ public class AddExecutionQueueAction extends Action{
 	public boolean isEnabled() {		
 		try {
 			IGCodeProvider provider = gcodeProviderRepository.getGCodeProvider(idGCodeProvider);
-			boolean exists = executionService.findExecutionTokenByIdGCodeProvider(idGCodeProvider) != null;
+			boolean exists = executionService.findExecutionTokenByGCodeProvider(provider) != null;
 			return !exists && provider.hasErrors() == false;
 		} catch (GkException e) {
 			LOG.error(e);

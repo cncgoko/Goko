@@ -105,7 +105,7 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 		if(CollectionUtils.isNotEmpty(lstToken)){
 			for (XmlExecutionToken xmlExecutionToken : lstToken) {
 				IGCodeProvider provider = gcodeRepository.getGCodeProvider(xmlExecutionToken.getCodeGCodeProvider());
-				ExecutionToken<ExecutionTokenState> token = new ExecutionToken<ExecutionTokenState>(gcodeRepository, provider, ExecutionTokenState.NONE);
+				ExecutionToken<ExecutionTokenState> token = new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
 				executionService.addToExecutionQueue(token);
 			}
 		}

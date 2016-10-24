@@ -7,20 +7,18 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
-import org.goko.core.gcode.service.IGCodeProviderRepository;
 
 public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> implements IExecutor<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>{
 	private Object lock = new Object();
-	/** The gcode repository wherer the GCodeProvider is located */
-	private IGCodeProviderRepository gcodeRepository;
+//	/** The gcode repository wherer the GCodeProvider is located */
+//	private IGCodeProviderRepository gcodeRepository;
 	
 	/**
 	 * Constructor
 	 * @param gcodeRepository
 	 */
-	public DebugExecutor(IGCodeProviderRepository gcodeRepository) {
+	public DebugExecutor() {
 		super();
-		this.gcodeRepository = gcodeRepository;
 	}
 
 	/** (inheritDoc)
@@ -36,7 +34,7 @@ public class DebugExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 */
 	@Override
 	public ExecutionToken<ExecutionTokenState> createToken(IGCodeProvider provider) throws GkException {
-		return new ExecutionToken<ExecutionTokenState>(gcodeRepository, provider, ExecutionTokenState.NONE);
+		return new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
 	}
 
 	/** (inheritDoc)

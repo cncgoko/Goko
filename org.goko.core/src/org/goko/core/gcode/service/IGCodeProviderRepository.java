@@ -11,7 +11,7 @@ public interface IGCodeProviderRepository extends IGokoService{
 	List<IGCodeProvider> getGCodeProvider() throws GkException;
 
 	IGCodeProvider getGCodeProvider(Integer id) throws GkException;
-
+		
 	IGCodeProvider findGCodeProvider(Integer id) throws GkException;
 	
 	IGCodeProvider getGCodeProvider(String code) throws GkException;
@@ -34,5 +34,6 @@ public interface IGCodeProviderRepository extends IGokoService{
 
 	void removeDeleteVetoableListener(IGCodeProviderDeleteVetoableListener listener) throws GkException;
 
+	IGCodeProvider internalGetGCodeProvider(Integer id) throws GkException;
 	
 }
