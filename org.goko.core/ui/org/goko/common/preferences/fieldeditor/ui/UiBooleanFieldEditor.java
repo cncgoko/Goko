@@ -39,7 +39,7 @@ public class UiBooleanFieldEditor extends UiFieldEditor<Button> {
 		super.createControls(parent, style);
 		control = new Button(this, SWT.CHECK |  style);    	
     	control.setText(getLabel());
-    	control.setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, true, false, 1, 1));
+    	control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
     	control.addSelectionListener(new SelectionAdapter() {
     		/** (inheritDoc)
     		 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)

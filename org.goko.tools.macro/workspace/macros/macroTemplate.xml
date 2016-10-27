@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gcodeMacro code="test macro" requestConfirmation="true">
+	<gcodeContent type="source:text">G90
+G0X21
+G0Y15		
+	</gcodeContent>	
+</gcodeMacro>

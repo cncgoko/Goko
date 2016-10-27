@@ -94,12 +94,19 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 		
 	}
 
-	private void updateContentBounds() throws GkException {
+	/**
+	 * Update content bounds
+	 * Synchronized keyword is required to avoid conflicting update 
+	 * @throws GkException GkException
+	 */
+	private synchronized void updateContentBounds() throws GkException {
 		List<RS274GCodeRenderer> lstRenderer = cacheRenderer.get();
 		lstRenderer.addAll(cacheRendererByExecutionToken.get());
 		
 		if(contentBoundsRenderer != null){
-			Activator.getJoglViewerService().removeRenderer(contentBoundsRenderer);
+			contentBoundsRenderer.destroy();
+			LOG.info("Ivoking destroy on ["+contentBoundsRenderer.toString()+"]");
+			//Activator.getJoglViewerService().removeRenderer(contentBoundsRenderer);
 		}
 
 		if(CollectionUtils.isNotEmpty(lstRenderer)){

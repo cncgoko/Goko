@@ -199,8 +199,11 @@ public class GCodeProviderPointer implements IGCodeProvider{
 	 */
 	@Override
 	public void lock() {
-		// TODO Auto-generated method stub
-		
+		try {
+			gcodeProviderRepository.lockGCodeProvider(idGCodeProvider);
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 
 	/** (inheritDoc)
@@ -208,8 +211,11 @@ public class GCodeProviderPointer implements IGCodeProvider{
 	 */
 	@Override
 	public void unlock() {
-		// TODO Auto-generated method stub
-		
+		try {
+			gcodeProviderRepository.unlockGCodeProvider(idGCodeProvider);
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 	
 	

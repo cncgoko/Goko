@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.goko.tools.macro.AddMacroContributionItem">
+   <implementation class="org.goko.tools.macro.menu.MacroSubmenuContributionItem"/>
+   <service>
+      <provide interface="org.goko.core.execution.monitor.uiprovider.menu.executionqueue.IExecutionQueueContributionItem"/>
+   </service>
+   <reference bind="setMacroService" cardinality="1..1" interface="org.goko.tools.macro.service.IGCodeMacroService" name="IGCodeMacroService" policy="static"/>
+   <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
+</scr:component>

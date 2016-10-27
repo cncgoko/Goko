@@ -577,8 +577,9 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		boolean canDelete = checkDeleteGCodeProvider(id);
 		if(canDelete){
 			LOG.info("Deleting GCode provider code=["+provider.getCode()+"], id=["+provider.getId()+"]");
+			IGCodeProvider notificationProvider = getGCodeProvider(provider.getId());
 			// Notifies before listeners first
-			notifyBeforeGCodeProviderDelete(getGCodeProvider(provider.getId()));
+			notifyBeforeGCodeProviderDelete(notificationProvider);
 			// Remove attached modifiers 
 			performDeleteByIdGCodeProvider(id);
 			// Update the provider once it's modified
@@ -588,7 +589,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			provider.getSource().delete();
 			
 			// Notifies after listeners
-			notifyAfterGCodeProviderDelete(getGCodeProvider(provider.getId()));
+			notifyAfterGCodeProviderDelete(notificationProvider);
 		}
 	}
 

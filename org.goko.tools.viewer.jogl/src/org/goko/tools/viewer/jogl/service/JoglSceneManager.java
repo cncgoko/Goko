@@ -211,6 +211,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			if(CollectionUtils.isNotEmpty(renderersToRemove)){
 				for (ICoreJoglRenderer renderer : renderersToRemove) {
 					renderer.performDestroy(gl);
+					LOG.info("Destroying renderer "+renderer.getCode()+" ["+renderer.toString()+"]");
 					renderers.remove(renderer);
 				}
 				renderersToRemove.clear();
@@ -231,6 +232,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
 		renderers.add(renderer);
+		LOG.info("Adding renderer "+renderer.getCode()+" ["+renderer.toString()+"]");
 		synchronized (renderers) {
 			// Make sure that renderer using alpha get rendered last
 			Collections.sort(getRenderers(), new CoreJoglRendererAlphaComparator());

@@ -323,6 +323,16 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		bindingContext.bindValue(observeSelectionBtnCheckButtonObserveWidget, enabledBindingsObserveValue, null, null);
 
 	}
+	
+	public void addSelectionBinding(Viewer target, String property) throws GkException {
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+
+		IObservableValue observeSelectionObserveWidget = ViewersObservables.observeSingleSelection(target);
+		IObservableValue enabledBindingsObserveValue = BeanProperties.value(property).observe(dataModel);
+		bindingContext.bindValue(observeSelectionObserveWidget, enabledBindingsObserveValue, null, null);
+
+	}
 
 	public void addTableSelectionBinding(TableViewer target, String property) throws GkException {
 		verifyGetter(dataModel,property);

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.tools.macro.DefaultGCodeMacroPersistenceService">
+   <implementation class="org.goko.tools.macro.service.DefaultGCodeMacroPersistenceService"/>
+   <reference bind="setGCodeMacroService" cardinality="1..1" interface="org.goko.tools.macro.service.IGCodeMacroService" name="IGCodeMacroService" policy="static"/>
+   <reference bind="setXmlPersistenceService" cardinality="1..1" interface="org.goko.core.common.io.xml.IXmlPersistenceService" name="IXmlPersistenceService" policy="static"/>
+   <reference bind="setMapperService" cardinality="1..1" interface="org.goko.core.workspace.service.IMapperService" name="IMapperService" policy="static"/>
+</scr:component>

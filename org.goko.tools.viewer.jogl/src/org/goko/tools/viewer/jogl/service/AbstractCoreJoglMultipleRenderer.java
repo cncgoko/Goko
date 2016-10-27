@@ -122,6 +122,7 @@ public abstract class AbstractCoreJoglMultipleRenderer extends AbstractCoreJoglR
 
 	@Override
 	public void destroy() throws GkException {
+		super.destroy();
 		if(CollectionUtils.isNotEmpty(renderers)){
 			for (AbstractCoreJoglRenderer abstractCoreJoglRenderer : renderers) {
 				abstractCoreJoglRenderer.destroy();
