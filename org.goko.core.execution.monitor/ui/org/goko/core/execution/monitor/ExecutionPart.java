@@ -27,6 +27,7 @@ import org.goko.common.dialog.GkDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartController;
 import org.goko.core.execution.monitor.executionpart.ExecutionPartModel;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
@@ -297,7 +298,8 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		});
 		
 		try {
-			getController().getExecutionService().addExecutionListener(this);
+			getController().getExecutionService().addExecutionListener(ExecutionQueueType.DEFAULT, this);
+			getController().getExecutionService().addExecutionListener(ExecutionQueueType.SYSTEM, this);
 		} catch (GkException e1) {
 			LOG.error(e1);
 		}

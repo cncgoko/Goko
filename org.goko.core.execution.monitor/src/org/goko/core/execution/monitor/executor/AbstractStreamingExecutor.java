@@ -88,7 +88,7 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 	 */
 	@Override
 	public void waitTokenComplete() throws GkException {		
-		while(!tokenComplete && state != ExecutionState.STOPPED){
+		while(!isTokenComplete() && state != ExecutionState.STOPPED){
 			tokenCompleteLock.lock();
 			try{
 				tokenCompleteCondition.await(100, TimeUnit.MILLISECONDS);

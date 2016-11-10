@@ -72,6 +72,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
@@ -426,13 +427,15 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		decrementUsedBufferCount();
 		
 		String formattedErrorMessage = formatErrorMessage(errorMessage);
-		if(grblExecutor.getState() == ExecutionState.RUNNING){			
+		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
+				executionService.getExecutionState() == ExecutionState.PAUSED ||
+				executionService.getExecutionState() == ExecutionState.ERROR ){		
 			GCodeLine line = grblExecutor.markNextLineAsError();
 			logError(formattedErrorMessage, line);
 		}else{
 			logError(formattedErrorMessage, null);
 		}
-		
+		System.err.println("Error while state = "+grblExecutor.getState());
 	}
 
 	/**
@@ -481,8 +484,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	}
 
 	protected void handleOkResponse() throws GkException{
-		decrementUsedBufferCount();
-		if(executionService.getExecutionState() == ExecutionState.RUNNING){
+		decrementUsedBufferCount();		
+		grblState.setPlannerBuffer( grblState.getPlannerBuffer() + 1);
+		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
+			executionService.getExecutionState() == ExecutionState.PAUSED ||
+			executionService.getExecutionState() == ExecutionState.ERROR ){
 			grblExecutor.confirmNextLineExecution();
 		}
 	}
@@ -595,7 +601,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(executionService.getExecutionState() == ExecutionState.PAUSED){
 			executionService.resumeQueueExecution();
 		}else{
-			executionService.beginQueueExecution();
+			executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 		}
 	}
 	
@@ -979,7 +985,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		gcodeService.addGCodeProvider(probeGCodeProvider);
 		probeGCodeProvider = gcodeService.getGCodeProvider(probeGCodeProvider.getId());// Required since internally the provider is a new one
 		executionService.addToExecutionQueue(probeGCodeProvider);
-		executionService.beginQueueExecution();
+		executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 		
 		return completionService;
 	}

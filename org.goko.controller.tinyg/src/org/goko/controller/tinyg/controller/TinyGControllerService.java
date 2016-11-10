@@ -62,6 +62,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
@@ -155,7 +156,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 //		jogRunnable = new TinyGJoggingRunnable(this, communicator);
 //		ExecutorService jogExecutor 	= Executors.newSingleThreadExecutor();
 //		jogExecutor.execute(jogRunnable);
-		executionService.addExecutionListener(this);
+		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, this);
 		tinyGJogging = new TinyGJogging(this, communicator);
 		LOG.info("Successfully started "+getServiceId());
 	}
@@ -402,7 +403,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @throws GkTechnicalException
 	 */
 	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
-		if(executionService.getExecutionState() == ExecutionState.RUNNING){
+		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
+			executionService.getExecutionState() == ExecutionState.PAUSED ||
+			executionService.getExecutionState() == ExecutionState.ERROR ){
 			if(status == TinyGStatusCode.TG_OK){
 				tinygExecutor.confirmNextLineExecution();
 			}else{
@@ -640,7 +643,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void startMotion() throws GkException {
 		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
-		executionService.beginQueueExecution();
+		executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 	}
 	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#stopMotion()
@@ -769,8 +772,9 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		probeGCodeProvider.setCode("TinyG probing");
 		gcodeService.addGCodeProvider(probeGCodeProvider);
 		probeGCodeProvider = gcodeService.getGCodeProvider(probeGCodeProvider.getId());// Required since internally the provider is a new one
-		executionService.addToExecutionQueue(probeGCodeProvider);
-		executionService.beginQueueExecution();
+		executionService.clearExecutionQueue(ExecutionQueueType.SYSTEM);
+		executionService.addToExecutionQueue(ExecutionQueueType.SYSTEM, probeGCodeProvider);
+		executionService.beginQueueExecution(ExecutionQueueType.SYSTEM);
 		
 		return completionService;
 	}
@@ -979,7 +983,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	public void setMonitorService(IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> monitorService) throws GkException {
 		this.executionService = monitorService;
 		this.executionService.setExecutor(tinygExecutor);
-		this.executionService.addExecutionListener(tinygExecutor);
+		this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, tinygExecutor);
 		//executionService.setExecutor(new DebugExecutor());
 	}
 

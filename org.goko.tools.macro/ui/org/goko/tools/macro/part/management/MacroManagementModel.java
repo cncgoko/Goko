@@ -25,12 +25,14 @@ public class MacroManagementModel extends AbstractModelObject {
 	static final String BUTTON_COLOR = "buttonColor";
 	static final String OVERRIDE_BUTTON_COLOR = "overrideButtonColor";
 	static final String DIRTY = "dirty";
+	static final String EDITION_MODE = "editionMode";
 	private IObservableList availableMacro;
 	private GCodeMacro selectedMacro;
 	private String macroName;
 	private boolean requestConfirmation;
 	private boolean displayMacroButton;
 	private boolean dirty;
+	private boolean editionMode;
 	private Color3f buttonColor;
 	private boolean overrideButtonColor;
 	/**
@@ -140,5 +142,17 @@ public class MacroManagementModel extends AbstractModelObject {
 	 */
 	public void setOverrideButtonColor(boolean overrideButtonColor) {
 		firePropertyChangeWithDirty(OVERRIDE_BUTTON_COLOR, this.overrideButtonColor, this.overrideButtonColor = overrideButtonColor);
+	}
+	/**
+	 * @return the editionMode
+	 */
+	public boolean isEditionMode() {
+		return editionMode;
+	}
+	/**
+	 * @param editionMode the editionMode to set
+	 */
+	public void setEditionMode(boolean editionMode) {
+		firePropertyChange(EDITION_MODE, this.editionMode, this.editionMode = editionMode);	
 	}
 }

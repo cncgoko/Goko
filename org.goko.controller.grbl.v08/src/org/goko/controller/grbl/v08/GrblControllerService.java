@@ -69,6 +69,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
@@ -414,7 +415,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	protected void handleError(String errorMessage) throws GkException{
 		decrementUsedBufferCount();
-		if(grblExecutor.getState() == ExecutionState.RUNNING){
+		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
+			executionService.getExecutionState() == ExecutionState.PAUSED ||
+			executionService.getExecutionState() == ExecutionState.ERROR ){
 			GCodeLine line = grblExecutor.markNextLineAsError();		
 			logError(errorMessage, line);
 		}
@@ -448,7 +451,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	protected void handleOkResponse() throws GkException{
 		decrementUsedBufferCount();
-		if(executionService.getExecutionState() == ExecutionState.RUNNING){
+		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
+			executionService.getExecutionState() == ExecutionState.PAUSED ||
+			executionService.getExecutionState() == ExecutionState.ERROR ){
 			grblExecutor.confirmNextLineExecution();
 		}
 	}
@@ -543,7 +548,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		if(executionService.getExecutionState() == ExecutionState.PAUSED){
 			executionService.resumeQueueExecution();
 		}else{
-			executionService.beginQueueExecution();
+			executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 		}
 	}
 	

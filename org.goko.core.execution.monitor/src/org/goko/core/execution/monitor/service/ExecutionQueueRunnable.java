@@ -1,9 +1,9 @@
 package org.goko.core.execution.monitor.service;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.IExecutionControl;
-import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutor;
@@ -22,7 +22,7 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	/** The current executor */
 	private IExecutor<S, T> executor;
 	/** The execution queue*/
-	private IExecutionQueue<S, T> executionQueue;
+	private ExecutionQueue<S, T> executionQueue;
 	/** The underlying execution service */
 	private IExecutionService<S, T> executionService;
 	/** The state of the execution */
@@ -45,30 +45,26 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 		LOG.info("Starting ExecutionQueueRunnable");
 		try{
 			setState(ExecutionState.RUNNING);
-			executionService.notifyQueueExecutionStart();
+			executionService.notifyQueueExecutionStart(executionQueue.getType());
 
-			while(executionQueue.hasNext() && state != ExecutionState.STOPPED){
-				try{
-					executionQueue.beginNextTokenExecution();
-					runExecutionToken();
-					executionQueue.endCurrentTokenExecution();
-				}catch(GkException e){
-					LOG.error(e);
-					setState(ExecutionState.ERROR);
-				}
+			while(executionQueue.hasNext() && state != ExecutionState.STOPPED){				
+				executionQueue.beginNextTokenExecution();
+				runExecutionToken();					
+				executionQueue.endCurrentTokenExecution();									
 			}
 						
 			if(state == ExecutionState.STOPPED){
-				executionService.notifyQueueExecutionCanceled();
+				executionService.notifyQueueExecutionCanceled(executionQueue.getType());
 			}else if(state == ExecutionState.ERROR){
-				executionService.notifyQueueExecutionCanceled();
+				executionService.notifyQueueExecutionCanceled(executionQueue.getType());
 			}else{
 				setState(ExecutionState.COMPLETE);
-				executionService.notifyQueueExecutionComplete();
-			}
+				executionService.notifyQueueExecutionComplete(executionQueue.getType());	
+				LOG.info("Queue complete");
+			}			
 		}catch(GkException e){
 			LOG.error(e);
-			setState(ExecutionState.ERROR);
+			setState(ExecutionState.FATAL_ERROR);
 		}
 	}
 
@@ -103,14 +99,14 @@ public class ExecutionQueueRunnable<S extends IExecutionTokenState, T extends IE
 	/**
 	 * @return the executionQueue
 	 */
-	public IExecutionQueue<S, T> getExecutionQueue() {
+	public ExecutionQueue<S, T> getExecutionQueue() {
 		return executionQueue;
 	}
 
 	/**
 	 * @param executionQueue the executionQueue to set
 	 */
-	public void setExecutionQueue(IExecutionQueue<S, T> executionQueue) {
+	public void setExecutionQueue(ExecutionQueue<S, T> executionQueue) {
 		this.executionQueue = executionQueue;
 	}
 

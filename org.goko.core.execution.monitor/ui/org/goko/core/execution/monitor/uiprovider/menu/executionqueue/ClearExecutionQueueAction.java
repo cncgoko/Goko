@@ -5,6 +5,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 
@@ -33,7 +34,7 @@ public class ClearExecutionQueueAction extends Action {
 	@Override
 	public void run() {
 		try {
-			executionService.clearExecutionQueue();			
+			executionService.clearExecutionQueue(ExecutionQueueType.DEFAULT);			
 		} catch (GkException e) {
 			LOG.error(e);
 		}

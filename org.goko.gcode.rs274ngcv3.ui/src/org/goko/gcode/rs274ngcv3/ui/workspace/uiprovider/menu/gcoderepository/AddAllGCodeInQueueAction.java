@@ -6,6 +6,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.action.Action;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
@@ -44,7 +45,9 @@ public class AddAllGCodeInQueueAction extends Action {
 		boolean enabled = false;
 		try {
 			// Enabled when not running
-			enabled = !ExecutionState.RUNNING.equals(executionService.getExecutionState());
+			enabled = !ExecutionState.RUNNING.equals(executionService.getExecutionState()) && 
+						!ExecutionState.PAUSED.equals(executionService.getExecutionState()) &&
+						!ExecutionState.ERROR.equals(executionService.getExecutionState());
 		} catch (GkException e) {
 			LOG.error(e);
 		}
@@ -60,7 +63,7 @@ public class AddAllGCodeInQueueAction extends Action {
 			List<IGCodeProvider> lstProvider = gcodeRepository.getGCodeProvider();
 			if(CollectionUtils.isNotEmpty(lstProvider)){
 				for (IGCodeProvider gcodeProvider : lstProvider) {
-					if(executionService.findExecutionTokenByGCodeProvider(gcodeProvider) == null){
+					if(executionService.findExecutionTokenByGCodeProvider(ExecutionQueueType.DEFAULT, gcodeProvider) == null){
 						executionService.addToExecutionQueue(gcodeProvider);
 					}
 				}

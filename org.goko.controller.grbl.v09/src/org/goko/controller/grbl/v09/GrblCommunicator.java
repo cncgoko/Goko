@@ -215,7 +215,6 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 		// Looking for WPosition
 		Matcher wposMatcher = PATTERN_WPOS.matcher(strStatusReport);
 		if(wposMatcher.matches()){
-			int t = wposMatcher.groupCount();
 			String wposX = wposMatcher.group(1);
 			String wposY = wposMatcher.group(2);
 			String wposZ = wposMatcher.group(3);

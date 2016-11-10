@@ -110,6 +110,24 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 	}
 
 	/**
+	 * Method used to confirm all command being marked as error.
+	 * This is the result of the user continuing the execution after an error was reported.
+	 * If the user continues, it meas the error is ignored.
+	 * @throws GkException GkException
+	 */
+	protected void confirmErrorCommands() throws GkException{
+		List<GCodeLine> lstErrorToken = getToken().getLineByState(ExecutionTokenState.ERROR);
+		if(CollectionUtils.isNotEmpty(lstErrorToken)){
+			for (GCodeLine line : lstErrorToken) {				
+				getToken().setLineState(line.getId(), ExecutionTokenState.EXECUTED);
+				getExecutionService().notifyCommandStateChanged(getToken(), line.getId());				
+				System.err.println("Confirming execution of error command");
+			}
+			notifyReadyForNextLineIfRequired();
+			notifyTokenCompleteIfRequired();
+		}
+	}
+	/**
 	 * Notify the parent executor if the conditions are met
 	 * @throws GkException GkException
 	 */
@@ -129,6 +147,13 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 		}
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#isTokenComplete()
+	 */
+	@Override
+	public boolean isTokenComplete() throws GkException {		
+		return super.isTokenComplete() && grblService.getUsedGrblPlannerBuffer() == 0;
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#pause()
 	 */
@@ -162,6 +187,7 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 	@Override
 	public void resume() throws GkException {
 		super.resume();
+		confirmErrorCommands();
 		grblService.resumeMotion();
 	}
 }

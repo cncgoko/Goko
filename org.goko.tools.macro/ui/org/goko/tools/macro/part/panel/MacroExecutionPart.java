@@ -8,15 +8,19 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.wb.swt.ResourceManager;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.execution.ExecutionQueueType;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.tools.macro.bean.GCodeMacro;
 import org.goko.tools.macro.service.DefaultGCodeMacroService;
@@ -29,15 +33,17 @@ import org.goko.tools.macro.service.IGCodeMacroServiceListener;
 public class MacroExecutionPart implements IGCodeMacroServiceListener{
 	private static final GkLog LOG = GkLog.getLogger(MacroExecutionPart.class);
 	private DefaultGCodeMacroService macroService;
+	private IExecutionService executionService;
 	private Composite parent;
 	/**
 	 * Constructor
 	 */
 	@Inject
-	public MacroExecutionPart(DefaultGCodeMacroService macroService) throws GkException {
+	public MacroExecutionPart(DefaultGCodeMacroService macroService,IExecutionService executionService) throws GkException {
 		super();
 		this.macroService = macroService;
 		this.macroService.addListener(this);
+		this.executionService = executionService;
 	}
 
 	@PostConstruct
@@ -69,12 +75,37 @@ public class MacroExecutionPart implements IGCodeMacroServiceListener{
 			if(macro.isShowInMacroPanel()){
 				Button btnMacro = new Button(composite, SWT.NONE);
 				btnMacro.setText(macro.getCode());
-				btnMacro.setLayoutData(new RowData(100, 35));
+			//	btnMacro.setLayoutData(new RowData(100, 35));
 				if(macro.getButtonColor() != null){
 					btnMacro.setBackground(ResourceManager.getColor(Math.round(macro.getButtonColor().x * 255),
 																	Math.round(macro.getButtonColor().y * 255),
 																	Math.round(macro.getButtonColor().z * 255)));
 				}
+				
+				btnMacro.addMouseListener(new MouseAdapter() {
+					/** (inheritDoc)
+					 * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
+					 */
+					@Override
+					public void mouseUp(MouseEvent e) {						
+						super.mouseUp(e);
+						try{
+							boolean executionConfirmed = true;
+							if(macro.isRequestConfirmBeforeExecution()){
+								executionConfirmed = MessageDialog.openConfirm(parent.getShell(), "Confirm execution", "Do your really want to immediately execute the macro "+macro.getCode()+" ?");
+							}
+							if(executionConfirmed){
+								if(executionService.isReadyForExecution()){
+									executionService.clearExecutionQueue(ExecutionQueueType.SYSTEM);								
+									executionService.addToExecutionQueue(ExecutionQueueType.SYSTEM, macroService.getGCodeProviderByMacro(macro.getId()));								
+									executionService.beginQueueExecution(ExecutionQueueType.SYSTEM);
+								}
+							}
+						}catch(GkException ex){
+							LOG.error(ex);
+						}
+					}
+				});
 			}
 		}
 		parent.layout(true);

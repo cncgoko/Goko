@@ -17,9 +17,12 @@
 
 package org.goko.core.gcode.service;
 
+import java.util.List;
+
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.execution.IExecutionTokenState;
@@ -31,19 +34,25 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 	
 	T addToExecutionQueue(IGCodeProvider gcodeProvider) throws GkException;
 	
+	T addToExecutionQueue(ExecutionQueueType type, IGCodeProvider gcodeProvider) throws GkException;
+	
 	void addToExecutionQueue(T executionToken) throws GkException;	
 	
-	void clearExecutionQueue() throws GkException;
+	void addToExecutionQueue(ExecutionQueueType type, T executionToken) throws GkException;
 	
-	void removeFromExecutionQueue(Integer idExecutionToken) throws GkException;
+	void clearExecutionQueue(ExecutionQueueType queueType) throws GkException;
 	
-	void removeFromExecutionQueue(T executionToken) throws GkException;
+	void removeFromExecutionQueue(ExecutionQueueType queueType, Integer idExecutionToken) throws GkException;
 	
-	void addExecutionListener(IGCodeExecutionListener<S,T> listener) throws GkException;
+	void removeFromExecutionQueue(ExecutionQueueType queueType, T executionToken) throws GkException;
+	
+	void addExecutionListener(ExecutionQueueType queueType, IGCodeExecutionListener<S,T> listener) throws GkException;
 
 	void removeExecutionListener(IGCodeExecutionListener<S,T> listener) throws GkException;
+	
+	void removeExecutionListener(ExecutionQueueType queueType, IGCodeExecutionListener<S,T> listener) throws GkException;
 
-	void notifyQueueExecutionStart() throws GkException;
+	void notifyQueueExecutionStart(ExecutionQueueType queueType) throws GkException;
 	
 	void notifyExecutionStart(T token) throws GkException;
 	
@@ -57,13 +66,13 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 
 	void notifyExecutionComplete(T token) throws GkException;
 	
-	void notifyQueueExecutionComplete() throws GkException;
+	void notifyQueueExecutionComplete(ExecutionQueueType queueType) throws GkException;
 	
-	void notifyQueueExecutionCanceled() throws GkException;
+	void notifyQueueExecutionCanceled(ExecutionQueueType queueType) throws GkException;
 	
 	// Controls over the execution queue
 	
-	void beginQueueExecution() throws GkException;
+	void beginQueueExecution(ExecutionQueueType queueType) throws GkException;
 	
 	void pauseQueueExecution() throws GkException;
 	
@@ -73,19 +82,24 @@ public interface IExecutionService<S extends IExecutionTokenState, T extends IEx
 
 	ExecutionState getExecutionState() throws GkException;
 	
-	ExecutionQueue<S, T> getExecutionQueue() throws GkException;
+	ExecutionQueue<S, T> findRunningExecutionQueue() throws GkException;
+	
+	List<ExecutionQueue<S, T>> getExecutionQueue() throws GkException;
+	
+	ExecutionQueue<S, T> getExecutionQueue(ExecutionQueueType type) throws GkException;
 	
 	void addExecutionQueueListener(IExecutionQueueListener<S, T> listener) throws GkException;
 	
 	void removeExecutionQueueListener(IExecutionQueueListener<S, T> listener) throws GkException;
 	
+	boolean isReadyForExecution() throws GkException;
 	// Accessibility
 	
-	T getExecutionTokenByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException;
+	T getExecutionTokenByGCodeProvider(ExecutionQueueType queueType, IGCodeProvider gcodeProvider) throws GkException;
 	
-	T findExecutionTokenByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException;
+	T findExecutionTokenByGCodeProvider(ExecutionQueueType queueType, IGCodeProvider gcodeProvider) throws GkException;
 	
-	T findExecutionTokenAfter(T token) throws GkException;
+	T findExecutionTokenAfter(ExecutionQueueType queueType, T token) throws GkException;
 	
-	T findExecutionTokenBefore(T token) throws GkException;
+	T findExecutionTokenBefore(ExecutionQueueType queueType, T token) throws GkException;
 }

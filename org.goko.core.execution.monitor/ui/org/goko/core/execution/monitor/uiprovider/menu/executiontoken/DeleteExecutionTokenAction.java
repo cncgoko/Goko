@@ -1,6 +1,7 @@
 package org.goko.core.execution.monitor.uiprovider.menu.executiontoken;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.workspace.action.AbstractDeleteAction;
 
@@ -21,7 +22,7 @@ public class DeleteExecutionTokenAction extends AbstractDeleteAction {
 	 */
 	@Override
 	protected void deleteById(Integer id) throws GkException {
-		executionService.removeFromExecutionQueue(id);
+		executionService.removeFromExecutionQueue(ExecutionQueueType.DEFAULT, id);
 	}
 	
 

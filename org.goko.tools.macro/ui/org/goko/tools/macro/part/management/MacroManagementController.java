@@ -70,6 +70,7 @@ public class MacroManagementController extends AbstractController<MacroManagemen
 		GCodeMacro macro = new GCodeMacro();
 		macro.setCode("New macro"); 
 		macro.setRequestConfirmBeforeExecution(true);
+		macro.setShowInMacroPanel(true);
 		macro.setContent(new StringGCodeSource(StringUtils.EMPTY));
 		macroService.addGCodeMacro(macro);
 		selectMacro(macro);
@@ -112,13 +113,20 @@ public class MacroManagementController extends AbstractController<MacroManagemen
 			macroService.updateGCodeMacro(macro);
 			getDataModel().setSelectedMacro(macroService.getGCodeMacro(macro.getId()));
 			getDataModel().setDirty(false);
+			getDataModel().setEditionMode(false);
 		}
+	}
+	
+	public void enableEditionMode(){
+		getDataModel().setEditionMode(true);
+		getDataModel().setDirty(true);
 	}
 	
 	public void cancelChangesToGCodeMacro(){
 		if(getDataModel().getSelectedMacro() != null){
 			selectMacro(getDataModel().getSelectedMacro());
 			getDataModel().setDirty(false);
+			getDataModel().setEditionMode(false);
 		}
 	}
 	

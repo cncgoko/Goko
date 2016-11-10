@@ -83,6 +83,8 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
 	/** The GCode context supplier */
 	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
+	/** The map of stored states (in case line get executed before renderer is initialized) */
+	private Map<Integer, ExecutionTokenState> storedStates;
 	/**
 	 * Constructor
 	 * @param gcodeProvider the GCodeProvider to render
@@ -328,21 +330,43 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		if(ObjectUtils.equals(token.getGCodeProvider(), gcodeProvider)){
-			if(mapVerticesGroupByIdLine != null){		
-				if(mapVerticesGroupByIdLine.containsKey(idLine)){
-					VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);
-					ExecutionTokenState state = token.getLineState(idLine);
-					if(stateBuffer != null){				
-						for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
-							stateBuffer.put(i, state.getState());
+			synchronized(this){
+				if(mapVerticesGroupByIdLine != null && stateBuffer != null){		
+					if(mapVerticesGroupByIdLine.containsKey(idLine)){
+						// Process stored states
+						if(storedStates != null){
+							for (Integer storedLineId : storedStates.keySet()) {
+								updateStateBuffer(storedLineId, storedStates.get(storedLineId));
+							}
+							storedStates.clear();
+							storedStates = null;
 						}
-						update();
-					}
-				}	
+						
+						// Process last received state						
+						ExecutionTokenState state = token.getLineState(idLine);
+						updateStateBuffer(idLine, state);
+					}	
+				}else{
+					// Renderer not initialized yet, we have to store received line
+					if(storedStates == null){
+						storedStates = new HashMap<>();
+					}					
+					storedStates.put(idLine, token.getLineState(idLine));
+				}
 			}
 		}
 	}
 
+	private void updateStateBuffer(Integer idLine, ExecutionTokenState state){
+		// Process last received state
+		VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);		
+		if(stateBuffer != null){				
+			for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
+				stateBuffer.put(i, state.getState());
+			}
+			update();
+		}
+	}
 	/**
 	 * @return the gcodeContextProvider
 	 */

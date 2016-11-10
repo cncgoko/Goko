@@ -19,6 +19,7 @@ import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
@@ -105,8 +106,8 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 	public void startMapProbing() throws GkException{
 		getModifier().getHeightMap().build();
 		probingService.checkReadyToProbe();
-		if(executionService.getExecutionQueue() != null && executionService.getExecutionQueue().hasNext()){
-			throw new GkFunctionalException("Execution queue must be empty before autoleveler probing. Please empty the queue first.");
+		if(executionService.getExecutionState() !=  ExecutionState.IDLE){
+			throw new GkFunctionalException("Some GCode is being executed. Please wait for it to complete before probing.");
 		}
 		Executors.newSingleThreadExecutor().execute(new Runnable() {
 			

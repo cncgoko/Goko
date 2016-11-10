@@ -22,6 +22,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
+import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
@@ -61,7 +63,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void initialize() throws GkException {
-		executionService.addExecutionListener(this);
+		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, this);
+		executionService.addExecutionListener(ExecutionQueueType.SYSTEM, this);
 		executionService.addExecutionQueueListener(this);
 		updateTokenQueueData();
 		updateButtonState();
@@ -152,7 +155,9 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {		
-		if(token.getState() == ExecutionState.RUNNING){
+		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
+			executionService.getExecutionState() == ExecutionState.PAUSED ||
+			executionService.getExecutionState() == ExecutionState.ERROR ){
 			getDataModel().setLineCompleteInCurrentToken(token.getLineCountByState(ExecutionTokenState.EXECUTED));
 		}else if(token.getState() == ExecutionState.COMPLETE){
 			getDataModel().setLineCompleteInCurrentToken(0);
@@ -173,7 +178,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @throws GkException GkException
 	 */
 	public void beginQueueExecution() throws GkException {
-		executionService.beginQueueExecution();
+		executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 		this.getDataModel().setExecutionQueueStartDate(new Date());
 		this.getDataModel().setExecutionTimerActive(true);
 	}
@@ -217,17 +222,18 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 					break;
 			case PAUSED:
 			case ERROR:
+			case FATAL_ERROR:
 			case RUNNING: buttonStartEnabled = false;
 						  buttonPauseEnabled = true;
 						  buttonStopEnabled = true;
 					break;
 			}
 				
-			if(executionService.getExecutionQueue() != null){
-				if(CollectionUtils.isEmpty(executionService.getExecutionQueue().getExecutionToken())){
+			if(getCurrentExecutionQueue() != null){
+				if(CollectionUtils.isEmpty(getCurrentExecutionQueue().getExecutionToken())){
 					buttonStartEnabled = false;
 				}else{
-					buttonStartEnabled = !isErrorInQueue(executionService.getExecutionQueue());
+					buttonStartEnabled = !isErrorInQueue(getCurrentExecutionQueue());
 				}
 			}
 			getDataModel().setButtonStartEnabled(buttonStartEnabled);
@@ -300,7 +306,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			protected IStatus run(IProgressMonitor monitor) {
 				if(executionTimeService != null){
 					try {
-						List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+						
+						List<ExecutionToken<ExecutionTokenState>> lstToken = getCurrentExecutionQueue().getExecutionToken();
 						Time estimatedTime = Time.ZERO;
 						if(CollectionUtils.isNotEmpty(lstToken)){
 							SubMonitor subMonitor = SubMonitor.convert(monitor,"Computing time...", lstToken.size());
@@ -335,7 +342,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	private void updateTokenQueueData() {
 		try{
-			List<ExecutionToken<ExecutionTokenState>> lstToken = executionService.getExecutionQueue().getExecutionToken();
+			List<ExecutionToken<ExecutionTokenState>> lstToken = getCurrentExecutionQueue().getExecutionToken();
 			int tokenCount = CollectionUtils.size(lstToken);
 			this.getDataModel().setTotalTokenCount(tokenCount);
 	
@@ -363,6 +370,13 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		}
 	}
 
+	private ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getCurrentExecutionQueue() throws GkException{
+		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> currentQueue = executionService.findRunningExecutionQueue();
+		if(executionService.getExecutionState() == ExecutionState.COMPLETE || executionService.getExecutionState() == ExecutionState.IDLE || currentQueue == null){
+			currentQueue = executionService.getExecutionQueue(ExecutionQueueType.DEFAULT);
+		}
+		return currentQueue;
+	}
 	/**
 	 * @return the executionService
 	 */

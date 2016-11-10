@@ -13,6 +13,8 @@ import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
@@ -137,7 +139,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	public void createRenderer(IGCodeProvider provider) throws GkException{		
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(provider, gcodeContextProvider, fourAxisControllerAdapter);		
-		executionService.addExecutionListener(renderer);
+		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, renderer);
 		this.cacheRenderer.add(provider, renderer);
 		Activator.getJoglViewerService().addRenderer(renderer);
 	}
@@ -150,7 +152,8 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	public RS274GCodeRenderer createRenderer(IExecutionToken executionToken) throws GkException{		
 		RS274GCodeRenderer renderer = new RS274GCodeRenderer(executionToken.getGCodeProvider(), gcodeContextProvider, fourAxisControllerAdapter);		
-		executionService.addExecutionListener(renderer);		
+		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, renderer);
+		executionService.addExecutionListener(ExecutionQueueType.SYSTEM, renderer); // FIXME : remove double listener addition
 		Activator.getJoglViewerService().addRenderer(renderer);
 		return renderer;
 	}
@@ -377,7 +380,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 			
 			// Update the rendering of the GCodeProvider 
 			RS274GCodeRenderer renderer = findRendererByExecutionToken(token);			
-			if(renderer != null){
+			if(renderer != null){				
 				executionService.removeExecutionListener(renderer);
 				cacheRendererByExecutionToken.remove(token);
 				// Do we have a renderer for the provider itself ? 
@@ -430,8 +433,8 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 * @throws GkException GkException
 	 */
 	public void updateGeometryRendererInExecutionQueue() throws GkException {
-		if(executionService.getExecutionQueue() != null){
-			List<ExecutionToken<ExecutionTokenState>> lstTokens = executionService.getExecutionQueue().getExecutionToken();
+		for(ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue : executionService.getExecutionQueue()){
+			List<ExecutionToken<ExecutionTokenState>> lstTokens = queue.getExecutionToken();
 			if(CollectionUtils.isNotEmpty(lstTokens)){
 				for (ExecutionToken<ExecutionTokenState> token : lstTokens) {
 					RS274GCodeRenderer renderer = getRendererByExecutionToken(token);

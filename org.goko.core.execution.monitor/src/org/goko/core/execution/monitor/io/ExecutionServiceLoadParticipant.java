@@ -14,6 +14,7 @@ import org.goko.core.execution.monitor.io.xml.XmlExecutionService;
 import org.goko.core.execution.monitor.io.xml.XmlExecutionToken;
 import org.goko.core.execution.monitor.service.ExecutionServiceImpl;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
@@ -94,7 +95,8 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 	 */
 	@Override
 	public void clearContent() throws GkException {
-		executionService.clearExecutionQueue();
+		executionService.clearExecutionQueue(ExecutionQueueType.DEFAULT);
+		executionService.clearExecutionQueue(ExecutionQueueType.SYSTEM);
 	}
 	
 	

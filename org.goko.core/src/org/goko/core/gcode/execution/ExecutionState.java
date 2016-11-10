@@ -6,5 +6,6 @@ public enum ExecutionState {
 	PAUSED,
 	STOPPED,
 	ERROR,
+	FATAL_ERROR,
 	COMPLETE;	
 }

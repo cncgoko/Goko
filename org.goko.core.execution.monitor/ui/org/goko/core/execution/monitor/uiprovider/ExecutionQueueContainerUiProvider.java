@@ -16,6 +16,7 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.execution.monitor.uiprovider.menu.executionqueue.ClearExecutionQueueAction;
 import org.goko.core.execution.monitor.uiprovider.menu.executionqueue.IExecutionQueueContributionItem;
 import org.goko.core.execution.monitor.uiprovider.menu.executiontoken.DeleteExecutionTokenAction;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IExecutionService;
@@ -121,7 +122,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	@Override
 	public boolean hasChildren(Object content) throws GkException {
 		if(this.equals(content)){
-			return CollectionUtils.isNotEmpty(executionService.getExecutionQueue().getExecutionToken());
+			return CollectionUtils.isNotEmpty(executionService.getExecutionQueue(ExecutionQueueType.DEFAULT).getExecutionToken());
 		}
 		return false;
 	}
@@ -132,7 +133,7 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 	@Override
 	public Object[] getChildren(Object content) throws GkException {
 		if(this.equals(content)){
-			return executionService.getExecutionQueue().getExecutionToken().toArray();
+			return executionService.getExecutionQueue(ExecutionQueueType.DEFAULT).getExecutionToken().toArray();
 		}
 		return new Object[0];
 	}

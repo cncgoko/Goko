@@ -37,13 +37,16 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	private CacheById<T> executionTokens;
 	/** The current token */
 	private T currentToken;
-		
+	/** The type of queue */
+	private ExecutionQueueType type;
+	
 	/**
 	 * Constructor
 	 */
-	public ExecutionQueue() {
+	public ExecutionQueue(ExecutionQueueType type) {
 		remainingExecutionTokens = new LinkedBlockingQueue<T>();
 		executionTokens 		 = new CacheById<T>(new SequentialIdGenerator());
+		this.type = type;
 	}
 
 	/** (inheritDoc)
@@ -146,6 +149,13 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	
 	public T getExecutionToken(Integer idExecutionToken) throws GkException{		
 		return executionTokens.get(idExecutionToken);
+	}
+
+	/**
+	 * @return the type
+	 */
+	public ExecutionQueueType getType() {
+		return type;
 	}
 
 }

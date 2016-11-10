@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.wb.swt.ResourceManager;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
-import org.goko.common.preferences.fieldeditor.ui.ColorSelector;
 import org.goko.common.preferences.fieldeditor.ui.UiBooleanFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiColorFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiStringFieldEditor;
@@ -69,51 +68,6 @@ public class MacroManagementPart extends GkUiComponent<MacroManagementController
 		gl_composite_2.marginHeight = 0;
 		composite_2.setLayout(gl_composite_2);
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
-
-		Composite composite_3 = new Composite(composite_2, SWT.NONE);
-		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		GridLayout gl_composite_3 = new GridLayout(2, false);
-		gl_composite_3.marginWidth = 0;
-		gl_composite_3.marginHeight = 0;
-		composite_3.setLayout(gl_composite_3);
-
-		Button btnNewButton = new Button(composite_3, SWT.NONE);
-		btnNewButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				try {
-					getController().createNewMacro();
-				} catch (GkException e1) {
-					LOG.error(e1);
-				}
-			}
-		});
-		btnNewButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		btnNewButton.setText("New");
-		btnNewButton.setImage(ResourceManager.getPluginImage("org.goko.tools.macro", "resources/icons/new-macro.png"));
-
-		Button btnNewButton_1 = new Button(composite_3, SWT.NONE);
-		btnNewButton_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				boolean confirm = MessageDialog.openConfirm(parent.getShell(), "Confirm",
-						"Are you sure you want to delete the selected macro ?");
-				if (confirm) {
-					try {
-						getController().deleteSelectedMacro();
-					} catch (GkException e1) {
-						LOG.error(e1);
-					}
-				}
-			}
-		});
-		btnNewButton_1.setImage(ResourceManager.getPluginImage("org.goko.tools.macro", "resources/icons/delete-macro.png"));
-
-		ListViewer listViewer = new ListViewer(composite_2, SWT.BORDER | SWT.V_SCROLL);
-		List list = listViewer.getList();
-		GridData gd_list = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
-		gd_list.widthHint = 100;
-		list.setLayoutData(gd_list);
 
 		Group composite_1 = new Group(composite, SWT.NONE);
 		composite_1.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
@@ -159,40 +113,14 @@ public class MacroManagementPart extends GkUiComponent<MacroManagementController
 		overrideButtonColorEditor.setLabel("Override button color");
 		overrideButtonColorEditor.setPropertyName(MacroManagementModel.OVERRIDE_BUTTON_COLOR);
 		getController().addFieldEditor(overrideButtonColorEditor);
-		
+
 		UiColorFieldEditor macroButtonColor = new UiColorFieldEditor(composite_1, SWT.NONE);
-		macroButtonColor.setLabel("Button color");		
+		macroButtonColor.setLabel("Button color");
 		macroButtonColor.setPropertyName(MacroManagementModel.BUTTON_COLOR);
 		getController().addFieldEditor(macroButtonColor);
-		
-		listViewer.setLabelProvider(new LabelProvider() {
-			/**
-			 * (inheritDoc)
-			 * 
-			 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
-			 */
-			@Override
-			public String getText(Object element) {
-				return ((GCodeMacro) element).getCode();
-			}
-		});
-
-		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				if (!selection.isEmpty()) {
-					getController().selectMacro((GCodeMacro) selection.getFirstElement());
-				}
-			}
-		});
 
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		listViewer.setContentProvider(contentProvider);
-		getController().addItemsBinding(listViewer, MacroManagementModel.AVAILABLE_MACRO);
 		getController().addFieldEditor(macroNameFieldEditor);
-		
-		ColorSelector lblNewLabel_2 = new ColorSelector(composite_1);
-		
 
 		Label lblNewLabel = new Label(composite_1, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
@@ -237,7 +165,112 @@ public class MacroManagementPart extends GkUiComponent<MacroManagementController
 
 		getController().addEnableBinding(applyButton, MacroManagementModel.DIRTY);
 		getController().addEnableBinding(cancelButton, MacroManagementModel.DIRTY);
+
+		Composite composite_6 = new Composite(composite_2, SWT.NONE);
+		GridLayout gl_composite_6 = new GridLayout(2, false);
+		gl_composite_6.marginWidth = 0;
+		gl_composite_6.marginHeight = 0;
+		composite_6.setLayout(gl_composite_6);
+
+		Button btnNew = new Button(composite_6, SWT.NONE);
+		btnNew.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				try {
+					getController().createNewMacro();
+				} catch (GkException e1) {
+					LOG.error(e1);
+				}
+			}
+		});
+		btnNew.setText("New");
+		btnNew.setImage(ResourceManager.getPluginImage("org.goko.tools.macro", "resources/icons/new-macro.png"));
+
+		Button btnEdit = new Button(composite_6, SWT.NONE);
+		btnEdit.setText("Edit");
+		btnEdit.setImage(ResourceManager.getPluginImage("org.goko.tools.macro", "resources/icons/script-edit.png"));
+		btnEdit.addMouseListener(new MouseAdapter() {
+			/** (inheritDoc)
+			 * @see org.eclipse.swt.events.MouseAdapter#mouseUp(org.eclipse.swt.events.MouseEvent)
+			 */
+			@Override
+			public void mouseUp(MouseEvent e) {				
+				getController().enableEditionMode();
+			}
+		});
+		Composite composite_3 = new Composite(composite_2, SWT.NONE);
+		GridLayout gl_composite_3 = new GridLayout(1, false);
+		gl_composite_3.marginHeight = 0;
+		gl_composite_3.marginWidth = 0;
+		composite_3.setLayout(gl_composite_3);
+		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+
+		ListViewer listViewer = new ListViewer(composite_3, SWT.BORDER | SWT.V_SCROLL);
+		List list = listViewer.getList();
+		list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+		listViewer.setLabelProvider(new LabelProvider() {
+			/**
+			 * (inheritDoc)
+			 * 
+			 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+			 */
+			@Override
+			public String getText(Object element) {
+				return ((GCodeMacro) element).getCode();
+			}
+		});
+
+		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				if (!selection.isEmpty()) {
+					getController().selectMacro((GCodeMacro) selection.getFirstElement());
+				}
+			}
+		});
+		listViewer.setContentProvider(contentProvider);
+
+		Composite composite_5 = new Composite(composite_2, SWT.NONE);
+		GridLayout gl_composite_5 = new GridLayout(1, false);
+		gl_composite_5.marginWidth = 0;
+		gl_composite_5.marginHeight = 0;
+		composite_5.setLayout(gl_composite_5);
+		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		composite_5.setBounds(0, 0, 64, 64);
+
+		Button btnDelete = new Button(composite_5, SWT.NONE);
+		btnDelete.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		btnDelete.setText("Delete");
+		btnDelete.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				boolean confirm = MessageDialog.openConfirm(parent.getShell(), "Confirm",
+						"Are you sure you want to delete the selected macro ?");
+				if (confirm) {
+					try {
+						getController().deleteSelectedMacro();
+					} catch (GkException e1) {
+						LOG.error(e1);
+					}
+				}
+			}
+		});
+		btnDelete.setImage(ResourceManager.getPluginImage("org.goko.tools.macro", "resources/icons/delete-macro.png"));
+
+		getController().addItemsBinding(listViewer, MacroManagementModel.AVAILABLE_MACRO);
 		getController().addSelectionBinding(listViewer, MacroManagementModel.SELECTED_MACRO);
 		getController().addEnableBinding(macroButtonColor, MacroManagementModel.OVERRIDE_BUTTON_COLOR);
+		
+		getController().addEnableReverseBinding(btnEdit, MacroManagementModel.EDITION_MODE);
+		getController().addEnableReverseBinding(btnNew, MacroManagementModel.EDITION_MODE);
+		getController().addEnableReverseBinding(btnDelete, MacroManagementModel.EDITION_MODE);
+		getController().addEnableReverseBinding(listViewer.getList(), MacroManagementModel.EDITION_MODE);
+		
+		getController().addEnableBinding(macroNameFieldEditor, MacroManagementModel.EDITION_MODE);
+		//getController().addEnableBinding(editContentButton, MacroManagementModel.EDITION_MODE);
+		getController().addEnableBinding(macroDisplayButton, MacroManagementModel.EDITION_MODE);
+		getController().addEnableBinding(macroRequestConfirm, MacroManagementModel.EDITION_MODE);
+		getController().addEnableBinding(overrideButtonColorEditor, MacroManagementModel.EDITION_MODE);
 	}
 }

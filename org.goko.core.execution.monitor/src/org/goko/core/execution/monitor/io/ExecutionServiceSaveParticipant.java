@@ -14,6 +14,7 @@ import org.goko.core.execution.monitor.io.xml.XmlExecutionService;
 import org.goko.core.execution.monitor.io.xml.XmlExecutionToken;
 import org.goko.core.execution.monitor.service.ExecutionServiceImpl;
 import org.goko.core.gcode.execution.ExecutionQueue;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.log.GkLog;
@@ -87,7 +88,7 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 
 	private XmlExecutionService persistContent() throws GkException{
 		XmlExecutionService content = new XmlExecutionService();
-		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue = executionService.getExecutionQueue();
+		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> queue = executionService.getExecutionQueue(ExecutionQueueType.DEFAULT);
 		List<ExecutionToken<ExecutionTokenState>> tokens = queue.getExecutionToken();
 		
 		ArrayList<XmlExecutionToken> lstExecutionToken = new ArrayList<XmlExecutionToken>();

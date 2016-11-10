@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_VTFpkJSyEea7XY8ohba-NQ">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_asdiAJSyEea7XY8ohba-NQ" featurename="children" parentElementId="goko.partstack.f">
-    <elements xsi:type="basic:Part" xmi:id="_b0BnAJSyEea7XY8ohba-NQ" elementId="org.goko.tools.macro.part.management" contributionURI="bundleclass://org.goko.tools.macro/org.goko.tools.macro.part.management.MacroManagementPart" label="Macros manager" iconURI="platform:/plugin/org.goko.tools.macro/resources/icons/script_gear.png"/>
-    <elements xsi:type="basic:Part" xmi:id="_sNDVcJu5EeaivMbv7wy_Jg" elementId="org.goko.tools.macro.part.execution" contributionURI="bundleclass://org.goko.tools.macro/org.goko.tools.macro.part.panel.MacroExecutionPart" label="Macros" iconURI="platform:/plugin/org.goko.tools.macro/resources/icons/script_go.png"/>
+    <elements xsi:type="basic:Part" xmi:id="_b0BnAJSyEea7XY8ohba-NQ" elementId="org.goko.tools.macro.part.management" contributionURI="bundleclass://org.goko.tools.macro/org.goko.tools.macro.part.management.MacroManagementPart" label="Macros manager" iconURI="platform:/plugin/org.goko.tools.macro/resources/icons/script-gear.png"/>
+    <elements xsi:type="basic:Part" xmi:id="_sNDVcJu5EeaivMbv7wy_Jg" elementId="org.goko.tools.macro.part.execution" contributionURI="bundleclass://org.goko.tools.macro/org.goko.tools.macro.part.panel.MacroExecutionPart" label="Macros" iconURI="platform:/plugin/org.goko.tools.macro/resources/icons/script-go.png"/>
   </fragments>
 </fragment:ModelFragments>
