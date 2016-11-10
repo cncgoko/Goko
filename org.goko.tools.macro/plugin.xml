@@ -5,7 +5,7 @@
          id="org.goko.tools.macro.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="notexists"
+            apply="initial"
             uri="resources/fragments/MacroPartModelFragment.e4xmi">
       </fragment>
    </extension>
