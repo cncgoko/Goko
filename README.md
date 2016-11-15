@@ -1,4 +1,4 @@
-# Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
+# Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
 
 Current version  : ```0.3.0```
 
@@ -19,7 +19,7 @@ See [documentation](http://docs.goko.fr/)
 
 You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
 
-You can also discuss on [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cncgoko/Goko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
+You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
 
 ##Changelog
 
