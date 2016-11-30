@@ -3,7 +3,7 @@ package org.goko.gcode.rs274ngcv3.ui.workspace.io;
 import java.util.ArrayList;
 
 import org.goko.core.workspace.io.XmlProjectContainer;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
+import org.goko.gcode.rs274ngcv3.xml.bean.XmlGCodeProvider;
 import org.simpleframework.xml.DerivedType;
 import org.simpleframework.xml.ElementList;
 

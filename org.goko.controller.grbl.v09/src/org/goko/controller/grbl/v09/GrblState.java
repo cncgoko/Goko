@@ -266,8 +266,7 @@ public class GrblState extends MachineValueStore{
 	}
 
 	public EnumUnit getContextUnit(){
-		return currentContext.getUnit();
-		//return getValue(Grbl.CONTEXT_UNIT, EnumGCodeCommandUnit.class).getValue();
+		return currentContext.getUnit();	
 	}
 	
 	/**
@@ -288,7 +287,7 @@ public class GrblState extends MachineValueStore{
 			}else{
 				updateValue(Grbl.CONTEXT_FEEDRATE, currentContext.getFeedrate().value(SpeedUnit.INCH_PER_MINUTE));
 			}
-			updateValue(Grbl.CONTEXT_COORD_SYSTEM, currentContext.getCoordinateSystem()); //g54 ne sont pas trouvés
+			updateValue(Grbl.CONTEXT_COORD_SYSTEM, currentContext.getCoordinateSystem()); //g54 ne sont pas trouvï¿½s
 			updateValue(Grbl.CONTEXT_DISTANCE_MODE, currentContext.getDistanceMode());
 			updateValue(Grbl.CONTEXT_MOTION_MODE, currentContext.getMotionMode());
 			updateValue(Grbl.CONTEXT_PLANE, currentContext.getPlane());

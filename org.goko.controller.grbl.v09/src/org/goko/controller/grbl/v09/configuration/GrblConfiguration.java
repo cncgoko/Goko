@@ -39,6 +39,7 @@ import org.goko.core.common.measure.units.Unit;
  *
  */
 public class GrblConfiguration {
+	public static final String STATUS_REPORT_MASK = "$10";
 	private List<GrblSetting<?>> lstGrblSetting;
 
 	private GrblIntegerSetting stepPulse;
@@ -87,7 +88,7 @@ public class GrblConfiguration {
 		registerSetting(stepEnableInvert   = new GrblBooleanSetting("$4",false));
 		registerSetting(limitPinInvert     = new GrblBooleanSetting("$5",false));
 		registerSetting(probePinInvert     = new GrblBooleanSetting("$6",false));
-		registerSetting(statusReportMask   = new GrblIntegerSetting("$10",0));
+		registerSetting(statusReportMask   = new GrblIntegerSetting(STATUS_REPORT_MASK,0));
 		registerSetting(junctionDeviation  = new GrblBigDecimalSetting ("$11", BigDecimal.ZERO));
 		registerSetting(arcTolerance       = new GrblBigDecimalSetting ("$12",BigDecimal.ZERO));
 		registerSetting(reportInches       = new GrblBooleanSetting("$13",false));
@@ -184,6 +185,14 @@ public class GrblConfiguration {
 		lstGrblSetting.add(setting);
 	}
 
+	public GrblConfiguration copy(){
+		GrblConfiguration copy = new GrblConfiguration();
+		for (GrblSetting<?> grblSetting : lstGrblSetting) {
+			copy.registerSetting(grblSetting);
+		}
+		return copy;
+	}
+	
 	public Unit<Length> getReportUnit(){
 		Unit<Length> unit = LengthUnit.MILLIMETRE;
 		if(getReportInches().getValue() == true){
@@ -192,6 +201,18 @@ public class GrblConfiguration {
 		return unit;
 	}
 
+	/**
+	 * Determines if this configuration was completely assigned using at least once the setValue(..) method on every setting
+	 * @return <code>true</code> if all settings were assigned, <code>false</code> otherwise
+	 */
+	public boolean isCompletelyLoaded(){
+		for (GrblSetting<?> grblSetting : lstGrblSetting) {
+			if(!grblSetting.isAssigned()){				
+				return false;
+			}
+		}		
+		return true;
+	}
 	/**
 	 * @return the lstGrblSetting
 	 */

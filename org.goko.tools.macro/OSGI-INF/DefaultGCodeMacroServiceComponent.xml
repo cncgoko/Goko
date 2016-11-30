@@ -4,7 +4,7 @@
    <service>
       <provide interface="org.goko.tools.macro.service.IGCodeMacroService"/>
       <provide interface="org.goko.tools.macro.service.DefaultGCodeMacroService"/>
-      <provide interface="org.goko.core.gcode.service.IGCodeProviderRepository"/>
    </service>
    <reference bind="setGCodeService" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeService" name="IGCodeService" policy="static"/>
+   <reference bind="addListener" cardinality="0..n" interface="org.goko.core.gcode.service.IGCodeProviderRepositoryListener" name="IGCodeProviderRepositoryListener" policy="dynamic"/>
 </scr:component>

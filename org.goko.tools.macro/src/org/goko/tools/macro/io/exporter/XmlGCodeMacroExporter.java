@@ -7,9 +7,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.bean.XmlColor;
 import org.goko.core.workspace.service.IExporter;
 import org.goko.core.workspace.service.IMapperService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlGCodeProviderSource;
+import org.goko.gcode.rs274ngcv3.xml.bean.source.XmlGCodeProviderSource;
 import org.goko.tools.macro.bean.GCodeMacro;
-import org.goko.tools.macro.io.XmlGCodeMacro;
+import org.goko.tools.macro.io.bean.XmlGCodeMacro;
 
 /**
  * @author Psyko

@@ -20,6 +20,7 @@
 package org.goko.controller.grbl.v09;
 
 import org.goko.controller.grbl.v09.configuration.GrblConfiguration;
+import org.goko.controller.grbl.v09.configuration.IGrblConfigurationListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.IControllerConfigurationFileExporter;
 import org.goko.core.controller.IControllerConfigurationFileImporter;
@@ -76,4 +77,23 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 	void startMotion() throws GkException;
 	
 	void resumeMotion() throws GkException;
+	
+	/**
+	 * Adds the given {@link IGrblConfigurationListener} as a listener to this service configuration event
+	 * @param listener the listener to add
+	 */
+	void addConfigurationListener(IGrblConfigurationListener listener);
+	
+	/**
+	 * Removes the given {@link IGrblConfigurationListener} from the listener of this service configuration event
+	 * @param listener the listener to remove
+	 */
+	void removeConfigurationListener(IGrblConfigurationListener listener);
+	
+	/**
+	 * Set this controller configuration. This method SHOULD send back the configuration to the Grbl board
+	 * @param configuration the configuration to set
+	 * @throws GkException GkException
+	 */
+	void updateConfiguration(GrblConfiguration configuration) throws GkException;
 }

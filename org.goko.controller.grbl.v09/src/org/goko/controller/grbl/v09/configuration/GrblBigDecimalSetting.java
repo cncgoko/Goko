@@ -53,4 +53,11 @@ public class GrblBigDecimalSetting extends GrblSetting<BigDecimal>{
 		return getValue().toPlainString();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.configuration.GrblSetting#newInstance()
+	 */
+	@Override
+	protected GrblSetting<BigDecimal> newInstance() {
+		return new GrblBigDecimalSetting(getIdentifier(), new BigDecimal(getValueAsString()));
+	}
 }

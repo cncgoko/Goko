@@ -31,6 +31,7 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
@@ -45,6 +46,7 @@ import org.goko.controller.grbl.v09.bean.IGrblStateChangeListener;
 import org.goko.controller.grbl.v09.bean.StatusReport;
 import org.goko.controller.grbl.v09.configuration.GrblConfiguration;
 import org.goko.controller.grbl.v09.configuration.GrblSetting;
+import org.goko.controller.grbl.v09.configuration.IGrblConfigurationListener;
 import org.goko.controller.grbl.v09.configuration.topic.GrblExecutionErrorTopic;
 import org.goko.controller.grbl.v09.probe.ProbeCallable;
 import org.goko.core.common.GkUtils;
@@ -110,6 +112,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	private GrblActionFactory grblActionFactory;
 	/** Grbl configuration */
 	private GrblConfiguration configuration;
+	/** The configuration listeners */
+	private List<IGrblConfigurationListener> configurationListener;
 	/** Applicative log service */
 	private IApplicativeLogService applicativeLogService;
 	/** Grbl state object */
@@ -146,7 +150,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		usedBufferStack = new LinkedBlockingQueue<Integer>();
 		grblExecutor	= new GrblExecutor(this, gcodeService);
 		gcodeContextListener = new GCodeContextObservable();		
-		stateListener = new ObservableDelegate<IGrblStateChangeListener>(IGrblStateChangeListener.class);		
+		stateListener = new ObservableDelegate<IGrblStateChangeListener>(IGrblStateChangeListener.class);
+		configurationListener = new CopyOnWriteArrayList<IGrblConfigurationListener>();
 	}
 
 	/** (inheritDoc)
@@ -233,8 +238,10 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		String cmd = gcodeService.render(gCodeLine);
 		List<Byte> byteCommand = GkUtils.toBytesList(cmd);
 		int usedBufferCount = CollectionUtils.size(byteCommand);
-		communicator.send( byteCommand );
+		// Increment before we even send, to make sure we have enough space
 		incrementUsedBufferCount(usedBufferCount + 2); // Dirty hack for end of line chars
+		communicator.send( byteCommand );
+		
 	}
 
 	/**
@@ -400,10 +407,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		communicator.send( GkUtils.toBytesList(Grbl.CONFIGURATION) );
 	}
 
-	protected void handleConfigurationReading(String cofigurationMessage) throws GkException{
-		String identifier = StringUtils.substringBefore(cofigurationMessage, "=").trim();
-		String value 	  = StringUtils.substringBetween(cofigurationMessage, "=","(").trim();
+	protected void handleConfigurationReading(String configurationMessage) throws GkException{
+		String identifier = StringUtils.substringBefore(configurationMessage, "=").trim();
+		String value 	  = StringUtils.substringBetween(configurationMessage, "=","(").trim();
 		configuration.setValue(identifier, value);
+		notifyConfigurationChanged(identifier);
 		LOG.info("Updating setting '"+identifier+"' with value '"+value+"'");
 	}
 
@@ -477,9 +485,11 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		getApplicativeLogService().error(formattedErrorMessage, SERVICE_ID);
 
 		// If not in check mode, let's pause the execution (disabled in check mode because check mode can't handle paused state and buffer would be flooded with commands)
-		if(!ObjectUtils.equals(GrblMachineState.CHECK, getState())){
+		if(executionService.getExecutionState() == ExecutionState.RUNNING && !ObjectUtils.equals(GrblMachineState.CHECK, getState())){
 			pauseMotion();
 			EventBrokerUtils.send(eventAdmin, new GrblExecutionErrorTopic(), new GrblExecutionError("Error reported durring execution", "Execution was paused after Grbl reported an error. You can resume, or stop the execution at your own risk.", formattedErrorMessage));
+		}else{
+			EventBrokerUtils.send(eventAdmin, new GrblExecutionErrorTopic(), new GrblExecutionError("Grbl error", "Grbl reported an error.", formattedErrorMessage));
 		}
 	}
 
@@ -684,7 +694,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 				cfgCommand.addAll(GkUtils.toBytesList(grblSetting.getIdentifier()+"="+grblSetting.getValueAsString() ));
 				communicator.send( cfgCommand );
 				cfgCommand.clear();
-			}
+				notifyConfigurationChanged(grblSetting.getIdentifier());
+			}			
 		}
 	}
 
@@ -1052,5 +1063,42 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 
 	void removeStateListener(IGrblStateChangeListener listener){
 		stateListener.removeObserver(listener);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.IGrblControllerService#addConfigurationListener(org.goko.controller.grbl.v09.configuration.IGrblConfigurationListener)
+	 */
+	@Override
+	public void addConfigurationListener(IGrblConfigurationListener listener) {
+		if(!configurationListener.contains(listener)){
+			configurationListener.add(listener);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.IGrblControllerService#removeConfigurationListener(org.goko.controller.grbl.v09.configuration.IGrblConfigurationListener)
+	 */
+	@Override
+	public void removeConfigurationListener(IGrblConfigurationListener listener) {
+		configurationListener.remove(listener);
+	}
+	
+	/**
+	 * Notifies the registered listeners for a configuration change
+	 * @param the identifier of the setting that changed
+	 * @throws GkException GkException 
+	 */
+	private void notifyConfigurationChanged(String identifier) throws GkException{
+		for (IGrblConfigurationListener listener : configurationListener) {
+			listener.onConfigurationChanged(configuration, identifier); // Use a copy of the configuration
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.IGrblControllerService#updateConfiguration(org.goko.controller.grbl.v09.configuration.GrblConfiguration)
+	 */
+	@Override
+	public void updateConfiguration(GrblConfiguration configuration) throws GkException {
+		setConfiguration(configuration);
 	}
 }

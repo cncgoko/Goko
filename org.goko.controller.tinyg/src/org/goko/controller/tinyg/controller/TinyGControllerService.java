@@ -669,7 +669,8 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			});
 		}else{
 			communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
-			communicator.sendImmediately(GkUtils.toBytesList("G90"));
+			//communicator.sendImmediately(GkUtils.toBytesList("G90"));
+			communicator.send(GkUtils.toBytesList("")); // Force end line character
 		}
 				
 		executionService.stopQueueExecution();

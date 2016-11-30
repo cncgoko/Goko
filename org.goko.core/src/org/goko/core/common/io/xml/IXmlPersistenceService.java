@@ -13,4 +13,6 @@ public interface IXmlPersistenceService extends IGokoService {
 	<T> T read(Class<T> type, InputStream input) throws GkException;
 
 	<T> void write(T type, OutputStream output) throws GkException;
+	
+	void addXmlPersistenceProvider(IXmlPersistenceProvider xmlPersistenceProvider) throws GkException;
 }

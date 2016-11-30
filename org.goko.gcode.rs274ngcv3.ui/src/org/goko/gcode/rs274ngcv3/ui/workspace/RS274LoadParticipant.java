@@ -19,24 +19,8 @@ import org.goko.core.workspace.service.AbstractProjectLoadParticipant;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ArrayModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.RotateModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.ScaleModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.SegmentizeModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.TranslateModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.WrapModifierExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.source.ResourceLocationGCodeSourceExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.source.StringGCodeSourceExporter;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ArrayModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.RotateModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.ScaleModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.SegmentizeModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.TranslateModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.modifier.WrapModifierLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.source.ResourceLocationGCodeSourceLoader;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.loader.source.StringGCodeSourceLoader;
+import org.goko.gcode.rs274ngcv3.xml.bean.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.xml.bean.XmlGCodeProvider;
 
 public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS274GContent> implements IGokoService, IProjectLoadParticipant {
 	/** LOG */
@@ -75,24 +59,6 @@ public class RS274LoadParticipant extends AbstractProjectLoadParticipant<XmlRS27
 	@Override
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
-		mapperService.addLoader(new ResourceLocationGCodeSourceLoader());
-		mapperService.addLoader(new StringGCodeSourceLoader());
-		mapperService.addLoader(new SegmentizeModifierLoader());
-		mapperService.addLoader(new TranslateModifierLoader());		
-		mapperService.addLoader(new ScaleModifierLoader());		
-		mapperService.addLoader(new WrapModifierLoader());		
-		mapperService.addLoader(new RotateModifierLoader());
-		mapperService.addLoader(new ArrayModifierLoader());
-		
-		
-		mapperService.addExporter(new ResourceLocationGCodeSourceExporter());
-		mapperService.addExporter(new StringGCodeSourceExporter());
-		mapperService.addExporter(new TranslateModifierExporter());		
-		mapperService.addExporter(new SegmentizeModifierExporter());		
-		mapperService.addExporter(new ScaleModifierExporter());
-		mapperService.addExporter(new WrapModifierExporter());
-		mapperService.addExporter(new RotateModifierExporter());
-		mapperService.addExporter(new ArrayModifierExporter());
 		
 		LOG.info("Successfully started "+getServiceId());
 	}

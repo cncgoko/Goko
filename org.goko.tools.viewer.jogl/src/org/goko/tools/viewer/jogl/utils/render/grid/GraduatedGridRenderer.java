@@ -30,6 +30,7 @@ import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
+import org.goko.tools.viewer.jogl.service.Layer;
 import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 
 /**
@@ -47,20 +48,14 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 	 */
 	public GraduatedGridRenderer(String id, IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
 		super();
+		setLayerId(Layer.LAYER_GRIDS);
 		setCode(id);
 		gridRenderer = new GridRenderer(gcodeContextProvider);		
 		lstAnnotations = new ArrayList<TextRenderer>();
 		
 		addRenderer(gridRenderer);
 	}
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#setEnabled(boolean)
-	 */
-	@Override
-	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		super.setEnabled(enabled);
-	}
+
 	protected void buildRenderers() throws GkException{
 		destroyAnnotations();
 		createAnnotations();
@@ -159,10 +154,10 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		for (int i = 1; i <= nbStepPlusMajor.x; i++) {
 			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x+i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
 			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit*width.x, lclCenter.y+i*majorIncrementJoglUnit*width.y , lclCenter.z+i*majorIncrementJoglUnit*width.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height, TextRenderer.TOP | TextRenderer.LEFT);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height, TextRenderer.TOP | TextRenderer.LEFT);			
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
-			lstAnnotations.add(graduation);
+			lstAnnotations.add(graduation);			
 			graduation.setColor(getMajorUnitColor().x, getMajorUnitColor().y, getMajorUnitColor().z, getMajorUnitColor().w);
 		}
  		

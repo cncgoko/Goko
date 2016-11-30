@@ -1,6 +1,5 @@
 package org.goko.core.gcode.rs274ngcv3.jogl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -28,7 +27,6 @@ import org.goko.core.gcode.rs274ngcv3.jogl.internal.LinkedGCodeContextProvider;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
 import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
-import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
@@ -45,9 +43,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	/** The list of managed renderer */
 	private CacheByKey<IExecutionToken, RS274GCodeRenderer> cacheRendererByExecutionToken;
 	/** The RS274 GCode service */
-	private IRS274NGCService rs274Service;
-	/** The list of repository */
-	private List<IGCodeProviderRepository> lstProviderRepository;
+	private IRS274NGCService rs274Service;	
 	/** The bounds of all the loaded gcode */
 	private BoundsRenderer contentBoundsRenderer;
 	/** ICoordinateSystemAdapter */
@@ -68,7 +64,6 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 		this.lstContextProvider = new GCodeContextProviderLinkedList();
 		this.cacheRenderer = new CacheByKey<IGCodeProvider, RS274GCodeRenderer>();
 		this.cacheRendererByExecutionToken = new CacheByKey<IExecutionToken, RS274GCodeRenderer>();		
-		this.lstProviderRepository = new ArrayList<IGCodeProviderRepository>();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -270,15 +265,6 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 		this.coordinateSystemAdapter = coordinateSystemAdapter;
 	}
 
-	/**
-	 * Add a GCode Provider repository
-	 * @param repo the IGCodeProviderRepository to add 
-	 * @throws GkException GkException 
-	 */
-	public void addGCodeProviderRepository(IGCodeProviderRepository repo) throws GkException {
-		this.lstProviderRepository.add(repo);
-		repo.addListener(this);
-	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderCreate(org.goko.core.gcode.element.IGCodeProvider)
 	 */

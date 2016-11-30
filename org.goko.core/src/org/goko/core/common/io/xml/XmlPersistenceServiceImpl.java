@@ -2,7 +2,9 @@ package org.goko.core.common.io.xml;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.io.xml.bean.XmlColor;
@@ -29,6 +31,13 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	private TypedRegistry registry;
 	/** The used serializer */
 	private Serializer persister;
+	
+	/**
+	 * 
+	 */
+	public XmlPersistenceServiceImpl() {
+		System.out.println();
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -70,6 +79,7 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	public void register(Class<?> clazz) throws GkException {
 		try {
 			registry.register(clazz);
+			LOG.info("Registering ["+clazz.toString()+"] in persistence");
 		} catch (Exception e) {
 			throw new GkTechnicalException(e);
 		}
@@ -96,6 +106,19 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 			persister.write(type, output);
 		} catch (Exception e) {
 			throw new GkTechnicalException(e);
+		}
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.common.io.xml.IXmlPersistenceService#addXmlPersistenceProvider(org.goko.core.common.io.xml.IXmlPersistenceProvider)
+	 */
+	@Override
+	public void addXmlPersistenceProvider(IXmlPersistenceProvider xmlPersistenceProvider) throws GkException {
+		List<Class<?>> lstClass = xmlPersistenceProvider.getSupportedClass();
+		if(CollectionUtils.isNotEmpty(lstClass)){
+			for (Class<?> clazz: lstClass) {
+				register(clazz);
+			}
 		}
 	}
 

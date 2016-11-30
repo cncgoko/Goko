@@ -28,7 +28,8 @@ Require-Bundle: org.goko.core,
  org.goko.tools.viewer.jogl,
  org.jogamp.jogl;bundle-version="2.0.2",
  org.goko.gcode.rs274ngcv3;bundle-version="0.0.1",
- org.goko.core.workspace
+ org.goko.core.workspace,
+ org.goko.gcode.rs274ngcv3.xml;bundle-version="0.3.2"
 Service-Component: OSGI-INF/AutoLevelerModifierBuilder.xml,
  OSGI-INF/AutoLevelerServiceImpl.xml
 Export-Package: org.goko.tools.autoleveler.bean.grid,

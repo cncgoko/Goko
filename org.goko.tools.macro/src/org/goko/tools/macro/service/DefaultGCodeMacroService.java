@@ -16,12 +16,12 @@ import org.goko.core.common.utils.CacheByKey;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.common.utils.UniqueCacheByCode;
 import org.goko.core.gcode.element.IGCodeProvider;
-import org.goko.core.gcode.rs274ngcv3.GCodeProviderPointer;
 import org.goko.core.gcode.service.GCodeProviderDeleteEvent;
 import org.goko.core.gcode.service.IGCodeProviderDeleteVetoableListener;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
 import org.goko.core.gcode.service.IGCodeService;
 import org.goko.tools.macro.bean.GCodeMacro;
+import org.goko.tools.macro.bean.GCodeMacroReferenceById;
 
 /**
  * Default GCodeMacro services. Stores macro in a folder inside the workspace 
@@ -111,6 +111,22 @@ public class DefaultGCodeMacroService implements IGCodeMacroService {
 	public GCodeMacro getGCodeMacro(String code) throws GkException {
 		return cacheMacrosByCode.get(code);
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.macro.service.IGCodeMacroService#findGCodeMacro(java.lang.String)
+	 */
+	@Override
+	public GCodeMacro findGCodeMacro(String code) throws GkException {
+		return cacheMacrosByCode.find(code);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.macro.service.IGCodeMacroService#findGCodeMacro(java.lang.Integer)
+	 */
+	@Override
+	public GCodeMacro findGCodeMacro(Integer id) throws GkException {
+		return cacheMacros.find(id);
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.tools.macro.service.IGCodeMacroService#getGCodeMacro()
@@ -193,6 +209,18 @@ public class DefaultGCodeMacroService implements IGCodeMacroService {
 		return getGCodeProvider(cacheProviderByMacro.get(idMacro));
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.tools.macro.service.IGCodeMacroService#internalGetGCodeProviderByMacro(java.lang.Integer)
+	 */
+	@Override
+	public IGCodeProvider internalGetGCodeProviderByMacro(Integer idMacro) throws GkException {
+		GCodeMacro macro = getGCodeMacro(idMacro);
+		if(!cacheProviderByMacro.exist(idMacro)){			
+			updateGCodeProvider(macro);
+		}
+		return cacheProviders.get(cacheProviderByMacro.get(idMacro));
+	}
+	
 	protected void updateGCodeProvider(GCodeMacro macro) throws GkException{
 		IGCodeProvider provider = gcodeService.parse(macro.getContent(), new NullProgressMonitor());
 		provider.setCode(macro.getCode());
@@ -212,7 +240,7 @@ public class DefaultGCodeMacroService implements IGCodeMacroService {
 	 */
 	@Override
 	public IGCodeProvider getGCodeProvider(Integer id) throws GkException {
-		return new GCodeProviderPointer(this, id);
+		return new GCodeMacroReferenceById(this, id);
 	}
 	
 	/** (inheritDoc)

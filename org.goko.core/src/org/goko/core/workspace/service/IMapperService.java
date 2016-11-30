@@ -8,10 +8,12 @@ import org.goko.core.common.service.IGokoService;
 
 /**
  * @author PsyKo
- * @date 10 févr. 2016
+ * @date 10 fï¿½vr. 2016
  */
 public interface IMapperService extends IGokoService{
 
+	void addMapperProvider(IMapperProvider mapperProvider) throws GkException;
+	
 	void addLoader(ILoader<?, ?> loader) throws GkException;
 	
 	void addExporter(IExporter<?, ?> loader) throws GkException;
@@ -19,4 +21,5 @@ public interface IMapperService extends IGokoService{
 	<O> O load(Object object, Class<O> outputClass) throws GkException;
 	
 	<O> O export(Object object, Class<O> outputClass) throws GkException;
+		 
 }

@@ -64,6 +64,7 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 		if(getToken().hasMoreLine()){
 			GCodeLine nextLine = getToken().getNextLine();
 			String lineStr = gcodeService.render(nextLine);
+		//	System.out.println("lineStr:"+lineStr.length()+", getUsedGrblBuffer:"+grblService.getUsedGrblBuffer()+" / "+Grbl.GRBL_BUFFER_SIZE);
 			return grblService.getUsedGrblBuffer() + StringUtils.length(lineStr) < Grbl.GRBL_BUFFER_SIZE;
 		}
 		return true;
@@ -142,7 +143,7 @@ public class GrblExecutor extends AbstractStreamingExecutor<ExecutionTokenState,
 	 * @throws GkException GkException
 	 */
 	private void notifyTokenCompleteIfRequired() throws GkException {
-		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0){
+		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0 && getToken().getLineCountByState(ExecutionTokenState.NONE) == 0){
 			notifyTokenComplete();
 		}
 	}

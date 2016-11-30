@@ -10,17 +10,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.execution.monitor.io.xml.XmlExecutionService;
-import org.goko.core.execution.monitor.io.xml.XmlExecutionToken;
+import org.goko.core.execution.monitor.io.bean.XmlExecutionService;
+import org.goko.core.execution.monitor.io.bean.XmlExecutionToken;
 import org.goko.core.execution.monitor.service.ExecutionServiceImpl;
-import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionToken;
-import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.service.AbstractProjectLoadParticipant;
+import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectLoadParticipant;
 
 /**
@@ -34,6 +33,8 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 	private static final String SERVICE_ID = "org.goko.core.execution.monitor.io.ExecutionServiceLoadParticipant";
 	/** XML persistence service */
 	private IXmlPersistenceService xmlPersistenceService;
+	/** Mapper service */
+	private IMapperService mapperService;
 	/** The target execution service */
 	private ExecutionServiceImpl executionService;
 	/** GCode provider repository */
@@ -106,9 +107,10 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 		
 		if(CollectionUtils.isNotEmpty(lstToken)){
 			for (XmlExecutionToken xmlExecutionToken : lstToken) {
-				IGCodeProvider provider = gcodeRepository.getGCodeProvider(xmlExecutionToken.getCodeGCodeProvider());
-				ExecutionToken<ExecutionTokenState> token = new ExecutionToken<ExecutionTokenState>(provider, ExecutionTokenState.NONE);
-				executionService.addToExecutionQueue(token);
+				ExecutionToken executionToken = mapperService.load(xmlExecutionToken, ExecutionToken.class);
+				if(executionToken != null){
+					executionService.addToExecutionQueue(executionToken);
+				}
 			}
 		}
 	}
@@ -153,5 +155,19 @@ public class ExecutionServiceLoadParticipant extends AbstractProjectLoadParticip
 	 */
 	public void setGcodeRepository(IGCodeProviderRepository gcodeRepository) {
 		this.gcodeRepository = gcodeRepository;
+	}
+
+	/**
+	 * @return the mapperService
+	 */
+	public IMapperService getMapperService() {
+		return mapperService;
+	}
+
+	/**
+	 * @param mapperService the mapperService to set
+	 */
+	public void setMapperService(IMapperService mapperService) {
+		this.mapperService = mapperService;
 	}
 }

@@ -6,12 +6,12 @@ package org.goko.tools.autoleveler.io.xml;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.quantity.XmlLength;
 import org.goko.core.workspace.service.IMapperService;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.exporter.modifier.AbstractModifierExporter;
+import org.goko.gcode.rs274ngcv3.xml.exporter.modifier.AbstractModifierExporter;
 import org.goko.tools.autoleveler.modifier.GridAutoLevelerModifier;
 
 /**
  * @author PsyKo
- * @date 16 févr. 2016
+ * @date 16 fï¿½vr. 2016
  */
 public class GridAutoLevelerModifierExporter extends AbstractModifierExporter<GridAutoLevelerModifier, XmlGridAutoLevelerModifier> {
 

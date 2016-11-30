@@ -14,11 +14,13 @@
     <elements xsi:type="commands:Command" xmi:id="_6u_OAN4oEeSgkc4P43h1Kw" elementId="org.goko.controller.grbl.v09.command.toggleActivePolling" commandName="Toggle Active Polling"/>
     <elements xsi:type="commands:Command" xmi:id="_gBNqYAL0EeWNAc6kezL54A" elementId="org.goko.controller.grbl.v09.command.toggleCheckMode" commandName="Toggle Check mode"/>
     <elements xsi:type="commands:Command" xmi:id="_zdK3cAPeEeWX6eDFOGSLJw" elementId="org.goko.controller.grbl.v09.command.stateWatcher" commandName="GRBL State watcher command"/>
+    <elements xsi:type="commands:Command" xmi:id="_tqnT8LW1Eea3eO03IRlhpg" elementId="org.goko.controller.grbl.v09.command.grblconfigurationwatcher" commandName="GRBL configuration watcher"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_F160QPPLEeOJp_-s_mlAUA" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_HaDggPPLEeOJp_-s_mlAUA" elementId="org.goko.controller.grbl.v09.handler.openGrblSettings" contributionURI="bundleclass://org.goko.controller.grbl.v09/org.goko.controller.grbl.v09.internal.handlers.GrblConfigurationOpenHandler" command="_CCEIIPPLEeOJp_-s_mlAUA"/>
     <elements xsi:type="commands:Handler" xmi:id="_8UWpUN4oEeSgkc4P43h1Kw" elementId="org.goko.controller.grbl.v09.handler.toggleActivePolling" contributionURI="bundleclass://org.goko.controller.grbl.v09/org.goko.controller.grbl.v09.internal.handlers.GrblActivePollingHandler" command="_6u_OAN4oEeSgkc4P43h1Kw"/>
     <elements xsi:type="commands:Handler" xmi:id="_fLuz4AL0EeWNAc6kezL54A" elementId="org.goko.controller.grbl.v09.handler.toggleCheckMode" contributionURI="bundleclass://org.goko.controller.grbl.v09/org.goko.controller.grbl.v09.internal.handlers.GrblCheckModeHandler" command="_gBNqYAL0EeWNAc6kezL54A"/>
     <elements xsi:type="commands:Handler" xmi:id="_74214APUEeWX6eDFOGSLJw" elementId="org.goko.controller.grbl.v09.handler.stateupdate" contributionURI="bundleclass://org.goko.controller.grbl.v09/org.goko.controller.grbl.v09.internal.handlers.GrblStateUpdateHandler" command="_zdK3cAPeEeWX6eDFOGSLJw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_qbGD8LW1Eea3eO03IRlhpg" elementId="org.goko.controller.grbl.v09.handler.grblConfigurationWatcher" contributionURI="bundleclass://org.goko.controller.grbl.v09/org.goko.controller.grbl.v09.handlers.GrblConfigurationWatcherHandler" command="_tqnT8LW1Eea3eO03IRlhpg"/>
   </fragments>
 </fragment:ModelFragments>

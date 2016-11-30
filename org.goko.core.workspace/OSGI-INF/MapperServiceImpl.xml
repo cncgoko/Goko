@@ -6,4 +6,5 @@
    </service>
    <reference bind="addLoader" cardinality="0..n" interface="org.goko.core.workspace.service.ILoader" name="ILoader" policy="dynamic"/>
    <reference bind="addExporter" cardinality="0..n" interface="org.goko.core.workspace.service.IExporter" name="IExporter" policy="dynamic"/>
+   <reference bind="addMapperProvider" cardinality="0..n" interface="org.goko.core.workspace.service.IMapperProvider" name="IMapperProvider" policy="dynamic"/>
 </scr:component>

@@ -28,7 +28,8 @@ public abstract class GrblSetting<T> {
 	private boolean readOnly;
 	/** Type of setting */
 	private Class<T> type;
-
+	/** Assigned boolean, indicating that this value was actually assigned from a set statement*/
+	private boolean assigned;
 	/**
 	 * @param identifier
 	 * @param value
@@ -75,6 +76,7 @@ public abstract class GrblSetting<T> {
 	 */
 	public void setValue(T value) {
 		this.value = value;
+		this.setAssigned(true);
 	}
 	/**
 	 * @return the readOnly
@@ -100,5 +102,32 @@ public abstract class GrblSetting<T> {
 	public void setType(Class<T> type) {
 		this.type = type;
 	}
+	
+	protected abstract GrblSetting<T> newInstance();
+		
+	public GrblSetting<T> copy(){
+		GrblSetting<T> setting = newInstance();
+		copyAbstract(setting);		
+		return setting;
+	}
+	protected void copyAbstract(GrblSetting<T> setting){
+		setting.setIdentifier(getIdentifier());
+		setting.setReadOnly(isReadOnly());
+		setting.setType(getType());	
+		setting.setAssigned(isAssigned());
+	}
 
+	/**
+	 * @return the assigned
+	 */
+	public boolean isAssigned() {
+		return assigned;
+	}
+
+	/**
+	 * @param assigned the assigned to set
+	 */
+	public void setAssigned(boolean assigned) {
+		this.assigned = assigned;
+	}
 }

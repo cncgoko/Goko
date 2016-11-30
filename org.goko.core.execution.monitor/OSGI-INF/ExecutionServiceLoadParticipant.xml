@@ -7,4 +7,5 @@
    <reference bind="setXmlPersistenceService" cardinality="1..1" interface="org.goko.core.common.io.xml.IXmlPersistenceService" name="IXmlPersistenceService" policy="static"/>
    <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
    <reference bind="setGcodeRepository" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeProviderRepository" name="IGCodeProviderRepository" policy="static"/>
+   <reference bind="setMapperService" cardinality="1..1" interface="org.goko.core.workspace.service.IMapperService" name="IMapperService" policy="static"/>
 </scr:component>

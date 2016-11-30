@@ -32,12 +32,28 @@ public interface IGCodeMacroService extends IGCodeProviderRepository{
 	GCodeMacro getGCodeMacro(String code) throws GkException;
 	
 	/**
+	 * Returns the macro for the given code
+	 * @param code the code of the requested macro
+	 * @return IGCodeMacro or <code>null</code> iof it doesn't exist
+	 * @throws GkException GkException
+	 */
+	GCodeMacro findGCodeMacro(String code) throws GkException;
+	
+	/**
 	 * Returns the macro for the given id
 	 * @param id the id of the requested macro
 	 * @return IGCodeMacro
 	 * @throws GkException GkException
 	 */
 	GCodeMacro getGCodeMacro(Integer id) throws GkException;
+	
+	/**
+	 * Returns the macro for the given id
+	 * @param id the id of the requested macro
+	 * @return IGCodeMacro or <code>null</code> iof it doesn't exist
+	 * @throws GkException GkException
+	 */
+	GCodeMacro findGCodeMacro(Integer id) throws GkException;
 	
 	/**
 	 * Returns all the available macro
@@ -81,6 +97,14 @@ public interface IGCodeMacroService extends IGCodeProviderRepository{
 	 * @throws GkException GkException
 	 */
 	IGCodeProvider getGCodeProviderByMacro(Integer idMacro) throws GkException;
+	
+	/**
+	 * Returns the GCode provider for the given macro
+	 * @param idMacro id of the macro
+	 * @return IGCodeProvider (the direct object, not a reference)
+	 * @throws GkException GkException
+	 */
+	IGCodeProvider internalGetGCodeProviderByMacro(Integer idMacro) throws GkException;
 	
 	/**
 	 * Registers the given listener 

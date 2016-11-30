@@ -83,8 +83,6 @@ public class GrblDoubleSetting extends GrblSetting<Double> {
 
 		if (Pattern.matches(fpRegex, value)) {
 			setValue(Double.valueOf(value)); // Will not throw NumberFormatException
-		} else {
-			// Perform suitable alternative action
 		}
 	}
 
@@ -96,4 +94,11 @@ public class GrblDoubleSetting extends GrblSetting<Double> {
 		return String.valueOf(getValue());
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.configuration.GrblSetting#newInstance()
+	 */
+	@Override
+	protected GrblSetting<Double> newInstance() {		
+		return new GrblDoubleSetting(getIdentifier(), new Double(getValue()));
+	}
 }

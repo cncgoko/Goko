@@ -51,4 +51,11 @@ public class GrblIntegerSetting extends GrblSetting<Integer> {
 		return String.valueOf(getValue());
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.configuration.GrblSetting#newInstance()
+	 */
+	@Override
+	protected GrblSetting<Integer> newInstance() {		
+		return new GrblIntegerSetting(getIdentifier(), new Integer(getValue()));
+	}
 }

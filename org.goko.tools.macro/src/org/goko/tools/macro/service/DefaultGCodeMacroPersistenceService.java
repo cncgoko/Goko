@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -22,15 +23,22 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
+import org.goko.core.common.io.xml.IXmlPersistenceProvider;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.common.service.IGokoService;
 import org.goko.core.common.utils.CacheByKey;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.service.IExporter;
+import org.goko.core.workspace.service.ILoader;
+import org.goko.core.workspace.service.IMapperProvider;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.tools.macro.bean.GCodeMacro;
-import org.goko.tools.macro.io.XmlGCodeMacro;
+import org.goko.tools.macro.io.bean.XmlGCodeMacro;
+import org.goko.tools.macro.io.bean.XmlGCodeMacroReference;
 import org.goko.tools.macro.io.exporter.XmlGCodeMacroExporter;
+import org.goko.tools.macro.io.exporter.XmlGCodeMacroReferenceExporter;
 import org.goko.tools.macro.io.loader.XmlGCodeMacroLoader;
+import org.goko.tools.macro.io.loader.XmlGCodeMacroReferenceLoader;
 
 /**
  * Services to initialize the Macro service 
@@ -38,7 +46,7 @@ import org.goko.tools.macro.io.loader.XmlGCodeMacroLoader;
  * @author Psyko
  * @date 16 oct. 2016
  */
-public class DefaultGCodeMacroPersistenceService implements IGokoService, IGCodeMacroServiceListener {
+public class DefaultGCodeMacroPersistenceService implements IGokoService, IGCodeMacroServiceListener, IMapperProvider, IXmlPersistenceProvider {
 	private static final GkLog LOG = GkLog.getLogger(DefaultGCodeMacroPersistenceService.class);
 	private static final String SERVICE_ID = "org.goko.tools.macro.service.DefaultGCodeMacroPersistenceService";
 	/** The XML persistence service to read macros files */
@@ -50,6 +58,7 @@ public class DefaultGCodeMacroPersistenceService implements IGokoService, IGCode
 	/** The Mapper service */
 	private IMapperService mapperService;
 
+
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
 	 */
@@ -57,16 +66,15 @@ public class DefaultGCodeMacroPersistenceService implements IGokoService, IGCode
 	public String getServiceId() throws GkException {
 		return SERVICE_ID;
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#start()
 	 */
 	@Override
-	public void start() throws GkException {
-		xmlPersistenceService.register(XmlGCodeMacro.class);
-		mapperService.addLoader(new XmlGCodeMacroLoader());
-		mapperService.addExporter(new XmlGCodeMacroExporter());
-		this.cacheFileByMacro = new CacheByKey<Integer, File>(); 
+	public void start() throws GkException {		
+		this.cacheFileByMacro = new CacheByKey<Integer, File>();
+		this.xmlPersistenceService.addXmlPersistenceProvider(this);
+		this.mapperService.addMapperProvider(this);
 		initialize();
 		gcodeMacroService.addListener(this);
 		
@@ -261,5 +269,38 @@ public class DefaultGCodeMacroPersistenceService implements IGokoService, IGCode
 		String filename = StringUtils.deleteWhitespace(macro.getCode());
 		filename = StringUtils.stripAccents(filename);
 		return filename+".gkm";
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.io.xml.IXmlPersistenceProvider#getSupportedClass()
+	 */
+	@Override
+	public List<Class<?>> getSupportedClass() throws GkException {
+		List<Class<?>> supportedClass = new ArrayList<Class<?>>();
+		supportedClass.add(XmlGCodeMacro.class);
+		supportedClass.add(XmlGCodeMacroReference.class);
+		return supportedClass;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IMapperProvider#getLoader()
+	 */
+	@Override
+	public List<ILoader<?, ?>> getLoader() throws GkException {
+		List<ILoader<?, ?>> loaders = new ArrayList<ILoader<?, ?>>();
+		loaders.add(new XmlGCodeMacroLoader());
+		loaders.add(new XmlGCodeMacroReferenceLoader(gcodeMacroService));
+		return loaders;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IMapperProvider#getExporter()
+	 */
+	@Override
+	public List<IExporter<?, ?>> getExporter() throws GkException {
+		List<IExporter<?, ?>> exporters = new ArrayList<IExporter<?, ?>>();
+		exporters.add(new XmlGCodeMacroExporter());
+		exporters.add(new XmlGCodeMacroReferenceExporter());
+		return exporters;
 	}
 }

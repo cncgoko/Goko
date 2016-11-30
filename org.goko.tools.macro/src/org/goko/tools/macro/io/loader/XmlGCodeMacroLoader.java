@@ -8,7 +8,7 @@ import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.workspace.service.ILoader;
 import org.goko.core.workspace.service.IMapperService;
 import org.goko.tools.macro.bean.GCodeMacro;
-import org.goko.tools.macro.io.XmlGCodeMacro;
+import org.goko.tools.macro.io.bean.XmlGCodeMacro;
 
 /**
  * @author Psyko

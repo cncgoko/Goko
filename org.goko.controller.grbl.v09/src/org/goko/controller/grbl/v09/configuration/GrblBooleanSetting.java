@@ -51,4 +51,11 @@ public class GrblBooleanSetting extends GrblSetting<Boolean> {
 		return BooleanUtils.toString(getValue(),"1","0");
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.configuration.GrblSetting#newInstance()
+	 */
+	@Override
+	protected GrblSetting<Boolean> newInstance() {
+		return new GrblBooleanSetting(getIdentifier(), new Boolean(getValue()));
+	}
 }

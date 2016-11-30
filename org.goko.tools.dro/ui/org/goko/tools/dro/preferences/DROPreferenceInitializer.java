@@ -18,8 +18,8 @@ public class DROPreferenceInitializer extends GkPreferenceInitializer{
 				DefaultControllerValues.POSITION_Y + DROPreferences.DISPLAYED_VALUES_SEPARATOR +
 				DefaultControllerValues.POSITION_Z + DROPreferences.DISPLAYED_VALUES_SEPARATOR;
 		
-		// Non existing values will be removed at initialisation
-		DROPreferences.getInstance().putValue(DROPreferences.KEY_DISPLAYED_VALUES, defValues);
+		// Non existing values will be removed at initialisation		
+		DROPreferences.getInstance().setDefault(DROPreferences.KEY_DISPLAYED_VALUES, defValues);
 	}
 
 }

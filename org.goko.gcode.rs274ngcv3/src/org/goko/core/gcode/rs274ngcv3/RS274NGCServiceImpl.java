@@ -109,7 +109,9 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public void startService() throws GkException {
+		LOG.info("Starting "+getServiceId());
 		
+		LOG.info("Successfully started "+getServiceId());
 	}
 
 	/** (inheritDoc)
@@ -511,7 +513,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	public IGCodeProvider getGCodeProvider(final Integer id) throws GkException {	
 		// Make sure the required id exists
 		internalGetGCodeProvider(id);		
-		return new GCodeProviderPointer(this, id);
+		return new RS274GCodeReference(this, id);
 	}
 	
 

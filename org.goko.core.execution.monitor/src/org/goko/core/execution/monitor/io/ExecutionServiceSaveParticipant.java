@@ -10,8 +10,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.io.xml.IXmlPersistenceService;
 import org.goko.core.common.service.IGokoService;
-import org.goko.core.execution.monitor.io.xml.XmlExecutionService;
-import org.goko.core.execution.monitor.io.xml.XmlExecutionToken;
+import org.goko.core.execution.monitor.io.bean.XmlExecutionService;
+import org.goko.core.execution.monitor.io.bean.XmlExecutionToken;
+import org.goko.core.execution.monitor.io.exporter.XmlExecutionTokenExporter;
 import org.goko.core.execution.monitor.service.ExecutionServiceImpl;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionQueueType;
@@ -20,6 +21,7 @@ import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.io.IProjectLocation;
 import org.goko.core.workspace.io.XmlProjectContainer;
+import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectSaveParticipant;
 
 /**
@@ -37,6 +39,8 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 	private IXmlPersistenceService xmlPersistenceService;
 	/** The target execution service */
 	private ExecutionServiceImpl executionService;
+	/** Mapper service */
+	private IMapperService mapperService;
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -53,6 +57,8 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 	public void start() throws GkException {
 		LOG.info("Starting  "+getServiceId());
 		xmlPersistenceService.register(XmlExecutionService.class);
+		xmlPersistenceService.register(XmlExecutionToken.class);
+		mapperService.addExporter(new XmlExecutionTokenExporter());
 		LOG.info("Successfully started "+getServiceId());
 	}
 	
@@ -94,10 +100,8 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 		ArrayList<XmlExecutionToken> lstExecutionToken = new ArrayList<XmlExecutionToken>();
 		if(CollectionUtils.isNotEmpty(tokens)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : tokens) {
-				XmlExecutionToken xmlToken = new XmlExecutionToken();
-				xmlToken.setExecutionOrder(executionToken.getExecutionOrder());
-				xmlToken.setCodeGCodeProvider(executionToken.getGCodeProvider().getCode());
-				lstExecutionToken.add(xmlToken);
+				XmlExecutionToken xmlToken = mapperService.export(executionToken, XmlExecutionToken.class);
+				lstExecutionToken.add(xmlToken);				
 			}
 		}
 		
@@ -149,6 +153,20 @@ public class ExecutionServiceSaveParticipant implements IProjectSaveParticipant<
 	 */
 	public void setExecutionService(ExecutionServiceImpl executionService) {
 		this.executionService = executionService;
+	}
+
+	/**
+	 * @return the mapperService
+	 */
+	public IMapperService getMapperService() {
+		return mapperService;
+	}
+
+	/**
+	 * @param mapperService the mapperService to set
+	 */
+	public void setMapperService(IMapperService mapperService) {
+		this.mapperService = mapperService;
 	}
 
 }

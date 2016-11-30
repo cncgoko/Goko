@@ -18,17 +18,9 @@ import org.goko.core.workspace.service.IMapperService;
 import org.goko.core.workspace.service.IProjectSaveParticipant;
 import org.goko.core.workspace.service.IWorkspaceService;
 import org.goko.gcode.rs274ngcv3.ui.workspace.io.XmlRS274GContent;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.XmlGCodeProvider;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlRotateModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlScaleModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlSegmentizeModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlTranslateModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.modifier.XmlWrapModifier;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlExternalFileGCodeSource;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlGCodeProviderSource;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlResourceLocationGCodeSource;
-import org.goko.gcode.rs274ngcv3.ui.workspace.io.bean.source.XmlStringGCodeSource;
+import org.goko.gcode.rs274ngcv3.xml.bean.XmlGCodeModifier;
+import org.goko.gcode.rs274ngcv3.xml.bean.XmlGCodeProvider;
+import org.goko.gcode.rs274ngcv3.xml.bean.source.XmlGCodeProviderSource;
 
 public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GContent> , IGokoService {
 	/** LOG */
@@ -62,16 +54,10 @@ public class RS274SaveParticipant implements IProjectSaveParticipant<XmlRS274GCo
 	 */
 	@Override
 	public void start() throws GkException {
-		LOG.info("Starting  "+getServiceId());	
-		xmlPersistenceService.register(XmlRS274GContent.class);		
-		xmlPersistenceService.register(XmlExternalFileGCodeSource.class);		
-		xmlPersistenceService.register(XmlResourceLocationGCodeSource.class);
-		xmlPersistenceService.register(XmlStringGCodeSource.class);
-		xmlPersistenceService.register(XmlSegmentizeModifier.class);		
-		xmlPersistenceService.register(XmlTranslateModifier.class);		
-		xmlPersistenceService.register(XmlWrapModifier.class);		
-		xmlPersistenceService.register(XmlScaleModifier.class);		
-		xmlPersistenceService.register(XmlRotateModifier.class);		
+		LOG.info("Starting  "+getServiceId());
+		
+		xmlPersistenceService.register(XmlRS274GContent.class);
+		
 		LOG.info("Successfully started "+getServiceId());
 	}
 

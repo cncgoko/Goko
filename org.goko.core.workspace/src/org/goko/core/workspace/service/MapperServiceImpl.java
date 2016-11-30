@@ -4,8 +4,10 @@
 package org.goko.core.workspace.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.AbstractGokoService;
@@ -131,5 +133,28 @@ public class MapperServiceImpl extends AbstractGokoService implements IMapperSer
 			throw new GkTechnicalException("No exporter found for input class ["+inputClass+"] with matching output class ["+outputClass+"]");
 		}
 		throw new GkTechnicalException("No exporter found for input class ["+inputClass+"]");
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IMapperService#addMapperProvider(org.goko.core.workspace.service.IMapperProvider)
+	 */
+	@Override
+	public void addMapperProvider(IMapperProvider mapperProvider) throws GkException {
+		// Reading loaders
+		List<ILoader<?, ?>> lstLoader = mapperProvider.getLoader();
+		if(CollectionUtils.isNotEmpty(lstLoader)){
+			for (ILoader<?, ?> loader : lstLoader) {
+				addLoader(loader);
+			}
+		}
+		
+		// Reading exporters
+		List<IExporter<?, ?>> lstExporter = mapperProvider.getExporter();
+		if(CollectionUtils.isNotEmpty(lstExporter)){
+			for (IExporter<?, ?> exporter : lstExporter) {
+				addExporter(exporter);
+			}
+		}
+		
 	}		
 }

@@ -53,6 +53,7 @@ public class FeatureSetManagerImpl extends AbstractGokoService implements IGokoS
 	 */
 	public void addFeatureSet(IFeatureSet featureSet) throws GkException {
 		if(!lstFeatureSet.contains(featureSet)){
+			LOG.info("Registering feature set for "+featureSet.getTargetBoard()+" using ["+featureSet+"]");
 			lstFeatureSet.add(featureSet);		
 			if(!cacheTargetBoard.exist(featureSet.getTargetBoard().getCode())){
 				cacheTargetBoard.add(featureSet.getTargetBoard());
