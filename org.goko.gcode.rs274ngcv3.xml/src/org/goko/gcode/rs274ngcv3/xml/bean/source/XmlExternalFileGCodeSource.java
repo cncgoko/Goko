@@ -1,0 +1,33 @@
+/**
+ *
+ */
+package org.goko.gcode.rs274ngcv3.xml.bean.source;
+
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.DerivedType;
+
+/**
+ * @author PsyKo
+ * @date 13 d�c. 2015
+ */
+@DerivedType(parent=XmlGCodeProviderSource.class, name="source:file")
+public class XmlExternalFileGCodeSource extends XmlGCodeProviderSource{
+	/** Paht of the file */
+	@Attribute
+	private String path;
+
+	/**
+	 * @return the path
+	 */
+	public String getPath() {
+		return path;
+	}
+
+	/**
+	 * @param path the path to set
+	 */
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+}
