@@ -3,8 +3,6 @@ package org.goko.tools.viewer.jogl.utils.render.text.v2;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -14,7 +12,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL3;
 
-import org.apache.commons.io.FilenameUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.log.GkLog;
@@ -47,22 +44,16 @@ public class BitmapFontFile {
 	}
 	
 	protected void load(String bffFileName) throws GkException{
-		//URL url = new URL("file://c:/test.ttf");
-		//BufferedReader reader = new BufferedReader(new FileReader("c:/test.ttf"));
-	//	InputStream inputStream = url.openConnection().getInputStream();
-		try{
-			File f = new File("G:/Git/Goko/org.goko.tools.viewer.jogl/resources/font/Y145M-2009.fnt");
-			//File f = new File("G:/Git/Goko/org.goko.tools.viewer.jogl/resources/font/Consolas_1024.fnt");
-			String prefix = FilenameUtils.getFullPath(f.getAbsolutePath());
-			InputStream inputStream = new FileInputStream(f);
-			//voir pourquoi ca marche avec consolas mais pas les autres
+		try{		
+			InputStream inputStream =  getClass().getResourceAsStream("/resources/font/Y145M-2009.fnt");//new FileInputStream(f);
+
 			mapChars = new HashMap<Integer, CharBlock>();
 			mapPages = new HashMap<Integer, PageBlock>();
 			
 			loadFileIdentifier(inputStream);
 			loadInfoBlock(inputStream);
 			loadCommonBlock(inputStream);
-			loadPagesBlock(prefix, inputStream);
+			loadPagesBlock(inputStream);
 			loadCharsBlock(inputStream);
 			
 			
@@ -75,7 +66,7 @@ public class BitmapFontFile {
 	protected void loadBuffer(String imageFile) throws IOException{
 		//LOG.debug("Loading image "+imageFile);
 		 // open image
-		 File imgPath = new File(imageFile);
+		 InputStream imgPath = getClass().getResourceAsStream("/resources/font/"+imageFile);
 		 BufferedImage bufferedImage = ImageIO.read(imgPath);
 
 		 // get DataBufferBytes from Raster
@@ -139,7 +130,7 @@ public class BitmapFontFile {
 	 * @param inputStream the {@link InputStream}
 	 * @throws IOException IOException
 	 */
-	private void loadPagesBlock(String prefix, InputStream inputStream) throws IOException {
+	private void loadPagesBlock(InputStream inputStream) throws IOException {
 		ByteBuffer data = getBlockData(inputStream);
 		int size = data.limit();
 		int id = 0;
@@ -150,7 +141,7 @@ public class BitmapFontFile {
 				// Page detected
 				mapPages.put(id, new PageBlock(id, buffer.toString()));
 				//LOG.debug("Detected image "+buffer.toString());
-				loadBuffer(prefix+mapPages.get(id).getFile());
+				loadBuffer(mapPages.get(id).getFile());
 				id++;
 				buffer.setLength(0);
 			}else{
@@ -194,12 +185,8 @@ public class BitmapFontFile {
 		byte[] blockHeader = new byte[5];
 		inputStream.read(blockHeader);
 		ByteBuffer data = ByteBuffer.wrap(blockHeader);
-		int blockId = getUint8(data);
-		//LOG.debug("Block id : "+ String.valueOf(blockId));		
-		
-		
+		int blockId = getUint8(data);		
 		int length = getUint32(data);
-		//LOG.debug("Block length : "+ String.valueOf(length));
 		
 		byte[] blockData = new byte[length];
 		inputStream.read(blockData); 
