@@ -16,8 +16,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -71,7 +71,7 @@ public class GokoProgressDialog extends Dialog {
 
 		composite = new Composite(scrolledComposite, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		composite.setLayout(new GridLayout(1, false));
+		composite.setLayout(new FillLayout(SWT.VERTICAL));
 
 		scrolledComposite.setContent(composite);
 		scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -103,7 +103,7 @@ public class GokoProgressDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(415, 250);
+		return new Point(419, 402);
 	}
 
 	/**
@@ -134,15 +134,14 @@ public class GokoProgressDialog extends Dialog {
 		//sync.asyncExec();
 	}
 
-	public synchronized IProgressMonitor addJob(final Job job) {
-		if (job != null && job.isUser()) {
+	public IProgressMonitor addJob(final Job job) {
+		if (job != null && job.isUser()) {			
 			sync.syncExec(new Runnable() {
 				@Override
 				public void run() {
 					if(!GokoProgressDialog.this.getShell().isDisposed()){
 						JobProgressElement progressElement = new JobProgressElement(composite, SWT.NONE, sync, job, GokoProgressDialog.this);
 						mapProgressElement.put(job, progressElement);
-						progressElement.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 						composite.pack();
 						requestShow();
 					}
