@@ -61,6 +61,8 @@ public class JsscConsolePreferencesPage extends GkPreferencesPage {
 		
 		filterTableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);		
 		filterTable = filterTableViewer.getTable();
+		filterTable.setLinesVisible(true);
+		filterTable.setHeaderVisible(true);
 		filterTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		TableViewerColumn tableViewerColumn_2 = new TableViewerColumn(filterTableViewer, SWT.NONE);
@@ -105,6 +107,20 @@ public class JsscConsolePreferencesPage extends GkPreferencesPage {
 					return "Enabled";
 				}
 				return "Disabled";
+			}
+		});
+		
+		TableViewerColumn tableViewerColumn_3 = new TableViewerColumn(filterTableViewer, SWT.NONE);
+		TableColumn columnViewerType = tableViewerColumn_3.getColumn();
+		columnViewerType.setWidth(60);
+		columnViewerType.setText("Type");
+		tableViewerColumn_3.setLabelProvider(new ColumnLabelProvider(){
+			/** (inheritDoc)
+			 * @see org.eclipse.jface.viewers.ColumnLabelProvider#getText(java.lang.Object)
+			 */
+			@Override
+			public String getText(Object element) {				
+				return ((JsscConsoleFilter)element).getType().getLabel();
 			}
 		});
 		// set the content provider
