@@ -20,11 +20,15 @@
 package org.goko.tools.serial.jssc.console.internal;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
 
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -36,20 +40,21 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionService;
 import org.goko.core.log.GkLog;
+import org.goko.tools.serial.jssc.preferences.connection.SerialConnectionPreference;
 
-public class JsscSerialConsoleController extends AbstractController<JsscSerialConsoleModel> implements IConnectionDataListener {
+public class JsscSerialConsoleController extends AbstractController<JsscSerialConsoleModel> implements IConnectionDataListener, IPropertyChangeListener {
 	private static final GkLog LOG = GkLog.getLogger(JsscSerialConsoleController.class);
 	@Inject
-	IConnectionService connectionService;
+	private IConnectionService connectionService;
 	private StyledText textDisplay;
 	private ByteCommandBuffer inputBuffer;
 	private ByteCommandBuffer outputBuffer;
-
+	private List<JsscConsoleFilter> lstInputFilter;
+	
 	public JsscSerialConsoleController() {
 		super(new JsscSerialConsoleModel());
 		inputBuffer  = new ByteCommandBuffer((byte)('\n'));
-		outputBuffer = new ByteCommandBuffer((byte)('\n'));
-
+		outputBuffer = new ByteCommandBuffer((byte)('\n'));		
 	}
 
 	@Override
@@ -57,7 +62,8 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 		// TODO Auto-generated method stub
 		connectionService.addOutputDataListener(this);
 		connectionService.addInputDataListener(this);
-
+		SerialConnectionPreference.getInstance().addPropertyChangeListener(this);
+		updateInputFilters();
 	}
 
 	@Override
@@ -66,18 +72,20 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 			inputBuffer.addAll(data);
 			while(inputBuffer.hasNext()){
 				final String text = GkUtils.toString(inputBuffer.unstackNextCommand());
-
-				Display.getDefault().asyncExec(new Runnable() {
-				    @Override
-					public void run() {
-				    	if(!textDisplay.isDisposed()){
-					        textDisplay.append(text);
-					    	if(!getDataModel().isScrollLock()){
-					    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+				final String finalString = filterString(text, JsscConsoleFilterType.INPUT);
+				if(StringUtils.isNotBlank(finalString)){
+					Display.getDefault().asyncExec(new Runnable() {
+					    @Override
+						public void run() {
+					    	if(!textDisplay.isDisposed()){			    		
+						        textDisplay.append(finalString);
+						    	if(!getDataModel().isScrollLock()){
+						    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+						    	}
 					    	}
-				    	}
-				    }
-				});
+					    }
+					});
+				}
 			}
 		}
 	}
@@ -87,28 +95,49 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 		if(getDataModel().isConsoleEnabled()){
 			outputBuffer.addAll(data);
 			if(outputBuffer.hasNext()){
-				final String text = GkUtils.toString(outputBuffer.unstackNextCommand());
-				Display.getDefault().asyncExec(new Runnable() {
-				    @Override
-					public void run() {
-				    	if(!textDisplay.isDisposed()){
-					    	StyleRange style = new StyleRange();
-					        style.start = textDisplay.getCharCount();
-					        style.length = StringUtils.length(text);
-					        style.foreground = textDisplay.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
-					        textDisplay.append(text);
-					        textDisplay.setStyleRange(style);
-					    	if(!getDataModel().isScrollLock()){
-					    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+				final String text = GkUtils.toString(outputBuffer.unstackNextCommand());	
+				final String finalString = filterString(text, JsscConsoleFilterType.OUTPUT);
+				if(StringUtils.isNotBlank(finalString)){
+					Display.getDefault().asyncExec(new Runnable() {
+					    @Override
+						public void run() {
+					    	if(!textDisplay.isDisposed()){
+						    	StyleRange style = new StyleRange();
+						        style.start = textDisplay.getCharCount();
+						        style.length = StringUtils.length(finalString);
+						        style.foreground = textDisplay.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN);
+						        textDisplay.append(finalString);
+						        textDisplay.setStyleRange(style);
+						    	if(!getDataModel().isScrollLock()){
+						    		textDisplay.setTopIndex(textDisplay.getLineCount() - 1);
+						    	}
 					    	}
-				    	}
-				    }
-				});
+					    }
+					});	
+				}
 			}
 		}
-
 	}
 
+	protected String filterString(String text, JsscConsoleFilterType filter){		
+		String resultString = text;	
+		if(CollectionUtils.isNotEmpty(lstInputFilter)){
+			for (JsscConsoleFilter jsscConsoleFilter : lstInputFilter) {
+				if((jsscConsoleFilter.getType().getValue() & filter.getValue()) != 0 && 
+					jsscConsoleFilter.isEnabled()){
+					StringBuffer sb = new StringBuffer(StringUtils.length(resultString));			
+					Matcher matcher = jsscConsoleFilter.getPattern().matcher(resultString);
+					while(matcher.find()){
+						matcher.appendReplacement(sb, StringUtils.EMPTY);
+					}
+					matcher.appendTail(sb);
+					resultString = sb.toString();
+				}
+			}
+		}		
+		return resultString;
+	}
+	
 	public void setTextDisplay(StyledText text_1) {
 		this.textDisplay = text_1;
 	}
@@ -170,6 +199,24 @@ public class JsscSerialConsoleController extends AbstractController<JsscSerialCo
 
 	public void setScrollLock(boolean lock){
 		getDataModel().setScrollLock(lock);
+	}
+
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		if(StringUtils.equals(event.getProperty(), SerialConnectionPreference.KEY_FILTERS)){
+			updateInputFilters();
+		}
+	}
+
+	/**
+	 * Update the list of filter based on the preferences
+	 * 
+	 */
+	private void updateInputFilters() {		
+		lstInputFilter = new CopyOnWriteArrayList<JsscConsoleFilter>(SerialConnectionPreference.getInstance().getFilters());	
 	}
 
 }

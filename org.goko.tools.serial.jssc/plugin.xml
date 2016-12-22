@@ -16,6 +16,12 @@
             id="org.goko.tools.serial.jssc.preferences.connection"
             name="Serial connection">
       </page>
+      <page
+            category="org.goko.tools.serial.jssc.preferences.connection"
+            class="org.goko.tools.serial.jssc.preferences.console.JsscConsolePreferencesPage"
+            id="org.goko.tools.serial.jssc.console"
+            name="Console">
+      </page>
    </extension>
    <extension
          point="Goko.org.goko.ui.gkPreferenceStoreProvider">
