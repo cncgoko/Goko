@@ -37,15 +37,38 @@ public class UpdateHandler {
         	public void done(IJobChangeEvent event) {        		
         		super.done(event);
         		IStatus result = event.getResult();
-        		if(result != null && result.equals(GokoUpdateCheckRunnable.NOTHING_TO_UPDATE)){
-        			// Asynchronous execution required to allow the job progress to close
-        	        sync.asyncExec(new Runnable() {        	            
-        	            /** (inheritDoc) @see java.lang.Runnable#run() */
-        	            @Override
-        	            public void run() {
-        	                MessageDialog.openInformation(null, "Information", "Nothing to update");
-        	            }
-        	        });
+        		if(result != null){
+        			if(result.equals(GokoUpdateCheckRunnable.NOTHING_TO_UPDATE)){
+	        			// Asynchronous execution required to allow the job progress to close
+	        	        sync.asyncExec(new Runnable() {        	            
+	        	            /** (inheritDoc) @see java.lang.Runnable#run() */
+	        	            @Override
+	        	            public void run() {
+	        	                MessageDialog.openInformation(null, "Information", "Nothing to update");
+	        	            }
+	        	        });
+        			}else if(result.equals(GokoUpdateCheckRunnable.UPDATE_AVAILABLE)){
+        				sync.asyncExec(new Runnable() {        	            
+	        	            /** (inheritDoc) @see java.lang.Runnable#run() */
+	        	            @Override
+	        	            public void run() {
+		        				boolean performUpdate = MessageDialog.openQuestion(null,
+		                                "Updates available",
+		                                "There are updates available. Do you want to install them now?");
+		        				if(performUpdate){
+				        			// Asynchronous execution required to allow the job progress to close
+			        				Job applyUpdateJob = new Job("Checking for updates"){
+			        					@Override
+			        					protected IStatus run(IProgressMonitor monitor) {				 
+			        						return updateCheck.performUpdate(monitor, sync, workbench);
+			        					}        	
+			        		        };      
+			        		        applyUpdateJob.setUser(true);
+			        		        applyUpdateJob.schedule();
+		        				}
+	        	            }
+	        	        });
+        			}
         		}
         	}
         });

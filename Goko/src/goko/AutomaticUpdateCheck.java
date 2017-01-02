@@ -8,11 +8,14 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.EnumUpdateCheckFrequency;
 import org.goko.core.config.GokoPreference;
@@ -37,7 +40,7 @@ public class AutomaticUpdateCheck implements EventHandler{
 	private UISynchronize sync;
 	@Inject
 	private IEclipseContext context;
-	
+		
 	/** (inheritDoc)
 	 * @see org.osgi.service.event.EventHandler#handleEvent(org.osgi.service.event.Event)
 	 */
@@ -65,7 +68,31 @@ public class AutomaticUpdateCheck implements EventHandler{
 					LOG.info("Checking for update...");
 					GokoPreference.getInstance().setLastUpdateCheckTimestamp(new Date());
 					final GokoUpdateCheckRunnable updateCheck = new GokoUpdateCheckRunnable();
-					updateCheck.update(agent, monitor, sync, context.get(IWorkbench.class), true);
+					final IWorkbench workbench = context.get(IWorkbench.class);
+					IStatus result = updateCheck.update(agent, monitor, sync, workbench, true);
+					
+					if(GokoUpdateCheckRunnable.UPDATE_AVAILABLE.equals(result)){
+						sync.asyncExec(new Runnable() {        	            
+	        	            /** (inheritDoc) @see java.lang.Runnable#run() */
+	        	            @Override
+	        	            public void run() {
+		        				boolean performUpdate = MessageDialog.openQuestion(null,
+		                                "Updates available",
+		                                "There are updates available. Do you want to install them now?");
+		        				if(performUpdate){
+				        			// Asynchronous execution required to allow the job progress to close
+			        				Job applyUpdateJob = new Job("Checking for updates"){
+			        					@Override
+			        					protected IStatus run(IProgressMonitor monitor) {				 
+			        						return updateCheck.performUpdate(monitor, sync, workbench);
+			        					}        	
+			        		        };      
+			        		        applyUpdateJob.setUser(true);
+			        		        applyUpdateJob.schedule();
+		        				}
+	        	            }
+	        	        });
+					}
 				}
 			}
 		}catch(GkException e){

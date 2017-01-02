@@ -325,6 +325,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onLineStateChanged(token, idLine);
+				LOG.info("Executed line ["+idLine+"]");
 			}
 		}
 	}

@@ -31,10 +31,14 @@ public class GokoUpdateCheckRunnable {
 	private boolean cancelled;
 	/** Nothing to update status */
 	public static final IStatus NOTHING_TO_UPDATE = new Status(Status.OK, "Goko", 10000, "", null);
+	/** Update available status */ 
+	public static final IStatus UPDATE_AVAILABLE = new Status(Status.OK, "Goko", 10001, "", null);
 	/** Default update site location */
 	private static final String UPDATE_SITE_URL = "http://update.goko.fr/";
 	/** Developer mode update site location */
 	private static final String DEV_UPDATE_SITE_URL = "http://update.goko.fr/dev/";
+	/** The update operation */
+	private UpdateOperation operation;
 	
 	public IStatus update(final IProvisioningAgent agent, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench, boolean silent){		
 		if(GokoPreference.getInstance().isDevEnvironment()){
@@ -44,7 +48,7 @@ public class GokoUpdateCheckRunnable {
 		}
 		ProvisioningSession session = new ProvisioningSession(agent);
 		// update the whole running profile, otherwise specify IUs
-		UpdateOperation operation = new UpdateOperation(session);
+		operation = new UpdateOperation(session);
 		
 		final SubMonitor sub = SubMonitor.convert(monitor, "Checking for application updates...", 200);
 		IMetadataRepositoryManager metadataManager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
@@ -64,33 +68,16 @@ public class GokoUpdateCheckRunnable {
 		
         //check if updates are available
         IStatus status = operation.resolveModal(sub.newChild(100));
-        
+        IStatus finalStatus = status; 
         if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
         	LOG.info("Nothing to update");
             if(!silent){
             //	showMessage(sync, "Nothing to update");
             }
-            return NOTHING_TO_UPDATE;
+            finalStatus = NOTHING_TO_UPDATE;
         }
         else {        
-        	final ProvisioningJob provisioningJob = operation.getProvisioningJob(sub.newChild(100));        	
-        	if (provisioningJob != null) {
-        		performUpdate(provisioningJob, monitor, sync, workbench);
-        	} else {
-                if (operation.hasResolved()) {                	 
-                    if(!silent){
-                    	showError(sync, "Couldn't get provisioning job: " + operation.getResolutionResult());
-                    }
-                    LOG.error( LogUtils.getMessage(operation.getResolutionResult()) );       
-                   
-                }
-                else {
-                	if(!silent){
-                		 showError(sync, "Couldn't resolve provisioning job");
-                	}
-                }
-                cancelled = true;
-        	}
+        	finalStatus = UPDATE_AVAILABLE;
         }
         if(GokoPreference.getInstance().isDeveloperMode()){
         	removeGokoDeveloperRepositories(metadataManager, artifactManager);
@@ -98,56 +85,69 @@ public class GokoUpdateCheckRunnable {
 		if (cancelled) {
 			// reset cancelled flag
 			cancelled = false;
-			return Status.CANCEL_STATUS;
+			finalStatus = Status.CANCEL_STATUS;
 		}
-        return Status.OK_STATUS;
+        return finalStatus;
 	}
 	
-	public IStatus performUpdate(final ProvisioningJob provisioningJob, final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench) {		 
-		
+	/**
+	 * Retrieve the provisioning job for update
+	 * @param monitor progress monitor
+	 * @param sync ui sync
+	 * @return ProvisioningJob
+	 */
+	protected ProvisioningJob getProvisioningJob(final IProgressMonitor monitor, final UISynchronize sync){
+		final SubMonitor sub = SubMonitor.convert(monitor, "Retrieving provisioning job...", 10);
+		final ProvisioningJob provisioningJob = operation.getProvisioningJob(sub);        	
+    	if (provisioningJob == null) {
+            if (operation.hasResolved()) {
+                showError(sync, "Couldn't get provisioning job: " + operation.getResolutionResult());
+                LOG.error( LogUtils.getMessage(operation.getResolutionResult()) );      
+            } else {            	
+            	showError(sync, "Couldn't resolve provisioning job");            	
+            }
+            cancelled = true;
+    	}
+    	
+    	return provisioningJob;
+	}
+	
+	public IStatus performUpdate(final IProgressMonitor monitor, final UISynchronize sync, final IWorkbench workbench) {		 
+		final ProvisioningJob provisioningJob = getProvisioningJob(monitor, sync);
 		sync.syncExec(new Runnable() {            
             @Override
             public void run() {      
-            	
-                boolean performUpdate = MessageDialog.openQuestion(null,
-                        "Updates available",
-                        "There are updates available. Do you want to install them now?");
-                if (performUpdate) {
-                	provisioningJob.addJobChangeListener(new JobChangeAdapter() {
-						@Override
-						public void done(IJobChangeEvent event) {
-							if (event.getResult().isOK()) {
-								sync.syncExec(new Runnable() {
+            	                
+            	provisioningJob.addJobChangeListener(new JobChangeAdapter() {
+					@Override
+					public void done(IJobChangeEvent event) {
+						if (event.getResult().isOK()) {
+							sync.asyncExec(new Runnable() {
 
-									@Override
-									public void run() {
-										GokoPreference.getInstance().setSystemClearPersistedState(true);
-										boolean restart = MessageDialog.open(MessageDialog.QUESTION, null,
-		                                        "Updates installed, restart?",
-		                                        "Updates have been installed successfully, do you want to restart?", SWT.MODELESS);
-		                                if (restart) {
-		                                	workbench.restart();
-		                                }
-									}
-								});
-							}else {
-								LOG.info( LogUtils.getMessage(event.getResult()));
-								showError(sync, event.getResult().getMessage());
-								cancelled = true;
-							}
+								@Override
+								public void run() {
+									GokoPreference.getInstance().setSystemClearPersistedState(true);
+									boolean restart = MessageDialog.open(MessageDialog.QUESTION, null,
+	                                        "Updates installed, restart?",
+	                                        "Updates have been installed successfully, do you want to restart?", SWT.MODELESS);
+	                                if (restart) {
+	                                	workbench.restart();
+	                                }
+								}
+							});
+						}else {
+							LOG.info( LogUtils.getMessage(event.getResult()));
+							showError(sync, event.getResult().getMessage());
+							cancelled = true;
 						}
-                	});
-                	
-                	// since we switched to the UI thread for interacting with the user
-                	// we need to schedule the provisioning thread, otherwise it would
-                	// be executed also in the UI thread and not in a background thread
-                	provisioningJob.setUser(true); 
-                	provisioningJob.schedule(); 
-                	//provisioningJob.run(sub.newChild(100));
-                }
-                else {
-                	cancelled = true;
-                }
+					}
+            	});
+            	
+            	// since we switched to the UI thread for interacting with the user
+            	// we need to schedule the provisioning thread, otherwise it would
+            	// be executed also in the UI thread and not in a background thread
+            	provisioningJob.setUser(true); 
+            	provisioningJob.schedule(); 
             }
         });
 
@@ -290,11 +290,11 @@ public class GokoUpdateCheckRunnable {
      */
     private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
 		try {
-			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
-			LOG.info("Adding Goko dev repository ("+UPDATE_SITE_URL+") to metadata repositories.");
+			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));		
+			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to metadata repositories.");
 			
 			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
-			LOG.info("Adding Goko dev repository ("+UPDATE_SITE_URL+") to artifact repositories.");
+			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to artifact repositories.");
 			
 		} catch (URISyntaxException e) {
 			LOG.error(e);

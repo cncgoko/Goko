@@ -140,7 +140,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		while(iterator.hasNext()){
 			GCodeContext preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();
-			
+			LOG.info("Processing line ["+instruction.getIdGCodeLine()+"]");
 			// TEST : Make sure we have a complete start position for rendering. 
 			if(preContext.getX() != null && preContext.getY() != null && preContext.getZ() != null){
 				List<Point3d> 		vertices 	= InstructionGeometryFactory.build(preContext, instruction);
@@ -154,8 +154,9 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 					lstColors.add(color);				
 				}	
 			}
+			
 		}
-		
+		LOG.info("Processing line complete");
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		
 		stateBuffer = IntBuffer.allocate(getVerticesCount());
@@ -181,6 +182,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		}
 		VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idGCodeLine);
 		group.setLength( group.getLength() + vertices.size());
+		LOG.info("Assigning line ["+idGCodeLine+"] vertices to group starting at ["+group.getStartIndex()+"]");
 	}
 
 	/** (inheritDoc)
@@ -352,6 +354,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 						storedStates = new HashMap<>();
 					}					
 					storedStates.put(idLine, token.getLineState(idLine));
+					LOG.info("Storing state line change for line ["+idLine+"] before init");
 				}
 			}
 		}
@@ -360,9 +363,12 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	private void updateStateBuffer(Integer idLine, ExecutionTokenState state){
 		// Process last received state
 		VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idLine);		
-		if(stateBuffer != null){				
-			for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
-				stateBuffer.put(i, state.getState());
+		if(stateBuffer != null){
+			// Make sure the line created renderable items (an empty line, not creating instruction, will be skipped)			
+			if(group != null){
+				for (int i = group.getStartIndex(); i < group.getStartIndex() + group.getLength(); i++) {
+					stateBuffer.put(i, state.getState());
+				}
 			}
 			update();
 		}

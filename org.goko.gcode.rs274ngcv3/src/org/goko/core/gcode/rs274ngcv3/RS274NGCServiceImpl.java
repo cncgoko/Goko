@@ -173,7 +173,9 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			for (List<GCodeToken> lstToken : tokens) {
 				verifyModality(lstToken);
 				GCodeLine line = buildLine(lstToken);
-				provider.addLine(line);
+				if(line != null){
+					provider.addLine(line);
+				}
 				if(subMonitor != null){
 					subMonitor.worked(1);
 				}
@@ -216,19 +218,24 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	private GCodeLine buildLine(List<GCodeToken> lstToken) throws GkException {
-		GCodeLine line = new GCodeLine();
+		
+		GCodeLine line = new GCodeLine();		
+		
+		if(CollectionUtils.isNotEmpty(lstToken)){
+			
 
-		for (GCodeToken token : lstToken) {
-//			if(token.getType() == GCodeTokenType.LINE_NUMBER){
-//				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));
-//			}else
-			if(token.getType() == GCodeTokenType.WORD || token.getType() == GCodeTokenType.LINE_NUMBER){
-				line.addWord(new GCodeWord(StringUtils.substring(token.getValue(), 0, 1), StringUtils.substring(token.getValue(), 1)));
-			}else if(token.getType() == GCodeTokenType.SIMPLE_COMMENT
-					|| token.getType() == GCodeTokenType.MULTILINE_COMMENT){
-				line.addWord(new GCodeWord(";", token.getValue()));
-			}else if(token.getType() == GCodeTokenType.PERCENT){
-				line.addWord(new GCodeWord("%", StringUtils.EMPTY));
+			for (GCodeToken token : lstToken) {
+	//			if(token.getType() == GCodeTokenType.LINE_NUMBER){
+	//				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));
+	//			}else
+				if(token.getType() == GCodeTokenType.WORD || token.getType() == GCodeTokenType.LINE_NUMBER){
+					line.addWord(new GCodeWord(StringUtils.substring(token.getValue(), 0, 1), StringUtils.substring(token.getValue(), 1)));
+				}else if(token.getType() == GCodeTokenType.SIMPLE_COMMENT
+						|| token.getType() == GCodeTokenType.MULTILINE_COMMENT){
+					line.addWord(new GCodeWord(";", token.getValue()));
+				}else if(token.getType() == GCodeTokenType.PERCENT){
+					line.addWord(new GCodeWord("%", StringUtils.EMPTY));
+				}
 			}
 		}
 		return line;
