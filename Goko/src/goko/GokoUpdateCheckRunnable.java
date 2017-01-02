@@ -56,10 +56,10 @@ public class GokoUpdateCheckRunnable {
 		
 		if(GokoPreference.getInstance().isDeveloperMode()){			
 			LOG.info("********** DEV MODE UPDATE **********");
-			removeDistantRepositories(metadataManager, artifactManager);
-			addGokoDeveloperRepositories(metadataManager, artifactManager);
+			removeDistantRepositories(metadataManager, artifactManager);			
+			addGokoDeveloperRepositories(metadataManager, artifactManager, sub.newChild(100));
 		}else{
-			addGokoDefaultRepositories(metadataManager, artifactManager);	
+			addGokoDefaultRepositories(metadataManager, artifactManager, sub.newChild(100));	
 		}
 		
 		refreshUsedRepositories(metadataManager, artifactManager, monitor);
@@ -71,9 +71,6 @@ public class GokoUpdateCheckRunnable {
         IStatus finalStatus = status; 
         if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
         	LOG.info("Nothing to update");
-            if(!silent){
-            //	showMessage(sync, "Nothing to update");
-            }
             finalStatus = NOTHING_TO_UPDATE;
         }
         else {        
@@ -203,7 +200,7 @@ public class GokoUpdateCheckRunnable {
      * @param metadataManager the used IMetadataRepositoryManager
      * @param artifactManager the used IArtifactRepositoryManager
      */
-    private void refreshUsedRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager,final IProgressMonitor monitor){
+    private void refreshUsedRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager, IProgressMonitor monitor){
 		URI[] lstMetadataRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);		
 		URI[] lstArtifactRepositories = artifactManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
 		
@@ -239,7 +236,7 @@ public class GokoUpdateCheckRunnable {
      * @param metadataManager the used IMetadataRepositoryManager
      * @param artifactManager the used IArtifactRepositoryManager
      */
-    private void addGokoDefaultRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+    private void addGokoDefaultRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager, IProgressMonitor monitor){
     	URI[] lstMetadataRepositories = metadataManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);		
 		URI[] lstArtifactRepositories = artifactManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL);
 		
@@ -267,8 +264,8 @@ public class GokoUpdateCheckRunnable {
 		if(!metadataRepositoryFound){
 			LOG.info("Adding Goko default repository ("+UPDATE_SITE_URL+") to metadata repositories.");
 			try {
-				metadataManager.addRepository(new URI(UPDATE_SITE_URL));
-			} catch (URISyntaxException e) {
+				metadataManager.loadRepository(new URI(UPDATE_SITE_URL), monitor);
+			} catch (URISyntaxException | ProvisionException | OperationCanceledException e) {
 				LOG.error(e);
 			}
 		}
@@ -288,15 +285,15 @@ public class GokoUpdateCheckRunnable {
      * @param metadataManager the used IMetadataRepositoryManager
      * @param artifactManager the used IArtifactRepositoryManager
      */
-    private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
+    private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager, IProgressMonitor monitor){
 		try {
-			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));		
+			metadataManager.loadRepository(new URI(DEV_UPDATE_SITE_URL), monitor);		
 			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to metadata repositories.");
 			
-			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			artifactManager.loadRepository(new URI(DEV_UPDATE_SITE_URL), monitor);			
 			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to artifact repositories.");
 			
-		} catch (URISyntaxException e) {
+		} catch (URISyntaxException | ProvisionException | OperationCanceledException e) {
 			LOG.error(e);
 		}
     }
@@ -315,6 +312,7 @@ public class GokoUpdateCheckRunnable {
 			LOG.info("Removing distant updates site from the following metadata repositories :");
 			for (URI uri : lstMetadataRepositories) {
 				metadataManager.removeRepository(uri);
+				
 				LOG.info("  - Removing  "+uri.toString());				
 			}			
 		}
