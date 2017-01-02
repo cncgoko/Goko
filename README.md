@@ -1,6 +1,6 @@
 # Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
 
-Current version  : ```0.3.0```
+Current version  : ```0.3.2 Development version```
 
 ##Description
 
