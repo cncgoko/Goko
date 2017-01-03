@@ -115,6 +115,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	private Button btnResetCsZero;
 	private Label lblUnit;
 	private Label lblJogStep;
+	private Button btnReset;
 
 	@Inject
 	public CommandPanelPart(IEclipseContext context) throws GkException {
@@ -592,6 +593,13 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnKillAlarm.setLayoutData(gd_btnKillAlarm);
 		
 		btnKillAlarm.setText("Kill alarm");
+		
+		btnReset = new Button(grpControls, SWT.NONE);
+		GridData gd_btnReset = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_btnReset.heightHint = 35;
+		btnReset.setLayoutData(gd_btnReset);
+		btnReset.setText("Reset");
+		btnReset.setImage(ResourceManager.getPluginImage("org.goko.tools.commandpanel", "icons/reset.png"));
 
 		Group grpSpindle = new Group(composite_10, SWT.NONE);
 		grpSpindle.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.BOLD));
@@ -696,8 +704,10 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnSpindleOff, DefaultControllerAction.SPINDLE_OFF);
 		getController().bindButtonToExecuteAction(btnSpindleOff, DefaultControllerAction.SPINDLE_OFF);
 		getController().bindEnableControlWithAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
-		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);		
-				
+		getController().bindButtonToExecuteAction(btnKillAlarm, DefaultControllerAction.KILL_ALARM);
+		getController().bindEnableControlWithAction(btnReset, DefaultControllerAction.HARD_RESET);
+		getController().bindButtonToExecuteAction(btnReset, DefaultControllerAction.HARD_RESET);
+		
 		getController().addSelectionBinding(btnPreciseJog, "preciseJog");		
 		if(getDataModel().isPreciseJogForced()){			
 			btnPreciseJog.setEnabled(false);
@@ -726,7 +736,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnCSG58, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnCSG59, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnResetCsZero, DefaultControllerAction.JOG_START);
-
+		
 		getController().bindJogButton(btnJogYPos, EnumControllerAxis.Y_POSITIVE);
 		getController().bindJogButton(btnJogYNeg, EnumControllerAxis.Y_NEGATIVE);
 		getController().bindJogButton(btnJogXPos, EnumControllerAxis.X_POSITIVE);

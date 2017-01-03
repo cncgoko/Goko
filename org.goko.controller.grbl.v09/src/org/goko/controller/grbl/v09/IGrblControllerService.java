@@ -96,4 +96,10 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 	 * @throws GkException GkException
 	 */
 	void updateConfiguration(GrblConfiguration configuration) throws GkException;
+	
+	/**
+	 * Reset the Grbl board
+	 * @throws GkException GkException
+	 */
+	void resetGrbl() throws GkException;
 }

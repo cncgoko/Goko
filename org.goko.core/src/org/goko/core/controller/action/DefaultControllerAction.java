@@ -30,4 +30,5 @@ public interface DefaultControllerAction {
 	static final String SPINDLE_ON	= "GkDefaultControllerAction.SpindleOn";
 	static final String SPINDLE_OFF	= "GkDefaultControllerAction.SpindleOff";
 	static final String KILL_ALARM	= "GkDefaultControllerAction.KillAlarm";
+	static final String HARD_RESET  = "GkDefaultControllerAction.HardReset";
 }

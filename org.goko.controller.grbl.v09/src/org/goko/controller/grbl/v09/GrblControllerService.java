@@ -1101,4 +1101,14 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public void updateConfiguration(GrblConfiguration configuration) throws GkException {
 		setConfiguration(configuration);
 	}
+		
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.v09.IGrblControllerService#resetGrbl()
+	 */
+	@Override
+	public void resetGrbl() throws GkException {
+		List<Byte> resetCommand = new ArrayList<Byte>();
+		resetCommand.add(Grbl.RESET_COMMAND);
+		communicator.sendImmediately(resetCommand);
+	}
 }

@@ -72,4 +72,10 @@ public interface IGrblControllerService extends IControllerService<ExecutionToke
 	void startMotion() throws GkException;
 	
 	void resumeMotion() throws GkException;
+	
+	/**
+	 * Reset the Grbl board
+	 * @throws GkException GkException
+	 */
+	void resetGrbl() throws GkException;
 }
