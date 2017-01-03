@@ -1,5 +1,10 @@
 package org.goko.tools.viewer.jogl.preferences.performances;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -11,7 +16,9 @@ import org.goko.common.preferences.fieldeditor.preference.ColorFieldEditor;
 import org.goko.common.preferences.fieldeditor.preference.ComboFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
+import org.goko.tools.viewer.jogl.camera.AbstractCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.tools.viewer.jogl.service.IJoglViewerService;
 
 /**
  * Jogl viewer preferences page
@@ -20,6 +27,8 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
  *
  */
 public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
+	@Inject
+	private IJoglViewerService joglviewerService;
 	
 	public JoglViewerPreferencePage() {
 		setDescription("Configure the 3D viewer component.");
@@ -44,7 +53,7 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 										 			{"2x","2"},
 													{"4x","4"},
 													{"8x (Nicest)","8"}};
-		comboFieldEditor.setPreferenceName("performances.multisampling");
+		comboFieldEditor.setPreferenceName(JoglViewerPreference.MULTISAMPLING);
 		comboFieldEditor.setEntry(lstMultiSampling);
 		
 		GokoPreference.getInstance().getLengthUnit();
@@ -61,9 +70,28 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 		ColorFieldEditor backgroundColorFieldEditor = new ColorFieldEditor(grpMisc, SWT.NONE);
 		backgroundColorFieldEditor.setPreferenceName(JoglViewerPreference.BACKGROUND_COLOR);
 		backgroundColorFieldEditor.setLabel("Background");
-		
+
+		ComboFieldEditor defaultCameraFieldEditor = new ComboFieldEditor(grpMisc, SWT.READ_ONLY);
+		defaultCameraFieldEditor.setLabel("Default view");
+		defaultCameraFieldEditor.setEntry(getAvailableCamera());
+		defaultCameraFieldEditor.setPreferenceName(JoglViewerPreference.DEFAULT_CAMERA);
+
 		addField(comboFieldEditor);
 		addField(showFpsFieldEditor);
 		addField(backgroundColorFieldEditor);
+		addField(defaultCameraFieldEditor);
 	}	
+	
+	private String[][] getAvailableCamera() throws GkException{
+		List<AbstractCamera> supportedCamera = joglviewerService.getSupportedCamera();		
+		int cameraCount = CollectionUtils.size(supportedCamera);
+		String[][] result = new String[cameraCount][2];		
+		int i = 0;
+		for (AbstractCamera camera : supportedCamera) {
+			result[i][0] = camera.getLabel();
+			result[i][1] = camera.getId();
+			i++;
+		}
+		return result;
+	}
 }

@@ -6,6 +6,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.config.GkPreferenceInitializer;
 import org.goko.core.math.Tuple6b;
+import org.goko.tools.viewer.jogl.camera.PerspectiveCamera;
 
 public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 
@@ -40,6 +41,8 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		prefs.setDefault(JoglViewerPreference.GRID_END_X, "100mm");
 		prefs.setDefault(JoglViewerPreference.GRID_END_Y, "100mm");
 		prefs.setDefault(JoglViewerPreference.GRID_END_Z, "100mm");
+		
+		prefs.setDefault(JoglViewerPreference.DEFAULT_CAMERA, PerspectiveCamera.ID);
 		
 		
 		prefs.setDefault(JoglViewerPreference.ORBIT_INVERT_X_AXIS 	, false);

@@ -71,6 +71,6 @@ public class TopCamera extends OrthographicCamera implements MouseMoveListener,M
 		double yWorld = -2*((yMouse - (height/ 2)) / zoomOffset) + eye.y;
 		zoomOffset = Math.max(0.1, zoomOffset * (1+(event.count*zoomFactor*zoomSensitivity)/30.0) );
 		eye.x = (float) (xWorld - 2*((xMouse - (width / 2)) / zoomOffset));
-		eye.y = (float) (yWorld + 2*((yMouse - (height/ 2)) / zoomOffset));
+		eye.y = (float) (yWorld + 2*((yMouse - (height/ 2)) / zoomOffset));		
 	}
 }

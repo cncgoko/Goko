@@ -46,6 +46,7 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String MULTISAMPLING 		= "performances.multisampling";
 	public static final String BACKGROUND_COLOR 	= "viewer.backgroundColor";
 	public static final String SHOW_FPS			 	= "viewer.showFps";
+	public static final String DEFAULT_CAMERA		= "viewer.defaultCamera";
 	public static final String GROUP_GRID 			= "grid.";
 	public static final String MAJOR_GRID_SPACING 	= "grid.majorSpacing";
 	public static final String MINOR_GRID_SPACING 	= "grid.minorSpacing";
@@ -390,5 +391,19 @@ public class JoglViewerPreference extends GkPreference{
 	 */
 	public void setGraduationSize(Length graduationSize) throws GkException {
 		setValue(GRID_GRADUATION_SIZE, GokoPreference.getInstance().format(graduationSize));
+	}
+	
+	/**
+	 * @return the defaultView 
+	 */
+	public String getDefaultCamera() {
+		return getString(DEFAULT_CAMERA);
+	}
+
+	/**
+	 * @param cameraPanSensitivity the cameraPanSensitivity to set
+	 */
+	public void setDefaultCamera(String defaultView) {
+		setValue(DEFAULT_CAMERA, defaultView);
 	}
 }

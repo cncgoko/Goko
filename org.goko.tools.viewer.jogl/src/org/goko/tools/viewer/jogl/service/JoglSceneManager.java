@@ -137,7 +137,15 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		addCamera(new TopCamera(canvas));
 		addCamera(new LeftCamera(canvas));
 		addCamera(new FrontCamera(canvas));
-		setActiveCamera(PerspectiveCamera.ID);
+		String defaultCamera = JoglViewerPreference.getInstance().getDefaultCamera();
+		
+		if(isSupportedCamera(defaultCamera)){
+			setActiveCamera(defaultCamera);	
+		}else{
+			setActiveCamera(PerspectiveCamera.ID);
+			JoglViewerPreference.getInstance().setDefaultCamera(PerspectiveCamera.ID);
+		}
+		
 
 		addOverlayRenderer(new CameraNameOverlay(this));
 
@@ -337,6 +345,15 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			this.supportedCamera = new ArrayList<AbstractCamera>();
 		}
 		return supportedCamera;
+	}
+	
+	public boolean isSupportedCamera(String cameraId) throws GkException{
+		for (AbstractCamera tmpCamera : getSupportedCamera()) {
+			if(StringUtils.equals(cameraId, tmpCamera.getId())){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setActiveCamera(String idCamera) throws GkException {
