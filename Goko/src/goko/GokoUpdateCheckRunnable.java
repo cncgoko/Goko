@@ -290,10 +290,12 @@ public class GokoUpdateCheckRunnable {
      */
     private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
 		try {
-			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));		
+			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			metadataManager.addRepository(new URI("file:///G:/Git/Goko/org.goko.build.product/target/repository"));
 			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to metadata repositories.");
 			
-			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));			
+			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));
+			artifactManager.addRepository(new URI("file:///G:/Git/Goko/org.goko.build.product/target/repository"));
 			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to artifact repositories.");
 			
 		} catch (URISyntaxException e) {

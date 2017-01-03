@@ -72,7 +72,7 @@ public class AutomaticUpdateCheck implements EventHandler{
 					IStatus result = updateCheck.update(agent, monitor, sync, workbench, true);
 					
 					if(GokoUpdateCheckRunnable.UPDATE_AVAILABLE.equals(result)){
-						sync.asyncExec(new Runnable() {        	            
+						sync.syncExec(new Runnable() {        	            
 	        	            /** (inheritDoc) @see java.lang.Runnable#run() */
 	        	            @Override
 	        	            public void run() {
