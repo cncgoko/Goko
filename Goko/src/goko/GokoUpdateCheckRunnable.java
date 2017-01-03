@@ -290,10 +290,10 @@ public class GokoUpdateCheckRunnable {
      */
     private void addGokoDeveloperRepositories(IMetadataRepositoryManager metadataManager, IArtifactRepositoryManager artifactManager){
 		try {
-			metadataManager.setEnabled(new URI(DEV_UPDATE_SITE_URL), true);		
+			metadataManager.addRepository(new URI(DEV_UPDATE_SITE_URL));		
 			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to metadata repositories.");
 			
-			artifactManager.setEnabled(new URI(DEV_UPDATE_SITE_URL), true);			
+			artifactManager.addRepository(new URI(DEV_UPDATE_SITE_URL));			
 			LOG.info("Adding Goko dev repository ("+DEV_UPDATE_SITE_URL+") to artifact repositories.");
 			
 		} catch (URISyntaxException e) {
@@ -314,17 +314,17 @@ public class GokoUpdateCheckRunnable {
 		if(lstMetadataRepositories != null && lstMetadataRepositories.length > 0){			
 			LOG.info("Removing distant updates site from the following metadata repositories :");
 			for (URI uri : lstMetadataRepositories) {
-				//metadataManager.removeRepository(uri);
-				metadataManager.setEnabled(uri, false);
-				LOG.info("  - Disabling "+uri.toString());				
+				metadataManager.removeRepository(uri);
+				
+				LOG.info("  - Removing  "+uri.toString());				
 			}			
 		}
 		// Logging known artifact repositories
 		if(lstArtifactRepositories != null && lstArtifactRepositories.length > 0){
 			LOG.info("Removing distant updates site from the following artifact repositories :");
 			for (URI uri : lstArtifactRepositories) {
-				artifactManager.setEnabled(uri, false);
-				LOG.info("  - Disabling "+uri.toString());				
+				artifactManager.removeRepository(uri);
+				LOG.info("  - Removing  "+uri.toString());				
 			}			
 		}
     }
