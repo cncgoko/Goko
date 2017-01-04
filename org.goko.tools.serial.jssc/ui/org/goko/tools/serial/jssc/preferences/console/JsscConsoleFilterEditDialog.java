@@ -80,15 +80,22 @@ public class JsscConsoleFilterEditDialog extends Dialog {
 		filterPatternText = new Text(container, SWT.BORDER);
 		filterPatternText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				boolean validState = false;
 				if(StringUtils.isEmpty(filterPatternText.getText())){
 					errorLabel.setText(StringUtils.EMPTY);
+					validState = true;
 				}else{
 					try{
 						Pattern.compile(filterPatternText.getText());
 						errorLabel.setText(StringUtils.EMPTY);
+						validState = true;
 					}catch(PatternSyntaxException exception){
 						errorLabel.setText("Pattern is not a valid expression");
+						validState = false;						
 					}	
+				}
+				if(getButton(IDialogConstants.OK_ID) != null){
+					getButton(IDialogConstants.OK_ID).setEnabled(validState);
 				}
 			}
 		});
