@@ -28,9 +28,14 @@ import org.goko.core.controller.bean.DefaultControllerValues;
  *
  */
 public class TinyG implements DefaultControllerValues{
+	/** Feed hold command */
 	public static final String FEED_HOLD = "!";
+	/** Cycle start command */
 	public static final String CYCLE_START = "~";
+	/** Queue flush command */
 	public static final String QUEUE_FLUSH = "%";
+    /** Reset command */
+    public static final byte RESET_COMMAND = 0x18;
 	protected static final String TINYG_BUFFER_COUNT = "tinyg.buffer.count";
 	public static final String ON = "On";
 	public static final String OFF = "Off";

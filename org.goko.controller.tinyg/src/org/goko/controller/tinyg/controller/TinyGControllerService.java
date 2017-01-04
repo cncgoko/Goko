@@ -1184,4 +1184,14 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#resetTinyG()
+	 */
+	@Override
+	public void resetTinyG() throws GkException {
+		List<Byte> resetCommand = new ArrayList<Byte>();
+		resetCommand.add(TinyG.RESET_COMMAND);
+		communicator.sendImmediately(resetCommand);		
+	}
 }

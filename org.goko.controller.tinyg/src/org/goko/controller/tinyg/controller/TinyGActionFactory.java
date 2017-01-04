@@ -26,6 +26,7 @@ import org.goko.controller.tinyg.controller.actions.TinyGCycleStartAction;
 import org.goko.controller.tinyg.controller.actions.TinyGFeedHoldAction;
 import org.goko.controller.tinyg.controller.actions.TinyGHomingAction;
 import org.goko.controller.tinyg.controller.actions.TinyGKillAlarmAction;
+import org.goko.controller.tinyg.controller.actions.TinyGResetAction;
 import org.goko.controller.tinyg.controller.actions.TinyGResetZeroAction;
 import org.goko.controller.tinyg.controller.actions.TinyGSpindleOffAction;
 import org.goko.controller.tinyg.controller.actions.TinyGSpindleOnAction;
@@ -54,6 +55,7 @@ public class TinyGActionFactory {
 		createJogStopAction();
 		createSpindleAction();
 		createKillAlarmAction();
+		createResetAction();
 	}
 	
 	private void createKillAlarmAction() {		
@@ -108,5 +110,10 @@ public class TinyGActionFactory {
 			action = mapAction.get(id);
 		}
 		return action;
+	}
+	
+	private void createResetAction() {
+		TinyGResetAction action = new TinyGResetAction(controllerService);
+		mapAction.put(action.getId(), action);
 	}
 }

@@ -163,6 +163,9 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 				if(queueReport != null){
 					handleQueueReport(queueReport);
 				}
+			}else{
+				// Not Json, we force a JSon command to make sure TinyG uses JSon
+				tinyg.refreshStatus();
 			}
 		}
 	}

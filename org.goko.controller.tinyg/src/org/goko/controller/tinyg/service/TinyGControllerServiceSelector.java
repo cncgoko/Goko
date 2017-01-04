@@ -672,4 +672,9 @@ public class TinyGControllerServiceSelector implements ITinyGControllerServiceSe
 	public void removeConfigurationListener(ITinyGConfigurationListener listener) {
 		getCurrentService().removeConfigurationListener(listener);
 	}
+	
+	@Override
+	public void resetTinyG() throws GkException {
+		getCurrentService().resetTinyG();
+	}
 }

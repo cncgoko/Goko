@@ -124,4 +124,6 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 	void resumeMotion() throws GkException;
 	
 	void startMotion() throws GkException;
+	
+	void resetTinyG() throws GkException;
 }
