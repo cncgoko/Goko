@@ -38,6 +38,7 @@ public class JsscConsoleFilterEditDialog extends Dialog {
 	private Text filterPatternText;
 	private JsscConsoleFilter filter;
 	private Label errorLabel;
+	private Label descriptionErrorLabel;
 	private ComboViewer filterTypeCombo;
 	
 	/**
@@ -70,9 +71,25 @@ public class JsscConsoleFilterEditDialog extends Dialog {
 		lblDescription.setText("Description");
 		
 		filterDescriptionText = new Text(container, SWT.BORDER);
+		filterDescriptionText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				boolean validState = false;
+				if(StringUtils.isEmpty(filterDescriptionText.getText())){
+					descriptionErrorLabel.setText("A description is required");
+					validState = false;
+				}else{
+					descriptionErrorLabel.setText(StringUtils.EMPTY);
+					validState = true;
+				}
+				if(getButton(IDialogConstants.OK_ID) != null){
+					getButton(IDialogConstants.OK_ID).setEnabled(validState);
+				}
+			}
+		});
 		filterDescriptionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
-		Label lblNewLabel = new Label(container, SWT.NONE);
+		descriptionErrorLabel = new Label(container, SWT.NONE);
+		descriptionErrorLabel.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		
 		Label lblPattern = new Label(container, SWT.NONE);
 		lblPattern.setText("Pattern");
