@@ -55,4 +55,19 @@ public abstract class AbstractGrblControllerAction implements IGkControllerActio
 		throw new GkFunctionalException("AbstractGrblControllerAction : Cannot cast object '"+object.toString()+"' to a String...");
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.common.utils.ICodeBean#getCode()
+	 */
+	@Override
+	public String getCode() {
+		return getId();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.common.utils.ICodeBean#setCode(java.lang.String)
+	 */
+	@Override
+	public void setCode(String code) { }
+
+	
 }

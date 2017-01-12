@@ -19,7 +19,7 @@
  */
 package org.goko.controller.tinyg.controller.configuration.type;
 
-import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
+import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
 
 public class TinyGStringSetting extends TinyGSetting<String>{
 

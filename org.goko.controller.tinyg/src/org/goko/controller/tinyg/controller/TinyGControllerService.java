@@ -17,17 +17,18 @@ import java.util.concurrent.Executors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.commons.ITinyGStatus;
+import org.goko.controller.tinyg.commons.TinyGJsonUtils;
+import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
+import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
 import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
-import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
-import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
 import org.goko.controller.tinyg.controller.prefs.TinyGPreferences;
 import org.goko.controller.tinyg.controller.probe.ProbeCallable;
 import org.goko.controller.tinyg.controller.topic.TinyGExecutionErrorTopic;
-import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.controller.tinyg.service.ITinyGControllerFirmwareService;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.ApplicativeLogEvent;
@@ -239,7 +240,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		String gcodeString = gcodeService.render(gCodeLine);
 		if(StringUtils.isNotBlank(gcodeString)){
 			JsonValue jsonStr = TinyGControllerUtility.toJson(gcodeString);
-			communicator.send(GkUtils.toBytesList(jsonStr.toString()));
+			communicator.send(GkUtils.toBytesList(jsonStr.toString()), true);
 		}else{
 			tinygExecutor.confirmNextLineExecution();
 		}
@@ -297,20 +298,20 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		for(TinyGGroupSettings group : configuration.getGroups()){
 			JsonObject groupEmpty = new JsonObject();
 			groupEmpty.add(group.getGroupIdentifier(), StringUtils.EMPTY);
-			communicator.send(GkUtils.toBytesList(groupEmpty.toString()));
+			communicator.send(GkUtils.toBytesList(groupEmpty.toString()), true);
 		}
 	}
 	public void refreshStatus() throws GkException{
 		JsonObject statusQuery = new JsonObject();
 		statusQuery.add("sr", StringUtils.EMPTY);
-		communicator.send(GkUtils.toBytesList(statusQuery.toString()));
+		communicator.send(GkUtils.toBytesList(statusQuery.toString()), true);
 		updateQueueReport();
 	}
 
 	protected void updateQueueReport()throws GkException{
 		JsonObject queueQuery = new JsonObject();
 		queueQuery.add("qr", StringUtils.EMPTY);
-		communicator.send(GkUtils.toBytesList(queueQuery.toString()));
+		communicator.send(GkUtils.toBytesList(queueQuery.toString()), true);
 	}
 
 	/**
@@ -402,7 +403,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param jsonValue
 	 * @throws GkTechnicalException
 	 */
-	protected void handleGCodeResponse(String receivedCommand, TinyGStatusCode status) throws GkException {
+	protected void handleGCodeResponse(String receivedCommand, ITinyGStatus status) throws GkException {
 		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
 			executionService.getExecutionState() == ExecutionState.PAUSED ||
 			executionService.getExecutionState() == ExecutionState.ERROR ){
@@ -425,7 +426,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 * @param receivedCommand the received command
 	 * @throws GkException GkException
 	 */
-	protected void notifyNonOkStatus(TinyGStatusCode status, String receivedCommand) throws GkException {
+	protected void notifyNonOkStatus(ITinyGStatus status, String receivedCommand) throws GkException {
 		String message = StringUtils.EMPTY;
 
 		if(status == null){
@@ -468,7 +469,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		checkVerbosity(cfg);
 		// Let's only change the new values
 		// The new value will be applied directly to TinyG. The changes will be reported in the data model when TinyG sends them back for confirmation.
-		TinyGConfiguration diffConfig = TinyGControllerUtility.getDifferentialConfiguration(getConfiguration(), cfg);
+		TinyGConfiguration diffConfig = getConfiguration().getDifferentialConfiguration(cfg);
 
 		// TODO : perform sending in communicator
 		for(TinyGGroupSettings group: diffConfig.getGroups()){
@@ -478,7 +479,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 			}
 			JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
 			if(jsonGroup != null){
-				communicator.send( GkUtils.toBytesList(jsonGroup.toString()) );
+				communicator.send( GkUtils.toBytesList(jsonGroup.toString()), true );
 			}
 		}
 	}
@@ -563,7 +564,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		if(TinyGPreferences.getInstance().isHomingEnabledAxisA()){
 			homingCommand += " A0";
 		}
-		communicator.send(GkUtils.toBytesList(homingCommand));
+		communicator.send(GkUtils.toBytesList(homingCommand), true);
 	}
 
 	/** (inheritDoc)
@@ -625,7 +626,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void pauseMotion() throws GkException{
-		communicator.send(GkUtils.toBytesList(TinyG.FEED_HOLD));
+		communicator.send(GkUtils.toBytesList(TinyGv097.FEED_HOLD), true);
 		executionService.pauseQueueExecution();
 	}
 	/** (inheritDoc)
@@ -633,7 +634,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void resumeMotion() throws GkException{
-		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
+		communicator.sendImmediately(GkUtils.toBytesList(TinyGv097.CYCLE_START), true);
 		executionService.resumeQueueExecution();
 	}
 
@@ -642,7 +643,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void startMotion() throws GkException {
-		communicator.sendImmediately(GkUtils.toBytesList(TinyG.CYCLE_START));
+		communicator.sendImmediately(GkUtils.toBytesList(TinyGv097.CYCLE_START), true);
 		executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 	}
 	/** (inheritDoc)
@@ -654,23 +655,23 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		
 		if(CollectionUtils.isNotEmpty(lstProbeCallable)){
 			// Probe active, let's hack over a TinyG bug
-			communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD));
+			communicator.sendImmediately(GkUtils.toBytesList(TinyGv097.FEED_HOLD), true);
 			Executors.newSingleThreadExecutor().submit(new Runnable() {
 				
 				@Override
 				public void run() {					
 					try {
 						Thread.sleep(1000);
-						communicator.sendImmediately(GkUtils.toBytesList(TinyG.QUEUE_FLUSH));
+						communicator.sendImmediately(GkUtils.toBytesList(TinyGv097.QUEUE_FLUSH), true);
 					} catch (GkException | InterruptedException e) {
 						LOG.error(e);
 					}
 				}
 			});
 		}else{
-			communicator.sendImmediately(GkUtils.toBytesList(TinyG.FEED_HOLD, TinyG.QUEUE_FLUSH));
+			communicator.sendImmediately(GkUtils.toBytesList(TinyGv097.FEED_HOLD, TinyGv097.QUEUE_FLUSH), true);
 			//communicator.sendImmediately(GkUtils.toBytesList("G90"));
-			communicator.send(GkUtils.toBytesList("")); // Force end line character
+			communicator.send(GkUtils.toBytesList(""), true); // Force end line character
 		}
 				
 		executionService.stopQueueExecution();
@@ -690,15 +691,15 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		}else{
 			lstBytes.addAll( GkUtils.toBytesList("X0Y0Z0"));
 		}
-		communicator.send(lstBytes);
+		communicator.send(lstBytes, true);
 	}
 
 	public void turnSpindleOn() throws GkException{
-		communicator.send(GkUtils.toBytesList("M3"));
+		communicator.send(GkUtils.toBytesList("M3"), true);
 	}
 
 	public void turnSpindleOff() throws GkException{
-		communicator.send(GkUtils.toBytesList("M5"));
+		communicator.send(GkUtils.toBytesList("M5"), true);
 	}
 
 	/**
@@ -715,7 +716,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void setAvailableBuffer(int availableBuffer) throws GkException {
-		tinygState.updateValue(TinyG.TINYG_BUFFER_COUNT, availableBuffer);
+		tinygState.updateValue(TinyGv097.AVAILABLE_BUFFER_COUNT, availableBuffer);
 		tinygExecutor.onBufferSpaceAvailableChange(availableBuffer);
 	}
 
@@ -935,7 +936,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void setCurrentCoordinateSystem(ICoordinateSystem cs) throws GkException {
-		communicator.send( GkUtils.toBytesList( cs.getCode()) );
+		communicator.send( GkUtils.toBytesList( cs.getCode()), true );
 	}
 
 	/** (inheritDoc)
@@ -952,7 +953,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		cmd += "\"x\":"+ getPositionAsString(mPos.getX()) +", ";
 		cmd += "\"y\":"+ getPositionAsString(mPos.getY())+", ";
 		cmd += "\"z\":"+ getPositionAsString(mPos.getZ())+"}} ";
-		communicator.send( GkUtils.toBytesList( cmd ) );
+		communicator.send( GkUtils.toBytesList( cmd ), true );
 		communicator.updateCoordinateSystem(current);
 	}
 
@@ -1117,7 +1118,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public void killAlarm() throws GkException {
-		communicator.send(GkUtils.toBytesList("{\"clear\":\"\"}"));
+		communicator.send(GkUtils.toBytesList("{\"clear\":\"\"}"), true);
 	}
 
 	/** (inheritDoc)
@@ -1191,7 +1192,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	@Override
 	public void resetTinyG() throws GkException {
 		List<Byte> resetCommand = new ArrayList<Byte>();
-		resetCommand.add(TinyG.RESET_COMMAND);
-		communicator.sendImmediately(resetCommand);		
+		resetCommand.add(TinyGv097.RESET_COMMAND);
+		communicator.sendImmediately(resetCommand, true);		
 	}
 }

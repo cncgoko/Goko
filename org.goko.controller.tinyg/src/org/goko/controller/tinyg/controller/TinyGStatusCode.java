@@ -19,6 +19,7 @@
  */
 package org.goko.controller.tinyg.controller;
 
+import org.goko.controller.tinyg.commons.ITinyGStatus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 
@@ -29,7 +30,7 @@ import org.goko.core.common.exception.GkFunctionalException;
  * @author PsyKo
  *
  */
-public enum TinyGStatusCode {	
+public enum TinyGStatusCode implements ITinyGStatus {	
 	TG_UNKNOWN(-1,""),
 	TG_CONFIG_ASSERTION_FAILURE(90,""),
 	TG_XIO_ASSERTION_FAILURE(91,""),
@@ -60,7 +61,7 @@ public enum TinyGStatusCode {
 	TG_GCODE_MODAL_GROUP_VIOLATION(133,"gcode modal group error"),
 	TG_GCODE_AXIS_IS_MISSING(134,"requires at least one axis present"),
 	TG_GCODE_AXIS_CANNOT_BE_PRESENT(135,"error if G80 has axis words"),
-	TG_GCODE_AXIS_IS_INVALID(136,"axis specified that’s illegal for command"),
+	TG_GCODE_AXIS_IS_INVALID(136,"axis specified thatï¿½s illegal for command"),
 	TG_GCODE_AXIS_IS_NOT_CONFIGURED(137,"WARNING: attempt to program an axis that is disabled"),
 	TG_GCODE_AXIS_NUMBER_IS_MISSING(138,"axis word is missing its value"),
 	TG_GCODE_AXIS_NUMBER_IS_INVALID(139,"axis word value is illegal"),
@@ -181,8 +182,8 @@ public enum TinyGStatusCode {
 
 	/**
 	 * Constructor
-	 * @param value la valeur entière de l'erreur
-	 * @param label le libellé de l'erreur
+	 * @param value la valeur entiï¿½re de l'erreur
+	 * @param label le libellï¿½ de l'erreur
 	 */
 	TinyGStatusCode(int value, String label){
 		this.value = value;
@@ -192,8 +193,8 @@ public enum TinyGStatusCode {
 
 	/**
 	 * Constructor
-	 * @param value la valeur entière de l'erreur
-	 * @param label le libellé de l'erreur
+	 * @param value la valeur entiï¿½re de l'erreur
+	 * @param label le libellï¿½ de l'erreur
 	 */
 	TinyGStatusCode(int value, String label, int severity){
 		this.value = value;
@@ -201,16 +202,18 @@ public enum TinyGStatusCode {
 		this.severity = severity;
 	}
 	
-	/**
-	 * @return the value
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinyGStatus#getValue()
 	 */
+	@Override
 	public int getValue() {
 		return value;
 	}
 
-	/**
-	 * @return the label
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinyGStatus#getLabel()
 	 */
+	@Override
 	public String getLabel() {
 		return label;
 	}
@@ -221,8 +224,8 @@ public enum TinyGStatusCode {
  	 * @return  TinyGStatusCode
 	 * @throws GkException GkException
 	 */
-	public static TinyGStatusCode getEnum(int value) throws GkException{
-		for (TinyGStatusCode statusCode : values()) {
+	public static ITinyGStatus getEnum(int value) throws GkException{
+		for (ITinyGStatus statusCode : values()) {
 			if(statusCode.getValue() == value){
 				return statusCode;
 			}
@@ -236,25 +239,25 @@ public enum TinyGStatusCode {
  	 * @return  TinyGStatusCode
 	 * @throws GkException GkException
 	 */
-	public static TinyGStatusCode findEnum(int value) throws GkException{
-		for (TinyGStatusCode statusCode : values()) {
+	public static ITinyGStatus findEnum(int value) throws GkException{
+		for (ITinyGStatus statusCode : values()) {
 			if(statusCode.getValue() == value){
 				return statusCode;
 			}
 		}
 		return null;
 	}
-	/**
-	 * Test for this status against warning severity
-	 * @return <code>true</code> if it's a warning, <code>false</code> otherwise
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinyGStatus#isWarning()
 	 */
+	@Override
 	public boolean isWarning(){
 		return severity == SEVERITY_WARNING;
 	}
-	/**
-	 * Test for this status against error severity
-	 * @return <code>true</code> if it's a error, <code>false</code> otherwise
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.controller.ITinyGStatus#isError()
 	 */
+	@Override
 	public boolean isError(){
 		return severity == SEVERITY_ERROR;
 	}

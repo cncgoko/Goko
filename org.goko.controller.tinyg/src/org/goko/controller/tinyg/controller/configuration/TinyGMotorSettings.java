@@ -21,6 +21,7 @@ package org.goko.controller.tinyg.controller.configuration;
 
 import java.math.BigDecimal;
 
+import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
 
 public class TinyGMotorSettings extends TinyGGroupSettings {

@@ -109,7 +109,8 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	MachineValueDefinition findMachineValueDefinition(String id) throws GkException;
 
 	void cancelFileSending() throws GkException;
-
+	
+	@Deprecated
 	void moveToAbsolutePosition(Tuple6b position) throws GkException;
 	
 }

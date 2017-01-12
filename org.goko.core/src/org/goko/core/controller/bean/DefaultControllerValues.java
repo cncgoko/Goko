@@ -18,18 +18,22 @@ package org.goko.core.controller.bean;
 
 public interface DefaultControllerValues {
 
-	static final String STATE 			= "GkDefaultControllerValue.State";
-	static final String POSITION 		= "GkDefaultControllerValue.Position";
-	static final String POSITION_X 		= "GkDefaultControllerValue.PositionX";
-	static final String POSITION_X_UNIT 		= "GkDefaultControllerValue.PositionXUnit";
-	static final String POSITION_Y		= "GkDefaultControllerValue.PositionY";
-	static final String POSITION_Z		= "GkDefaultControllerValue.PositionZ";
-	static final String POSITION_A		= "GkDefaultControllerValue.PositionA";
-	static final String VELOCITY		= "GkDefaultControllerValue.Velocity";
-	static final String SPINDLE_STATE	= "GkDefaultControllerValue.SpindleState";
-	static final String UNITS 			= "GkDefaultControllerValue.Units";
-	static final String COORDINATES 	= "GkDefaultControllerValue.Coordinates";
-	static final String DISTANCE_MODE	= "GkDefaultControllerValue.DistanceMode";
+	static final String STATE 				= "GkDefaultControllerValue.State";
+	static final String POSITION 			= "GkDefaultControllerValue.Position";
+	static final String POSITION_X 			= "GkDefaultControllerValue.PositionX";	
+	static final String POSITION_Y			= "GkDefaultControllerValue.PositionY";
+	static final String POSITION_Z			= "GkDefaultControllerValue.PositionZ";
+	static final String POSITION_A			= "GkDefaultControllerValue.PositionA";
+	static final String MACHINE_POSITION 	= "GkDefaultControllerValue.MachinePosition";
+	static final String MACHINE_POSITION_X 	= "GkDefaultControllerValue.MachinePositionX";	
+	static final String MACHINE_POSITION_Y	= "GkDefaultControllerValue.MachinePositionY";
+	static final String MACHINE_POSITION_Z	= "GkDefaultControllerValue.MachinePositionZ";
+	static final String MACHINE_POSITION_A	= "GkDefaultControllerValue.MachinePositionA";
+	static final String VELOCITY			= "GkDefaultControllerValue.Velocity";
+	static final String SPINDLE_STATE		= "GkDefaultControllerValue.SpindleState";
+	static final String UNITS 				= "GkDefaultControllerValue.Units";
+	static final String COORDINATES 		= "GkDefaultControllerValue.Coordinates";
+	static final String DISTANCE_MODE		= "GkDefaultControllerValue.DistanceMode";
 
 	static final String CONTEXT_FEEDRATE		= "GCodeContext.Feedrate";
 	static final String CONTEXT_PLANE			= "GCodeContext.Plane";

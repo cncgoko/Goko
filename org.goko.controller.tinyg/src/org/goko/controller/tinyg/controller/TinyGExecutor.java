@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.commons.ITinyGStatus;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
 import org.goko.core.gcode.element.GCodeLine;
@@ -142,7 +143,7 @@ public class TinyGExecutor extends AbstractStreamingExecutor<ExecutionTokenState
 	 * @param status the received status or <code>null</code> if unknown
 	 * @throws GkException GkException
 	 */
-	protected void handleNonOkStatus(TinyGStatusCode status) throws GkException {
+	protected void handleNonOkStatus(ITinyGStatus status) throws GkException {
 		if(status == null || status.isError()){
 			LOG.warn("Pausing execution queue from TinyG Executor due to received status ["+status.getValue()+"]");
 			getExecutionService().pauseQueueExecution();

@@ -19,28 +19,17 @@
  */
 package org.goko.controller.tinyg.controller;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.commons.AbstractTinyGCommunicator;
+import org.goko.controller.tinyg.commons.ITinyGStatus;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.core.common.GkUtils;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
-import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.common.measure.quantity.Speed;
-import org.goko.core.common.measure.quantity.SpeedUnit;
-import org.goko.core.common.measure.units.Unit;
-import org.goko.core.connection.DataPriority;
-import org.goko.core.connection.EnumConnectionEvent;
-import org.goko.core.connection.IConnectionDataListener;
-import org.goko.core.connection.IConnectionListener;
-import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -55,17 +44,15 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
-public class TinyGCommunicator implements IConnectionDataListener, IConnectionListener {
+/**
+ * @author Psyko
+ * @date 8 janv. 2017
+ */
+public class TinyGCommunicator extends AbstractTinyGCommunicator {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(TinyGCommunicator.class);
 	/** The target TinyG service */
 	private TinyGControllerService tinyg;
-	/** TinyG end line delimiter */
-	private char endLineCharDelimiter;
-	/** Buffer for incoming data	 */
-	private ByteCommandBuffer incomingBuffer;
-	/** The connection service */
-	private IConnectionService connectionService;
 	/** The applicative log service */
 	private IApplicativeLogService applicativeLogService;
 	/** GCode service */
@@ -77,135 +64,70 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 */
 	public TinyGCommunicator(TinyGControllerService tinyg) {
 		this.tinyg = tinyg;
-		endLineCharDelimiter = '\n';
-		incomingBuffer 		 = new ByteCommandBuffer((byte) endLineCharDelimiter);		
+		setEndLineCharacters('\n');				
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionDataListener#onDataReceived(java.util.List)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#onConnected()
 	 */
 	@Override
-	public void onDataReceived(List<Byte> data) throws GkException {
-		incomingBuffer.addAll(data);
-		//D�piler dans un thread ?
-//		if(incomingBuffer.hasNext()){
-//			executor.execute(new Runnable() {
-//				@Override
-//				public void run() {
-					while(incomingBuffer.hasNext()){
-						try {
-							handleIncomingData(GkUtils.toString(incomingBuffer.unstackNextCommand()));
-						} catch (GkException e) {
-							LOG.error(e);
-						}
-					}
-//				}
-//			});
-//		}
+	protected void onConnected() throws GkException {
+		getIncomingBuffer().clear();
+		getConnectionService().addInputDataListener(this);
+		// Force strict JSon mode
+		send(GkUtils.toBytesList("{\"js\":1}"), true);			
+		tinyg.refreshStatus();
+		tinyg.refreshConfiguration();
+		updateCoordinateSystem();
 	}
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.connection.IConnectionDataListener#onDataSent(java.util.List)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#onDisconnected()
 	 */
 	@Override
-	public void onDataSent(List<Byte> data) throws GkException {
-		// TODO Auto-generated method stub
-
+	protected void onDisconnected() throws GkException {
+		getConnectionService().removeInputDataListener(this);
+		tinyg.setState(MachineState.UNDEFINED);
+		tinyg.setConfiguration(new TinyGConfiguration());
+		getIncomingBuffer().clear();		
 	}
-
-	@Override
-	public void onConnectionEvent(EnumConnectionEvent event) throws GkException {
-		if(event == EnumConnectionEvent.CONNECTED){
-			incomingBuffer.clear();
-			getConnectionService().addInputDataListener(this);
-			// Force strict GCode mode
-			send(GkUtils.toBytesList("{\"js\":1}"));			
-			tinyg.refreshStatus();
-			tinyg.refreshConfiguration();
-			updateCoordinateSystem();			
-		}else if(event == EnumConnectionEvent.DISCONNECTED){
-			getConnectionService().removeInputDataListener(this);
-			tinyg.setState(MachineState.UNDEFINED);
-			tinyg.setConfiguration(new TinyGConfiguration());
-			incomingBuffer.clear();
-		}		
-	}
-
-	private void handleIncomingData(String data) throws GkException {
-		String trimmedData = StringUtils.trim(data);
-		if(StringUtils.isNotEmpty(trimmedData)){
-			if(TinyGJsonUtils.isJsonFormat(trimmedData)){
-				JsonObject response = null;
-				try{
-					response = JsonObject.readFrom(trimmedData);
-				}catch(Exception e){
-					String msg = "Error while parsing JSon for string '"+trimmedData+"'"+System.lineSeparator()+e.getMessage();
-					applicativeLogService.error(msg, "Goko");
-					LOG.error(msg);					
-					return;
-				}
-
-				JsonValue footerBody = response.get(TinyGJsonUtils.FOOTER);
-				TinyGStatusCode status = null;				
-				
-				if(footerBody != null){
-					status = getResponseFooter(footerBody);
-				}
-
-				JsonValue responseBody = response.get(TinyGJsonUtils.RESPONSE_ENVELOPE);
-				if(responseBody != null){
-					handleResponseEnvelope((JsonObject) responseBody, status);
-				}
-				JsonValue statusReport = response.get(TinyGJsonUtils.STATUS_REPORT);
-				if(statusReport != null){
-					handleStatusReport(statusReport);
-				}
-				JsonValue queueReport = response.get(TinyGJsonUtils.QUEUE_REPORT);
-				if(queueReport != null){
-					handleQueueReport(queueReport);
-				}
-			}else{
-				// Not Json, we force a JSon command to make sure TinyG uses JSon
-				tinyg.refreshStatus();
-			}
-		}
-	}
-
 	/**
 	 * Verify the response using the footer
 	 * @param jsonFooter the parsed response
 	 * @throws GkException GkException
 	 */
-	private TinyGStatusCode getResponseFooter(JsonValue jsonFooter) throws GkException {
+	protected ITinyGStatus getResponseFooter(JsonValue jsonFooter) throws GkException {
 		JsonArray footerArray = jsonFooter.asArray();
-		int statusCodeIntValue = footerArray.get(TinyGJsonUtils.FOOTER_STATUS_CODE_INDEX).asInt();
-		TinyGStatusCode status = TinyGStatusCode.findEnum(statusCodeIntValue);
+		int statusCodeIntValue = footerArray.get(TinyGv097.FOOTER_STATUS_CODE_INDEX).asInt();
+		ITinyGStatus status = TinyGStatusCode.findEnum(statusCodeIntValue);
 		return status;
 	}
 	
-	/**
-	 * Handle a JSon response envelope
-	 * @param jsonValue
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#handleResponse(com.eclipsesource.json.JsonObject, org.goko.controller.tinyg.commons.ITinyGStatus)
 	 */
-	private void handleResponseEnvelope(JsonObject responseEnvelope, TinyGStatusCode status) throws GkException {
+	@Override
+	protected void handleResponse(JsonObject responseEnvelope, ITinyGStatus status) throws GkException {
 		for(String name : responseEnvelope.names()){
 
-			if(StringUtils.equals(name, TinyGJsonUtils.GCODE_COMMAND)){				
-				handleGCodeResponse(responseEnvelope.get(TinyGJsonUtils.GCODE_COMMAND), status);
+			if(StringUtils.equals(name, TinyGv097.GCODE_COMMAND)){				
+				handleGCodeResponse(responseEnvelope.get(TinyGv097.GCODE_COMMAND), status);
 
-			}else if(StringUtils.equals(name, TinyGJsonUtils.STATUS_REPORT)){
-				handleStatusReport(responseEnvelope.get(TinyGJsonUtils.STATUS_REPORT));
+			}else if(StringUtils.equals(name, TinyGv097.STATUS_REPORT)){
+				handleStatusReport((JsonObject)responseEnvelope.get(TinyGv097.STATUS_REPORT));
 			
-			}else if(StringUtils.equals(name, TinyGJsonUtils.QUEUE_REPORT)){
-				handleQueueReport(responseEnvelope.get(TinyGJsonUtils.QUEUE_REPORT));
+			}else if(StringUtils.equals(name, TinyGv097.QUEUE_REPORT)){
+				handleQueueReport(responseEnvelope.get(TinyGv097.QUEUE_REPORT));
 
-			}else if(StringUtils.equals(name, TinyGJsonUtils.LINE_REPORT)){
+			}else if(StringUtils.equals(name, TinyGv097.LINE_REPORT)){
 		//		LOG.info("Skipping line report "+String.valueOf(responseEnvelope.get(name)));
 
-			}else if(StringUtils.equals(name, TinyGJsonUtils.PROBE_REPORT)){
-				handleProbeReport(responseEnvelope.get(TinyGJsonUtils.PROBE_REPORT));
+			}else if(StringUtils.equals(name, TinyGv097.PROBE_REPORT)){
+				handleProbeReport(responseEnvelope.get(TinyGv097.PROBE_REPORT));
 			
-			}else if(StringUtils.equals(name, TinyGJsonUtils.MESSAGE_REPORT)){
-				handleMessage(responseEnvelope.get(TinyGJsonUtils.MESSAGE_REPORT));
+			}else if(StringUtils.equals(name, TinyGv097.MESSAGE_REPORT)){
+				handleMessage(responseEnvelope.get(TinyGv097.MESSAGE_REPORT));
 				
 			}else if(StringUtils.defaultString(name).matches("(g|G)5(4|5|6|7|8|9)")){
 				handleCoordinateSystemOffsetReport(name, responseEnvelope.get(name));
@@ -242,12 +164,12 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		tinyg.setConfiguration(cfg);
 	}
 
-	private void handleGCodeResponse(JsonValue jsonValue, TinyGStatusCode status) throws GkException {
+	private void handleGCodeResponse(JsonValue jsonValue, ITinyGStatus status) throws GkException {
 		String 	receivedCommand = jsonValue.asString();
 		tinyg.handleGCodeResponse(receivedCommand, status);
 	}
 
-	private void handleQueueReport(JsonValue queueReport) throws GkException {
+	protected void handleQueueReport(JsonValue queueReport) throws GkException {
 		tinyg.setAvailableBuffer(queueReport.asInt());
 	}
 
@@ -259,15 +181,15 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		if(probeReport.isObject()){
 			Tuple6b 	probePosition 		= null;
 			JsonObject 	probeReportObject 	= (JsonObject) probeReport;
-			JsonValue 	eProbeResult 		= probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_SUCCESS);
+			JsonValue 	eProbeResult 		= probeReportObject.get(TinyGv097.PROBE_REPORT_SUCCESS);
 			boolean 	probeSuccess 		= (eProbeResult.asInt() == 1);
 			if(probeSuccess){
-				JsonValue xProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_X);
-				JsonValue yProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_Y);
-				JsonValue zProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_Z);
-				JsonValue aProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_A);
-				JsonValue bProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_B);
-				JsonValue cProbeResult = probeReportObject.get(TinyGJsonUtils.PROBE_REPORT_POSITION_C);
+				JsonValue xProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_X);
+				JsonValue yProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_Y);
+				JsonValue zProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_Z);
+				JsonValue aProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_A);
+				JsonValue bProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_B);
+				JsonValue cProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_C);
 				probePosition = new Tuple6b();
 				if(xProbeResult != null){
 					probePosition.setX( Length.valueOf(xProbeResult.asBigDecimal(), tinyg.getCurrentUnit()) );
@@ -291,21 +213,23 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			tinyg.handleProbeResult(probeSuccess, probePosition);
 		}
 	}
-	/**
-	 * Handling status report from TinyG
-	 * @param jsonValue
+	
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#handleStatusReport(com.eclipsesource.json.JsonObject)
 	 */
-	private void handleStatusReport(JsonValue statusReport) throws GkException {
+	@Override
+	protected void handleStatusReport(JsonObject statusReport) throws GkException {
 		if(statusReport.isObject()){
 			JsonObject 	statusReportObject = (JsonObject) statusReport;
 
-			Tuple6b 					 workPosition 	= findWorkPosition(statusReportObject);
-			MachineState 				 state 			= findState(statusReportObject);
-			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);
 			EnumUnit 		 units 			= findUnits(statusReportObject);
-			Speed 		 	velocity 		= findVelocity(statusReportObject);
-			Speed 			 feedrate 		= findFeedrate(statusReportObject);
-			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
+			Tuple6b 		 workPosition 	= findWorkPosition(statusReportObject, units);
+			MachineState 	 state 			= findState(statusReportObject);
+			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);			
+			Speed 		 	 velocity 		= findVelocity(statusReportObject, units);
+			Speed 			 feedrate 		= findFeedrate(statusReportObject, units);
+			EnumCoordinateSystem cs 		= findCoordinateSystem(statusReportObject);
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getGCodeContext());
 
 			gcodeContext.setPosition(workPosition);			
@@ -323,144 +247,57 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			tinyg.updateCurrentGCodeContext(gcodeContext);
 		}
 	}
-
-	private Speed findVelocity(JsonObject statusReport){
-		JsonValue velocityReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_VELOCITY);
-		if(velocityReport != null){
-			Unit<Length> unit = tinyg.getCurrentUnit();
-			Unit<Speed> speedUnit = SpeedUnit.MILLIMETRE_PER_MINUTE;
-			if(LengthUnit.INCH.equals(unit)){
-				speedUnit = SpeedUnit.INCH_PER_MINUTE;
-			}
-			return Speed.valueOf(velocityReport.asBigDecimal(), speedUnit);
-		}
-		return null;
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#handleErrorReport(com.eclipsesource.json.JsonObject)
+	 */
+	@Override
+	protected void handleErrorReport(JsonObject errorReportBody) throws GkException {
+				
 	}
 
-	private Speed findFeedrate(JsonObject feedrate){
-		JsonValue feedrateReport = feedrate.get(TinyGJsonUtils.STATUS_REPORT_FEEDRATE);
-		if(feedrateReport != null){
-			Unit<Speed> unit = SpeedUnit.MILLIMETRE_PER_MINUTE;
-			if(tinyg.getCurrentUnit().equals(LengthUnit.INCH)){
-				unit = SpeedUnit.INCH_PER_MINUTE;	
-			}
-			return Speed.valueOf(feedrateReport.asBigDecimal().setScale(3, BigDecimal.ROUND_HALF_EVEN), unit);
-		}
-		return null;
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#handleMalformedJson(java.lang.String)
+	 */
+	@Override
+	protected void handleMalformedJson(String data) {
+		
 	}
 	
-	/**
-	 * Update the current work position using the given status report
-	 * @param statusReport
-	 * @return
-	 * @throws GkException
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#handleNonJsonData(java.lang.String)
 	 */
-	private Tuple6b findWorkPosition(JsonObject statusReport) throws GkException{
-		Tuple6b 	workPosition = tinyg.getGCodeContext().getPosition();
-		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport);
-		return workPosition;
+	@Override
+	protected void handleNonJsonData(String data) throws GkException {
+		tinyg.refreshStatus();
 	}
 	
-	private EnumDistanceMode findDistanceMode(JsonObject statusReport){
-		JsonValue distReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_DISTANCE_MODE);
-		if(distReport != null){
-			int dist = distReport.asInt();
-			if(dist == 0){
-				return EnumDistanceMode.ABSOLUTE;
-			}else{
-				return EnumDistanceMode.RELATIVE;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Finds the units declaration in the status report
-	 * @param statusReport the status report
-	 * @return {@link EnumGCodeCommandUnit}
-	 */
-	private EnumUnit findUnits(JsonObject statusReport){
-		JsonValue unitReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_UNITS);
-		if(unitReport != null){
-			int units = unitReport.asInt();
-			if(units == 1){
-				return EnumUnit.MILLIMETERS;
-			}else{
-				return EnumUnit.INCHES;
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * Extract state from status report
 	 * @param statusReport
 	 * @return
 	 */
 	private MachineState findState(JsonObject statusReport){
-		JsonValue statReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_STATE);
+		JsonValue statReport = statusReport.get(TinyGv097.STATUS_REPORT_STATE);
 		if(statReport != null){
 			return TinyGControllerUtility.getState(statReport.asInt());
 		}
 		return null;
 	}
-	/**
-	 * Update coordinates
-	 * 0=g53, 1=g54, 2=g55, 3=g56, 4=g57, 5=g58, 6=g59
-	 */
-	private EnumCoordinateSystem findCoordinateSystem(JsonObject statusReport){
-		EnumCoordinateSystem coordinateSystem = null;
-		JsonValue coordReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_COORDINATES);
-		if(coordReport != null){
-			int units = coordReport.asInt();
-			switch(units){
-			case 0: coordinateSystem = EnumCoordinateSystem.G53;
-			break;
-			case 1: coordinateSystem = EnumCoordinateSystem.G54;
-			break;
-			case 2: coordinateSystem = EnumCoordinateSystem.G55;
-			break;
-			case 3: coordinateSystem = EnumCoordinateSystem.G56;
-			break;
-			case 4: coordinateSystem = EnumCoordinateSystem.G57;
-			break;
-			case 5: coordinateSystem = EnumCoordinateSystem.G58;
-			break;
-			case 6: coordinateSystem = EnumCoordinateSystem.G59;
-			break;
-			}
-		}
-		return coordinateSystem;
-	}
+
 
 	protected void updateCoordinateSystem() throws GkException{
-		send(GkUtils.toBytesList("{\"G55\":\"\"}"));
-		send(GkUtils.toBytesList("{\"G56\":\"\"}"));
-		send(GkUtils.toBytesList("{\"G57\":\"\"}"));
-		send(GkUtils.toBytesList("{\"G58\":\"\"}"));
-		send(GkUtils.toBytesList("{\"G59\":\"\"}"));
+		send(GkUtils.toBytesList("{\"G55\":\"\"}"), true);
+		send(GkUtils.toBytesList("{\"G56\":\"\"}"), true);
+		send(GkUtils.toBytesList("{\"G57\":\"\"}"), true);
+		send(GkUtils.toBytesList("{\"G58\":\"\"}"), true);
+		send(GkUtils.toBytesList("{\"G59\":\"\"}"), true);
 	}
 	
 	protected void updateCoordinateSystem(ICoordinateSystem cs) throws GkException{
-		send(GkUtils.toBytesList("{\""+cs.getCode()+"\":\"\"}"));		
+		send(GkUtils.toBytesList("{\""+cs.getCode()+"\":\"\"}"), true);		
 	}
 	
-	/**
-	 * @return the connectionService
-	 */
-	protected IConnectionService getConnectionService() {
-		return connectionService;
-	}
-
-	/**
-	 * @param connectionService the connectionService to set
-	 * @throws GkException
-	 */
-	protected void setConnectionService(IConnectionService connectionService) throws GkException {
-		this.connectionService = connectionService;
-		connectionService.addConnectionListener(this);
-	}
-
 	/**
 	 * @return the applicativeLogService
 	 */
@@ -473,27 +310,6 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 */
 	protected void setApplicativeLogService(IApplicativeLogService applicativeLogService) {
 		this.applicativeLogService = applicativeLogService;
-	}
-
-	/**
-	 * Add the end line character at the end of the given list
-	 * @param list the list
-	 */
-	private void addEndLineCharacter(List<Byte> list){
-		list.add(new Byte((byte) endLineCharDelimiter));
-	}
-
-	protected void send(List<Byte> lstByte) throws GkException{
-		addEndLineCharacter(lstByte);
-		getConnectionService().send(lstByte);
-	}
-
-	protected void sendWithoutEndLineCharacter(List<Byte> lstByte) throws GkException{
-		getConnectionService().send(lstByte);
-	}
-
-	protected void sendImmediately(List<Byte> lstByte) throws GkException{
-		getConnectionService().send(lstByte, DataPriority.IMPORTANT);
 	}
 
 	/**

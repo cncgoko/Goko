@@ -86,6 +86,12 @@ public interface IConnectionService extends IGokoService{
 	 * @throws GkException an exception
 	 */
 	void addConnectionListener(IConnectionListener listener) throws GkException;
+	/**
+	 * Remove a listener for connection events
+	 * @param listener the listener to remove
+	 * @throws GkException an exception
+	 */
+	void removeConnectionListener(IConnectionListener listener) throws GkException;
 
 	/**
 	 * Clear the buffer of outgoing data

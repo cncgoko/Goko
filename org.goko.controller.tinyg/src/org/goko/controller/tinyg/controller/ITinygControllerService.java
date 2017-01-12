@@ -71,7 +71,7 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 	void addConfigurationListener(ITinyGConfigurationListener listener);
 	
 	/**
-	 * Removes the given {@link ITinyGConfigurationListener} from the listener ofthis service configuration event
+	 * Removes the given {@link ITinyGConfigurationListener} from the listener of this service configuration event
 	 * @param listener the listener to remove
 	 */
 	void removeConfigurationListener(ITinyGConfigurationListener listener);
@@ -108,14 +108,14 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 	 * @throws GkException GkException
 	 */
 	MachineState getState() throws GkException;
-	
-	void killAlarm() throws GkException;
-	
+		
 	public int getAvailableBuffer() throws GkException;
 	
 	public void setAvailableBuffer(int availableBuffer) throws GkException;
 	
 	void send(GCodeLine gCodeLine) throws GkException;
+	
+	void killAlarm() throws GkException;
 	
 	void stopMotion() throws GkException;
 	

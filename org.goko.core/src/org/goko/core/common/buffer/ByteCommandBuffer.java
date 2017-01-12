@@ -73,4 +73,20 @@ public class ByteCommandBuffer {
 		}
 	}
 
+
+	/**
+	 * @return the commandDelimiter
+	 */
+	public Byte getCommandDelimiter() {
+		return commandDelimiter;
+	}
+
+
+	/**
+	 * @param commandDelimiter the commandDelimiter to set
+	 */
+	public void setCommandDelimiter(char commandDelimiter) {
+		this.commandDelimiter = new Byte((byte)commandDelimiter);
+	}
+
 }

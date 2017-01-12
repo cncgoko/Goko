@@ -9,7 +9,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.goko.controller.tinyg.controller.TinyG;
+import org.goko.controller.tinyg.controller.TinyGv097;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.controller.topic.TinyGExecutionErrorTopic;
@@ -31,7 +31,7 @@ public class TinyGStateUpdateHandler implements EventHandler {
 	public TinyGStateUpdateHandler(IEventBroker broker) {	
 		this.broker = broker;
 		broker.subscribe(IControllerService.CONTROLLER_TOPIC_STATE_UPDATE, this);
-		broker.subscribe(TinyG.Topic.TinyGExecutionError.TOPIC, this);
+		broker.subscribe(TinyGv097.Topic.TinyGExecutionError.TOPIC, this);
 		
 	}
 
@@ -43,7 +43,7 @@ public class TinyGStateUpdateHandler implements EventHandler {
 		switch(event.getTopic()){
 		case IControllerService.CONTROLLER_TOPIC_STATE_UPDATE:broker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 		break;
-		case TinyG.Topic.TinyGExecutionError.TOPIC: displayErrorMessage(event);
+		case TinyGv097.Topic.TinyGExecutionError.TOPIC: displayErrorMessage(event);
 		break;
 		default:broker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 		}

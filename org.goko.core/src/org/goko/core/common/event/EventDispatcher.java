@@ -19,8 +19,8 @@ package org.goko.core.common.event;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.log.GkLog;
@@ -44,7 +44,7 @@ public class EventDispatcher {
 	 * Constructor
 	 */
 	public EventDispatcher() {
-		listenerList = Collections.synchronizedList(new ArrayList<Object>());
+		listenerList = new CopyOnWriteArrayList<Object>();
 	}
 	/**
 	 * Add a listener
@@ -54,8 +54,10 @@ public class EventDispatcher {
 		if(listener != null){
 			if(listener == this){
 				LOG.error("Cannot add myself as listener");
-			}else{
+			}else if(!this.listenerList.contains(listener)){
 				this.listenerList.add(listener);
+			}else{
+				LOG.error("Listener already existing");
 			}
 		}
 	}
@@ -67,6 +69,7 @@ public class EventDispatcher {
 	public void removeListener(Object listener){
 		if(listener != null){
 			this.listenerList.remove(listener);
+			LOG.error("Removing listener");
 		}
 	}
 

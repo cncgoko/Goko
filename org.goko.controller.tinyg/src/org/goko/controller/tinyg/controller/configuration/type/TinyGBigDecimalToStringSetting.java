@@ -21,7 +21,7 @@ package org.goko.controller.tinyg.controller.configuration.type;
 
 import java.math.BigDecimal;
 
-import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
+import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
 
 public class TinyGBigDecimalToStringSetting extends TinyGSetting<String>{
 

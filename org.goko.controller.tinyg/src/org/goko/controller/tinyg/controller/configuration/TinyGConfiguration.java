@@ -23,12 +23,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
+import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
 import org.goko.controller.tinyg.controller.configuration.type.TinyGStringSetting;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkFunctionalException;
-import org.goko.core.common.exception.GkTechnicalException;
 
 
 
@@ -38,7 +37,7 @@ import org.goko.core.common.exception.GkTechnicalException;
  * @author PsyKo
  *
  */
-public class TinyGConfiguration {
+public class TinyGConfiguration extends AbstractTinyGConfiguration<TinyGConfiguration>{
 	public static final String SYSTEM_SETTINGS = "sys";
 
 	public static final String X_AXIS_SETTINGS = "x";
@@ -109,8 +108,7 @@ public class TinyGConfiguration {
 	private List<TinyGGroupSettings> groups;
 
 	public TinyGConfiguration(){
-		groups   = new ArrayList<TinyGGroupSettings>();
-		initSettings();
+		this(true);
 	}
 	
 	private TinyGConfiguration(boolean initializeGroups){
@@ -164,31 +162,9 @@ public class TinyGConfiguration {
 		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_PATH_CONTROL		,BigDecimal.ZERO));
 		sysgroup.addSetting(new TinyGBigDecimalSetting(DEFAULT_DISTANCE_MODE 		,BigDecimal.ZERO));
 
-		groups.add(sysgroup);
+		addGroup(sysgroup);
 	}
 
-	/**
-	 * @return the groups
-	 */
-	public List<TinyGGroupSettings> getGroups() {
-		return groups;
-	}
-
-	public TinyGGroupSettings getGroup(String identifier) {
-		for (TinyGGroupSettings tinyGGroupSettings : groups) {
-			if(StringUtils.equals(tinyGGroupSettings.getGroupIdentifier(), identifier)){
-				return tinyGGroupSettings;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @param groups the groups to set
-	 */
-	public void setGroups(List<TinyGGroupSettings> groups) {
-		this.groups = groups;
-	}
 	/**
 	 * Returns the setting as a String
 	 * @param identifier the identifier
@@ -207,35 +183,9 @@ public class TinyGConfiguration {
 	 * @throws GkException GkException
 	 */
 	public <T> T getSetting(String identifier, Class<T> clazz) throws GkException{
-		for(TinyGGroupSettings grpSetting : groups){
-			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), SYSTEM_SETTINGS ) ){
-				T setting = getSetting(identifier,grpSetting.getSettings(), clazz);
-				return setting;
-			}
-		}
-		throw new GkFunctionalException("Setting '"+identifier+"' is unknown");
+		return getSetting(SYSTEM_SETTINGS, identifier, clazz);
 	}
 
-	/**
-	 * Returns the setting as the specified type amongst the given list of settings
-	 * @param identifier the identifier
-	 * @param lstSettings th settings to go through
-	 * @param clazz the expected type
-	 * @return the value as clazz
-	 * @throws GkException GkException
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <T> T getSetting(String identifier, List<TinyGSetting> lstSettings, Class<T> clazz) throws GkException{
-		for(TinyGSetting setting : lstSettings){
-			if(StringUtils.equalsIgnoreCase( setting.getIdentifier(), identifier ) ){
-				if(setting.getType() != clazz){
-					throw new GkTechnicalException("Cannot retrieve setting '"+identifier+"' type. Requesting "+clazz+"', got'"+setting.getType()+"'. ");
-				}
-				return (T) setting.getValue();
-			}
-		}
-		throw new GkFunctionalException("Setting '"+identifier+"' is unknown");
-	}
 
 	/**
 	 * Returns the setting as a String
@@ -247,103 +197,18 @@ public class TinyGConfiguration {
 	public String getSetting(String groupIdentifier, String identifier) throws GkException{
 		return getSetting(groupIdentifier, identifier, String.class);
 	}
-	
-	/**
-	 * Returns the setting as the specified type or null if not found
-	 * @param groupIdentifier the identifier of the group
-	 * @param identifier the identifier
-	 * @param clazz the expected type
-	 * @return the value as clazz
-	 * @throws GkException GkException
-	 */
-	public <T> T findSetting(String groupIdentifier, String identifier, Class<T> clazz) throws GkException{
-		for(TinyGGroupSettings grpSetting : groups){
-			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
-				T setting = getSetting(identifier,grpSetting.getSettings(), clazz);				
-				return setting;
-			}
-		}
-		return null;
-	}
-	/**
-	 * Returns the setting as the specified type
-	 * @param groupIdentifier the identifier of the group
-	 * @param identifier the identifier
-	 * @param clazz the expected type
-	 * @return the value as clazz
-	 * @throws GkException GkException
-	 */
-	public <T> T getSetting(String groupIdentifier, String identifier, Class<T> clazz) throws GkException{
-		for(TinyGGroupSettings grpSetting : groups){
-			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
-				T setting = getSetting(identifier,grpSetting.getSettings(), clazz);
-				if(setting == null){
-					throw new GkFunctionalException("Setting '"+identifier+"' is unknown for group "+groupIdentifier);
-				}
-				return setting;
-			}
-		}
-		throw new GkFunctionalException("Unknown  group "+groupIdentifier);
-
-	}
-
-	/**
-	 * Sets the setting value
-	 * @param groupIdentifier the identifier of the group
-	 * @param identifier the identifier
-	 * @param value the value to set
-	 * @throws GkException GkException
-	 */
-	public <T> void setSetting(String groupIdentifier, String identifier, T value) throws GkException{
-		for(TinyGGroupSettings grpSetting : groups){
-			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
-				setSetting(grpSetting, identifier, value);
-				return;
-			}
-		}
-		throw new GkFunctionalException("Setting '"+identifier+"' is unknown");
-	}
-
-	/**
-	 * Sets the setting value
-	 * @param group the TinyGGroupSettings
-	 * @param identifier the identifier
-	 * @param value the value to set
-	 * @throws GkException GkException
-	 */
-	@SuppressWarnings("unchecked")
-	private <T> void setSetting(TinyGGroupSettings group, String identifier, T value) throws GkException{
-		for(TinyGSetting<?> setting : group.getSettings()){
-			if(StringUtils.equalsIgnoreCase( setting.getIdentifier(), identifier ) ){
-				if(value != null && setting.getType() != value.getClass()){
-					throw new GkTechnicalException("Setting '"+identifier+"' type mismatch. Expecting "+setting.getType()+"', got'"+value.getClass()+"'. ");
-				}
-				((TinyGSetting<T>)setting).setValue(value);
-				return;
-			}
-		}
-	}
-	
-	/**
-	 * Determines if this configuration was completely assigned using at least once the setValue(..) method on every setting
-	 * @return <code>true</code> if all settings were assigned, <code>false</code> otherwise
-	 */
-	public boolean isCompletelyLoaded(){
-		for (TinyGGroupSettings tinyGGroupSettings : groups) {
-			if(!tinyGGroupSettings.isCompletelyLoaded()){				
-				return false;
-			}
-		}		
-		return true;
-	}
-	
+		
 	public TinyGConfiguration copy(){
 		TinyGConfiguration copy = new TinyGConfiguration(false);
-		
-		for (TinyGGroupSettings tinyGGroupSettings : groups) {
-			copy.groups.add(tinyGGroupSettings.copy());
-		}	
-		
+		copy.copyFrom(this);
 		return copy;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration#newInstance()
+	 */
+	@Override
+	protected TinyGConfiguration newInstance() {
+		return new TinyGConfiguration(false);
 	}
 }

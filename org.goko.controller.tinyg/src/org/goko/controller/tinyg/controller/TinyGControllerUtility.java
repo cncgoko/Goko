@@ -19,14 +19,9 @@
  */
 package org.goko.controller.tinyg.controller;
 
-import java.util.List;
-
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goko.controller.tinyg.commons.TinyGJsonUtils;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.controller.tinyg.controller.configuration.TinyGGroupSettings;
-import org.goko.controller.tinyg.controller.configuration.TinyGSetting;
-import org.goko.controller.tinyg.json.TinyGJsonUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
@@ -67,7 +62,7 @@ public class TinyGControllerUtility {
 	 */
 	protected static JsonValue toJson(String command){
 		JsonObject value = new JsonObject();
-		value.add(TinyGJsonUtils.GCODE_COMMAND, StringUtils.lowerCase(command));
+		value.add(TinyGv097.GCODE_COMMAND, StringUtils.lowerCase(command));
 		return value;
 	}
 
@@ -79,10 +74,10 @@ public class TinyGControllerUtility {
 	 */
 	protected static Tuple6b updatePosition(Tuple6b lastKnownPosition, JsonObject statusReport){
 		Tuple6b newPosition = new Tuple6b(lastKnownPosition);
-		JsonValue newPositionX = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_X);
-		JsonValue newPositionY = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_Y);
-		JsonValue newPositionZ = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_Z);
-		JsonValue newPositionA = statusReport.get(TinyGJsonUtils.STATUS_REPORT_POSITION_A);
+		JsonValue newPositionX = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_X);
+		JsonValue newPositionY = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_Y);
+		JsonValue newPositionZ = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_Z);
+		JsonValue newPositionA = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_A);
 		if(newPositionX != null){
 			newPosition.setX( Length.valueOf(newPositionX.asBigDecimal(), lastKnownPosition.getX().getUnit()));
 		}
@@ -116,30 +111,5 @@ public class TinyGControllerUtility {
 		case 9: return MachineState.HOMING;
 		default: return MachineState.INITIALIZING;
 		}
-	}
-
-	/**
-	 * Returns a configuration containing only the values that differ from the base configuration. Other values are null
-	 * @param baseConfig the base configuration
-	 * @param newConfig the new configuration
-	 * @return a differential configuration
-	 * @throws GkException GkException
-	 */
-	protected static TinyGConfiguration getDifferentialConfiguration(TinyGConfiguration baseConfig, TinyGConfiguration newConfig) throws GkException{
-		TinyGConfiguration diffConfig = new TinyGConfiguration();
-
-		for(TinyGGroupSettings group : baseConfig.getGroups()){
-			List<TinyGSetting> settings = group.getSettings();
-			for (TinyGSetting tinyGSetting : settings) {
-				Object baseValue = tinyGSetting.getValue();
-				Object newValue = newConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
-				if(!ObjectUtils.equals(baseValue, newValue)){
-					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
-				}else{
-					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), null);
-				}
-			}
-		}
-		return diffConfig;
 	}
 }

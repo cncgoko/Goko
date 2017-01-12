@@ -60,9 +60,9 @@ public class TinyGJogging {
 				}
 											
 				command = getRelativeJogCommand(command, tinygAxis, localStep);
-				tinygCommunicator.send(GkUtils.toBytesList(command));				
+				tinygCommunicator.send(GkUtils.toBytesList(command), true);				
 				if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){					
-					tinygCommunicator.send(GkUtils.toBytesList("G90"));
+					tinygCommunicator.send(GkUtils.toBytesList("G90"), true);
 				}								
 			}
 			
@@ -89,7 +89,7 @@ public class TinyGJogging {
 		tinygService.stopMotion();
 		// Restore previous distance mode		
 		if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){
-			tinygCommunicator.send(GkUtils.toBytesList("G90"));
+			tinygCommunicator.send(GkUtils.toBytesList("G90"), true);
 		}
 		previousDistanceMode  = null;
 	}

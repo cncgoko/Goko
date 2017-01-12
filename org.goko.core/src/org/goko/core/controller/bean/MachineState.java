@@ -33,7 +33,7 @@ public class MachineState {
 	public static final MachineState MOTION_HOLDING = new MachineState(6,"Motion holding");
 	public static final MachineState PROBE_CYCLE 	= new MachineState(7,"Probe cycle");
 	public static final MachineState RUNNING 		= new MachineState(8,"Running");
-	public static final MachineState HOMING 		= new MachineState(9,"Homing");
+	public static final MachineState HOMING 		= new MachineState(9,"Homing");	
 	/** The code of the state */
 	private int code;
 	/** Label of the state */ // TODO : make it work for I18N

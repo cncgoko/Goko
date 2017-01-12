@@ -125,6 +125,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
 		
+		
 	    canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 	    canvasCapabilities.setHardwareAccelerated(true);
 	    canvasCapabilities.setDoubleBuffered(true);
@@ -298,7 +299,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		backgroundColor = JoglViewerPreference.getInstance().getBackgroundColor();
 		gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); 
 		gl.glClearDepth(1.0f); // set clear depth value to farthest
-
+		gl.getMaxRenderbufferSamples();
+		
 		// Enable blending
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);

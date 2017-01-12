@@ -59,6 +59,7 @@ public class ToolRenderer extends AbstractLineRenderer {
 					p = offset.toPoint3d(JoglUtils.JOGL_UNIT);
 				}
 				p.x += getControllerAdapter().getX().doubleValue(JoglUtils.JOGL_UNIT); 
+				System.out.println(p.x);
 				p.y += getControllerAdapter().getY().doubleValue(JoglUtils.JOGL_UNIT);
 				p.z += getControllerAdapter().getZ().doubleValue(JoglUtils.JOGL_UNIT);
 				

@@ -17,13 +17,14 @@
 package org.goko.core.controller.action;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.utils.ICodeBean;
 
 /**
  * Interface describing a controller action
  * @author PsyKo
  *
  */
-public interface IGkControllerAction {
+public interface IGkControllerAction extends ICodeBean {
 	/**
 	 * Determines if the action can be executed at the moment of the call
 	 * @return <code>true</code> if the action can be executed, <code>false</code> otherwise

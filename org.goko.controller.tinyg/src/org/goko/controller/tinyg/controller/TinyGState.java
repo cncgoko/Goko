@@ -94,20 +94,20 @@ public class TinyGState extends MachineValueStore{
 	private void initializeDefaultValue() throws GkException{
 		position = new Tuple6b().setZero();
 		currentUnit = SIPrefix.MILLI(Units.METRE);
-		storeValue(TinyG.STATE, "State", "The state of TinyG controller board", MachineState.UNDEFINED);
+		storeValue(TinyGv097.STATE, "State", "The state of TinyG controller board", MachineState.UNDEFINED);
 		//storeValue(TinyG.POSITION, "Pos", "The position of the machine", new Point3d());
-		storeValue(TinyG.POSITION_X, "X", "The X position of the machine",  Length.ZERO);
-		storeValue(TinyG.POSITION_Y, "Y", "The Y position of the machine",  Length.ZERO);
-		storeValue(TinyG.POSITION_Z, "Z", "The Z position of the machine",  Length.ZERO);
-		storeValue(TinyG.POSITION_A, "A", "The A position of the machine", StringUtils.EMPTY);
-		storeValue(TinyG.VELOCITY, "Velocity", "The current velocity of the machine", Speed.ZERO);
-		storeValue(TinyG.SPINDLE_STATE, "Spindle", "The current state of the spindle", "false");
-		storeValue(TinyG.CONTEXT_UNIT, "Units", "The units in use", StringUtils.EMPTY);
-		storeValue(TinyG.CONTEXT_COORD_SYSTEM, "Coordinates", "The coordinate system",StringUtils.EMPTY);
-		storeValue(TinyG.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
-		storeValue(TinyG.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);
-		storeValue(TinyG.TINYG_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", 0);
-		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
+		storeValue(TinyGv097.POSITION_X, "X", "The X position of the machine",  Length.ZERO);
+		storeValue(TinyGv097.POSITION_Y, "Y", "The Y position of the machine",  Length.ZERO);
+		storeValue(TinyGv097.POSITION_Z, "Z", "The Z position of the machine",  Length.ZERO);
+		storeValue(TinyGv097.POSITION_A, "A", "The A position of the machine", StringUtils.EMPTY);
+		storeValue(TinyGv097.VELOCITY, "Velocity", "The current velocity of the machine", Speed.ZERO);
+		storeValue(TinyGv097.SPINDLE_STATE, "Spindle", "The current state of the spindle", "false");
+		storeValue(TinyGv097.CONTEXT_UNIT, "Units", "The units in use", StringUtils.EMPTY);
+		storeValue(TinyGv097.CONTEXT_COORD_SYSTEM, "Coordinates", "The coordinate system",StringUtils.EMPTY);
+		storeValue(TinyGv097.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
+		storeValue(TinyGv097.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);
+		storeValue(TinyGv097.AVAILABLE_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", 0);
+		storeValue(TinyGv097.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
 		addListener(this);
 		offsets = new HashMap<ICoordinateSystem, Tuple6b>();
 		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
@@ -122,7 +122,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	public int getAvailableBuffer() throws GkException {
-		return getIntegerValue(TinyG.TINYG_BUFFER_COUNT).getValue();
+		return getIntegerValue(TinyGv097.AVAILABLE_BUFFER_COUNT).getValue();
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	public void setAvailableBuffer(int availableBuffer) throws GkException {
-		updateValue(TinyG.TINYG_BUFFER_COUNT, availableBuffer);
+		updateValue(TinyGv097.AVAILABLE_BUFFER_COUNT, availableBuffer);
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class TinyGState extends MachineValueStore{
 	 */
 	public MachineState getState() throws GkException {
 		MachineState state = MachineState.UNDEFINED;
-		MachineValue<MachineState> storedState = getValue(TinyG.STATE, MachineState.class);
+		MachineValue<MachineState> storedState = getValue(TinyGv097.STATE, MachineState.class);
 		if(storedState != null && storedState.getValue() != null){
 			state = storedState.getValue();
 		}
@@ -151,7 +151,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException
 	 */
 	public void setState(MachineState state) throws GkException {
-		updateValue(TinyG.STATE, state);
+		updateValue(TinyGv097.STATE, state);
 	}
 	
 	/**
@@ -160,7 +160,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	public boolean isSpindleOn() throws GkException{
-		return StringUtils.equals(getValue(TinyG.SPINDLE_STATE, String.class).getValue(), TinyG.ON);
+		return StringUtils.equals(getValue(TinyGv097.SPINDLE_STATE, String.class).getValue(), TinyGv097.ON);
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	public boolean isSpindleOff() throws GkException{
-		return StringUtils.equals(getValue(TinyG.SPINDLE_STATE, String.class).getValue(), TinyG.OFF);
+		return StringUtils.equals(getValue(TinyGv097.SPINDLE_STATE, String.class).getValue(), TinyGv097.OFF);
 	}
 
 	/**
@@ -186,13 +186,13 @@ public class TinyGState extends MachineValueStore{
 	public void setGCodeContext(GCodeContext gcodeContext) throws GkException {
 		this.gcodeContext = gcodeContext;
 		
-		updateValue(TinyG.CONTEXT_UNIT, String.valueOf(gcodeContext.getUnit()));
+		updateValue(TinyGv097.CONTEXT_UNIT, String.valueOf(gcodeContext.getUnit()));
 		setCurrentUnit( gcodeContext.getUnit().getUnit());
 		setWorkPosition(gcodeContext.getPosition());
-		updateValue(TinyG.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
-		updateValue(TinyG.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
-		updateValue(TinyG.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));		
-		updateValue(TinyG.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());		
+		updateValue(TinyGv097.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
+		updateValue(TinyGv097.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
+		updateValue(TinyGv097.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));		
+		updateValue(TinyGv097.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());		
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException
 	 */
 	public Speed getVelocity() throws GkException {
-		return getValue(TinyG.VELOCITY, Speed.class).getValue();
+		return getValue(TinyGv097.VELOCITY, Speed.class).getValue();
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class TinyGState extends MachineValueStore{
 	 * @throws GkException
 	 */
 	public void setVelocity(Speed velocity) throws GkException {
-		updateValue(TinyG.VELOCITY, velocity);
+		updateValue(TinyGv097.VELOCITY, velocity);
 	}
 
 	/**
@@ -263,10 +263,10 @@ public class TinyGState extends MachineValueStore{
 	public void setWorkPosition(Tuple6b position) throws GkException {
 		this.position = new Tuple6b(position);		
 		String a = QuantityUtils.format(position.getA(), GokoPreference.getInstance().getDigitCount(), true, true);
-		updateValue(TinyG.POSITION_X, position.getX());
-		updateValue(TinyG.POSITION_Y, position.getY());
-		updateValue(TinyG.POSITION_Z, position.getZ());
-		updateValue(TinyG.POSITION_A, a);
+		updateValue(TinyGv097.POSITION_X, position.getX());
+		updateValue(TinyGv097.POSITION_Y, position.getY());
+		updateValue(TinyGv097.POSITION_Z, position.getZ());
+		updateValue(TinyGv097.POSITION_A, a);
 	}
 
 	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {

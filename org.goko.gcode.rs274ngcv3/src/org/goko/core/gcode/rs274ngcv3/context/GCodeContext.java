@@ -92,6 +92,30 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	private Angle c;
 	/**
+	 * X coordinate in the machine coordinate system
+	 */
+	private Length machineX;
+	/**
+	 *  Y coordinate in the machine coordinate system
+	 */
+	private Length machineY;
+	/**
+	 *  Z coordinate in the machine coordinate system
+	 */
+	private Length machineZ;
+	/**
+	 *  A coordinate in the machine coordinate system
+	 */
+	private Angle machineA;
+	/**
+	 *  B coordinate in the machine coordinate system
+	 */
+	private Angle machineB;
+	/**
+	 *  C coordinate in the machine coordinate system
+	 */
+	private Angle machineC;
+	/**
 	 * Coordinates system offsets
 	 */
 	private Map<ICoordinateSystem, Tuple6b> coordinateSystemData;
@@ -119,6 +143,12 @@ public class GCodeContext implements IGCodeContext{
 		this.a = Angle.ZERO;
 		this.b = Angle.ZERO;
 		this.c = Angle.ZERO;
+		this.machineX = Length.ZERO;
+		this.machineY = Length.ZERO;
+		this.machineZ = Length.ZERO;
+		this.machineA = Angle.ZERO;
+		this.machineB = Angle.ZERO;
+		this.machineC = Angle.ZERO;
 		this.initCoordinateSystemData();
 	}
 
@@ -146,6 +176,12 @@ public class GCodeContext implements IGCodeContext{
 		this.a = context.a;
 		this.b = context.b;
 		this.c = context.c;
+		this.machineX = context.machineX;
+		this.machineY = context.machineY;
+		this.machineZ = context.machineZ;
+		this.machineA = context.machineA;
+		this.machineB = context.machineB;
+		this.machineC = context.machineC;
 
 		// Copy coordinate systems data
 		if(!context.coordinateSystemData.isEmpty()){
@@ -323,6 +359,37 @@ public class GCodeContext implements IGCodeContext{
 			setC(c);
 		}
 	}
+	
+	/**
+	 * Update the position
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param z the z coordinate
+	 * @param a the a coordinate
+	 * @param b the b coordinate
+	 * @param c the c coordinate
+	 * @throws GkException GkException
+	 */
+	public void setMachinePosition(Length x, Length y, Length z, Angle a, Angle b, Angle c) throws GkException{
+		if( x != null) {
+			setMachineX(x);
+		}
+		if( y != null) {
+			setMachineY(y);
+		}
+		if( z != null) {
+			setMachineZ(z);
+		}
+		if( a != null) {
+			setMachineA(a);
+		}
+		if( b != null) {
+			setMachineB(b);
+		}
+		if( c != null) {
+			setMachineC(c);
+		}
+	}
 
 	/**
 	 * Update the position
@@ -332,9 +399,21 @@ public class GCodeContext implements IGCodeContext{
 	public void setPosition(Tuple6b tuple) throws GkException{
 		setPosition(tuple.getX(),tuple.getY(),tuple.getZ(),tuple.getA(),tuple.getB(),tuple.getC());
 	}
+	
+	/**
+	 * Update the machine position
+	 * @param tuple the tuple to get the position from
+	 * @throws GkException GkException
+	 */
+	public void setMachinePosition(Tuple6b tuple) throws GkException{
+		setMachinePosition(tuple.getX(),tuple.getY(),tuple.getZ(),tuple.getA(),tuple.getB(),tuple.getC());
+	}
 
 	public Tuple6b getPosition() throws GkException{
 		return new Tuple6b(getX(),getY(),getZ(),getA(),getB(),getC());
+	}
+	public Tuple6b getMachinePosition() throws GkException{
+		return new Tuple6b(getMachineX(),getMachineY(),getMachineZ(),getMachineA(),getMachineB(),getMachineC());
 	}
 	/**
 	 * @return the x
@@ -476,6 +555,90 @@ public class GCodeContext implements IGCodeContext{
 	 */
 	public void setMotionControl(EnumMotionControl motionControl) {
 		this.motionControl = motionControl;
+	}
+
+	/**
+	 * @return the machineX
+	 */
+	public Length getMachineX() {
+		return machineX;
+	}
+
+	/**
+	 * @param machineX the machineX to set
+	 */
+	public void setMachineX(Length machineX) {
+		this.machineX = machineX;
+	}
+
+	/**
+	 * @return the machineY
+	 */
+	public Length getMachineY() {
+		return machineY;
+	}
+
+	/**
+	 * @param machineY the machineY to set
+	 */
+	public void setMachineY(Length machineY) {
+		this.machineY = machineY;
+	}
+
+	/**
+	 * @return the machineZ
+	 */
+	public Length getMachineZ() {
+		return machineZ;
+	}
+
+	/**
+	 * @param machineZ the machineZ to set
+	 */
+	public void setMachineZ(Length machineZ) {
+		this.machineZ = machineZ;
+	}
+
+	/**
+	 * @return the machineA
+	 */
+	public Angle getMachineA() {
+		return machineA;
+	}
+
+	/**
+	 * @param machineA the machineA to set
+	 */
+	public void setMachineA(Angle machineA) {
+		this.machineA = machineA;
+	}
+
+	/**
+	 * @return the machineB
+	 */
+	public Angle getMachineB() {
+		return machineB;
+	}
+
+	/**
+	 * @param machineB the machineB to set
+	 */
+	public void setMachineB(Angle machineB) {
+		this.machineB = machineB;
+	}
+
+	/**
+	 * @return the machineC
+	 */
+	public Angle getMachineC() {
+		return machineC;
+	}
+
+	/**
+	 * @param machineC the machineC to set
+	 */
+	public void setMachineC(Angle machineC) {
+		this.machineC = machineC;
 	}
 
 }

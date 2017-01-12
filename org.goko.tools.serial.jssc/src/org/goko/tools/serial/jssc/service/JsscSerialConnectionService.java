@@ -240,6 +240,14 @@ public class JsscSerialConnectionService extends AbstractGokoService implements 
 	public void addConnectionListener(IConnectionListener listener) throws GkException {
 		connectionListeners.add(new WeakReference<IConnectionListener>(listener));
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.IConnectionService#removeConnectionListener(org.goko.core.connection.IConnectionListener)
+	 */
+	@Override
+	public void removeConnectionListener(IConnectionListener listener) throws GkException {
+		connectionListeners.remove(listener);		
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.connection.IConnectionService#clearOutputBuffer()

@@ -18,7 +18,7 @@
  */
 package org.goko.controller.tinyg.controller.configuration;
 
-
+import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
 
 public class TinyGAxisSettings extends TinyGGroupSettings {
 
