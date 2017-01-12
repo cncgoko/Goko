@@ -299,11 +299,11 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 		if(statusReport.isObject()){
 			JsonObject 	statusReportObject = (JsonObject) statusReport;
 
-			Tuple6b 					 workPosition 	= findWorkPosition(statusReportObject);
-			MachineState 				 state 			= findState(statusReportObject);
-			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);
 			EnumUnit 		 units 			= findUnits(statusReportObject);
-			Speed 		 	velocity 		= findVelocity(statusReportObject);
+			Tuple6b 		 workPosition 	= findWorkPosition(statusReportObject, units);
+			MachineState 	 state 			= findState(statusReportObject);
+			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);			
+			Speed 		 	 velocity 		= findVelocity(statusReportObject);
 			Speed 			 feedrate 		= findFeedrate(statusReportObject);
 			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getGCodeContext());
@@ -355,9 +355,9 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * @return
 	 * @throws GkException
 	 */
-	private Tuple6b findWorkPosition(JsonObject statusReport) throws GkException{
+	private Tuple6b findWorkPosition(JsonObject statusReport, EnumUnit unit) throws GkException{
 		Tuple6b 	workPosition = tinyg.getGCodeContext().getPosition();
-		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport);
+		workPosition = TinyGControllerUtility.updatePosition(workPosition, statusReport, unit);
 		return workPosition;
 	}
 	
@@ -378,8 +378,9 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * Finds the units declaration in the status report
 	 * @param statusReport the status report
 	 * @return {@link EnumGCodeCommandUnit}
+	 * @throws GkException GkException 
 	 */
-	private EnumUnit findUnits(JsonObject statusReport){
+	private EnumUnit findUnits(JsonObject statusReport) throws GkException{
 		JsonValue unitReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_UNITS);
 		if(unitReport != null){
 			int units = unitReport.asInt();
@@ -389,7 +390,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 				return EnumUnit.INCHES;
 			}
 		}
-		return null;
+		return  tinyg.getGCodeContext().getUnit();
 	}
 
 	/**
