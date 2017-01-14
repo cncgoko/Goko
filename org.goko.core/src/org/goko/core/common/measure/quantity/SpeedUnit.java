@@ -3,7 +3,6 @@
  */
 package org.goko.core.common.measure.quantity;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,10 +62,5 @@ public class SpeedUnit {
 	public static List<Unit<Speed>> getAll(){
 		return new ArrayList<Unit<Speed>>(mapUnitBySymbol.values());
 	}
-	public static void main(String[] args) {
-		Speed f1 = new Speed(new BigDecimal("100.0"), INCH_PER_MINUTE);
-		Length l1 = Length.valueOf(50, LengthUnit.INCH);
-		Time t1 = l1.divide(f1);		
-		System.out.println(t1.value(TimeUnit.SECOND).toPlainString());		
-	}
+
 }

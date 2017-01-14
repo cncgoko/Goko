@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ShuttlXpress
 Bundle-SymbolicName: org.goko.tools.shuttlexpress;singleton:=true
-Bundle-Version: 0.3.2.qualifier
+Bundle-Version: 0.3.3.qualifier
 Require-Bundle: org.goko.core,
  org.eclipse.e4.core.di;bundle-version="1.1.0",
  org.eclipse.e4.ui.workbench.renderers.swt;bundle-version="0.10.2",

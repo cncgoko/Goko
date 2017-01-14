@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Autoleveller Modifier
 Bundle-SymbolicName: org.goko.tools.autoleveler;singleton:=true
-Bundle-Version: 0.3.2.qualifier
+Bundle-Version: 0.3.3.qualifier
 Bundle-Activator: org.goko.tools.autoleveler.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.ibm.icu.math;version="54.1.1",
@@ -29,7 +29,7 @@ Require-Bundle: org.goko.core,
  org.jogamp.jogl;bundle-version="2.0.2",
  org.goko.gcode.rs274ngcv3;bundle-version="0.0.1",
  org.goko.core.workspace,
- org.goko.gcode.rs274ngcv3.xml;bundle-version="0.3.2"
+ org.goko.gcode.rs274ngcv3.xml
 Service-Component: OSGI-INF/AutoLevelerModifierBuilder.xml,
  OSGI-INF/AutoLevelerServiceImpl.xml
 Export-Package: org.goko.tools.autoleveler.bean.grid,

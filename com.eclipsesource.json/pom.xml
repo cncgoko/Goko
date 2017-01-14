@@ -10,7 +10,7 @@
   <parent>
   	<groupId>org.goko</groupId>
   	<artifactId>org.goko.build.parent</artifactId>
-  	<version>0.3.2-SNAPSHOT</version>
+  	<version>0.3.3-SNAPSHOT</version>
   	<relativePath>../org.goko.build.parent</relativePath>
   </parent>
   
