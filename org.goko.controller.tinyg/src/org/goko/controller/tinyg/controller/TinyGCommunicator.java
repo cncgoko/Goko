@@ -227,9 +227,11 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator {
 			Tuple6b 		 workPosition 	= findWorkPosition(statusReportObject, units);
 			MachineState 	 state 			= findState(statusReportObject);
 			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);			
+
 			Speed 		 	 velocity 		= findVelocity(statusReportObject, units);
 			Speed 			 feedrate 		= findFeedrate(statusReportObject, units);
 			EnumCoordinateSystem cs 		= findCoordinateSystem(statusReportObject);
+
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getGCodeContext());
 
 			gcodeContext.setPosition(workPosition);			
@@ -271,6 +273,7 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator {
 	protected void handleNonJsonData(String data) throws GkException {
 		tinyg.refreshStatus();
 	}
+
 	
 	/**
 	 * Extract state from status report

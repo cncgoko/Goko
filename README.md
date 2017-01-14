@@ -1,6 +1,6 @@
 # Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
 
-Current version  : ```0.3.2 Development version```
+Current version  : ```0.3.3 Development branch```
 
 ##Description
 
@@ -21,20 +21,21 @@ You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
 
 You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
 
-##Changelog
+##Changelog - Version 0.3.2 [2017-01-14]
 
 ###Added
-- Support for **Grbl v0.9**
-- New GCode parsing functionalities,
-- Added GCode modifiers support (Translate, scale, segmentize...),
-- Added **auto-leveler**,
-- Added **wrapper** to convert GCode to 4 axis,
-- Added support for **Shuttle XPress** device,
-- Added save/load project features,
-- Added execution queue for multiple files execution,
-- Improved jog functionnality,
-- Online documentation http://docs.goko.fr/
+ - *Code macro support*,
+ - Added Grbl configuration watcher to maintain a stable and comptabile Grbl configuration,
+ - Added Serial Console user defined display filter to avoid flooding the console,
+ - Added preference to set the default view in 3D viewer at application startup ( in _Viewer_ page),
+ - Added Reset action in command panel for both TinyG and Grbl,
 
 ###Fixed
-- Fixed Grbl buffering issue, 
-- Fixed High CPU while connected to serial - [Issue #22](https://github.com/cncgoko/Goko/issues/22)
+ - Fixed error at startup `org.eclipse.swt.SWTException: Failed to execute runnable`,
+ - Fixed Grbl not completing execution when Grbl errors happened during streaming,
+ - Fixed size of Target board selection dialog not being displayed on high DPI monitors,
+ - Fixed rendering of arc motion with rotary axis,
+ - Fixed a bug where configured DRO settings were not saved,
+ - Fixed a bug where the update confirmation was covered by the Progress dialog,
+ - Fixed TinyG controller wrong handling of Inch units
+

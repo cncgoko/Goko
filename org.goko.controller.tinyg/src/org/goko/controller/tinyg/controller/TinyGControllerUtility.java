@@ -26,6 +26,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.controller.bean.MachineState;
+import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.math.Tuple6b;
 
 import com.eclipsesource.json.JsonObject;
@@ -72,20 +73,20 @@ public class TinyGControllerUtility {
 	 * @param statusReport
 	 * @return
 	 */
-	protected static Tuple6b updatePosition(Tuple6b lastKnownPosition, JsonObject statusReport){
+	protected static Tuple6b updatePosition(Tuple6b lastKnownPosition, JsonObject statusReport, EnumUnit unit){
 		Tuple6b newPosition = new Tuple6b(lastKnownPosition);
 		JsonValue newPositionX = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_X);
 		JsonValue newPositionY = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_Y);
 		JsonValue newPositionZ = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_Z);
 		JsonValue newPositionA = statusReport.get(TinyGv097.STATUS_REPORT_POSITION_A);
 		if(newPositionX != null){
-			newPosition.setX( Length.valueOf(newPositionX.asBigDecimal(), lastKnownPosition.getX().getUnit()));
+			newPosition.setX( Length.valueOf(newPositionX.asBigDecimal(), unit.getUnit()));
 		}
 		if(newPositionY != null){
-			newPosition.setY( Length.valueOf(newPositionY.asBigDecimal() , lastKnownPosition.getY().getUnit()));
+			newPosition.setY( Length.valueOf(newPositionY.asBigDecimal() , unit.getUnit()));
 		}
 		if(newPositionZ != null){
-			newPosition.setZ( Length.valueOf(newPositionZ.asBigDecimal() , lastKnownPosition.getZ().getUnit()));
+			newPosition.setZ( Length.valueOf(newPositionZ.asBigDecimal() , unit.getUnit()));
 		}
 		if(newPositionA != null){
 			newPosition.setA( Angle.valueOf(newPositionA.asBigDecimal() , lastKnownPosition.getA().getUnit()));
