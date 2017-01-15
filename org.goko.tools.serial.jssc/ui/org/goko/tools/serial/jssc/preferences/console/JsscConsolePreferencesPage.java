@@ -45,12 +45,12 @@ public class JsscConsolePreferencesPage extends GkPreferencesPage {
 	
 	public JsscConsolePreferencesPage() {
 		setTitle("Serial console");
-		lstFilter = new ArrayList<JsscConsoleFilter>();
 	}
 
 	
 	@Override
 	protected Control createContents(final Composite parentComposite) {
+		lstFilter = new ArrayList<JsscConsoleFilter>();
 		Composite parent = new Composite(parentComposite, SWT.NONE);
 		parent.setLayout(new GridLayout(2, false));
 		
@@ -265,7 +265,9 @@ public class JsscConsolePreferencesPage extends GkPreferencesPage {
 	 */
 	@Override
 	public boolean performOk() {
-		SerialConnectionPreference.getInstance().setFilters(lstFilter);
+		if(lstFilter != null){
+			SerialConnectionPreference.getInstance().setFilters(lstFilter);
+		}
 		return super.performOk();
 	}
 
