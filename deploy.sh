@@ -2,7 +2,7 @@
 
 renameFolders(){
 	echo "Renaming folder $1 to $2"
-	curl -u $FTP_USER:$FTP_PASS $TARGET/$UPDATE_FOLDER/ -Q "-RNFR $1" -Q "-RNTO $2"
+	curl -u $VAR1:$VAR2 $TARGET/$UPDATE_FOLDER/ -Q "-RNFR $1" -Q "-RNTO $2"
 
 }
 
@@ -27,7 +27,7 @@ exportRepository(){
 # Let's do it
 if [ $updateRepository == 'true' ]
 then
-	if curl -u $FTP_USER:$FTP_PASS --output /dev/null --silent --head --fail "$TARGET/$UPDATE_FOLDER/$gokoVersion"; then
+	if curl -u $VAR1:$VAR2 --output /dev/null --silent --head --fail "$TARGET/$UPDATE_FOLDER/$gokoVersion/"; then
 		# previous repo already exists, let's archive it
 		archiveRepository
 	fi
