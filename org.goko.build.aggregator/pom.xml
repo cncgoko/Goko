@@ -22,11 +22,13 @@
 		<module>../org.goko.tools.viewer.jogl</module>
 		<module>../org.goko.tools.macro</module>
 
+
 		<module>../org.goko.gcode.rs274ngcv3</module>
 		<module>../org.goko.gcode.rs274ngcv3.jogl</module>
 		<module>../org.goko.gcode.rs274ngcv3.ui</module>
 		<module>../org.goko.gcode.rs274ngcv3.xml</module>
 
+		<module>../org.goko.controller.tinyg.commons</module>
 		<module>../org.goko.controller.tinyg</module>
 		<module>../org.goko.controller.grbl.v08</module>
 		<module>../org.goko.controller.grbl.v09</module>
