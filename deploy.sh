@@ -27,7 +27,7 @@ exportRepository(){
 # Let's do it
 if [ $updateRepository == 'true' ]
 then
-	if curl --output /dev/null --silent --head --fail "$TARGET/$UPDATE_FOLDER/$gokoVersion"; then
+	if curl -u $FTP_USER:$FTP_PASS --output /dev/null --silent --head --fail "$TARGET/$UPDATE_FOLDER/$gokoVersion"; then
 		# previous repo already exists, let's archive it
 		archiveRepository
 	fi
