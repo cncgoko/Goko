@@ -38,4 +38,4 @@ You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-
  - Fixed a bug where configured DRO settings were not saved,
  - Fixed a bug where the update confirmation was covered by the Progress dialog,
  - Fixed TinyG controller wrong handling of Inch units
-
+ - Fixed error when sending Grbl configuration
