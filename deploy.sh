@@ -1,17 +1,5 @@
 #!/bin/bash
 
-#$1 is baseFolder, $2 is subfolders array
-deleteFolders(){
-	#for file in $(curl -s -l -u $VAR1:$VAR2 $TARGET$1); 
-	#do
-	# echo "Removing file www/download/$1$file"
-	# curl -u $VAR1:$VAR2 $TARGET$1 -X "DELE $file"
-	#done
-	#echo "Removing folder www/download/$1"
-	#curl -u $VAR1:$VAR2 $TARGET -X "RMD $1"
-	
-}
-
 renameFolders(){
 	echo "Renaming folder $1 to $2"
 	curl -u $FTP_USER:$FTP_PASS ftp://ftp.goko.fr/www/docs/ -Q "-RNFR $1" -Q "-RNTO $2"
