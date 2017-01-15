@@ -646,6 +646,13 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 				cfgCommand.addAll(GkUtils.toBytesList(grblSetting.getIdentifier()+"="+grblSetting.getValueAsString() ));
 				communicator.send( cfgCommand );
 				cfgCommand.clear();
+				// Start of dirty hack to avoid flooding Grbl RX buffer. Need to work on a proper solution
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
+				// End of dirty hack to avoid flooding Grbl RX buffer. Need to work on a proper solution
 			}
 		}
 	}

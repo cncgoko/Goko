@@ -686,17 +686,26 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void setConfiguration(GrblConfiguration configuration) throws GkException {
-		this.configuration = configuration;
+		
 		if(CollectionUtils.isNotEmpty( configuration.getLstGrblSetting() )){
 			List<GrblSetting<?>> lstSetting = configuration.getLstGrblSetting();
 			List<Byte> cfgCommand = new ArrayList<Byte>();
-			for (GrblSetting<?> grblSetting : lstSetting) {
-				cfgCommand.addAll(GkUtils.toBytesList(grblSetting.getIdentifier()+"="+grblSetting.getValueAsString() ));
+			
+			for (GrblSetting<?> newGrblSetting : lstSetting) {
+				cfgCommand.addAll(GkUtils.toBytesList(newGrblSetting.getIdentifier()+"="+newGrblSetting.getValueAsString() ));
 				communicator.send( cfgCommand );
 				cfgCommand.clear();
-				notifyConfigurationChanged(grblSetting.getIdentifier());
+				notifyConfigurationChanged(newGrblSetting.getIdentifier());
+				// Start of dirty hack to avoid flooding Grbl RX buffer. Need to work on a proper solution
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
+				// End of dirty hack to avoid flooding Grbl RX buffer. Need to work on a proper solution
 			}			
 		}
+		this.configuration = configuration;
 	}
 
 	/** (inheritDoc)
