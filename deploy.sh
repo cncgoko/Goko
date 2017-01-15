@@ -11,7 +11,7 @@ archiveRepository(){
   echo "Archiving repository..."
   timestamp=`date +"%Y%m%d%H%M%S"`
   archivedRepoName=$gokoVersion"_"$timestamp
-  curl -u $VAR1:$VAR2 $TARGET$1/update/ -Q "-RNFR $1" -Q "-RNTO $2"
+  curl -u $VAR1:$VAR2 $TARGET$1/update/ -Q "-RNFR $gokoVersion" -Q "-RNTO $archivedRepoName"
   
 }
 
