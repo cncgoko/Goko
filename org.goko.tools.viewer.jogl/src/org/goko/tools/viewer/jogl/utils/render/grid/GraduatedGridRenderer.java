@@ -51,9 +51,9 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		setLayerId(Layer.LAYER_GRIDS);
 		setCode(id);
 		gridRenderer = new GridRenderer(gcodeContextProvider);		
-		lstAnnotations = new ArrayList<TextRenderer>();
-		
+		lstAnnotations = new ArrayList<TextRenderer>();		
 		addRenderer(gridRenderer);
+		setUseAlpha(true);
 	}
 
 	protected void buildRenderers() throws GkException{
