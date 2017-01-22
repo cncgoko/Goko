@@ -178,6 +178,7 @@ public class MacroManagementPart extends GkUiComponent<MacroManagementController
 			public void mouseUp(MouseEvent e) {
 				try {
 					getController().createNewMacro();
+					getController().enableEditionMode();
 				} catch (GkException e1) {
 					LOG.error(e1);
 				}
