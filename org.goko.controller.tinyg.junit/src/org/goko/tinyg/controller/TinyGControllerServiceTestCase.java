@@ -2,6 +2,7 @@ package org.goko.tinyg.controller;
 
 import java.math.BigDecimal;
 
+import org.goko.controller.tinyg.controller.TinyGCommunicator;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
@@ -59,8 +60,9 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		super.setUp();
 		serialEmulator = new SerialConnectionEmulator();
 		serialEmulator.setDebugOutputConsole(true);
-		tinyg = new TinyGControllerService();		
-		tinyg.setConnectionService(serialEmulator);
+		TinyGCommunicator communicator = new TinyGCommunicator();
+		communicator.setConnectionService(serialEmulator);
+		tinyg = new TinyGControllerService(communicator);				
 		gcodeService = new RS274NGCServiceImpl();
 		tinyg.setGCodeService(gcodeService);
 		tinyg.start(); 				  // Start the TinyG service
@@ -184,18 +186,6 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"unit\":1}},\"f\":[1,0,0,0]}");		
 		assertEquals(LengthUnit.MILLIMETRE, tinyg.getCurrentUnit());
 	}
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public void testUnsupportedAction() throws Exception{	
-		try{
-			tinyg.getControllerAction("INCONNU");
-			fail();
-		}catch(GkFunctionalException e){
-			AssertGkFunctionalException.assertException(e, "TNG-004", "INCONNU", "Controller for TinyG v0.97");
-		}
-	}
 	
 	/**
 	 * 
@@ -232,27 +222,27 @@ public class TinyGControllerServiceTestCase extends TestCase {
 
 		
 		tinyg.jog(EnumControllerAxis.X_POSITIVE, Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X1.000\n",1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G91G1F1000X1.000\n",1000);
 		
 		
 		tinyg.jog(EnumControllerAxis.X_NEGATIVE, Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000X-1.000\n",1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G91G1F1000X-1.000\n",1000);
 		
 		
 		tinyg.jog(EnumControllerAxis.Y_POSITIVE, Length.valueOf("0.01", LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y0.010\n",1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G91G1F1000Y0.010\n",1000);
 		
 		
 		tinyg.jog(EnumControllerAxis.Y_NEGATIVE, Length.valueOf("0.01", LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Y-0.010\n",1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G91G1F1000Y-0.010\n",1000);
 		
 		
 		tinyg.jog(EnumControllerAxis.Z_POSITIVE, Length.valueOf("2.035", LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z2.035\n",1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G91G1F1000Z2.035\n",1000);
 		
 		
 		tinyg.jog(EnumControllerAxis.Z_NEGATIVE, Length.valueOf(BigDecimal.ONE, LengthUnit.MILLIMETRE), Speed.valueOf("1000", SpeedUnit.MILLIMETRE_PER_MINUTE));		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G1F1000Z-2.035\n",1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "G91G1F1000Z-1.000\n",1000);
 		
 	}
 	/** (inheritDoc)
