@@ -19,10 +19,6 @@
  */
 package org.goko.controller.tinyg.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.goko.controller.tinyg.controller.actions.TinyGCycleStartAction;
 import org.goko.controller.tinyg.controller.actions.TinyGFeedHoldAction;
 import org.goko.controller.tinyg.controller.actions.TinyGHomingAction;
 import org.goko.controller.tinyg.controller.actions.TinyGKillAlarmAction;
@@ -33,87 +29,36 @@ import org.goko.controller.tinyg.controller.actions.TinyGSpindleOnAction;
 import org.goko.controller.tinyg.controller.actions.TinyGStartJogAction;
 import org.goko.controller.tinyg.controller.actions.TinyGStopAction;
 import org.goko.controller.tinyg.controller.actions.TinyGStopJogAction;
-import org.goko.core.controller.action.IGkControllerAction;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.action.ControllerActionFactory;
 
-public class TinyGActionFactory {
-	private Map<String, IGkControllerAction> mapAction;
+public class TinyGActionFactory extends ControllerActionFactory{	
+	/** The target controller service */
 	private TinyGControllerService controllerService;
 
 	/**
 	 * @param controllerService
 	 */
-	protected TinyGActionFactory(TinyGControllerService controllerService) {
+	public TinyGActionFactory(TinyGControllerService controllerService) {
 		super();
 		this.controllerService = controllerService;
-		mapAction = new HashMap<String, IGkControllerAction>();
-		createHomingAction();
-		createCycleStartAction();
-		createStopAction();
-		createFeedHoldAction();
-		createResetZeroAction();
-		createJogStartAction();
-		createJogStopAction();
-		createSpindleAction();
-		createKillAlarmAction();
-		createResetAction();
-	}
-	
-	private void createKillAlarmAction() {		
-		TinyGKillAlarmAction action = new TinyGKillAlarmAction(controllerService);
-		mapAction.put(action.getId(), action);
 	}
 
-	private void createJogStopAction(){
-		TinyGStopJogAction action = new TinyGStopJogAction(controllerService);
-		mapAction.put(action.getId(), action);
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.action.ControllerActionFactory#createActions()
+	 */
+	@Override
+	public void createActions() throws GkException {
+		add(new TinyGFeedHoldAction(controllerService));
+		add(new TinyGKillAlarmAction(controllerService));
+		add(new TinyGResetAction(controllerService));
+		add(new TinyGResetZeroAction(controllerService));
+		add(new TinyGSpindleOffAction(controllerService));
+		add(new TinyGSpindleOnAction(controllerService));
+		add(new TinyGStartJogAction(controllerService));
+		add(new TinyGStopAction(controllerService));
+		add(new TinyGStopJogAction(controllerService));
+		add(new TinyGHomingAction(controllerService));
 	}
 
-	private void createJogStartAction(){
-		TinyGStartJogAction action = new TinyGStartJogAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
-	private void createResetZeroAction() {
-		TinyGResetZeroAction action = new TinyGResetZeroAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
-
-	private void createFeedHoldAction() {
-		TinyGFeedHoldAction action = new TinyGFeedHoldAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
-
-	private void createStopAction() {
-		TinyGStopAction action = new TinyGStopAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
-
-	private void createCycleStartAction() {
-		TinyGCycleStartAction action = new TinyGCycleStartAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
-
-	private void createHomingAction(){
-		TinyGHomingAction action = new TinyGHomingAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
-
-	private void createSpindleAction(){
-		TinyGSpindleOffAction action = new TinyGSpindleOffAction(controllerService);
-		mapAction.put(action.getId(), action);
-		TinyGSpindleOnAction actionOn = new TinyGSpindleOnAction(controllerService);
-		mapAction.put(actionOn.getId(), actionOn);
-	}
-	
-	protected IGkControllerAction findAction(String id){
-		IGkControllerAction action = null;
-		if(mapAction.containsKey(id)){
-			action = mapAction.get(id);
-		}
-		return action;
-	}
-	
-	private void createResetAction() {
-		TinyGResetAction action = new TinyGResetAction(controllerService);
-		mapAction.put(action.getId(), action);
-	}
 }

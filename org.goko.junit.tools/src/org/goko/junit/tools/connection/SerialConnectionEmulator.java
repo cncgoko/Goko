@@ -208,4 +208,5 @@ public class SerialConnectionEmulator extends ConnectionServiceAdapter implement
 		this.debugOutputConsole = debugOutputConsole;
 	}
 
+
 }

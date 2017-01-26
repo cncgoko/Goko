@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.commons.jog.AbstractTinyGJogger;
@@ -21,6 +22,7 @@ import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.event.ObservableDelegate;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
@@ -36,12 +38,16 @@ import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
+import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
+import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -51,11 +57,12 @@ import com.eclipsesource.json.JsonObject;
  * @author Psyko
  * @date 8 janv. 2017
  */
-public abstract class AbstractTinyGControllerService<T extends ITinyGControllerService,
+public abstract class AbstractTinyGControllerService<T extends ITinyGControllerService<C>,
 													 S extends AbstractTinyGState,
 													 C extends AbstractTinyGConfiguration<C>,
-													 P extends AbstractTinyGCommunicator<T>,
-													 J extends AbstractTinyGJogger<T, P>> extends EventDispatcher implements ITinyGControllerService{
+													 P extends AbstractTinyGCommunicator<C, T>,
+													 J extends AbstractTinyGJogger<C, T, P>,
+													 X extends AbstractTinyGExecutor<T>> extends EventDispatcher implements ITinyGControllerService<C>{
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(AbstractTinyGControllerService.class);
 	/** Bean holding the internal state of the controller */
@@ -72,6 +79,14 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	private List<ITinyGConfigurationListener<C>> configurationListener;
 	/** Jogger utility*/
 	private J jogger;
+	/** Executor */
+	private X executor;
+	/** GCode service */
+	private IRS274NGCService gcodeService;
+	/** Planner buffer check for execution */
+	private boolean plannerBufferCheck;
+	/** The execution monitor service */
+	private IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService;
 	/**
 	 * Constructor
 	 * @param internalState the internal state object
@@ -89,6 +104,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		this.actionFactory = createActionFactory();		
 		this.actionFactory.createActions();
 		this.jogger = createJogger();
+		this.executor = createExecutor();
 	}
 
 	/**
@@ -201,8 +217,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	 */
 	@Override
 	public void cancelFileSending() throws GkException {
-		// TODO Auto-generated method stub
-		
+		stopMotion();
 	}
 
 	/** (inheritDoc)
@@ -235,35 +250,19 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	 */
 	@Override
 	public CompletionService<ProbeResult> probe(ProbeRequest probeRequest) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProbeRequest> lstProbeRequest = new ArrayList<ProbeRequest>();
+		lstProbeRequest.add(probeRequest);
+		return probe(lstProbeRequest);
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.controller.IProbingService#probe(java.util.List)
-	 */
-	@Override
-	public CompletionService<ProbeResult> probe(List<ProbeRequest> probeRequest) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IProbingService#checkReadyToProbe()
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#checkReadyToProbe()
 	 */
 	@Override
 	public void checkReadyToProbe() throws GkException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.IProbingService#isReadyToProbe()
-	 */
-	@Override
-	public boolean isReadyToProbe() {
-		// TODO Auto-generated method stub
-		return false;
+		if(!isReadyToProbe()){
+			throw new GkFunctionalException("TNG-COMMON-002");
+		}
 	}
 
 	/** (inheritDoc)
@@ -325,6 +324,14 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#setCoordinateSystemOffset(org.goko.core.gcode.element.ICoordinateSystem, org.goko.core.math.Tuple6b)
+	 */
+	@Override
+	public void setCoordinateSystemOffset(ICoordinateSystem coordinateSystem, Tuple6b offset) throws GkException {
+		getInternalState().setCoordinateSystemOffset(coordinateSystem, offset);		
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.IJogService#jog(org.goko.core.controller.bean.EnumControllerAxis, org.goko.core.common.measure.quantity.Length, org.goko.core.common.measure.quantity.Speed)
 	 */
 	@Override
@@ -385,7 +392,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		C currentConfiguration = getConfiguration();
 		try {
 			JsonObject jsonCfg = JsonObject.readFrom(new InputStreamReader(inputStream));
-			TinyGJsonUtils.buildConfigurationFromJson(configuration, jsonCfg);
+			configuration.setFromJson(jsonCfg);			
 			C differentialConfig = currentConfiguration.getDifferentialConfiguration(configuration);
 			communicator.sendConfigurationUpdate(differentialConfig);			
 		} catch (IOException e) {
@@ -609,10 +616,24 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	
 	/**
 	 * Creates the jogging utility
-	 * @return
+	 * @return J
 	 */
 	abstract protected J createJogger();
 
+	/**
+	 * Creates the executor for this service
+	 * @return X
+	 */
+	protected abstract X createExecutor() ;
+	
+	/**
+	 * Handle probe result
+	 * @param probeSuccess <code>true</code> if the probed succeed, <code>false</code> otherwise
+	 * @param probePosition the probed position
+	 * @throws GkException GkException
+	 */
+	public abstract void handleProbeResult(boolean probeSuccess, Tuple6b probePosition) throws GkException;
+	
 	/**
 	 * @return the jogger
 	 */
@@ -628,5 +649,74 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	public Scheduler<T> schedule(){
 		return new Scheduler<T>((T) this);
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#send(org.goko.core.gcode.element.GCodeLine)
+	 */
+	@Override
+	public void send(GCodeLine line) throws GkException {
+		String gcodeString = gcodeService.render(line);
+		if(StringUtils.isNotBlank(gcodeString)){
+			communicator.sendGCode(gcodeString);
+		}else{						
+			getExecutor().confirmLineExecution(line);
+		}		
+	}
+
+	/**
+	 * @return the executor
+	 */
+	public X getExecutor() {
+		return executor;
+	}
+
+	/**
+	 * @return the gcodeService
+	 */
+	public IRS274NGCService getGCodeService() {
+		return gcodeService;
+	}
+
+	/**
+	 * @param gcodeService the gcodeService to set
+	 */
+	public void setGCodeService(IRS274NGCService gcodeService) {
+		this.gcodeService = gcodeService;
+	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#isPlannerBufferCheck()
+	 */
+	@Override
+	public boolean isPlannerBufferCheck() {		
+		return plannerBufferCheck;
+	}
+	
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#setPlannerBufferCheck(boolean)
+	 */
+	@Override
+	public void setPlannerBufferCheck(boolean plannerBufferCheck) {
+		this.plannerBufferCheck = plannerBufferCheck;
+	}
+	
+	/**
+	 * @return the executionService
+	 */
+	public IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> getExecutionService() {
+		return executionService;
+	}
+
+	/**
+	 * @param executionService the executionService to set
+	 * @throws GkException GkException 
+	 */
+	public void setExecutionService(IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService) throws GkException {
+		this.executionService = executionService;
+		if(this.executionService != null){
+			this.executionService.setExecutor(getExecutor());
+			this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, getExecutor());
+		}
+	}
 }

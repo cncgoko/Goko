@@ -71,18 +71,22 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 	 * @see org.goko.core.gcode.execution.IExecutionToken#setLineState(java.lang.Integer, org.goko.core.gcode.execution.IExecutionTokenState)
 	 */
 	@Override
-	public synchronized void setLineState(Integer idLine, T state) throws GkException {		
+	public synchronized void setLineState(Integer idLine, T state) throws GkException {	
+		
 		if(!mapExecutionStateById.containsKey(idLine)){
 			throw new GkTechnicalException("GCodeLine ["+idLine+"] not found in execution token");
 		}
-
+		System.out.println("ExecutionToken.setLineState("+idLine+", "+state+")");
 		if(!mapLineByExecutionState.containsKey(state)){
 			mapLineByExecutionState.put(state, new ArrayList<Integer>());
 		}
 		// remove from previous state list
 		T oldState = findLineState(idLine);
 		if(oldState != null){
+			LOG.info("setLineState("+idLine+" , FROM "+oldState+" TO "+state+")");
 			mapLineByExecutionState.get(oldState).remove(idLine);
+		}else{
+			LOG.info("setLineState("+idLine+" ,"+state+")");
 		}
 		// Add to new state list
 		mapLineByExecutionState.get(state).add(idLine);

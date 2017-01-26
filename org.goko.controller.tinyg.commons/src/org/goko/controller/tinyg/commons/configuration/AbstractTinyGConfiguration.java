@@ -28,21 +28,32 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 
 
 /**
- * A Class containing all the parameters of TinyG's configuration
+ * Abstract implementation of TinyG based board configuration
  *
  * @author PsyKo
  *
  */
 public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfiguration<C>> {
+	/** The list of handled groups */
 	private List<TinyGGroupSettings> groups;
 
+	/**
+	 * Constructor
+	 */
 	public AbstractTinyGConfiguration(){
 		groups   = new ArrayList<TinyGGroupSettings>();		
 	}
 	
+	/**
+	 * Add the given group
+	 * @param group the group to add 
+	 */
 	public void addGroup(TinyGGroupSettings group){
 		groups.add(group);
 	}
@@ -54,6 +65,11 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 		return groups;
 	}
 
+	/**
+	 * Returns the group for the given identifier
+	 * @param identifier the identifier of the requested group
+	 * @return TinyGGroupSettings
+	 */
 	public TinyGGroupSettings getGroup(String identifier) {
 		for (TinyGGroupSettings tinyGGroupSettings : groups) {
 			if(StringUtils.equals(tinyGGroupSettings.getGroupIdentifier(), identifier)){
@@ -155,7 +171,7 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 				return;
 			}
 		}
-		throw new GkFunctionalException("Setting '"+identifier+"' is unknown");
+		throw new GkFunctionalException("Setting '"+identifier+"' from group '"+groupIdentifier+"' is unknown");
 	}
 
 	/**
@@ -197,8 +213,16 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 		}
 	}
 	
+	/**
+	 * Creates a new instance of this configuration
+	 * @return C
+	 */
 	protected abstract C newInstance();
 
+	/**
+	 * Returns a copy of this configuration
+	 * @return C
+	 */
 	public C getCopy(){
 		C newInstance = newInstance();
 		newInstance.copyFrom(this);
@@ -229,5 +253,60 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 			}
 		}
 		return diffConfig;
+	}
+	
+	/**
+	 * Build the given configuration using the JSon object as input and support for recursive levels
+	 * @param config the target configuration
+	 * @param json the JSon object to get values from
+	 * @throws GkException GkException
+	 */
+	public void setFromJson(JsonObject json) throws GkException{
+		setFromJson(json, null);
+	}
+	
+	/**
+	 * Build the given configuration using the JSon object as input and support for recursive levels
+	 * @param config the target configuration
+	 * @param json the JSon object to get values from
+	 * @param identifierPrefix the current identifier prefix for JSon group handling
+	 * @throws GkException GkException
+	 */
+	protected void setFromJson(JsonObject json, String identifierPrefix) throws GkException{
+		System.out.println("AbstractTinyGConfiguration.setFromJson()");
+		JsonObject jsonObj = json;
+		for(String name : jsonObj.names()){
+			JsonValue subObj = jsonObj.get(name);
+			if(subObj.isObject()){
+				setFromJson((JsonObject)subObj, name);
+			}else{
+				if(StringUtils.isBlank(identifierPrefix)){
+					setSetting(getDefaultGroup(), name, getValue(subObj));
+				}else{
+					setSetting(identifierPrefix, name, getValue(subObj));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Returns the default group (usually the system group)
+	 * @return the default group 
+	 */
+	protected abstract String getDefaultGroup();
+	
+	/**
+	 * Returns the value of the given JsonValue
+	 * @param jsonValue the JsonValue to get value of 
+	 * @return Object
+	 */
+	private static Object getValue(JsonValue jsonValue){
+		if(jsonValue.isNumber()){
+			return jsonValue.asBigDecimal();
+		}else if(jsonValue.isString()){
+			return jsonValue.asString();
+		}
+		return null;
+
 	}
 }

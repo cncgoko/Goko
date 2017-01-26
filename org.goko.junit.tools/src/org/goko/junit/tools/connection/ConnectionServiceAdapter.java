@@ -87,6 +87,17 @@ public abstract class ConnectionServiceAdapter implements IConnectionService {
 		connectionListeners.add(new WeakReference<IConnectionListener>(listener));
 	}
 	
+
+	/** (inheritDoc)
+	 * @see org.goko.core.connection.IConnectionService#removeConnectionListener(org.goko.core.connection.IConnectionListener)
+	 */
+	@Override
+	public void removeConnectionListener(IConnectionListener listener) throws GkException {
+		WeakReference<IConnectionListener> reference = findListener(connectionListeners, listener);
+		if(reference != null){
+			outputListeners.remove(reference);
+		}
+	}
 	/**
 	 * Notifies the registered IConnectionListener that the given event happened
 	 * @param event the event

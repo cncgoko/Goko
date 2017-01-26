@@ -20,9 +20,6 @@
 package org.goko.controller.tinyg.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goko.controller.tinyg.commons.TinyGJsonUtils;
-import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.controller.bean.MachineState;
@@ -36,24 +33,6 @@ public class TinyGControllerUtility {
 
 	public TinyGControllerUtility() {
 
-	}
-//
-//	public final static TinyGConfiguration getConfigurationCopy(final TinyGConfiguration baseCfg) throws GkException{
-//		TinyGConfiguration copy = new TinyGConfiguration();
-//		for(TinyGGroupSettings group : baseCfg.getGroups()){
-//			for(TinyGSetting<?> setting : group.getSettings()){
-//				copy.setSetting(group.getGroupIdentifier(), setting.getIdentifier(), setting.getValue());
-//			}
-//		}
-//		return copy;
-//	}
-
-	/**
-	 * Handling configuration response from TinyG
-	 * @return {@link JsonValue}
-	 */
-	protected static void handleConfigurationModification(TinyGConfiguration configuration, JsonObject responseEnvelope) throws GkException {
-		TinyGJsonUtils.buildConfigurationFromJson(configuration, responseEnvelope);		
 	}
 
 	/**

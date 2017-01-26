@@ -7,12 +7,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
 import org.goko.core.common.GkUtils;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.buffer.ByteCommandBuffer;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
@@ -25,7 +28,8 @@ import org.goko.core.connection.DataPriority;
 import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
-import org.goko.core.connection.IConnectionService;
+import org.goko.core.connection.serial.ISerialConnectionService;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
@@ -39,11 +43,11 @@ import com.eclipsesource.json.JsonValue;
  * @author Psyko
  * @date 6 janv. 2017
  */
-public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerService> implements IConnectionDataListener, IConnectionListener{
+public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfiguration<C>, S extends ITinyGControllerService<C>> implements IConnectionDataListener, IConnectionListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(AbstractTinyGCommunicator.class);
 	/** The connection service */
-	private IConnectionService connectionService;
+	private ISerialConnectionService connectionService;
 	/** Buffer for incoming data	 */
 	private ByteCommandBuffer incomingBuffer;
 	/** End line characters */
@@ -52,6 +56,10 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	private boolean connected;
 	/** The running TinyG service*/
 	private S controllerService;
+	/** UI Log service */	
+	private IApplicativeLogService applicativeLogService;
+	// TODO : remove queue field
+	protected ConcurrentLinkedQueue<String> queue;
 	
 	/**
 	 * Constructor 
@@ -60,6 +68,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 		this.incomingBuffer    = new ByteCommandBuffer((byte) '\n');
 		this.endLineCharacters = new ArrayList<Character>();
 		setEndLineCharacters('\n');
+		queue = new ConcurrentLinkedQueue<>();
 	}
 	
 	/** (inheritDoc)
@@ -81,14 +90,12 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	 * @see org.goko.core.connection.IConnectionDataListener#onDataReceived(java.util.List)
 	 */
 	@Override
-	public final void onDataReceived(List<Byte> data) throws GkException {
-		LOG.info("Adding "+GkUtils.toString(data));
+	public final void onDataReceived(List<Byte> data) throws GkException {		
 		incomingBuffer.addAll(data);
 
 		while(incomingBuffer.hasNext()){
 			try {
-				String next = GkUtils.toString(incomingBuffer.unstackNextCommand());
-				LOG.info("Processing "+next);
+				String next = GkUtils.toString(incomingBuffer.unstackNextCommand());				
 				handleIncomingData(next);
 			} catch (GkException e) {
 				LOG.error(e);
@@ -105,7 +112,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	/**
 	 * @return the connectionService
 	 */
-	public IConnectionService getConnectionService() {
+	public ISerialConnectionService getConnectionService() {
 		return connectionService;
 	}
 	
@@ -113,7 +120,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	 * @param connectionService the connectionService to set
 	 * @throws GkException
 	 */
-	public void setConnectionService(IConnectionService connectionService) throws GkException {
+	public void setConnectionService(ISerialConnectionService connectionService) throws GkException {
 		if(this.connectionService != null){
 			this.connectionService.removeConnectionListener(this);
 			this.connectionService.removeInputDataListener(this);
@@ -121,6 +128,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 		}
 		this.connectionService = connectionService;
 		connectionService.addConnectionListener(this);
+		System.err.println("Adding listener "+this);
 	}
 	
 	/**
@@ -141,7 +149,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 			list.add(new Byte((byte) endChar));	
 		}		
 	}
-	
+		
 	/**
 	 * Sends the given JsonValue over the connection service
 	 * @param data the JsonValue to send
@@ -177,6 +185,16 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 			addEndLineCharacter(lstByte);
 		}
 		getConnectionService().send(lstByte);
+	}
+	
+	/**
+	 * Sends the given GCode over the connection service
+	 * @param gcode the gcode to send
+	 * @throws GkException GkException
+	 */
+	public final void sendGCode(String gcode) throws GkException{
+		queue.add(gcode+" "); // Add " " to simulate end line char
+		send(gcode, true);
 	}
 	
 	/**
@@ -241,7 +259,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	 * @param data the received data
 	 * @throws GkException GkException
 	 */
-	protected final void handleIncomingData(String data) throws GkException{
+	protected void handleIncomingData(String data) throws GkException{		
 		String trimmedData = StringUtils.trim(data);
 		if(StringUtils.isNotEmpty(trimmedData)){
 			if(TinyGJsonUtils.isJsonFormat(trimmedData)){
@@ -490,7 +508,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	 * Update the configuration by sending it through the communicator
 	 * @throws GkException GkException 
 	 */
-	protected void sendConfigurationUpdate(AbstractTinyGConfiguration<?> configuration) throws GkException {		
+	public void sendConfigurationUpdate(AbstractTinyGConfiguration<?> configuration) throws GkException {		
 		for(TinyGGroupSettings group: configuration.getGroups()){
 			JsonObject jsonGroup = TinyGJsonUtils.toCompleteJson(group);
 			if(jsonGroup != null){
@@ -515,7 +533,7 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	 */
 	protected JsonValue buildJsonQuery(String header, String value){
 		JsonObject query = new JsonObject();
-		query.add(header, StringUtils.EMPTY);
+		query.add(header, value);
 		return query;
 	}
 	
@@ -548,6 +566,33 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	}
 
 	/**
+	 * Sends a coordinate system update query
+	 * @param coordinateSystem the coordinate system to update
+	 * @throws GkException GkException
+	 */
+	public void requestCoordinateSystemUpdate(ICoordinateSystem coordinateSystem)throws GkException{
+		if(isConnected()){
+			send(buildJsonQuery(coordinateSystem.getCode()), true);
+		}
+	}
+	
+	/**
+	 * Sends the request for a configuration update
+	 * @throws GkException GkException
+	 */
+	public void requestConfigurationUpdate() throws GkException{
+		if(isConnected()){			
+			C cfg = getControllerService().getConfiguration();
+			List<TinyGGroupSettings> lstGroups = cfg.getGroups();
+			if(CollectionUtils.isNotEmpty(lstGroups)){
+				for (TinyGGroupSettings groupSettings : lstGroups) {
+					send(buildJsonQuery(groupSettings.getGroupIdentifier()), true);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * @return the controllerService
 	 */
 	public S getControllerService() {
@@ -559,5 +604,19 @@ public abstract class AbstractTinyGCommunicator<S extends ITinyGControllerServic
 	 */
 	public void setControllerService(S controllerService) {
 		this.controllerService = controllerService;
+	}
+
+	/**
+	 * @return the applicativeLogService
+	 */
+	public IApplicativeLogService getApplicativeLogService() {
+		return applicativeLogService;
+	}
+
+	/**
+	 * @param applicativeLogService the applicativeLogService to set
+	 */
+	public void setApplicativeLogService(IApplicativeLogService applicativeLogService) {
+		this.applicativeLogService = applicativeLogService;
 	}
 }

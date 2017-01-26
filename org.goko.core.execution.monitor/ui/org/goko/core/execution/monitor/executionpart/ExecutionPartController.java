@@ -154,7 +154,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
 	 */
 	@Override
-	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {		
+	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
+		LOG.info("onLineStateChanged"+idLine);
 		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
 			executionService.getExecutionState() == ExecutionState.PAUSED ||
 			executionService.getExecutionState() == ExecutionState.ERROR ){

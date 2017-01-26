@@ -31,8 +31,9 @@ public class TinyGConfigurationRefreshHandler {
 	@Execute
 	@Optional
 	public void execute(ITinygControllerService tinyg) throws GkException {
+		System.out.println("hop hop op");
 		if(!ObjectUtils.equals(MachineState.UNDEFINED,tinyg.getState())){
-			tinyg.refreshConfiguration();
+			//tinyg.refreshConfiguration();
 		}
 	}
 

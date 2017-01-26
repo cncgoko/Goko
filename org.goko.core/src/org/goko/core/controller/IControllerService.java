@@ -26,6 +26,7 @@ import org.goko.core.common.service.IGokoService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
+import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.math.Tuple6b;
@@ -91,13 +92,27 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	 * @throws GkException GkException
 	 */
 	Class<?> getMachineValueType(String name) throws GkException;
+	
 	/**
 	 * Returns the current GCode context of the controller
 	 * @return GCodeContext
 	 * @throws GkException exception
 	 */
 	G getGCodeContext() throws GkException;
-
+	
+	/**
+	 * Adds the given GCodeContext listener
+	 * @param observer the observer
+	 */
+	void addObserver(IGCodeContextListener<G> observer);	
+	
+	/**
+	 * Removes the given GCodeContext listener
+	 * @param observer the observer
+	 * @return <code>true</code> if the observer was removed, <code>false</code> otherwise
+	 */
+	boolean removeObserver(IGCodeContextListener<G> observer);
+	
 	/**
 	 * Returns the list of available values
 	 * @return list of String

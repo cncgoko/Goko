@@ -9,43 +9,46 @@ package org.goko.core.gcode.execution;
  */
 public class ExecutionTokenState implements IExecutionTokenState{
 	/** Object value of NONE state  */
-	public static final ExecutionTokenState NONE = new ExecutionTokenState(NONE_STATE);
+	public static final ExecutionTokenState NONE = new ExecutionTokenState(NONE_STATE, "NONE_STATE");
 
 	/** Object value of SENT state  */
-	public static final ExecutionTokenState SENT = new ExecutionTokenState(SENT_STATE);
+	public static final ExecutionTokenState SENT = new ExecutionTokenState(SENT_STATE, "SENT_STATE");
 	
 	/** Object value of EXECUTED state  */
-	public static final ExecutionTokenState EXECUTED = new ExecutionTokenState(EXECUTED_STATE);
+	public static final ExecutionTokenState EXECUTED = new ExecutionTokenState(EXECUTED_STATE, "EXECUTED_STATE");
 
 	/** Object value of CONFIRMED state  */
-	public static final ExecutionTokenState CONFIRMED = new ExecutionTokenState(CONFIRMED_STATE);
+	public static final ExecutionTokenState CONFIRMED = new ExecutionTokenState(CONFIRMED_STATE, "CONFIRMED_STATE");
 
 	/** Object value of IGNORED state  */
-	public static final ExecutionTokenState IGNORED = new ExecutionTokenState(IGNORED_STATE);
+	public static final ExecutionTokenState IGNORED = new ExecutionTokenState(IGNORED_STATE, "IGNORED_STATE");
 
 	/** Object value of ERROR state  */
-	public static final ExecutionTokenState ERROR = new ExecutionTokenState(ERROR_STATE);
+	public static final ExecutionTokenState ERROR = new ExecutionTokenState(ERROR_STATE, "ERROR_STATE");
 	
 	/** Object value of RUNNING state  */
-	public static final ExecutionTokenState RUNNING = new ExecutionTokenState(RUNNING_STATE);
+	public static final ExecutionTokenState RUNNING = new ExecutionTokenState(RUNNING_STATE, "RUNNING_STATE");
 	
 	/** Object value of STOPPED state  */
-	public static final ExecutionTokenState STOPPED = new ExecutionTokenState(STOPPED_STATE);
+	public static final ExecutionTokenState STOPPED = new ExecutionTokenState(STOPPED_STATE, "STOPPED_STATE");
 	
 	/** Object value of PAUSED state  */
-	public static final ExecutionTokenState PAUSED = new ExecutionTokenState(PAUSED_STATE);
+	public static final ExecutionTokenState PAUSED = new ExecutionTokenState(PAUSED_STATE, "PAUSED_STATE");
 	
 	/** Execution state */
 	private int state;
+	/** Satate label*/
+	private String label;
 
 	
 	/**
 	 * Constructor
 	 * @param state the state 
 	 */
-	public ExecutionTokenState(int state) {
+	public ExecutionTokenState(int state, String label) {
 		super();
 		this.state = state;
+		this.label = label;
 	}
 
 	/**
@@ -90,5 +93,11 @@ public class ExecutionTokenState implements IExecutionTokenState{
 		return true;
 	}
 	
-	
+	/** (inheritDoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {		
+		return label;
+	}
 }

@@ -20,13 +20,11 @@
 package org.goko.controller.tinyg.controller.configuration;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
-import org.goko.controller.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
-import org.goko.controller.tinyg.controller.configuration.type.TinyGStringSetting;
+import org.goko.controller.tinyg.commons.configuration.settings.TinyGBigDecimalSetting;
+import org.goko.controller.tinyg.commons.configuration.settings.TinyGStringSetting;
 import org.goko.core.common.exception.GkException;
 
 
@@ -105,29 +103,27 @@ public class TinyGConfiguration extends AbstractTinyGConfiguration<TinyGConfigur
 	public static final String POLARITY				= "po";
 	public static final String POWER_MANAGEMENT_MODE= "pm";
 
-	private List<TinyGGroupSettings> groups;
 
 	public TinyGConfiguration(){
 		this(true);
 	}
 	
-	private TinyGConfiguration(boolean initializeGroups){
-		groups   = new ArrayList<TinyGGroupSettings>();
+	private TinyGConfiguration(boolean initializeGroups){		
 		if(initializeGroups){
 			initSettings();
 		}
 	}
 
 	private void initSettings() {
-		groups.add(new TinyGMotorSettings("1"));
-		groups.add(new TinyGMotorSettings("2"));
-		groups.add(new TinyGMotorSettings("3"));
-		groups.add(new TinyGMotorSettings("4"));
+		addGroup(new TinyGMotorSettings("1"));
+		addGroup(new TinyGMotorSettings("2"));
+		addGroup(new TinyGMotorSettings("3"));
+		addGroup(new TinyGMotorSettings("4"));
 
-		groups.add( new TinyGLinearAxisSettings(X_AXIS_SETTINGS));
-		groups.add( new TinyGLinearAxisSettings(Y_AXIS_SETTINGS));
-		groups.add( new TinyGLinearAxisSettings(Z_AXIS_SETTINGS));
-		groups.add( new TinyGRotationalAxisSettings(A_AXIS_SETTINGS));
+		addGroup( new TinyGLinearAxisSettings(X_AXIS_SETTINGS));
+		addGroup( new TinyGLinearAxisSettings(Y_AXIS_SETTINGS));
+		addGroup( new TinyGLinearAxisSettings(Z_AXIS_SETTINGS));
+		addGroup( new TinyGRotationalAxisSettings(A_AXIS_SETTINGS));
 		//groups.add( new TinyGAxisSettings(B_AXIS_SETTINGS));
 		//groups.add( new TinyGAxisSettings(C_AXIS_SETTINGS));
 
@@ -210,5 +206,13 @@ public class TinyGConfiguration extends AbstractTinyGConfiguration<TinyGConfigur
 	@Override
 	protected TinyGConfiguration newInstance() {
 		return new TinyGConfiguration(false);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration#getDefaultGroup()
+	 */
+	@Override
+	protected String getDefaultGroup() {		
+		return SYSTEM_SETTINGS;
 	}
 }

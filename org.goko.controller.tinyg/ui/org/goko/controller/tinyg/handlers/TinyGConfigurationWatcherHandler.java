@@ -12,8 +12,8 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.ITinygControllerService;
-import org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.handlers.watcher.ITinyGConfigurationFix;
 import org.goko.controller.tinyg.handlers.watcher.JSonModeFix;
@@ -28,7 +28,7 @@ import org.goko.core.log.GkLog;
  * @author Psyko
  * @date 6 juin 2016
  */
-public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationListener {
+public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationListener<TinyGConfiguration> {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(TinyGConfigurationWatcherHandler.class);
 	
@@ -61,29 +61,25 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 	 * @see org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.controller.configuration.TinyGConfiguration)
 	 */
 	@Override
-	public void onConfigurationChanged(TinyGConfiguration configuration) {		
-		try{
-			if(!updateInProgress.get() &&  configuration.isCompletelyLoaded()){			
-				
-				List<ITinyGConfigurationFix> lstFixToApply = new ArrayList<ITinyGConfigurationFix>();
-				TinyGConfiguration tinyGConfiguration = tinygControllerService.getConfiguration();
-				
-				if(CollectionUtils.isNotEmpty(lstConfigurationFix)){
-					for (ITinyGConfigurationFix fix : lstConfigurationFix) {
-						if(fix.shouldApply(tinyGConfiguration)){
-							lstFixToApply.add(fix);							
-						}
+	public void onConfigurationChanged(TinyGConfiguration configuration) {	
+		if(!updateInProgress.get() &&  configuration.isCompletelyLoaded()){			
+			
+			List<ITinyGConfigurationFix> lstFixToApply = new ArrayList<ITinyGConfigurationFix>();
+			TinyGConfiguration tinyGConfiguration = tinygControllerService.getConfiguration();
+			
+			if(CollectionUtils.isNotEmpty(lstConfigurationFix)){
+				for (ITinyGConfigurationFix fix : lstConfigurationFix) {
+					if(fix.shouldApply(tinyGConfiguration)){
+						lstFixToApply.add(fix);							
 					}
 				}
-								
-				if(CollectionUtils.isNotEmpty(lstFixToApply)){
-					suggestToApply(lstFixToApply);
-				}
-				
 			}
-		}catch(GkException e){
-			LOG.error(e);
-		}
+							
+			if(CollectionUtils.isNotEmpty(lstFixToApply)){
+				suggestToApply(lstFixToApply);
+			}
+			
+		}	
 	}
 	
 	/**
@@ -109,7 +105,7 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 									fix.apply(tinyGConfiguration);
 								}
 							}						
-							tinygControllerService.updateConfiguration(tinyGConfiguration);
+							tinygControllerService.applyConfiguration(tinyGConfiguration);
 						} catch (GkException e) {
 							LOG.error(e);
 						}

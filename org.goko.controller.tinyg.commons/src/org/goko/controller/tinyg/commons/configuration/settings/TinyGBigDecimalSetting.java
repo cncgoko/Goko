@@ -17,22 +17,46 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.goko.controller.tinyg.controller.configuration.type;
+package org.goko.controller.tinyg.commons.configuration.settings;
 
 import java.math.BigDecimal;
 
 import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
 
+/**
+ * TinyG setting storing a BigDecimal value 
+ * 
+ * @author Psyko
+ * @date 20 janv. 2017
+ */
 public class TinyGBigDecimalSetting extends TinyGSetting<BigDecimal>{
 
+	/**
+	 * Constructor
+	 * @param identifier the identifier of the setting
+	 * @param value the actual value
+	 */
 	public TinyGBigDecimalSetting(String identifier, BigDecimal value) {
-		super(identifier, value);
+		this(identifier, value, false);
 	}
 
+	/**
+	 * Constructor
+	 * @param identifier the identifier of the setting
+	 * @param value the actual value
+	 * @param readonly <code>true</code> to make this setting readonly, <code>false</code> otherwise
+	 */
 	public TinyGBigDecimalSetting(String identifier, BigDecimal value, boolean readonly) {
 		super(identifier, value, readonly);
 	}
 	
+	/**
+	 * Constructor
+	 * @param identifier the identifier of the setting
+	 * @param value the actual value
+	 * @param readonly <code>true</code> to make this setting readonly, <code>false</code> otherwise
+	 * @param assigned <code>true</code> to indicated that it was already read from TinyG board, <code>false</code> otherwise
+	 */
 	protected TinyGBigDecimalSetting(String identifier, BigDecimal value, boolean readonly, boolean assigned) {
 		super(identifier, value, readonly, assigned);
 	}

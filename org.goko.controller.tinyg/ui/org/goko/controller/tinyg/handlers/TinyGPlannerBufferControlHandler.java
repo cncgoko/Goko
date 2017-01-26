@@ -33,7 +33,7 @@ public class TinyGPlannerBufferControlHandler {
 	public boolean canExecute(MHandledMenuItem menuItem, ITinygControllerService controllerService){
 		if(!initialized){
 			initialized = true;
-			menuItem.setSelected(controllerService.isPlannerBufferSpaceCheck());
+			menuItem.setSelected(controllerService.isPlannerBufferCheck());
 		}
 		try {
 			return !MachineState.UNDEFINED.equals(controllerService.getState());
@@ -45,6 +45,6 @@ public class TinyGPlannerBufferControlHandler {
 
 	@Execute
 	public void execute( MHandledMenuItem menuItem, ITinygControllerService tinyg) throws GkException {
-		tinyg.setPlannerBufferSpaceCheck(menuItem.isSelected());
+		tinyg.setPlannerBufferCheck(menuItem.isSelected());
 	}
 }

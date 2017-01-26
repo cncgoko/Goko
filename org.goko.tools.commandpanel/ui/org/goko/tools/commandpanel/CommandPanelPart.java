@@ -113,9 +113,10 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	private Button btnCSG58;
 	private Button btnCSG59;
 	private Button btnResetCsZero;
-	private Label lblUnit;
+	private Label lblLengthUnit;
 	private Label lblJogStep;
 	private Button btnReset;
+	private Label lblSpeedUnit;
 
 	@Inject
 	public CommandPanelPart(IEclipseContext context) throws GkException {
@@ -166,42 +167,44 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		composite_5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
 		
-		composite_5.setLayout(new GridLayout(3, false));
+		GridLayout gl_composite_5 = new GridLayout(3, false);
+		gl_composite_5.marginWidth = 0;
+		composite_5.setLayout(gl_composite_5);
 
 		
 		lblJogStep = new Label(composite_5, SWT.NONE);
 		lblJogStep.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblJogStep.setText("Step :");
+		lblJogStep.setText("Step");
 				
 		jogStepSpinner = new Spinner(composite_5, SWT.BORDER);
 		jogStepSpinner.setMaximum(100000);
 		jogStepSpinner.setMinimum(1);
 		jogStepSpinner.setDigits(GokoPreference.getInstance().getDigitCount());
 		GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpinner.widthHint = 40;
+		gd_jogSpinner.widthHint = 30;
 		jogStepSpinner.setLayoutData(gd_jogSpinner);
 		
 		
 		
-		lblUnit = new Label(composite_5, SWT.NONE);
+		lblLengthUnit = new Label(composite_5, SWT.NONE);
 		
-		lblUnit.setText("mm");
+		lblLengthUnit.setText("mm");
 		
 
 		Label lblJogSpeed = new Label(composite_5, SWT.NONE);
 		lblJogSpeed.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblJogSpeed.setBounds(0, 0, 55, 15);
 		
-		lblJogSpeed.setText("Speed :");
+		lblJogSpeed.setText("Speed");
 
 		jogSpeedSpinner = new Spinner(composite_5, SWT.BORDER);
 		jogSpeedSpinner.setMaximum(10000);
 		GridData gd_jogSpeedSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpeedSpinner.widthHint = 40;
+		gd_jogSpeedSpinner.widthHint = 30;
 		jogSpeedSpinner.setLayoutData(gd_jogSpeedSpinner);
 		
-		
-		new Label(composite_5, SWT.NONE);
+		lblSpeedUnit = new Label(composite_5, SWT.NONE);
+		lblSpeedUnit.setText("mm/min");
 		Composite composite_4 = new Composite(grpManualJog, SWT.NONE);
 		
 		
@@ -679,7 +682,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	}
 
 	protected void initCustomBindings(MPart part) throws GkException {
-		getController().addTextDisplayBinding(lblUnit, "lengthUnitSymbol");
+		getController().addTextDisplayBinding(lblLengthUnit, "lengthUnitSymbol");
+		getController().addTextDisplayBinding(lblSpeedUnit, "speedUnitSymbol");
 				
 		getController().bindEnableControlWithAction(btnHome, DefaultControllerAction.HOME);
 		getController().bindButtonToExecuteAction(btnHome, DefaultControllerAction.HOME);
@@ -768,8 +772,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void run() {
 				try {
-					lblUnit.setText(GokoPreference.getInstance().getLengthUnit().getSymbol());
-					lblUnit.pack();
+					lblLengthUnit.setText(GokoPreference.getInstance().getLengthUnit().getSymbol());
+					lblLengthUnit.pack();
 				} catch (GkException e) {
 					LOG.error(e);
 				}

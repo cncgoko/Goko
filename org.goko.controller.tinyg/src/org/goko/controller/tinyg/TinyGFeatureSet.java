@@ -1,6 +1,7 @@
 package org.goko.controller.tinyg;
 
 import org.goko.controller.tinyg.controller.ITinygControllerService;
+import org.goko.controller.tinyg.controller.TinyGCommunicator;
 import org.goko.controller.tinyg.controller.TinyGControllerService;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.exception.GkException;
@@ -44,8 +45,11 @@ public class TinyGFeatureSet implements IFeatureSet {
 	 * @see org.goko.core.feature.IFeatureSet#start(org.osgi.framework.BundleContext)
 	 */
 	@Override
-	public void start(BundleContext context) throws GkException {		
-		TinyGControllerService service = new TinyGControllerService();
+	public void start(BundleContext context) throws GkException {
+		TinyGCommunicator communicator = new TinyGCommunicator();
+		communicator.setConnectionService(findService(context, ISerialConnectionService.class));
+		
+		TinyGControllerService service = new TinyGControllerService(communicator);
 		// ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService
 		context.registerService(IControllerService.class, service, null);
 		context.registerService(ITinygControllerService.class, service, null);		
@@ -60,9 +64,8 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IControllerConfigurationFileImporter.class, service, null);		
 				
 		service.setGCodeService(findService(context, IRS274NGCService.class));
-		service.setEventAdmin(findService(context, EventAdmin.class));
-		service.setConnectionService(findService(context, ISerialConnectionService.class));
-		service.setMonitorService(findService(context, IExecutionService.class));
+		service.setEventAdmin(findService(context, EventAdmin.class));		
+		service.setExecutionService(findService(context, IExecutionService.class));		
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));
 		
 		service.start();

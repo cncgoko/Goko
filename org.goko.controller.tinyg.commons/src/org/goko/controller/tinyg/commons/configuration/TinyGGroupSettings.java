@@ -19,15 +19,18 @@
  */
 package org.goko.controller.tinyg.commons.configuration;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.goko.controller.tinyg.commons.configuration.settings.TinyGBigDecimalSetting;
+import org.goko.controller.tinyg.commons.configuration.settings.TinyGStringSetting;
 import org.goko.core.common.exception.GkException;
 
 /**
  * A TinyG Group setting
+ * 
  * @author PsyKo
- *
  */
 public class TinyGGroupSettings {
 	/** The group identifier */
@@ -52,6 +55,43 @@ public class TinyGGroupSettings {
 	public void addSetting(TinyGSetting<?> setting){
 		this.settings.add(setting);
 	}
+	
+	/**
+	 * Utility method to add a Big Decimal setting
+	 * @param identifier identifier of the setting
+	 * @param value value of the setting
+	 */
+	public void addSetting(String identifier, BigDecimal value){
+		addSetting(new TinyGBigDecimalSetting(identifier, value));
+	}
+	
+	/**
+	 * Utility method to add a String setting
+	 * @param identifier identifier of the setting
+	 * @param value value of the setting
+	 */
+	public void addSetting(String identifier, String value){
+		addSetting(new TinyGStringSetting(identifier, value));
+	}
+	
+	/**
+	 * Utility method to add a readonly Big Decimal setting
+	 * @param identifier identifier of the setting
+	 * @param value value of the setting
+	 */
+	public void addSettingReadOnly(String identifier, BigDecimal value){
+		addSetting(new TinyGBigDecimalSetting(identifier, value, true));
+	}
+	
+	/**
+	 * Utility method to add a readonly String setting
+	 * @param identifier identifier of the setting
+	 * @param value value of the setting
+	 */
+	public void addSettingReadOnly(String identifier, String value){
+		addSetting(new TinyGStringSetting(identifier, value, true));
+	}
+	
 	/**
 	 * @return the groupIdentifier
 	 */
@@ -79,6 +119,7 @@ public class TinyGGroupSettings {
 	public void setSettings(List<TinyGSetting<?>> settings) {
 		this.settings = settings;
 	}
+	
 	/**
 	 * Determines if this group was completely assigned using at least once the setValue(..) method on every setting
 	 * @return <code>true</code> if all settings were assigned, <code>false</code> otherwise
@@ -92,7 +133,11 @@ public class TinyGGroupSettings {
 		return true;
 	}
 	
-	protected  TinyGGroupSettings copy(){
+	/**
+	 * Returns a copy of this group object
+	 * @return TinyGGroupSettings
+	 */
+	protected TinyGGroupSettings copy(){
 		TinyGGroupSettings group = new TinyGGroupSettings(groupIdentifier);
 		for (TinyGSetting<?> tinyGSetting : settings) {			
 			group.addSetting(tinyGSetting.copy());

@@ -9,9 +9,13 @@ Bundle-Vendor: Goko
 Require-Bundle: org.goko.core,
  com.eclipsesource.json,
  org.goko.gcode.rs274ngcv3,
- org.eclipse.jface;bundle-version="3.11.1"
+ org.eclipse.jface;bundle-version="3.11.1",
+ org.goko.core.execution.monitor
 Export-Package: org.goko.controller.tinyg.commons,
  org.goko.controller.tinyg.commons.action,
  org.goko.controller.tinyg.commons.bean,
  org.goko.controller.tinyg.commons.configuration,
- org.goko.controller.tinyg.commons.jog
+ org.goko.controller.tinyg.commons.configuration.settings,
+ org.goko.controller.tinyg.commons.jog,
+ org.goko.controller.tinyg.commons.probe,
+ org.goko.controller.tinyg.commons.schedule

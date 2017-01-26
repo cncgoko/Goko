@@ -22,7 +22,7 @@ package org.goko.controller.tinyg.controller.configuration;
 import java.math.BigDecimal;
 
 import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
-import org.goko.controller.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
+import org.goko.controller.tinyg.commons.configuration.settings.TinyGBigDecimalSetting;
 
 public class TinyGMotorSettings extends TinyGGroupSettings {
 	private static final String MOTOR_AXIS_MAPPING 		= "ma";

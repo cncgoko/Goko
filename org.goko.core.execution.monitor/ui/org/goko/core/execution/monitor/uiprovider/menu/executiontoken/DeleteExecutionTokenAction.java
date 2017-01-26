@@ -15,6 +15,7 @@ public class DeleteExecutionTokenAction extends AbstractDeleteAction {
 	public DeleteExecutionTokenAction(IExecutionService<?,?> executionService, Integer idTarget) {
 		super(idTarget);
 		this.executionService = executionService;
+		setText("Remove");
 	}
 
 	/** (inheritDoc)

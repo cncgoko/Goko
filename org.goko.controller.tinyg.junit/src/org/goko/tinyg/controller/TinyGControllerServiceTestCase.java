@@ -65,7 +65,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		tinyg.setGCodeService(gcodeService);
 		tinyg.start(); 				  // Start the TinyG service
 		serialEmulator.connect(null, null, null, null, null, null); // Make sure the service is connected
-		tinyg.setPlannerBufferSpaceCheck(false);		
+		tinyg.setPlannerBufferCheck(false);		
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2, \"jv\":5},\"f\":[1,0,0,0]}");
 		serialEmulator.getCurrentConnection().setFlowControl(SerialParameter.FLOWCONTROL_RTSCTS);
-		tinyg.setPlannerBufferSpaceCheck(true);
+		tinyg.setPlannerBufferCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(new BigDecimal("2"), tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
 		
@@ -113,7 +113,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":0},\"f\":[1,0,0,0]}");
 		
-		tinyg.setPlannerBufferSpaceCheck(true);
+		tinyg.setPlannerBufferCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(new BigDecimal("0"), tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
 				
@@ -135,7 +135,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":2},\"f\":[1,0,0,0]}");
 		
-		tinyg.setPlannerBufferSpaceCheck(true);
+		tinyg.setPlannerBufferCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(TinyGConfigurationValue.FLOW_CONTROL_RTS_CTS, tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
 				
@@ -157,7 +157,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"line\":0,\"posx\":0.000,\"posy\":0.000,\"posz\":0.000,\"posa\":0.000,\"feed\":0.00,\"vel\":0.00,\"unit\":1,\"coor\":1,\"dist\":0,\"frmo\":1,\"momo\":4,\"stat\":1}},\"f\":[1,0,0,0]}");
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"ex\":1},\"f\":[1,0,0,0]}");
 		
-		tinyg.setPlannerBufferSpaceCheck(true);
+		tinyg.setPlannerBufferCheck(true);
 		// Let's check that flow control is enabled
 		assertEquals(TinyGConfigurationValue.FLOW_CONTROL_XON_XOFF, tinyg.getConfiguration().getSetting(TinyGConfiguration.ENABLE_FLOW_CONTROL, BigDecimal.class));
 				

@@ -19,99 +19,20 @@
  */
 package org.goko.controller.tinyg.controller;
 
-import org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener;
+import org.goko.controller.tinyg.commons.ITinyGControllerService;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.controller.IControllerConfigurationFileExporter;
-import org.goko.core.controller.IControllerConfigurationFileImporter;
-import org.goko.core.controller.IControllerService;
-import org.goko.core.controller.ICoordinateSystemAdapter;
-import org.goko.core.controller.IFourAxisControllerAdapter;
-import org.goko.core.controller.IJogService;
-import org.goko.core.controller.IProbingService;
-import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.GCodeLine;
-import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.execution.ExecutionTokenState;
-import org.goko.core.gcode.execution.IExecutionToken;
-import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
-import org.goko.core.gcode.rs274ngcv3.context.GCodeContextProvider;
-import org.goko.core.gcode.service.IGCodeExecutionListener;
 
-public interface ITinygControllerService extends IControllerService<ExecutionTokenState, GCodeContext>,
-												 IProbingService,
-												 IFourAxisControllerAdapter,
-												 ICoordinateSystemAdapter<ICoordinateSystem>,
-												 IJogService,												 
-												 IWorkVolumeProvider,
-												 IControllerConfigurationFileExporter,
-												 IControllerConfigurationFileImporter,
-												 IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>,
-												 GCodeContextProvider{
-
-	/**
-	 * Returns the TinyG configuration
-	 * @return TinyGConfiguration
-	 * @throws GkException
-	 */
-	TinyGConfiguration getConfiguration() throws GkException;
-
-	/**
-	 * Set this controller configuration. This method SHOULD NOT send back the configuration to the tinyG board
-	 * @param configuration the configuration to set
-	 * @throws GkException GkException
-	 */
-	void setConfiguration(TinyGConfiguration configuration) throws GkException;
-
-	/**
-	 * Adds the given {@link ITinyGConfigurationListener} as a listener to this service configuration event
-	 * @param listener the listener to add
-	 */
-	void addConfigurationListener(ITinyGConfigurationListener listener);
+public interface ITinygControllerService extends ITinyGControllerService<TinyGConfiguration>{
 	
-	/**
-	 * Removes the given {@link ITinyGConfigurationListener} from the listener of this service configuration event
-	 * @param listener the listener to remove
-	 */
-	void removeConfigurationListener(ITinyGConfigurationListener listener);
-	
-	/**
-	 * Set this controller configuration. This method SHOULD send back the configuration to the tinyG board
-	 * @param configuration the configuration to set
-	 * @throws GkException GkException
-	 */
-	void updateConfiguration(TinyGConfiguration configuration) throws GkException;
-
-	/**
-	 * Request a configuration refresh
-	 * @throws GkException GkException
-	 */
-	void refreshConfiguration() throws GkException;
-	
-	/**
-	 * Sets the check for planner buffer space.
-	 * @param plannerBufferSpaceCheck the state of planner buffer check
-	 * @throws GkException GkException
-	 */
-	void setPlannerBufferSpaceCheck(boolean plannerBufferSpaceCheck) throws GkException;
-	
-	/**
-	 * Returns the state of the planner buffer check 
-	 * @return <code>true</code> if the test is enabled, <code>false</code> otherwise
-	 */
-	boolean isPlannerBufferSpaceCheck();
-
 	/**
 	 * Returns the machine state 
 	 * @return MachineState
 	 * @throws GkException GkException
 	 */
 	MachineState getState() throws GkException;
-		
-	public int getAvailableBuffer() throws GkException;
-	
-	public void setAvailableBuffer(int availableBuffer) throws GkException;
 	
 	void send(GCodeLine gCodeLine) throws GkException;
 	
@@ -126,4 +47,11 @@ public interface ITinygControllerService extends IControllerService<ExecutionTok
 	void startMotion() throws GkException;
 	
 	void resetTinyG() throws GkException;
+
+	/**
+	 * Apply the given configuration and sends the update to the board 
+	 * @param configuration the new configuration
+	 * @throws GkException GkException 
+	 */
+	void applyConfiguration(TinyGConfiguration configuration) throws GkException;
 }

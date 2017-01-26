@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 
@@ -52,6 +53,7 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 	public void drawOverlayData(Graphics2D g2d, Rectangle s) throws GkException {
 		
 		if(joglSceneManager.getActiveCamera() != null){
+			g2d.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			FontRenderContext 	frc = g2d.getFontRenderContext();
 			String 				cameraString = joglSceneManager.getActiveCamera().getLabel();
 			GlyphVector 		gv = getOverlayFont().createGlyphVector(frc, cameraString);
@@ -127,7 +129,6 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 		RGB rgbColor = new RGB( (int)(color.x * 255), (int)(color.y * 255), (int)(color.z * 255));
 		float[] hsb = rgbColor.getHSB();
 		float complementaryHue = (hsb[0] + 180 ) % 360;
-		textColor = new RGB(complementaryHue,  1 - hsb[1], 1 - hsb[2]);
-		System.out.println(" ");
+		textColor = new RGB(complementaryHue,  1 - hsb[1], 1 - hsb[2]);		
 	}
 }

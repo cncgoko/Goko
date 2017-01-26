@@ -25,7 +25,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
  * @author Psyko
  * @date 11 janv. 2017
  */
-public class Scheduler<T extends ITinyGControllerService>  {
+public class Scheduler<T extends ITinyGControllerService<?>>  {
 	/** The controller service */
 	private T controllerService;
 	/** The expected machine value identifier*/
@@ -51,7 +51,17 @@ public class Scheduler<T extends ITinyGControllerService>  {
 	 * @return scheduler
 	 */
 	public Scheduler<T> send(String data){
-		runnable = new SendDataRunnable<ITinyGControllerService>(controllerService, data);
+		runnable = new SendDataRunnable<ITinyGControllerService<?>>(controllerService, data, false);
+		return this;
+	}
+	
+	/**
+	 * Creates default runnable to send the given data with high priority
+	 * @param data the data to send 
+	 * @return scheduler
+	 */
+	public Scheduler<T> sendImmediately(String data){
+		runnable = new SendDataRunnable<ITinyGControllerService<?>>(controllerService, data, true);
 		return this;
 	}
 	
@@ -124,8 +134,7 @@ public class Scheduler<T extends ITinyGControllerService>  {
 			MachineValue<?> currentValue = controllerService.getMachineValue(machineValueId, controllerService.getMachineValueType(machineValueId));
 			if(currentValue != null && ObjectUtils.equals(currentValue.getValue(), expectedMachineValue)){
 				executeRunnable();				
-			}else{
-				System.out.println("Adding listener");
+			}else{				
 				controllerService.addListener(this);
 			}
 		}catch(GkException e){
@@ -138,12 +147,11 @@ public class Scheduler<T extends ITinyGControllerService>  {
 	 * @param evt the event
 	 */
 	@EventListener(MachineValueUpdateEvent.class)
-	public void onEvent(MachineValueUpdateEvent evt){
-		System.out.println("void onEvent()");
+	public void onEvent(MachineValueUpdateEvent evt){		
 		MachineValue<?> newMachineValue = evt.getTarget();
 		if( StringUtils.equals(evt.getTarget().getIdDescriptor(), machineValueId) 
 				&& ObjectUtils.equals(newMachineValue.getValue(), expectedMachineValue)){
-			System.out.println("void onEvent() equals");
+			
 			executeRunnable();
 		}
 	}

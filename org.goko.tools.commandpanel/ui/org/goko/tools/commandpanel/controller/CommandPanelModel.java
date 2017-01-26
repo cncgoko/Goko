@@ -39,8 +39,12 @@ public class CommandPanelModel extends AbstractModelObject{
 	private Length jogIncrement;
 	private boolean preciseJog;	
 	private Unit<Length> lengthUnit;
+	private Unit<Speed> speedUnit;
 	private String lengthUnitSymbol;
+	private String speedUnitSymbol;
 	private boolean preciseJogForced;
+	
+	
 
 	public CommandPanelModel(){
 		actionState = new WritableMap(String.class, Boolean.class);
@@ -105,10 +109,28 @@ public class CommandPanelModel extends AbstractModelObject{
 		firePropertyChange("lengthUnit", this.lengthUnit, this.lengthUnit = unit);
 		setLengthUnitSymbol(unit.getSymbol());
 	}
-
+	
 	public Unit<Length> getLengthUnit() {
 		return lengthUnit;
 	}
+	
+	public void setSpeedUnitSymbol(String symbol) {
+		firePropertyChange("speedUnitSymbol", this.speedUnitSymbol, this.speedUnitSymbol = symbol);
+	}
+	
+	public String getSpeedUnitSymbol() {
+		return speedUnitSymbol;
+	}
+	
+	public void setSpeedUnit(Unit<Speed> unit) {
+		firePropertyChange("speedUnit", this.speedUnit, this.speedUnit = unit);
+		setSpeedUnitSymbol(unit.getSymbol());
+	}
+
+	public Unit<Speed> getSpeedUnit() {
+		return speedUnit;
+	}
+
 	/**
 	 * @return the preciseJogForced
 	 */

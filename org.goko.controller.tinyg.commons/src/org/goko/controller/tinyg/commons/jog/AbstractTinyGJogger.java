@@ -6,6 +6,7 @@ package org.goko.controller.tinyg.commons.jog;
 import org.goko.controller.tinyg.commons.AbstractTinyGCommunicator;
 import org.goko.controller.tinyg.commons.ITinyGControllerService;
 import org.goko.controller.tinyg.commons.bean.EnumTinyGAxis;
+import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.QuantityUtils;
@@ -14,6 +15,7 @@ import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
+import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -25,7 +27,7 @@ import org.goko.core.log.GkLog;
  * TinyG Jogging utility
  * @author PsyKo
  */
-public abstract class AbstractTinyGJogger<S extends ITinyGControllerService, C extends AbstractTinyGCommunicator<S>> {
+public abstract class AbstractTinyGJogger<F extends AbstractTinyGConfiguration<F>, S extends ITinyGControllerService<F>, C extends AbstractTinyGCommunicator<F, S>> {
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(AbstractTinyGJogger.class);
 	/** The target TinyG service */
@@ -36,6 +38,8 @@ public abstract class AbstractTinyGJogger<S extends ITinyGControllerService, C e
 	private long period = 100; // 100ms aka 10Hz
 	/** The active distance mode before jog */
 	private EnumDistanceMode previousDistanceMode;
+	/** Stop requested flag - when complete effective stop before jogging again*/
+	private boolean stopRequested;
 	
 	/**
 	 * Constructor
@@ -43,15 +47,17 @@ public abstract class AbstractTinyGJogger<S extends ITinyGControllerService, C e
 	public AbstractTinyGJogger(S controllerService, C communicator) {
 		this.controllerService = controllerService;
 		this.communicator = communicator;
+		this.stopRequested = false;
 	}
 	
 	public void jog(EnumControllerAxis axis, Length step, Speed feedrate) throws GkException {
 		Length localStep = step;				
 		EnumTinyGAxis tinygAxis = EnumTinyGAxis.getEnum(axis.getCode());
-		if(isReadyToJog()){			
+		
+		if(!stopRequested && isReadyToJog()){
 			if(axis != null){	
 				GCodeContext context = controllerService.getGCodeContext();
-				if(previousDistanceMode == null){
+				if(previousDistanceMode == null){					
 					previousDistanceMode = context.getDistanceMode();	
 				}
 				EnumUnit contextUnit = context.getUnit();
@@ -65,10 +71,7 @@ public abstract class AbstractTinyGJogger<S extends ITinyGControllerService, C e
 				}
 											
 				command = getRelativeJogCommand(command, tinygAxis, localStep);
-				communicator.send(command, true);				
-//				if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){					
-//					communicator.send("G90", true);
-//				}								
+				communicator.send(command, true);	
 			}
 			
 		}	
@@ -85,26 +88,41 @@ public abstract class AbstractTinyGJogger<S extends ITinyGControllerService, C e
 	 * @throws GkException GkException 
 	 */
 	public void stopJog() throws GkException{
-		controllerService.stopMotion();
-		
-		// Restore previous distance mode		
-		if(previousDistanceMode == EnumDistanceMode.ABSOLUTE){
-			controllerService.schedule().execute(getRestoreDistanceModeRunnable()).whenState(MachineState.PROGRAM_STOP).timeout(5, TimeUnit.SECOND).begin();
+		if(previousDistanceMode != null){
+			stopRequested = true;	
+			controllerService.stopMotion();
+
+			// Restore previous distance mode
+			controllerService.schedule().execute(getRestoreDistanceModeRunnable(previousDistanceMode)).whenState(MachineState.PROGRAM_STOP).timeout(5, TimeUnit.SECOND).begin();
+			if(previousDistanceMode != null){
+				controllerService.schedule().execute(new Runnable() {
+					
+					@Override
+					public void run() {
+						previousDistanceMode  = null;
+						stopRequested = false;						
+					}
+				}).when(DefaultControllerValues.CONTEXT_DISTANCE_MODE, previousDistanceMode.name()).timeout(5, TimeUnit.SECOND).begin();			
+			}
 		}
-		
 	}
 	
 	/**
 	 * Creates the runnable that will restore the previous distance mode 
+	 * @param pPreviousDistanceMode the previous distance mode
 	 * @return Runnable
 	 */
-	protected Runnable getRestoreDistanceModeRunnable(){
+	protected Runnable getRestoreDistanceModeRunnable(EnumDistanceMode pPreviousDistanceMode){
 		return new Runnable() {				
 			@Override
 			public void run() {
 				try {
-					communicator.send("G90", true);
-					previousDistanceMode  = null;
+					if(EnumDistanceMode.ABSOLUTE == pPreviousDistanceMode){
+						communicator.send("G90", true);
+					}else{
+						communicator.send("G91", true);
+					}
+					
 				} catch (GkException e) {
 					LOG.error(e);
 				}					

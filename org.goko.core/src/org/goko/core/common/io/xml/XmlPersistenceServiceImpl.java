@@ -36,7 +36,7 @@ public class XmlPersistenceServiceImpl implements IXmlPersistenceService {
 	 * 
 	 */
 	public XmlPersistenceServiceImpl() {
-		System.out.println();
+		
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()

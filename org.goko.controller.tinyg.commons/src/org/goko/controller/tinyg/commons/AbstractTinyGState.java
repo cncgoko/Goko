@@ -266,8 +266,7 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 	 * @param position the position to set
 	 * @throws GkException GkException
 	 */
-	public void setMachinePosition(Tuple6b position) throws GkException {
-		this.position = new Tuple6b(position);		
+	public void setMachinePosition(Tuple6b position) throws GkException {				
 		String a = QuantityUtils.format(position.getA(), GokoPreference.getInstance().getDigitCount(), true, true);
 		updateValue(DefaultControllerValues.MACHINE_POSITION_X, position.getX());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Y, position.getY());

@@ -36,6 +36,13 @@ public class TinyGv097 implements DefaultControllerValues{
 	public static final String QUEUE_FLUSH = "%";
     /** Reset command */
     public static final byte RESET_COMMAND = 0x18;
+    /** GCode for turning spindle on */
+    public static final String TURN_SPINDLE_ON_GCODE = "M3";
+    /** GCode for turning spindle off */
+    public static final String TURN_SPINDLE_OFF_GCODE = "M5";
+    /** Kill alarm header */
+    public static final String KILL_ALARM_HEADER = "clear";
+    
 	protected static final String AVAILABLE_BUFFER_COUNT = "tinyg.buffer.count";
 	public static final String ON = "On";
 	public static final String OFF = "Off";

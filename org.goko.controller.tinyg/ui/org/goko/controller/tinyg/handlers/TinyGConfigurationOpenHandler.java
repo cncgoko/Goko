@@ -94,7 +94,7 @@ public class TinyGConfigurationOpenHandler {
 		
 		if(result == Dialog.OK){
 			try{				
-				service.updateConfiguration(cfg);
+				service.applyConfiguration(cfg);
 			}catch(GkFunctionalException e){
 				LOG.log(e);
 				GkDialog.openDialog(shell, e);				

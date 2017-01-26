@@ -42,15 +42,16 @@ import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
-import org.goko.core.common.measure.units.Unit;
 import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
 
@@ -60,7 +61,7 @@ import org.goko.core.log.GkLog;
  * @author PsyKo
  *
  */
-public class CommandPanelController  extends AbstractController<CommandPanelModel> implements PropertyChangeListener {
+public class CommandPanelController  extends AbstractController<CommandPanelModel> implements PropertyChangeListener, IGCodeContextListener<GCodeContext> {
 	private final static GkLog LOG = GkLog.getLogger(CommandPanelController.class);
 	@Inject
 	private IControllerService<IExecutionTokenState, GCodeContext> controllerService;
@@ -79,8 +80,10 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 
 	@Override
 	public void initialize() throws GkException {
-		controllerService.addListener(this);	
-		getDataModel().setPreciseJogForced(false);
+		controllerService.addListener(this);
+		controllerService.addObserver(this);
+		getDataModel().setPreciseJogForced(false);	
+		refreshUnits();
 	}
 
 	public void bindEnableControlWithAction(Control widget, String actionId) throws GkException{
@@ -157,39 +160,34 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		widget.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				try {					
-					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
-					getDataModel().setLengthUnit(unit);
-					Length step = null;					
-					boolean isPrecise = getDataModel().isPreciseJog();
-					final Speed feedrate = getDataModel().getJogSpeed();
-					if(isPrecise){
-						step = getDataModel().getJogIncrement();
-					}
-					final Length taskStep = step;
-					timer = new Timer();					
-					timer.schedule(new TimerTask() {
-						
-						@Override
-						public void run() {
-							try {
-								jogService.jog(axis, taskStep, feedrate);
-							} catch (GkException e) {
-								LOG.error(e);
-							}
-						}
-					}, 0, 100);
-								
-				} catch (GkException e1) {
-					LOG.error(e1);
+				Length step = null;					
+				boolean isPrecise = getDataModel().isPreciseJog();
+				final Speed feedrate = getDataModel().getJogSpeed();
+				if(isPrecise){
+					step = getDataModel().getJogIncrement();
 				}
+				final Length taskStep = step;
+				timer = new Timer();					
+				timer.schedule(new TimerTask() {
+					
+					@Override
+					public void run() {
+						try {
+							jogService.jog(axis, taskStep, feedrate);
+						} catch (GkException e) {
+							LOG.error(e);
+						}
+					}
+				}, 0, 100);								
+
 			}
 
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					Unit<Length> unit = controllerService.getGCodeContext().getUnit().getUnit();
-					getDataModel().setLengthUnit(unit);
+//					EnumUnit enumUnit = controllerService.getGCodeContext().getUnit();
+//					getDataModel().setLengthUnit(enumUnit.getUnit());
+//					getDataModel().setSpeedUnit(enumUnit.getFeedUnit());
 					timer.cancel();
 					jogService.stopJog();					
 				} catch (GkException e1) {
@@ -227,6 +225,31 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 				
-	}	
+	}
+	
+	public void refreshUnits() throws GkException{
+		GCodeContext context = controllerService.getGCodeContext();
+		if(context != null){
+			EnumUnit enumUnit = context.getUnit();
+			if( !enumUnit.getUnit().equals(getDataModel().getLengthUnit()) ){
+				getDataModel().setLengthUnit(enumUnit.getUnit());
+			}
+			if( !enumUnit.getFeedUnit().equals(getDataModel().getSpeedUnit()) ){
+				getDataModel().setSpeedUnit(enumUnit.getFeedUnit());
+			}
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.event.IGCodeContextListener#onGCodeContextEvent(org.goko.core.gcode.element.IGCodeContext)
+	 */
+	@Override
+	public void onGCodeContextEvent(GCodeContext context) {
+		try {
+			refreshUnits();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+	}
 }
 

@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
-import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
 import com.eclipsesource.json.JsonObject;
@@ -114,38 +113,7 @@ public class TinyGJsonUtils {
 		}
 		return jsonGroup;
 	}
-	/**
-	 * Build the given configuration using the JSon object as input
-	 * @param config the target configuration
-	 * @param json the JSon object to get values from
-	 * @throws GkException GkException
-	 */
-	public static void buildConfigurationFromJson(AbstractTinyGConfiguration config, JsonObject json) throws GkException{
-		buildConfigurationFromJsonRecursive(config, json, StringUtils.EMPTY);
-	}
-	
-	/**
-	 * Build the given configuration using the JSon object as input and support for recursive levels
-	 * @param config the target configuration
-	 * @param json the JSon object to get values from
-	 * @param identifierPrefix the current identifier prefix for JSon group handling
-	 * @throws GkException GkException
-	 */
-	public static void buildConfigurationFromJsonRecursive(AbstractTinyGConfiguration config, JsonObject json, String identifierPrefix) throws GkException{
-		JsonObject jsonObj = json;
-		for(String name : jsonObj.names()){
-			JsonValue subObj = jsonObj.get(name);
-			if(subObj.isObject()){
-				buildConfigurationFromJsonRecursive(config, (JsonObject)subObj, name);
-			}else{
-				if(StringUtils.isNotEmpty( identifierPrefix )){
-					config.setSetting(identifierPrefix, name, getValue(subObj));					
-				}else{
-					config.setSetting(SYSTEM_SETTINGS, name, getValue(subObj));
-				}
-			}
-		}
-	}
+
 
 	/**
 	 * Returns the value of the given JsonValue

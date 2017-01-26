@@ -139,8 +139,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 
 		while(iterator.hasNext()){
 			GCodeContext preContext = new GCodeContext(iterator.getContext());
-			AbstractInstruction instruction = iterator.next();
-			LOG.info("Processing line ["+instruction.getIdGCodeLine()+"]");
+			AbstractInstruction instruction = iterator.next();			
 			// TEST : Make sure we have a complete start position for rendering. 
 			if(preContext.getX() != null && preContext.getY() != null && preContext.getZ() != null){
 				List<Point3d> 		vertices 	= InstructionGeometryFactory.build(preContext, instruction);
@@ -181,8 +180,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 			mapVerticesGroupByIdLine.put(idGCodeLine, new VerticesGroupByLine(startIndex));
 		}
 		VerticesGroupByLine group = mapVerticesGroupByIdLine.get(idGCodeLine);
-		group.setLength( group.getLength() + vertices.size());
-		LOG.info("Assigning line ["+idGCodeLine+"] vertices to group starting at ["+group.getStartIndex()+"]");
+		group.setLength( group.getLength() + vertices.size());		
 	}
 
 	/** (inheritDoc)

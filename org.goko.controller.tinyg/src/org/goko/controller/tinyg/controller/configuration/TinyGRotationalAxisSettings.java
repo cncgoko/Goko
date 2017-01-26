@@ -21,7 +21,7 @@ package org.goko.controller.tinyg.controller.configuration;
 
 import java.math.BigDecimal;
 
-import org.goko.controller.tinyg.controller.configuration.type.TinyGBigDecimalSetting;
+import org.goko.controller.tinyg.commons.configuration.settings.TinyGBigDecimalSetting;
 
 public class TinyGRotationalAxisSettings extends TinyGLinearAxisSettings{
 
