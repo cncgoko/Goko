@@ -146,9 +146,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 * @throws GkException GkException
 	 */
 	public RS274GCodeRenderer createRenderer(IExecutionToken executionToken) throws GkException{		
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(executionToken.getGCodeProvider(), gcodeContextProvider, fourAxisControllerAdapter);		
-		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, renderer);
-		executionService.addExecutionListener(ExecutionQueueType.SYSTEM, renderer); // FIXME : remove double listener addition
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(executionToken.getGCodeProvider(), gcodeContextProvider, fourAxisControllerAdapter);	
 		Activator.getJoglViewerService().addRenderer(renderer);
 		return renderer;
 	}
@@ -327,6 +325,10 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 				// Create a renderer from the execution token itself
 				renderer = createRenderer(token);				
 			}
+			// Ad the renderer as listener for execution 
+			executionService.addExecutionListener(ExecutionQueueType.DEFAULT, renderer);
+			executionService.addExecutionListener(ExecutionQueueType.SYSTEM, renderer); // FIXME : remove double listener addition
+			
 			cacheRendererByExecutionToken.add(token, renderer);
 			// Make sure we get the updated context from latest executed token
 			if(lstContextProvider.isEmpty()){					
