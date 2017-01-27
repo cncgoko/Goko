@@ -87,6 +87,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	private boolean plannerBufferCheck;
 	/** The execution monitor service */
 	private IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService;
+	
 	/**
 	 * Constructor
 	 * @param internalState the internal state object
@@ -477,6 +478,14 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		return configuration.getCopy();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#applyConfiguration(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
+	 */
+	@Override
+	public void applyConfiguration(C configuration) throws GkException {
+		this.configuration = configuration;
+		getCommunicator().sendConfigurationUpdate(configuration);
+	}
 	/**
 	 * @return the communicator
 	 */

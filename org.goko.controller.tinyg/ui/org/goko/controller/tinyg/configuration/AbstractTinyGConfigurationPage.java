@@ -1,6 +1,8 @@
 package org.goko.controller.tinyg.configuration;
 
 import org.goko.common.preferences.GkFieldEditorPreferencesPage;
+import org.goko.common.preferences.NullPreferenceStore;
+import org.goko.controller.tinyg.commons.configuration.fields.ITinyGFieldEditor;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 
 /**

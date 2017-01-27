@@ -2,6 +2,7 @@ package org.goko.controller.tinyg.configuration;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGBooleanFieldEditor;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 

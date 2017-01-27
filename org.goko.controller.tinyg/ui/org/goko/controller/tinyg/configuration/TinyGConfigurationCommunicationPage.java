@@ -4,6 +4,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGBigDecimalSettingFieldEditor;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGBooleanFieldEditor;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGComboFieldEditor;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 

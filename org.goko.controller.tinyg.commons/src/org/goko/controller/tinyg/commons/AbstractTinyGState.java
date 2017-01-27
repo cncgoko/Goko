@@ -28,10 +28,8 @@ import org.goko.core.common.measure.SIPrefix;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.units.Unit;
-import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
@@ -101,12 +99,12 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		storeValue(DefaultControllerValues.POSITION_X, "X", "The X work position",  Length.ZERO);
 		storeValue(DefaultControllerValues.POSITION_Y, "Y", "The Y work position",  Length.ZERO);
 		storeValue(DefaultControllerValues.POSITION_Z, "Z", "The Z work position",  Length.ZERO);
-		storeValue(DefaultControllerValues.POSITION_A, "A", "The A work position", StringUtils.EMPTY);
+		storeValue(DefaultControllerValues.POSITION_A, "A", "The A work position", Angle.ZERO);
 		
 		storeValue(DefaultControllerValues.MACHINE_POSITION_X, "Machine X", "The X machine position in absolute coord system",  Length.ZERO);
 		storeValue(DefaultControllerValues.MACHINE_POSITION_Y, "Machine Y", "The Y machine position in absolute coord system",  Length.ZERO);
 		storeValue(DefaultControllerValues.MACHINE_POSITION_Z, "Machine Z", "The Z machine position in absolute coord system",  Length.ZERO);
-		storeValue(DefaultControllerValues.MACHINE_POSITION_A, "Machine A", "The A machine position in absolute coord system", StringUtils.EMPTY);
+		storeValue(DefaultControllerValues.MACHINE_POSITION_A, "Machine A", "The A machine position in absolute coord system",  Angle.ZERO);
 				
 		storeValue(DefaultControllerValues.VELOCITY				, "Velocity", "The current velocity of the machine", Speed.ZERO);
 		storeValue(DefaultControllerValues.SPINDLE_STATE		, "Spindle", "The current state of the spindle", "false");
@@ -254,11 +252,10 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 	 */
 	public void setWorkPosition(Tuple6b position) throws GkException {
 		this.position = new Tuple6b(position);		
-		String a = QuantityUtils.format(position.getA(), GokoPreference.getInstance().getDigitCount(), true, true);
 		updateValue(DefaultControllerValues.POSITION_X, position.getX());
 		updateValue(DefaultControllerValues.POSITION_Y, position.getY());
 		updateValue(DefaultControllerValues.POSITION_Z, position.getZ());
-		updateValue(DefaultControllerValues.POSITION_A, a);
+		updateValue(DefaultControllerValues.POSITION_A, position.getA());
 	}
 	
 	/**
@@ -267,11 +264,10 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 	 * @throws GkException GkException
 	 */
 	public void setMachinePosition(Tuple6b position) throws GkException {				
-		String a = QuantityUtils.format(position.getA(), GokoPreference.getInstance().getDigitCount(), true, true);
 		updateValue(DefaultControllerValues.MACHINE_POSITION_X, position.getX());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Y, position.getY());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Z, position.getZ());
-		updateValue(DefaultControllerValues.MACHINE_POSITION_A, a);
+		updateValue(DefaultControllerValues.MACHINE_POSITION_A, position.getA());
 	}
 
 	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {

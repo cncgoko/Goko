@@ -126,6 +126,13 @@ public interface ITinyGControllerService<C extends AbstractTinyGConfiguration<C>
 	C getConfiguration();
 
 	/**
+	 * Sets the given configuration and send it to the distant board
+	 * @param configuration the configuration
+	 * @throws GkException GkException
+	 */
+	void applyConfiguration(C configuration) throws GkException;
+	
+	/**
 	 * Entry point for Kill Alarm action
 	 * @throws GkException GkException
 	 */

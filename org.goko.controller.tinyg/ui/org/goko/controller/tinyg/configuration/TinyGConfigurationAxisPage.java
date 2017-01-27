@@ -7,6 +7,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGBigDecimalSettingFieldEditor;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGComboFieldEditor;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;

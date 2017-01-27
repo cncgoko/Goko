@@ -5,6 +5,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.goko.controller.tinyg.commons.configuration.fields.TinyGComboFieldEditor;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 
