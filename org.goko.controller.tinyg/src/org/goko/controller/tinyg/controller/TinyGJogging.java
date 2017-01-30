@@ -31,7 +31,8 @@ public class TinyGJogging extends AbstractTinyGJogger<TinyGConfiguration, TinyGC
 	 */
 	@Override
 	protected boolean isReadyToJog() throws GkException {
-		return getControllerService().getAvailablePlannerBuffer() > 5;
+		// We want to use very few moves
+		return getControllerService().getAvailablePlannerBuffer() > 28;
 	}
 
 }

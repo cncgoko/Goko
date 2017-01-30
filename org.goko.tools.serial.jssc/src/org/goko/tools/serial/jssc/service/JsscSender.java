@@ -125,6 +125,7 @@ public class JsscSender implements Runnable {
 	 */
 	protected void clearOutputBuffer(){
 		queue.clear();
+		importantQueue.clear();
 	}
 
 	private void waitDataAvailableToSend() throws GkException{

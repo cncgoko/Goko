@@ -156,7 +156,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		}
 	}
 
-	public void bindJogButton(Button widget, final EnumControllerAxis axis) throws GkException {		
+	public void bindJogButton(final Button widget, final EnumControllerAxis axis) throws GkException {		
 		widget.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -172,8 +172,8 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 					
 					@Override
 					public void run() {
-						try {
-							jogService.jog(axis, taskStep, feedrate);
+						try {							
+							jogService.jog(axis, taskStep, feedrate);							
 						} catch (GkException e) {
 							LOG.error(e);
 						}

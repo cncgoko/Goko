@@ -344,10 +344,10 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	 * Entry point for Stop Motion action
 	 * @throws GkException GkException
 	 */
-	public void stopMotion() throws GkException{
+	public void stopMotion() throws GkException{	
+		getConnectionService().clearOutputBuffer(); 
 		sendImmediately(TinyGv097.FEED_HOLD, true);
-		sendImmediately(TinyGv097.QUEUE_FLUSH, true);
-		getConnectionService().clearOutputBuffer();
+		sendImmediately(TinyGv097.QUEUE_FLUSH, true);		
 	}
 	
 	/**
