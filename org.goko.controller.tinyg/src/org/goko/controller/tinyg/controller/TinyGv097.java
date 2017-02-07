@@ -49,13 +49,13 @@ public class TinyGv097 implements DefaultControllerValues{
 
 	public class Topic{
 		public class TinyGExecutionError{
-			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			/** TinyG Topic : error notification topic */ 
 			public static final String TOPIC		= "topic/tinyg/execution/error";
-			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			/** TinyG Topic : Title proerty */ 
 			public static final String TITLE		= "prop/tinyg/execution/error/title";
-			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			/** TinyG Topic : Message property */ 
 			public static final String MESSAGE		= "prop/tinyg/execution/error/message";
-			/** TinyG Topic : TinyG execution was paused due to an error during execution */ 
+			/** TinyG Topic : Error property */ 
 			public static final String ERROR		= "prop/tinyg/execution/error/error";
 		}
 	}

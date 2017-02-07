@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -58,9 +57,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	private S controllerService;
 	/** UI Log service */	
 	private IApplicativeLogService applicativeLogService;
-	// TODO : remove queue field
-	protected ConcurrentLinkedQueue<String> queue;
-	
+
 	/**
 	 * Constructor 
 	 */
@@ -68,7 +65,6 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 		this.incomingBuffer    = new ByteCommandBuffer((byte) '\n');
 		this.endLineCharacters = new ArrayList<Character>();
 		setEndLineCharacters('\n');
-		queue = new ConcurrentLinkedQueue<>();
 	}
 	
 	/** (inheritDoc)
@@ -77,7 +73,6 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	@Override
 	public final void onConnectionEvent(EnumConnectionEvent event) throws GkException {
 		if(event == EnumConnectionEvent.CONNECTED){
-			System.err.println("connected");
 			connected = true;
 			onConnected();			
 		}else if(event == EnumConnectionEvent.DISCONNECTED){
@@ -193,7 +188,6 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 * @throws GkException GkException
 	 */
 	public final void sendGCode(String gcode) throws GkException{
-		queue.add(gcode+" "); // Add " " to simulate end line char
 		send(gcode, true);
 	}
 	
@@ -592,6 +586,17 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 		}
 	}
 	
+	/**
+	 * Sends requests for coordinate system update 
+	 * @throws GkException GkException
+	 */
+	public void requestCoordinateSystemUpdate() throws GkException{
+		send(buildJsonQuery("G55"), true);
+		send(buildJsonQuery("G56"), true);
+		send(buildJsonQuery("G57"), true);
+		send(buildJsonQuery("G58"), true);
+		send(buildJsonQuery("G59"), true);
+	}
 	/**
 	 * @return the controllerService
 	 */

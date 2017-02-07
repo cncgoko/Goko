@@ -16,8 +16,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -37,6 +37,7 @@ public class GokoProgressDialog extends Dialog {
 	private Map<Job, JobProgressElement> mapProgressElement;
 	private ScrolledComposite scrolledComposite;
 	private Composite composite;
+	private Label lblNewLabel;
 
 	/**
 	 * Create the dialog.
@@ -71,8 +72,8 @@ public class GokoProgressDialog extends Dialog {
 
 		composite = new Composite(scrolledComposite, SWT.NONE);
 		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		composite.setLayout(new FillLayout(SWT.VERTICAL));
-
+		composite.setLayout(new GridLayout(1, false));
+				
 		scrolledComposite.setContent(composite);
 		scrolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
@@ -141,6 +142,7 @@ public class GokoProgressDialog extends Dialog {
 				public void run() {
 					if(!GokoProgressDialog.this.getShell().isDisposed()){
 						JobProgressElement progressElement = new JobProgressElement(composite, SWT.NONE, sync, job, GokoProgressDialog.this);
+						progressElement.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 						mapProgressElement.put(job, progressElement);
 						composite.pack();
 						requestShow();

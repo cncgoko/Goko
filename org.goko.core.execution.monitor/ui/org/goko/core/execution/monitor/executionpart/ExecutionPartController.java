@@ -197,6 +197,30 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	}
 
 	/**
+	 * Start or resume the execution queue
+	 * @throws GkException GkException
+	 */
+	public void startResumeQueueExecution() throws GkException {
+		if(executionService.getExecutionState() == ExecutionState.PAUSED){
+			executionService.resumeQueueExecution();
+		}else{
+			executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
+		}
+	}
+	
+	/**
+	 * Start or resume the execution queue
+	 * @throws GkException GkException
+	 */
+	public void pauseStopQueueExecution() throws GkException {
+		if(executionService.getExecutionState() == ExecutionState.PAUSED){
+			executionService.stopQueueExecution();
+		}else if(executionService.getExecutionState() == ExecutionState.RUNNING){
+			executionService.pauseQueueExecution();
+		}
+	}
+	
+	/**
 	 * Stops the execution queue
 	 * @throws GkException GkException
 	 */
@@ -204,6 +228,9 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		executionService.stopQueueExecution();
 	}
 
+	public ExecutionState getExecutionState() throws GkException{
+		return executionService.getExecutionState();
+	}
 	/**
 	 * Update the state of the buttons according to the execution state
 	 * @throws GkException GkException

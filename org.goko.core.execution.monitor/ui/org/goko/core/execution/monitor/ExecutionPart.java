@@ -46,6 +46,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	private static final int EXECUTION_TIMER_REFRESH_INTERVAL_MS = 1000;
 	/** Parent composite */
 	private Composite parent;
+	private Button btnPause;
 	/**
 	 * Constructor
 	 */
@@ -61,6 +62,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	@PostConstruct
 	public void postConstruct(final Composite parent) {
 		this.parent = parent;
+		addResizeListener(parent);
 		parent.setLayout(new GridLayout(1, false));
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(1, false);
@@ -80,12 +82,12 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		
 		Button btnStart = new Button(composite_1, SWT.NONE);
 		
-		GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_btnStart.heightHint = 32;
 		btnStart.setLayoutData(gd_btnStart);
 		btnStart.setText("Start queue");
 		
-		Button btnPause = new Button(composite_1, SWT.NONE);
+		btnPause = new Button(composite_1, SWT.NONE);
 		btnPause.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -97,7 +99,8 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 			}
 		});
 		btnPause.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnPause.setText("Pause/Resume queue");
+		btnPause.setText("Pause queue");
+		System.out.println("btnPause.setText(Pause queue); l103");
 		
 		Button btnStop = new Button(composite_1, SWT.NONE);
 		btnStop.addMouseListener(new MouseAdapter() {
@@ -130,7 +133,9 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		lblTotal.setText("Total ");
 		
 		ProgressBar totalProgressBar = new ProgressBar(composite_2, SWT.SMOOTH);
-		totalProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		GridData gd_totalProgressBar = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_totalProgressBar.heightHint = 20;
+		totalProgressBar.setLayoutData(gd_totalProgressBar);
 		
 		Composite composite_3 = new Composite(composite, SWT.NONE);
 		composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -143,7 +148,9 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		lblCurrent.setText("Current token");
 		
 		ProgressBar currentTokenProgressBar = new ProgressBar(composite_3, SWT.SMOOTH);
-		currentTokenProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		GridData gd_currentTokenProgressBar = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_currentTokenProgressBar.heightHint = 20;
+		currentTokenProgressBar.setLayoutData(gd_currentTokenProgressBar);
 		
 		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gd_label = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -326,6 +333,7 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 					ExecutionPart.this.getDataModel().setElapsedTimeString(durationStr);
 				}							
 				if(ExecutionPart.this.getDataModel().isExecutionTimerActive()){
+					// Respawn it only if the queue is running
 					display.timerExec(EXECUTION_TIMER_REFRESH_INTERVAL_MS, this);
 				}
 			}
@@ -355,8 +363,19 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	 */
 	@Override
 	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
-		
+		System.out.println("ExecutionPart.onExecutionPause()");
+		parent.getDisplay().asyncExec(new Runnable() {
+			/** Runnable used to update execution time measurement */
+			@Override
+			public void run() {														
+				if(parent.isDisposed()){
+					System.out.println("parent.isDisposed()");
+					return;
+				}
+				btnPause.setText("Resume queue");
+				System.out.println("btnPause.setText(Resume queue);");
+			}
+		});
 	}
 
 	/** (inheritDoc)
@@ -364,8 +383,17 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	 */
 	@Override
 	public void onExecutionResume(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
-		
+		parent.getDisplay().asyncExec(new Runnable() {
+			/** Runnable used to update execution time measurement */
+			@Override
+			public void run() {														
+				if(parent.isDisposed()){
+					return;
+				}
+				btnPause.setText("Pause queue");
+				System.out.println("btnPause.setText(Pause queue); l395");
+			}
+		});
 	}
 
 	/** (inheritDoc)

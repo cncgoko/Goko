@@ -3,8 +3,8 @@
  */
 package org.goko.controller.tinyg.controller.topic;
 
+import org.goko.controller.tinyg.commons.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.controller.TinyGv097;
-import org.goko.controller.tinyg.controller.bean.TinyGExecutionError;
 import org.goko.core.common.event.GkTopic;
 
 /**

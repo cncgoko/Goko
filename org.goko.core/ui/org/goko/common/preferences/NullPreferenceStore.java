@@ -15,7 +15,6 @@ public class NullPreferenceStore implements IPreferenceStore {
 	@Override
 	public void addPropertyChangeListener(IPropertyChangeListener listener) {
 		// Simply do nothing
-
 	}
 
 	/** (inheritDoc)

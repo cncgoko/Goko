@@ -13,6 +13,7 @@ import javax.vecmath.Color3f;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.AbstractIdBean;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
@@ -35,13 +36,13 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 	/** Computed FPS */
 	private int fps;
 	
-	private RGB textColor;
+	private RGBA textColor;
 	/**
 	 * Constructor 
 	 */
 	public CameraNameOverlay(JoglSceneManager joglSceneManager) {
 		this.joglSceneManager =joglSceneManager;
-		this.overlayFont = new Font("SansSerif", Font.PLAIN, 12);
+		this.overlayFont = new Font("SansSerif", Font.TRUETYPE_FONT, 13);
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
 		updateTextColor();
 	}
@@ -62,7 +63,7 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 		    int y = 5 + glyphBounds.height;
 		    g2d.setFont(getOverlayFont());
 		    //Color overlayColor = new Color(0.8f,0.8f,0.8f);
-		    Color overlayColor = new Color(textColor.red, textColor.green, textColor.blue);
+		    Color overlayColor = new Color(textColor.rgb.red, textColor.rgb.green, textColor.rgb.blue, textColor.alpha);
 		    Color transparentColor = new Color(0,0,0,0);
 		    g2d.setBackground(transparentColor);
 		    g2d.setColor(overlayColor);
@@ -129,6 +130,6 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 		RGB rgbColor = new RGB( (int)(color.x * 255), (int)(color.y * 255), (int)(color.z * 255));
 		float[] hsb = rgbColor.getHSB();
 		float complementaryHue = (hsb[0] + 180 ) % 360;
-		textColor = new RGB(complementaryHue,  1 - hsb[1], 1 - hsb[2]);		
+		textColor = new RGBA(complementaryHue,  1 - hsb[1], 1 - hsb[2], 255f);		
 	}
 }

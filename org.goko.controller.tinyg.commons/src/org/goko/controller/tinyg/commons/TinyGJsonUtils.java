@@ -25,14 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
 import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
-import org.goko.core.log.GkLog;
 
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 public class TinyGJsonUtils {
-	/** LOG */
-	private static final GkLog LOG = GkLog.getLogger(TinyGJsonUtils.class);
 	public static final String SYSTEM_SETTINGS = "sys";
 	
 	/**
@@ -114,21 +110,6 @@ public class TinyGJsonUtils {
 		return jsonGroup;
 	}
 
-
-	/**
-	 * Returns the value of the given JsonValue
-	 * @param jsonValue the JsonValue to get value of 
-	 * @return Object
-	 */
-	private static Object getValue(JsonValue jsonValue){
-		if(jsonValue.isNumber()){
-			return jsonValue.asBigDecimal();
-		}else if(jsonValue.isString()){
-			return jsonValue.asString();
-		}
-		return null;
-
-	}
 //	/**
 //	 * Extract the checksum value of a TinyG response envelope
 //	 *

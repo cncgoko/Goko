@@ -91,6 +91,8 @@ public class TinyGConfigurationOpenHandler {
 		PreferenceDialog dialog = new PreferenceDialog(shell, manager);
 		
 		int result = dialog.open();
+		dialog.create();		
+		dialog.getTreeViewer().expandAll();
 		
 		if(result == Dialog.OK){
 			try{				

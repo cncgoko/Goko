@@ -95,6 +95,7 @@ public abstract class TinyGSetting<T> {
 		this.setAssigned(true);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Class getType(){
 		return value.getClass();
 	}

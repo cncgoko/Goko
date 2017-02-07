@@ -155,7 +155,6 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 			}
 			
 		}
-		LOG.info("Processing line complete");
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		
 		stateBuffer = IntBuffer.allocate(getVerticesCount());

@@ -17,8 +17,6 @@
 package org.goko.tools.viewer.jogl.service;
 
 import javax.media.opengl.GLAutoDrawable;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -41,7 +39,6 @@ import org.goko.tools.viewer.jogl.service.overlay.KeyboardJogOverlay;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
 import org.goko.tools.viewer.jogl.utils.render.grid.GraduatedGridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
-import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
 

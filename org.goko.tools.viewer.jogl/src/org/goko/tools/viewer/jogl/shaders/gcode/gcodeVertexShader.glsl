@@ -23,6 +23,6 @@ void main(){
     }else if(vertexStatus == 5){ // ERROR
  	  	vColor = vec4(0.9,0.0,0.0,1);
     }else{
-    	vColor = vec4(0,0.0,1,1);
+    	vColor = vec4(0,0,1,1);
     }
  }

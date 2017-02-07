@@ -31,7 +31,7 @@ import org.goko.core.controller.action.IGkControllerAction;
  * @author PsyKo
  *
  */
-public abstract class AbstractTinyGControllerAction<C extends AbstractTinyGConfiguration<C>, S extends ITinyGControllerService> implements IGkControllerAction {
+public abstract class AbstractTinyGControllerAction<C extends AbstractTinyGConfiguration<C>, S extends ITinyGControllerService<?>> implements IGkControllerAction {
 	/**
 	 * TinyG controller service
 	 */

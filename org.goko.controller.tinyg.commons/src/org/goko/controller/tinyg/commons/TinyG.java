@@ -38,8 +38,16 @@ public class TinyG {
 	public static final String STATUS_REPORT_MACHINE_POSITION_A = "mpoa";
 	public static final String STATUS_REPORT_UNITS = "unit";
 	public static final String STATUS_REPORT_COORDINATES = "coor";
+	public static final String STATUS_REPORT_MOTION_MODE = "momo";
+	public static final String STATUS_REPORT_PLANE = "plan";
+	public static final String STATUS_REPORT_PATH_CONTROL = "path";
 	public static final String STATUS_REPORT_DISTANCE_MODE = "dist";
 	public static final String STATUS_REPORT_VELOCITY = "vel";
 	public static final String STATUS_REPORT_FEEDRATE = "feed";
 	public static final String STATUS_REPORT_STATE = "stat";
+	public static final String STATUS_REPORT_ARC_DISTANCE_MODE = "admo";
+	public static final String STATUS_REPORT_TOOL = "tool";
+	public static final String STATUS_REPORT_FEEDRATE_MODE = "frmo";
+	public static final String STATUS_REPORT_MACHINE_POSITION = "mpo";
+	public static final String STATUS_REPORT_WORK_POSITION = "pos";
 }

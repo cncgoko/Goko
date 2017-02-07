@@ -18,6 +18,7 @@ import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguratio
 import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.commons.jog.AbstractTinyGJogger;
 import org.goko.controller.tinyg.commons.schedule.Scheduler;
+import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.event.ObservableDelegate;
@@ -84,9 +85,11 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	/** GCode service */
 	private IRS274NGCService gcodeService;
 	/** Planner buffer check for execution */
-	private boolean plannerBufferCheck;
+	private boolean plannerBufferCheck = true;
 	/** The execution monitor service */
 	private IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService;
+	/** UI Log service */	
+	private IApplicativeLogService applicativeLogService;
 	
 	/**
 	 * Constructor
@@ -482,9 +485,13 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#applyConfiguration(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
 	 */
 	@Override
-	public void applyConfiguration(C configuration) throws GkException {
-		this.configuration = configuration;
-		getCommunicator().sendConfigurationUpdate(configuration);
+	public void applyConfiguration(C newConfiguration) throws GkException {
+		C differentialConfig = newConfiguration;
+		if(this.configuration != null){
+			differentialConfig = this.configuration.getDifferentialConfiguration(newConfiguration);
+		}
+		this.configuration = newConfiguration;
+		getCommunicator().sendConfigurationUpdate(differentialConfig);
 	}
 	/**
 	 * @return the communicator
@@ -727,5 +734,19 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 			this.executionService.setExecutor(getExecutor());
 			this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, getExecutor());
 		}
+	}
+
+	/**
+	 * @return the applicativeLogService
+	 */
+	public IApplicativeLogService getApplicativeLogService() {
+		return applicativeLogService;
+	}
+
+	/**
+	 * @param applicativeLogService the applicativeLogService to set
+	 */
+	public void setApplicativeLogService(IApplicativeLogService applicativeLogService) {
+		this.applicativeLogService = applicativeLogService;
 	}
 }

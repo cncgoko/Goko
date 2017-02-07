@@ -237,13 +237,14 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	 * @return a differential configuration
 	 * @throws GkException GkException
 	 */
+	@SuppressWarnings("unchecked")
 	public C getDifferentialConfiguration(C otherConfig) throws GkException{
 		C diffConfig = newInstance();
 
 		for(TinyGGroupSettings group : getGroups()){
 			List<TinyGSetting<?>> settings = group.getSettings();
 			for (TinyGSetting<?> tinyGSetting : settings) {
-				Object baseValue = tinyGSetting.getValue();
+				Object baseValue = tinyGSetting.getValue();				
 				Object newValue = otherConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
 				if(!ObjectUtils.equals(baseValue, newValue)){
 					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
@@ -273,7 +274,6 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	 * @throws GkException GkException
 	 */
 	protected void setFromJson(JsonObject json, String identifierPrefix) throws GkException{
-		System.out.println("AbstractTinyGConfiguration.setFromJson()");
 		JsonObject jsonObj = json;
 		for(String name : jsonObj.names()){
 			JsonValue subObj = jsonObj.get(name);

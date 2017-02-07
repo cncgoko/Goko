@@ -20,7 +20,12 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.bindings.AbstractModelObject;
 import org.goko.common.bindings.ErrorEvent;
@@ -47,6 +52,15 @@ public abstract class GkUiComponent<C extends AbstractController<D>, D extends A
 		this.controller = abstractController;
 		this.dataModel = this.controller.getDataModel();
 		initialize(context);
+	}
+	
+	protected void addResizeListener(final Composite parent){
+		parent.addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event e) {
+				Point size = parent.getSize();
+				parent.layout();
+			}
+		});
 	}
 
 	private void initialize(IEclipseContext context){

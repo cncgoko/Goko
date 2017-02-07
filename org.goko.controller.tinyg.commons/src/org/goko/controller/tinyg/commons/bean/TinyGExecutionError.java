@@ -1,4 +1,4 @@
-package org.goko.controller.tinyg.controller.bean;
+package org.goko.controller.tinyg.commons.bean;
 
 public class TinyGExecutionError {
 	private String title;

@@ -60,6 +60,7 @@ public abstract class AbstractTinyGJogger<F extends AbstractTinyGConfiguration<F
 				if(previousDistanceMode == null){					
 					previousDistanceMode = context.getDistanceMode();	
 				}
+				stopRequested = false;
 				EnumUnit contextUnit = context.getUnit();
 				String command = "G91G1";
 				if(feedrate != null){
@@ -76,6 +77,7 @@ public abstract class AbstractTinyGJogger<F extends AbstractTinyGConfiguration<F
 			
 		}	
 	}
+	
 	/**
 	 * Determine if TinyG is ready to jog
 	 * @return <code>true</code> if TinyG is ready to receive another jog order, <code>false</code> otherwise

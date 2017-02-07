@@ -79,7 +79,7 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 		requestStatusReport();
 		requestQueueReport();	
 		requestConfigurationUpdate();
-		updateCoordinateSystem();
+		requestCoordinateSystemUpdate();
 	}
 	
 	/** (inheritDoc)
@@ -257,7 +257,7 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	 */
 	@Override
 	protected void handleErrorReport(JsonObject errorReportBody) throws GkException {
-				
+		// TODO
 	}
 
 	/** (inheritDoc)
@@ -289,15 +289,6 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 			return TinyGControllerUtility.getState(statReport.asInt());
 		}
 		return null;
-	}
-
-
-	protected void updateCoordinateSystem() throws GkException{
-		send("{\"G55\":\"\"}", true);
-		send("{\"G56\":\"\"}", true);
-		send("{\"G57\":\"\"}", true);
-		send("{\"G58\":\"\"}", true);
-		send("{\"G59\":\"\"}", true);
 	}
 	
 	protected void updateCoordinateSystem(ICoordinateSystem cs) throws GkException{
