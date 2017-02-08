@@ -17,7 +17,7 @@ import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionControl;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
@@ -468,12 +468,12 @@ public class RS274NGCServiceTest {
 		GCodeLine line = provider.getLineAtIndex(0);
 		
 		GCodeContext context = new GCodeContext();
-		context.setCoordinateSystem(EnumCoordinateSystem.G54);
+		context.setCoordinateSystem(CoordinateSystem.G54);
 		
 		InstructionProvider instructionProvider = service.getInstructions(context, provider);
 		InstructionSet set = new InstructionSet();
 		
-		SetCoordinateSystemInstruction instr = new SetCoordinateSystemInstruction(EnumCoordinateSystem.G58);
+		SetCoordinateSystemInstruction instr = new SetCoordinateSystemInstruction(CoordinateSystem.G58);
 		instr.setIdGCodeLine(line.getId());
 		set.addInstruction(instr);
 					
@@ -481,7 +481,7 @@ public class RS274NGCServiceTest {
 		
 		// Context update check 
 		GCodeContext postContext = service.update(context, instr);		
-		assertEquals(EnumCoordinateSystem.G58, postContext.getCoordinateSystem());
+		assertEquals(CoordinateSystem.G58, postContext.getCoordinateSystem());
 	}
 	
 	@Test

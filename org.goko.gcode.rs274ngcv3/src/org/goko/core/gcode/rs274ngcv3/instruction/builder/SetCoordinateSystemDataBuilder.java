@@ -8,7 +8,8 @@ import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.element.GCodeWord;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.SetCoordinateSystemDataInstruction;
@@ -44,7 +45,7 @@ public class SetCoordinateSystemDataBuilder extends AbstractInstructionBuilder<S
 			throw new GkFunctionalException("GCO-120");
 		}
 		
-		EnumCoordinateSystem targetCoordinateSystem = EnumCoordinateSystem.getEnum(coordinateSystemInteger);
+		CoordinateSystem targetCoordinateSystem = new CoordinateSystemFactory().get(coordinateSystemInteger);
 		Length x = findWordLength("X", words, null, context.getUnit().getUnit());
 		Length y = findWordLength("Y", words, null, context.getUnit().getUnit());
 		Length z = findWordLength("Z", words, null, context.getUnit().getUnit());

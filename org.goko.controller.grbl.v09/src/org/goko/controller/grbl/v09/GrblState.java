@@ -30,7 +30,7 @@ import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
@@ -83,14 +83,14 @@ public class GrblState extends MachineValueStore{
 		storeValue(Grbl.CONTEXT_MOTION_MODE, "Motion mode", "The current motion mode", EnumMotionMode.RAPID);
 		storeValue(Grbl.CONTEXT_UNIT, "Units", "The current units", EnumUnit.MILLIMETERS);
 		storeValue(Grbl.CONTEXT_DISTANCE_MODE, "Distance mode", "The current distance mode", EnumDistanceMode.ABSOLUTE);
-		storeValue(Grbl.CONTEXT_COORD_SYSTEM, "Coordinate system", "The current coordinate system", EnumCoordinateSystem.G53);
+		storeValue(Grbl.CONTEXT_COORD_SYSTEM, "Coordinate system", "The current coordinate system", CoordinateSystem.G53.getCode());
 
 		// TODO REMOVE OFFSETS FROM VALUE STORE
-		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G54, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G55, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G56, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G57, new Tuple6b());
+		offsets.put(CoordinateSystem.G53, new Tuple6b());
+		offsets.put(CoordinateSystem.G54, new Tuple6b());
+		offsets.put(CoordinateSystem.G55, new Tuple6b());
+		offsets.put(CoordinateSystem.G56, new Tuple6b());
+		offsets.put(CoordinateSystem.G57, new Tuple6b());
 		activePolling = true;
 		
 		addListener(this);
@@ -181,56 +181,56 @@ public class GrblState extends MachineValueStore{
 	 * @return the offset
 	 */
 	public Tuple6b getG54Offset() throws GkException{
-		return getOffset(EnumCoordinateSystem.G54);
+		return getOffset(CoordinateSystem.G54);
 	}
 	/**
 	 * Sets G54 offset
 	 * @param the offset
 	 */
 	public void setG54Offset(Tuple6b offset) throws GkException{
-		setOffset(EnumCoordinateSystem.G54, offset);
+		setOffset(CoordinateSystem.G54, offset);
 	}
 	/**
 	 * Return G55 offset
 	 * @return the offset
 	 */
 	public Tuple6b getG55Offset()throws GkException{
-		return getOffset(EnumCoordinateSystem.G55);
+		return getOffset(CoordinateSystem.G55);
 	}
 	/**
 	 * Sets G55 offset
 	 * @param the offset
 	 */
 	public void setG55Offset(Tuple6b offset)throws GkException{
-		setOffset(EnumCoordinateSystem.G55, offset);
+		setOffset(CoordinateSystem.G55, offset);
 	}
 	/**
 	 * Return G54 offset
 	 * @return the offset
 	 */
 	public Tuple6b getG56Offset()throws GkException{
-		return getOffset(EnumCoordinateSystem.G56);
+		return getOffset(CoordinateSystem.G56);
 	}
 	/**
 	 * Sets G56 offset
 	 * @param the offset
 	 */
 	public void setG56Offset(Tuple6b offset)throws GkException{
-		setOffset(EnumCoordinateSystem.G56, offset);
+		setOffset(CoordinateSystem.G56, offset);
 	}
 	/**
 	 * Return G57 offset
 	 * @return the offset
 	 */
 	public Tuple6b getG57Offset() throws GkException{
-		return getOffset(EnumCoordinateSystem.G57);
+		return getOffset(CoordinateSystem.G57);
 	}
 	/**
 	 * Sets G57 offset
 	 * @param the offset
 	 */
 	public void setG57Offset(Tuple6b offset)throws GkException{
-		setOffset(EnumCoordinateSystem.G57, offset);
+		setOffset(CoordinateSystem.G57, offset);
 	}
 	/**
 	 * Setter for the state

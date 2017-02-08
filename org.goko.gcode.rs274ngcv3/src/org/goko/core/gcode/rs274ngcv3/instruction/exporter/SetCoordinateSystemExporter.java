@@ -20,17 +20,17 @@ public class SetCoordinateSystemExporter extends AbstractInstructionExporter<Set
 	 */
 	@Override
 	protected List<GCodeWord> getWords(GCodeContext context, SetCoordinateSystemInstruction instruction, RenderingFormat format) throws GkException {
-		switch (instruction.getTargetCoordinateSystem()) {
-		case G53: return wrap(new GCodeWord("G", "53"));			
-		case G54: return wrap(new GCodeWord("G", "54"));			
-		case G55: return wrap(new GCodeWord("G", "55"));			
-		case G56: return wrap(new GCodeWord("G", "56"));			
-		case G57: return wrap(new GCodeWord("G", "57"));			
-		case G58: return wrap(new GCodeWord("G", "58"));			
-		case G59: return wrap(new GCodeWord("G", "59"));			
-		case G59_1: return wrap(new GCodeWord("G", "59.1"));			
-		case G59_2: return wrap(new GCodeWord("G", "59.2"));			
-		case G59_3: return wrap(new GCodeWord("G", "59.3"));				
+		switch (instruction.getTargetCoordinateSystem().getCode()) {
+		case "G53": return wrap(new GCodeWord("G", "53"));			
+		case "G54": return wrap(new GCodeWord("G", "54"));			
+		case "G55": return wrap(new GCodeWord("G", "55"));			
+		case "G56": return wrap(new GCodeWord("G", "56"));			
+		case "G57": return wrap(new GCodeWord("G", "57"));			
+		case "G58": return wrap(new GCodeWord("G", "58"));			
+		case "G59": return wrap(new GCodeWord("G", "59"));			
+		case "G59.1": return wrap(new GCodeWord("G", "59.1"));			
+		case "G59.2": return wrap(new GCodeWord("G", "59.2"));			
+		case "G59.3": return wrap(new GCodeWord("G", "59.3"));				
 		}
 		return null;
 	}

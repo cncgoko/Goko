@@ -13,4 +13,5 @@ public interface ICoordinateSystem {
 	String getCode();
 	
 	boolean equals(ICoordinateSystem coordinateSystem);
+		
 }

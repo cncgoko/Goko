@@ -1,19 +1,19 @@
 package org.goko.core.gcode.rs274ngcv3.instruction;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 
 public class SetCoordinateSystemInstruction extends AbstractInstruction {
 	/** The target coordinate system */
-	private EnumCoordinateSystem targetCoordinateSystem;
+	private CoordinateSystem targetCoordinateSystem;
 
 	/**
 	 * Constructor 
 	 * @param targetCoordinateSystem The target coordinate system 
 	 */
-	public SetCoordinateSystemInstruction(EnumCoordinateSystem targetCoordinateSystem) {
+	public SetCoordinateSystemInstruction(CoordinateSystem targetCoordinateSystem) {
 		super(InstructionType.SET_COORDINATE_SYSTEM);
 		this.targetCoordinateSystem = targetCoordinateSystem;
 	}
@@ -29,7 +29,7 @@ public class SetCoordinateSystemInstruction extends AbstractInstruction {
 	/**
 	 * @return the targetCoordinateSystem
 	 */
-	public EnumCoordinateSystem getTargetCoordinateSystem() {
+	public CoordinateSystem getTargetCoordinateSystem() {
 		return targetCoordinateSystem;
 	}
 

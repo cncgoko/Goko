@@ -70,8 +70,6 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 			return;
 		}
 		if(adapter != null){
-			ICoordinateSystem activeCoordinateSystem = adapter.getCurrentCoordinateSystem();
-			Tuple6b offsets 		= adapter.getCoordinateSystemOffset(activeCoordinateSystem);
 			Tuple6b machineOrigin 	= new Tuple6b().setZero();//.subtract(new Tuple6b(offsets));
 
 			for (ICoordinateSystem cs : adapter.getCoordinateSystem()) {
