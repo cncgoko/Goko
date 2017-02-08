@@ -36,7 +36,7 @@ import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
@@ -77,7 +77,7 @@ public class TinyGState extends MachineValueStore{
 		gcodeContext = new GCodeContext();
 		gcodeContext.setPosition(new Tuple6b());
 		gcodeContext.setOriginOffset(new Tuple6b());
-		gcodeContext.setCoordinateSystem(EnumCoordinateSystem.G54);
+		gcodeContext.setCoordinateSystem(CoordinateSystem.G54);
 		gcodeContext.setSelectedToolNumber(0);
 		gcodeContext.setActiveToolNumber(0);
 		gcodeContext.setUnit(EnumUnit.MILLIMETERS);
@@ -110,11 +110,11 @@ public class TinyGState extends MachineValueStore{
 		storeValue(TinyG.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
 		addListener(this);
 		offsets = new HashMap<ICoordinateSystem, Tuple6b>();
-		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G54, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G55, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G56, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G57, new Tuple6b());
+		offsets.put(CoordinateSystem.G53, new Tuple6b());
+		offsets.put(CoordinateSystem.G54, new Tuple6b());
+		offsets.put(CoordinateSystem.G55, new Tuple6b());
+		offsets.put(CoordinateSystem.G56, new Tuple6b());
+		offsets.put(CoordinateSystem.G57, new Tuple6b());
 	}
 
 	/**

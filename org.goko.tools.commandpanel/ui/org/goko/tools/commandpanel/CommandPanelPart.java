@@ -66,7 +66,7 @@ import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IGkConstants;
 import org.goko.core.controller.action.DefaultControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.log.GkLog;
 import org.goko.tools.commandpanel.controller.CommandPanelController;
 import org.goko.tools.commandpanel.controller.CommandPanelModel;
@@ -413,7 +413,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().setCoordinateSystem(EnumCoordinateSystem.G54);
+					getController().setCoordinateSystem(CoordinateSystem.G54);
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}
@@ -429,7 +429,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().setCoordinateSystem(EnumCoordinateSystem.G55);
+					getController().setCoordinateSystem(CoordinateSystem.G55);
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}
@@ -445,7 +445,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().setCoordinateSystem(EnumCoordinateSystem.G56);
+					getController().setCoordinateSystem(CoordinateSystem.G56);
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}
@@ -461,7 +461,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().setCoordinateSystem(EnumCoordinateSystem.G57);
+					getController().setCoordinateSystem(CoordinateSystem.G57);
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}
@@ -477,7 +477,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().setCoordinateSystem(EnumCoordinateSystem.G58);
+					getController().setCoordinateSystem(CoordinateSystem.G58);
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}
@@ -493,7 +493,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-					getController().setCoordinateSystem(EnumCoordinateSystem.G59);
+					getController().setCoordinateSystem(CoordinateSystem.G59);
 				} catch (GkException e1) {
 					displayMessage(e1);
 				}

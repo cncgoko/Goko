@@ -50,7 +50,7 @@ import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
 import org.goko.core.gcode.execution.IExecutionTokenState;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
 
@@ -66,7 +66,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 	private IControllerService<IExecutionTokenState, GCodeContext> controllerService;
 	@Inject
 	@Optional
-	private ICoordinateSystemAdapter<EnumCoordinateSystem> coordinateSystemAdapter;	
+	private ICoordinateSystemAdapter<CoordinateSystem> coordinateSystemAdapter;	
 	@Inject	
 	private IJogService jogService;
 	private Timer timer;
@@ -213,7 +213,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 		});
 	}
 	
-	public void setCoordinateSystem(EnumCoordinateSystem enumCoordinateSystem) throws GkException {
+	public void setCoordinateSystem(CoordinateSystem enumCoordinateSystem) throws GkException {
 		coordinateSystemAdapter.setCurrentCoordinateSystem(enumCoordinateSystem);
 	}
 

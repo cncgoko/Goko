@@ -44,7 +44,8 @@ import org.goko.core.connection.IConnectionService;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -216,7 +217,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	}
 
 	private void handleCoordinateSystemOffsetReport(String offsetName, JsonValue jsonOffset) throws GkException{
-		EnumCoordinateSystem cs = EnumCoordinateSystem.valueOf(StringUtils.upperCase(offsetName));
+		CoordinateSystem cs = new CoordinateSystemFactory().get(StringUtils.upperCase(offsetName));
 		JsonObject offsetObj = (JsonObject) jsonOffset;
 		JsonValue xOffset = offsetObj.get("x");
 		JsonValue yOffset = offsetObj.get("y");
@@ -305,7 +306,7 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);			
 			Speed 		 	 velocity 		= findVelocity(statusReportObject);
 			Speed 			 feedrate 		= findFeedrate(statusReportObject);
-			EnumCoordinateSystem 		 cs 			= findCoordinateSystem(statusReportObject);
+			CoordinateSystem cs 			= findCoordinateSystem(statusReportObject);
 			GCodeContext gcodeContext = new GCodeContext(tinyg.getGCodeContext());
 
 			gcodeContext.setPosition(workPosition);			
@@ -409,25 +410,25 @@ public class TinyGCommunicator implements IConnectionDataListener, IConnectionLi
 	 * Update coordinates
 	 * 0=g53, 1=g54, 2=g55, 3=g56, 4=g57, 5=g58, 6=g59
 	 */
-	private EnumCoordinateSystem findCoordinateSystem(JsonObject statusReport){
-		EnumCoordinateSystem coordinateSystem = null;
+	private CoordinateSystem findCoordinateSystem(JsonObject statusReport){
+		CoordinateSystem coordinateSystem = null;
 		JsonValue coordReport = statusReport.get(TinyGJsonUtils.STATUS_REPORT_COORDINATES);
 		if(coordReport != null){
 			int units = coordReport.asInt();
 			switch(units){
-			case 0: coordinateSystem = EnumCoordinateSystem.G53;
+			case 0: coordinateSystem = CoordinateSystem.G53;
 			break;
-			case 1: coordinateSystem = EnumCoordinateSystem.G54;
+			case 1: coordinateSystem = CoordinateSystem.G54;
 			break;
-			case 2: coordinateSystem = EnumCoordinateSystem.G55;
+			case 2: coordinateSystem = CoordinateSystem.G55;
 			break;
-			case 3: coordinateSystem = EnumCoordinateSystem.G56;
+			case 3: coordinateSystem = CoordinateSystem.G56;
 			break;
-			case 4: coordinateSystem = EnumCoordinateSystem.G57;
+			case 4: coordinateSystem = CoordinateSystem.G57;
 			break;
-			case 5: coordinateSystem = EnumCoordinateSystem.G58;
+			case 5: coordinateSystem = CoordinateSystem.G58;
 			break;
-			case 6: coordinateSystem = EnumCoordinateSystem.G59;
+			case 6: coordinateSystem = CoordinateSystem.G59;
 			break;
 			}
 		}

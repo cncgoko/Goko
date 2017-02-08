@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.goko.controller.grbl.v09.bean.EnumGrblCoordinateSystem;
 import org.goko.controller.grbl.v09.bean.GrblExecutionError;
 import org.goko.controller.grbl.v09.bean.IGrblStateChangeListener;
 import org.goko.controller.grbl.v09.bean.StatusReport;
@@ -79,6 +77,8 @@ import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionToken;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
@@ -753,8 +753,8 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		return grblState;
 	}
 
-	protected void setOffsetCoordinate(String offsetIdentifier, Tuple6b value) throws GkException{
-		getGrblState().setOffset(EnumGrblCoordinateSystem.getEnum(offsetIdentifier), value);
+	protected void setCoordinateSystemOffset(CoordinateSystem coordinateSystem, Tuple6b value) throws GkException{
+		getGrblState().setOffset(coordinateSystem, value);
 		gcodeContextListener.getEventDispatcher().onGCodeContextEvent(getGCodeContext());
 	}
 	/** (inheritDoc)
@@ -777,7 +777,9 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
-		return new ArrayList<ICoordinateSystem>(Arrays.asList(EnumGrblCoordinateSystem.values()));
+		List<ICoordinateSystem> lstCoordinateSystem = new ArrayList<>();
+		lstCoordinateSystem.addAll(new CoordinateSystemFactory().get());
+		return lstCoordinateSystem;
 	}
 
 	/** (inheritDoc)

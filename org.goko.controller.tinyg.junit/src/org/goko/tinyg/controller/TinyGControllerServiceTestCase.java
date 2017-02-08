@@ -14,7 +14,7 @@ import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
@@ -209,7 +209,7 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		// Enable G55 
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"coor\":2}},\"f\":[1,0,0,0]}"); 
 			
-		assertEquals(EnumCoordinateSystem.G55, tinyg.getCurrentCoordinateSystem());
+		assertEquals(CoordinateSystem.G55, tinyg.getCurrentCoordinateSystem());
 		tinyg.resetCurrentCoordinateSystem();		
 		
 		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"G55\":{\"x\":15.031, \"y\":35.000, \"z\":-16.031}} "+'\n', 1000);

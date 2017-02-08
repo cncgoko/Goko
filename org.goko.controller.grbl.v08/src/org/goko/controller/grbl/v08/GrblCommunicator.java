@@ -36,6 +36,7 @@ import org.goko.core.connection.EnumConnectionEvent;
 import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.IConnectionService;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -125,7 +126,7 @@ public class GrblCommunicator implements IConnectionDataListener, IConnectionLis
 			}else if(StringUtils.defaultString(trimmedData).matches("\\[G5.*\\]")){
 				Tuple6b targetPoint = new Tuple6b().setNull();
 				String offsetName = parseCoordinateSystem(trimmedData, targetPoint);
-				grbl.setOffsetCoordinate(offsetName, targetPoint);
+				grbl.setCoordinateSystemOffset(new CoordinateSystemFactory().get(offsetName), targetPoint);
 				
 			/* Received an offset position report */
 			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G92|G28|G30).*\\]")){					

@@ -14,23 +14,22 @@
  *   You should have received a copy of the GNU General Public License
  *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package org.goko.controller.grbl.v08.bean;
+package org.goko.core.gcode.rs274ngcv3.context;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.ICoordinateSystem;
 
-public enum EnumGrblCoordinateSystem implements ICoordinateSystem{
-	G53(0, "G53"),
-	G54(1, "G54"),
-	G55(2, "G55"),
-	G56(3, "G56"),
-	G57(4, "G57"),
-	G58(5, "G58"),
-	G59(6, "G59"),
-	G59_1(7, "G59.1"),
-	G59_2(8, "G59.2"),
-	G59_3(9, "G59.3");
+public class CoordinateSystem implements ICoordinateSystem{
+	public static final CoordinateSystem G53 = new CoordinateSystem(0, "G53");
+	public static final CoordinateSystem G54 = new CoordinateSystem(1, "G54");
+	public static final CoordinateSystem G55 = new CoordinateSystem(2, "G55");
+	public static final CoordinateSystem G56 = new CoordinateSystem(3, "G56");
+	public static final CoordinateSystem G57 = new CoordinateSystem(4, "G57");
+	public static final CoordinateSystem G58 = new CoordinateSystem(5, "G58");
+	public static final CoordinateSystem G59 = new CoordinateSystem(6, "G59");
+	public static final CoordinateSystem G59_1 = new CoordinateSystem(7, "G59.1");
+	public static final CoordinateSystem G59_2 = new CoordinateSystem(8, "G59.2");
+	public static final CoordinateSystem G59_3 = new CoordinateSystem(9, "G59.3");
 	
 	/** Integer denomination of the coordinate system */
 	private int intValue;
@@ -39,41 +38,11 @@ public enum EnumGrblCoordinateSystem implements ICoordinateSystem{
 	/** Constructor
 	 * @param intValue the integer value of the coordinate system 
 	 */
-	private EnumGrblCoordinateSystem(int intValue, String code) {
+	private CoordinateSystem(int intValue, String code) {
 		this.intValue = intValue;
 		this.code = code;
 	}
 	
-	/**
-	 * Returns the enum for the given int value 
-	 * @param intValue the int value 
-	 * @return EnumCoordinateSystem
-	 * @throws GkTechnicalException GkTechnicalException
-	 */
-	public static EnumGrblCoordinateSystem getEnum(int intValue) throws GkTechnicalException{
-		for (EnumGrblCoordinateSystem enumCS : values()) {
-			if(enumCS.getIntValue() == intValue){
-				return enumCS;
-			}
-		}
-		throw new GkTechnicalException("No EnumCoordinateSystem for int value ["+intValue+"]");
-	}
-	
-	/**
-	 * Returns the enum for the given code 
-	 * @param code the code  
-	 * @return EnumCoordinateSystem
-	 * @throws GkTechnicalException GkTechnicalException
-	 */
-	public static EnumGrblCoordinateSystem getEnum(String code) throws GkTechnicalException{
-		for (EnumGrblCoordinateSystem enumCS : values()) {
-			if(StringUtils.equalsIgnoreCase(enumCS.getCode(), code)){
-				return enumCS;
-			}
-		}
-		throw new GkTechnicalException("No EnumCoordinateSystem for code ["+code+"]");
-	}
-
 	/**
 	 * @return the intValue
 	 */
@@ -95,5 +64,36 @@ public enum EnumGrblCoordinateSystem implements ICoordinateSystem{
 	public boolean equals(ICoordinateSystem coordinateSystem) {		
 		return StringUtils.equals(code, coordinateSystem.getCode());
 	}
-	
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CoordinateSystem other = (CoordinateSystem) obj;
+		if (code == null) {
+			if (other.code != null)
+				return false;
+		} else if (!code.equals(other.code))
+			return false;
+		return true;
+	}
+
 }

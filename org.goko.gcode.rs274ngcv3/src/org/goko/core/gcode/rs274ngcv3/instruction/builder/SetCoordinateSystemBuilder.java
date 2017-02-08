@@ -5,7 +5,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.GCodeWord;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.SetCoordinateSystemInstruction;
@@ -38,33 +38,33 @@ public class SetCoordinateSystemBuilder extends AbstractInstructionBuilder<SetCo
 	 */
 	@Override
 	protected SetCoordinateSystemInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		EnumCoordinateSystem targetCoordinateSystem = null;
+		CoordinateSystem targetCoordinateSystem = null;
 		if(GCodeWordUtils.findAndRemoveWord("G54", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G54;
+			targetCoordinateSystem = CoordinateSystem.G54;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G55", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G55;
+			targetCoordinateSystem = CoordinateSystem.G55;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G56", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G56;
+			targetCoordinateSystem = CoordinateSystem.G56;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G57", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G57;
+			targetCoordinateSystem = CoordinateSystem.G57;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G58", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G58;
+			targetCoordinateSystem = CoordinateSystem.G58;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G59", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G59;
+			targetCoordinateSystem = CoordinateSystem.G59;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G59.1", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G59_1;
+			targetCoordinateSystem = CoordinateSystem.G59_1;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G59.2", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G59_2;
+			targetCoordinateSystem = CoordinateSystem.G59_2;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G59.3", words) != null){
-			targetCoordinateSystem = EnumCoordinateSystem.G59_3;
+			targetCoordinateSystem = CoordinateSystem.G59_3;
 		}else{
 			throw new GkTechnicalException("Unknown Coordinate system...");
 		}

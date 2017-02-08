@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -67,7 +66,8 @@ import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
@@ -914,11 +914,12 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 	 */
 	@Override
 	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
-		List<ICoordinateSystem> lstCoordinateSystem = new ArrayList<ICoordinateSystem>();
-		lstCoordinateSystem.addAll(Arrays.asList(EnumCoordinateSystem.values()));
+		List<ICoordinateSystem> lstCoordinateSystem = new ArrayList<>();
+		lstCoordinateSystem.addAll(new CoordinateSystemFactory().get());
 		return lstCoordinateSystem;
 	}
-	public void setCoordinateSystemOffset(EnumCoordinateSystem cs, Tuple6b offset) throws GkException {
+	
+	public void setCoordinateSystemOffset(CoordinateSystem cs, Tuple6b offset) throws GkException {
 		tinygState.setCoordinateSystemOffset(cs, offset);
 	}
 
@@ -947,7 +948,7 @@ public class TinyGControllerService extends EventDispatcher implements ITinyGCon
 		Tuple6b offsets = getCoordinateSystemOffset(current);
 		Tuple6b mPos = new Tuple6b(tinygState.getWorkPosition());
 		mPos = mPos.add(offsets);
-		String cmd = "{\""+String.valueOf(current) +"\":{";
+		String cmd = "{\""+ current.getCode() +"\":{";
 
 		cmd += "\"x\":"+ getPositionAsString(mPos.getX()) +", ";
 		cmd += "\"y\":"+ getPositionAsString(mPos.getY())+", ";
