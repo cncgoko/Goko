@@ -9,8 +9,8 @@ env:
    - TARGET: ftp://ftp.goko.fr/www/download/
    - UPDATE_FOLDER: update
    - updateRepository: true
-   - updateBinaries: false
-   - gokoVersion: dev
+   - updateBinaries: true
+   - gokoVersion: 0.3.2
 
 cache:
   directories:
