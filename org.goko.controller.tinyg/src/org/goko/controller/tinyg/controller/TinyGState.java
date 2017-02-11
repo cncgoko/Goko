@@ -19,6 +19,7 @@
  */
 package org.goko.controller.tinyg.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.AbstractTinyGState;
 import org.goko.core.common.exception.GkException;
 
@@ -45,6 +46,7 @@ public class TinyGState extends AbstractTinyGState{
 	protected void initializeDefaultValue() throws GkException{
 		super.initializeDefaultValue();
 		storeValue(TinyGv097.AVAILABLE_BUFFER_COUNT, "TinyG Buffer", "The available space in the planner buffer", 0);
+		storeValue(TinyGv097.MESSAGE, "Msg", "Last received message", StringUtils.EMPTY);
 	}
 
 	/**
@@ -61,5 +63,22 @@ public class TinyGState extends AbstractTinyGState{
 	 */
 	public void setAvailableBuffer(int availableBuffer) throws GkException {
 		updateValue(TinyGv097.AVAILABLE_BUFFER_COUNT, availableBuffer);
+	}
+	
+	/**
+	 * Set the last received message 
+	 * @param message the message
+	 * @throws GkException GkException 
+	 */
+	public void setMessage(String message) throws GkException{
+		updateValue(TinyGv097.MESSAGE, message);
+	}
+	
+	/**
+	 * @return the availableBuffer
+	 * @throws GkException GkException
+	 */
+	public int getMessage() throws GkException {
+		return getIntegerValue(TinyGv097.MESSAGE).getValue();
 	}
 }

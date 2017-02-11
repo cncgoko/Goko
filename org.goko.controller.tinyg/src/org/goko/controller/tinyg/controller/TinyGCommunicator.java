@@ -175,7 +175,8 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	}
 
 	private void handleMessage(JsonValue message) throws GkException {
-		getApplicativeLogService().warning(message.asString(), "TinyG");		
+		getApplicativeLogService().warning(message.asString(), "TinyG");
+		getControllerService().setMessage(message.asString());
 	}
 	
 	private void handleProbeReport(JsonValue probeReport) throws GkException {

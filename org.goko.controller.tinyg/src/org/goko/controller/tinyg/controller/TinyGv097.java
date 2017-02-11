@@ -44,6 +44,9 @@ public class TinyGv097 implements DefaultControllerValues{
     public static final String KILL_ALARM_HEADER = "clear";
     
 	protected static final String AVAILABLE_BUFFER_COUNT = "tinyg.buffer.count";
+	
+	protected static final String MESSAGE = "tinyg.msg";
+	
 	public static final String ON = "On";
 	public static final String OFF = "Off";
 

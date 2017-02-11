@@ -357,6 +357,15 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		}	
 	}
 
+	/**
+	 * Set the last received message 
+	 * @param message the message
+	 * @throws GkException GkException 
+	 */
+	public void setMessage(String message) throws GkException{
+		getInternalState().setMessage(message);
+	}
+	
 	public void resetAvailableBuffer()  {
 		setAvailablePlannerBuffer(28);
 	}
