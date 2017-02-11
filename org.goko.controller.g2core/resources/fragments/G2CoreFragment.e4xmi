@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_kj3ZUOciEeagK9BhG8cHSg">
+  <imports xsi:type="menu:Menu" xmi:id="__UpCQOckEeagK9BhG8cHSg" elementId="goko.menu.tools"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_A3BbAOclEeagK9BhG8cHSg" featurename="children" parentElementId="goko.menu.tools">
+    <elements xsi:type="menu:Menu" xmi:id="_DRWIYOclEeagK9BhG8cHSg" elementId="org.goko.controller.g2core.menu.g2core" label="G2 Core">
+      <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_FwPMsOclEeagK9BhG8cHSg" coreExpressionId="org.goko.targetboard.g2core"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_HdNr4OclEeagK9BhG8cHSg" elementId="org.goko.controller.g2core.handledmenuitem.g2coresettings" label="G2 Core settings" command="_X5KrgOcmEeagK9BhG8cHSg"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QD_fAOcmEeagK9BhG8cHSg" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_X5KrgOcmEeagK9BhG8cHSg" elementId="org.goko.controller.g2core.command.g2coresettings" commandName="G2 Core settings"/>
+    <elements xsi:type="commands:Command" xmi:id="_7b19cOuSEeaWqKO1s4cQwg" elementId="org.goko.controller.g2core.command.stateupdate" commandName="G2Core State watcher command"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__cRCUOcmEeagK9BhG8cHSg" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_AJ3IIOcnEeagK9BhG8cHSg" elementId="org.goko.controller.g2core.handler.0" contributionURI="bundleclass://org.goko.controller.g2core/org.goko.controller.g2core.handlers.G2CoreConfigurationOpenHandler" command="_X5KrgOcmEeagK9BhG8cHSg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_5UsDsOuSEeaWqKO1s4cQwg" elementId="org.goko.controller.g2core.handler.1" contributionURI="bundleclass://org.goko.controller.g2core/org.goko.controller.g2core.handlers.G2CoreStateUpdateHandler" command="_7b19cOuSEeaWqKO1s4cQwg"/>
+  </fragments>
+</fragment:ModelFragments>

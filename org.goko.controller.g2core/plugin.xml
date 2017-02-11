@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="org.goko.targetboard.g2core">
+         <with
+               variable="org.goko.targetBoard">
+            <equals
+                  value="g2core.v099">
+            </equals>
+         </with>
+      </definition>
+   </extension>
+   <extension
+         id="org.goko.controller.g2core.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="resources/fragments/G2CoreFragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePage">
+      <page
+            class="org.goko.controller.g2core.preferences.G2CorePreferencesPage"
+            id="org.goko.controller.g2core.mainpage"
+            name="G2Core"
+            targetBoard="g2core.v099">
+      </page>
+      <page
+            category="org.goko.controller.g2core.mainpage"
+            class="org.goko.controller.g2core.preferences.G2CoreStatusPreferencesPage"
+            id="org.goko.controller.g2core.page.statusreport"
+            name="Status report"
+            targetBoard="g2core.v099">
+      </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.controller.g2core.preferences.G2CorePreferenceStoreProvider"
+            id="org.goko.controller.g2core.provider1">
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.goko.controller.g2core.preferences.G2CorePreferencesInitializer">
+      </initializer>
+   </extension>
+
+</plugin>
