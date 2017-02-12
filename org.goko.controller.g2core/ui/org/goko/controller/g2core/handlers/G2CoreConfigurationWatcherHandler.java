@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.goko.controller.tinyg.handlers;
+package org.goko.controller.g2core.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,31 +12,30 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.goko.controller.g2core.configuration.G2CoreConfiguration;
+import org.goko.controller.g2core.controller.IG2CoreControllerService;
+import org.goko.controller.g2core.handlers.watcher.JSonModeFix;
+import org.goko.controller.g2core.handlers.watcher.JSonVerbosityFix;
+import org.goko.controller.g2core.handlers.watcher.QueueReportVerbosityFix;
 import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.commons.configuration.watcher.ITinyGConfigurationFix;
-import org.goko.controller.tinyg.commons.configuration.watcher.TinyGConfigurationFixDialog;
-import org.goko.controller.tinyg.controller.ITinygControllerService;
-import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
-import org.goko.controller.tinyg.handlers.watcher.JSonModeFix;
-import org.goko.controller.tinyg.handlers.watcher.JSonVerbosityFix;
-import org.goko.controller.tinyg.handlers.watcher.QueueReportVerbosityFix;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
 
 /**
- * Watches the configuration to make sure TinyG and Goko will work together
+ * Watches the configuration to make sure G2Core and Goko will work together
  * 
  * @author Psyko
- * @date 6 juin 2016
+ * @date 12 févr. 2017
  */
-public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationListener<TinyGConfiguration> {
+public class G2CoreConfigurationWatcherHandler implements ITinyGConfigurationListener<G2CoreConfiguration> {
 	/** LOG */
-	private static final GkLog LOG = GkLog.getLogger(TinyGConfigurationWatcherHandler.class);
+	private static final GkLog LOG = GkLog.getLogger(G2CoreConfigurationWatcherHandler.class);
 	
 	/** The fixes to apply */
-	private List<ITinyGConfigurationFix<TinyGConfiguration>> lstConfigurationFix;
+	private List<ITinyGConfigurationFix<G2CoreConfiguration>> lstConfigurationFix;
 	/** The target service */
-	private ITinygControllerService tinygControllerService;
+	private IG2CoreControllerService controllerService;
 	/** UI Sync object */
 	@Inject
 	private UISynchronize uiSynchronize;
@@ -48,10 +47,10 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 	 * Constructor 
 	 */
 	@Inject
-	public TinyGConfigurationWatcherHandler(ITinygControllerService service) {
+	public G2CoreConfigurationWatcherHandler(IG2CoreControllerService service) {
 		service.addConfigurationListener(this);
-		this.tinygControllerService = service;
-		this.lstConfigurationFix = new ArrayList<ITinyGConfigurationFix<TinyGConfiguration>>();
+		this.controllerService = service;
+		this.lstConfigurationFix = new ArrayList<ITinyGConfigurationFix<G2CoreConfiguration>>();
 		this.lstConfigurationFix.add(new JSonModeFix());
 		this.lstConfigurationFix.add(new JSonVerbosityFix());
 		this.lstConfigurationFix.add(new QueueReportVerbosityFix());
@@ -62,14 +61,14 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 	 * @see org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.controller.configuration.TinyGConfiguration)
 	 */
 	@Override
-	public void onConfigurationChanged(TinyGConfiguration configuration) {	
+	public void onConfigurationChanged(G2CoreConfiguration configuration) {	
 		if(!updateInProgress.get() &&  configuration.isCompletelyLoaded()){			
 			
-			List<ITinyGConfigurationFix<TinyGConfiguration>> lstFixToApply = new ArrayList<ITinyGConfigurationFix<TinyGConfiguration>>();
-			TinyGConfiguration tinyGConfiguration = tinygControllerService.getConfiguration();
+			List<ITinyGConfigurationFix<G2CoreConfiguration>> lstFixToApply = new ArrayList<ITinyGConfigurationFix<G2CoreConfiguration>>();
+			G2CoreConfiguration tinyGConfiguration = controllerService.getConfiguration();
 			
 			if(CollectionUtils.isNotEmpty(lstConfigurationFix)){
-				for (ITinyGConfigurationFix<TinyGConfiguration> fix : lstConfigurationFix) {
+				for (ITinyGConfigurationFix<G2CoreConfiguration> fix : lstConfigurationFix) {
 					if(fix.shouldApply(tinyGConfiguration)){
 						lstFixToApply.add(fix);							
 					}
@@ -87,7 +86,7 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 	 * Opens the dialog describing changes that should be made, and asking for user feedback
 	 * @param lstFixToApply the list of fix to apply
 	 */
-	private void suggestToApply(final List<ITinyGConfigurationFix<TinyGConfiguration>> lstFixToApply){
+	private void suggestToApply(final List<ITinyGConfigurationFix<G2CoreConfiguration>> lstFixToApply){
 		if(CollectionUtils.isNotEmpty(lstFixToApply)){
 			uiSynchronize.asyncExec(new Runnable() {
 				
@@ -96,17 +95,17 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 				 */
 				@Override
 				public void run() {
-					TinyGConfigurationFixDialog dialog = new TinyGConfigurationFixDialog(null, getDescription(lstFixToApply));
+					G2CoreGConfigurationFixDialog dialog = new G2CoreGConfigurationFixDialog(null, getDescription(lstFixToApply));
 					int result = dialog.open();
 					if(result == IDialogConstants.OK_ID){
 						try {
-							TinyGConfiguration tinyGConfiguration = tinygControllerService.getConfiguration();
-							for (ITinyGConfigurationFix<TinyGConfiguration> fix : lstConfigurationFix) {
+							G2CoreConfiguration tinyGConfiguration = controllerService.getConfiguration();
+							for (ITinyGConfigurationFix<G2CoreConfiguration> fix : lstConfigurationFix) {
 								if(fix.shouldApply(tinyGConfiguration)){
 									fix.apply(tinyGConfiguration);
 								}
 							}						
-							tinygControllerService.applyConfiguration(tinyGConfiguration);
+							controllerService.applyConfiguration(tinyGConfiguration);
 						} catch (GkException e) {
 							LOG.error(e);
 						}
@@ -116,11 +115,11 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 		}
 	}
 	
-	private String[] getDescription(List<ITinyGConfigurationFix<TinyGConfiguration>> lstFixToApply){		
+	private String[] getDescription(List<ITinyGConfigurationFix<G2CoreConfiguration>> lstFixToApply){		
 		if(CollectionUtils.isNotEmpty(lstFixToApply)){
 			String[] arrDescriptions = new String[lstFixToApply.size()];
 			int i = 0;
-			for (ITinyGConfigurationFix<TinyGConfiguration> fix : lstFixToApply) {				
+			for (ITinyGConfigurationFix<G2CoreConfiguration> fix : lstFixToApply) {				
 				arrDescriptions[i] = fix.getDescription();
 				i++;
 			}

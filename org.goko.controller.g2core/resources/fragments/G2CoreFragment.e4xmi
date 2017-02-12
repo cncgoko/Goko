@@ -10,9 +10,11 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QD_fAOcmEeagK9BhG8cHSg" featurename="commands" parentElementId="goko.application">
     <elements xsi:type="commands:Command" xmi:id="_X5KrgOcmEeagK9BhG8cHSg" elementId="org.goko.controller.g2core.command.g2coresettings" commandName="G2 Core settings"/>
     <elements xsi:type="commands:Command" xmi:id="_7b19cOuSEeaWqKO1s4cQwg" elementId="org.goko.controller.g2core.command.stateupdate" commandName="G2Core State watcher command"/>
+    <elements xsi:type="commands:Command" xmi:id="_7JPE4PEAEeaaVZHwnOxg0A" elementId="org.goko.controller.g2core.command.g2coreconfigurationwatcher" commandName="G2Core Configuration watcher"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__cRCUOcmEeagK9BhG8cHSg" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_AJ3IIOcnEeagK9BhG8cHSg" elementId="org.goko.controller.g2core.handler.0" contributionURI="bundleclass://org.goko.controller.g2core/org.goko.controller.g2core.handlers.G2CoreConfigurationOpenHandler" command="_X5KrgOcmEeagK9BhG8cHSg"/>
     <elements xsi:type="commands:Handler" xmi:id="_5UsDsOuSEeaWqKO1s4cQwg" elementId="org.goko.controller.g2core.handler.1" contributionURI="bundleclass://org.goko.controller.g2core/org.goko.controller.g2core.handlers.G2CoreStateUpdateHandler" command="_7b19cOuSEeaWqKO1s4cQwg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_9JzOcPEAEeaaVZHwnOxg0A" elementId="org.goko.controller.g2core.handler.2" contributionURI="bundleclass://org.goko.controller.g2core/org.goko.controller.g2core.handlers.G2CoreConfigurationWatcherHandler" command="_7JPE4PEAEeaaVZHwnOxg0A"/>
   </fragments>
 </fragment:ModelFragments>

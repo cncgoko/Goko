@@ -426,4 +426,12 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 	public void setMessage(String message) throws GkException{
 		getInternalState().setMessage(message);
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#resetConfiguration()
+	 */
+	@Override
+	public void resetConfiguration() {
+		setConfiguration( new G2CoreConfiguration() );		
+	}
 }

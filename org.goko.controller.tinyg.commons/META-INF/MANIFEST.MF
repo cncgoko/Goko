@@ -17,6 +17,7 @@ Export-Package: org.goko.controller.tinyg.commons,
  org.goko.controller.tinyg.commons.configuration,
  org.goko.controller.tinyg.commons.configuration.fields,
  org.goko.controller.tinyg.commons.configuration.settings,
+ org.goko.controller.tinyg.commons.configuration.watcher,
  org.goko.controller.tinyg.commons.jog,
  org.goko.controller.tinyg.commons.probe,
  org.goko.controller.tinyg.commons.schedule

@@ -100,7 +100,6 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 		});
 		btnPause.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		btnPause.setText("Pause queue");
-		System.out.println("btnPause.setText(Pause queue); l103");
 		
 		Button btnStop = new Button(composite_1, SWT.NONE);
 		btnStop.addMouseListener(new MouseAdapter() {
@@ -373,7 +372,6 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 					return;
 				}
 				btnPause.setText("Resume queue");
-				System.out.println("btnPause.setText(Resume queue);");
 			}
 		});
 	}
@@ -391,7 +389,6 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 					return;
 				}
 				btnPause.setText("Pause queue");
-				System.out.println("btnPause.setText(Pause queue); l395");
 			}
 		});
 	}

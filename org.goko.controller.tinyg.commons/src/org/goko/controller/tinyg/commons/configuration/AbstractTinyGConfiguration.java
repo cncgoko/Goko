@@ -167,7 +167,7 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	public <T> void setSetting(String groupIdentifier, String identifier, T value) throws GkException{
 		for(TinyGGroupSettings grpSetting : groups){
 			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
-				setSetting(grpSetting, identifier, value);
+				setSetting(grpSetting, identifier, value);				
 				return;
 			}
 		}
@@ -240,7 +240,8 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	@SuppressWarnings("unchecked")
 	public C getDifferentialConfiguration(C otherConfig) throws GkException{
 		C diffConfig = newInstance();
-
+		diffConfig.copyFrom(this);
+		
 		for(TinyGGroupSettings group : getGroups()){
 			List<TinyGSetting<?>> settings = group.getSettings();
 			for (TinyGSetting<?> tinyGSetting : settings) {

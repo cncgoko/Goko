@@ -79,6 +79,7 @@ public class G2CoreCommunicator extends AbstractTinyGCommunicator<G2CoreConfigur
 		getIncomingBuffer().clear();
 		getConnectionService().removeInputDataListener(this);
 		getControllerService().setState(G2Core.State.UNDEFINED);
+		getControllerService().resetConfiguration();
 	}
 	
 	/** (inheritDoc)

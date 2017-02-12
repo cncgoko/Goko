@@ -55,7 +55,7 @@ public abstract class TinyGSetting<T> {
 		this.identifier = identifier;
 		this.value = value;
 		this.readOnly = readonly;
-		this.assigned = assigned;
+		this.assigned = assigned;	
 	}
 
 	/**
@@ -93,6 +93,7 @@ public abstract class TinyGSetting<T> {
 	public void setValue(T value) {
 		this.value = clone(value);
 		this.setAssigned(true);
+		System.out.println("identifer ["+identifier+"] = ["+value+"] (assigned: "+assigned);
 	}
 
 	@SuppressWarnings("rawtypes")

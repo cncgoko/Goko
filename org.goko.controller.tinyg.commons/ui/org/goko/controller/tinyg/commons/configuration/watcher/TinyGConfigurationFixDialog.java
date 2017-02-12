@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.goko.controller.tinyg.handlers;
+package org.goko.controller.tinyg.commons.configuration.watcher;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;

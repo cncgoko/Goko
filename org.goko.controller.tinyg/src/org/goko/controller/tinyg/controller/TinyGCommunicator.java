@@ -89,7 +89,7 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	protected void onDisconnected() throws GkException {
 		getConnectionService().removeInputDataListener(this);
 		getControllerService().setState(MachineState.UNDEFINED);
-		getControllerService().setConfiguration(new TinyGConfiguration());
+		getControllerService().resetConfiguration();
 		getIncomingBuffer().clear();		
 	}
 	/**

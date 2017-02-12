@@ -3,6 +3,8 @@
  */
 package org.goko.controller.g2core.controller;
 
+import java.math.BigDecimal;
+
 import org.goko.controller.tinyg.commons.TinyG;
 import org.goko.core.controller.bean.MachineState;
 
@@ -129,7 +131,7 @@ public class G2Core extends TinyG {
 	    	 */
 	    	public static final String JSON_MODE				= "ej";
 	    	public static final String JSON_MODE_VERBOSITY		= "jv";
-	    	public static final String TEXT_MODE_VERBOSITY		= "jt";
+	    	public static final String TEXT_MODE_VERBOSITY		= "tv";
 	    	public static final String QUEUE_REPORT_VERBOSITY	= "qv";
 	    	public static final String STATUS_REPORT_VERBOSITY	= "sv";
 	    	public static final String STATUS_REPORT_INTERVAL	= "si";
@@ -191,6 +193,20 @@ public class G2Core extends TinyG {
     		public static final String COUNTERCLOCKWISE_PHASE_LOW 	= "wpl";
     		public static final String COUNTERCLOCKWISE_PHASE_HIGH	= "wph";
     		public static final String PHASE_OFF			= "pof";
+    	}
+    	
+    	public static class Values{
+    		public static final BigDecimal QUEUE_REPORT_SILENT		= BigDecimal.ZERO;
+    		public static final BigDecimal QUEUE_REPORT_SINGLE	    = new BigDecimal("1");
+    		public static final BigDecimal QUEUE_REPORT_VERBOSE		= new BigDecimal("2");
+
+    		public static final BigDecimal JSON_VERBOSITY_VERBOSE	= new BigDecimal("5");
+    		
+    		public static final BigDecimal JSON_MODE_DISABLE		= new BigDecimal("0");
+    		public static final BigDecimal JSON_MODE_ENABLE			= new BigDecimal("1");
+    		
+    		public static final BigDecimal JSON_SYNTAX_RELAXED		= new BigDecimal("0");
+    		public static final BigDecimal JSON_SYNTAX_STRICT		= new BigDecimal("1");    		
     	}
     }
 }

@@ -631,6 +631,12 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	}
 	
 	/**
+	 * Resets the configuration
+	 */
+	public abstract void resetConfiguration();
+	
+	
+	/**
 	 * Creates the jogging utility
 	 * @return J
 	 */

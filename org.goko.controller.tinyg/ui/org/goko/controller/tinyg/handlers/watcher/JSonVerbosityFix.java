@@ -6,6 +6,7 @@ package org.goko.controller.tinyg.handlers.watcher;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.goko.controller.tinyg.commons.configuration.watcher.ITinyGConfigurationFix;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.core.common.exception.GkException;
@@ -15,7 +16,7 @@ import org.goko.core.log.GkLog;
  * @author Psyko
  * @date 7 juin 2016
  */
-public class JSonVerbosityFix implements ITinyGConfigurationFix{
+public class JSonVerbosityFix implements ITinyGConfigurationFix<TinyGConfiguration>{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JSonVerbosityFix.class);
 	

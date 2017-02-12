@@ -609,4 +609,12 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	public void handleProbeResult(boolean probeSuccess, Tuple6b probePosition) throws GkException {
 		probeUtility.handleProbeResult(probeSuccess, probePosition);
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#resetConfiguration()
+	 */
+	@Override
+	public void resetConfiguration() {
+		setConfiguration( new TinyGConfiguration() );		
+	}
 }

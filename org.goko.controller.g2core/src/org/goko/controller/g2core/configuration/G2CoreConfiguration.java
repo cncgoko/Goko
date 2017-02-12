@@ -66,7 +66,7 @@ public class G2CoreConfiguration extends AbstractTinyGConfiguration<G2CoreConfig
 		systemGroup.addSetting(G2Core.Configuration.System.QUEUE_REPORT_VERBOSITY		, BigDecimal.ZERO); 		
 		systemGroup.addSetting(G2Core.Configuration.System.STATUS_REPORT_VERBOSITY		, BigDecimal.ZERO); 	
 		systemGroup.addSetting(G2Core.Configuration.System.STATUS_REPORT_INTERVAL		, BigDecimal.ZERO); 		
-		systemGroup.addSetting(G2Core.Configuration.System.FLOW_CONTROL					, BigDecimal.ZERO); 				
+		//systemGroup.addSetting(G2Core.Configuration.System.FLOW_CONTROL					, BigDecimal.ZERO); 				
 		                      
 		systemGroup.addSetting(G2Core.Configuration.System.DEFAULT_PLANE_SELECTION		, BigDecimal.ZERO); 		
 		systemGroup.addSetting(G2Core.Configuration.System.DEFAULT_UNITS_MODE			, BigDecimal.ZERO); 			
