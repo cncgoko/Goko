@@ -76,17 +76,13 @@ public class ExecutionToken<T extends IExecutionTokenState> extends AbstractIdBe
 		if(!mapExecutionStateById.containsKey(idLine)){
 			throw new GkTechnicalException("GCodeLine ["+idLine+"] not found in execution token");
 		}
-		System.out.println("ExecutionToken.setLineState("+idLine+", "+state+")");
 		if(!mapLineByExecutionState.containsKey(state)){
 			mapLineByExecutionState.put(state, new ArrayList<Integer>());
 		}
 		// remove from previous state list
 		T oldState = findLineState(idLine);
 		if(oldState != null){
-			LOG.info("setLineState("+idLine+" , FROM "+oldState+" TO "+state+")");
 			mapLineByExecutionState.get(oldState).remove(idLine);
-		}else{
-			LOG.info("setLineState("+idLine+" ,"+state+")");
 		}
 		// Add to new state list
 		mapLineByExecutionState.get(state).add(idLine);

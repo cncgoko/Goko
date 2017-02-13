@@ -19,8 +19,10 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
-import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.tools.editor.component.annotation.ErrorAnnotation;
 
@@ -32,13 +34,13 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	private static final GkLog LOG = GkLog.getLogger(GCodeProviderDocument.class);
 	private IGCodeProvider provider;
 	private IGCodeProviderRepository gcodeRepository;
-	private IGCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 	private Document document;
 	
 	/**
 	 * @param source
 	 */
-	public GCodeProviderDocument(IGCodeProviderRepository gcodeRepository, IGCodeService gcodeService, IGCodeProvider provider) {
+	public GCodeProviderDocument(IGCodeProviderRepository gcodeRepository, IRS274NGCService gcodeService, IGCodeProvider provider) {
 		super();
 		this.provider = provider;
 		this.gcodeRepository = gcodeRepository;
@@ -92,8 +94,11 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	@Override
 	public IDocument getGCodeDocument() throws GkException {		
 		StringBuffer buffer = new StringBuffer();		
+		GCodeContext context = new GCodeContext();
+		InstructionProvider instructionProvider = gcodeService.getInstructions(context , provider);
+		provider = gcodeService.getGCodeProvider(context , instructionProvider);
 		
-		List<GCodeLine> lines = provider.getLines();
+		List<GCodeLine> lines = provider.getLines();		
 		for (GCodeLine gCodeLine : lines) {
 			String strLine = gcodeService.render(gCodeLine);
 			if(StringUtils.isNotEmpty(strLine)){

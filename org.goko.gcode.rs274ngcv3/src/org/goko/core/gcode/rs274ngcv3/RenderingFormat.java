@@ -3,6 +3,11 @@
  */
 package org.goko.core.gcode.rs274ngcv3;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.units.Unit;
@@ -32,6 +37,18 @@ public class RenderingFormat {
 		this.decimalCount = decimalCount;
 	}
 	
+	public String format(BigDecimal decimal){
+		DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		
+		if(decimalCount != null){			
+			df.setMaximumFractionDigits(decimalCount);			
+			df.setMinimumFractionDigits(decimalCount);			
+		}else{
+			df.setMaximumFractionDigits(10);
+			df.setMinimumFractionDigits(0);
+		}
+		return df.format(decimal.doubleValue());		
+	}
 	
 	public <Q extends Quantity<Q>> String format(Q quantity, Unit<Q> unit){
 		return QuantityUtils.format(quantity, decimalCount, false, false, unit);

@@ -586,10 +586,6 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	@Override
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
 		// Reset the data for the updated token
-		
-		ExecutionToken<ExecutionTokenState> tokenToRemove = null;
-		ExecutionQueueType type = null;
-		
 		for (ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionQueue : cacheExecutionQueue.get()) {
 			ExecutionToken<ExecutionTokenState> token = findExecutionTokenByGCodeProvider(executionQueue.getType(), provider);
 			if(token != null){

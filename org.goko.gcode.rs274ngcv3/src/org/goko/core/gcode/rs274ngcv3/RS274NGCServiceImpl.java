@@ -250,8 +250,6 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		GCodeContext localContext = null;
 		if(context != null){
 			localContext = new GCodeContext(context);
-		}else{
-			localContext = context;
 		}
 
 		InstructionFactory factory = new InstructionFactory();
@@ -295,14 +293,13 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	public GCodeProvider getGCodeProvider(GCodeContext context, InstructionProvider instructionProvider) throws GkException {
 		InstructionFactory factory = new InstructionFactory();
 		GCodeProvider provider = new GCodeProvider();
-		//provider.setSource(new InstructionProviderSource(instructionProvider));
+
 		List<InstructionSet> sets = instructionProvider.getInstructionSets();
 		for (InstructionSet instructionSet : sets) {
 			GCodeLine line = factory.getLine(context, instructionSet, renderingFormat);
 
 			provider.addLine(line);
 		}
-
 		return provider;
 	}
 
@@ -1195,7 +1192,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @param renderingFormat the renderingFormat to set
 	 */
 	public void setRenderingFormat(RenderingFormat renderingFormat) {
-		this.renderingFormat = renderingFormat;
+		this.renderingFormat = renderingFormat;	
 	}
 }
 

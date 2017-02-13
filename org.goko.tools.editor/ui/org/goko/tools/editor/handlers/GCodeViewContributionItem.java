@@ -11,8 +11,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
-import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem;
 import org.goko.tools.editor.GCodeEditorTopic;
@@ -31,7 +31,7 @@ public class GCodeViewContributionItem implements IGCodeProviderContributionItem
 	/** GCode repository */
 	private IGCodeProviderRepository gcodeProviderRepository;
 	/** GCode service */
-	private IGCodeService gcodeService;
+	private IRS274NGCService gcodeService;
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem#getItem(org.goko.core.gcode.element.IGCodeProvider)
 	 */
@@ -90,14 +90,14 @@ public class GCodeViewContributionItem implements IGCodeProviderContributionItem
 	/**
 	 * @return the gcodeService
 	 */
-	public IGCodeService getGCodeService() {
+	public IRS274NGCService getGCodeService() {
 		return gcodeService;
 	}
 
 	/**
 	 * @param gcodeService the gcodeService to set
 	 */
-	public void setGCodeService(IGCodeService gcodeService) {
+	public void setGCodeService(IRS274NGCService gcodeService) {
 		this.gcodeService = gcodeService;
 	}
 	

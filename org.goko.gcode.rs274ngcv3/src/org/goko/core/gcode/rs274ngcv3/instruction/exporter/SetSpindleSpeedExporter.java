@@ -20,7 +20,7 @@ public class SetSpindleSpeedExporter extends AbstractInstructionExporter<SetSpin
 	 */
 	@Override
 	protected List<GCodeWord> getWords(GCodeContext context, SetSpindleSpeedInstruction instruction, RenderingFormat format) throws GkException {
-		return wrap(new GCodeWord("S", instruction.getSpindleSpeed().toPlainString()));
+		return wrap(new GCodeWord("S", format.format(instruction.getSpindleSpeed())));
 	}
 
 }
