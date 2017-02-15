@@ -8,4 +8,5 @@
    <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
    <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IThreeAxisControllerAdapter" name="IThreeAxisControllerAdapter" policy="dynamic"/>
    <reference bind="setGcodeContextProvider" cardinality="1..1" interface="org.goko.core.controller.IGCodeContextProvider" name="IGCodeContextProvider" policy="static"/>
+   <reference bind="setWorkVolumeProvider" cardinality="0..1" interface="org.goko.core.controller.IWorkVolumeProvider" name="IWorkVolumeProvider" policy="dynamic"/>
 </scr:component>

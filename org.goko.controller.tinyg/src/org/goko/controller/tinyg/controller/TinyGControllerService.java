@@ -465,6 +465,14 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeProviderName()
+	 */
+	@Override
+	public String getWorkVolumeProviderName() {		
+		return "TinyG 0.97";
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.IWorkVolumeProvider#findWorkVolumeMaximalPosition()
 	 */
 	@Override
@@ -492,8 +500,47 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 			min.setX( Length.valueOf( cfg.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
 			min.setY( Length.valueOf( cfg.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
 			min.setZ( Length.valueOf( cfg.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class), Units.MILLIMETRE));
-	}
+		}
 		return min;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#detectWorkVolumeUpdate(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
+	 */
+	@Override
+	protected boolean detectWorkVolumeUpdate(TinyGConfiguration currentConfiguration, TinyGConfiguration newConfiguration) {
+		return detectWorkVolumeUpdateOnAxis(TinyGConfiguration.X_AXIS_SETTINGS, currentConfiguration, newConfiguration)
+			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.Y_AXIS_SETTINGS, currentConfiguration, newConfiguration)
+			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.Z_AXIS_SETTINGS, currentConfiguration, newConfiguration)
+			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.A_AXIS_SETTINGS, currentConfiguration, newConfiguration)
+			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.B_AXIS_SETTINGS, currentConfiguration, newConfiguration)
+			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.C_AXIS_SETTINGS, currentConfiguration, newConfiguration);
+	}
+	
+	/**
+	 * Detect any work volume update on the given axis 
+	 * @param axis the axis 
+	 * @param currentConfiguration the current configuration
+	 * @param newConfiguration the new configuration
+	 * @return <code>true</code> if an update was detected, <code>false</code> otherwise
+	 */
+	protected boolean detectWorkVolumeUpdateOnAxis(String axis, TinyGConfiguration currentConfiguration, TinyGConfiguration newConfiguration){		
+		try {
+			BigDecimal oldMinValue = currentConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class);
+			BigDecimal newMinValue = newConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class);
+			if(oldMinValue != null && newMinValue != null && oldMinValue.compareTo(newMinValue) != 0){
+				return true;
+			}
+			
+			BigDecimal oldMaxValue = currentConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class);
+			BigDecimal newMaxValue = newConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class);
+			if(oldMaxValue != null && newMaxValue != null && oldMaxValue.compareTo(newMaxValue) != 0){
+				return true;
+			}
+		} catch (GkException e) {
+			LOG.error(e);
+		}
+		return false;
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()

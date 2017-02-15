@@ -2,6 +2,7 @@ package org.goko.core.gcode.rs274ngcv3;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -463,7 +464,12 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 				buffer.append(" ");
 			}
 			buffer.append(word.getLetter());
-			buffer.append(word.getValue());
+			String value = word.getValue();
+			// Dirty temporary hack for decimal truncation
+			if("XYZABCIJKS".contains(word.getLetter())){
+				value = renderingFormat.format( new BigDecimal(value) );
+			}
+			buffer.append(value);
 		}
 		// Add comment
 		if(commentWord != null){

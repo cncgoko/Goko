@@ -56,6 +56,7 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String MINOR_GRID_OPACITY 	= "grid.minor.opacity";
 	public static final String GRID_AXIS_OPACITY 	= "grid.axis.opacity";
 	public static final String GRID_GRADUATION_SIZE	= "grid.graduation.size";
+	public static final String GRID_USE_VOLUME_PROVIDER	= "grid.use.volume.provider";
 	public static final String GRID_START_X 		= "grid.start.x";
 	public static final String GRID_START_Y 		= "grid.start.y";
 	public static final String GRID_START_Z 		= "grid.start.z";
@@ -405,5 +406,19 @@ public class JoglViewerPreference extends GkPreference{
 	 */
 	public void setDefaultCamera(String defaultView) {
 		setValue(DEFAULT_CAMERA, defaultView);
+	}
+	
+	/**
+	 * @return the GRID_USE_VOLUME_PROVIDER 
+	 */
+	public boolean isUseWorkVolumeProvider() {
+		return getBoolean(GRID_USE_VOLUME_PROVIDER);
+	}
+
+	/**
+	 * @param use the GRID_USE_VOLUME_PROVIDER to set
+	 */
+	public void setUseWorkVolumeProvider(boolean use) {
+		setValue(GRID_USE_VOLUME_PROVIDER, use);
 	}
 }

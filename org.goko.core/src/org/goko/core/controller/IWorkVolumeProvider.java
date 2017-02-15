@@ -1,9 +1,28 @@
 package org.goko.core.controller;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.listener.IWorkVolumeUpdateListener;
 import org.goko.core.math.Tuple6b;
 
 public interface IWorkVolumeProvider {
+	/**
+	 * Returns the name of this provider 
+	 * @return String
+	 */
+	String getWorkVolumeProviderName();
+	
+	/**
+	 * Register the given listener for update events
+	 * @param listener the listener
+	 */
+	void addUpdateListener(IWorkVolumeUpdateListener listener);
+		
+	/**
+	 * Unregister the given listener for update events
+	 * @param listener the listener
+	 */
+	void removeUpdateListener(IWorkVolumeUpdateListener listener);
+		
 	/**
 	 * The minimal point that the machine can reach
 	 * Cannot return null; If no volume is defined, an exception is thrown

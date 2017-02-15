@@ -568,14 +568,14 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 
 		btnStart = new Button(composite_8, SWT.NONE);
 		GridData gd_btnStart = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_btnStart.heightHint = 35;
+		gd_btnStart.heightHint = 37;
 		btnStart.setLayoutData(gd_btnStart);
 		
 		btnStart.setText("Resume");
 
 		btnPause = new Button(composite_8, SWT.NONE);
 		GridData gd_btnPause = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_btnPause.heightHint = 35;
+		gd_btnPause.heightHint = 37;
 		btnPause.setLayoutData(gd_btnPause);
 		
 		btnPause.setText("Pause");
@@ -584,7 +584,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnStop.setImage(ResourceManager.getPluginImage("org.goko.tools.commandpanel", "icons/stop.png"));
 		btnStop.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		GridData gd_btnStop = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_btnStop.heightHint = 35;
+		gd_btnStop.heightHint = 37;
 		btnStop.setLayoutData(gd_btnStop);
 		
 		btnStop.setText("Stop");
@@ -592,14 +592,14 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnKillAlarm = new Button(grpControls, SWT.NONE);
 		btnKillAlarm.setImage(ResourceManager.getPluginImage("org.goko.tools.commandpanel", "icons/bell--minus.png"));
 		GridData gd_btnKillAlarm = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_btnKillAlarm.heightHint = 35;
+		gd_btnKillAlarm.heightHint = 37;
 		btnKillAlarm.setLayoutData(gd_btnKillAlarm);
 		
 		btnKillAlarm.setText("Kill alarm");
 		
 		btnReset = new Button(grpControls, SWT.NONE);
 		GridData gd_btnReset = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_btnReset.heightHint = 35;
+		gd_btnReset.heightHint = 37;
 		btnReset.setLayoutData(gd_btnReset);
 		btnReset.setText("Reset");
 		btnReset.setImage(ResourceManager.getPluginImage("org.goko.tools.commandpanel", "icons/reset.png"));
@@ -621,13 +621,13 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		btnSpindleOn = new Button(composite_3, SWT.NONE);
 		btnSpindleOn.setText("On");
 		GridData gd_btnSpindleOn = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_btnSpindleOn.heightHint = 35;
+		gd_btnSpindleOn.heightHint = 38;
 		btnSpindleOn.setLayoutData(gd_btnSpindleOn);
 
 		btnSpindleOff = new Button(composite_3, SWT.NONE);
 		btnSpindleOff.setText("Off");
 		GridData gd_btnSpindleOff = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		gd_btnSpindleOff.heightHint = 35;
+		gd_btnSpindleOff.heightHint = 38;
 		btnSpindleOff.setLayoutData(gd_btnSpindleOff);
 		
 		initFromPersistedState(part);

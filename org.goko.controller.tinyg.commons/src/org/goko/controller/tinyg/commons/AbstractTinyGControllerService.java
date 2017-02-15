@@ -39,6 +39,7 @@ import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.controller.event.IGCodeContextListener;
 import org.goko.core.controller.event.MachineValueUpdateEvent;
+import org.goko.core.controller.listener.IWorkVolumeUpdateListener;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.execution.ExecutionQueueType;
@@ -90,6 +91,8 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	private IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService;
 	/** UI Log service */	
 	private IApplicativeLogService applicativeLogService;
+	/** The work volume listener */
+	private List<IWorkVolumeUpdateListener> workVolumeUpdateListener;
 	
 	/**
 	 * Constructor
@@ -105,6 +108,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		this.communicator = communicator;
 		this.gcodeContextListener = new GCodeContextObservable();
 		this.configurationListener = new CopyOnWriteArrayList<ITinyGConfigurationListener<C>>();
+		this.workVolumeUpdateListener = new CopyOnWriteArrayList<IWorkVolumeUpdateListener>();
 		this.actionFactory = createActionFactory();		
 		this.actionFactory.createActions();
 		this.jogger = createJogger();
@@ -351,6 +355,30 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		jogger.stopJog();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#addUpdateListener(org.goko.core.controller.listener.IWorkVolumeUpdateListener)
+	 */
+	@Override
+	public void addUpdateListener(IWorkVolumeUpdateListener listener) {
+		this.workVolumeUpdateListener.add(listener);		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IWorkVolumeProvider#removeUpdateListener(org.goko.core.controller.listener.IWorkVolumeUpdateListener)
+	 */
+	@Override
+	public void removeUpdateListener(IWorkVolumeUpdateListener listener) {
+		this.workVolumeUpdateListener.remove(listener);
+	}
+	
+	/**
+	 * Notify the registered IWorkVolumeUpdateListener
+	 */
+	protected void notifyWorkVolumeUpdate(){
+		for (IWorkVolumeUpdateListener listener : workVolumeUpdateListener) {
+			listener.onWorkVolumeUpdate();
+		}
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IWorkVolumeProvider#getWorkVolumeMinimalPosition()
 	 */
@@ -626,10 +654,23 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	 * @param configuration the configuration to set
 	 */
 	public void setConfiguration(C configuration) {
+		boolean workVolumeUpdate = detectWorkVolumeUpdate(this.configuration, configuration); //wont work ? la config est mise à jour à chaque setting ?
+		boolean isFirstTimeCompletelyLoaded = !this.configuration.isCompletelyLoaded() && configuration.isCompletelyLoaded(); 
 		this.configuration = configuration;
 		this.notifyConfigurationChanged();	
+		if(workVolumeUpdate || isFirstTimeCompletelyLoaded){
+			notifyWorkVolumeUpdate();
+		}		
 	}
-	
+		
+	/**
+	 * Detect if the work volume was updated 
+	 * @param currentConfiguration the current configuration
+	 * @param newConfiguration the new configuration
+	 * @return
+	 */
+	protected abstract boolean detectWorkVolumeUpdate(C currentConfiguration, C newConfiguration);
+
 	/**
 	 * Resets the configuration
 	 */

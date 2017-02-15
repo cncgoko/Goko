@@ -34,6 +34,8 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 		prefs.setDefault(JoglViewerPreference.MAJOR_GRID_OPACITY, 25);
 		prefs.setDefault(JoglViewerPreference.MINOR_GRID_OPACITY, 15);
 		prefs.setDefault(JoglViewerPreference.GRID_AXIS_OPACITY, 40);
+				
+		prefs.setDefault(JoglViewerPreference.GRID_USE_VOLUME_PROVIDER, false);
 		
 		prefs.setDefault(JoglViewerPreference.GRID_START_X, "-100mm");
 		prefs.setDefault(JoglViewerPreference.GRID_START_Y, "-100mm");

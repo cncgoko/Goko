@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IGCodeContextProvider;
@@ -29,6 +30,7 @@ import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IThreeAxisControllerAdapter;
 import org.goko.core.controller.IWorkVolumeProvider;
 import org.goko.core.controller.ThreeToFourAxisAdapterWrapper;
+import org.goko.core.controller.listener.IWorkVolumeUpdateListener;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
@@ -48,7 +50,7 @@ import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
  * @author PsyKo
  *
  */
-public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglViewerService, IPropertyChangeListener{
+public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglViewerService, IPropertyChangeListener, IWorkVolumeUpdateListener{
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(JoglViewerServiceImpl.class);
 	/** SERVICE_ID */
@@ -107,6 +109,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(xyGridRenderer);
 		addRenderer(xzGridRenderer);
 		addRenderer(yzGridRenderer);		
+		
+		workVolumeProvider.addUpdateListener(this);
 		LOG.info("Successfully started " + getServiceId());
 	}
 
@@ -256,10 +260,18 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		}		
 	}
 	
-	private void updateGridRenderer(IGridRenderer gridRenderer) throws GkException{		
-		gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
-		gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
-		
+	private void updateGridRenderer(IGridRenderer gridRenderer) throws GkException{
+		if(JoglViewerPreference.getInstance().isUseWorkVolumeProvider()
+			&& workVolumeProvider != null
+			&& workVolumeProvider.findWorkVolumeMinimalPosition() != null
+			&& workVolumeProvider.findWorkVolumeMaximalPosition() != null
+			&& workVolumeProvider.findWorkVolumeMinimalPosition().distance(workVolumeProvider.findWorkVolumeMaximalPosition()).greaterThan(Length.ZERO)){
+			gridRenderer.setStart(workVolumeProvider.getWorkVolumeMinimalPosition());
+			gridRenderer.setEnd(workVolumeProvider.getWorkVolumeMaximalPosition());
+		}else{
+			gridRenderer.setStart(JoglViewerPreference.getInstance().getGridStart());
+			gridRenderer.setEnd(JoglViewerPreference.getInstance().getGridEnd());
+		}
 		gridRenderer.setMajorIncrement( JoglViewerPreference.getInstance().getMajorGridSpacing());
 		gridRenderer.setMinorIncrement( JoglViewerPreference.getInstance().getMinorGridSpacing());
 		gridRenderer.setMajorUnitColor( JoglViewerPreference.getInstance().getMajorColor());
@@ -297,5 +309,20 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	 */
 	public void setGcodeContextProvider(IGCodeContextProvider<GCodeContext> gcodeContextProvider) {
 		this.gcodeContextProvider = gcodeContextProvider;
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.listener.IWorkVolumeUpdateListener#onWorkVolumeUpdate()
+	 */
+	@Override
+	public void onWorkVolumeUpdate() {
+		try{
+			updateGridRenderer(xyGridRenderer);
+			updateGridRenderer(xzGridRenderer);
+			updateGridRenderer(yzGridRenderer);
+		}catch(GkException e){
+			LOG.error(e);
+		}
+		
 	}	
 }

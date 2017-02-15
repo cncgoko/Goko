@@ -143,8 +143,6 @@ public class DisplayReadOut extends GkUiComponent<DisplayReadOutController, Disp
 				parentComposite = new Composite(parent, SWT.NONE);
 				createControls(parentComposite);
 				parent.setSize(parent.getSize());
-	//			parent.redraw();
-	//			parent.update();
 				parent.layout();
 			} catch (GkException e) {
 				LOG.error(e);
