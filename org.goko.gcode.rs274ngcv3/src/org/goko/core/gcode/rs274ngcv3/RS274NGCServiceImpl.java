@@ -466,7 +466,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			buffer.append(word.getLetter());
 			String value = word.getValue();
 			// Dirty temporary hack for decimal truncation
-			if("XYZABCIJKS".contains(word.getLetter())){
+			if("XYZABCIJKSF".contains(word.getLetter())){
 				value = renderingFormat.format( new BigDecimal(value) );
 			}
 			buffer.append(value);
