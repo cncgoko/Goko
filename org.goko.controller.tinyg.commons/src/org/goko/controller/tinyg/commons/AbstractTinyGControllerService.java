@@ -654,7 +654,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	 * @param configuration the configuration to set
 	 */
 	public void setConfiguration(C configuration) {
-		boolean workVolumeUpdate = detectWorkVolumeUpdate(this.configuration, configuration); //wont work ? la config est mise à jour à chaque setting ?
+		boolean workVolumeUpdate = detectWorkVolumeUpdate(this.configuration, configuration); 
 		boolean isFirstTimeCompletelyLoaded = !this.configuration.isCompletelyLoaded() && configuration.isCompletelyLoaded(); 
 		this.configuration = configuration;
 		this.notifyConfigurationChanged();	
