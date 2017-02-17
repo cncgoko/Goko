@@ -87,12 +87,13 @@ public class TinyGConfigurationOpenHandler {
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.b.yaxis" , 		new TinyGConfigurationAxisPage(cfg, "Y Axis", TinyGConfiguration.Y_AXIS_SETTINGS)));
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.c.zaxis" , 		new TinyGConfigurationAxisPage(cfg, "Z Axis", TinyGConfiguration.Z_AXIS_SETTINGS)));
 		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.d.aaxis" , 		new TinyGConfigurationAxisPage(cfg, "A Axis", TinyGConfiguration.A_AXIS_SETTINGS)));
+		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.e.aaxis" , 		new TinyGConfigurationAxisPage(cfg, "B Axis", TinyGConfiguration.B_AXIS_SETTINGS)));
+		manager.addTo("org.goko.controller.tinyg.6.axis", new PreferenceNode("org.goko.controller.tinyg.6.f.aaxis" , 		new TinyGConfigurationAxisPage(cfg, "C Axis", TinyGConfiguration.C_AXIS_SETTINGS)));
 		
 		PreferenceDialog dialog = new PreferenceDialog(shell, manager);
-		
-		int result = dialog.open();
 		dialog.create();		
 		dialog.getTreeViewer().expandAll();
+		int result = dialog.open();
 		
 		if(result == Dialog.OK){
 			try{				

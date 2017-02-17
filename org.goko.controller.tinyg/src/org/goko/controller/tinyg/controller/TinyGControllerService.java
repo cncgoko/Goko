@@ -509,12 +509,13 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	 */
 	@Override
 	protected boolean detectWorkVolumeUpdate(TinyGConfiguration currentConfiguration, TinyGConfiguration newConfiguration) {
-		return detectWorkVolumeUpdateOnAxis(TinyGConfiguration.X_AXIS_SETTINGS, currentConfiguration, newConfiguration)
+		return newConfiguration.isCompletelyLoaded() && 
+			( detectWorkVolumeUpdateOnAxis(TinyGConfiguration.X_AXIS_SETTINGS, currentConfiguration, newConfiguration)
 			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.Y_AXIS_SETTINGS, currentConfiguration, newConfiguration)
 			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.Z_AXIS_SETTINGS, currentConfiguration, newConfiguration)
 			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.A_AXIS_SETTINGS, currentConfiguration, newConfiguration)
 			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.B_AXIS_SETTINGS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.C_AXIS_SETTINGS, currentConfiguration, newConfiguration);
+			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.C_AXIS_SETTINGS, currentConfiguration, newConfiguration));
 	}
 	
 	/**

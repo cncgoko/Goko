@@ -82,7 +82,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 			gcodeContextProvider.addObserver(this);
 		}
 	}
-			
+				
 	/**
 	 * Constructor
 	 */
@@ -107,6 +107,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	}
 
 	private void buildGrid() throws GkException{
+		System.out.println("GridRenderer.buildGrid() on "+this);
 		buildMatrix();		
 		List<Point4d> lstVertices = new ArrayList<Point4d>();
 		List<Color4f> lstColors = new ArrayList<Color4f>();
@@ -115,6 +116,8 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		lclStart6b.min(start, end);		
 		Tuple6b lclEnd6b 			= new Tuple6b();
 		lclEnd6b.max(start, end);
+		Point3f tupleStart = lclStart6b.toPoint3f(JoglUtils.JOGL_UNIT);
+		Point3f tupleEnd   = lclEnd6b.toPoint3f(JoglUtils.JOGL_UNIT);
 		Tuple6b lclCenter6b = new Tuple6b(0,0,0, JoglUtils.JOGL_UNIT);
 		if(gcodeContextProvider != null){
 			GCodeContext context = gcodeContextProvider.getGCodeContext();
@@ -236,24 +239,24 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		
 		// Add X Zero red axis
 		if(normal.dot(new Vector4f(1,0,0,0)) == 0 ){
-			addVertice(new Point4d(lclStart.x, 0, 0,1), lstVertices, null);
-			addVertice(new Point4d(lclEnd.x, 0, 0,1), lstVertices, null);		
+			addVertice(new Point4d(tupleStart.x, 0, 0,1), lstVertices, null);
+			addVertice(new Point4d(tupleEnd.x, 0, 0,1), lstVertices, null);		
 			lstColors.add(new Color4f(1,0,0,axisOpacity));
-			lstColors.add(new Color4f(1,0,0,axisOpacity));
+			lstColors.add(new Color4f(1,0,0,axisOpacity)); //ca ne fonctionne pas car les axes sont tournés
 		}
 		
 		// Add Y Zero green axis
 		if(normal.dot(new Vector4f(0,1,0,0)) == 0 ){
-			addVertice(new Point4d(0, lclStart.y , 0,1), lstVertices, null);
-			addVertice(new Point4d(0, lclEnd.y,  0,1), lstVertices, null);		
+			addVertice(new Point4d(0, tupleStart.y , 0,1), lstVertices, null);
+			addVertice(new Point4d(0, tupleEnd.y,  0,1), lstVertices, null);		
 			lstColors.add(new Color4f(0,1,0,axisOpacity));
 			lstColors.add(new Color4f(0,1,0,axisOpacity));
 		}
 
 		// Add Z Zero Blue axis
 		if(normal.dot(new Vector4f(0,0,1,0)) == 0 ){
-			addVertice(new Point4d(0, 0, lclStart.z ,1), lstVertices, null);
-			addVertice(new Point4d(0, 0, lclEnd.z,  1), lstVertices, null);		
+			addVertice(new Point4d(0, 0, tupleStart.z ,1), lstVertices, null);
+			addVertice(new Point4d(0, 0, tupleEnd.z,  1), lstVertices, null);		
 			lstColors.add(new Color4f(0,0,1,axisOpacity));
 			lstColors.add(new Color4f(0,0,1,axisOpacity));
 		}
@@ -459,7 +462,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		if(normal.dot(JoglUtils.X_AXIS) == 1){ // 
 			this.axisTransformMatrix = new Matrix4f(new float[]{0.0f, 1.0f, 0.0f, 0.0f,																										
 																0.0f, 0.0f, 1.0f, 0.0f,
-																1.0f, 0.0f, 0.0f, 0.0f,
+															    1.0f, 0.0f, 0.0f, 0.0f,
 																0.0f, 0.0f, 0.0f, 1.0f});
 		}else if(normal.dot(JoglUtils.Y_AXIS) == 1){ //
 			this.axisTransformMatrix = new Matrix4f(new float[]{1.0f, 0.0f, 0.0f, 0.0f,
@@ -473,7 +476,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 																0.0f, 0.0f, 0.0f, 1.0f});
 		}
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getNormal()
 	 */
@@ -488,6 +491,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	@Override
 	public void setNormal(Vector4f normal) {
 		this.normal = normal;
+		buildMatrix();
 	}
 
 	/**

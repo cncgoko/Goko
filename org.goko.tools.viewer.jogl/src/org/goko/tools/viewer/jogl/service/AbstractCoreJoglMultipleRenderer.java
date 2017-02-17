@@ -17,8 +17,8 @@
 
 package org.goko.tools.viewer.jogl.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.media.opengl.GL3;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
@@ -36,7 +36,7 @@ public abstract class AbstractCoreJoglMultipleRenderer extends AbstractCoreJoglR
 	 */
 	public AbstractCoreJoglMultipleRenderer() {
 		super(0);
-		this.renderers = new ArrayList<AbstractCoreJoglRenderer>();		
+		this.renderers = new CopyOnWriteArrayList<AbstractCoreJoglRenderer>();		
 	}
 
 

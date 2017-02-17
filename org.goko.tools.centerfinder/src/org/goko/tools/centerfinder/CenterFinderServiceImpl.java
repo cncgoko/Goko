@@ -182,6 +182,7 @@ public class CenterFinderServiceImpl extends AbstractGokoService implements ICen
 			centerResult.setCenter(untransformFromXYPlane(plane, center));
 			centerResult.setRadius(t1.distance(center));	
 			centerResult.setPlane(plane);
+			computeAverageCenter(centerResult, lstPoints, plane);
 			updateRenderer();
 			return centerResult;
 		}else if(xParallelSegment >= 0){ // Avoid x parallel axis to avoid division by zero
@@ -220,11 +221,34 @@ public class CenterFinderServiceImpl extends AbstractGokoService implements ICen
 		BigDecimal centerY = b.subtract(d.multiply(centerX));
 		center.setX( Length.valueOf(centerX, resultUnit));
 		center.setY( Length.valueOf(centerY, resultUnit));		
-		centerResult.setCenter(untransformFromXYPlane(plane, center));
+		centerResult.setCenter(untransformFromXYPlane(plane, center));		
 		centerResult.setRadius(t1.distance(center));
 		centerResult.setPlane(plane);
+		computeAverageCenter(centerResult, lstPoints, plane);
 		updateRenderer();
 		return centerResult;
+	}
+	
+	/**
+	 * @param centerResult2
+	 * @param lstPoints
+	 * @param plane
+	 */
+	private void computeAverageCenter(CircleCenterFinderResult centerResult, List<Tuple6b> lstPoints, EnumPlane enumPlane) {
+		Tuple6b average = new Tuple6b().setZero();
+		for (Tuple6b tuple6b : lstPoints) {
+			average = average.add(tuple6b);
+		}
+		if(EnumPlane.XY_PLANE == enumPlane){			
+			centerResult.getCenter().setZ( average.getZ().divide(3) );
+			
+		}else if(EnumPlane.XZ_PLANE == enumPlane){
+			centerResult.getCenter().setY( average.getY().divide(3) );
+			
+		}else if(EnumPlane.YZ_PLANE == enumPlane){
+			centerResult.getCenter().setX( average.getX().divide(3) );
+		}
+		
 	}
 
 	/**
@@ -254,7 +278,8 @@ public class CenterFinderServiceImpl extends AbstractGokoService implements ICen
 	 * @return the tuple in the given plane 
 	 * @throws GkException GkException
 	 */
-	private static Tuple6b untransformFromXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{		
+	private static Tuple6b untransformFromXYPlane(EnumPlane enumPlane, Tuple6b tuple) throws GkException{
+
 		if(EnumPlane.XY_PLANE == enumPlane){			
 			return new Tuple6b(tuple.getX(), tuple.getY(), Length.ZERO, tuple.getA(), tuple.getB(), tuple.getC());
 						
@@ -266,7 +291,7 @@ public class CenterFinderServiceImpl extends AbstractGokoService implements ICen
 		}		
 		throw new GkTechnicalException("Unsupported plane "+ enumPlane);
 	}
-	
+
 	/**
 	 * Update the renderer for the circle center finder 
 	 * @throws GkException GkException

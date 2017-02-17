@@ -52,11 +52,12 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		setCode(id);
 		gridRenderer = new GridRenderer(gcodeContextProvider);		
 		lstAnnotations = new ArrayList<TextRenderer>();		
-		addRenderer(gridRenderer);
+	//	addRenderer(gridRenderer);
 		setUseAlpha(true);
 	}
 
-	protected void buildRenderers() throws GkException{
+	protected void buildRenderers() throws GkException{	
+		System.out.println("GraduatedGridRenderer.buildRenderers() on "+this+" [back grid "+gridRenderer+"]");
 		destroyAnnotations();
 		createAnnotations();
 		if(CollectionUtils.isNotEmpty(lstAnnotations)){
@@ -129,10 +130,6 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		Matrix4d invAxisTransformMatrix = new Matrix4d(getAxisTransformMatrix());
 		invAxisTransformMatrix.invert();
 
-		
-		//addVertice(new Point4d(lclCenter.x, lclStart.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-				
-		
 		Tuple6b deltaPlus  =  lclEnd6b.subtract(lclCenter6b).max(new Tuple6b(0,0,0,JoglUtils.JOGL_UNIT));
 		Tuple6b deltaMinus =  lclCenter6b.subtract(lclStart6b).max(new Tuple6b(0,0,0,JoglUtils.JOGL_UNIT));
 		
@@ -153,8 +150,8 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		double majorIncrementJoglUnit = getMajorIncrement().doubleValue(JoglUtils.JOGL_UNIT);		
 		for (int i = 1; i <= nbStepPlusMajor.x; i++) {
 			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x+i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit*width.x, lclCenter.y+i*majorIncrementJoglUnit*width.y , lclCenter.z+i*majorIncrementJoglUnit*width.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height, TextRenderer.TOP | TextRenderer.LEFT);			
+			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit/**width.x*/, lclCenter.y+i*majorIncrementJoglUnit/**width.y*/ , lclCenter.z+i*majorIncrementJoglUnit*width.z);
+			TextRenderer graduation = new TextRenderer("x"+GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height, TextRenderer.TOP | TextRenderer.LEFT);		
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);			
@@ -163,8 +160,8 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
  		
  		for (int i = 1; i <= nbStepMinusMajor.x; i++) {
  			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x-i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
- 			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit*width.x, lclCenter.y-i*majorIncrementJoglUnit*width.y , lclCenter.z-i*majorIncrementJoglUnit*width.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height,TextRenderer.TOP | TextRenderer.RIGHT);
+ 			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit, lclCenter.y-i*majorIncrementJoglUnit , lclCenter.z-i*majorIncrementJoglUnit*width.z);
+ 			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height,TextRenderer.TOP | TextRenderer.RIGHT);
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);
@@ -197,12 +194,20 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 	 */
 	@Override
 	public void update() {
+		gridRenderer.update();
+		super.update();
 		try {
 			buildRenderers();
 		} catch (GkException e) {
 			LOG.error(e);
-		}
-		super.update();
+		}		
+	}
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer#initialize(javax.media.opengl.GL3)
+	 */
+	@Override
+	protected void initialize(GL3 gl) throws GkException {		
+		
 	}
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#performInitialize(javax.media.opengl.GL3)

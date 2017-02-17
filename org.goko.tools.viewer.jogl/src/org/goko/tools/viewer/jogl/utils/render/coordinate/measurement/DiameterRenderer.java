@@ -72,7 +72,7 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		addRenderer(new PointRenderer(center, 1, centerColor));
 		Vector3d a = new Vector3d(1,0,0);
 		Vector3d b = new Vector3d(1,0,0);
-		if(a.dot(normal) <= 0.01){
+		if(Math.abs(a.dot(normal)) >= 0.99){
 			a = new Vector3d(0,1,0);
 		}
 		b.cross(normal, a);
@@ -110,9 +110,10 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		Vector3d txtHeight = new Vector3d();
 		direction.normalize();
 		txtHeight.cross(normal,direction);
-
+		
 		Point3d pos3d = new Point3d(p3.x, p3.y, p3.z);		
-		addRenderer(new TextRenderer( GokoPreference.getInstance().format(diameter), 3.0, pos3d, direction, txtHeight, TextRenderer.RIGHT | TextRenderer.MIDDLE));
+		
+		addRenderer(new TextRenderer( GokoPreference.getInstance().format(diameter), 3.0, pos3d, direction, txtHeight, TextRenderer.RIGHT | TextRenderer.BOTTOM));
 
 	}
 

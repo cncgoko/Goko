@@ -80,21 +80,6 @@ public class TinyGConfiguration extends AbstractTinyGConfiguration<TinyGConfigur
 	public static final String DEFAULT_PATH_CONTROL		= "gpa";
 	public static final String DEFAULT_DISTANCE_MODE	= "gdi";
 
-	// Axis settings
-//	public static final String AXIS_MODE 			= "am";
-//	public static final String VELOCITY_MAXIMUM 	= "vm";
-//	public static final String FEEDRATE_MAXIMUM 	= "fr";
-//	public static final String TRAVEL_MAXIMUM 		= "tm";
-//	public static final String JERK_MAXIMUM 		= "jm";
-//	public static final String JERK_HOMING 			= "jh";
-//	public static final String JUNCTION_DEVIATION	= "jd";
-//	public static final String RADIUS_SETTING 		= "ra";
-//	public static final String MINIMUM_SWITCH_MODE 	= "sn";
-//	public static final String MAXIMUM_SWITCH_MODE 	= "sx";
-//	public static final String SEARCH_VELOCITY		= "sv";
-//	public static final String LATCH_VELOCITY 		= "lv";
-//	public static final String ZERO_BACKOFF 		= "zb";
-
 	// Motor settings
 	public static final String MOTOR_MAPPING		= "ma";
 	public static final String STEP_ANGLE			= "sa";
@@ -124,13 +109,13 @@ public class TinyGConfiguration extends AbstractTinyGConfiguration<TinyGConfigur
 		addGroup( new TinyGLinearAxisSettings(Y_AXIS_SETTINGS));
 		addGroup( new TinyGLinearAxisSettings(Z_AXIS_SETTINGS));
 		addGroup( new TinyGRotationalAxisSettings(A_AXIS_SETTINGS));
-		//groups.add( new TinyGAxisSettings(B_AXIS_SETTINGS));
-		//groups.add( new TinyGAxisSettings(C_AXIS_SETTINGS));
+		addGroup( new TinyGSecondaryRotationalAxisSettings(B_AXIS_SETTINGS));
+		addGroup( new TinyGSecondaryRotationalAxisSettings(C_AXIS_SETTINGS));
 
 		TinyGGroupSettings sysgroup = new TinyGGroupSettings(SYSTEM_SETTINGS);
-		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_BUILD 					,BigDecimal.ZERO, true));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_VERSION 				,BigDecimal.ZERO, true));
-		sysgroup.addSetting(new TinyGBigDecimalSetting(HARDWARE_VERSION 			 	,BigDecimal.ZERO, true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_BUILD 				,BigDecimal.ZERO, true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(FIRMWARE_VERSION 			,BigDecimal.ZERO, true));
+		sysgroup.addSetting(new TinyGBigDecimalSetting(HARDWARE_VERSION 			,BigDecimal.ZERO, true));
 		sysgroup.addSetting(new TinyGStringSetting(UNIQUE_ID						,"0", true));
 
 		sysgroup.addSetting(new TinyGBigDecimalSetting(JUNCTION_ACCELERATION 		,BigDecimal.ZERO));

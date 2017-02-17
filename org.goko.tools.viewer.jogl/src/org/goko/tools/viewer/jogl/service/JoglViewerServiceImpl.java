@@ -106,8 +106,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		updateGridRenderer(xyGridRenderer);
 		updateGridRenderer(xzGridRenderer);
 		updateGridRenderer(yzGridRenderer);
-		addRenderer(xyGridRenderer);
-		addRenderer(xzGridRenderer);
+	//	addRenderer(xyGridRenderer);
+	//	addRenderer(xzGridRenderer);
 		addRenderer(yzGridRenderer);		
 		
 		workVolumeProvider.addUpdateListener(this);
@@ -226,16 +226,16 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	public void setActiveCamera(String idCamera) throws GkException {		
 		super.setActiveCamera(idCamera);
 		if(xyGridRenderer != null){
-			setRendererEnabled(JoglUtils.XY_GRID_ID, false);
-			setRendererEnabled(JoglUtils.XZ_GRID_ID, false);
+		//	setRendererEnabled(JoglUtils.XY_GRID_ID, false);
+		//	setRendererEnabled(JoglUtils.XZ_GRID_ID, false);
 			setRendererEnabled(JoglUtils.YZ_GRID_ID, false);
 			
 			if(StringUtils.equals(idCamera, FrontCamera.ID)){
-				setRendererEnabled(JoglUtils.XZ_GRID_ID, true);	
+		//		setRendererEnabled(JoglUtils.XZ_GRID_ID, true);	
 			}else if(StringUtils.equals(idCamera, LeftCamera.ID)){
 				setRendererEnabled(JoglUtils.YZ_GRID_ID, true);	
 			}else{
-				setRendererEnabled(JoglUtils.XY_GRID_ID, true);	
+		//		setRendererEnabled(JoglUtils.XY_GRID_ID, true);	
 			}
 		}
 	}
