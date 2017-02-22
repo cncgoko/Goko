@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 import java.util.List;
 
 import javax.media.opengl.GL2;
+import javax.vecmath.Color4f;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
@@ -13,7 +14,6 @@ import javax.vecmath.Tuple4d;
 import javax.vecmath.Tuple4f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -21,8 +21,12 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.units.Unit;
+import org.goko.core.controller.IGCodeContextProvider;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.math.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
+import org.goko.tools.viewer.jogl.utils.render.grid.GraduatedGridRenderer;
+import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
 
 /**
  * Utility class for Jogl rendering
@@ -36,9 +40,15 @@ public class JoglUtils {
 	public static final String XY_GRID_ID = "GRID.XY";
 	public static final String XZ_GRID_ID = "GRID.XZ";
 	public static final String YZ_GRID_ID = "GRID.YZ";
-	public static final Vector4f X_AXIS = new Vector4f(1f,0f,0f,0f);
-	public static final Vector4f Y_AXIS = new Vector4f(0f,1f,0f,0f);
-	public static final Vector4f Z_AXIS = new Vector4f(0f,0f,1f,0f);
+	public static final Vector3f X_AXIS = new Vector3f(1f,0f,0f);
+	public static final Vector3f Y_AXIS = new Vector3f(0f,1f,0f);
+	public static final Vector3f Z_AXIS = new Vector3f(0f,0f,1f);
+	public static final Vector3f X_AXIS_NEGATIVE = new Vector3f(-1f,0f,0f);
+	public static final Vector3f Y_AXIS_NEGATIVE = new Vector3f(0f,-1f,0f);
+	public static final Vector3f Z_AXIS_NEGATIVE = new Vector3f(0f,0f,-1f);
+	public static final Color4f X_COLOR = new Color4f(1f,0f,0f,1f);
+	public static final Color4f Y_COLOR = new Color4f(0f,1f,0f,1f);
+	public static final Color4f Z_COLOR = new Color4f(0f,0f,1f,1f);
 	
 	
 
@@ -229,6 +239,35 @@ public class JoglUtils {
 
 	}
 
+	public static IGridRenderer drawXYGrid(IGCodeContextProvider<GCodeContext> gcodeContextProvider){
+		IGridRenderer xyGridRenderer = new GraduatedGridRenderer(JoglUtils.XY_GRID_ID, gcodeContextProvider);
+		xyGridRenderer.setNormal(JoglUtils.Z_AXIS);		
+		xyGridRenderer.setHorizontalVector(JoglUtils.X_AXIS);
+		xyGridRenderer.setVerticalVector(JoglUtils.Y_AXIS);
+		xyGridRenderer.setHorizontalColor(JoglUtils.X_COLOR);
+		xyGridRenderer.setVerticalColor(JoglUtils.Y_COLOR);
+		return xyGridRenderer;
+	}
+	
+	public static IGridRenderer drawXZGrid(IGCodeContextProvider<GCodeContext> gcodeContextProvider){
+		IGridRenderer xzGridRenderer = new GraduatedGridRenderer(JoglUtils.XZ_GRID_ID, gcodeContextProvider);
+		xzGridRenderer.setNormal(JoglUtils.Y_AXIS);
+		xzGridRenderer.setHorizontalVector(JoglUtils.X_AXIS);
+		xzGridRenderer.setVerticalVector(JoglUtils.Z_AXIS);
+		xzGridRenderer.setHorizontalColor(JoglUtils.X_COLOR);
+		xzGridRenderer.setVerticalColor(JoglUtils.Z_COLOR);
+		return xzGridRenderer;
+	}
+	
+	public static IGridRenderer drawYZGrid(IGCodeContextProvider<GCodeContext> gcodeContextProvider){
+		IGridRenderer yzGridRenderer = new GraduatedGridRenderer(JoglUtils.YZ_GRID_ID, gcodeContextProvider);
+		yzGridRenderer.setNormal(JoglUtils.X_AXIS);		
+		yzGridRenderer.setHorizontalVector(JoglUtils.Y_AXIS_NEGATIVE);
+		yzGridRenderer.setVerticalVector(JoglUtils.Z_AXIS);		
+		yzGridRenderer.setHorizontalColor(JoglUtils.Y_COLOR);
+		yzGridRenderer.setVerticalColor(JoglUtils.Z_COLOR);
+		return yzGridRenderer;
+	}
 	/**
 	 * Generate a FloatBuffer with the given list of Tuple4d.
 	 * For each tuple4d, 4 float values will be added the the created buffer.

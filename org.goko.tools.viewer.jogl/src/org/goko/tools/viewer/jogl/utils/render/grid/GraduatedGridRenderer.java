@@ -3,7 +3,7 @@
  */
 package org.goko.tools.viewer.jogl.utils.render.grid;
 
-import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +13,6 @@ import javax.vecmath.Color4f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
@@ -52,12 +51,21 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		setCode(id);
 		gridRenderer = new GridRenderer(gcodeContextProvider);		
 		lstAnnotations = new ArrayList<TextRenderer>();		
-	//	addRenderer(gridRenderer);
+		addRenderer(gridRenderer);
 		setUseAlpha(true);
 	}
 
+	public GraduatedGridRenderer(String id, IGCodeContextProvider<GCodeContext> gcodeContextProvider, Vector4f normal, Vector4f horizontalVector) {
+		super();
+		setLayerId(Layer.LAYER_GRIDS);
+		setCode(id);
+		gridRenderer = new GridRenderer(gcodeContextProvider);		
+		lstAnnotations = new ArrayList<TextRenderer>();		
+		addRenderer(gridRenderer);
+		setUseAlpha(true);
+	}
+	
 	protected void buildRenderers() throws GkException{	
-		System.out.println("GraduatedGridRenderer.buildRenderers() on "+this+" [back grid "+gridRenderer+"]");
 		destroyAnnotations();
 		createAnnotations();
 		if(CollectionUtils.isNotEmpty(lstAnnotations)){
@@ -75,117 +83,55 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 			}
 		}
 	}
-	
-	protected Vector3d getWidthVector(){
-		Vector3d width = new Vector3d();
-		// Add Y Zero green axis
-		if(getNormal().dot(new Vector4f(0,0,1,0)) == 1 ){	// XY plane 				
-			width = new Vector3d(1,0,0);
 
-		}else if(getNormal().dot(new Vector4f(0,1,0,0)) == 1 ){ // XZ plane
-			width = new Vector3d(1,0,0);
-			
-		}else{ // YZ Plane
-			width = new Vector3d(0,-1,0);
-		}
-		
-		return width;
-	}
-	
-	protected Vector3d getHeightVector(){
-		Vector3d height = new Vector3d();
-		// Add Y Zero green axis
-		if(getNormal().dot(new Vector4f(0,0,1,0)) == 1 ){	// XY plane 				
-			height = new Vector3d(0,1,0);
-		}else if(getNormal().dot(new Vector4f(0,1,0,0)) == 1 ){ // XZ plane
-			height = new Vector3d(0,0,1);
-		}else{ // YZ Plane
-			height = new Vector3d(0,0,1);
-		}
-		return height;
-	}
-	
 	protected void createAnnotations() throws GkException{
-		double graduationSize = JoglViewerPreference.getInstance().getGraduationSize().doubleValue(JoglUtils.JOGL_UNIT);
-		// Let's compute the width and height vector of the texts
-		Vector3d width = getWidthVector();
-		Vector3d height = getHeightVector();
-		
-		Tuple6b lclStart6b 			= new Tuple6b();
-		lclStart6b.min(getStart(), getEnd());		
-		Tuple6b lclEnd6b 			= new Tuple6b();
-		lclEnd6b.max(getStart(), getEnd());
-		Tuple6b lclCenter6b = new Tuple6b(0,0,0, JoglUtils.JOGL_UNIT);
-		
-		Length padding = Length.valueOf("0.1", JoglUtils.JOGL_UNIT);
-		// Determine min/max if zero is not in the desired area
-		lclCenter6b = lclCenter6b.max(lclStart6b).min(lclEnd6b);
-						
-		Point3f lclStart = lclStart6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		getAxisTransformMatrix().transform(lclStart);
-		Point3f lclEnd   = lclEnd6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		getAxisTransformMatrix().transform(lclEnd);
-		Point3f lclCenter   = lclCenter6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		getAxisTransformMatrix().transform(lclCenter);
 		Matrix4d invAxisTransformMatrix = new Matrix4d(getAxisTransformMatrix());
-		invAxisTransformMatrix.invert();
-
-		Tuple6b deltaPlus  =  lclEnd6b.subtract(lclCenter6b).max(new Tuple6b(0,0,0,JoglUtils.JOGL_UNIT));
-		Tuple6b deltaMinus =  lclCenter6b.subtract(lclStart6b).max(new Tuple6b(0,0,0,JoglUtils.JOGL_UNIT));
+		invAxisTransformMatrix.invert(); 
 		
-		// Major divisions
-		int nbStepXPlusMajor = Math.abs(deltaPlus.getX().divide(getMajorIncrement()).intValue());
-		int nbStepYPlusMajor = Math.abs(deltaPlus.getY().divide(getMajorIncrement()).intValue());
-		int nbStepZPlusMajor = Math.abs(deltaPlus.getZ().divide(getMajorIncrement()).intValue());
+		double graduationSize = JoglViewerPreference.getInstance().getGraduationSize().doubleValue(JoglUtils.JOGL_UNIT);
+		Length padding = Length.valueOf("0.1", JoglUtils.JOGL_UNIT);
 		
-		int nbStepXMinusMajor = Math.abs(deltaMinus.getX().divide(getMajorIncrement()).intValue());
-		int nbStepYMinusMajor = Math.abs(deltaMinus.getY().divide(getMajorIncrement()).intValue());
-		int nbStepZMinusMajor = Math.abs(deltaMinus.getZ().divide(getMajorIncrement()).intValue());
-				
-		Vector3f nbStepPlusMajor = new Vector3f(nbStepXPlusMajor, nbStepYPlusMajor, nbStepZPlusMajor);
-		Vector3f nbStepMinusMajor = new Vector3f(nbStepXMinusMajor, nbStepYMinusMajor, nbStepZMinusMajor);
-		getAxisTransformMatrix().transform(nbStepPlusMajor);
-		getAxisTransformMatrix().transform(nbStepMinusMajor);
-				
-		double majorIncrementJoglUnit = getMajorIncrement().doubleValue(JoglUtils.JOGL_UNIT);		
-		for (int i = 1; i <= nbStepPlusMajor.x; i++) {
-			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x+i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit/**width.x*/, lclCenter.y+i*majorIncrementJoglUnit/**width.y*/ , lclCenter.z+i*majorIncrementJoglUnit*width.z);
-			TextRenderer graduation = new TextRenderer("x"+GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height, TextRenderer.TOP | TextRenderer.LEFT);		
+		// Let's compute the width and height vector of the texts
+		Vector3d txtDirection = new Vector3d(1,0,0);
+		invAxisTransformMatrix.transform(txtDirection);
+		Vector3d txtUp = new Vector3d(0,1,0);
+		invAxisTransformMatrix.transform(txtUp);
+		
+		int hStart = getHorizontalMinimal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
+		int hEnd   = getHorizontalMaximal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
+		if(hStart > hEnd){
+			int tmp = hEnd;
+			hEnd = hStart;
+			hStart = tmp;
+		}
+		double dMajorIncrement = getMajorIncrement().doubleValue(JoglUtils.JOGL_UNIT);
+	
+		// Let's build vertical major rulers
+		for (int h = hStart; h <= hEnd; h++) {
+			double horizontal = dMajorIncrement * h;
+			Length graduationValue = getMajorIncrement().multiply(h);
+			Point3d position = new Point3d(horizontal, 0, 0);
+			invAxisTransformMatrix.transform(position);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, txtDirection, txtUp, TextRenderer.TOP | TextRenderer.LEFT);		
+			graduation.setHorizontalPadding(padding);
+			graduation.setVerticalPadding(padding);			
+			lstAnnotations.add(graduation);			
+			graduation.setColor(getHorizontalColor().x, getHorizontalColor().y, getHorizontalColor().z, getMajorOpacity());			
+		}
+		
+		int vStart = getVerticalMinimal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
+		int vEnd   = getVerticalMaximal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
+		// Let's build horizontal major rulers
+		for (int v = vStart; v <= vEnd; v++) {
+			double vertical = dMajorIncrement * v;
+			Length graduationValue = getMajorIncrement().multiply(v);
+			Point3d position = new Point3d(0, vertical, 0);
+			invAxisTransformMatrix.transform(position);
+			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, txtDirection, txtUp, TextRenderer.TOP | TextRenderer.LEFT);		
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);
 			lstAnnotations.add(graduation);			
-			graduation.setColor(getMajorUnitColor().x, getMajorUnitColor().y, getMajorUnitColor().z, getMajorUnitColor().w);
-		}
- 		
- 		for (int i = 1; i <= nbStepMinusMajor.x; i++) {
- 			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.x-i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
- 			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit, lclCenter.y-i*majorIncrementJoglUnit , lclCenter.z-i*majorIncrementJoglUnit*width.z);
- 			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height,TextRenderer.TOP | TextRenderer.RIGHT);
-			graduation.setHorizontalPadding(padding);
-			graduation.setVerticalPadding(padding);
-			lstAnnotations.add(graduation);
-			graduation.setColor(getMajorUnitColor().x, getMajorUnitColor().y, getMajorUnitColor().z, getMajorUnitColor().w);			
- 		}
-		
-		for (int i = 1; i <= nbStepPlusMajor.y; i++) {
-			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.y+i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x+i*majorIncrementJoglUnit*height.x, lclCenter.y+i*majorIncrementJoglUnit*height.y , lclCenter.z+i*majorIncrementJoglUnit*height.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height,TextRenderer.BOTTOM | TextRenderer.RIGHT);
-			graduation.setHorizontalPadding(padding);
-			graduation.setVerticalPadding(padding);
-			lstAnnotations.add(graduation);			
-			graduation.setColor(getMajorUnitColor().x, getMajorUnitColor().y, getMajorUnitColor().z, getMajorUnitColor().w);
-		}
-		
-		for (int i = 1; i <= nbStepMinusMajor.y; i++) {
-			Length graduationValue = Length.valueOf(BigDecimal.valueOf(lclCenter.y-i*majorIncrementJoglUnit), JoglUtils.JOGL_UNIT);
-			Point3d position = new Point3d(lclCenter.x-i*majorIncrementJoglUnit*height.x, lclCenter.y-i*majorIncrementJoglUnit*height.y , lclCenter.z-i*majorIncrementJoglUnit*height.z);
-			TextRenderer graduation = new TextRenderer(GokoPreference.getInstance().format(graduationValue, false, true), graduationSize, position, width, height,TextRenderer.BOTTOM | TextRenderer.RIGHT);
-			graduation.setHorizontalPadding(padding);
-			graduation.setVerticalPadding(padding);
-			lstAnnotations.add(graduation);	
-			graduation.setColor(getMajorUnitColor().x, getMajorUnitColor().y, getMajorUnitColor().z, getMajorUnitColor().w);
+			graduation.setColor(getVerticalColor().x, getVerticalColor().y, getVerticalColor().z, getMajorOpacity());
 		}
 	}
 	
@@ -194,7 +140,6 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 	 */
 	@Override
 	public void update() {
-		gridRenderer.update();
 		super.update();
 		try {
 			buildRenderers();
@@ -202,13 +147,7 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 			LOG.error(e);
 		}		
 	}
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer#initialize(javax.media.opengl.GL3)
-	 */
-	@Override
-	protected void initialize(GL3 gl) throws GkException {		
-		
-	}
+
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#performInitialize(javax.media.opengl.GL3)
 	 */
@@ -280,17 +219,10 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		gridRenderer.setOriginColor(originColor);
 	}
 	/**
-	 * @param end
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#setEnd(org.goko.core.math.Tuple6b)
-	 */
-	public void setEnd(Tuple6b end) {
-		gridRenderer.setEnd(end);
-	}
-	/**
 	 * @param normal
 	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#setNormal(javax.vecmath.Vector4f)
 	 */
-	public void setNormal(Vector4f normal) {
+	public void setNormal(Vector3f normal) {
 		gridRenderer.setNormal(normal);
 	}
 	/**
@@ -344,33 +276,11 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 	}
 	/**
 	 * @return
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#getStart()
-	 */
-	public Tuple6b getStart() {
-		return gridRenderer.getStart();
-	}
-	/**
-	 * @return
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#getEnd()
-	 */
-	public Tuple6b getEnd() {
-		return gridRenderer.getEnd();
-	}
-	/**
-	 * @return
 	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#getNormal()
 	 */
-	public Vector4f getNormal() {
+	public Vector3f getNormal() {
 		return gridRenderer.getNormal();
 	}
-	/**
-	 * @param start
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#setStart(org.goko.core.math.Tuple6b)
-	 */
-	public void setStart(Tuple6b start) {
-		gridRenderer.setStart(start);
-	}
-
 	/**
 	 * @return
 	 * @see org.goko.tools.viewer.jogl.utils.render.grid.GridRenderer#getAxisTransformMatrix()
@@ -395,4 +305,139 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		return gridRenderer.getMinorUnitColor();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getHorizontalVector()
+	 */
+	@Override
+	public Vector3f getHorizontalVector() {
+		return gridRenderer.getHorizontalVector();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setHorizontalVector(javax.vecmath.Vector3f)
+	 */
+	@Override
+	public void setHorizontalVector(Vector3f horizontalVector) {
+		gridRenderer.setHorizontalVector(horizontalVector);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getVerticalVector()
+	 */
+	@Override
+	public Vector3f getVerticalVector() {
+		return gridRenderer.getVerticalVector();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setVerticalVector(javax.vecmath.Vector3f)
+	 */
+	@Override
+	public void setVerticalVector(Vector3f verticalVector) {
+		gridRenderer.setVerticalVector(verticalVector);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getHorizontalMinimal()
+	 */
+	@Override
+	public Length getHorizontalMinimal() {
+		return gridRenderer.getHorizontalMinimal();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setHorizontalMinimal(org.goko.core.common.measure.quantity.Length)
+	 */
+	@Override
+	public void setHorizontalMinimal(Length horizontalMinimal) {
+		gridRenderer.setHorizontalMinimal(horizontalMinimal);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getHorizontalMaximal()
+	 */
+	@Override
+	public Length getHorizontalMaximal() {
+		return gridRenderer.getHorizontalMaximal();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setHorizontalMaximal(org.goko.core.common.measure.quantity.Length)
+	 */
+	@Override
+	public void setHorizontalMaximal(Length horizontalMaximal) {
+		gridRenderer.setHorizontalMaximal(horizontalMaximal);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getVerticalMinimal()
+	 */
+	@Override
+	public Length getVerticalMinimal() {
+		return gridRenderer.getVerticalMinimal();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setVerticalMinimal(org.goko.core.common.measure.quantity.Length)
+	 */
+	@Override
+	public void setVerticalMinimal(Length verticalMinimal) {
+		gridRenderer.setVerticalMinimal(verticalMinimal);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getVerticalMaximal()
+	 */
+	@Override
+	public Length getVerticalMaximal() {
+		return gridRenderer.getVerticalMaximal();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setVerticalMaximal(org.goko.core.common.measure.quantity.Length)
+	 */
+	@Override
+	public void setVerticalMaximal(Length verticalMaximal) {
+		gridRenderer.setVerticalMaximal(verticalMaximal);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getHorizontalColor()
+	 */
+	@Override
+	public Color4f getHorizontalColor() {
+		return gridRenderer.getHorizontalColor();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setHorizontalColor(javax.vecmath.Color4f)
+	 */
+	@Override
+	public void setHorizontalColor(Color4f horizontalColor) {
+		gridRenderer.setHorizontalColor(horizontalColor);		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getVerticalColor()
+	 */
+	@Override
+	public Color4f getVerticalColor() {
+		return gridRenderer.getVerticalColor();
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setVerticalColor(javax.vecmath.Color4f)
+	 */
+	@Override
+	public void setVerticalColor(Color4f verticalColor) {
+		gridRenderer.setVerticalColor(verticalColor);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setWorldBounds(org.goko.core.math.Tuple6b, org.goko.core.math.Tuple6b)
+	 */
+	@Override
+	public void setWorldBounds(Tuple6b min, Tuple6b max) {
+		gridRenderer.setWorldBounds(min, max);
+	}
 }

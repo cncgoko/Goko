@@ -19,6 +19,8 @@
  */
 package org.goko.tools.viewer.jogl.utils.render.grid;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +30,8 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
 import javax.vecmath.Point4d;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -56,215 +56,199 @@ import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeContextListener<GCodeContext>, IGridRenderer {
 	private static final GkLog LOG = GkLog.getLogger(GridRenderer.class);
 	private Length majorIncrement;
-	private Length minorIncrement;
+	private Length minorIncrement;	
+	private Matrix4f axisTransformMatrix; 
+	private Vector3f normal;
+	private Vector3f horizontalVector;
+	private Length horizontalMinimal;
+	private Length horizontalMaximal;
+	private Color4f horizontalColor;
+	private Vector3f verticalVector;
+	private Length verticalMinimal;
+	private Length verticalMaximal;
+	private Color4f verticalColor;
+	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
+	 
 	private Color4f majorUnitColor	= new Color4f(0.4f, 0.4f, 0.4f,1f);
 	private Color4f minorUnitColor	= new Color4f(0.4f, 0.4f, 0.4f,1f);
 	private Color4f originColor		= new Color4f(0.8f, 0.8f, 0.8f,1f);
-	private Tuple6b start;
-	private Tuple6b end;
 	private float majorOpacity;
 	private float minorOpacity;
 	private float axisOpacity;
-	private Matrix4f axisTransformMatrix; 
-	private Vector4f normal; 
-	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
-	 
+	
 	public GridRenderer(IGCodeContextProvider<GCodeContext> gcodeContextProvider){		
-		this(new Tuple6b(-100, -100, 0, JoglUtils.JOGL_UNIT), 
-			 new Tuple6b(100, 100, 0, JoglUtils.JOGL_UNIT),
-			 Length.valueOf(10, JoglUtils.JOGL_UNIT),
-			 Length.valueOf(1, JoglUtils.JOGL_UNIT),
-			 new Color3f(0.4f, 0.4f, 0.4f),
-			 new Color3f(0.4f, 0.4f, 0.4f),
-			 0.5f, 0.5f, 0.5f, new Vector4f(0f,0f,1f,0f));
+		this(new Vector3f(0f,0f,1f),
+				Length.valueOf(10, JoglUtils.JOGL_UNIT), Length.valueOf(1, JoglUtils.JOGL_UNIT),
+				new Vector3f(1f,0f,0f), Length.valueOf(-100, JoglUtils.JOGL_UNIT), Length.valueOf(100, JoglUtils.JOGL_UNIT),
+				new Vector3f(0f,1f,0f), Length.valueOf(-100, JoglUtils.JOGL_UNIT), Length.valueOf(100, JoglUtils.JOGL_UNIT),
+				new Color3f(0.4f, 0.4f, 0.4f), new Color3f(0.4f, 0.4f, 0.4f), 0.5f, 0.5f, 0.5f);
+
 		this.gcodeContextProvider = gcodeContextProvider;
 		if(this.gcodeContextProvider != null){
 			gcodeContextProvider.addObserver(this);
 		}
 	}
 				
-	/**
-	 * Constructor
+	/**	
+	 * @param normal
+	 * @param majorIncrement
+	 * @param minorIncrement
+	 * @param horizontalVector
+	 * @param horizontalMinimal
+	 * @param horizontalMaximal
+	 * @param verticalVector
+	 * @param verticalMinimal
+	 * @param verticalMaximal
+	 * @param majorUnitColor
+	 * @param minorUnitColor
+	 * @param originColor
+	 * @param majorOpacity
+	 * @param minorOpacity
+	 * @param axisOpacity
 	 */
-	public GridRenderer(Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float minorOpacity, float majorOpacity, float axisOpacity, Vector4f normal) {
+	public GridRenderer(Vector3f normal, Length majorIncrement, Length minorIncrement, 
+			Vector3f horizontalVector, Length horizontalMinimal, Length horizontalMaximal,
+			Vector3f verticalVector, Length verticalMinimal, Length verticalMaximal,
+			Color3f majorUnitColor, Color3f minorUnitColor, 
+			float majorOpacity, float minorOpacity, 
+			float axisOpacity) {		
 		super(GL.GL_LINES,  COLORS | VERTICES);
-		this.setLayerId(Layer.LAYER_GRIDS);		
-		this.start 			= new Tuple6b();
-		this.start.min(start, end);
-		this.end 			= new Tuple6b();
-		this.end.max(start, end);
-		this.majorIncrement = majorIncrement.to(JoglUtils.JOGL_UNIT);
-		this.minorIncrement = minorIncrement.to(JoglUtils.JOGL_UNIT);
-		this.majorUnitColor = new Color4f(majorColor.x,majorColor.y,majorColor.z,majorOpacity);
-		this.minorUnitColor = new Color4f(minorColor.x,minorColor.y,minorColor.z,minorOpacity);
-		this.originColor.w = axisOpacity;
-		this.minorOpacity = minorOpacity;
+		this.setLayerId(Layer.LAYER_GRIDS);	
+		this.majorIncrement = majorIncrement;
+		this.minorIncrement = minorIncrement;
+		this.normal = new Vector3f(normal);
+		this.horizontalVector = horizontalVector;
+		this.horizontalMinimal = horizontalMinimal;
+		this.horizontalMaximal = horizontalMaximal;
+		this.verticalVector = verticalVector;
+		this.verticalMinimal = verticalMinimal;
+		this.verticalMaximal = verticalMaximal;
+		this.majorUnitColor = new Color4f(majorUnitColor.x,majorUnitColor.y,majorUnitColor.z,majorOpacity);
+		this.minorUnitColor = new Color4f(minorUnitColor.x,minorUnitColor.y,minorUnitColor.z,minorOpacity);
 		this.majorOpacity = majorOpacity;
+		this.minorOpacity = minorOpacity;
 		this.axisOpacity = axisOpacity;
-		this.normal = new Vector4f(normal);
 		buildMatrix();
 		setUseAlpha(true);
 	}
 
+//	/**
+//	 * Constructor
+//	 */
+//	public GridRenderer(Tuple6b start, Tuple6b end, Length majorIncrement, Length minorIncrement, Color3f majorColor, Color3f minorColor, float minorOpacity, float majorOpacity, float axisOpacity, Vector4f normal) {
+//		super(GL.GL_LINES,  COLORS | VERTICES);
+//		this.setLayerId(Layer.LAYER_GRIDS);		
+//		this.majorIncrement = majorIncrement.to(JoglUtils.JOGL_UNIT);
+//		this.minorIncrement = minorIncrement.to(JoglUtils.JOGL_UNIT);
+//		this.majorUnitColor = new Color4f(majorColor.x,majorColor.y,majorColor.z,majorOpacity);
+//		this.minorUnitColor = new Color4f(minorColor.x,minorColor.y,minorColor.z,minorOpacity);
+//		this.originColor.w = axisOpacity;
+//		this.minorOpacity = minorOpacity;
+//		this.majorOpacity = majorOpacity;
+//		this.axisOpacity = axisOpacity;
+//		this.normal = new Vector3f(normal.x, normal.y, normal.z);
+//		buildMatrix();
+//		setUseAlpha(true);
+//	}
+
 	private void buildGrid() throws GkException{
-		System.out.println("GridRenderer.buildGrid() on "+this);
 		buildMatrix();		
 		List<Point4d> lstVertices = new ArrayList<Point4d>();
-		List<Color4f> lstColors = new ArrayList<Color4f>();
-		
-		Tuple6b lclStart6b 			= new Tuple6b();
-		lclStart6b.min(start, end);		
-		Tuple6b lclEnd6b 			= new Tuple6b();
-		lclEnd6b.max(start, end);
-		Point3f tupleStart = lclStart6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		Point3f tupleEnd   = lclEnd6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		Tuple6b lclCenter6b = new Tuple6b(0,0,0, JoglUtils.JOGL_UNIT);
-		if(gcodeContextProvider != null){
-			GCodeContext context = gcodeContextProvider.getGCodeContext();
-			lclCenter6b = context.getCoordinateSystemData( context.getCoordinateSystem() );
-		}
-		// Determine min/max if zero is not in the desired area
-		lclCenter6b = lclCenter6b.max(lclStart6b).min(lclEnd6b);
-				
-		
-		Point3f lclStart = lclStart6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		axisTransformMatrix.transform(lclStart);
-		Point3f lclEnd   = lclEnd6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		axisTransformMatrix.transform(lclEnd);
-		Point3f lclCenter   = lclCenter6b.toPoint3f(JoglUtils.JOGL_UNIT);
-		axisTransformMatrix.transform(lclCenter);
+		List<Color4f> lstColors   = new ArrayList<Color4f>();
+	
 		Matrix4d invAxisTransformMatrix = new Matrix4d(axisTransformMatrix);
 		invAxisTransformMatrix.invert();
+		
+		double hMin = horizontalMinimal.doubleValue(JoglUtils.JOGL_UNIT);
+		double hMax = horizontalMaximal.doubleValue(JoglUtils.JOGL_UNIT);
+		
+		double vMin = verticalMinimal.doubleValue(JoglUtils.JOGL_UNIT);
+		double vMax = verticalMaximal.doubleValue(JoglUtils.JOGL_UNIT);
+		
+		int hStart = horizontalMinimal.divide(majorIncrement).setScale(0, RoundingMode.DOWN).intValue();
+		int hEnd   = horizontalMaximal.divide(majorIncrement).setScale(0, RoundingMode.DOWN).intValue();
 
+		int nbMinorPerMajor = (int) majorIncrement.divide(minorIncrement).floatValue();
+		double dMajorIncrement = majorIncrement.doubleValue(JoglUtils.JOGL_UNIT);
+		double dMinorIncrement = minorIncrement.doubleValue(JoglUtils.JOGL_UNIT);
 		
-		addVertice(new Point4d(lclCenter.x, lclStart.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-		addVertice(new Point4d(lclCenter.x, lclEnd.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-		addVertice(new Point4d(lclStart.x, lclCenter.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-		addVertice(new Point4d(lclEnd.x, lclCenter.y, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+		// Draw origin		
+		Point4d originHorizontalMin = new Point4d( hMin, 0, 0 , 1);
+		Point4d originHorizontalMax = new Point4d( hMax, 0, 0 , 1);
+		Point4d originVerticalMin   = new Point4d( 0, vMin, 0 , 1);
+		Point4d originVerticalMax   = new Point4d( 0, vMax, 0 , 1);
+		
+		addVertice(originHorizontalMin, lstVertices, invAxisTransformMatrix);
+		addVertice(originHorizontalMax, lstVertices, invAxisTransformMatrix);
+		addVertice(originVerticalMin, lstVertices, invAxisTransformMatrix);
+		addVertice(originVerticalMax, lstVertices, invAxisTransformMatrix);
 		lstColors.add(originColor);
 		lstColors.add(originColor);
 		lstColors.add(originColor);
 		lstColors.add(originColor);
 		
-		Tuple6b deltaPlus  =  lclEnd6b.subtract(lclCenter6b).max(new Tuple6b(0,0,0,JoglUtils.JOGL_UNIT));
-		Tuple6b deltaMinus =  lclCenter6b.subtract(lclStart6b).max(new Tuple6b(0,0,0,JoglUtils.JOGL_UNIT));
-		
-		// Major divisions
-		int nbStepXPlusMajor = Math.abs(deltaPlus.getX().divide(majorIncrement).intValue());
-		int nbStepYPlusMajor = Math.abs(deltaPlus.getY().divide(majorIncrement).intValue());
-		int nbStepZPlusMajor = Math.abs(deltaPlus.getZ().divide(majorIncrement).intValue());
-		
-		int nbStepXMinusMajor = Math.abs(deltaMinus.getX().divide(majorIncrement).intValue());
-		int nbStepYMinusMajor = Math.abs(deltaMinus.getY().divide(majorIncrement).intValue());
-		int nbStepZMinusMajor = Math.abs(deltaMinus.getZ().divide(majorIncrement).intValue());
-				
-		Vector3f nbStepPlusMajor = new Vector3f(nbStepXPlusMajor, nbStepYPlusMajor, nbStepZPlusMajor);
-		Vector3f nbStepMinusMajor = new Vector3f(nbStepXMinusMajor, nbStepYMinusMajor, nbStepZMinusMajor);
-		axisTransformMatrix.transform(nbStepPlusMajor);
-		axisTransformMatrix.transform(nbStepMinusMajor);
-		
-		double majorIncrementJoglUnit = majorIncrement.doubleValue(JoglUtils.JOGL_UNIT);
-		double minorIncrementJoglUnit = minorIncrement.doubleValue(JoglUtils.JOGL_UNIT);
-		for (int i = 1; i <= nbStepPlusMajor.x; i++) {
-			addVertice(new Point4d(lclCenter.x+i*majorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);			
-			addVertice(new Point4d(lclCenter.x+i*majorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);		
-			
-			lstColors.add(majorUnitColor);
-			lstColors.add(majorUnitColor);			
-		}
-		
-		for (int i = 1; i <= nbStepMinusMajor.x; i++) {
-			addVertice(new Point4d(lclCenter.x-i*majorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclCenter.x-i*majorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			lstColors.add(majorUnitColor);
-			lstColors.add(majorUnitColor);			
-		}
-		
-		for (int i = 1; i <= nbStepPlusMajor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y+i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y+i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+		// Let's build vertical major rulers
+		for (int h = hStart; h <= hEnd; h++) {
+			double horizontal = dMajorIncrement * h;
+			Point4d p1 = new Point4d( horizontal, vMin, 0 , 1);
+			Point4d p2 = new Point4d( horizontal, vMax, 0 , 1);
+			addVertice(p1, lstVertices, invAxisTransformMatrix);
+			addVertice(p2, lstVertices, invAxisTransformMatrix);
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);
+			for(int s = 1; s < nbMinorPerMajor && h < hEnd; s++){
+				Point4d s1 = new Point4d( horizontal + dMinorIncrement * s, vMin, 0 , 1);
+				Point4d s2 = new Point4d( horizontal + dMinorIncrement * s, vMax, 0 , 1);
+				addVertice(s1, lstVertices, invAxisTransformMatrix);
+				addVertice(s2, lstVertices, invAxisTransformMatrix);
+				lstColors.add(minorUnitColor);
+				lstColors.add(minorUnitColor);	
+			}
 		}
 		
-		for (int i = 1; i <= nbStepMinusMajor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y-i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y-i*majorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
+		int vStart = verticalMinimal.divide(majorIncrement).setScale(0, RoundingMode.DOWN).intValue();
+		int vEnd   = verticalMaximal.divide(majorIncrement).setScale(0, RoundingMode.DOWN).intValue();
+		// Let's build horizontal major rulers
+		for (int v = vStart; v <= vEnd; v++) {
+			double vertical = dMajorIncrement * v;
+			Point4d p1 = new Point4d( hMin, vertical, 0 , 1);
+			Point4d p2 = new Point4d( hMax, vertical, 0 , 1);
+			addVertice(p1, lstVertices, invAxisTransformMatrix);
+			addVertice(p2, lstVertices, invAxisTransformMatrix);
 			lstColors.add(majorUnitColor);
 			lstColors.add(majorUnitColor);
+			for(int s = 1; s < nbMinorPerMajor  && v < vEnd; s++){
+				Point4d s1 = new Point4d( hMin, vertical + dMinorIncrement * s, 0 , 1);
+				Point4d s2 = new Point4d( hMax, vertical + dMinorIncrement * s, 0 , 1);
+				addVertice(s1, lstVertices, invAxisTransformMatrix);
+				addVertice(s2, lstVertices, invAxisTransformMatrix);
+				lstColors.add(minorUnitColor);
+				lstColors.add(minorUnitColor);	
+			}
 		}
 		
-		// Minor divisions
-		int nbStepXPlusMinor = Math.abs(deltaPlus.getX().divide(minorIncrement).intValue());
-		int nbStepYPlusMinor = Math.abs(deltaPlus.getY().divide(minorIncrement).intValue());
-		int nbStepZPlusMinor = Math.abs(deltaPlus.getZ().divide(minorIncrement).intValue());
-		
-		int nbStepXMinusMinor = Math.abs(deltaMinus.getX().divide(minorIncrement).intValue());
-		int nbStepYMinusMinor = Math.abs(deltaMinus.getY().divide(minorIncrement).intValue());
-		int nbStepZMinusMinor = Math.abs(deltaMinus.getZ().divide(minorIncrement).intValue());
-		
-		Vector3f nbStepPlusMinor = new Vector3f(nbStepXPlusMinor, nbStepYPlusMinor, nbStepZPlusMinor);
-		Vector3f nbStepMinusMinor = new Vector3f(nbStepXMinusMinor, nbStepYMinusMinor, nbStepZMinusMinor);
-		
-		axisTransformMatrix.transform(nbStepPlusMinor);
-		axisTransformMatrix.transform(nbStepMinusMinor);
-		
-		for (int i = 1; i <= nbStepPlusMinor.x; i++) {
-			addVertice(new Point4d(lclCenter.x+i*minorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclCenter.x+i*minorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			lstColors.add(minorUnitColor);
-			lstColors.add(minorUnitColor);			
+		if(horizontalColor != null){
+			Point4d p1 = new Point4d( hMin, 0, 0 , 1);
+			Point4d p2 = new Point4d( hMax, 0, 0 , 1);
+			addVertice(p1, lstVertices, invAxisTransformMatrix);
+			addVertice(p2, lstVertices, invAxisTransformMatrix);
+			lstColors.add(horizontalColor);
+			lstColors.add(horizontalColor);
 		}
 		
-		for (int i = 1; i <= nbStepMinusMinor.x; i++) {
-			addVertice(new Point4d(lclCenter.x-i*minorIncrementJoglUnit, lclStart.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclCenter.x-i*minorIncrementJoglUnit, lclEnd.y , lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			lstColors.add(minorUnitColor);
-			lstColors.add(minorUnitColor);			
-		}
-		
-		for (int i = 1; i <= nbStepPlusMinor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y+i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y+i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			lstColors.add(minorUnitColor);
-			lstColors.add(minorUnitColor);
-		}
-		
-		for (int i = 1; i <= nbStepMinusMinor.y; i++) {
-			addVertice(new Point4d(lclStart.x, lclCenter.y-i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			addVertice(new Point4d(lclEnd.x ,  lclCenter.y-i*minorIncrementJoglUnit, lclCenter.z,1), lstVertices, invAxisTransformMatrix);
-			lstColors.add(minorUnitColor);
-			lstColors.add(minorUnitColor);
-		}
-		
-		// Add X Zero red axis
-		if(normal.dot(new Vector4f(1,0,0,0)) == 0 ){
-			addVertice(new Point4d(tupleStart.x, 0, 0,1), lstVertices, null);
-			addVertice(new Point4d(tupleEnd.x, 0, 0,1), lstVertices, null);		
-			lstColors.add(new Color4f(1,0,0,axisOpacity));
-			lstColors.add(new Color4f(1,0,0,axisOpacity)); //ca ne fonctionne pas car les axes sont tournés
-		}
-		
-		// Add Y Zero green axis
-		if(normal.dot(new Vector4f(0,1,0,0)) == 0 ){
-			addVertice(new Point4d(0, tupleStart.y , 0,1), lstVertices, null);
-			addVertice(new Point4d(0, tupleEnd.y,  0,1), lstVertices, null);		
-			lstColors.add(new Color4f(0,1,0,axisOpacity));
-			lstColors.add(new Color4f(0,1,0,axisOpacity));
-		}
-
-		// Add Z Zero Blue axis
-		if(normal.dot(new Vector4f(0,0,1,0)) == 0 ){
-			addVertice(new Point4d(0, 0, tupleStart.z ,1), lstVertices, null);
-			addVertice(new Point4d(0, 0, tupleEnd.z,  1), lstVertices, null);		
-			lstColors.add(new Color4f(0,0,1,axisOpacity));
-			lstColors.add(new Color4f(0,0,1,axisOpacity));
+		if(verticalColor != null){
+			Point4d p1 = new Point4d( 0, vMin, 0 , 1);
+			Point4d p2 = new Point4d( 0, vMax, 0 , 1);
+			addVertice(p1, lstVertices, invAxisTransformMatrix);
+			addVertice(p2, lstVertices, invAxisTransformMatrix);
+			lstColors.add(verticalColor);
+			lstColors.add(verticalColor);
 		}
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		setColorsBuffer(JoglUtils.buildFloatBuffer4f(lstColors));
-		setVerticesBuffer(JoglUtils.buildFloatBuffer4d(lstVertices));		
+		setVerticesBuffer(JoglUtils.buildFloatBuffer4d(lstVertices));	
 	}
-	
+		
 	private void addVertice(Point4d p, List<Point4d> buffer, Matrix4d invMatrix){
 		if(invMatrix != null){
 			invMatrix.transform(p);
@@ -425,63 +409,23 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 		this.originColor = originColor;
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getStart()
-	 */
-	@Override
-	public Tuple6b getStart() {
-		return start;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setStart(org.goko.core.math.Tuple6b)
-	 */
-	@Override
-	public void setStart(Tuple6b start) {
-		this.start = start;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getEnd()
-	 */
-	@Override
-	public Tuple6b getEnd() {
-		return end;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setEnd(org.goko.core.math.Tuple6b)
-	 */
-	@Override
-	public void setEnd(Tuple6b end) {
-		this.end = end;
-	}
-	
 	private void buildMatrix(){
-		
-		if(normal.dot(JoglUtils.X_AXIS) == 1){ // 
-			this.axisTransformMatrix = new Matrix4f(new float[]{0.0f, 1.0f, 0.0f, 0.0f,																										
-																0.0f, 0.0f, 1.0f, 0.0f,
-															    1.0f, 0.0f, 0.0f, 0.0f,
-																0.0f, 0.0f, 0.0f, 1.0f});
-		}else if(normal.dot(JoglUtils.Y_AXIS) == 1){ //
-			this.axisTransformMatrix = new Matrix4f(new float[]{1.0f, 0.0f, 0.0f, 0.0f,
-																0.0f, 0.0f, 1.0f, 0.0f,
-																0.0f, 1.0f, 0.0f, 0.0f,
-																0.0f, 0.0f, 0.0f, 1.0f});
-		}else { //
-			this.axisTransformMatrix = new Matrix4f(new float[]{1.0f, 0.0f, 0.0f, 0.0f,																										
-																0.0f, 1.0f, 0.0f, 0.0f,
-																0.0f, 0.0f, 1.0f, 0.0f,
-																0.0f, 0.0f, 0.0f, 1.0f});
-		}
+		this.normal.normalize();
+		this.horizontalVector.normalize();
+		this.verticalVector.normalize();
+		//this.verticalVector = new Vector3f();		
+		//this.verticalVector.cross(normal, horizontalVector);
+		this.axisTransformMatrix = new Matrix4f(new float[]{horizontalVector.x, horizontalVector.y, horizontalVector.z, 0.0f,																										
+															verticalVector.x, verticalVector.y, verticalVector.z, 0.0f,
+														    normal.x, normal.y, normal.z, 0.0f,
+															0.0f, 0.0f, 0.0f, 1.0f});		
 	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#getNormal()
 	 */
 	@Override
-	public Vector4f getNormal() {
+	public Vector3f getNormal() {
 		return normal;
 	}
 
@@ -489,7 +433,7 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setNormal(javax.vecmath.Vector4f)
 	 */
 	@Override
-	public void setNormal(Vector4f normal) {
+	public void setNormal(Vector3f normal) {
 		this.normal = normal;
 		buildMatrix();
 	}
@@ -535,5 +479,136 @@ public class GridRenderer extends AbstractVboJoglRenderer implements IGCodeConte
 	public void setAxisTransformMatrix(Matrix4f axisTransformMatrix) {
 		this.axisTransformMatrix = axisTransformMatrix;
 	}
-	
+
+	/**
+	 * @return the horizontalVector
+	 */
+	public Vector3f getHorizontalVector() {
+		return horizontalVector;
+	}
+
+	/**
+	 * @param horizontalVector the horizontalVector to set
+	 */
+	public void setHorizontalVector(Vector3f horizontalVector) {
+		this.horizontalVector = horizontalVector;
+		buildMatrix();
+	}
+
+	/**
+	 * @return the verticalVector
+	 */
+	public Vector3f getVerticalVector() {
+		return verticalVector;
+	}
+
+	/**
+	 * @param verticalVector the verticalVector to set
+	 */
+	public void setVerticalVector(Vector3f verticalVector) {
+		this.verticalVector = verticalVector;
+		buildMatrix();
+	}
+
+	/**
+	 * @return the horizontalMinimal
+	 */
+	public Length getHorizontalMinimal() {
+		return horizontalMinimal;
+	}
+
+	/**
+	 * @param horizontalMinimal the horizontalMinimal to set
+	 */
+	public void setHorizontalMinimal(Length horizontalMinimal) {
+		this.horizontalMinimal = horizontalMinimal;
+	}
+
+	/**
+	 * @return the horizontalMaximal
+	 */
+	public Length getHorizontalMaximal() {
+		return horizontalMaximal;
+	}
+
+	/**
+	 * @param horizontalMaximal the horizontalMaximal to set
+	 */
+	public void setHorizontalMaximal(Length horizontalMaximal) {
+		this.horizontalMaximal = horizontalMaximal;
+	}
+
+	/**
+	 * @return the verticalMinimal
+	 */
+	public Length getVerticalMinimal() {
+		return verticalMinimal;
+	}
+
+	/**
+	 * @param verticalMinimal the verticalMinimal to set
+	 */
+	public void setVerticalMinimal(Length verticalMinimal) {
+		this.verticalMinimal = verticalMinimal;
+	}
+
+	/**
+	 * @return the verticalMaximal
+	 */
+	public Length getVerticalMaximal() {
+		return verticalMaximal;
+	}
+
+	/**
+	 * @param verticalMaximal the verticalMaximal to set
+	 */
+	public void setVerticalMaximal(Length verticalMaximal) {
+		this.verticalMaximal = verticalMaximal;
+	}
+
+	/**
+	 * @return the horizontalColor
+	 */
+	public Color4f getHorizontalColor() {
+		return horizontalColor;
+	}
+
+	/**
+	 * @param horizontalColor the horizontalColor to set
+	 */
+	public void setHorizontalColor(Color4f horizontalColor) {
+		this.horizontalColor = horizontalColor;
+	}
+
+	/**
+	 * @return the verticalColor
+	 */
+	public Color4f getVerticalColor() {
+		return verticalColor;
+	}
+
+	/**
+	 * @param verticalColor the verticalColor to set
+	 */
+	public void setVerticalColor(Color4f verticalColor) {
+		this.verticalColor = verticalColor;
+	}
+
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer#setWorldBounds(org.goko.core.math.Tuple6b, org.goko.core.math.Tuple6b)
+	 */
+	@Override
+	public void setWorldBounds(Tuple6b workMin, Tuple6b workMax) {
+		Vector3f workMinJogl = new Vector3f(workMin.min(workMax).toVector3d(JoglUtils.JOGL_UNIT));
+		Vector3f workMaxJogl = new Vector3f(workMax.max(workMin).toVector3d(JoglUtils.JOGL_UNIT));
+		Matrix4f invMatrix = new Matrix4f(getAxisTransformMatrix());
+		invMatrix.invert();
+		invMatrix.transform(workMinJogl);		
+		invMatrix.transform(workMaxJogl);
+		setHorizontalMinimal( Length.valueOf(BigDecimal.valueOf(workMinJogl.dot(getHorizontalVector())), JoglUtils.JOGL_UNIT));
+		setHorizontalMaximal( Length.valueOf(BigDecimal.valueOf(workMaxJogl.dot(getHorizontalVector())), JoglUtils.JOGL_UNIT));
+		setVerticalMinimal(   Length.valueOf(BigDecimal.valueOf(workMinJogl.dot(getVerticalVector())), JoglUtils.JOGL_UNIT));
+		setVerticalMaximal(   Length.valueOf(BigDecimal.valueOf(workMaxJogl.dot(getVerticalVector())), JoglUtils.JOGL_UNIT));		
+	}
 }
