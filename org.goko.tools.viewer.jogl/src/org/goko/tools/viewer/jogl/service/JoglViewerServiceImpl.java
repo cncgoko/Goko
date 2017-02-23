@@ -107,8 +107,9 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(xyGridRenderer);
 		addRenderer(xzGridRenderer);
 		addRenderer(yzGridRenderer);		
-		
-		workVolumeProvider.addUpdateListener(this);
+		if(workVolumeProvider != null){
+			workVolumeProvider.addUpdateListener(this);
+		}
 		LOG.info("Successfully started " + getServiceId());
 	}
 

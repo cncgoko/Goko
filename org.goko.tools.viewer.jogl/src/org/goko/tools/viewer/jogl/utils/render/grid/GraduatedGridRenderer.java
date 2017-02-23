@@ -99,11 +99,7 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 		
 		int hStart = getHorizontalMinimal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
 		int hEnd   = getHorizontalMaximal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
-		if(hStart > hEnd){
-			int tmp = hEnd;
-			hEnd = hStart;
-			hStart = tmp;
-		}
+
 		double dMajorIncrement = getMajorIncrement().doubleValue(JoglUtils.JOGL_UNIT);
 	
 		// Let's build vertical major rulers
@@ -116,7 +112,7 @@ public class GraduatedGridRenderer extends AbstractCoreJoglMultipleRenderer impl
 			graduation.setHorizontalPadding(padding);
 			graduation.setVerticalPadding(padding);			
 			lstAnnotations.add(graduation);			
-			graduation.setColor(getHorizontalColor().x, getHorizontalColor().y, getHorizontalColor().z, getMajorOpacity());			
+			graduation.setColor(getHorizontalColor().x, getHorizontalColor().y, getHorizontalColor().z, getMajorOpacity());
 		}
 		
 		int vStart = getVerticalMinimal().divide(getMajorIncrement()).setScale(0, RoundingMode.DOWN).intValue();
