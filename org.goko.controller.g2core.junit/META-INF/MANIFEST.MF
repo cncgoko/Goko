@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: G2Core Junit
+Bundle-SymbolicName: org.goko.controller.g2core.junit
+Bundle-Version: 0.3.3.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.goko.core,
+ org.goko.junit.tools,
+ org.junit,
+ org.goko.controller.tinyg,
+ org.eclipse.core.runtime;bundle-version="3.11.1",
+ org.goko.gcode.rs274ngcv3,
+ org.goko.controller.tinyg.commons;bundle-version="0.3.3",
+ org.goko.controller.g2core
+Import-Package: org.osgi.framework;version="1.8.0"

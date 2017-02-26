@@ -127,7 +127,6 @@ public class TinyGGroupSettings {
 	public boolean isCompletelyLoaded(){
 		for (TinyGSetting<?> tinyGSetting : settings) {
 			if(!tinyGSetting.isReadOnly() && !tinyGSetting.isAssigned()){
-				System.out.println("TinyG setting not assigned "+tinyGSetting.getIdentifier());
 				return false;
 			}
 		}

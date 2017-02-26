@@ -13,11 +13,15 @@ import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.SpeedUnit;
 import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.controller.bean.EnumControllerAxis;
+import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.RS274NGCServiceImpl;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.math.Tuple6b;
 import org.goko.junit.tools.assertion.AssertGkFunctionalException;
 import org.goko.junit.tools.connection.AssertSerialEmulator;
 import org.goko.junit.tools.connection.SerialConnectionEmulator;
@@ -199,10 +203,218 @@ public class TinyGControllerServiceTestCase extends TestCase {
 		// Enable G55 
 		serialEmulator.receiveDataWithEndChar("{\"r\":{\"sr\":{\"coor\":2}},\"f\":[1,0,0,0]}"); 
 			
-		assertEquals(EnumCoordinateSystem.G55, tinyg.getCurrentCoordinateSystem());
+		assertEquals(CoordinateSystem.G55, tinyg.getCurrentCoordinateSystem());
 		tinyg.resetCurrentCoordinateSystem();		
 		
-		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"G55\":{\"x\":15.031, \"y\":35.000, \"z\":-16.031}} "+'\n', 1000);
+		AssertSerialEmulator.assertOutputMessagePresent(serialEmulator, "{\"G55\":{\"X\":15.031,\"Y\":35,\"Z\":-16.031}}"+'\n', 1000);
+	}
+	
+	/**
+	 * Context : We receive notification about the coordinate system update offset
+	 * Result  : TinyG controller updates it's internal units
+	 * @throws Exception
+	 */
+	public void testGCodeContextCoordinateSystemOffsetChange() throws Exception{			
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		
+		serialEmulator.receiveDataWithEndChar("{\"r\":{\"g55\":{\"x\":-10,\"y\":20,\"z\":35.53,\"a\":0,\"b\":0,\"c\":0}},\"f\":[1,0,12]}");		
+		Tuple6b expectedG55 = new Tuple6b(Length.valueOf("-10", tinyg.getCurrentUnit()),
+											Length.valueOf("20", tinyg.getCurrentUnit()),
+											Length.valueOf("35.53", tinyg.getCurrentUnit()));
+		Tuple6b actualG55 = tinyg.getGCodeContext().getCoordinateSystemData(CoordinateSystem.G55);
+		assertEquals(expectedG55, actualG55);
+		
+	}
+	
+	/**
+	 * Tests the various stat values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportState() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{	// Stat 0 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":0}}");
+			assertEquals(tinyg.getState(), MachineState.INITIALIZING);
+		}
+		{	// Stat 1 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":1}}");
+			assertEquals(tinyg.getState(), MachineState.READY);
+		}
+		{	// Stat 2
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":2}}");
+			assertEquals(tinyg.getState(), MachineState.ALARM);
+		}
+		{	// Stat 3 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":3}}");
+			assertEquals(tinyg.getState(), MachineState.PROGRAM_STOP);
+		}
+		{	// Stat 4 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":4}}");
+			assertEquals(tinyg.getState(), MachineState.PROGRAM_END);
+		}
+		{	// Stat 5 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":5}}");
+			assertEquals(tinyg.getState(), MachineState.MOTION_RUNNING);
+		}
+		{	// Stat 6 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":6}}");
+			assertEquals(tinyg.getState(), MachineState.MOTION_HOLDING);
+		}
+		{	// Stat 7 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":7}}");
+			assertEquals(tinyg.getState(), MachineState.PROBE_CYCLE);
+		}		
+		{	// Stat 9 
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"stat\":9}}");
+			assertEquals(tinyg.getState(), MachineState.HOMING);
+		}	
+		
+	}
+		
+	/**
+	 * Tests the various stat values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportVelocity() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		serialEmulator.receiveDataWithEndChar("{\"sr\":{\"vel\":109.35}}");
+		assertEquals(tinyg.getVelocity(), Speed.valueOf("109.35", SpeedUnit.MILLIMETRE_PER_MINUTE));
+	}
+	
+	/**
+	 * Tests the various feed values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportDistanceMode() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"dist\":0}}");
+			assertEquals(EnumDistanceMode.ABSOLUTE, tinyg.getGCodeContext().getDistanceMode());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"dist\":1}}");
+			assertEquals(EnumDistanceMode.RELATIVE, tinyg.getGCodeContext().getDistanceMode());
+		}
+		
+	}
+	
+	/**
+	 * Tests the various feed values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportCoordinateSystem() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":0}}");
+			assertEquals(CoordinateSystem.G53, tinyg.getCurrentCoordinateSystem());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":1}}");
+			assertEquals(CoordinateSystem.G54, tinyg.getCurrentCoordinateSystem());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":2}}");
+			assertEquals(CoordinateSystem.G55, tinyg.getCurrentCoordinateSystem());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":3}}");
+			assertEquals(CoordinateSystem.G56, tinyg.getCurrentCoordinateSystem());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":4}}");
+			assertEquals(CoordinateSystem.G57, tinyg.getCurrentCoordinateSystem());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":5}}");
+			assertEquals(CoordinateSystem.G58, tinyg.getCurrentCoordinateSystem());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"coor\":6}}");
+			assertEquals(CoordinateSystem.G59, tinyg.getCurrentCoordinateSystem());
+		}
+	}
+	
+	/**
+	 * Tests the various plane values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportPlane() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"plan\":0}}");
+			assertEquals(EnumPlane.XY_PLANE, tinyg.getGCodeContext().getPlane());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"plan\":1}}");
+			assertEquals(EnumPlane.XZ_PLANE, tinyg.getGCodeContext().getPlane());
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"plan\":2}}");
+			assertEquals(EnumPlane.YZ_PLANE, tinyg.getGCodeContext().getPlane());
+		}
+	}
+	
+	/**
+	 * Tests the various motion mode values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportMotionMode() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"momo\":0}}");
+			assertEquals(EnumMotionMode.RAPID, tinyg.getGCodeContext().getMotionMode());			
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"momo\":1}}");
+			assertEquals(EnumMotionMode.FEEDRATE, tinyg.getGCodeContext().getMotionMode());			
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"momo\":2}}");
+			assertEquals(EnumMotionMode.ARC_CLOCKWISE, tinyg.getGCodeContext().getMotionMode());			
+		}
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"momo\":3}}");
+			assertEquals(EnumMotionMode.ARC_COUNTERCLOCKWISE, tinyg.getGCodeContext().getMotionMode());			
+		}
+	}
+	
+	/**
+	 * Tests the machine position values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportMachinePosition() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"mpox\":-10,\"mpoy\":20,\"mpoz\":35.53}}");
+			Tuple6b expectedPosition = new Tuple6b(Length.valueOf("-10", tinyg.getCurrentUnit()),
+													Length.valueOf("20", tinyg.getCurrentUnit()),
+													Length.valueOf("35.53", tinyg.getCurrentUnit()));
+			assertEquals(expectedPosition, tinyg.getGCodeContext().getMachinePosition());		
+		}
+	}
+	
+	/**
+	 * Tests the work position values in status report 
+	 * @throws Exception Exception
+	 */
+	public void testStatusReportWorkPosition() throws Exception{
+		serialEmulator.clearOutputBuffer();
+		serialEmulator.clearSentBuffer();
+		{
+			serialEmulator.receiveDataWithEndChar("{\"sr\":{\"posx\":-10,\"posy\":20,\"posz\":35.53}}");
+			Tuple6b expectedPosition = new Tuple6b(Length.valueOf("-10", tinyg.getCurrentUnit()),
+													Length.valueOf("20", tinyg.getCurrentUnit()),
+													Length.valueOf("35.53", tinyg.getCurrentUnit()));
+			assertEquals(expectedPosition, tinyg.getGCodeContext().getPosition());		
+		}
 	}
 	
 	/* ************************************************

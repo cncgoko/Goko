@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionService;
 
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.AbstractTinyGControllerService;
 import org.goko.controller.tinyg.commons.ITinyGStatus;
 import org.goko.controller.tinyg.commons.TinyGJsonUtils;
+import org.goko.controller.tinyg.commons.bean.EnumTinyGAxis;
 import org.goko.controller.tinyg.commons.bean.TinyGExecutionError;
 import org.goko.controller.tinyg.commons.probe.ProbeUtility;
 import org.goko.controller.tinyg.controller.configuration.TinyGAxisSettings;
@@ -43,6 +45,7 @@ import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 import org.osgi.service.event.EventAdmin;
@@ -386,8 +389,8 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		return probeUtility.getExecutorCompletionService();
 	}
 
-	protected String getPositionAsString(Length q) throws GkException{
-		return GokoPreference.getInstance().format(q.to(getCurrentUnit()), true, false);
+	protected double getPositionAsDouble(Length q) throws GkException{
+		return Double.valueOf(GokoPreference.getInstance().format(q.to(getCurrentUnit()), true, false));
 	}
 	/**
 	 * @param applicativeLogService the IApplicativeLogService to set
@@ -406,6 +409,16 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystem()
+	 */
+	@Override
+	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
+		List<ICoordinateSystem> lstCoordinateSystem = new ArrayList<>();
+		lstCoordinateSystem.addAll(new CoordinateSystemFactory().get());
+		return lstCoordinateSystem;
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.ICoordinateSystemAdapter#resetCurrentCoordinateSystem()
 	 */
 	@Override
@@ -414,13 +427,16 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		Tuple6b offsets = getCoordinateSystemOffset(current);
 		Tuple6b mPos = new Tuple6b(getInternalState().getWorkPosition());
 		mPos = mPos.add(offsets);
-		String cmd = "{\""+String.valueOf(current) +"\":{";
-
-		cmd += "\"x\":"+ getPositionAsString(mPos.getX()) +", ";
-		cmd += "\"y\":"+ getPositionAsString(mPos.getY())+", ";
-		cmd += "\"z\":"+ getPositionAsString(mPos.getZ())+"}} ";
-		getCommunicator().send( cmd , true );
-		getCommunicator().updateCoordinateSystem(current);
+		
+		JsonObject xyzPosition = new JsonObject();
+		xyzPosition.add(EnumTinyGAxis.X_POSITIVE.getAxisCode(), getPositionAsDouble(mPos.getX()));
+		xyzPosition.add(EnumTinyGAxis.Y_POSITIVE.getAxisCode(), getPositionAsDouble(mPos.getY()));
+		xyzPosition.add(EnumTinyGAxis.Z_POSITIVE.getAxisCode(), getPositionAsDouble(mPos.getZ()));
+		JsonObject csObject = new JsonObject();
+		csObject.add(current.getCode(), xyzPosition);
+		
+		getCommunicator().send( csObject , true );
+		getCommunicator().requestCoordinateSystemUpdate(current);
 	}
 	
 	

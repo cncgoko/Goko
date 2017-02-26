@@ -29,8 +29,10 @@ import org.goko.core.connection.IConnectionDataListener;
 import org.goko.core.connection.IConnectionListener;
 import org.goko.core.connection.serial.ISerialConnectionService;
 import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
@@ -473,29 +475,79 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 * @return EnumCoordinateSystem
 	 * @throws GkException GkException 
 	 */	
-	protected EnumCoordinateSystem findCoordinateSystem(JsonObject statusReport){
-		EnumCoordinateSystem coordinateSystem = null;
+	protected CoordinateSystem findCoordinateSystem(JsonObject statusReport){
+		CoordinateSystem coordinateSystem = null;
 		JsonValue coordReport = statusReport.get(TinyG.STATUS_REPORT_COORDINATES);
 		if(coordReport != null){
 			int units = coordReport.asInt();
 			switch(units){
-			case 0: coordinateSystem = EnumCoordinateSystem.G53;
+			case 0: coordinateSystem = CoordinateSystem.G53;
 			break;
-			case 1: coordinateSystem = EnumCoordinateSystem.G54;
+			case 1: coordinateSystem = CoordinateSystem.G54;
 			break;
-			case 2: coordinateSystem = EnumCoordinateSystem.G55;
+			case 2: coordinateSystem = CoordinateSystem.G55;
 			break;
-			case 3: coordinateSystem = EnumCoordinateSystem.G56;
+			case 3: coordinateSystem = CoordinateSystem.G56;
 			break;
-			case 4: coordinateSystem = EnumCoordinateSystem.G57;
+			case 4: coordinateSystem = CoordinateSystem.G57;
 			break;
-			case 5: coordinateSystem = EnumCoordinateSystem.G58;
+			case 5: coordinateSystem = CoordinateSystem.G58;
 			break;
-			case 6: coordinateSystem = EnumCoordinateSystem.G59;
+			case 6: coordinateSystem = CoordinateSystem.G59;
 			break;
 			}
 		}
 		return coordinateSystem;
+	}
+	
+	/**
+	 * Finds the current plane from the given status report
+	 * 0=XY, 1=XZ, 2=YZ 
+	 * @param statusReport the status report 
+	 * @return EnumPlane
+	 * @throws GkException GkException 
+	 */	
+	protected EnumPlane findPlane(JsonObject statusReport) {
+		EnumPlane enumPlane = null;
+		JsonValue coordReport = statusReport.get(TinyG.STATUS_REPORT_PLANE);
+		if(coordReport != null){
+			int units = coordReport.asInt();
+			switch(units){
+			case 0: enumPlane = EnumPlane.XY_PLANE;
+			break;
+			case 1: enumPlane = EnumPlane.XZ_PLANE;
+			break;
+			case 2: enumPlane = EnumPlane.YZ_PLANE;
+			break;
+			}
+		}
+		return enumPlane;
+	}
+	
+	/**
+	 * Finds the current motion mode from the given status report
+	 * 0=traverse, 1=straight feed, 2=cw arc, 3=ccw arc 
+	 * @param statusReport the status report 
+	 * @return EnumMotionMode
+	 * @throws GkException GkException 
+	 */	
+	protected EnumMotionMode findMotionMode(JsonObject statusReport) {
+		EnumMotionMode enumMotionMode = null;
+		JsonValue coordReport = statusReport.get(TinyG.STATUS_REPORT_MOTION_MODE);
+		if(coordReport != null){
+			int units = coordReport.asInt();
+			switch(units){
+			case 0: enumMotionMode = EnumMotionMode.RAPID;
+			break;
+			case 1: enumMotionMode = EnumMotionMode.FEEDRATE;
+			break;
+			case 2: enumMotionMode = EnumMotionMode.ARC_CLOCKWISE;
+			break;
+			case 3: enumMotionMode = EnumMotionMode.ARC_COUNTERCLOCKWISE;
+			break;
+			}
+		}
+		return enumMotionMode;
 	}
 	
 	/**

@@ -35,7 +35,7 @@ import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
 import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
@@ -77,7 +77,7 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		gcodeContext.setPosition(new Tuple6b());
 		gcodeContext.setMachinePosition(new Tuple6b());
 		gcodeContext.setOriginOffset(new Tuple6b());
-		gcodeContext.setCoordinateSystem(EnumCoordinateSystem.G54);
+		gcodeContext.setCoordinateSystem(CoordinateSystem.G54);
 		gcodeContext.setSelectedToolNumber(0);
 		gcodeContext.setActiveToolNumber(0);
 		gcodeContext.setUnit(EnumUnit.MILLIMETERS);
@@ -115,11 +115,11 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		storeValue(DefaultControllerValues.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
 		
 		offsets = new HashMap<ICoordinateSystem, Tuple6b>();
-		offsets.put(EnumCoordinateSystem.G53, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G54, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G55, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G56, new Tuple6b());
-		offsets.put(EnumCoordinateSystem.G57, new Tuple6b());
+		offsets.put(CoordinateSystem.G53, new Tuple6b());
+		offsets.put(CoordinateSystem.G54, new Tuple6b());
+		offsets.put(CoordinateSystem.G55, new Tuple6b());
+		offsets.put(CoordinateSystem.G56, new Tuple6b());
+		offsets.put(CoordinateSystem.G57, new Tuple6b());
 	}
 
 	/**
@@ -179,7 +179,9 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		setCurrentUnit( gcodeContext.getUnit().getUnit());
 		setWorkPosition(gcodeContext.getPosition());
 		setMachinePosition(gcodeContext.getMachinePosition());
-		updateValue(DefaultControllerValues.CONTEXT_COORD_SYSTEM, String.valueOf(gcodeContext.getCoordinateSystem()));
+		if(gcodeContext.getCoordinateSystem() != null){
+			updateValue(DefaultControllerValues.CONTEXT_COORD_SYSTEM, gcodeContext.getCoordinateSystem().getCode());
+		}
 		updateValue(DefaultControllerValues.CONTEXT_DISTANCE_MODE, String.valueOf(gcodeContext.getDistanceMode()));
 		updateValue(DefaultControllerValues.CONTEXT_PLANE, String.valueOf(gcodeContext.getPlane()));		
 		updateValue(DefaultControllerValues.CONTEXT_FEEDRATE, gcodeContext.getFeedrate());		

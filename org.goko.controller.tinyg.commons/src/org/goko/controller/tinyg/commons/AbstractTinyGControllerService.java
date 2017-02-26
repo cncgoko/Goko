@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,7 +45,6 @@ import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionTokenState;
 import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.service.IExecutionService;
@@ -319,16 +317,6 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	@Override
 	public ICoordinateSystem getCurrentCoordinateSystem() throws GkException {
 		return getInternalState().getGCodeContext().getCoordinateSystem();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.controller.ICoordinateSystemAdapter#getCoordinateSystem()
-	 */
-	@Override
-	public List<ICoordinateSystem> getCoordinateSystem() throws GkException {
-		List<ICoordinateSystem> lstCoordinateSystem = new ArrayList<ICoordinateSystem>();
-		lstCoordinateSystem.addAll(Arrays.asList(EnumCoordinateSystem.values()));
-		return lstCoordinateSystem;
 	}
 
 	/** (inheritDoc)

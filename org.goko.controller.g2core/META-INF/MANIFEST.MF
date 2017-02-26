@@ -26,3 +26,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/G2CoreFeatureSetComponent.xml
 Import-Package: org.eclipse.e4.ui.workbench
+Export-Package: org.goko.controller.g2core,
+ org.goko.controller.g2core.configuration,
+ org.goko.controller.g2core.controller

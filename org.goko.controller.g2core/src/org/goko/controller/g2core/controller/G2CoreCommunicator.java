@@ -19,8 +19,11 @@ import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.controller.bean.MachineState;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
@@ -177,7 +180,10 @@ public class G2CoreCommunicator extends AbstractTinyGCommunicator<G2CoreConfigur
 			EnumDistanceMode distanceMode 	= findDistanceMode(statusReportObject);			
 			Speed 		 	 velocity 		= findVelocity(statusReportObject, units);
 			Speed 			 feedrate 		= findFeedrate(statusReportObject, units);
-			EnumCoordinateSystem cs 		= findCoordinateSystem(statusReportObject);
+			CoordinateSystem cs 			= findCoordinateSystem(statusReportObject);
+			EnumPlane 		 plane 			= findPlane(statusReportObject);
+			EnumMotionMode 	 motionMode 	= findMotionMode(statusReportObject);
+			
 			GCodeContext gcodeContext = new GCodeContext(getControllerService().getGCodeContext());
 
 			gcodeContext.setPosition(workPosition);
@@ -187,7 +193,9 @@ public class G2CoreCommunicator extends AbstractTinyGCommunicator<G2CoreConfigur
 			gcodeContext.setCoordinateSystem(cs);
 			gcodeContext.setFeedrate(feedrate);
 			gcodeContext.setMachinePosition(machinePosition);
-
+			gcodeContext.setPlane(plane);
+			gcodeContext.setMotionMode(motionMode);
+			
 			if(state != null){
 				getControllerService().setState(state);
 			}
@@ -200,6 +208,8 @@ public class G2CoreCommunicator extends AbstractTinyGCommunicator<G2CoreConfigur
 
 	
 	
+
+
 	/**
 	 * Extract state from status report
 	 * @param statusReport
@@ -287,7 +297,7 @@ public class G2CoreCommunicator extends AbstractTinyGCommunicator<G2CoreConfigur
 	 * @throws GkException GkException
 	 */
 	private void handleCoordinateSystemOffsetReport(String offsetName, JsonValue jsonOffset) throws GkException{
-		EnumCoordinateSystem cs = EnumCoordinateSystem.valueOf(StringUtils.upperCase(offsetName));
+		CoordinateSystem cs = new CoordinateSystemFactory().get(StringUtils.upperCase(offsetName));
 		JsonObject offsetObj = (JsonObject) jsonOffset;
 		JsonValue xOffset = offsetObj.get("x");
 		JsonValue yOffset = offsetObj.get("y");

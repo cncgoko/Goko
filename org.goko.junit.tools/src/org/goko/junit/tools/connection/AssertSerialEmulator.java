@@ -17,7 +17,7 @@ public class AssertSerialEmulator {
 		if(CollectionUtils.isNotEmpty(buffers)){			
 			for (List<Byte> list : buffers) {
 				lastMessage = GkUtils.toString(list);
-				if(StringUtils.equals(GkUtils.toString(list), message)){
+				if(StringUtils.equalsIgnoreCase(GkUtils.toString(list), message)){
 					return;
 				}
 			}

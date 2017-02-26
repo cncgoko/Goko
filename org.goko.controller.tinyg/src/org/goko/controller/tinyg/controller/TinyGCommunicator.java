@@ -40,8 +40,11 @@ import org.goko.core.connection.serial.ISerialConnection;
 import org.goko.core.connection.serial.SerialParameter;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.ICoordinateSystem;
-import org.goko.core.gcode.rs274ngcv3.context.EnumCoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystemFactory;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
+import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.EnumUnit;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.log.GkLog;
@@ -139,7 +142,7 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	}
 
 	private void handleCoordinateSystemOffsetReport(String offsetName, JsonValue jsonOffset) throws GkException{
-		EnumCoordinateSystem cs = EnumCoordinateSystem.valueOf(StringUtils.upperCase(offsetName));
+		CoordinateSystem cs = new CoordinateSystemFactory().get(StringUtils.upperCase(offsetName));
 		JsonObject offsetObj = (JsonObject) jsonOffset;
 		JsonValue xOffset = offsetObj.get("x");
 		JsonValue yOffset = offsetObj.get("y");
@@ -232,8 +235,10 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 			Tuple6b 		 machinePosition= findMachinePosition(statusReportObject, units);
 			Speed 		 	 velocity 		= findVelocity(statusReportObject, units);
 			Speed 			 feedrate 		= findFeedrate(statusReportObject, units);
-			EnumCoordinateSystem cs 		= findCoordinateSystem(statusReportObject);
-
+			CoordinateSystem cs 			= findCoordinateSystem(statusReportObject);
+			EnumPlane 		 plane 			= findPlane(statusReportObject);
+			EnumMotionMode 	 motionMode 	= findMotionMode(statusReportObject);
+			
 			GCodeContext gcodeContext = new GCodeContext(getControllerService().getGCodeContext());
 
 			gcodeContext.setPosition(workPosition);		
@@ -242,7 +247,9 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 			gcodeContext.setUnit(units);
 			gcodeContext.setCoordinateSystem(cs);
 			gcodeContext.setFeedrate(feedrate);
-
+			gcodeContext.setPlane(plane);
+			gcodeContext.setMotionMode(motionMode);
+			
 			if(state != null){
 				getControllerService().setState(state);
 			}
