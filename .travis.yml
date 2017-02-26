@@ -8,7 +8,7 @@ env:
    - secure: "mxlkRS44IBexYyDHedm8FXfo7CI5nIRbqITfS+ZXwyLNN4tfPJ8CuTJH5aN+W9HFw0mlMzXmRnrN8kXV0zOWRhCYNMrS4k2DuNu8qX5ZiGftg+YxVNhaY+1+U6HVDT7B3+hPdWgBNSvfuBwyQGQSur8tQpLiV0ttIWRn1rzdz7mK/rIzi5WtlN6jqaMSPpwkPJ7j3uA9a8tlmAowMnAcKgGuiwZns/7nbuntQch/1xYet6lQgNBa8EsyOXS8dB215sKLF/1dAifkijLJsiY5zDE91Iw5EVHRjeWXAx8mVJQAK5SHKDHMxNmRpkHK786sEDEwqq7bh2uNCG+8N8sPF17kTEgEaPX8OowGlPTCKXUbI8Z6XtoqwutAcn7cASNMJALATYjx5mYU/NVwAEBxmuvrDI2P7pZ9lUMkvDLHB6k9gKPHo0upFW/5fhKKiU1nXmTUZzTmH6hkoIuVoIl6prPmOvCXurPWvf+1ROusk2RzqVL0vOgaQlbLrS7710S52mbNYihtKK8d+IGUm7ckbxaGz9lNUXZgabaTd4d9+wiGd2Dk8w3J9n+V4O/T5mRw2Viu3CyqOIr3aN6axrHj2NtbRJW0cnEvy+HWK+ZKBQmaVCT2lYWTSNio0YM+Tsal1kpqrhQENc8qwKPyWGl4GZcMMK7aEEp2jtQKNW1TEvk="
    - TARGET: ftp://ftp.goko.fr//www/download/
    - UPDATE_FOLDER: update
-   - updateRepository: false
+   - updateRepository: true
    - updateBinaries: true
    - gokoVersion: 0.3.3
 
