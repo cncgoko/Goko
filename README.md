@@ -30,6 +30,6 @@ You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-
  * MSG display in Digital Read Out for TinyG andd G2 board,
 
 **Fixed**
- * Fixed wrong handling of coordinate system (both Grbl and TinyG) - `Issue #36 <https://github.com/cncgoko/Goko/issues/36>`_ ,
- * Fixed an issue where execution was not displayed in 3d view - `Issue #35 <https://github.com/cncgoko/Goko/issues/35>`_ 
+ * Fixed wrong handling of coordinate system (both Grbl and TinyG) - [Issue #36](https://github.com/cncgoko/Goko/issues/36>),
+ * Fixed an issue where execution was not displayed in 3d view - [Issue #35](https://github.com/cncgoko/Goko/issues/35>) 
  
