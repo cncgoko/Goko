@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TinyG
 Bundle-SymbolicName: org.goko.controller.tinyg;singleton:=true
-Bundle-Version: 0.3.3.qualifier
+Bundle-Version: 0.3.4.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.di;bundle-version="1.1.0",

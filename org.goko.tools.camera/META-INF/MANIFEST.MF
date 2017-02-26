@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Camera Tool
 Bundle-SymbolicName: org.goko.tools.camera;singleton:=true
-Bundle-Version: 0.3.3.qualifier
+Bundle-Version: 0.3.4.qualifier
 Bundle-ClassPath: lib/webcam-capture-0.3.10.jar,
  lib/bridj-0.6.2.jar,
  .
