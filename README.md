@@ -20,7 +20,7 @@ See [documentation](http://docs.goko.fr/)
 
 You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
 
-You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
+You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://discuss.goko.fr/)
 
 ##Changelog - Version 0.3.2 [2017-02-27]
 
