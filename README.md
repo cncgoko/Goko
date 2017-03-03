@@ -1,4 +1,4 @@
-# Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
+# Goko [![Build Status](https://travis-ci.org/cncgoko/Goko.svg?branch=master)](https://travis-ci.org/cncgoko/Goko) [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://discuss.goko.fr/)
 
 Current version  : ```0.3.3 Development branch```
 
@@ -19,7 +19,7 @@ See [documentation](http://docs.goko.fr/)
 
 You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
 
-You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://http://discuss.goko.fr/)
+You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://discuss.goko.fr/)
 
 ##Changelog - Version 0.3.2 [2017-01-14]
 
