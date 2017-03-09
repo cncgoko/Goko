@@ -22,7 +22,7 @@ You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
 
 You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://discuss.goko.fr/)
 
-##Changelog - Version 0.3.2 [2017-02-27]
+##Changelog - Version 0.3.3 [2017-02-27]
 
 **Added**
  * G2 Core support,
