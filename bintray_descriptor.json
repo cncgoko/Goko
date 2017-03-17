@@ -6,17 +6,17 @@
     },
 
     "version": {
-        "name": "0.3.3",
-        "desc": "Goko v0.3.3",
+        "name": "0.3.4",
+        "desc": "Goko v0.3.4",
         "released": "2017-02-26",
         "gpgSign": false
     },
 
     "files":
         [
-        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(goko-0.3.3.*\.zip)", "uploadPattern": "$1",
+        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(goko-0.3.4.*\.zip)", "uploadPattern": "$1",
         "matrixParams": {
-            "override": 1 }
+            "override": 0 }
         }
         ],
     "publish": false
