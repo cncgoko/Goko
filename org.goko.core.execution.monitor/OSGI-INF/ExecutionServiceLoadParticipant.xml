@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.core.execution.monitor.loadparticipant">
    <implementation class="org.goko.core.execution.monitor.io.ExecutionServiceLoadParticipant"/>
-   <service>
-      <provide interface="org.goko.core.workspace.service.IProjectLoadParticipant"/>
-   </service>
    <reference bind="setXmlPersistenceService" cardinality="1..1" interface="org.goko.core.common.io.xml.IXmlPersistenceService" name="IXmlPersistenceService" policy="static"/>
    <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
    <reference bind="setGcodeRepository" cardinality="1..1" interface="org.goko.core.gcode.service.IGCodeProviderRepository" name="IGCodeProviderRepository" policy="static"/>

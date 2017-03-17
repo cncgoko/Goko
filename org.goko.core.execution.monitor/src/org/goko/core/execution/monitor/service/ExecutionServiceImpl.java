@@ -106,7 +106,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	 */
 	@Override
 	public void startService() throws GkException {		
-		
+		LOG.info("Started ExecutionServiceImpl . instance is ["+this+"]");
 
 	}
 	/** (inheritDoc)

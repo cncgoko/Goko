@@ -63,7 +63,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	public RS274NGCV3JoglService() {
 		this.lstContextProvider = new GCodeContextProviderLinkedList();
 		this.cacheRenderer = new CacheByKey<IGCodeProvider, RS274GCodeRenderer>();
-		this.cacheRendererByExecutionToken = new CacheByKey<IExecutionToken, RS274GCodeRenderer>();		
+		this.cacheRendererByExecutionToken = new CacheByKey<IExecutionToken, RS274GCodeRenderer>();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -80,6 +80,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	public void startService() throws GkException {				
 		CoordinateSystemSetRenderer csrenderer = new CoordinateSystemSetRenderer();
 		csrenderer.setAdapter(coordinateSystemAdapter);
+		rs274Service.addListener(this);
 		Activator.getJoglViewerService().addRenderer(csrenderer);		
 	}
 

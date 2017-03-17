@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lI1gcP72EeOf-uPkbeZVyA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_UgJiAP8ZEeOZbpDQ7wgKzQ" featurename="commands" parentElementId="goko.application" positionInList="">
-    <elements xsi:type="commands:Command" xmi:id="_YE9skP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.tools.serial.jssc.toolbar.connect.command" commandName="Connect to Serial port" description="Description"/>
-    <elements xsi:type="commands:Command" xmi:id="_g5PloP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.tools.serial.jssc.toolbar.disconnect.command" commandName="Disconnect from Serial port"/>
-    <elements xsi:type="commands:Command" xmi:id="_OwalgAIuEeSwg8sHuXwnow" elementId="org.goko.tools.serial.jssc.toolbar.settings.command" commandName="Serial connection settings" description="Open serial connection settings page">
+    <elements xsi:type="commands:Command" xmi:id="_YE9skP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.tools.serial.jssc.toolbar.connect.command" commandName="Connect to Serial port" description="Description" category="_VPR8UAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_g5PloP8ZEeOZbpDQ7wgKzQ" elementId="org.goko.tools.serial.jssc.toolbar.disconnect.command" commandName="Disconnect from Serial port" category="_VPR8UAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_OwalgAIuEeSwg8sHuXwnow" elementId="org.goko.tools.serial.jssc.toolbar.settings.command" commandName="Serial connection settings" description="Open serial connection settings page" category="_VPR8UAH6EeeZSvWBWfFcHg">
       <parameters xmi:id="_QWnbMF7cEeSjT6_mc7-mKQ" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
     </elements>
-    <elements xsi:type="commands:Command" xmi:id="_qeJGQLS_EeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.command.lockscroll" commandName="Enable console"/>
-    <elements xsi:type="commands:Command" xmi:id="_MVQ8QLTBEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.command.clearconsole" commandName="Clear console"/>
-    <elements xsi:type="commands:Command" xmi:id="_zxt4gLTBEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.command.lockconsolescroll" commandName="Lock console scroll"/>
-    <elements xsi:type="commands:Command" xmi:id="_YOt-UMglEeaJFo0lWdNPQg" elementId="org.goko.tools.serial.jssc.command.serialconsolepreferences" commandName="Serial console preferences">
+    <elements xsi:type="commands:Command" xmi:id="_qeJGQLS_EeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.command.lockscroll" commandName="Enable console" category="_RC4NUAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_MVQ8QLTBEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.command.clearconsole" commandName="Clear console" category="_RC4NUAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_zxt4gLTBEeWKMfEVt-PchA" elementId="org.goko.tools.serial.jssc.command.lockconsolescroll" commandName="Lock console scroll" category="_RC4NUAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_YOt-UMglEeaJFo0lWdNPQg" elementId="org.goko.tools.serial.jssc.command.serialconsolepreferences" commandName="Serial console preferences" category="_RC4NUAH6EeeZSvWBWfFcHg">
       <parameters xmi:id="_bCTgQMglEeaJFo0lWdNPQg" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
     </elements>
   </fragments>
@@ -54,5 +54,9 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sBFA0Dp6EeWfb7Pq7VqslQ" featurename="children" parentElementId="goko.trimbar.bottom">
     <elements xsi:type="menu:ToolControl" xmi:id="_XOo5gHNBEeS68rr8iXoRPQ" elementId="org.goko.tools.serial.jssc.toolcontrol.2" contributionURI="bundleclass://org.goko.tools.serial.jssc/org.goko.tools.serial.jssc.toolbar.control.JsscSerialPortConnectionState"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_bexkcAH6EeeZSvWBWfFcHg" featurename="categories" parentElementId="goko.application">
+    <elements xsi:type="commands:Category" xmi:id="_VPR8UAH6EeeZSvWBWfFcHg" elementId="org.goko.tools.serial.jssc.category.serial" name="Serial"/>
+    <elements xsi:type="commands:Category" xmi:id="_RC4NUAH6EeeZSvWBWfFcHg" elementId="org.goko.tools.serial.jssc.category.console" name="Serial console"/>
   </fragments>
 </fragment:ModelFragments>

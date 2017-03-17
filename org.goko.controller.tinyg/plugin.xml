@@ -28,7 +28,7 @@
    </extension>
    <extension
          id="id1"
-         point="org.eclipse.e4.workbench.model">
+         point="org.goko.core.ui.e4.model">
       <fragment
             apply="always"
             targetBoard="tinyg.v097"

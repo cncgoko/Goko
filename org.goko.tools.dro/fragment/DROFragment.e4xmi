@@ -11,11 +11,14 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1hJzAD8lEeOV84c-W_LF1A" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_YHJpUFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.command.dropreferences" commandName="DROPreferences" description="Open DRO preferences page">
+    <elements xsi:type="commands:Command" xmi:id="_YHJpUFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.command.dropreferences" commandName="DRO Preferences" description="Open DRO preferences page" category="_5_mHcAQ0Eeeci8K8qIYGLg">
       <parameters xmi:id="_b9K4oFrsEeSeFYUQtBIr9A" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_IThF0D8mEeOV84c-W_LF1A" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_W2ocoFrsEeSeFYUQtBIr9A" elementId="org.goko.tools.dro.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_YHJpUFrsEeSeFYUQtBIr9A"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4oULcAQ0Eeeci8K8qIYGLg" featurename="categories" parentElementId="goko.application">
+    <elements xsi:type="commands:Category" xmi:id="_5_mHcAQ0Eeeci8K8qIYGLg" elementId="org.goko.tools.dro.category.digitalreadout" name="Digital Read Out"/>
   </fragments>
 </fragment:ModelFragments>

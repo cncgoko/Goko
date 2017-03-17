@@ -10,15 +10,20 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_AuQ98PPLEeOJp_-s_mlAUA" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_CCEIIPPLEeOJp_-s_mlAUA" elementId="org.goko.controller.grbl.v08.command.configuration" commandName="Grbl Settings" description="Grbl Settings Display"/>
-    <elements xsi:type="commands:Command" xmi:id="_6u_OAN4oEeSgkc4P43h1Kw" elementId="org.goko.controller.grbl.v08.command.toggleActivePolling" commandName="Toggle Active Polling"/>
-    <elements xsi:type="commands:Command" xmi:id="_gBNqYAL0EeWNAc6kezL54A" elementId="org.goko.controller.grbl.v08.command.toggleCheckMode" commandName="Toggle Check mode"/>
-    <elements xsi:type="commands:Command" xmi:id="_zdK3cAPeEeWX6eDFOGSLJw" elementId="org.goko.controller.grbl.v08.command.stateWatcher" commandName="GRBL State watcher command"/>
+    <elements xsi:type="commands:Command" xmi:id="_CCEIIPPLEeOJp_-s_mlAUA" elementId="org.goko.controller.grbl.v08.command.configuration" commandName="Grbl Settings" description="Grbl Settings Display" category="_sJUPIAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_6u_OAN4oEeSgkc4P43h1Kw" elementId="org.goko.controller.grbl.v08.command.toggleActivePolling" commandName="Toggle Active Polling" category="_sJUPIAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_gBNqYAL0EeWNAc6kezL54A" elementId="org.goko.controller.grbl.v08.command.toggleCheckMode" commandName="Toggle Check mode" category="_sJUPIAH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_zdK3cAPeEeWX6eDFOGSLJw" elementId="org.goko.controller.grbl.v08.command.stateWatcher" commandName="GRBL State watcher command" category="_sJUPIAH6EeeZSvWBWfFcHg">
+      <tags>system</tags>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_F160QPPLEeOJp_-s_mlAUA" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_HaDggPPLEeOJp_-s_mlAUA" elementId="org.goko.controller.grbl.v08.handler.openGrblSettings" contributionURI="bundleclass://org.goko.controller.grbl.v08/org.goko.controller.grbl.v08.internal.handlers.GrblConfigurationOpenHandler" command="_CCEIIPPLEeOJp_-s_mlAUA"/>
     <elements xsi:type="commands:Handler" xmi:id="_8UWpUN4oEeSgkc4P43h1Kw" elementId="org.goko.controller.grbl.v08.handler.toggleActivePolling" contributionURI="bundleclass://org.goko.controller.grbl.v08/org.goko.controller.grbl.v08.internal.handlers.GrblActivePollingHandler" command="_6u_OAN4oEeSgkc4P43h1Kw"/>
     <elements xsi:type="commands:Handler" xmi:id="_fLuz4AL0EeWNAc6kezL54A" elementId="org.goko.controller.grbl.v08.handler.toggleCheckMode" contributionURI="bundleclass://org.goko.controller.grbl.v08/org.goko.controller.grbl.v08.internal.handlers.GrblCheckModeHandler" command="_gBNqYAL0EeWNAc6kezL54A"/>
     <elements xsi:type="commands:Handler" xmi:id="_74214APUEeWX6eDFOGSLJw" elementId="org.goko.controller.grbl.v08.handler.stateupdate" contributionURI="bundleclass://org.goko.controller.grbl.v08/org.goko.controller.grbl.v08.internal.handlers.GrblStateUpdateHandler" command="_zdK3cAPeEeWX6eDFOGSLJw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_qnqPIAH6EeeZSvWBWfFcHg" featurename="categories" parentElementId="goko.application">
+    <elements xsi:type="commands:Category" xmi:id="_sJUPIAH6EeeZSvWBWfFcHg" elementId="org.goko.controller.grbl.v08.category.grbl" name="Grbl"/>
   </fragments>
 </fragment:ModelFragments>

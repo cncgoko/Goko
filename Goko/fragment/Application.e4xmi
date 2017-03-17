@@ -53,7 +53,7 @@
   <handlers xmi:id="_-NFSMN78EeSbWNQONxf66w" elementId="goko.handler.updateHandler" contributionURI="bundleclass://Goko/goko.handlers.UpdateHandler" command="_ASrswN79EeSbWNQONxf66w"/>
   <handlers xmi:id="_8XFekK-tEeWhqNE8GV2-oQ" elementId="goko.handler.toggleView" contributionURI="bundleclass://Goko/goko.handlers.ToggleViewHandler" command="_1iBEMK-tEeWhqNE8GV2-oQ"/>
   <handlers xmi:id="_EaS_EMhwEeWpu_gVhK3ZQg" elementId="goko.handler.0" contributionURI="bundleclass://Goko/goko.handlers.OnlineHelpHandler" command="_Cc_k4MhwEeWpu_gVhK3ZQg"/>
-  <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" bindingContext="_wyBcodwYEeKC274TynxXSA">
+  <bindingTables xmi:id="_wyCDsNwYEeKC274TynxXSA" elementId="org.goko.bindingtable.dialogAndWindows" bindingContext="_wyBcodwYEeKC274TynxXSA">
     <bindings xmi:id="_wyCDsdwYEeKC274TynxXSA" keySequence="M1+Q" command="_wyBcqtwYEeKC274TynxXSA"/>
     <bindings xmi:id="_9fdVsDqaEeWfb7Pq7VqslQ" elementId="goko.keybinding.0" keySequence="M1+P" command="_i52IoBAdEeOTXNaDwRiLUA"/>
   </bindingTables>
@@ -61,16 +61,21 @@
     <children xmi:id="_wyBcotwYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
     <children xmi:id="_wyBco9wYEeKC274TynxXSA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
-  <commands xmi:id="_wyBcqtwYEeKC274TynxXSA" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>
-  <commands xmi:id="_wyCDstwYEeKC274TynxXSA" elementId="Goko.open" commandName="openCommand"/>
-  <commands xmi:id="_wyCDtdwYEeKC274TynxXSA" elementId="org.eclipse.ui.file.save" commandName="saveCommand"/>
-  <commands xmi:id="_wyCDuNwYEeKC274TynxXSA" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
-  <commands xmi:id="_i52IoBAdEeOTXNaDwRiLUA" elementId="goko.command.preferences" commandName="Preferences"/>
-  <commands xmi:id="_ASrswN79EeSbWNQONxf66w" elementId="goko.command.update" commandName="Update"/>
+  <commands xmi:id="_wyBcqtwYEeKC274TynxXSA" elementId="org.eclipse.ui.file.exit" commandName="Quit" category="__hd28AH3EeeZSvWBWfFcHg"/>
+  <commands xmi:id="_wyCDstwYEeKC274TynxXSA" elementId="Goko.open" commandName="Open" category="__hd28AH3EeeZSvWBWfFcHg">
+    <tags>system</tags>
+  </commands>
+  <commands xmi:id="_wyCDtdwYEeKC274TynxXSA" elementId="org.eclipse.ui.file.save" commandName="Save" category="__hd28AH3EeeZSvWBWfFcHg">
+    <tags>system</tags>
+  </commands>
+  <commands xmi:id="_wyCDuNwYEeKC274TynxXSA" elementId="org.eclipse.ui.help.aboutAction" commandName="About" category="__hd28AH3EeeZSvWBWfFcHg"/>
+  <commands xmi:id="_i52IoBAdEeOTXNaDwRiLUA" elementId="goko.command.preferences" commandName="Preferences" category="__hd28AH3EeeZSvWBWfFcHg"/>
+  <commands xmi:id="_ASrswN79EeSbWNQONxf66w" elementId="goko.command.update" commandName="Update" category="__hd28AH3EeeZSvWBWfFcHg"/>
   <commands xmi:id="_1iBEMK-tEeWhqNE8GV2-oQ" elementId="goko.command.toggleView" commandName="toggleViewCommand">
+    <tags>system</tags>
     <parameters xmi:id="_5Jln0K-tEeWhqNE8GV2-oQ" elementId="org.goko.commands.toggleView.viewName" name="org.goko.commands.toggleView.viewName" optional="false"/>
   </commands>
-  <commands xmi:id="_Cc_k4MhwEeWpu_gVhK3ZQg" elementId="goko.command.onlinehelpcommand" commandName="Online help command"/>
+  <commands xmi:id="_Cc_k4MhwEeWpu_gVhK3ZQg" elementId="goko.command.onlinehelpcommand" commandName="Online help" category="__hd28AH3EeeZSvWBWfFcHg"/>
   <addons xmi:id="_wyBcpNwYEeKC274TynxXSA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_wyBcpdwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_wyBcptwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
@@ -78,4 +83,5 @@
   <addons xmi:id="_wyBcqNwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_wyBcqdwYEeKC274TynxXSA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_rnaFUC12EeKJg_Pk9LqbBQ" elementId="org.eclipse.e4.tools.emf.editor.addon.0" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <categories xmi:id="__hd28AH3EeeZSvWBWfFcHg" elementId="goko.category.general" name="General"/>
 </application:Application>

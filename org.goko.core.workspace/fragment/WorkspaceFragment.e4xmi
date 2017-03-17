@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_R-Gp4H9UEeWiwps-G4ndPA">
   <imports xsi:type="commands:BindingContext" xmi:id="_6lltsOrzEeW3gspDVf0Ang" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
+  <imports xsi:type="commands:Category" xmi:id="_uPRIcAQ-Eeeci8K8qIYGLg" elementId="org.goko.core.category.general"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0u0lwOnOEeWTGrnu4rwRUg" featurename="children" parentElementId="org.goko.application.menu.file.open">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_AZTP4OnPEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handledmenuitem.open.project" label="Open project" command="_4ugucOnOEeWTGrnu4rwRUg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3CzakOnOEeWTGrnu4rwRUg" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_4ugucOnOEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.command.openproject" commandName="Open project"/>
-    <elements xsi:type="commands:Command" xmi:id="_XGYyYOn8EeWTGrnu4rwRUg" elementId="org.goko.core.workspace.command.saveproject" commandName="Save project"/>
+    <elements xsi:type="commands:Command" xmi:id="_4ugucOnOEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.command.openproject" commandName="Open project" category="_uPRIcAQ-Eeeci8K8qIYGLg"/>
+    <elements xsi:type="commands:Command" xmi:id="_XGYyYOn8EeWTGrnu4rwRUg" elementId="org.goko.core.workspace.command.saveproject" commandName="Save project" category="_uPRIcAQ-Eeeci8K8qIYGLg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_73fRkOnOEeWTGrnu4rwRUg" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_9X57cOnOEeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handler.0" contributionURI="bundleclass://org.goko.core.workspace/org.goko.core.workspace.handlers.OpenProjectHandler" command="_4ugucOnOEeWTGrnu4rwRUg"/>
@@ -18,11 +19,9 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_R1VIcOn8EeWTGrnu4rwRUg" featurename="children" parentElementId="org.goko.core.save.menu">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_UNrf4On8EeWTGrnu4rwRUg" elementId="org.goko.core.workspace.handledmenuitem.saveproject" label="Save project" command="_XGYyYOn8EeWTGrnu4rwRUg"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_yeH1IOrkEeW3gspDVf0Ang" featurename="bindingTables" parentElementId="goko.application">
-    <elements xsi:type="commands:BindingTable" xmi:id="_0z9EEOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.bindingtable.0" bindingContext="_6lltsOrzEeW3gspDVf0Ang">
-      <bindings xmi:id="_1GkeEOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.keybinding.0" keySequence="M1+O" command="_4ugucOnOEeWTGrnu4rwRUg"/>
-      <bindings xmi:id="_2h_TMOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.keybinding.1" keySequence="M1+S" command="_XGYyYOn8EeWTGrnu4rwRUg"/>
-    </elements>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_yeH1IOrkEeW3gspDVf0Ang" featurename="bindings" parentElementId="org.goko.bindingtable.dialogAndWindows">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_1GkeEOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.keybinding.0" keySequence="M1+O" command="_4ugucOnOEeWTGrnu4rwRUg"/>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_2h_TMOrkEeW3gspDVf0Ang" elementId="org.goko.core.workspace.keybinding.1" keySequence="M1+S" command="_XGYyYOn8EeWTGrnu4rwRUg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_D51isO9GEeW9iIV7y2teoQ" featurename="children" parentElementId="org.goko.application.menu.file" positionInList="after:org.goko.core.handledmenuitem.newproject">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_IFBJsO9GEeW9iIV7y2teoQ" elementId="org.goko.core.workspace.handledmenuitem.save" label="Save" iconURI="platform:/plugin/org.goko.core/icons/disk-black.png" command="_XGYyYOn8EeWTGrnu4rwRUg"/>

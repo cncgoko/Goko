@@ -14,14 +14,6 @@
       </definition>
    </extension>
    <extension
-         id="org.goko.controller.g2core.fragment"
-         point="org.eclipse.e4.workbench.model">
-      <fragment
-            apply="always"
-            uri="resources/fragments/G2CoreFragment.e4xmi">
-      </fragment>
-   </extension>
-   <extension
          point="Goko.org.goko.ui.gkPreferencePage">
       <page
             class="org.goko.controller.g2core.preferences.G2CorePreferencesPage"
@@ -50,5 +42,13 @@
             class="org.goko.controller.g2core.preferences.G2CorePreferencesInitializer">
       </initializer>
    </extension>
-
+   <extension
+         id="id1"
+         point="org.goko.core.ui.e4.model">
+      <fragment
+            apply="always"
+            targetBoard="g2core.v099"
+            uri="resources/fragments/G2CoreFragment.e4xmi">
+      </fragment>
+   </extension>   
 </plugin>

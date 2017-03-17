@@ -9,7 +9,7 @@
         <children xsi:type="menu:DirectToolItem" xmi:id="_iREiIOn8EeWTGrnu4rwRUg" elementId="org.goko.core.handledtoolitem.save" label="Save" iconURI="platform:/plugin/org.goko.core/icons/disk-black.png">
           <menu xmi:id="_imagAOn8EeWTGrnu4rwRUg" elementId="org.goko.core.save.menu"/>
         </children>
-        <children xsi:type="menu:DirectToolItem" xmi:id="_DqlHoALWEeWNAc6kezL54A" elementId="org.goko.core.open.item" iconURI="platform:/plugin/org.goko.core/icons/folder-horizontal-open.png">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_DqlHoALWEeWNAc6kezL54A" elementId="org.goko.core.open.item" label="Open" iconURI="platform:/plugin/org.goko.core/icons/folder-horizontal-open.png">
           <menu xmi:id="_ELe1QALWEeWNAc6kezL54A" elementId="org.goko.core.open.menu">
             <children xsi:type="menu:MenuSeparator" xmi:id="_hNluMKQnEeWPNZ1DqEcbWw" elementId="org.goko.core.menuseparator.0"/>
           </menu>
@@ -18,11 +18,10 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8sy2IALVEeWNAc6kezL54A" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_92VREALVEeWNAc6kezL54A" elementId="org.goko.core.open.menu.command" commandName="Open command"/>
-    <elements xsi:type="commands:Command" xmi:id="_SLRO0A-YEeWArr9ccak6ZA" elementId="org.goko.core.command.preferences" commandName="Preferences"/>
-    <elements xsi:type="commands:Command" xmi:id="_FJ5pkEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.command.controller.configuration.export" commandName="Export controller configuration"/>
-    <elements xsi:type="commands:Command" xmi:id="_tXXzEEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.command.controller.configuration.import" commandName="Import controller configuration"/>
-    <elements xsi:type="commands:Command" xmi:id="_nQ6PMKI9EeWFq9L9la3C_w" elementId="org.goko.core.command.newproject" commandName="New project"/>
+    <elements xsi:type="commands:Command" xmi:id="_SLRO0A-YEeWArr9ccak6ZA" elementId="org.goko.core.command.preferences" commandName="Preferences" category="_CN4IwAQ7Eeeci8K8qIYGLg"/>
+    <elements xsi:type="commands:Command" xmi:id="_FJ5pkEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.command.controller.configuration.export" commandName="Export controller configuration" category="_CN4IwAQ7Eeeci8K8qIYGLg"/>
+    <elements xsi:type="commands:Command" xmi:id="_tXXzEEtJEeWoH66P5Rv4Fg" elementId="org.goko.core.command.controller.configuration.import" commandName="Import controller configuration" category="_CN4IwAQ7Eeeci8K8qIYGLg"/>
+    <elements xsi:type="commands:Command" xmi:id="_nQ6PMKI9EeWFq9L9la3C_w" elementId="org.goko.core.command.newproject" commandName="New project" category="_CN4IwAQ7Eeeci8K8qIYGLg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VC_p4A-YEeWArr9ccak6ZA" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_XWYo0A-YEeWArr9ccak6ZA" elementId="org.goko.core.handler.preferences" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_SLRO0A-YEeWArr9ccak6ZA"/>
@@ -40,15 +39,12 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VgUEwKSVEeWtZ4gPa6z3WA" featurename="addons" parentElementId="goko.application">
     <elements xsi:type="application:Addon" xmi:id="_XMeEkKSVEeWtZ4gPa6z3WA" elementId="org.goko.core.addon.projectNameTitleUpdater" contributionURI="bundleclass://org.goko.core/org.goko.common.addons.ProjectNameTitleUpdater"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p40N8KSgEeWtZ4gPa6z3WA" featurename="bindingTables" parentElementId="goko.application">
-    <elements xsi:type="commands:BindingTable" xmi:id="_se-X4KSgEeWtZ4gPa6z3WA" elementId="org.goko.core.bindingtable.corebindings" bindingContext="_pDCcgKSgEeWtZ4gPa6z3WA">
-      <bindings xmi:id="_svm04KSgEeWtZ4gPa6z3WA" elementId="org.goko.core.keybinding.0" keySequence="M1+S"/>
-      <bindings xmi:id="_jpLmcKShEeWtZ4gPa6z3WA" elementId="org.goko.core.keybinding.1" keySequence="M1+O"/>
-    </elements>
-  </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_p6ltkKS2EeWtZ4gPa6z3WA" featurename="children" parentElementId="org.goko.application.menu.file" positionInList="before:org.goko.application.menu.file.quitseparator">
     <elements xsi:type="menu:Menu" xmi:id="_MtuEUOnOEeWTGrnu4rwRUg" elementId="org.goko.application.menu.file.open" label="Open" iconURI="platform:/plugin/org.goko.core/icons/folder-horizontal-open.png"/>
     <elements xsi:type="menu:Menu" xmi:id="_nSGisO9EEeW9iIV7y2teoQ" elementId="org.goko.application.menu.file.save" label="Save" iconURI="platform:/plugin/org.goko.core/icons/disk-black.png"/>
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_unwnUKS2EeWtZ4gPa6z3WA" elementId="org.goko.core.handledmenuitem.newproject" label="New project" iconURI="platform:/plugin/org.goko.core/icons/document.png" command="_nQ6PMKI9EeWFq9L9la3C_w"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_AyqH8AQ7Eeeci8K8qIYGLg" featurename="categories" parentElementId="goko.application">
+    <elements xsi:type="commands:Category" xmi:id="_CN4IwAQ7Eeeci8K8qIYGLg" elementId="org.goko.core.category.general" name="General"/>
   </fragments>
 </fragment:ModelFragments>

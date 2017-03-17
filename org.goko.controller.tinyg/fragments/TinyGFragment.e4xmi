@@ -9,11 +9,15 @@
     <elements xsi:type="commands:Handler" xmi:id="_JrXgcCwjEeaA7e_qoVp7ug" elementId="org.goko.controller.tinyg.handler.0" contributionURI="bundleclass://org.goko.controller.tinyg/org.goko.controller.tinyg.handlers.TinyGConfigurationWatcherHandler" command="_K-cR4CwjEeaA7e_qoVp7ug"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ibiiEAymEeOcDqoQnBHULw" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_kVVVQAymEeOcDqoQnBHULw" elementId="goko.tinyg.command.configuration" commandName="TinyG Settings" description="TinyG"/>
-    <elements xsi:type="commands:Command" xmi:id="_9euI0AzYEeOTG-9JmiFUsg" elementId="org.goko.controller.tinyg.commands.configuration.refresh" commandName="Refresh configuration"/>
-    <elements xsi:type="commands:Command" xmi:id="_73dKQIeqEeSwBuc_3mnfwA" elementId="org.goko.controller.tinyg.command.enablePlannerBufferUse" commandName="Enable TinyG Planner Buffer control" description="TinyG Planner Buffer control"/>
-    <elements xsi:type="commands:Command" xmi:id="_nwF3IF71EeWEkYW2d9NzSQ" elementId="org.goko.controller.tinyg.command.stateWatcher" commandName="TinyG State watcher command"/>
-    <elements xsi:type="commands:Command" xmi:id="_K-cR4CwjEeaA7e_qoVp7ug" elementId="org.goko.controller.tinyg.command.tinygconfigurationwatcher" commandName="TinyG Configuration watcher"/>
+    <elements xsi:type="commands:Command" xmi:id="_kVVVQAymEeOcDqoQnBHULw" elementId="goko.tinyg.command.configuration" commandName="TinyG Settings" description="TinyG" category="_4UFi4AH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_9euI0AzYEeOTG-9JmiFUsg" elementId="org.goko.controller.tinyg.commands.configuration.refresh" commandName="Refresh configuration" category="_4UFi4AH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_73dKQIeqEeSwBuc_3mnfwA" elementId="org.goko.controller.tinyg.command.enablePlannerBufferUse" commandName="Enable TinyG Planner Buffer control" description="TinyG Planner Buffer control" category="_4UFi4AH6EeeZSvWBWfFcHg"/>
+    <elements xsi:type="commands:Command" xmi:id="_nwF3IF71EeWEkYW2d9NzSQ" elementId="org.goko.controller.tinyg.command.stateWatcher" commandName="TinyG State watcher command">
+      <tags>system</tags>
+    </elements>
+    <elements xsi:type="commands:Command" xmi:id="_K-cR4CwjEeaA7e_qoVp7ug" elementId="org.goko.controller.tinyg.command.tinygconfigurationwatcher" commandName="TinyG Configuration watcher">
+      <tags>system</tags>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_iIuDkNVjEeOx56hryHQKyQ" featurename="children" parentElementId="goko.menu.tools" positionInList="">
     <elements xsi:type="menu:Menu" xmi:id="_lbeNwNVjEeOx56hryHQKyQ" elementId="org.goko.controller.tinyg.menu.0" label="TinyG">
@@ -21,5 +25,8 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_mxv70IeqEeSwBuc_3mnfwA" elementId="org.goko.controller.tinyg.handledmenuitem.enablePlannerBufferControl" label="Planner buffer control" type="Check" command="_73dKQIeqEeSwBuc_3mnfwA"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_BH_fYAxGEeOHAtsV431cHw" elementId="goko.menu.tools.tinyg.settings" label="Configuration" command="_kVVVQAymEeOcDqoQnBHULw"/>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2-EyMAH6EeeZSvWBWfFcHg" featurename="categories" parentElementId="goko.application">
+    <elements xsi:type="commands:Category" xmi:id="_4UFi4AH6EeeZSvWBWfFcHg" elementId="org.goko.controller.tinyg.category.tinyg" name="TinyG"/>
   </fragments>
 </fragment:ModelFragments>

@@ -2,7 +2,7 @@
 <plugin>
    <extension-point id="org.goko.ui.gkPreferencePage" name="org.goko.ui.gkPreferencePage" schema="schema/org.goko.ui.gkPreferencePage.exsd"/>
    <extension-point id="org.goko.ui.gkPreferenceStoreProvider" name="org.goko.ui.gkPreferenceStoreProvider" schema="schema/org.goko.ui.gkPreferenceStoreProvider.exsd"/>
-
+   
    <extension
          id="product"
          point="org.eclipse.core.runtime.products">
@@ -29,6 +29,10 @@
                name="lifeCycleURI"
                value="bundleclass://Goko/goko.GokoLifeCycleManager">
          </property>
+         <property
+               name="modelResourceHandler"
+               value="bundleclass://org.goko.core/org.goko.common.application.GokoResourceHandler">
+         </property>         
       </product>
    </extension>   
    <extension
@@ -49,6 +53,11 @@
             class="org.goko.preferences.units.GokoUpdatesPreferences"
             id="Goko.preferencePages.general.updates"
             name="Updates">
+      </page>
+      <page
+            class="org.goko.preferences.keys.KeysPreferencePage"
+            id="Goko.page3"
+            name="Keys">
       </page>
    </extension>
    <extension

@@ -12,6 +12,9 @@
     <elements xsi:type="commands:Handler" xmi:id="_RQjAMO65EeW79p2f7vJRqA" elementId="org.goko.log.ui.handler.0" contributionURI="bundleclass://org.goko.log.ui/org.goko.log.part.handlers.ClearLogHandler" command="_P4FYcO65EeW79p2f7vJRqA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Nh3vAO65EeW79p2f7vJRqA" featurename="commands" parentElementId="goko.application">
-    <elements xsi:type="commands:Command" xmi:id="_P4FYcO65EeW79p2f7vJRqA" elementId="org.goko.log.ui.command.clearlog" commandName="Clear log"/>
+    <elements xsi:type="commands:Command" xmi:id="_P4FYcO65EeW79p2f7vJRqA" elementId="org.goko.log.ui.command.clearlog" commandName="Clear log" category="_CPkZkAQ1Eeeci8K8qIYGLg"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BBn_wAQ1Eeeci8K8qIYGLg" featurename="categories" parentElementId="goko.applications">
+    <elements xsi:type="commands:Category" xmi:id="_CPkZkAQ1Eeeci8K8qIYGLg" elementId="org.goko.log.ui.category.problemsview" name="Problems view"/>
   </fragments>
 </fragment:ModelFragments>

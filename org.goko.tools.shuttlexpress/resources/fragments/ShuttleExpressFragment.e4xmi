@@ -10,96 +10,94 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_dv1YkAkqEeaRWvu7LUfYSg" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_3RcKkAkqEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.handler.0" contributionURI="bundleclass://org.goko.tools.shuttlexpress/org.goko.tools.shuttlxpress.handlers.ShuttleXpressHandler" command="_Z8d0oAkqEeaRWvu7LUfYSg"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7W_qsAkqEeaRWvu7LUfYSg" featurename="bindingTables" parentElementId="goko.application">
-    <elements xsi:type="commands:BindingTable" xmi:id="_8Gl7oAkqEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.bindingtable.0" bindingContext="_MhjusAkqEeaRWvu7LUfYSg">
-      <bindings xmi:id="_oxREsAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.8" keySequence="M1+M2+M3+X" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_sAxtoAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.15" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_7NAAMAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.28" name="org.goko.tools.shuttlexpress.parameter.offset" value="-7"/>
-      </bindings>
-      <bindings xmi:id="_pGREUAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.9" keySequence="M1+M2+M3+C" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_t0VV8Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.16" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_7AJ3AAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.27" name="org.goko.tools.shuttlexpress.parameter.offset" value="-6"/>
-      </bindings>
-      <bindings xmi:id="_pRPlQAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.10" keySequence="M1+M2+M3+V" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_uthAsAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.17" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_605pQAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.26" name="org.goko.tools.shuttlexpress.parameter.offset" value="-5"/>
-      </bindings>
-      <bindings xmi:id="_petZgAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.11" keySequence="M1+M2+M3+B" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_vko18Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.18" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_6nKvQAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.25" name="org.goko.tools.shuttlexpress.parameter.offset" value="-4"/>
-      </bindings>
-      <bindings xmi:id="_ppOncAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.12" keySequence="M1+M2+M3+N" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_v82hoAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.19" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_6Ze4kAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.24" name="org.goko.tools.shuttlexpress.parameter.offset" value="-3"/>
-      </bindings>
-      <bindings xmi:id="_p0li4Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.13" keySequence="M1+M2+M3+J" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_wIXOEAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.20" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_6L-BAAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.23" name="org.goko.tools.shuttlexpress.parameter.offset" value="-2"/>
-      </bindings>
-      <bindings xmi:id="_qnC6kAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.14" keySequence="M1+M2+M3+H" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_wVVTEAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.21" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_597lAAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.22" name="org.goko.tools.shuttlexpress.parameter.offset" value="-1"/>
-      </bindings>
-      <bindings xmi:id="_iyxF8Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.7" keySequence="M1+M2+M3+G" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_kglSoAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.14" name="org.goko.tools.shuttlexpress.parameter.action" value="stop"/>
-      </bindings>
-      <bindings xmi:id="_9GerUAkqEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.0" keySequence="M1+M2+M3+F" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_kQz80AkrEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.0" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_HrqvEAkwEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.1" name="org.goko.tools.shuttlexpress.parameter.offset" value="1"/>
-      </bindings>
-      <bindings xmi:id="_YXw8IAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.1" keySequence="M1+M2+M3+D" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_dvvtcAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.2" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_d0LhgAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.3" name="org.goko.tools.shuttlexpress.parameter.offset" value="2"/>
-      </bindings>
-      <bindings xmi:id="_kkafMAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.2" keySequence="M1+M2+M3+E" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_utXsMAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.4" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_uutwAAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.5" name="org.goko.tools.shuttlexpress.parameter.offset" value="3"/>
-      </bindings>
-      <bindings xmi:id="_kxOzMAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.3" keySequence="M1+M2+M3+R" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_u6Q4sAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.6" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_u7dLgAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.7" name="org.goko.tools.shuttlexpress.parameter.offset" value="4"/>
-      </bindings>
-      <bindings xmi:id="_k9g7sAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.4" keySequence="M1+M2+M3+T" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_vF3EsAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.8" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_vHHo8Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.9" name="org.goko.tools.shuttlexpress.parameter.offset" value="5"/>
-      </bindings>
-      <bindings xmi:id="_lKUooAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.5" keySequence="M1+M2+M3+Y" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_vRo24Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.10" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_vS0ioAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.11" name="org.goko.tools.shuttlexpress.parameter.offset" value="6"/>
-      </bindings>
-      <bindings xmi:id="_lswAQAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.6" keySequence="M1+M2+M3+U" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_vd_Q0Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.12" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
-        <parameters xmi:id="_vfhh4Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.13" name="org.goko.tools.shuttlexpress.parameter.offset" value="7"/>
-      </bindings>
-      <bindings xmi:id="_Sq1tMAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.15" keySequence="M1+M2+M3+I" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_VRXqkAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.29" name="org.goko.tools.shuttlexpress.parameter.action" value="preciseJog"/>
-        <parameters xmi:id="_VspRUAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.30" name="org.goko.tools.shuttlexpress.parameter.offset" value="-1"/>
-      </bindings>
-      <bindings xmi:id="_Yp9XAAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.16" keySequence="M1+M2+M3+O" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_aNSK8AlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.31" name="org.goko.tools.shuttlexpress.parameter.action" value="preciseJog"/>
-        <parameters xmi:id="_acsf8AlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.32" name="org.goko.tools.shuttlexpress.parameter.offset" value="1"/>
-      </bindings>
-      <bindings xmi:id="_dLPyEAlcEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.17" keySequence="M1+M2+M3+A" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_ekTPsAlcEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.33" name="org.goko.tools.shuttlexpress.parameter.action" value="xaxis"/>
-      </bindings>
-      <bindings xmi:id="_CW7lkAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.18" keySequence="M1+M2+M3+Q" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_DQqC4AldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.34" name="org.goko.tools.shuttlexpress.parameter.action" value="yaxis"/>
-      </bindings>
-      <bindings xmi:id="_GNBtYAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.20" keySequence="M1+M2+M3+Z" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_Gx1qoAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.36" name="org.goko.tools.shuttlexpress.parameter.action" value="aaxis"/>
-      </bindings>
-      <bindings xmi:id="_CnETUAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.19" keySequence="M1+M2+M3+W" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_EjnfkAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.35" name="org.goko.tools.shuttlexpress.parameter.action" value="zaxis"/>
-      </bindings>
-      <bindings xmi:id="_6HOQoDyKEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.21" keySequence="M1+M2+M3+L" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_FtTi8DyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.37" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.Home"/>
-      </bindings>
-      <bindings xmi:id="_PDE_gDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.22" keySequence="M1+M2+M3+K" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_Q9v8cDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.38" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.ResetZero"/>
-      </bindings>
-      <bindings xmi:id="_eaz-gDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.23" keySequence="M1+M2+M3+M" command="_Z8d0oAkqEeaRWvu7LUfYSg">
-        <parameters xmi:id="_iKpGQDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.39" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.KillAlarm"/>
-      </bindings>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7W_qsAkqEeaRWvu7LUfYSg" featurename="bindings" parentElementId="org.goko.bindingtable.dialogAndWindows">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_oxREsAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.8" keySequence="M1+M2+M3+X" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_sAxtoAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.15" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_7NAAMAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.28" name="org.goko.tools.shuttlexpress.parameter.offset" value="-7"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_pGREUAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.9" keySequence="M1+M2+M3+C" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_t0VV8Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.16" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_7AJ3AAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.27" name="org.goko.tools.shuttlexpress.parameter.offset" value="-6"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_pRPlQAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.10" keySequence="M1+M2+M3+V" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_uthAsAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.17" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_605pQAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.26" name="org.goko.tools.shuttlexpress.parameter.offset" value="-5"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_petZgAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.11" keySequence="M1+M2+M3+B" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_vko18Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.18" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_6nKvQAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.25" name="org.goko.tools.shuttlexpress.parameter.offset" value="-4"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_ppOncAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.12" keySequence="M1+M2+M3+N" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_v82hoAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.19" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_6Ze4kAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.24" name="org.goko.tools.shuttlexpress.parameter.offset" value="-3"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_p0li4Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.13" keySequence="M1+M2+M3+J" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_wIXOEAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.20" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_6L-BAAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.23" name="org.goko.tools.shuttlexpress.parameter.offset" value="-2"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_qnC6kAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.14" keySequence="M1+M2+M3+H" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_wVVTEAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.21" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_597lAAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.22" name="org.goko.tools.shuttlexpress.parameter.offset" value="-1"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_iyxF8Ak1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.7" keySequence="M1+M2+M3+G" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_kglSoAk1EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.14" name="org.goko.tools.shuttlexpress.parameter.action" value="stop"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_9GerUAkqEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.0" keySequence="M1+M2+M3+F" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_kQz80AkrEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.0" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_HrqvEAkwEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.1" name="org.goko.tools.shuttlexpress.parameter.offset" value="1"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_YXw8IAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.1" keySequence="M1+M2+M3+D" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_dvvtcAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.2" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_d0LhgAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.3" name="org.goko.tools.shuttlexpress.parameter.offset" value="2"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_kkafMAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.2" keySequence="M1+M2+M3+E" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_utXsMAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.4" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_uutwAAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.5" name="org.goko.tools.shuttlexpress.parameter.offset" value="3"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_kxOzMAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.3" keySequence="M1+M2+M3+R" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_u6Q4sAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.6" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_u7dLgAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.7" name="org.goko.tools.shuttlexpress.parameter.offset" value="4"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_k9g7sAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.4" keySequence="M1+M2+M3+T" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_vF3EsAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.8" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_vHHo8Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.9" name="org.goko.tools.shuttlexpress.parameter.offset" value="5"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_lKUooAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.5" keySequence="M1+M2+M3+Y" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_vRo24Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.10" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_vS0ioAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.11" name="org.goko.tools.shuttlexpress.parameter.offset" value="6"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_lswAQAk0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.6" keySequence="M1+M2+M3+U" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_vd_Q0Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.12" name="org.goko.tools.shuttlexpress.parameter.action" value="rapidJog"/>
+      <parameters xmi:id="_vfhh4Ak0EeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.13" name="org.goko.tools.shuttlexpress.parameter.offset" value="7"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_Sq1tMAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.15" keySequence="M1+M2+M3+I" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_VRXqkAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.29" name="org.goko.tools.shuttlexpress.parameter.action" value="preciseJog"/>
+      <parameters xmi:id="_VspRUAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.30" name="org.goko.tools.shuttlexpress.parameter.offset" value="-1"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_Yp9XAAlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.16" keySequence="M1+M2+M3+O" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_aNSK8AlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.31" name="org.goko.tools.shuttlexpress.parameter.action" value="preciseJog"/>
+      <parameters xmi:id="_acsf8AlCEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.32" name="org.goko.tools.shuttlexpress.parameter.offset" value="1"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_dLPyEAlcEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.17" keySequence="M1+M2+M3+A" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_ekTPsAlcEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.33" name="org.goko.tools.shuttlexpress.parameter.action" value="xaxis"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_CW7lkAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.18" keySequence="M1+M2+M3+Q" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_DQqC4AldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.34" name="org.goko.tools.shuttlexpress.parameter.action" value="yaxis"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_GNBtYAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.20" keySequence="M1+M2+M3+Z" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_Gx1qoAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.36" name="org.goko.tools.shuttlexpress.parameter.action" value="aaxis"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_CnETUAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.keybinding.19" keySequence="M1+M2+M3+W" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_EjnfkAldEeaRWvu7LUfYSg" elementId="org.goko.tools.shuttlexpress.parameter.35" name="org.goko.tools.shuttlexpress.parameter.action" value="zaxis"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_6HOQoDyKEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.21" keySequence="M1+M2+M3+L" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_FtTi8DyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.37" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.Home"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_PDE_gDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.22" keySequence="M1+M2+M3+K" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_Q9v8cDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.38" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.ResetZero"/>
+    </elements>
+    <elements xsi:type="commands:KeyBinding" xmi:id="_eaz-gDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.keybinding.23" keySequence="M1+M2+M3+M" command="_Z8d0oAkqEeaRWvu7LUfYSg">
+      <parameters xmi:id="_iKpGQDyLEeapNcneX0oQYA" elementId="org.goko.tools.shuttlexpress.parameter.39" name="org.goko.tools.shuttlexpress.parameter.action" value="GkDefaultControllerAction.KillAlarm"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>

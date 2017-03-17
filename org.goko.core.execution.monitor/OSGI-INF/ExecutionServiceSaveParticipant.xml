@@ -2,9 +2,6 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" immediate="true" name="org.goko.core.execution.monitor.saveparticipant">
    <implementation class="org.goko.core.execution.monitor.io.ExecutionServiceSaveParticipant"/>
    <reference bind="setXmlPersistenceService" cardinality="1..1" interface="org.goko.core.common.io.xml.IXmlPersistenceService" name="IXmlPersistenceService" policy="static"/>
-   <service>
-      <provide interface="org.goko.core.workspace.service.IProjectSaveParticipant"/>
-   </service>
    <reference bind="setExecutionService" cardinality="1..1" interface="org.goko.core.gcode.service.IExecutionService" name="IExecutionService" policy="static"/>
    <reference bind="setMapperService" cardinality="1..1" interface="org.goko.core.workspace.service.IMapperService" name="IMapperService" policy="static"/>
 </scr:component>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
    <extension-point id="featureset.model" name="model" schema="schema/featureset.model.exsd"/>
+   <extension-point id="ui.e4.model" name="Goko E4 model" schema="schema/org.goko.ui.e4.model.exsd"/>
 
    <extension
          id="org.goko.core.fragment"
