@@ -2,7 +2,7 @@
 
 Current version  : ```0.3.3```
 
-##Description
+## Description
 
 Goko is a Java based GCode sender and CNC control software. It can be used to control a controller board based CNC machine. 
 
@@ -12,17 +12,17 @@ Supported controllers :
   * Grbl v0.9 - [doc](https://github.com/grbl/grbl/wiki)
   * Grbl v0.8c - [doc](https://github.com/grbl/grbl/wiki)
 
-##Getting started
+## Getting started
  
 See [documentation](http://docs.goko.fr/)
 
-##Report a bug
+## Report a bug
 
 You can use the [Issues tracker](https://github.com/cncgoko/Goko/issues)
 
 You can also discuss on the forum [![Discuss](https://img.shields.io/badge/goko-discuss-blue.svg)](http://discuss.goko.fr/)
 
-##Changelog - Version 0.3.3 [2017-02-27]
+## Changelog - Version 0.3.3 [2017-02-27]
 
 **Added**
  * G2 Core support,
