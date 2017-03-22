@@ -133,14 +133,19 @@ public class JsscSerialConnectionService extends AbstractGokoService implements 
 	public void disconnect() throws GkException {
 		try {
 			this.currentConnection = null;
-			if(serialPort != null){// && serialPort.isOpened()){
-				serialPort.closePort();
-			}
+			if(serialPort != null ){
+				serialPort.removeEventListener();
+				if(serialPort.isOpened()){			
+					serialPort.closePort();
+				}
+			}			
+		} catch (SerialPortException e) {
+			throw new GkTechnicalException(e);
+		}finally {
+			serialPort = null;
 			deamon.stop();
 			jsscSender.stop();
 			notifyConnectionListeners(EnumConnectionEvent.DISCONNECTED);
-		} catch (SerialPortException e) {
-			throw new GkTechnicalException(e);
 		}
 	}
 	

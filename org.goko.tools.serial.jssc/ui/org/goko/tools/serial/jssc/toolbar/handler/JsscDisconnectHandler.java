@@ -49,9 +49,11 @@ public class JsscDisconnectHandler {
 	 */
 	@Execute
 	public void execute() throws GkException{
-		connectionService.disconnect();
-
-		eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+		try{
+			connectionService.disconnect();
+		}finally{
+			eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+		}
 	}
 
 	/**
