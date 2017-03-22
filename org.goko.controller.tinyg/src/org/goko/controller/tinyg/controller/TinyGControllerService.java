@@ -224,16 +224,6 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		}
 	}
 
-
-	/** (inheritDoc)
-	 * @see org.goko.controller.tinyg.controller.ITinygControllerService#applyConfiguration(org.goko.controller.tinyg.controller.configuration.TinyGConfiguration)
-	 */
-	@Override
-	public void applyConfiguration(TinyGConfiguration cfg) throws GkException {
-		checkVerbosity();
-		getCommunicator().sendConfigurationUpdate(cfg);
-	}
-
 	/**
 	 * Initiate TinyG homing sequence
 	 * @throws GkException GkException
