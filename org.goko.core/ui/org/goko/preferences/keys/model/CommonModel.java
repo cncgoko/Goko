@@ -22,7 +22,6 @@ public class CommonModel<T extends ModelElement> extends ModelElement{
 	public void setSelectedElement(T selectedContext) {
 		T old = this.selectedElement;
 		this.selectedElement = selectedContext;
-		System.out.println("Set selected "+selectedContext);
 		getController().firePropertyChange(this, PROP_SELECTED_ELEMENT, old, selectedContext);
 	}
 

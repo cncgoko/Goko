@@ -3,9 +3,19 @@
  */
 package org.goko.preferences.keys.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.e4.ui.bindings.internal.BindingTableManager;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.commands.MBindingTable;
+import org.eclipse.e4.ui.model.application.commands.MCommand;
+import org.eclipse.e4.ui.model.application.commands.MCommandsFactory;
+import org.eclipse.e4.ui.model.application.commands.MKeyBinding;
 import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -37,8 +47,27 @@ public class KeyController{
 		
 		addSetBindingListener();
 		addSetKeySequenceListener();
+		addSetContextListener();
 	}
 	
+	public void restore(MApplication application){
+		contextModel = new ContextModel(this);
+		contextModel.init(application.getBindingContexts());
+		
+		bindingModel = new BindingModel(this);
+		bindingModel.init(application);
+		
+		tableModel = new TableModel(this);
+		tableModel.init(application.getBindingTables());
+		
+		conflictModel = new ConflictModel(this);
+		conflictModel.init();
+	}
+	/**
+	 * Register listener when the selected binding in the bindingModel changes:
+	 *  - Update selected context element
+	 *  - Update selected conflict element
+	 */
 	private void addSetBindingListener() {
 		addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
@@ -56,13 +85,32 @@ public class KeyController{
 			}
 		});
 	}
-	
+	/**
+	 * Register listener when the key sequence of the selected binding changes
+	 *   - 
+	 */
 	private void addSetKeySequenceListener() {
 		addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
 				if (BindingElement.PROP_TRIGGER.equals(event.getProperty())) {
-					updateTrigger((BindingElement) event.getSource(), (TriggerSequence) event.getOldValue(), (TriggerSequence) event.getNewValue());
-					getConflictModel().updateConflictsFor((BindingElement) event.getSource(), (TriggerSequence) event.getOldValue(), (TriggerSequence) event.getNewValue());
+					BindingElement bindingElement = (BindingElement) event.getSource();
+					updateTrigger(bindingElement, (TriggerSequence) event.getOldValue(), (TriggerSequence) event.getNewValue());
+					getConflictModel().updateConflictsFor(bindingElement, (TriggerSequence) event.getOldValue(), (TriggerSequence) event.getNewValue());
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Register listener when the context of the selected binding changes
+	 *   - 
+	 */
+	private void addSetContextListener() {
+		addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (BindingElement.PROP_CONTEXT.equals(event.getProperty())) {
+					BindingElement bindingElement = (BindingElement) event.getSource();
+					getConflictModel().updateConflictsFor(bindingElement, (ContextElement) event.getOldValue(), (ContextElement) event.getNewValue());
 				}
 			}
 		});
@@ -77,7 +125,7 @@ public class KeyController{
 		if(activeBinding == null){
 			return;
 		}
-		if(!newValue.isEmpty() && activeBinding.getContext() == null){
+		if(newValue != null && !newValue.isEmpty() && activeBinding.getContext() == null){
 			ContextElement targetContext = getContextModel().getSelectedElement();
 			if(targetContext == null){
 				targetContext = getContextModel().getRootContext();				
@@ -113,10 +161,87 @@ public class KeyController{
 
 		Object[] listeners = getEventManager().getListeners();
 		PropertyChangeEvent event = new PropertyChangeEvent(source, propId, oldVal, newVal);
-		System.out.println("    FirePropertyChange "+source+" prop:"+propId);
 		for (int i = 0; i < listeners.length; i++) {
 			((IPropertyChangeListener) listeners[i]).propertyChange(event);
 		}
+	}
+	
+	public void applyChanges(MApplication application, BindingTableManager bindingTableManager){
+		setNotifying(false);		
+		
+		removeModifiedBindings(application);
+		
+		updateModifiedBindings(application, bindingTableManager);
+		
+		setNotifying(true);
+	}
+	
+	/**
+	 * @param modifiedKeyBinding
+	 */
+	private void updateModifiedBindings(MApplication application, BindingTableManager btm) {
+		for (BindingElement be : getBindingModel().getBindings()) {			
+			Object modelObject = be.getModelObject();			
+			// Make sure we have everything we need
+			if(be.isChanged() && be.isComplete()){
+				TableElement tableElement = getTableModel().getTableByContext(be.getContext().getId());
+				
+				MBindingTable targetTable = tableElement.getModelObject(); 
+				MCommand mCommand = null;
+				String elementId = StringUtils.EMPTY;
+				String contributorURI = StringUtils.EMPTY;
+				
+				if(modelObject instanceof MKeyBinding){
+					MKeyBinding mKeyBinding = (MKeyBinding) modelObject;
+					mCommand = mKeyBinding.getCommand();
+					elementId = mKeyBinding.getElementId();
+					contributorURI = mKeyBinding.getContributorURI();
+				}else if(modelObject instanceof MCommand){				
+					mCommand = (MCommand) modelObject;
+					elementId = "kb."+mCommand.getElementId();
+					contributorURI = mCommand.getContributorURI();
+				}
+				if(mCommand != null){
+					MKeyBinding binding = MCommandsFactory.INSTANCE.createKeyBinding();				
+					
+					binding.setCommand(mCommand);					
+					binding.setElementId(elementId);
+					binding.setContributorURI(contributorURI);
+					binding.setKeySequence(be.getTrigger().format());
+					targetTable.getBindings().add(binding);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	private List<BindingElement> removeModifiedBindings(MApplication application) {
+		
+		List<BindingElement> modifiedKeyBinding = new ArrayList<>();
+		
+		for (MBindingTable mBindingTable : application.getBindingTables()) {			
+			ArrayList<MKeyBinding> localBinding = new ArrayList<>(mBindingTable.getBindings());
+			for (MKeyBinding mKeyBinding : localBinding) {				
+				MCommand command = mKeyBinding.getCommand();
+				List<String> tags = command.getTags();
+				if(!tags.contains(BindingModel.SYSTEM_COMMAND_TAG)){
+					BindingElement be = getBindingModel().getBinding(command.getElementId());
+				
+					if( CollectionUtils.isEmpty(command.getParameters()) // Ignore parametrized commands for now 
+						&& be.isChanged()){
+						// Actual remove
+						mBindingTable.getBindings().remove(mKeyBinding);
+						if(be.getTrigger() != null){
+							modifiedKeyBinding.add(be);
+						}
+					}					
+				}
+			}						
+		}
+		
+		return modifiedKeyBinding;
 	}
 
 	/**
@@ -182,6 +307,20 @@ public class KeyController{
 	 */
 	public void setConflictModel(ConflictModel conflictModel) {
 		this.conflictModel = conflictModel;
+	}
+
+	/**
+	 * @return the tableModel
+	 */
+	public TableModel getTableModel() {
+		return tableModel;
+	}
+
+	/**
+	 * @param tableModel the tableModel to set
+	 */
+	public void setTableModel(TableModel tableModel) {
+		this.tableModel = tableModel;
 	}
 	
 	

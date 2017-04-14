@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
-import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.common.utils.CacheById;
@@ -41,7 +40,6 @@ import org.goko.core.gcode.rs274ngcv3.element.StackableGCodeProviderRoot;
 import org.goko.core.gcode.rs274ngcv3.element.source.StringGCodeSource;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.InstructionFactory;
-import org.goko.core.gcode.rs274ngcv3.instruction.executiontime.InstructionTimeCalculatorFactory;
 import org.goko.core.gcode.rs274ngcv3.modifier.AbstractModifier;
 import org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener;
 import org.goko.core.gcode.rs274ngcv3.modifier.ModifierSorter;
@@ -399,28 +397,6 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	public InstructionIterator getIterator(IInstructionProvider<AbstractInstruction, InstructionSet> instructionProvider, GCodeContext baseContext) throws GkException {
 		return new InstructionIterator(instructionProvider, new GCodeContext(baseContext), this);
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.execution.IGCodeExecutionTimeService#evaluateExecutionTime(org.goko.core.gcode.element.IGCodeProvider)
-	 */
-	@Override
-	public Time evaluateExecutionTime(IGCodeProvider provider) throws GkException {
-		Time result = Time.ZERO;
-
-		InstructionTimeCalculatorFactory timeFactory = new InstructionTimeCalculatorFactory();
-		GCodeContext baseContext = new GCodeContext();
-		InstructionProvider instructions = getInstructions(baseContext, provider);
-
-		InstructionIterator iterator = getIterator(instructions, baseContext);
-
-		GCodeContext preContext = null;		
-		while(iterator.hasNext()){
-			preContext = new GCodeContext(iterator.getContext());
-			result = result.add( timeFactory.getExecutionTime(preContext, iterator.next()) );
-		}		
-		return result;
-	}
-
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeService#render(org.goko.core.gcode.element.GCodeLine)

@@ -6,6 +6,7 @@ import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.execution.ExecutionConstraint;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.StraightFeedInstruction;
@@ -17,12 +18,15 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 		super(InstructionType.STRAIGHT_FEED);
 	}
 
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.executiontime.AbstractInstructionTimeCalculator#calculateExecutionTime(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.executiontime.AbstractInstructionTimeCalculator#calculateInstructionExecutionTime(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction, org.goko.core.execution.ExecutionConstraint)
 	 */
 	@Override
-	protected Time calculateExecutionTime(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
+	public Time calculateInstructionExecutionTime(GCodeContext context, StraightFeedInstruction instruction, ExecutionConstraint constraint) throws GkException {
 		Length length = Length.ZERO;
+		Speed feedrate = context.getFeedrate();
+		Time result = Time.ZERO;
 		if(instruction != null){
 			
 			// The complete angle around the 4th axis
@@ -32,51 +36,22 @@ public class StraightFeedTimeCalculator extends AbstractInstructionTimeCalculato
 				deltaAngle = context.getA().subtract(instruction.getA());
 			}
 			
+			Tuple6b 		positionBefore 	= context.getPosition();
+			GCodeContext postContext = new GCodeContext(context);
+			instruction.apply(postContext);
+			Tuple6b 		positionAfter 	=  postContext.getPosition();
+			
+			Tuple6b delta = positionBefore.subtract(positionAfter);
+			
 			if(deltaAngle.abs().lowerThan(Angle.valueOf("0.0001", AngleUnit.DEGREE_ANGLE))){
-				length = calculateLengthLinearLine(context, instruction);
+				length = delta.length();
 			}else{				
-				length = calculateLengthRotaryLine(context, instruction);
+				length = Length.valueOf(delta.getA().value(AngleUnit.DEGREE_ANGLE), context.getUnit().getUnit());
 			}
+			result = constraint.getTravelTime(feedrate, delta);
 		}		
-
-		Speed feedrate = context.getFeedrate();
-		if(context.getFeedrate() == null || feedrate.equals(Speed.ZERO)){			
-			return Time.ZERO;
-		}
-		return length.abs().divide(feedrate);		
-	}
-
-	/**
-	 * @param context
-	 * @param instruction
-	 * @return
-	 * @throws GkException 
-	 */
-	private Length calculateLengthRotaryLine(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
-		Tuple6b 		positionBefore 	= context.getPosition();
-		GCodeContext postContext = new GCodeContext(context);
-		instruction.apply(postContext);
-		Tuple6b 		positionAfter 	=  postContext.getPosition();
 		
-		Tuple6b delta = positionBefore.subtract(positionAfter);
 		
-		return Length.valueOf(delta.getA().value(AngleUnit.DEGREE_ANGLE), context.getUnit().getUnit());
+		return result;//length.abs().divide(feedrate);		
 	}
-
-	/**
-	 * @param context
-	 * @param instruction
-	 * @return
-	 * @throws GkException 
-	 */
-	private Length calculateLengthLinearLine(GCodeContext context, StraightFeedInstruction instruction) throws GkException {
-		Tuple6b 		positionBefore 	= context.getPosition();
-		GCodeContext postContext = new GCodeContext(context);
-		instruction.apply(postContext);
-		Tuple6b 		positionAfter 	=  postContext.getPosition();
-		Tuple6b delta = positionBefore.subtract(positionAfter);
-		
-		return delta.length();
-	}
-
 }

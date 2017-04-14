@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -19,7 +18,7 @@ import org.goko.core.gcode.service.IGCodeService;
 import org.goko.core.math.BoundingTuple6b;
 
 public interface IRS274NGCService extends IGCodeService<AbstractInstruction, GCodeContext, InstructionSet>,
-										  IGCodeExecutionTimeService, IGCodeProviderRepository{
+										  IGCodeProviderRepository{
 
 	IGCodeProvider parse(String inputString) throws GkException;
 

@@ -3,6 +3,7 @@
  */
 package org.goko.preferences.keys.model;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
 import org.eclipse.e4.ui.model.application.commands.MKeyBinding;
@@ -14,7 +15,7 @@ import org.eclipse.jface.bindings.keys.ParseException;
  * @author Psyko
  * @date 23 mars 2017
  */
-public class BindingElement extends ModelElement<MKeyBinding>{
+public class BindingElement extends ModelElement<Object>{
 	public static final String PROP_TRIGGER = "trigger"; 
 	public static final String PROP_CONTEXT = "bindingContext"; 
 	public static final String PROP_CATEGORY = "category"; 
@@ -23,6 +24,7 @@ public class BindingElement extends ModelElement<MKeyBinding>{
 	private TriggerSequence trigger;
 	private ContextElement context;
 	private String category;
+	private boolean changed;
 	/**
 	 * @param controller
 	 */
@@ -39,7 +41,9 @@ public class BindingElement extends ModelElement<MKeyBinding>{
 		setDescription(StringUtils.defaultString(mCommand.getDescription()));
 		if(mCommand.getCategory() != null){
 			setCategory(mCommand.getCategory().getName());
-		}		
+		}
+		setModelObject(mCommand);
+		setChanged(false);
 	}
 	
 	public void complete(MKeyBinding mKeyBinding, ContextElement context){		
@@ -47,6 +51,7 @@ public class BindingElement extends ModelElement<MKeyBinding>{
 			setTrigger( KeySequence.getInstance(mKeyBinding.getKeySequence()) );
 			setContext(context);
 			setModelObject(mKeyBinding);
+			setChanged(false);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +66,10 @@ public class BindingElement extends ModelElement<MKeyBinding>{
 	 * @param trigger the trigger to set
 	 */
 	public void setTrigger(TriggerSequence trigger) {
-		getController().firePropertyChange(this, PROP_TRIGGER, this.trigger, this.trigger = trigger);
+		if (!ObjectUtils.equals(this.trigger, trigger)) {
+			setChanged(true);
+		}
+		getController().firePropertyChange(this, PROP_TRIGGER, this.trigger, this.trigger = trigger);		
 	}
 	/**
 	 * @return the context
@@ -73,6 +81,9 @@ public class BindingElement extends ModelElement<MKeyBinding>{
 	 * @param context the context to set
 	 */
 	public void setContext(ContextElement context) {
+		if (!ObjectUtils.equals(this.context, context)) {
+			setChanged(true);
+		}
 		getController().firePropertyChange(this, PROP_CONTEXT, this.context, this.context = context);
 	}
 	/**
@@ -94,5 +105,20 @@ public class BindingElement extends ModelElement<MKeyBinding>{
 		return getController().getConflictModel().hasConflicts(this);
 	} 
 
-	
+	public boolean isComplete(){
+		return getTrigger() != null && !getTrigger().isEmpty() && getContext() != null;		
+	}
+	/**
+	 * @return the changed
+	 */
+	public boolean isChanged() {
+		return changed;
+	}
+	/**
+	 * @param changed the changed to set
+	 */
+	public void setChanged(boolean changed) {
+		this.changed = changed;
+	}
+		
 }

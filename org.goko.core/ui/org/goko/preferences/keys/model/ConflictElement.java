@@ -41,12 +41,17 @@ public class ConflictElement extends ModelElement<MKeyBinding>{
 	}
 	
 	public void addBinding(BindingElement conflict) {
-		getConflicts().add(conflict);
-		getController().firePropertyChange(this, ConflictModel.PROP_CONFLICTS_ADD, null, conflict);
+		if(!getConflicts().contains(conflict)){
+			getConflicts().add(conflict);
+			getController().firePropertyChange(this, ConflictModel.PROP_CONFLICTS_ADD, null, conflict);
+		}
 	}
 	
 	public void removeBinding(BindingElement conflict) {
-		getConflicts().remove(conflict);
+		if(getConflicts().contains(conflict)){
+			getConflicts().remove(conflict);
+			getController().firePropertyChange(this, ConflictModel.PROP_CONFLICTS_REMOVE, null, conflict);
+		}
 	}
 
 	/**
@@ -63,6 +68,44 @@ public class ConflictElement extends ModelElement<MKeyBinding>{
 		this.key = key;
 	}
 
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((conflicts == null) ? 0 : conflicts.hashCode());
+		result = prime * result + ((key == null) ? 0 : key.hashCode());
+		return result;
+	}
+
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ConflictElement other = (ConflictElement) obj;
+		if (conflicts == null) {
+			if (other.conflicts != null)
+				return false;
+		} else if (!conflicts.equals(other.conflicts))
+			return false;
+		if (key == null) {
+			if (other.key != null)
+				return false;
+		} else if (!key.equals(other.key))
+			return false;
+		return true;
+	}
+
+	
 	
 }
 

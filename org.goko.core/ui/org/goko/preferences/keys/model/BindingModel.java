@@ -16,7 +16,7 @@ import org.eclipse.e4.ui.model.application.commands.MCommand;
  * @date 23 mars 2017
  */
 public class BindingModel extends CommonModel<BindingElement>{
-	private static final Object SYSTEM_COMMAND_TAG = "system";
+	static final Object SYSTEM_COMMAND_TAG = "system";
 	
 	public static final String PROP_BINDING_ADD = "bindingAdd"; 
 	public static final String PROP_BINDING_ELEMENT_MAP = "bindingElementMap"; 
@@ -25,7 +25,8 @@ public class BindingModel extends CommonModel<BindingElement>{
 	public static final String PROP_BINDINGS = "bindings"; 
 	public static final String PROP_CONFLICT_ELEMENT_MAP = "bindingConfictMap"; 
 		
-	private Map<String, BindingElement> bindingElementById; 
+	private Map<String, BindingElement> bindingElementById;
+	
 	/**
 	 * @param controller
 	 */

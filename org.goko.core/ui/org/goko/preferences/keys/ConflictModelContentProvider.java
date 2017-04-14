@@ -6,6 +6,7 @@ package org.goko.preferences.keys;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.goko.preferences.keys.model.BindingElement;
 import org.goko.preferences.keys.model.ConflictElement;
 import org.goko.preferences.keys.model.ConflictModel;
 
@@ -39,10 +40,10 @@ public class ConflictModelContentProvider implements IStructuredContentProvider{
 		ConflictModel cm = (ConflictModel)inputElement;
 		ConflictElement ce = cm.getSelectedElement();
 				
-		if(ce != null && CollectionUtils.size(ce.getConflicts()) > 0){
+		if(ce != null && CollectionUtils.size(ce.getConflicts()) > 1){
 			return ce.getConflicts().toArray();
 		}
-		return new ConflictElement[]{};
+		return new BindingElement[]{};
 	}
 
 }

@@ -4,7 +4,6 @@
    <service>
       <provide interface="org.goko.core.gcode.service.IGCodeService"/>
       <provide interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService"/>
-      <provide interface="org.goko.core.execution.IGCodeExecutionTimeService"/>
       <provide interface="org.goko.core.gcode.service.IGCodeProviderRepository"/>
    </service>
    <reference bind="addListener" cardinality="0..n" interface="org.goko.core.gcode.service.IGCodeProviderRepositoryListener" name="IGCodeProviderRepositoryListener" policy="dynamic"/>

@@ -8,7 +8,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.ui.bindings.internal.BindingTableManager;
 import org.eclipse.e4.ui.bindings.keys.KeyBindingDispatcher;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.commands.MBindingContext;
@@ -25,6 +27,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,6 +46,7 @@ import org.goko.preferences.keys.model.BindingElement;
 import org.goko.preferences.keys.model.BindingModel;
 import org.goko.preferences.keys.model.CommonModel;
 import org.goko.preferences.keys.model.ConflictModel;
+import org.goko.preferences.keys.model.ContextElement;
 import org.goko.preferences.keys.model.KeyController;
 import org.goko.preferences.keys.model.ModelElement;
 
@@ -56,12 +61,15 @@ public class KeysPreferencePage extends GkPreferencesPage {
 	private MApplication app;
 	@Inject
 	private KeyBindingDispatcher keyBindingDispatcher;
-
+	@Inject 
+	BindingTableManager btm;
+	
 	private Table table;
 	private TableViewer commandTableViewer;
 	private KeySequenceText keySequenceText;
 	private Table conflictTable;
 	private Collection<String> activeContexts;
+	private KeyController keyController;
 	
 	public KeysPreferencePage() {
 	}
@@ -79,12 +87,10 @@ public class KeysPreferencePage extends GkPreferencesPage {
 	 */
 	@Override
 	protected Control createContents(Composite parent) {		
-		final KeyController keyController = new KeyController();
+		keyController = new KeyController();
 		keyController.init(app);
 		List<MBindingContext> lstCtx = app.getBindingContexts();
-		for (MBindingContext mBindingContext : lstCtx) {
-			System.err.println(mBindingContext.getName());
-		}
+		
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new GridLayout(1, false));
 	
@@ -129,9 +135,24 @@ public class KeysPreferencePage extends GkPreferencesPage {
 		composite.setLayout(gl_composite);
 		
 		Button btnUnbindCommand = new Button(composite, SWT.NONE);
+		btnUnbindCommand.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				BindingElement be = keyController.getBindingModel().getSelectedElement();
+				be.setTrigger(null);
+				be.setContext(null);
+			}
+		});
+		
 		btnUnbindCommand.setText("Unbind command");
 		
 		Button btnRestoreCommand = new Button(composite, SWT.NONE);
+		btnRestoreCommand.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				
+			}
+		});
 		btnRestoreCommand.setText("Restore command");
 		
 		Composite composite_2 = new Composite(main, SWT.NONE);
@@ -231,6 +252,16 @@ public class KeysPreferencePage extends GkPreferencesPage {
 				}
 			}
 		};
+		whenComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				if(keyController.getBindingModel().getSelectedElement() != null){
+					ContextElement selectedContext = (ContextElement) ((StructuredSelection)event.getSelection()).getFirstElement();
+					keyController.getBindingModel().getSelectedElement().setContext(selectedContext);
+				}
+			}
+		});
 		keyController.addPropertyChangeListener(whenListener);
 		
 		Label label = new Label(composite_2, SWT.NONE);
@@ -291,9 +322,10 @@ public class KeysPreferencePage extends GkPreferencesPage {
 					weCare = true;
 				} else if (event.getSource() == keyController.getBindingModel().getSelectedElement()
 						&& (ModelElement.PROP_MODEL_OBJECT.equals(event.getProperty())
-						|| BindingElement.PROP_CONTEXT.equals(event.getProperty()))) {
+							|| BindingElement.PROP_TRIGGER.equals(event.getProperty())
+							|| BindingElement.PROP_CONTEXT.equals(event.getProperty()))) {
 					bindingElement = (BindingElement) event.getSource();
-					weCare = true;
+					weCare = true;					
 				}
 				if (bindingElement == null && weCare) {
 					commandNameValueLabel.setText(StringUtils.EMPTY); 
@@ -316,67 +348,103 @@ public class KeysPreferencePage extends GkPreferencesPage {
 
 			// When the model changes a property, update the viewer
 			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getSource() == keyController.getBindingModel()
-						&& CommonModel.PROP_SELECTED_ELEMENT.equals(event.getProperty())) {
+				
+				if (event.getSource() == keyController.getBindingModel() && CommonModel.PROP_SELECTED_ELEMENT.equals(event.getProperty())) {
 					Object newVal = event.getNewValue();
 					StructuredSelection structuredSelection = newVal == null ? null : new StructuredSelection(newVal);
-					commandTableViewer.setSelection(structuredSelection, true);
-				} else if (event.getSource() instanceof BindingElement
-						/*&& ModelElement.PROP_MODEL_OBJECT.equals(event.getProperty())*/) {
+					commandTableViewer.setSelection(structuredSelection, true);					
+				} else if (event.getSource() instanceof BindingElement){
 					commandTableViewer.update(event.getSource(), null);
 				} else if (BindingElement.PROP_CONFLICT.equals(event.getProperty())) {
 					commandTableViewer.update(keyController.getConflictModel().getSelectedElement().getConflicts().toArray(), null);
+					updateCommandTableViewerConflicts();
+					updateButtons();
 				} else if (BindingModel.PROP_BINDINGS.equals(event.getProperty())) {
 					commandTableViewer.refresh();
-//				} else if (BindingModel.PROP_BINDING_ADD.equals(event.getProperty())) {
-//					commandTableViewer.add(keyController.getBindingModel(), event.getNewValue());
-//				} else if (BindingModel.PROP_BINDING_REMOVE.equals(event.getProperty())) {
-//					commandTableViewer.remove(event.getNewValue());
-//				} else if (BindingModel.PROP_BINDING_FILTER.equals(event.getProperty())) {
-//					commandTableViewer.refresh();
 				}
 			}
-		};
+		};				
 		keyController.addPropertyChangeListener(tableUpdateListener);
 		
 		IPropertyChangeListener conflictsListener = new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getSource() == keyController.getConflictModel()
-						&& CommonModel.PROP_SELECTED_ELEMENT.equals(event.getProperty())) {
+				// Update the list of element in error in the main table
+				if (event.getSource() == keyController.getConflictModel() && CommonModel.PROP_SELECTED_ELEMENT.equals(event.getProperty())) {
 					if (keyController.getConflictModel().getSelectedElement() != null) {						
-						Object newVal = event.getNewValue();
+						Object newVal = event.getNewValue();						
 						StructuredSelection structuredSelection = newVal == null ? null : new StructuredSelection(newVal);
-						conflictTableViewer.setSelection(structuredSelection, true);						
-					}
-					conflictTableViewer.refresh(true);
-				} else if (ConflictModel.PROP_CONFLICTS.equals(event.getProperty())) {
-					conflictTableViewer.setInput(event.getNewValue());
-					if(keyController.getConflictModel().getSelectedElement() != null){
+						conflictTableViewer.setSelection(structuredSelection, true);
 						commandTableViewer.update(keyController.getConflictModel().getSelectedElement().getConflicts().toArray(), null);
 					}
+					conflictTableViewer.setInput(keyController.getConflictModel());
+					conflictTableViewer.refresh(true);
+				} else if (ConflictModel.PROP_CONFLICTS.equals(event.getProperty())) {
+					conflictTableViewer.setInput(keyController.getConflictModel());
+					updateCommandTableViewerConflicts();
+					updateButtons();
 				} else if (ConflictModel.PROP_CONFLICTS_ADD.equals(event.getProperty())) {
 					conflictTableViewer.add(event.getNewValue());
+					updateCommandTableViewerConflicts();
+					updateButtons();
 				} else if (ConflictModel.PROP_CONFLICTS_REMOVE.equals(event.getProperty())) {
 					conflictTableViewer.remove(event.getNewValue());
+					updateCommandTableViewerConflicts();
+					updateButtons();
 				}
 			}
+			
 		};
 		keyController.addPropertyChangeListener(conflictsListener);
+		commandNameColumn.pack();
+		categoryColumn.pack();
+		whenColumn.pack();
+		commandKeyColumn.pack();
 		return main;
 	}
 	
-//	protected void deactivateAllContexts(){
-//		activeContexts = new ArrayList<>(contextService.getActiveContextIds());
-//		for (String contextId : activeContexts) {
-//			contextService.deactivateContext(contextId);
-//			System.err.println(contextId);
-//		}		
-//	}
-//
-//	protected void activateAllContexts(){
-//		
-//		for (String contextId : activeContexts) {
-//			contextService.activateContext(contextId);
-//		}
-//	}
+	private void updateCommandTableViewerConflicts(){
+		if(keyController.getConflictModel().getSelectedElement() != null){
+			commandTableViewer.update(keyController.getConflictModel().getSelectedElement().getConflicts().toArray(), null);
+		}
+	}
+	
+	private void updateButtons(){
+		if(keyController.getConflictModel().getConflictsCount() > 0){
+			setValid(false);	
+			
+		}else{
+			setValid(true);
+		}
+	}
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#performOk()
+	 */
+	@Override
+	public boolean performOk() {
+		if(keyController != null){
+			keyController.applyChanges(app, btm);
+		}
+		return super.performOk();
+	}
+
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+	 */
+	@Override
+	protected void performDefaults() {
+		keyController.setNotifying(false);				
+		String selectedBinding = null;
+		if(keyController.getBindingModel().getSelectedElement() != null){
+			selectedBinding = keyController.getBindingModel().getSelectedElement().getId();
+		}
+		keyController.restore(app);				
+		keyController.setNotifying(true);				
+		commandTableViewer.setInput(keyController.getBindingModel());
+		
+		// Force reselection
+		if(!CollectionUtils.isEmpty(keyController.getBindingModel().getBindings()) && selectedBinding != null){
+			keyController.getBindingModel().setSelectedElement(keyController.getBindingModel().getBinding(selectedBinding));					
+		}
+		super.performDefaults();
+	}
 }

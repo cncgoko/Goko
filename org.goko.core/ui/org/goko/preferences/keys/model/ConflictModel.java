@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jface.bindings.TriggerSequence;
 
 /**
@@ -35,7 +36,13 @@ public class ConflictModel extends CommonModel<ConflictElement>{
 		return ce != null && CollectionUtils.size(ce.getConflicts()) > 1;
 	}
 
-
+	public int getConflictsCount(){
+		int count = 0;
+		for (ConflictElement ce : conflictElementByKey.values()) {
+			count += Math.max(0, CollectionUtils.size(ce.getConflicts()) - 1);
+		}
+		return count;
+	}
 	/**
 	 * @return the conflictElementByKey
 	 */
@@ -84,6 +91,30 @@ public class ConflictModel extends CommonModel<ConflictElement>{
 	}
 
 
+	public void updateConflictsFor(BindingElement source, ContextElement oldContext, ContextElement newContext) {
+		// Remove the old key
+		if(oldContext != null){
+			ConflictElementKey oldKey = new ConflictElementKey(oldContext, source.getTrigger());
+			ConflictElement ce = getConflictElement(oldKey);
+			if(ce != null){
+				ce.removeBinding(source);
+			}
+		}
+		if(newContext != null){
+			ConflictElementKey newKey = new ConflictElementKey(newContext, source.getTrigger());
+			ConflictElement ce = getConflictElement(newKey);
+			if(ce == null){
+				ce = new ConflictElement(getController());
+				ce.setKey(newKey);
+				getConflictElementByKey().put(newKey, ce);
+			}
+			ce.addBinding(source);
+			if(ObjectUtils.equals(source, getController().getBindingModel().getSelectedElement())){
+				setSelectedElement(ce);
+			}
+		}
+		getController().firePropertyChange(this, PROP_CONFLICTS, null, this);
+	}
 	/**
 	 * @param source
 	 * @param oldValue
@@ -101,8 +132,14 @@ public class ConflictModel extends CommonModel<ConflictElement>{
 		if(newValue != null && !newValue.isEmpty()){
 			ConflictElementKey newKey = new ConflictElementKey(source.getContext(), newValue);
 			ConflictElement ce = getConflictElement(newKey);
-			if(ce != null){
-				ce.addBinding(source);
+			if(ce == null){
+				ce = new ConflictElement(getController());
+				ce.setKey(newKey);
+				getConflictElementByKey().put(newKey, ce);
+			}
+			ce.addBinding(source);
+			if(ObjectUtils.equals(source, getController().getBindingModel().getSelectedElement())){
+				setSelectedElement(ce);
 			}
 		}
 		getController().firePropertyChange(this, PROP_CONFLICTS, null, this);

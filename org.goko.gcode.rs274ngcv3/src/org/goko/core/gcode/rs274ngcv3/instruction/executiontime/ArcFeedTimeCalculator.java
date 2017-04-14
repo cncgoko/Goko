@@ -3,6 +3,7 @@ package org.goko.core.gcode.rs274ngcv3.instruction.executiontime;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.Time;
+import org.goko.core.execution.ExecutionConstraint;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
@@ -14,12 +15,12 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 	public ArcFeedTimeCalculator() {
 		super(InstructionType.ARC_FEED);
 	}
-
+	
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.executiontime.AbstractInstructionTimeCalculator#calculateExecutionTime(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.executiontime.AbstractInstructionTimeCalculator#calculateInstructionExecutionTime(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction, org.goko.core.execution.ExecutionConstraint)
 	 */
 	@Override
-	protected Time calculateExecutionTime(GCodeContext context, ArcFeedInstruction instruction) throws GkException {
+	public Time calculateInstructionExecutionTime(GCodeContext context, ArcFeedInstruction instruction, ExecutionConstraint constraint) throws GkException {
 		Speed feedrate = Speed.ZERO;
 		if(context.getFeedrate() != null){
 			feedrate = context.getFeedrate();
@@ -29,7 +30,8 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 		if(feedrate.equals(Speed.ZERO)){
 			return Time.ZERO;
 		}
+		//feedrate = constraint.getMaximumFeedrate(feedrate, null);
 		Arc3b arc = InstructionUtils.getArc(context, instruction);	
-		return arc.getLength().divide(feedrate);	
+		return constraint.getTravelTime(feedrate, arc);//arc.getLength().divide(feedrate);	
 	}
 }

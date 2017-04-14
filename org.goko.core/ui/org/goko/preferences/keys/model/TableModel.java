@@ -15,7 +15,8 @@ import org.eclipse.e4.ui.model.application.commands.MBindingTable;
  */
 public class TableModel extends CommonModel<TableElement>{
 
-	private Map<String, TableElement> tableElementById; 
+	private Map<String, TableElement> tableElementById;
+	private Map<String, TableElement> tableElementByContextId; 
 	/**
 	 * @param controller
 	 */
@@ -28,7 +29,8 @@ public class TableModel extends CommonModel<TableElement>{
 		for (MBindingTable mBindingTable : lstTable) {
 			TableElement te = new TableElement(getController());
 			te.init(mBindingTable);
-			getTableElementById().put(te.getId(), te);			
+			getTableElementById().put(te.getId(), te);	
+			getTableElementByContextId().put(mBindingTable.getBindingContext().getElementId(), te);
 		}
 	}
 	
@@ -36,10 +38,21 @@ public class TableModel extends CommonModel<TableElement>{
 		return getTableElementById().get(id);
 	}
 	
+	public TableElement getTableByContext(String id){
+		return getTableElementByContextId().get(id);
+	}
+	
 	private Map<String, TableElement> getTableElementById(){
 		if(tableElementById == null){
 			tableElementById = new HashMap<>();
 		}
 		return tableElementById;
+	}
+	
+	private Map<String, TableElement> getTableElementByContextId(){
+		if(tableElementByContextId == null){
+			tableElementByContextId = new HashMap<>();
+		}
+		return tableElementByContextId;
 	}
 }

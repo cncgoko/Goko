@@ -36,4 +36,10 @@ public interface IGCodeExecutionTimeService extends IGokoService{
 	 * @throws GkException GkException
 	 */
 	Time evaluateExecutionTime(IGCodeProvider provider) throws GkException;
+	
+	/**
+	 * Returns the execution constraints hold by this execution time estimator
+	 * @return ExecutionConstraint
+	 */
+	ExecutionConstraint getExecutionConstraint();
 }

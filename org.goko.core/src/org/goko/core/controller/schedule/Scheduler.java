@@ -1,19 +1,19 @@
 /**
  * 
  */
-package org.goko.controller.tinyg.commons.schedule;
+package org.goko.core.controller.schedule;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.goko.controller.tinyg.commons.ITinyGControllerService;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.common.measure.units.Unit;
+import org.goko.core.controller.IControllerService;
 import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
@@ -25,7 +25,7 @@ import org.goko.core.controller.event.MachineValueUpdateEvent;
  * @author Psyko
  * @date 11 janv. 2017
  */
-public class Scheduler<T extends ITinyGControllerService<?>>  {
+public class Scheduler<X extends Scheduler<X, T>, T extends IControllerService<?, ?>>  {
 	/** The controller service */
 	private T controllerService;
 	/** The expected machine value identifier*/
@@ -46,33 +46,13 @@ public class Scheduler<T extends ITinyGControllerService<?>>  {
 	}
 	
 	/**
-	 * Creates default runnable to send the given data 
-	 * @param data the data to send 
-	 * @return scheduler
-	 */
-	public Scheduler<T> send(String data){
-		runnable = new SendDataRunnable<ITinyGControllerService<?>>(controllerService, data, false);
-		return this;
-	}
-	
-	/**
-	 * Creates default runnable to send the given data with high priority
-	 * @param data the data to send 
-	 * @return scheduler
-	 */
-	public Scheduler<T> sendImmediately(String data){
-		runnable = new SendDataRunnable<ITinyGControllerService<?>>(controllerService, data, true);
-		return this;
-	}
-	
-	/**
 	 * Set the given runnable as the one to run 
 	 * @param runnable the runnable to run
 	 * @return scheduler
 	 */
-	public Scheduler<T> execute(Runnable runnable){
+	public X execute(Runnable runnable){
 		this.runnable = runnable;
-		return this;
+		return (X) this;
 	}
 	
 	/**
@@ -80,7 +60,7 @@ public class Scheduler<T extends ITinyGControllerService<?>>  {
 	 * @param state the expected state 
 	 * @return scheduler
 	 */
-	public Scheduler<T> whenState(MachineState state){
+	public <S extends MachineState> X whenState(S state){
 		return when(DefaultControllerValues.STATE, state);
 	}
 	
@@ -90,10 +70,10 @@ public class Scheduler<T extends ITinyGControllerService<?>>  {
 	 * @param value the expected value
 	 * @return scheduler
 	 */
-	public Scheduler<T> when(String id, Object value){
+	public X when(String id, Object value){
 		machineValueId = id;
 		expectedMachineValue = value;
-		return this;
+		return (X) this;
 	}
 	
 	/**
@@ -102,7 +82,7 @@ public class Scheduler<T extends ITinyGControllerService<?>>  {
 	 * @param unit the unit of the delay
 	 * @return scheduler
 	 */
-	public Scheduler<T> timeout(int delay, Unit<Time> unit){
+	public X timeout(int delay, Unit<Time> unit){
 		this.timer = new Timer();
 		TimerTask action = new TimerTask() {
 			
@@ -112,7 +92,7 @@ public class Scheduler<T extends ITinyGControllerService<?>>  {
 			}
 		};
 		this.timer.schedule(action, Time.valueOf(delay, unit).value(TimeUnit.MILLISECOND).longValue());
-		return this;
+		return (X) this;
 	}
 	
 	/**
@@ -165,6 +145,27 @@ public class Scheduler<T extends ITinyGControllerService<?>>  {
 		}
 		controllerService.removeListener(this);
 		runnable.run();
+	}
+
+	/**
+	 * @return the runnable
+	 */
+	protected Runnable getRunnable() {
+		return runnable;
+	}
+
+	/**
+	 * @param runnable the runnable to set
+	 */
+	protected void setRunnable(Runnable runnable) {
+		this.runnable = runnable;
+	}
+
+	/**
+	 * @return the controllerService
+	 */
+	protected T getControllerService() {
+		return controllerService;
 	}
 	
 }

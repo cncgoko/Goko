@@ -31,6 +31,10 @@ import org.goko.tools.shuttlxpress.preferences.ShuttleXPressPreferences;
 public class ShuttleXpressHandler {
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(ShuttleXpressHandler.class);
+	/** Action parameter */
+	private static final String ACTION_PARAMETER = "org.goko.tools.shuttlexpress.parameter.action";
+	/** Offset parameter */
+	private static final String OFFSET_PARAMETER = "org.goko.tools.shuttlexpress.parameter.offset";
 	/** Action name for rapid jogging */
 	private static final String RAPID_JOG = "rapidJog";
 	/** Action name for precise jogging */
@@ -72,8 +76,7 @@ public class ShuttleXpressHandler {
 	 */
 	@Execute
 	@Inject
-	public void execute(@Optional @Named("org.goko.tools.shuttlexpress.parameter.action") String action, @Optional @Named("org.goko.tools.shuttlexpress.parameter.offset") String offset) throws GkException{
-		// System.err.println("Execute" +action+" "+offset);
+	public void execute(@Optional @Named(ACTION_PARAMETER) String action, @Optional @Named(OFFSET_PARAMETER) String offset) throws GkException{
 		if(StringUtils.isBlank(action)){
 			return;
 		}

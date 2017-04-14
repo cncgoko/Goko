@@ -43,6 +43,7 @@ public class TableElement extends ModelElement<MBindingTable> {
 				getBindingElementIds().add(be.getId());
 			}
 		}
+		
 	}
 	
 	protected List<String> getBindingElementIds(){

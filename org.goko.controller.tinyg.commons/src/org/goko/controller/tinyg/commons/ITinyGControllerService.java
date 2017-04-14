@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
-import org.goko.controller.tinyg.commons.schedule.Scheduler;
+import org.goko.controller.tinyg.commons.schedule.TinyGScheduler;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
@@ -35,15 +35,15 @@ import org.goko.core.math.Tuple6b;
  * @date 8 janv. 2017
  */
 public interface ITinyGControllerService<C extends AbstractTinyGConfiguration<C>> extends IControllerService<ExecutionTokenState, GCodeContext>,
-																				IProbingService,
-																				IFourAxisControllerAdapter,
-																				ICoordinateSystemAdapter<ICoordinateSystem>,
-																				IJogService,												 
-																				IWorkVolumeProvider,
-																				IControllerConfigurationFileExporter,
-																				IControllerConfigurationFileImporter,
-																				IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>,
-																				GCodeContextProvider{
+																							IProbingService,
+																							IFourAxisControllerAdapter,
+																							ICoordinateSystemAdapter<ICoordinateSystem>,
+																							IJogService,												 
+																							IWorkVolumeProvider,
+																							IControllerConfigurationFileExporter,
+																							IControllerConfigurationFileImporter,
+																							IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>>,
+																							GCodeContextProvider{
 	/**
 	 * Adds the given {@link ITinyGConfigurationListener} as a listener to this service configuration event
 	 * @param listener the listener to add
@@ -117,7 +117,7 @@ public interface ITinyGControllerService<C extends AbstractTinyGConfiguration<C>
 	 * Returns a scheduler element
 	 * @return Scheduler
 	 */
-	<S extends ITinyGControllerService<C>> Scheduler<S> schedule();
+	TinyGScheduler schedule();
 	
 	/**
 	 * Returns the current configuration

@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.commons.jog.AbstractTinyGJogger;
-import org.goko.controller.tinyg.commons.schedule.Scheduler;
+import org.goko.controller.tinyg.commons.schedule.TinyGScheduler;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
 import org.goko.core.common.event.EventDispatcher;
 import org.goko.core.common.event.EventListener;
@@ -691,14 +691,13 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	public J getJogger() {
 		return jogger;
 	}
-	
-	/**
-	 * (inheritDoc)
+		
+	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#schedule()
 	 */
-	@SuppressWarnings("unchecked")
-	public Scheduler<T> schedule(){
-		return new Scheduler<T>((T) this);
+	@Override
+	public TinyGScheduler schedule(){
+		return new TinyGScheduler(this);
 	}
 
 	/** (inheritDoc)
