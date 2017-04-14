@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_lVCU4B4HEeeX6PgBaelgMg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2-cXYB4OEeeX6PgBaelgMg" featurename="children" parentElementId="goko.partstack.e">
+    <elements xsi:type="basic:Part" xmi:id="_2L5E0B4pEeeX6PgBaelgMg" elementId="org.goko.controller.grbl.v11.part.override" contributionURI="bundleclass://org.goko.controller.grbl.v11/org.goko.controller.grbl.v11.GrblOverridePart" label="Grbl Override" iconURI="platform:/plugin/org.goko.controller.grbl.v11/resources/icons/control_equalizer.png" closeable="true">
+      <tags>view</tags>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

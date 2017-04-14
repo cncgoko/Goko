@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="id1"
+         point="org.goko.core.ui.e4.model">
+      <fragment
+            apply="initial"
+            targetBoard="grbl.v11"
+            uri="resources/fragments/Grblv11fragment.e4xmi">
+      </fragment>
+   </extension>
+
+</plugin>
