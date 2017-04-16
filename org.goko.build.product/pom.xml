@@ -14,6 +14,12 @@
 	</parent>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>./</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>

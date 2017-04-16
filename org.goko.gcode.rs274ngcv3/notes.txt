@@ -1,2 +1,0 @@
-Helpful link :
-http://git.linuxcnc.org/gitweb?p=linuxcnc.git;a=blob;f=src/emc/rs274ngc/interp_convert.cc;hb=edb8ad11745e7696ff4dd56eb9aa58dd0cf969f1
