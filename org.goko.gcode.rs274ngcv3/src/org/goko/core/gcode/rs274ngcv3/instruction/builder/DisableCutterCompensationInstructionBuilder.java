@@ -21,7 +21,7 @@ public class DisableCutterCompensationInstructionBuilder extends AbstractInstruc
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWordRegex("G40", words);
+		return GCodeWordUtils.containsWordRegex("(G|g)40", words);
 	}
 
 	/** (inheritDoc)
@@ -29,7 +29,7 @@ public class DisableCutterCompensationInstructionBuilder extends AbstractInstruc
 	 */
 	@Override
 	protected DisableCutterCompensationInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.findAndRemoveWordRegex("G40", words);
+		GCodeWordUtils.findAndRemoveWordRegex("(G|g)40", words);
 		return new DisableCutterCompensationInstruction();
 	}
 }

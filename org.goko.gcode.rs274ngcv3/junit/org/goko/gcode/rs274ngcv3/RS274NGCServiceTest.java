@@ -70,15 +70,28 @@ public class RS274NGCServiceTest {
 		
 	@Test
 	public void testParseString() throws Exception{
-		IGCodeProvider provider = service.parse("N12G90X12.5Y36.8Z45.3F100");
-		AssertGCodeProvider.assertLineCount(provider, 1);
-		
-		AssertGCodeLine.assertExactWords(provider.getLineAtIndex(0), 	new GCodeWord("N","12"),
-																		new GCodeWord("G","90"),
-																		new GCodeWord("X","12.5"),
-																		new GCodeWord("Y","36.8"),
-																		new GCodeWord("Z","45.3"),
-																		new GCodeWord("F","100"));		
+		{
+			IGCodeProvider provider = service.parse("n12G90X12.5Y36.8Z45.3F100");
+			AssertGCodeProvider.assertLineCount(provider, 1);
+			
+			AssertGCodeLine.assertExactWords(provider.getLineAtIndex(0), 	new GCodeWord("N","12"),
+																			new GCodeWord("G","90"),
+																			new GCodeWord("X","12.5"),
+																			new GCodeWord("Y","36.8"),
+																			new GCodeWord("Z","45.3"),
+																			new GCodeWord("F","100"));
+		}
+		{
+			IGCodeProvider provider = service.parse("N12g90x12.5y36.8z45.3f100");
+			AssertGCodeProvider.assertLineCount(provider, 1);
+			
+			AssertGCodeLine.assertExactWords(provider.getLineAtIndex(0), 	new GCodeWord("N","12"),
+																			new GCodeWord("G","90"),
+																			new GCodeWord("X","12.5"),
+																			new GCodeWord("Y","36.8"),
+																			new GCodeWord("Z","45.3"),
+																			new GCodeWord("F","100"));
+		}
 	}
 	
 	@Test
@@ -198,6 +211,49 @@ public class RS274NGCServiceTest {
 		assertEquals(  EnumMotionMode.ARC_COUNTERCLOCKWISE, postContext.getMotionMode());
 	}
 	
+	@Test
+	public void testArcFeedCounterClockwiseInstructionLowerCase() throws Exception{
+		IGCodeProvider provider = service.parse("g3 x10 y12 z42 i5 j6");
+		AssertGCodeProvider.assertLineCount(provider, 1);
+		GCodeLine line = provider.getLineAtIndex(0);
+		
+		GCodeContext context = new GCodeContext();
+		context.setA(Angle.ZERO);
+		context.setB(Angle.ZERO);
+		context.setC(Angle.ZERO);
+		context.setX(Length.ZERO);
+		context.setY(Length.ZERO);
+		context.setZ(Length.ZERO);
+		context.setUnit(EnumUnit.MILLIMETERS);
+		context.setMotionMode(EnumMotionMode.ARC_CLOCKWISE);
+		
+		InstructionProvider instructionProvider = service.getInstructions(context, provider);
+		InstructionSet set = new InstructionSet();
+		
+		ArcFeedInstruction instr = new ArcFeedInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE), 
+															Length.valueOf("12", LengthUnit.MILLIMETRE),															 
+															Length.valueOf("42", LengthUnit.MILLIMETRE),
+															Length.valueOf("5", LengthUnit.MILLIMETRE), 
+															Length.valueOf("6", LengthUnit.MILLIMETRE),
+															null,
+															null,
+															null,
+															null,
+															1, 
+															false);
+		instr.setIdGCodeLine(line.getId());
+		set.addInstruction(instr);
+					
+		AssertInstructionProvider.assertContainsInstructionSet(instructionProvider, set);
+		
+		// Context update check 
+		GCodeContext postContext = service.update(context, instr);
+		assertEquals( Length.valueOf("10", LengthUnit.MILLIMETRE) , postContext.getX() );
+		assertEquals( Length.valueOf("12", LengthUnit.MILLIMETRE) , postContext.getY() );
+		assertEquals( Length.valueOf("42", LengthUnit.MILLIMETRE)  , postContext.getZ() );
+		assertEquals(  EnumMotionMode.ARC_COUNTERCLOCKWISE, postContext.getMotionMode());
+	}
+	
 	
 	@Test
 	public void testStraightFeedInstruction() throws Exception{
@@ -241,8 +297,90 @@ public class RS274NGCServiceTest {
 	}
 	
 	@Test
+	public void testStraightFeedInstructionLowerCase() throws Exception{
+		IGCodeProvider provider = service.parse("g01 X10 y12 z5 a-23.5 b45.3 C-0.001");
+		AssertGCodeProvider.assertLineCount(provider, 1);
+		GCodeLine line = provider.getLineAtIndex(0);
+		
+		GCodeContext context = new GCodeContext();
+		context.setA(Angle.ZERO);
+		context.setB(Angle.ZERO);
+		context.setC(Angle.ZERO);
+		context.setX(Length.ZERO);
+		context.setY(Length.ZERO);
+		context.setZ(Length.ZERO);
+		context.setUnit(EnumUnit.MILLIMETERS);
+		context.setMotionMode(EnumMotionMode.ARC_CLOCKWISE);
+		
+		InstructionProvider instructionProvider = service.getInstructions(context, provider);
+		InstructionSet set = new InstructionSet();
+		
+		StraightFeedInstruction instr = new StraightFeedInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE),
+																	 Length.valueOf("12", LengthUnit.MILLIMETRE),
+																	 Length.valueOf("5", LengthUnit.MILLIMETRE),
+																	 Angle.valueOf("-23.5", AngleUnit.DEGREE_ANGLE),
+																	 Angle.valueOf("45.3", AngleUnit.DEGREE_ANGLE),
+																	 Angle.valueOf("-0.001", AngleUnit.DEGREE_ANGLE));
+		instr.setIdGCodeLine(line.getId());
+		set.addInstruction(instr);
+					
+		AssertInstructionProvider.assertContainsInstructionSet(instructionProvider, set);
+		
+		// Context update check 
+		GCodeContext postContext = service.update(context, instr);
+		assertEquals( Length.valueOf("10", LengthUnit.MILLIMETRE) , postContext.getX() );
+		assertEquals( Length.valueOf("12", LengthUnit.MILLIMETRE) , postContext.getY() );
+		assertEquals( Length.valueOf("5", LengthUnit.MILLIMETRE)  , postContext.getZ() );
+		assertEquals( Angle.valueOf("-23.5", AngleUnit.DEGREE_ANGLE)  , postContext.getA() );
+		assertEquals( Angle.valueOf("45.3", AngleUnit.DEGREE_ANGLE)  , postContext.getB() );
+		assertEquals( Angle.valueOf("-0.001", AngleUnit.DEGREE_ANGLE)  , postContext.getC() );
+		assertEquals(  EnumMotionMode.FEEDRATE, postContext.getMotionMode());
+	}
+	
+	@Test
 	public void testStraightTraverseInstruction() throws Exception{
 		IGCodeProvider provider = service.parse("G0 X10 Y12 Z5 A-23.5 B45.3 C-0.001");
+		AssertGCodeProvider.assertLineCount(provider, 1);
+		GCodeLine line = provider.getLineAtIndex(0);
+		
+		GCodeContext context = new GCodeContext();
+		context.setA(Angle.ZERO);
+		context.setB(Angle.ZERO);
+		context.setC(Angle.ZERO);
+		context.setX(Length.ZERO);
+		context.setY(Length.ZERO);
+		context.setZ(Length.ZERO);
+		context.setUnit(EnumUnit.MILLIMETERS);
+		context.setMotionMode(EnumMotionMode.ARC_CLOCKWISE);
+		
+		InstructionProvider instructionProvider = service.getInstructions(context, provider);
+		InstructionSet set = new InstructionSet();
+		
+		StraightTraverseInstruction instr = new StraightTraverseInstruction( Length.valueOf("10", LengthUnit.MILLIMETRE),
+																	 Length.valueOf("12", LengthUnit.MILLIMETRE),
+																	 Length.valueOf("5", LengthUnit.MILLIMETRE),
+																	 Angle.valueOf("-23.5", AngleUnit.DEGREE_ANGLE),
+																	 Angle.valueOf("45.3", AngleUnit.DEGREE_ANGLE),
+																	 Angle.valueOf("-0.001", AngleUnit.DEGREE_ANGLE));
+		instr.setIdGCodeLine(line.getId());
+		set.addInstruction(instr);
+					
+		AssertInstructionProvider.assertContainsInstructionSet(instructionProvider, set);
+		
+		// Context update check 
+		GCodeContext postContext = service.update(context, instr);
+		assertEquals( Length.valueOf("10", LengthUnit.MILLIMETRE) , postContext.getX() );
+		assertEquals( Length.valueOf("12", LengthUnit.MILLIMETRE) , postContext.getY() );
+		assertEquals( Length.valueOf("5", LengthUnit.MILLIMETRE)  , postContext.getZ() );
+		assertEquals( Angle.valueOf("-23.5", AngleUnit.DEGREE_ANGLE)  , postContext.getA() );
+		assertEquals( Angle.valueOf("45.3", AngleUnit.DEGREE_ANGLE)  , postContext.getB() );
+		assertEquals( Angle.valueOf("-0.001", AngleUnit.DEGREE_ANGLE)  , postContext.getC() );
+		assertEquals(  EnumMotionMode.RAPID, postContext.getMotionMode());
+	}
+	
+	@Test
+	public void testStraightTraverseInstructionLowerCase() throws Exception{
+		IGCodeProvider provider = service.parse("g00 X10 Y12 Z5 A-23.5 B45.3 C-0.001");
 		AssertGCodeProvider.assertLineCount(provider, 1);
 		GCodeLine line = provider.getLineAtIndex(0);
 		

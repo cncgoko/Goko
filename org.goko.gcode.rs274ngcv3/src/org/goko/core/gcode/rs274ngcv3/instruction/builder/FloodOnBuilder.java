@@ -21,7 +21,7 @@ public class FloodOnBuilder extends AbstractInstructionBuilder<FloodOnInstructio
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWordRegex("M(0?)8", words);
+		return GCodeWordUtils.containsWordRegex("(M|m)(0?)8", words);
 	}
 
 	/** (inheritDoc)
@@ -29,7 +29,7 @@ public class FloodOnBuilder extends AbstractInstructionBuilder<FloodOnInstructio
 	 */
 	@Override
 	protected FloodOnInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.findAndRemoveWordRegex("M(0?)8", words);
+		GCodeWordUtils.findAndRemoveWordRegex("(M|m)(0?)8", words);
 		return new FloodOnInstruction();
 	}
 }

@@ -24,7 +24,7 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		if(GCodeWordUtils.containsWordRegex("G(0?)0", words)){
+		if(GCodeWordUtils.containsWordRegex("(G|g)(0?)0", words)){
 			return true; // Explicit G0
 		}else if(GCodeWordUtils.containsWordByLetter("X", words)		
 		|| GCodeWordUtils.containsWordByLetter("Y", words)
@@ -34,9 +34,9 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 		|| GCodeWordUtils.containsWordByLetter("C", words)){
 			if(context.getMotionMode() == EnumMotionMode.RAPID){
 				// Make sure there is no other motion mode word
-				if(!GCodeWordUtils.containsWordRegex("G(0?)1", words)
-				&& !GCodeWordUtils.containsWordRegex("G(0?)2", words)
-				&& !GCodeWordUtils.containsWordRegex("G(0?)3", words)
+				if(!GCodeWordUtils.containsWordRegex("(G|g)(0?)1", words)
+				&& !GCodeWordUtils.containsWordRegex("(G|g)(0?)2", words)
+				&& !GCodeWordUtils.containsWordRegex("(G|g)(0?)3", words)
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
@@ -59,23 +59,7 @@ public class StraightTraverseBuilder extends AbstractInstructionBuilder<Straight
 		Angle c = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
 		
 		// Consume g0 if present
-		GCodeWordUtils.findAndRemoveWordRegex("G(0?)0", words);
-		
-//		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-//			x = NumberQuantity.add(x, context.getX());
-//			y = NumberQuantity.add(y, context.getY());
-//			z = NumberQuantity.add(z, context.getZ());
-//			a = NumberQuantity.add(a, context.getA());
-//			b = NumberQuantity.add(b, context.getB());
-//			c = NumberQuantity.add(c, context.getC());
-//		}
-//		
-//		if(x == null) x = context.getX();
-//		if(y == null) y = context.getY();
-//		if(z == null) z = context.getZ();
-//		if(a == null) a = context.getA();
-//		if(b == null) b = context.getB();
-//		if(c == null) c = context.getC();
+		GCodeWordUtils.findAndRemoveWordRegex("(G|g)(0?)0", words);
 		
 		return new StraightTraverseInstruction(x, y, z, a, b, c);
 	}

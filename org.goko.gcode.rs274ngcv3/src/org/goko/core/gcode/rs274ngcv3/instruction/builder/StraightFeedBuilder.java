@@ -24,7 +24,7 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		if(GCodeWordUtils.containsWordRegex("G(0?)1", words)){
+		if(GCodeWordUtils.containsWordRegex("(G|g)(0?)1", words)){
 			return true; // Explicit feedrate mode
 		}else if(GCodeWordUtils.containsWordByLetter("X", words) 
 		|| GCodeWordUtils.containsWordByLetter("Y", words)
@@ -34,9 +34,9 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 		|| GCodeWordUtils.containsWordByLetter("C", words)){
 			if(context.getMotionMode() == EnumMotionMode.FEEDRATE){
 				// Make sure there is no other motion mode word
-				if(!GCodeWordUtils.containsWordRegex("G(0?)0", words)
-				&& !GCodeWordUtils.containsWordRegex("G(0?)2", words)
-				&& !GCodeWordUtils.containsWordRegex("G(0?)3", words)
+				if(!GCodeWordUtils.containsWordRegex("(G|g)(0?)0", words)
+				&& !GCodeWordUtils.containsWordRegex("(G|g)(0?)2", words)
+				&& !GCodeWordUtils.containsWordRegex("(G|g)(0?)3", words)
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
@@ -59,7 +59,7 @@ public class StraightFeedBuilder extends AbstractInstructionBuilder<StraightFeed
 		Angle c = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
 
 		// Consume the word
-		GCodeWordUtils.findAndRemoveWordRegex("G(0?)1", words);
+		GCodeWordUtils.findAndRemoveWordRegex("(G|g)(0?)1", words);
 		return new StraightFeedInstruction(x, y, z, a, b, c);
 	}
 }

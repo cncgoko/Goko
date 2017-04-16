@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.core.gcode.element;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class GCodeWord {
 	/** The letter for this word */
 	private String letter;
@@ -25,7 +27,7 @@ public class GCodeWord {
 	
 	public GCodeWord(String letter, String value) {
 		super();
-		this.letter = letter;
+		this.letter = StringUtils.upperCase(letter);
 		this.value = value;
 	}
 	

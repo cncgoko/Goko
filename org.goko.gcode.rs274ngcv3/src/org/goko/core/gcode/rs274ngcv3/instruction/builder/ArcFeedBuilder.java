@@ -9,7 +9,6 @@ import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.element.GCodeWord;
-import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -36,14 +35,14 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		|| GCodeWordUtils.containsWordByLetter("C", words)){
 			if(context.getMotionMode() == EnumMotionMode.ARC_CLOCKWISE || context.getMotionMode() == EnumMotionMode.ARC_COUNTERCLOCKWISE ){
 				// Make sure there is no other motion mode word
-				if(!GCodeWordUtils.containsWordRegex("G(0?)0", words) 
-				&& !GCodeWordUtils.containsWordRegex("G(0?)1", words)
+				if(!GCodeWordUtils.containsWordRegex("(G|g)(0?)0", words) 
+				&& !GCodeWordUtils.containsWordRegex("(G|g)(0?)1", words)
 				&& !GCodeWordUtils.containsWord("G38.2", words)){
 					return true;
 				}
 			}else{
 				//Context motion mode is not ARC, we need an explicit G2 or G3
-				return GCodeWordUtils.containsWordRegex("G(0?)2", words) || GCodeWordUtils.containsWordRegex("G(0?)3", words);
+				return GCodeWordUtils.containsWordRegex("(G|g)(0?)2", words) || GCodeWordUtils.containsWordRegex("(G|g)(0?)3", words);
 			}
 		}
 		return false;
@@ -77,9 +76,9 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 			clockwise = false;
 		}
 
-		GCodeWord gWord = GCodeWordUtils.findAndRemoveWordRegex("G(0?)2", words);
+		GCodeWord gWord = GCodeWordUtils.findAndRemoveWordRegex("(G|g)(0?)2", words);
 		if(gWord == null){			
-			gWord = GCodeWordUtils.findAndRemoveWordRegex("G(0?)3", words);
+			gWord = GCodeWordUtils.findAndRemoveWordRegex("(G|g)(0?)3", words);
 			if(gWord != null){
 				clockwise = false;
 			}
@@ -125,39 +124,7 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
 		}
 		
-		if(context.getDistanceMode() == EnumDistanceMode.RELATIVE){
-//			x = NumberQuantity.add(x, context.getX());
-//			y = NumberQuantity.add(y, context.getY());
-//			z = NumberQuantity.add(z, context.getZ());
-//			a = NumberQuantity.add(a, context.getA());
-//			b = NumberQuantity.add(b, context.getB());
-//			c = NumberQuantity.add(c, context.getC());
-		}
-//		else{
-//			if(x == null) x = context.getX();
-//			if(y == null) y = context.getY();
-//			if(z == null) z = context.getZ();
-//			if(a == null) a = context.getA();
-//			if(b == null) b = context.getB();
-//			if(c == null) c = context.getC();
-//		}
-		// Compute the center of the arc 
-//		i = NumberQuantity.add(i, context.getX());
-//		j = NumberQuantity.add(j, context.getY());
-//		k = NumberQuantity.add(k, context.getZ());
-
 		instruction	= new ArcFeedInstruction(x, y, z, i, j, k, a, b, c, r, clockwise);
-		
-//		switch (plane) {
-//		// public ArcFeedInstruction(Length firstEnd, Length secondEnd, Length firstAxis, Length secondAxis, Length axisEndPoint, Integer rotation, Angle a, Angle b, Angle c, boolean clockwise) {
-//		case XY_PLANE:	instruction	= new ArcFeedInstruction(x, y, i, j, z, r, a, b, c, clockwise);
-//			break;		
-//		case XZ_PLANE:	instruction	= new ArcFeedInstruction(z, x, k, i, y, r, a, b, c, clockwise);
-//			break;
-//		case YZ_PLANE:	instruction	= new ArcFeedInstruction(y, z, j, k, x, r, a, b, c, clockwise);
-//			break;
-//		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
-//		}
 		return instruction;
 	}
 

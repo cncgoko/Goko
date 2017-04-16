@@ -21,7 +21,7 @@ public class MistOnBuilder extends AbstractInstructionBuilder<MistOnInstruction>
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWordRegex("M(0?)7", words);
+		return GCodeWordUtils.containsWordRegex("(M|m)(0?)7", words);
 	}
 
 	/** (inheritDoc)
@@ -29,7 +29,7 @@ public class MistOnBuilder extends AbstractInstructionBuilder<MistOnInstruction>
 	 */
 	@Override
 	protected MistOnInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.findAndRemoveWordRegex("M(0?)7", words);
+		GCodeWordUtils.findAndRemoveWordRegex("(M|m)(0?)7", words);
 		return new MistOnInstruction();
 	}
 }

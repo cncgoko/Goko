@@ -22,7 +22,7 @@ public class CutterCompensationLeftInstructionBuilder extends AbstractInstructio
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWordRegex("G41", words);
+		return GCodeWordUtils.containsWordRegex("(G|g)41", words);
 	}
 
 	/** (inheritDoc)
@@ -30,8 +30,8 @@ public class CutterCompensationLeftInstructionBuilder extends AbstractInstructio
 	 */
 	@Override
 	protected CutterCompensationLeftInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.findAndRemoveWordRegex("G41", words);
-		GCodeWord word = GCodeWordUtils.findAndRemoveWordRegex("D", words);
+		GCodeWordUtils.findAndRemoveWordRegex("(G|g)41", words);
+		GCodeWord word = GCodeWordUtils.findAndRemoveWordByLetter("D", words);
 		Length offset = null;
 		if(word != null){
 			offset = Length.valueOf(word.getValue(), context.getUnit().getUnit());

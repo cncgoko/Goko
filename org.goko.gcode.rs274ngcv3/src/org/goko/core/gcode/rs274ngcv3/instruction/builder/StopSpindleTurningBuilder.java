@@ -20,7 +20,7 @@ public class StopSpindleTurningBuilder extends AbstractInstructionBuilder<StopSp
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {
-		return GCodeWordUtils.containsWordRegex("M(0?)5", words);
+		return GCodeWordUtils.containsWordRegex("(M|m)(0?)5", words);
 	}
 
 	/** (inheritDoc)
@@ -28,7 +28,7 @@ public class StopSpindleTurningBuilder extends AbstractInstructionBuilder<StopSp
 	 */
 	@Override
 	protected StopSpindleTurningInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
-		GCodeWordUtils.getAndRemoveWordRegex("M(0?)5", words);
+		GCodeWordUtils.getAndRemoveWordRegex("(M|m)(0?)5", words);
 		return new StopSpindleTurningInstruction();
 	}
 }
