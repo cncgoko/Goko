@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.goko.controller.grbl.v11;
+package org.goko.controller.grbl.v11.parts;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -18,8 +18,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
-import org.goko.controller.grbl.v11.override.GrblOverrideController;
-import org.goko.controller.grbl.v11.override.GrblOverrideModel;
+import org.goko.controller.grbl.v11.parts.override.GrblOverrideController;
+import org.goko.controller.grbl.v11.parts.override.GrblOverrideModel;
 import org.goko.core.common.exception.GkException;
 
 /**

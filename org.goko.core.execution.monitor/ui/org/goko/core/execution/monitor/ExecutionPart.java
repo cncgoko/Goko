@@ -362,13 +362,11 @@ public class ExecutionPart extends GkUiComponent<ExecutionPartController, Execut
 	 */
 	@Override
 	public void onExecutionPause(ExecutionToken<ExecutionTokenState> token) throws GkException {
-		System.out.println("ExecutionPart.onExecutionPause()");
 		parent.getDisplay().asyncExec(new Runnable() {
 			/** Runnable used to update execution time measurement */
 			@Override
 			public void run() {														
-				if(parent.isDisposed()){
-					System.out.println("parent.isDisposed()");
+				if(parent.isDisposed()){					
 					return;
 				}
 				btnPause.setText("Resume queue");

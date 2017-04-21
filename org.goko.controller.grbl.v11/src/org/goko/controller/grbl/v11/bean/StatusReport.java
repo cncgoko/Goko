@@ -45,7 +45,12 @@ public class StatusReport {
 	private Speed velocity;
 	/** Spindle speed in RPM */
 	private Integer spindleSpeed;
-	
+	/** Spindle direction */
+	private String spindleDirection;
+	/** Flood coolant state */
+	private Boolean floodCoolantState;
+	/** Mist coolant state */
+	private Boolean mistCoolantState;
 	/**
 	 * @return the state
 	 */
@@ -177,6 +182,42 @@ public class StatusReport {
 	 */
 	public void setSpindleSpeed(Integer spindleSpeed) {
 		this.spindleSpeed = spindleSpeed;
+	}
+	/**
+	 * @return the spindleDirection
+	 */
+	public String getSpindleDirection() {
+		return spindleDirection;
+	}
+	/**
+	 * @param spindleDirection the spindleDirection to set
+	 */
+	public void setSpindleDirection(String spindleDirection) {
+		this.spindleDirection = spindleDirection;
+	}
+	/**
+	 * @return the floodCoolantState
+	 */
+	public Boolean getFloodCoolantState() {
+		return floodCoolantState;
+	}
+	/**
+	 * @param floodCoolantState the floodCoolantState to set
+	 */
+	public void setFloodCoolantState(Boolean floodCoolantState) {
+		this.floodCoolantState = floodCoolantState;
+	}
+	/**
+	 * @return the mistCoolantState
+	 */
+	public Boolean getMistCoolantState() {
+		return mistCoolantState;
+	}
+	/**
+	 * @param mistCoolantState the mistCoolantState to set
+	 */
+	public void setMistCoolantState(Boolean mistCoolantState) {
+		this.mistCoolantState = mistCoolantState;
 	}
 	
 }

@@ -322,7 +322,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 	public void notifyCommandStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		ExecutionQueueType queueType = executionQueueRunnable.getExecutionQueue().getType();
 		List<IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>> listenerList = listenercache.get(queueType);
-		LOG.info("Executed line ["+idLine+"]");
+		//LOG.info("Executed line ["+idLine+"]");
 		if(CollectionUtils.isNotEmpty(listenerList)){
 			for (IGCodeExecutionListener<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> executionListener : listenerList) {
 				executionListener.onLineStateChanged(token, idLine);				

@@ -62,6 +62,7 @@ public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfigurati
 	/** UI Log service */	
 	private IApplicativeLogService applicativeLogService;
 
+	
 	/**
 	 * Constructor
 	 */
@@ -124,7 +125,7 @@ public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfigurati
 	 * @throws GkException GkException
 	 */
 	protected void handleIncomingData(String data) throws GkException{
-		String trimmedData = StringUtils.trim(data);
+		String trimmedData = StringUtils.trim(StringUtils.defaultString(data));
 		if(StringUtils.isNotEmpty(trimmedData)){
 			/* Received OK response */
 			if(StringUtils.equals(trimmedData, Grbl.OK_RESPONSE)){
@@ -142,33 +143,57 @@ public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfigurati
 			}else if(StringUtils.startsWith(trimmedData, "Grbl")){
 				handleHeader(trimmedData);
 			/* Received a configuration confirmation */
-			}else if(StringUtils.defaultString(trimmedData).matches("\\$[0-9]*=.*")){
+			}else if(trimmedData.matches("\\$[0-9]*=.*")){
 				handleConfigurationReading(trimmedData);
 				
 			/* Received a probe result */
-			}else if(StringUtils.defaultString(trimmedData).matches("\\$[PRB*]")){
+			}else if(trimmedData.matches("\\[PRB.*]")){
 				//[PRB:0.000,0.000,0.000:0]
 				handleProbeResult(trimmedData);
 			/* Received a work position report */
-			}else if(StringUtils.defaultString(trimmedData).matches("\\[G5.*\\]")){
+			}else if(trimmedData.matches("\\[TLO.*]")){
+				//[PRB:0.000,0.000,0.000:0]
+				handleToolLengthOffset(trimmedData);
+			/* Received a work position report */
+			}else if(trimmedData.matches("\\[G5.*\\]")){
 				handleCoordinateSystemOffset(trimmedData);
-				
+			
+			}else if(trimmedData.matches("\\[MSG:.*\\]")){
+				handleMessage(trimmedData);
 			/* Received an offset position report */
-			}else if(StringUtils.defaultString(trimmedData).matches("\\[(G92|G28|G30).*\\]")){					
+			}else if(trimmedData.matches("\\[(G92|G28|G30).*\\]")){					
 //				Tuple6b targetPoint = new Tuple6b().setNull();
 //				String coordinateSystemName = parseCoordinateSystem(trimmedData, targetPoint);
 //				grbl.setOffsetCoordinate(coordinateSystemName, targetPoint);
 				// TODO Handle G92
 			/* Parser state report */
-			}else if(StringUtils.defaultString(trimmedData).matches("\\[GC:.*\\]")){
-				//grbl.receiveParserState(StringUtils.substringBetween(trimmedData, "[","]"));
+			}else if(trimmedData.matches("\\[GC:.*\\]")){
 				handleParserState(trimmedData);
-			/* Unkown format received */
+			/* Unknown format received */
+			}else if(trimmedData.startsWith("ALARM")){
+				handleAlarm(trimmedData);
 			}else{
-				LOG.error("Ignoring received data "+ trimmedData);
-				applicativeLogService.warning("Ignoring received data "+ trimmedData, "Grbl Communicator");
+				if(!handleCustomIncomingData(trimmedData)){
+					LOG.error("Ignoring received data "+ trimmedData);
+					applicativeLogService.warning("Ignoring received data "+ trimmedData, "Grbl Communicator");
+				}
 			}
 		}
+	}
+
+	/**
+	 * @param trimmedData
+	 */
+	protected abstract void handleMessage(String trimmedData) throws GkException;
+	
+
+	/**
+	 * Allow subclasses to handle custom data
+	 * @param trimmedData the raw data
+	 * @return <code>true</code> if data were processed, <code>false</code> otherwise
+	 */
+	protected boolean handleCustomIncomingData(String trimmedData) {
+		return false;
 	}
 
 	/**
@@ -180,6 +205,16 @@ public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfigurati
 	 * @param trimmedData
 	 */
 	protected abstract void handleParserState(String trimmedData) throws GkException;
+
+	/**
+	 * @param trimmedData
+	 */
+	protected abstract void handleToolLengthOffset(String trimmedData) throws GkException;
+
+	/**
+	 * @param trimmedData
+	 */
+	protected abstract void handleAlarm(String trimmedData) throws GkException;
 
 	/**
 	 * @param trimmedData
@@ -345,6 +380,21 @@ public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfigurati
 	 */
 	public final void sendImmediately(String data, boolean useEndLineCharacter) throws GkException{
 		List<Byte> lstBytes = GkUtils.toBytesList(data);
+		if(useEndLineCharacter){
+			addEndLineCharacter(lstBytes);
+		}
+		getConnectionService().send(lstBytes, DataPriority.IMPORTANT);
+	}
+	
+	/**
+	 * Sends the given byte over the connection service with high priority
+	 * @param lstByte the list of byte to send
+	 * @param useEndLineCharacter <code>true</code> to append end line characters before sending, <code>false</code> otherwise
+	 * @throws GkException GkException
+	 */
+	public final void sendImmediately(byte data, boolean useEndLineCharacter) throws GkException{
+		List<Byte> lstBytes = new ArrayList<>();
+		lstBytes.add(data);
 		if(useEndLineCharacter){
 			addEndLineCharacter(lstBytes);
 		}

@@ -35,6 +35,7 @@ public interface DefaultControllerValues {
 	static final String UNITS 				= "GkDefaultControllerValue.Units";
 	static final String COORDINATES 		= "GkDefaultControllerValue.Coordinates";
 	static final String DISTANCE_MODE		= "GkDefaultControllerValue.DistanceMode";
+	static final String TOOL_OFFSET			= "GkDefaultControllerValue.ToolOffset";
 
 	static final String CONTEXT_FEEDRATE		= "GCodeContext.Feedrate";
 	static final String CONTEXT_PLANE			= "GCodeContext.Plane";

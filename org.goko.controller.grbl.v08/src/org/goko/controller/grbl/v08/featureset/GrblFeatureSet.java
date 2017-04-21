@@ -49,7 +49,7 @@ import org.osgi.service.event.EventAdmin;
  */
 public class GrblFeatureSet implements IFeatureSet {
 	/** Target board definition for this feature set */
-	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v08", "Grbl v0.8 (beta)");
+	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v08", "Grbl v0.8");
 	public List<ServiceRegistration> lstServiceregistration;
 
 	public GrblFeatureSet() {

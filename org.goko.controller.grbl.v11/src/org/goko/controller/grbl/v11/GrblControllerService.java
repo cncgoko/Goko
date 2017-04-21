@@ -8,14 +8,16 @@ import java.util.concurrent.CompletionService;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.controller.grbl.commons.AbstractGrblControllerService;
-import org.goko.controller.grbl.commons.IGrblOverrideService;
 import org.goko.controller.grbl.commons.IGrblStatus;
-import org.goko.controller.grbl.commons.configuration.IGrblConfigurationListener;
+import org.goko.controller.grbl.commons.probe.ProbeUtility;
 import org.goko.controller.grbl.v11.bean.GrblMachineState;
 import org.goko.controller.grbl.v11.bean.StatusReport;
 import org.goko.controller.grbl.v11.configuration.GrblConfiguration;
 import org.goko.controller.grbl.v11.jog.GrblJogger;
+import org.goko.controller.grbl.v11.preferences.Grblv11Preferences;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
@@ -33,6 +35,7 @@ import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
@@ -49,13 +52,14 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 																		GrblConfiguration, 
 																		GrblCommunicator,
 																		GrblJogger,
-																		GrblExecutor> implements IGrblOverrideService, IGrblConfigurationListener<GrblConfiguration>{
+																		GrblExecutor> implements IGrbl11ControllerService, IPropertyChangeListener{
 	private static final GkLog LOG = GkLog.getLogger(GrblControllerService.class);
 	/**  Service ID */
 	public static final String SERVICE_ID = "Grbl v1.1 Controller";
 	/** Execution time service - keep updated with maximum feed */
 	private IGCodeExecutionTimeService gcodeExecutionTimeService;
-	
+	/** Probe utility */
+	private ProbeUtility probeUtility;
 	/**
 	 * Constructor
 	 * @param internalState
@@ -67,8 +71,9 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	public GrblControllerService(GrblState internalState, GrblConfiguration configuration) throws GkException {
 		super(internalState, configuration);
 		addConfigurationListener(this);
+		Grblv11Preferences.getInstance().addPropertyChangeListener(this);
 	}
-
+	//forcer le format du status report qqpart ?
 	/** (inheritDoc)
 	 * @see org.goko.controller.grbl.commons.IGrblControllerService#setConfigurationSetting(java.lang.String, java.lang.String)
 	 */
@@ -132,9 +137,16 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 * @see org.goko.core.controller.IProbingService#probe(java.util.List)
 	 */
 	@Override
-	public CompletionService<ProbeResult> probe(List<ProbeRequest> probeRequest) throws GkException {
-		// TODO Auto-generated method stub
-		return null;
+	public CompletionService<ProbeResult> probe(List<ProbeRequest> lstProbeRequest) throws GkException {
+		probeUtility = new ProbeUtility(this, getGCodeService());
+		probeUtility.prepare(lstProbeRequest);
+		
+		IGCodeProvider probeGCodeProvider = probeUtility.getProbeGCodeProvider();
+		getExecutionService().clearExecutionQueue(ExecutionQueueType.SYSTEM);
+		getExecutionService().addToExecutionQueue(ExecutionQueueType.SYSTEM, probeGCodeProvider);
+		getExecutionService().beginQueueExecution(ExecutionQueueType.SYSTEM);
+		
+		return probeUtility.getExecutorCompletionService();
 	}
 
 	/** (inheritDoc)
@@ -201,7 +213,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		LOG.error(formattedErrorMessage);
 		getApplicativeLogService().error(formattedErrorMessage, getServiceId());
 	}
-	
+		
 	protected void handleOkResponse() throws GkException {
 		releaseRxBuffer();	
 		decreasePendingCommands();
@@ -214,6 +226,10 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		}
 	}
 
+	protected void handleToolLengthOffset(Length toolLengthOffset) throws GkException {
+		getInternalState().setToolLengthOffset(toolLengthOffset);
+	}
+	
 	protected void handleStatusReport(StatusReport statusReport) throws GkException {
 		getInternalState().setState(statusReport.getState());
 		if(statusReport.getCurrentWorkCoordinateOffset() != null){
@@ -226,7 +242,10 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 			}
 		}
 		if(statusReport.getWorkPosition() != null){
-			getInternalState().setWorkPosition(statusReport.getWorkPosition());			
+			getInternalState().setWorkPosition(statusReport.getWorkPosition());	
+			if(getInternalState().getCurrentWorkCoordinateOffset() != null){
+				getInternalState().setMachinePosition(statusReport.getWorkPosition().add(getInternalState().getCurrentWorkCoordinateOffset()));
+			}
 		}
 		if(statusReport.getAvailablePlannerBuffer() != null){
 			getInternalState().setAvailablePlannerBuffer(statusReport.getAvailablePlannerBuffer());
@@ -248,15 +267,37 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		}
 		if(statusReport.getSpindleSpeed() != null){
 			getInternalState().setSpindleSpeed(statusReport.getSpindleSpeed());
+		}		
+		if(StringUtils.isNotBlank(statusReport.getSpindleDirection())){
+			getInternalState().setSpindleDirection(statusReport.getSpindleDirection());
+		}
+		if(statusReport.getMistCoolantState() != null){
+			getInternalState().setMistCoolantState(statusReport.getMistCoolantState());
+		}
+		if(statusReport.getFloodCoolantState() != null){
+			getInternalState().setFloodCoolantState(statusReport.getFloodCoolantState());
 		}
 	}
 
+	protected void handleAlarm(GrblMachineState alarmState) throws GkException{
+		setState(alarmState);
+		if(getExecutionService().getExecutionState() != ExecutionState.IDLE){
+			stopMotion();
+		}		
+	}
+	
+	protected void handleProbeResult(boolean probeSuccess, Tuple6b probePosition) throws GkException {
+		if(probeUtility != null){
+			probeUtility.handleProbeResult(probeSuccess, probePosition);
+		}
+	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.controller.grbl.commons.IGrblControllerService#setCheckModeEnabled(boolean)
 	 */
 	@Override
 	public void setCheckModeEnabled(boolean enabled) throws GkException {
-		if((enabled && ObjectUtils.equals(GrblMachineState.READY, getState())) || // Check mode is disabled and we want to enable it
+		if((enabled && ObjectUtils.equals(GrblMachineState.IDLE, getState())) || // Check mode is disabled and we want to enable it
 			(!enabled && ObjectUtils.equals(GrblMachineState.CHECK, getState())) ){ // Check mode is enabled and we want to disable it
 			getCommunicator().send(Grbl.CHECK_MODE, true);
 		}else{
@@ -277,7 +318,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public boolean canImport() throws GkException {		
-		return getCommunicator().isConnected() && GrblMachineState.READY.equals(getState());
+		return getCommunicator().isConnected() && GrblMachineState.IDLE.equals(getState());
 	}
 
 	/** (inheritDoc)
@@ -286,7 +327,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	@Override
 	public boolean isReadyToProbe() {		
 		try {
-			return getCommunicator().isConnected() && GrblMachineState.READY.equals(getState());
+			return getCommunicator().isConnected() && GrblMachineState.IDLE.equals(getState());
 		} catch (GkException e) {
 			LOG.error(e);
 		}
@@ -300,7 +341,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	public void handleParserState(String strParserState) throws GkException {
 		GCodeContext context = getGCodeContext();
-		String[] commands = StringUtils.split(" ");
+		String[] commands = StringUtils.split(strParserState, " ");
 		if(commands != null){
 			for (String strCommand : commands) {
 				IGCodeProvider provider = getGCodeService().parse(strCommand);
@@ -472,7 +513,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 * @see org.goko.controller.grbl.commons.configuration.IGrblConfigurationListener#onConfigurationChanged(org.goko.controller.grbl.commons.configuration.AbstractGrblConfiguration)
 	 */
 	@Override
-	public void onConfigurationChanged(GrblConfiguration configuration) {
+	public void onConfigurationChanged(GrblConfiguration configurhation) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -503,4 +544,46 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 			}
 		}
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {
+		super.onQueueExecutionComplete();
+		if(probeUtility != null){
+			probeUtility.clearProbingGCode();
+		}
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		super.onQueueExecutionCanceled();
+		if(probeUtility != null){
+			probeUtility.clearProbingGCode();
+		}
+	}
+
+	/**
+	 * @param message
+	 * @throws GkException 
+	 */
+	public void handleMessage(String message) throws GkException {
+		getInternalState().setMessage(message);
+	}
+	/** (inheritDoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		if(StringUtils.equals(Grblv11Preferences.POLLING_PERIOD_MS, event.getProperty())){
+			if(getStatusPoller() != null){
+				getStatusPoller().setPeriod( Grblv11Preferences.getInstance().getPollingPeriod() );
+			}
+		}
+	}
+
 }

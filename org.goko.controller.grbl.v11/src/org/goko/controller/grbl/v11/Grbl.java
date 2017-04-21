@@ -104,6 +104,12 @@ public abstract class Grbl implements DefaultControllerValues {
 		static final String WCO_X	= "Grbl.v1.1.wco.x";
 		static final String WCO_Y	= "Grbl.v1.1.wco.y";
 		static final String WCO_Z	= "Grbl.v1.1.wco.z";
+		
+		static final String SPINDLE_DIRECTION 	= "Grbl.v1.1.spindle.direction";
+		static final String MIST_COOLANT_STATE	= "Grbl.v1.1.mist.state";
+		static final String FLOOD_COOLANT_STATE	= "Grbl.v1.1.flood.state";
+		
+		static final String MESSAGE	= "Grbl.v1.1.message";
 	}
 	
 	public static class Configuration{

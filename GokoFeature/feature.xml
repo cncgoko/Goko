@@ -684,7 +684,7 @@ Public License instead of this License.  But first, please read
 
    <url>
       <update label="Goko Update site" url="http://update.goko.fr/0.3.3"/>
-      <discovery label="Goko" url="http://www.goko.fr/"/>
+      <discovery label="Goko" url="https://www.goko.fr/"/>
    </url>
 
    <includes
@@ -920,6 +920,20 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="org.goko.tools.macro"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.goko.controller.grbl.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.goko.controller.grbl.v11"
          download-size="0"
          install-size="0"
          version="0.0.0"

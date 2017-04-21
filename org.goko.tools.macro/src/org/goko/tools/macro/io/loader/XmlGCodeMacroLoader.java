@@ -20,7 +20,6 @@ public class XmlGCodeMacroLoader implements ILoader<XmlGCodeMacro, GCodeMacro>{
 	 * 
 	 */
 	public XmlGCodeMacroLoader() {
-		System.out.println("");// TODO Auto-generated constructor stub
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.workspace.service.ILoader#load(java.lang.Object, org.goko.core.workspace.service.IMapperService)

@@ -95,7 +95,7 @@ public abstract class GkFieldEditorPreferencesPage extends GkPreferencesPage {
 		boolean valid = true;
 		if(CollectionUtils.isNotEmpty(fields)){
 			for (IPreferenceFieldEditor<?> fieldEditor : fields) {
-				valid = fieldEditor.isValid();
+				valid = fieldEditor.isValid();				
 				if(!valid){
 					break;
 				}

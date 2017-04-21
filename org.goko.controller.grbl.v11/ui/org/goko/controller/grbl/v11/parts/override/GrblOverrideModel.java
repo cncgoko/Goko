@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.goko.controller.grbl.v11.override;
+package org.goko.controller.grbl.v11.parts.override;
 
 import org.goko.common.bindings.AbstractModelObject;
 

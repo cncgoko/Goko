@@ -106,7 +106,8 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 	public void startMapProbing() throws GkException{
 		getModifier().getHeightMap().build();
 		probingService.checkReadyToProbe();
-		if(executionService.getExecutionState() !=  ExecutionState.IDLE){
+		if(executionService.getExecutionState() ==  ExecutionState.PAUSED
+		|| executionService.getExecutionState() ==  ExecutionState.RUNNING){
 			throw new GkFunctionalException("Some GCode is being executed. Please wait for it to complete before probing.");
 		}
 		Executors.newSingleThreadExecutor().execute(new Runnable() {

@@ -67,16 +67,16 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_wuC_IGqyEeW_4J3oW3NGfQ" featurename="bindings" parentElementId="org.goko.bindingtable.dialogAndWindows">
     <elements xsi:type="commands:KeyBinding" xmi:id="_zCcqsGqyEeW_4J3oW3NGfQ" elementId="org.goko.tools.viewer.jogl.keybinding.0" keySequence="M1+J" command="_lIdcEGqyEeW_4J3oW3NGfQ"/>
-    <elements xsi:type="commands:KeyBinding" xmi:id="_Cois8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.2" keySequence="M2+T" command="_HuLH4J5xEeWki_YL0eV3Fg">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_Cois8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.2" keySequence="M3+T" command="_HuLH4J5xEeWki_YL0eV3Fg">
       <parameters xmi:id="_EdbK8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.4" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.top"/>
     </elements>
-    <elements xsi:type="commands:KeyBinding" xmi:id="_LyTt0M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.1" keySequence="M2+P" command="_HuLH4J5xEeWki_YL0eV3Fg">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_LyTt0M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.1" keySequence="M3+P" command="_HuLH4J5xEeWki_YL0eV3Fg">
       <parameters xmi:id="_Na7RcM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.5" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.PerspectiveCamera"/>
     </elements>
-    <elements xsi:type="commands:KeyBinding" xmi:id="_Q3PnUM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.3" keySequence="M2+L" command="_HuLH4J5xEeWki_YL0eV3Fg">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_Q3PnUM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.3" keySequence="M3+L" command="_HuLH4J5xEeWki_YL0eV3Fg">
       <parameters xmi:id="_R3bR8M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.6" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.left"/>
     </elements>
-    <elements xsi:type="commands:KeyBinding" xmi:id="_T4VZwM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.4" keySequence="M2+F" command="_HuLH4J5xEeWki_YL0eV3Fg">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_T4VZwM2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.keybinding.4" keySequence="M3+F" command="_HuLH4J5xEeWki_YL0eV3Fg">
       <parameters xmi:id="_VLN98M2nEeWMGY9Iv9_UJQ" elementId="org.goko.tools.viewer.jogl.parameter.7" name="jogl.camera.id" value="org.goko.tools.viewer.jogl.camera.orthographic.front"/>
     </elements>
     <elements xsi:type="commands:KeyBinding" xmi:id="_mNFvQAZCEeek6Y_udvCcTA" elementId="org.goko.tools.viewer.jogl.keybinding.6" keySequence="M1+M2+B" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>

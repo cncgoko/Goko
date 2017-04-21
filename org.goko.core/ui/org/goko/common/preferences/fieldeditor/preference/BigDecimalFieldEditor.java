@@ -40,10 +40,10 @@ public class BigDecimalFieldEditor extends StringFieldEditor {
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.preference.StringFieldEditor#isValidValue()
+	 * @see org.goko.common.preferences.fieldeditor.preference.StringFieldEditor#isValidInputValue()
 	 */
 	@Override
-	protected boolean isValidValue() {
+	protected boolean isValidInputValue() {
 		boolean valid = true;
 		if(StringUtils.isNotBlank(getText())){			
 			valid = BigDecimalUtils.isBigDecimal(getText());

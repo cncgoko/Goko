@@ -34,6 +34,7 @@ import org.goko.core.controller.bean.DefaultControllerValues;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueStore;
+import org.goko.core.controller.bean.OnOffBoolean;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
@@ -59,7 +60,7 @@ public abstract class AbstractGrblState<S extends MachineState> extends MachineV
 	private Unit<Length> currentUnit;
 	/** State of active polling */
 	private boolean activePolling;
-	
+
 	/** 
 	 * Constructor 
 	 * @throws GkException GkException 
@@ -106,13 +107,15 @@ public abstract class AbstractGrblState<S extends MachineState> extends MachineV
 		storeValue(DefaultControllerValues.MACHINE_POSITION_Z, "Machine Z", "The Z machine position in absolute coord system",  Length.ZERO);
 				
 		storeValue(DefaultControllerValues.VELOCITY				, "Velocity", "The current velocity of the machine", Speed.ZERO);
-		storeValue(DefaultControllerValues.SPINDLE_STATE		, "Spindle", "The current state of the spindle", "false");
+		storeValue(DefaultControllerValues.SPINDLE_STATE		, "Spindle", "The current state of the spindle", new OnOffBoolean(false));
 		storeValue(DefaultControllerValues.SPINDLE_SPEED		, "Spindle speed", "Current Spindle RPM", 0);
 		storeValue(DefaultControllerValues.CONTEXT_UNIT			, "Units", "The units in use", StringUtils.EMPTY);
 		storeValue(DefaultControllerValues.CONTEXT_COORD_SYSTEM , "Coordinates", "The coordinate system",StringUtils.EMPTY);
 		storeValue(DefaultControllerValues.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
 		storeValue(DefaultControllerValues.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);		
 		storeValue(DefaultControllerValues.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
+		
+		storeValue(DefaultControllerValues.TOOL_OFFSET, "Tool offset", "The current tool length offset", Length.ZERO);
 		
 		storeValue(Grbl.GRBL_AVAILABLE_RX_BUFFER, "Grbl RX Buffer", "The available space in Grbl RX buffer", 0);
 		storeValue(Grbl.GRBL_AVAILABLE_PLANNER_BUFFER, "Grbl Planner Buffer", "The available space in Grbl planner buffer", 0);
@@ -320,6 +323,22 @@ public abstract class AbstractGrblState<S extends MachineState> extends MachineV
 
 	public int getAvailablePlannerBuffer() throws GkException {
 		return getValue(Grbl.GRBL_AVAILABLE_PLANNER_BUFFER, Integer.class).getValue();
+	}
+
+	/**
+	 * @return the toolLengthOffset
+	 * @throws GkException GkException 
+	 */
+	public Length getToolLengthOffset() throws GkException {
+		return getValue(Grbl.TOOL_OFFSET, Length.class).getValue();
+	}
+
+	/**
+	 * @param toolLengthOffset the toolLengthOffset to set
+	 * @throws GkException GkException 
+	 */
+	public void setToolLengthOffset(Length toolLengthOffset) throws GkException {
+		updateValue(Grbl.TOOL_OFFSET, toolLengthOffset);
 	}
 	
 }

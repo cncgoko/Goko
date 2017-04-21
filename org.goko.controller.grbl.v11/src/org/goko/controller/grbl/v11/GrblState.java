@@ -3,11 +3,13 @@
  */
 package org.goko.controller.grbl.v11;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.grbl.commons.AbstractGrblState;
 import org.goko.controller.grbl.v11.bean.GrblMachineState;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.controller.bean.DefaultControllerValues;
+import org.goko.core.controller.bean.OnOffBoolean;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -51,6 +53,12 @@ public class GrblState extends AbstractGrblState<GrblMachineState> {
 		storeValue(Grbl.MachineValue.WCO_X, "WCO X", "The current X work coordinate offset",  Length.ZERO);
 		storeValue(Grbl.MachineValue.WCO_Y, "WCO Y", "The current Y work coordinate offset",  Length.ZERO);
 		storeValue(Grbl.MachineValue.WCO_Z, "WCO Z", "The current Z work coordinate offset",  Length.ZERO);
+		
+		storeValue(Grbl.MachineValue.SPINDLE_DIRECTION, "Spindle dir.", "The current spindle direction",  StringUtils.EMPTY);
+		storeValue(Grbl.MachineValue.MIST_COOLANT_STATE, "Mist", "The current state of the mist coolant",  new OnOffBoolean(false));
+		storeValue(Grbl.MachineValue.FLOOD_COOLANT_STATE, "Flood", "The current state of the flood coolant",  new OnOffBoolean(false));
+		
+		storeValue(Grbl.MachineValue.MESSAGE, "Message", "The last received message",  StringUtils.EMPTY);
 	}
 
 	/**
@@ -130,5 +138,57 @@ public class GrblState extends AbstractGrblState<GrblMachineState> {
 	 */
 	public void setSpindleSpeed(Integer velocity) throws GkException {
 		updateValue(DefaultControllerValues.SPINDLE_SPEED, velocity);
+	}
+	
+	/**
+	 * @return the spindle direction
+	 * @throws GkException
+	 */
+	public String getSpindleDirection() throws GkException {
+		return getValue(Grbl.MachineValue.SPINDLE_DIRECTION, String.class).getValue();
+	}
+
+	/**
+	 * @param direction the spindle direction
+	 * @throws GkException
+	 */
+	public void setSpindleDirection(String direction) throws GkException {
+		updateValue(Grbl.MachineValue.SPINDLE_DIRECTION, direction);
+	}
+	
+	/**
+	 * @return the mist coolant state
+	 * @throws GkException
+	 */
+	public boolean getMistCoolantState() throws GkException {
+		return getValue(Grbl.MachineValue.MIST_COOLANT_STATE, OnOffBoolean.class).getValue().get();
+	}
+
+	/**
+	 * @param state the mist coolant state 
+	 * @throws GkException
+	 */
+	public void setMistCoolantState(boolean state) throws GkException {
+		updateValue(Grbl.MachineValue.MIST_COOLANT_STATE, new OnOffBoolean(state));
+	}
+	
+	/**
+	 * @return the flood coolant state
+	 * @throws GkException
+	 */
+	public boolean getFloodCoolantState() throws GkException {
+		return getValue(Grbl.MachineValue.FLOOD_COOLANT_STATE, OnOffBoolean.class).getValue().get();
+	}
+
+	/**
+	 * @param state the flood coolant state 
+	 * @throws GkException
+	 */
+	public void setFloodCoolantState(boolean state) throws GkException {
+		updateValue(Grbl.MachineValue.FLOOD_COOLANT_STATE, new OnOffBoolean(state));
+	}
+	
+	public void setMessage(String message) throws GkException {
+		updateValue(Grbl.MachineValue.MESSAGE, StringUtils.defaultString(message));
 	}
 }

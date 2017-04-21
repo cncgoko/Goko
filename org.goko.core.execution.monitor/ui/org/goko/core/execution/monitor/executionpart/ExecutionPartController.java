@@ -66,7 +66,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, this);
 		executionService.addExecutionListener(ExecutionQueueType.SYSTEM, this);
 		executionService.addExecutionQueueListener(this);
-		updateTokenQueueData();
+		updateTokenQueueData(true);
 		updateButtonState();
 		executionTimeByToken = new HashMap<Integer, Time>();
 	}
@@ -146,7 +146,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onExecutionComplete(ExecutionToken<ExecutionTokenState> token) throws GkException {
 		getDataModel().setLineCompleteInCurrentToken(0);		
-		updateTokenQueueData();
+		updateTokenQueueData(false);
 		updateButtonState();
 	}
 
@@ -155,7 +155,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 */
 	@Override
 	public void onLineStateChanged(ExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		LOG.info("onLineStateChanged"+idLine);
+		//LOG.info("onLineStateChanged"+idLine);
 		if(executionService.getExecutionState() == ExecutionState.RUNNING ||
 			executionService.getExecutionState() == ExecutionState.PAUSED ||
 			executionService.getExecutionState() == ExecutionState.ERROR ){
@@ -368,7 +368,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	 * Update the data about the execution queue
 	 * @throws GkException GkException
 	 */
-	private void updateTokenQueueData() {
+	private void updateTokenQueueData(boolean updateTime) {
 		try{
 			List<ExecutionToken<ExecutionTokenState>> lstToken = getCurrentExecutionQueue().getExecutionToken();
 			int tokenCount = CollectionUtils.size(lstToken);
@@ -392,7 +392,9 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			this.getDataModel().setTotalLineCount(totalLineCount);
 			this.getDataModel().setLineCompleteFromCompleteToken(completedLineCount);
 			updateCompletedLineCount();
-			updateEstimatedExecutionTime();
+			if(updateTime){
+				updateEstimatedExecutionTime();
+			}
 		}catch(GkException e){
 			LOG.error(e);
 		}
@@ -418,7 +420,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onTokenCreate(ExecutionToken<ExecutionTokenState> token) {
 		updateButtonState();
-		updateTokenQueueData();
+		updateTokenQueueData(true);
 		scheduleExecutionTimeEstimationJob(token.getId());
 	}
 
@@ -428,7 +430,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onTokenDelete(ExecutionToken<ExecutionTokenState> token) {
 		updateButtonState();
-		updateTokenQueueData();
+		updateTokenQueueData(true);
 		executionTimeByToken.remove(token.getId());
 		scheduleExecutionTimeEstimationJob(token.getId());
 	}
@@ -439,7 +441,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Override
 	public void onTokenUpdate(ExecutionToken<ExecutionTokenState> token) {
 		updateButtonState();
-		updateTokenQueueData();
+		updateTokenQueueData(true);
 		scheduleExecutionTimeEstimationJob(token.getId());
 	}
 

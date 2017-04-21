@@ -44,6 +44,10 @@ public class Time extends AbstractQuantity<Time> {
 		return new Time(new BigDecimal(value), unit);
 	}
 	
+	public static Time valueOf(String value, Unit<Time> unit) {		
+		return new Time(new BigDecimal(value), unit);
+	}
+	
 	public static Time valueOf(BigDecimal value, Unit<Time> unit) {		
 		return new Time(value, unit);
 	}

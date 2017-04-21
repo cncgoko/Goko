@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.goko.common.bindings.AbstractModelObject;
+import org.goko.common.preferences.fieldeditor.preference.IStringValidator;
 import org.goko.core.common.exception.GkException;
 
 /**
@@ -51,6 +52,7 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
      * The valid state of this control
      */
     private boolean isValid;
+    private boolean isCustomValid;
     /**
      * The old valid value
      */
@@ -60,7 +62,11 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
      * <code>true</code> by default.
      */
     private boolean emptyStringAllowed = true;
-	
+	/**
+	 * Validator
+	 */
+    private IStringValidator validator;
+    
 	public UiStringFieldEditor(Composite parent, int style) {
 		super(parent, style);
 		//createControls(parent, style);
@@ -123,6 +129,11 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
 		}
 		
 		isValid = isValid && isValidValue();
+		
+		isCustomValid = (validator == null || validator.isValid(getText()));
+		
+		isValid = isValid && isCustomValid;
+		
 	}
 
 	/**
@@ -254,7 +265,11 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
 		if(isValid){
 			return ValidationStatus.OK_STATUS;
 		}
-		return ValidationStatus.error(errorMessage);
+		if(!isCustomValid){
+			return ValidationStatus.error(validator.getErrorMessage());
+		}else{
+			return ValidationStatus.error(errorMessage);
+		}
 	}
 	/**
 	 * @param errorMessage the errorMessage to set
@@ -274,6 +289,20 @@ public class UiStringFieldEditor extends UiLabeledFieldEditor<Text> {
 	public void setEnabled(boolean enabled) {		
 		super.setEnabled(enabled);
 		getControl().setEnabled(enabled);
+	}
+
+	/**
+	 * @return the validator
+	 */
+	public IStringValidator getValidator() {
+		return validator;
+	}
+
+	/**
+	 * @param validator the validator to set
+	 */
+	public void setValidator(IStringValidator validator) {
+		this.validator = validator;
 	}
 
 }

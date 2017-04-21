@@ -47,7 +47,7 @@ public class GrblResetZeroAction extends AbstractGrblControllerAction{
 	 */
 	@Override
 	public boolean canExecute() throws GkException {
-		return ObjectUtils.equals(GrblMachineState.READY, getControllerService().getState());
+		return ObjectUtils.equals(GrblMachineState.IDLE, getControllerService().getState());
 	}
 
 	/** (inheritDoc)

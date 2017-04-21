@@ -74,6 +74,7 @@ import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContextObservable;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.service.IExecutionService;
+import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
@@ -88,7 +89,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 													 C extends AbstractGrblConfiguration<C>,
 													 P extends AbstractGrblCommunicator<C, M, T>,
 													 J extends AbstractGrblJogger<C, M, T>,
-													 X extends AbstractGrblExecutor<T>> extends EventDispatcher implements IGrblControllerService<C, M> {
+													 X extends AbstractGrblExecutor<T>> extends EventDispatcher implements IGrblControllerService<C, M>,IGCodeExecutionListener<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> {
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(AbstractGrblControllerService.class);
 	/** GCode service*/
@@ -134,6 +135,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 		this.jogger = createJogger();
 		this.executor = createExecutor();
 		this.statusPoller = new GrblStatusPoller(this);
+		getInternalState().setActivePolling(true);
 		this.pendingCommandsCount = new AtomicInteger(0);
 	}
 
@@ -366,9 +368,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	 * @throws GkException GkException
 	 */
 	public void refreshStatus() throws GkException{
-		if(isActivePollingEnabled()){
-			communicator.send( Grbl.CURRENT_STATUS, false );
-		}
+		communicator.send( Grbl.CURRENT_STATUS, false );		
 	}
 
 	public void refreshSpaceCoordinates() throws GkException{
@@ -569,6 +569,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 				// End of dirty hack to avoid flooding Grbl RX buffer. Need to work on a proper solution
 			}			
 		}
+		notifyConfigurationChanged();
 		this.configuration = configuration;
 	}
 
@@ -715,6 +716,11 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	@Override
 	public void setActivePollingEnabled(boolean enabled) throws GkException {
 		getInternalState().setActivePolling(enabled);
+		if(enabled){
+			statusPoller.start();
+		}else{
+			statusPoller.stop();
+		}
 	}
 
 	/** (inheritDoc)
@@ -776,7 +782,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 			}
 		}
 		scanner.close();
-		setConfiguration(cfg);
+		applyConfiguration(cfg);
 	}
 
 	/** (inheritDoc)
@@ -866,7 +872,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	 */
 	@Override
 	public void resetGrbl() throws GkException {		
-		communicator.sendImmediately(String.valueOf(Grbl.RESET_COMMAND), false);
+		communicator.sendImmediately(Grbl.RESET_COMMAND, false);
 	}
 
 	/**
@@ -881,13 +887,6 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	 */
 	public P getCommunicator() {
 		return communicator;
-	}
-
-	/**
-	 * @return the gcodeService
-	 */
-	public IRS274NGCService getGcodeService() {
-		return gcodeService;
 	}
 
 	/**
@@ -945,11 +944,81 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	
 	protected void decreasePendingCommands(){
 		pendingCommandsCount.set(Math.max(0, pendingCommandsCount.get() - 1));
-		System.out.println( "pendingCommandsCount: -1  = "+pendingCommandsCount.get());
 	}
 	
 	protected void increasePendingCommands(){
 		pendingCommandsCount.set(Math.max(0, pendingCommandsCount.get() + 1));
-		System.out.println( "pendingCommandsCount: +1  = "+pendingCommandsCount.get());
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionStart()
+	 */
+	@Override
+	public void onQueueExecutionStart() throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionStart(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionStart(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionPause(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionPause(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionResume(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionResume(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
+	 */
+	@Override
+	public void onQueueExecutionComplete() throws GkException {
+		
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
+	 */
+	@Override
+	public void onQueueExecutionCanceled() throws GkException {
+		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
+	 */
+	@Override
+	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
+		
 	}
 }

@@ -51,8 +51,12 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
      * <code>true</code> by default.
      */
     private boolean emptyStringAllowed = true;
+	/**
+	 * Validator
+	 */
+    private IStringValidator validator;
 	
-	public StringFieldEditor(Composite parent, int style) {
+    public StringFieldEditor(Composite parent, int style) {
 		super(parent, style);
 		createControls(parent, style);
 		
@@ -118,19 +122,33 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 		}
 		
 		isValid = isValid && isValidValue();
-		
-        if (isValid) {
+		boolean customValidation = (validator == null || validator.isValid(getText()));
+				
+        if (isValid && customValidation) {
 			clearErrorMessage();
 		} else {
-			showErrorMessage(errorMessage);
+			if(!isValid){
+				showErrorMessage(errorMessage);
+			}else{
+				showErrorMessage(validator.getErrorMessage());
+			}
 		}
+        isValid = isValid && customValidation;
 	}
-
+	
 	/**
 	 * Allow verification in subclass
 	 * @return <code>true</code> if the input is valid, <code>false</code> otherwise
 	 */
-	protected boolean isValidValue() {
+	private boolean isValidValue() {
+		return isValidInputValue();
+	}
+	
+	/**
+	 * Allow verification in subclass
+	 * @return <code>true</code> if the input is valid, <code>false</code> otherwise
+	 */
+	protected boolean isValidInputValue() { 
 		return true;
 	}
 
@@ -250,5 +268,19 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	 */
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	/**
+	 * @return the validator
+	 */
+	public IStringValidator getValidator() {
+		return validator;
+	}
+
+	/**
+	 * @param validator the validator to set
+	 */
+	public void setValidator(IStringValidator validator) {
+		this.validator = validator;
 	}
 }

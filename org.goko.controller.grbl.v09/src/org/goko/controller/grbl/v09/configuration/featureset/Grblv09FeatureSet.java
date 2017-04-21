@@ -50,7 +50,7 @@ import org.osgi.service.event.EventAdmin;
  */
 public class Grblv09FeatureSet implements IFeatureSet {
 	/** Target board definition for this feature set */
-	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v09", "Grbl v0.9 (beta)");
+	public static final TargetBoard GRBL_TARGET_BOARD = new TargetBoard("grbl.v09", "Grbl v0.9");
 	public List<ServiceRegistration> lstServiceregistration;
 
 	public Grblv09FeatureSet() {

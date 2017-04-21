@@ -77,23 +77,24 @@ public class Grblv11eatureSet implements IFeatureSet {
 		GrblCommunicator communicator = new GrblCommunicator(grblControllerService);
 		grblControllerService.setCommunicator(communicator);
 
-		context.registerService(IControllerService.class,	 	grblControllerService, null);
-		lstServiceregistration.add(context.registerService(IGrblControllerService.class, 	grblControllerService, null));
-		lstServiceregistration.add(context.registerService(IJogService.class, 				grblControllerService, null));		
-		lstServiceregistration.add(context.registerService(IGrblOverrideService.class, 		grblControllerService, null));
-		lstServiceregistration.add(context.registerService(IThreeAxisControllerAdapter.class, grblControllerService, null));
-		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, grblControllerService, null));
-		lstServiceregistration.add(context.registerService(IControllerConfigurationFileExporter.class, grblControllerService, null));
-		lstServiceregistration.add(context.registerService(IControllerConfigurationFileImporter.class, grblControllerService, null));
-		lstServiceregistration.add(context.registerService(IGCodeContextProvider.class, grblControllerService, null));
-		lstServiceregistration.add(context.registerService(IProbingService.class, grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IControllerService.class,	 				grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IGrblControllerService.class, 				grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IGrbl11ControllerService.class, 				grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IJogService.class, 							grblControllerService, null));		
+		lstServiceregistration.add(context.registerService(IGrblOverrideService.class, 					grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IThreeAxisControllerAdapter.class, 			grblControllerService, null));
+		lstServiceregistration.add(context.registerService(ICoordinateSystemAdapter.class, 				grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IControllerConfigurationFileExporter.class, 	grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IControllerConfigurationFileImporter.class, 	grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IGCodeContextProvider.class, 				grblControllerService, null));
+		lstServiceregistration.add(context.registerService(IProbingService.class, 						grblControllerService, null));
 		
-		grblControllerService.setGCodeService(findService(context, IRS274NGCService.class));
+		grblControllerService.setGCodeService(findService(context, 				IRS274NGCService.class));
 		grblControllerService.setGcodeExecutionTimeService(findService(context, IGCodeExecutionTimeService.class));		
-		communicator.setConnectionService(findService(context, IConnectionService.class));
-		grblControllerService.setApplicativeLogService(findService(context, IApplicativeLogService.class));
-		communicator.setApplicativeLogService(findService(context, IApplicativeLogService.class));
-		grblControllerService.setExecutionService(findService(context, IExecutionService.class));
+		communicator.setConnectionService(findService(context, 					IConnectionService.class));
+		grblControllerService.setApplicativeLogService(findService(context,		IApplicativeLogService.class));
+		communicator.setApplicativeLogService(findService(context, 				IApplicativeLogService.class));
+		grblControllerService.setExecutionService(findService(context, 			IExecutionService.class));
 
 		grblControllerService.start();
 

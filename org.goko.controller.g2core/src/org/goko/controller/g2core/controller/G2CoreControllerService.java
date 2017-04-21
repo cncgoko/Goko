@@ -455,7 +455,9 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 	 */
 	@Override
 	public void handleProbeResult(boolean probeSuccess, Tuple6b probePosition) throws GkException {
-		probeUtility.handleProbeResult(probeSuccess, probePosition);
+		if(probeUtility != null){
+			probeUtility.handleProbeResult(probeSuccess, probePosition);
+		}
 	}
 	
 	

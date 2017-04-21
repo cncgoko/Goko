@@ -95,10 +95,8 @@ public class AbstractTinyGExecutor<T extends ITinyGControllerService<?>> extends
 
 		if(CollectionUtils.isNotEmpty(lstLines)){
 			GCodeLine line = lstLines.get(0);
-			System.out.println("Confirming line "+line.getId());
+			//System.out.println("Confirming line "+line.getId());
 			confirmLineExecution(line);
-		}else{
-			System.out.println("No sent");
 		}
 	}
 

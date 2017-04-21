@@ -3,6 +3,8 @@
  */
 package org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize;
 
+import java.math.BigDecimal;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -10,6 +12,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.goko.common.preferences.fieldeditor.preference.validator.BigDecimalValidator;
 import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.config.GokoPreference;
@@ -51,7 +54,7 @@ public class SegmentizePropertiesPanel extends AbstractModifierPropertiesPanel<S
 		lengthFieldEditor.setUnit(GokoPreference.getInstance().getLengthUnit());
 		lengthFieldEditor.setPropertyName(SegmentizeModifierPropertiesModel.CHORDAL_TOLERANCE);
 		lengthFieldEditor.setLabel("Chordal tolerance");
-		
+		lengthFieldEditor.setValidator(new BigDecimalValidator(BigDecimal.ZERO, false, null, false, "Chordal tolerance should be non-zero"));
 		getController().addFieldEditor(lengthFieldEditor);
 	}
 }
