@@ -35,6 +35,7 @@
 		<module>../org.goko.controller.grbl.commons</module>
 		<module>../org.goko.controller.grbl.v08</module>
 		<module>../org.goko.controller.grbl.v09</module>
+		<module>../org.goko.controller.grbl.v11</module>
 
 		<module>../org.goko.core</module>
 		<module>../org.goko.core.execution.monitor</module>
