@@ -39,3 +39,4 @@ Export-Package: org.goko.controller.grbl.commons,
  org.goko.controller.grbl.commons.probe,
  org.goko.controller.grbl.commons.schedule,
  org.goko.controller.grbl.commons.topic
+Bundle-ActivationPolicy: lazy
