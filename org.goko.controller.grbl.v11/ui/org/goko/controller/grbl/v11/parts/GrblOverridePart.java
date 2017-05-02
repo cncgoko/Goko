@@ -21,21 +21,24 @@ import org.goko.common.GkUiComponent;
 import org.goko.controller.grbl.v11.parts.override.GrblOverrideController;
 import org.goko.controller.grbl.v11.parts.override.GrblOverrideModel;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 
 /**
  * @author Psyko
  * @date 10 avr. 2017
  */
 public class GrblOverridePart extends GkUiComponent<GrblOverrideController, GrblOverrideModel> {
-
+	private static final GkLog LOG = GkLog.getLogger(GrblOverridePart.class);
 	/**
 	 * @param context
 	 * @param abstractController
 	 */
 	@Inject
-	public GrblOverridePart(IEclipseContext context) {
+	public GrblOverridePart(IEclipseContext context) {		
 		super(context, new GrblOverrideController());
+		LOG.info("constructor of GrblOverridePart");
 		ContextInjectionFactory.inject(getController(), context);
+		LOG.info("done injecting");
 	}
 
 	@PostConstruct
@@ -47,16 +50,13 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 		
 		Composite composite = new Composite(composite_1, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		GridLayout gl_composite = new GridLayout(7, true);
+		GridLayout gl_composite = new GridLayout(6, true);
 		gl_composite.marginWidth = 0;
 		gl_composite.verticalSpacing = 10;
 		composite.setLayout(gl_composite);
 		
 		Label lblFeed = new Label(composite, SWT.NONE);
 		lblFeed.setText("Feed:");
-		
-		Label lblNewLabel = new Label(composite, SWT.NONE);
-		lblNewLabel.setText("100%");
 		
 		Button btnFeedMinus10 = new Button(composite, SWT.NONE);
 		btnFeedMinus10.addMouseListener(new MouseAdapter() {
@@ -65,7 +65,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().decreaseFeedSpeed10();
 			}
 		});
-		GridData gd_btnFeedMinus10 = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
+		GridData gd_btnFeedMinus10 = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd_btnFeedMinus10.heightHint = 30;
 		gd_btnFeedMinus10.widthHint = 50;
 		btnFeedMinus10.setLayoutData(gd_btnFeedMinus10);
@@ -79,7 +79,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().decreaseFeedSpeed1();
 			}
 		});
-		GridData gd_btnFeedMinus1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnFeedMinus1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnFeedMinus1.heightHint = 30;
 		gd_btnFeedMinus1.widthHint = 50;
 		btnFeedMinus1.setLayoutData(gd_btnFeedMinus1);
@@ -93,7 +93,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().resetFeedSpeed();
 			}
 		});
-		GridData gd_btnFeedReset = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnFeedReset = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnFeedReset.heightHint = 30;
 		gd_btnFeedReset.widthHint = 50;
 		btnFeedReset.setLayoutData(gd_btnFeedReset);
@@ -107,7 +107,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().increaseFeedSpeed1();
 			}
 		});
-		GridData gd_btnFeedPlus1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnFeedPlus1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnFeedPlus1.heightHint = 30;
 		gd_btnFeedPlus1.widthHint = 50;
 		btnFeedPlus1.setLayoutData(gd_btnFeedPlus1);
@@ -121,7 +121,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().increaseFeedSpeed10();
 			}
 		});
-		GridData gd_btnFeedPlus10 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnFeedPlus10 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnFeedPlus10.heightHint = 30;
 		gd_btnFeedPlus10.widthHint = 50;
 		btnFeedPlus10.setLayoutData(gd_btnFeedPlus10);
@@ -131,9 +131,6 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 		Label lblSpindle = new Label(composite, SWT.NONE);
 		lblSpindle.setText("Spindle:");
 		
-		Label lblNewLabel_1 = new Label(composite, SWT.NONE);
-		lblNewLabel_1.setText("90%");
-		
 		Button btnSpindleMinus10 = new Button(composite, SWT.NONE);
 		btnSpindleMinus10.addMouseListener(new MouseAdapter() {
 			@Override
@@ -141,7 +138,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().decreaseSpindleSpeed10();
 			}
 		});
-		GridData gd_btnSpindleMinus10 = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
+		GridData gd_btnSpindleMinus10 = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_btnSpindleMinus10.heightHint = 30;
 		gd_btnSpindleMinus10.widthHint = 50;
 		btnSpindleMinus10.setLayoutData(gd_btnSpindleMinus10);
@@ -155,7 +152,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().decreaseSpindleSpeed1();
 			}
 		});
-		GridData gd_btnSpindleMinus1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnSpindleMinus1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnSpindleMinus1.heightHint = 30;
 		gd_btnSpindleMinus1.widthHint = 50;
 		btnSpindleMinus1.setLayoutData(gd_btnSpindleMinus1);
@@ -169,7 +166,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().resetSpindleSpeed();
 			}
 		});
-		GridData gd_btnSpindleReset = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnSpindleReset = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnSpindleReset.heightHint = 30;
 		gd_btnSpindleReset.widthHint = 50;
 		btnSpindleReset.setLayoutData(gd_btnSpindleReset);
@@ -183,7 +180,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().increaseSpindleSpeed1();
 			}
 		});
-		GridData gd_btnSpindlePlus1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnSpindlePlus1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnSpindlePlus1.heightHint = 30;
 		gd_btnSpindlePlus1.widthHint = 50;
 		btnSpindlePlus1.setLayoutData(gd_btnSpindlePlus1);
@@ -197,7 +194,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().increaseSpindleSpeed10();
 			}
 		});
-		GridData gd_btnSpindlePlus10 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnSpindlePlus10 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnSpindlePlus10.heightHint = 30;
 		gd_btnSpindlePlus10.widthHint = 50;
 		btnSpindlePlus10.setLayoutData(gd_btnSpindlePlus10);
@@ -207,9 +204,6 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 		Label lblRapid = new Label(composite, SWT.NONE);
 		lblRapid.setText("Rapid:");
 		
-		Label lblNewLabel_2 = new Label(composite, SWT.NONE);
-		lblNewLabel_2.setText("15%");
-		
 		Button btnRapid25 = new Button(composite, SWT.NONE);
 		btnRapid25.addMouseListener(new MouseAdapter() {
 			@Override
@@ -217,7 +211,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().setRapidSpeed25();
 			}
 		});
-		GridData gd_btnRapid25 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_btnRapid25 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnRapid25.heightHint = 30;
 		gd_btnRapid25.widthHint = 50;
 		btnRapid25.setLayoutData(gd_btnRapid25);
@@ -231,7 +225,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().setRapidSpeed50();
 			}
 		});
-		GridData gd_btnRapid50 = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
+		GridData gd_btnRapid50 = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_btnRapid50.heightHint = 30;
 		gd_btnRapid50.widthHint = 50;
 		btnRapid50.setLayoutData(gd_btnRapid50);
@@ -245,7 +239,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 				getController().resetRapidSpeed();
 			}
 		});
-		GridData gd_btnRapid100 = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
+		GridData gd_btnRapid100 = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		gd_btnRapid100.heightHint = 30;
 		gd_btnRapid100.widthHint = 50;
 		btnRapid100.setLayoutData(gd_btnRapid100);
@@ -267,7 +261,7 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 		btnNewButton_7.setText("Toggle spindle");
 		
 		Button btnNewButton_8 = new Button(composite_2, SWT.NONE);
-		btnNewButton_8.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		btnNewButton_8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		btnNewButton_8.setText("Toggle flood coolant");
 		
 		Button btnNewButton_9 = new Button(composite_2, SWT.NONE);
