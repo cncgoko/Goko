@@ -134,7 +134,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 		this.actionFactory.createActions();
 		this.jogger = createJogger();
 		this.executor = createExecutor();
-		this.statusPoller = new GrblStatusPoller(this);
+		this.statusPoller = new GrblStatusPoller(this);		
 		getInternalState().setActivePolling(true);
 		this.pendingCommandsCount = new AtomicInteger(0);
 	}

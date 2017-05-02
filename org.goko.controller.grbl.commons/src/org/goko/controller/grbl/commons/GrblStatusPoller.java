@@ -23,7 +23,7 @@ public class GrblStatusPoller {
 	/** Target service*/
 	private IGrblControllerService<?, ?> grblControllerService;
 	/** The polling period*/
-	private Time period = Time.valueOf(200, TimeUnit.MILLISECOND);
+	private Time period = Time.valueOf(100, TimeUnit.MILLISECOND);
 	/** Running state */
 	private boolean running;
 	

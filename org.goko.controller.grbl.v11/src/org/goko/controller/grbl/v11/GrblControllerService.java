@@ -178,6 +178,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	protected void startGrblService() {
+		getStatusPoller().setPeriod( Grblv11Preferences.getInstance().getPollingPeriod() );
 		getInternalState().addListener(this);
 	}
 
