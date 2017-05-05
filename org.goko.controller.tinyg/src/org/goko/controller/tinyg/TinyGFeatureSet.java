@@ -15,6 +15,7 @@ import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
+import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -64,6 +65,7 @@ public class TinyGFeatureSet implements IFeatureSet {
 		context.registerService(IControllerConfigurationFileImporter.class, service, null);		
 				
 		service.setGCodeService(findService(context, IRS274NGCService.class));
+		service.setGcodeExecutionTimeService(findService(context, IGCodeExecutionTimeService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));		
 		service.setExecutionService(findService(context, IExecutionService.class));		
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));

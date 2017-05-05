@@ -89,7 +89,7 @@ public class G2Core extends TinyG {
     
     public static class Configuration{
     	public static class Groups{
-    		public static final String SYSTEM 	  = "sys";
+    		public static final String SYSTEM = "sys";
     		public static final String X_AXIS = "x";
     		public static final String Y_AXIS = "y";
     		public static final String Z_AXIS = "z";

@@ -99,7 +99,7 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 		for(TinyGSetting setting : lstSettings){
 			if(StringUtils.equalsIgnoreCase( setting.getIdentifier(), identifier ) ){
 				if(setting.getType() != clazz){
-					throw new GkTechnicalException("Cannot retrieve setting '"+identifier+"' type. Requesting "+clazz+"', got'"+setting.getType()+"'. ");
+					throw new GkTechnicalException("Cannot retrieve setting '"+identifier+"' type. Requesting "+clazz+"', got'"+setting.getType()+"'. ");				
 				}
 				return (T) setting.getValue();
 			}
@@ -167,6 +167,7 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	public <T> void setSetting(String groupIdentifier, String identifier, T value) throws GkException{
 		for(TinyGGroupSettings grpSetting : groups){
 			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
+				System.err.println("Assignging "+grpSetting.getGroupIdentifier()+"/"+identifier+" = "+value);
 				setSetting(grpSetting, identifier, value);				
 				return;
 			}
@@ -200,7 +201,8 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	 */
 	public boolean isCompletelyLoaded(){
 		for (TinyGGroupSettings tinyGGroupSettings : groups) {
-			if(!tinyGGroupSettings.isCompletelyLoaded()){				
+			if(!tinyGGroupSettings.isCompletelyLoaded()){
+				System.err.println(" on group "+tinyGGroupSettings.getGroupIdentifier());
 				return false;
 			}
 		}		
@@ -240,17 +242,23 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	@SuppressWarnings("unchecked")
 	public C getDifferentialConfiguration(C otherConfig) throws GkException{
 		C diffConfig = newInstance();
-		diffConfig.copyFrom(this);
-		
-		for(TinyGGroupSettings group : getGroups()){
-			List<TinyGSetting<?>> settings = group.getSettings();
-			for (TinyGSetting<?> tinyGSetting : settings) {
-				Object baseValue = tinyGSetting.getValue();				
-				Object newValue = otherConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
-				if(!ObjectUtils.equals(baseValue, newValue)){
-					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
-				}else{
-					diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), null);
+		if(!isCompletelyLoaded() && otherConfig.isCompletelyLoaded()){
+			// We switch from a partial config to a complete config
+			diffConfig.copyFrom(otherConfig);
+		}else if(!isCompletelyLoaded() && !otherConfig.isCompletelyLoaded()){
+			// Otherwise, let's compute it setting by setting
+			diffConfig.copyFrom(this);
+			
+			for(TinyGGroupSettings group : getGroups()){
+				List<TinyGSetting<?>> settings = group.getSettings();
+				for (TinyGSetting<?> tinyGSetting : settings) {
+					Object baseValue = tinyGSetting.getValue();				
+					Object newValue = otherConfig.getSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), tinyGSetting.getType());
+					if(!ObjectUtils.equals(baseValue, newValue)){
+						diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), newValue);
+					}else{
+						diffConfig.setSetting(group.getGroupIdentifier(), tinyGSetting.getIdentifier(), null);
+					}
 				}
 			}
 		}
@@ -289,7 +297,7 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the default group (usually the system group)
 	 * @return the default group 

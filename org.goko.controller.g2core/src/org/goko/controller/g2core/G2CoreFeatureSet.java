@@ -18,6 +18,7 @@ import org.goko.core.controller.IGCodeContextProvider;
 import org.goko.core.controller.IJogService;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.IWorkVolumeProvider;
+import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.feature.IFeatureSet;
 import org.goko.core.feature.TargetBoard;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
@@ -52,7 +53,6 @@ public class G2CoreFeatureSet implements IFeatureSet {
 		communicator.setConnectionService(findService(context, ISerialConnectionService.class));
 		
 		G2CoreControllerService service = new G2CoreControllerService(communicator);
-		// ITinygControllerService extends IControllerService, IProbingService, IFourAxisControllerAdapter, ICoordinateSystemAdapter, IContinuousJogService
 		context.registerService(IControllerService.class, service, null);
 		context.registerService(IG2CoreControllerService.class, service, null);		
 		context.registerService(IProbingService.class, service, null);
@@ -68,6 +68,7 @@ public class G2CoreFeatureSet implements IFeatureSet {
 		service.setGCodeService(findService(context, IRS274NGCService.class));
 		service.setEventAdmin(findService(context, EventAdmin.class));		
 		service.setExecutionService(findService(context, IExecutionService.class));
+		service.setGcodeExecutionTimeService(findService(context, IGCodeExecutionTimeService.class));
 		
 		IApplicativeLogService applicativeLogService = findService(context, IApplicativeLogService.class);
 		service.setApplicativeLogService(findService(context, IApplicativeLogService.class));

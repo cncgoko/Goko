@@ -24,10 +24,13 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.action.ControllerActionFactory;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueueType;
@@ -52,6 +55,8 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 	private EventAdmin eventAdmin;
 	/** The probe utility */
 	private ProbeUtility probeUtility;	
+	/** Execution time service - keep updated with maximum feed */
+	private IGCodeExecutionTimeService gcodeExecutionTimeService;
 	
 	/**
 	 * @param communicator 
@@ -284,45 +289,6 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#detectWorkVolumeUpdate(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
-	 */
-	@Override
-	protected boolean detectWorkVolumeUpdate(G2CoreConfiguration currentConfiguration, G2CoreConfiguration newConfiguration) {
-		return newConfiguration.isCompletelyLoaded() && 
-			(detectWorkVolumeUpdateOnAxis(G2Core.Configuration.Groups.X_AXIS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(G2Core.Configuration.Groups.Y_AXIS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(G2Core.Configuration.Groups.Z_AXIS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(G2Core.Configuration.Groups.A_AXIS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(G2Core.Configuration.Groups.B_AXIS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(G2Core.Configuration.Groups.C_AXIS, currentConfiguration, newConfiguration));
-	}
-	
-	/**
-	 * Detect any work volume update on the given axis 
-	 * @param axis the axis 
-	 * @param currentConfiguration the current configuration
-	 * @param newConfiguration the new configuration
-	 * @return <code>true</code> if an update was detected, <code>false</code> otherwise
-	 */
-	protected boolean detectWorkVolumeUpdateOnAxis(String axis, G2CoreConfiguration currentConfiguration, G2CoreConfiguration newConfiguration){		
-		try {
-			BigDecimal oldMinValue = currentConfiguration.getSetting(axis, G2Core.Configuration.Axes.TRAVEL_MINIMUM, BigDecimal.class);
-			BigDecimal newMinValue = newConfiguration.getSetting(axis, G2Core.Configuration.Axes.TRAVEL_MINIMUM, BigDecimal.class);
-			if(oldMinValue != null && newMinValue != null && oldMinValue.compareTo(newMinValue) != 0){
-				return true;
-			}
-			
-			BigDecimal oldMaxValue = currentConfiguration.getSetting(axis, G2Core.Configuration.Axes.TRAVEL_MAXIMUM, BigDecimal.class);
-			BigDecimal newMaxValue = newConfiguration.getSetting(axis, G2Core.Configuration.Axes.TRAVEL_MAXIMUM, BigDecimal.class);
-			if(oldMaxValue != null && newMaxValue != null && oldMaxValue.compareTo(newMaxValue) != 0){
-				return true;
-			}
-		} catch (GkException e) {
-			LOG.error(e);
-		}
-		return false;
-	}
-	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()
 	 */
 	@Override
@@ -422,6 +388,49 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
+	 */
+	@Override
+	public void onConfigurationChanged(G2CoreConfiguration oldConfig, G2CoreConfiguration newConfig) {
+				
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationSettingChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void onConfigurationSettingChanged(G2CoreConfiguration oldConfig, G2CoreConfiguration newConfig, String groupIdentifier, String settingIdentifier) {
+		if(StringUtils.equals(settingIdentifier, G2Core.Configuration.Axes.TRAVEL_MINIMUM)
+		|| StringUtils.equals(settingIdentifier, G2Core.Configuration.Axes.TRAVEL_MAXIMUM)){
+			notifyWorkVolumeUpdate();
+		}		
+		
+		try{
+			if(StringUtils.equals(settingIdentifier, G2Core.Configuration.Axes.FEEDRATE_MAXIMUM)){			
+				BigDecimal xMaxValue = newConfig.getSetting(G2Core.Configuration.Groups.X_AXIS, G2Core.Configuration.Axes.FEEDRATE_MAXIMUM, BigDecimal.class);
+				BigDecimal yMaxValue = newConfig.getSetting(G2Core.Configuration.Groups.Y_AXIS, G2Core.Configuration.Axes.FEEDRATE_MAXIMUM, BigDecimal.class);
+				BigDecimal zMaxValue = newConfig.getSetting(G2Core.Configuration.Groups.Z_AXIS, G2Core.Configuration.Axes.FEEDRATE_MAXIMUM, BigDecimal.class);
+				BigDecimal aMaxValue = newConfig.getSetting(G2Core.Configuration.Groups.A_AXIS, G2Core.Configuration.Axes.FEEDRATE_MAXIMUM, BigDecimal.class);
+				Unit<Speed> unit = getInternalState().getGCodeContext().getUnit().getFeedUnit();
+				if(xMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setXAxisMaximumFeed( Speed.valueOf(xMaxValue, unit));
+				}
+				if(yMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setYAxisMaximumFeed( Speed.valueOf(yMaxValue, unit));
+				}
+				if(zMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setZAxisMaximumFeed( Speed.valueOf(zMaxValue, unit));
+				}
+				if(aMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setAAxisMaximumFeed( Speed.valueOf(aMaxValue, unit));
+				}
+			}
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.IProbingService#isReadyToProbe()
 	 */
 	@Override
@@ -517,5 +526,19 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 	@Override
 	public void resetConfiguration() {
 		setConfiguration( new G2CoreConfiguration() );		
+	}
+	
+	/**
+	 * @return the gcodeExecutionTimeService
+	 */
+	public IGCodeExecutionTimeService getGcodeExecutionTimeService() {
+		return gcodeExecutionTimeService;
+	}
+
+	/**
+	 * @param gcodeExecutionTimeService the gcodeExecutionTimeService to set
+	 */
+	public void setGcodeExecutionTimeService(IGCodeExecutionTimeService gcodeExecutionTimeService) {
+		this.gcodeExecutionTimeService = gcodeExecutionTimeService;
 	}
 }

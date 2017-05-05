@@ -58,18 +58,17 @@ public class G2CoreConfigurationWatcherHandler implements ITinyGConfigurationLis
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.controller.configuration.TinyGConfiguration)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
 	 */
 	@Override
-	public void onConfigurationChanged(G2CoreConfiguration configuration) {	
-		if(!updateInProgress.get() &&  configuration.isCompletelyLoaded()){			
+	public void onConfigurationChanged(G2CoreConfiguration oldConfig, G2CoreConfiguration newConfig) {
+		if(!updateInProgress.get() &&  newConfig.isCompletelyLoaded()){			
 			
 			List<ITinyGConfigurationFix<G2CoreConfiguration>> lstFixToApply = new ArrayList<ITinyGConfigurationFix<G2CoreConfiguration>>();
-			G2CoreConfiguration tinyGConfiguration = controllerService.getConfiguration();
 			
 			if(CollectionUtils.isNotEmpty(lstConfigurationFix)){
 				for (ITinyGConfigurationFix<G2CoreConfiguration> fix : lstConfigurationFix) {
-					if(fix.shouldApply(tinyGConfiguration)){
+					if(fix.shouldApply(newConfig)){
 						lstFixToApply.add(fix);							
 					}
 				}
@@ -82,6 +81,14 @@ public class G2CoreConfigurationWatcherHandler implements ITinyGConfigurationLis
 		}	
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationSettingChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void onConfigurationSettingChanged(G2CoreConfiguration oldConfig, G2CoreConfiguration newConfig, String groupIdentifier, String settingIdentifier) {
+		// TODO Auto-generated method stub
+		
+	}
 	/**
 	 * Opens the dialog describing changes that should be made, and asking for user feedback
 	 * @param lstFixToApply the list of fix to apply

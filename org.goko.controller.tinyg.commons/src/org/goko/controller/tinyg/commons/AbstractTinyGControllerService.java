@@ -15,6 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration;
 import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
+import org.goko.controller.tinyg.commons.configuration.TinyGGroupSettings;
+import org.goko.controller.tinyg.commons.configuration.TinyGSetting;
 import org.goko.controller.tinyg.commons.jog.AbstractTinyGJogger;
 import org.goko.controller.tinyg.commons.schedule.TinyGScheduler;
 import org.goko.core.common.applicative.logging.IApplicativeLogService;
@@ -62,13 +64,13 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 													 C extends AbstractTinyGConfiguration<C>,
 													 P extends AbstractTinyGCommunicator<C, T>,
 													 J extends AbstractTinyGJogger<C, T, P>,
-													 X extends AbstractTinyGExecutor<T>> extends EventDispatcher implements ITinyGControllerService<C>{
+													 X extends AbstractTinyGExecutor<T>> extends EventDispatcher implements ITinyGControllerService<C>, ITinyGConfigurationListener<C>{
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(AbstractTinyGControllerService.class);
 	/** Bean holding the internal state of the controller */
 	private S internalState;
 	/** Action factory */
-	private ControllerActionFactory actionFactory;
+	private ControllerActionFactory actionFactory;	
 	/** The TinyG Configuration*/
 	private C configuration;
 	/** The used communicator */
@@ -111,6 +113,7 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		this.actionFactory.createActions();
 		this.jogger = createJogger();
 		this.executor = createExecutor();
+		this.addConfigurationListener(this);
 	}
 
 	/**
@@ -631,10 +634,43 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	/**
 	 * Notifies the registered listeners for a configuration change
 	 */
-	private void notifyConfigurationChanged(){
-		C cfg = configuration.getCopy();
+	private void notifyConfigurationChanged(C oldConfig, C newConfig){
+		if(!newConfig.isCompletelyLoaded()){
+			return;
+		}
 		for (ITinyGConfigurationListener<C> listener : configurationListener) {
-			listener.onConfigurationChanged(cfg);
+			listener.onConfigurationChanged(oldConfig, newConfig);
+		}
+	}
+	
+	/**
+	 * Notifies the registered listeners for a configuration change
+	 */
+	private void notifySettingsChanged(C oldConfig, C newConfig){
+		if(!newConfig.isCompletelyLoaded()){
+			return;
+		}
+		try{	
+			boolean testo = oldConfig.isCompletelyLoaded();
+			boolean testn = newConfig.isCompletelyLoaded();
+			C cfg = oldConfig.getDifferentialConfiguration(newConfig);		
+			List<TinyGGroupSettings> lstGroups = cfg.getGroups();
+			newConfig.isCompletelyLoaded();
+			for (TinyGGroupSettings group : lstGroups) {
+				for (TinyGSetting<?> setting : group.getSettings()) {
+					if(setting.getValue() != null){
+						for (ITinyGConfigurationListener<C> listener : configurationListener) {
+							listener.onConfigurationSettingChanged(oldConfig,
+																	newConfig,
+																	group.getGroupIdentifier(),
+																	setting.getIdentifier());
+																	
+						}	
+					}	
+				}
+			}			
+		}catch(GkException e){
+			LOG.error(e);
 		}
 	}
 
@@ -642,23 +678,15 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	 * @param configuration the configuration to set
 	 */
 	public void setConfiguration(C configuration) {
-		boolean workVolumeUpdate = detectWorkVolumeUpdate(this.configuration, configuration); 
-		boolean isFirstTimeCompletelyLoaded = !this.configuration.isCompletelyLoaded() && configuration.isCompletelyLoaded(); 
+		C oldConfig = getConfiguration();
+		C newConfig = configuration;		 
 		this.configuration = configuration;
-		this.notifyConfigurationChanged();	
-		if(workVolumeUpdate || isFirstTimeCompletelyLoaded){
-			notifyWorkVolumeUpdate();
-		}		
+		// Notify changed settings
+		this.notifySettingsChanged(oldConfig, newConfig);		
+		// Notify global configuration change
+		this.notifyConfigurationChanged(oldConfig, newConfig);				
 	}
-		
-	/**
-	 * Detect if the work volume was updated 
-	 * @param currentConfiguration the current configuration
-	 * @param newConfiguration the new configuration
-	 * @return
-	 */
-	protected abstract boolean detectWorkVolumeUpdate(C currentConfiguration, C newConfiguration);
-
+	
 	/**
 	 * Resets the configuration
 	 */
@@ -783,4 +811,5 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	public void setApplicativeLogService(IApplicativeLogService applicativeLogService) {
 		this.applicativeLogService = applicativeLogService;
 	}
+		
 }

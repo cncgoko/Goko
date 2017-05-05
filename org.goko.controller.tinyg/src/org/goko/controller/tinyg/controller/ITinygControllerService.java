@@ -20,12 +20,14 @@
 package org.goko.controller.tinyg.controller;
 
 import org.goko.controller.tinyg.commons.ITinyGControllerService;
+import org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.gcode.element.GCodeLine;
 
-public interface ITinygControllerService extends ITinyGControllerService<TinyGConfiguration>{
+public interface ITinygControllerService extends ITinyGControllerService<TinyGConfiguration>,
+												ITinyGConfigurationListener<TinyGConfiguration>{
 	
 	/**
 	 * Returns the machine state 

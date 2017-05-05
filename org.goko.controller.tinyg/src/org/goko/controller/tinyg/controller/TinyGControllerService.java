@@ -33,12 +33,15 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.TimeUnit;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.action.ControllerActionFactory;
 import org.goko.core.controller.bean.MachineState;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.execution.IGCodeExecutionTimeService;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueueType;
@@ -58,7 +61,6 @@ import com.eclipsesource.json.JsonObject;
  * @author PsyKo
  *
  */
-// public class G2CoreControllerService extends AbstractTinyGControllerService<G2CoreControllerService, G2CoreState, G2CoreConfiguration, G2CoreCommunicator, G2CoreJogger, G2CoreExecutor> implements IG2CoreControllerService{
 public class TinyGControllerService extends AbstractTinyGControllerService<TinyGControllerService, TinyGState, TinyGConfiguration, TinyGCommunicator, TinyGJogging, TinyGExecutor> implements ITinygControllerService{
 	static final GkLog LOG = GkLog.getLogger(TinyGControllerService.class);
 	/**  Service ID */
@@ -69,6 +71,8 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	private EventAdmin eventAdmin;
 	/** The probe utility */
 	private ProbeUtility probeUtility;		
+	/** Execution time service - keep updated with maximum feed */
+	private IGCodeExecutionTimeService gcodeExecutionTimeService;
 	
 	/**
 	 * Constructor
@@ -511,45 +515,6 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#detectWorkVolumeUpdate(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
-	 */
-	@Override
-	protected boolean detectWorkVolumeUpdate(TinyGConfiguration currentConfiguration, TinyGConfiguration newConfiguration) {
-		return newConfiguration.isCompletelyLoaded() && 
-			( detectWorkVolumeUpdateOnAxis(TinyGConfiguration.X_AXIS_SETTINGS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.Y_AXIS_SETTINGS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.Z_AXIS_SETTINGS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.A_AXIS_SETTINGS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.B_AXIS_SETTINGS, currentConfiguration, newConfiguration)
-			|| detectWorkVolumeUpdateOnAxis(TinyGConfiguration.C_AXIS_SETTINGS, currentConfiguration, newConfiguration));
-	}
-	
-	/**
-	 * Detect any work volume update on the given axis 
-	 * @param axis the axis 
-	 * @param currentConfiguration the current configuration
-	 * @param newConfiguration the new configuration
-	 * @return <code>true</code> if an update was detected, <code>false</code> otherwise
-	 */
-	protected boolean detectWorkVolumeUpdateOnAxis(String axis, TinyGConfiguration currentConfiguration, TinyGConfiguration newConfiguration){		
-		try {
-			BigDecimal oldMinValue = currentConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class);
-			BigDecimal newMinValue = newConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MINIMUM, BigDecimal.class);
-			if(oldMinValue != null && newMinValue != null && oldMinValue.compareTo(newMinValue) != 0){
-				return true;
-			}
-			
-			BigDecimal oldMaxValue = currentConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class);
-			BigDecimal newMaxValue = newConfiguration.getSetting(axis, TinyGAxisSettings.TRAVEL_MAXIMUM, BigDecimal.class);
-			if(oldMaxValue != null && newMaxValue != null && oldMaxValue.compareTo(newMaxValue) != 0){
-				return true;
-			}
-		} catch (GkException e) {
-			LOG.error(e);
-		}
-		return false;
-	}
-	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerConfigurationFileExporter#getFileExtension()
 	 */
 	@Override
@@ -641,6 +606,50 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 			probeUtility.clearProbingGCode();
 		}
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
+	 */
+	@Override
+	public void onConfigurationChanged(TinyGConfiguration oldConfig, TinyGConfiguration newConfig) {
+		// TODO Auto-generated method stub
+		
+	}
+		
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationSettingChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void onConfigurationSettingChanged(TinyGConfiguration oldConfig, TinyGConfiguration newConfig, String groupIdentifier, String settingIdentifier) {
+		if(StringUtils.equals(settingIdentifier, TinyGAxisSettings.TRAVEL_MINIMUM)
+		|| StringUtils.equals(settingIdentifier, TinyGAxisSettings.TRAVEL_MAXIMUM)){
+			notifyWorkVolumeUpdate();
+		}	
+
+		try{
+			if(StringUtils.equals(settingIdentifier, TinyGAxisSettings.FEEDRATE_MAXIMUM)){			
+				BigDecimal xMaxValue = newConfig.getSetting(TinyGConfiguration.X_AXIS_SETTINGS, TinyGAxisSettings.FEEDRATE_MAXIMUM, BigDecimal.class);
+				BigDecimal yMaxValue = newConfig.getSetting(TinyGConfiguration.Y_AXIS_SETTINGS, TinyGAxisSettings.FEEDRATE_MAXIMUM, BigDecimal.class);
+				BigDecimal zMaxValue = newConfig.getSetting(TinyGConfiguration.Z_AXIS_SETTINGS, TinyGAxisSettings.FEEDRATE_MAXIMUM, BigDecimal.class);
+				BigDecimal aMaxValue = newConfig.getSetting(TinyGConfiguration.A_AXIS_SETTINGS, TinyGAxisSettings.FEEDRATE_MAXIMUM, BigDecimal.class);
+				Unit<Speed> unit = getInternalState().getGCodeContext().getUnit().getFeedUnit();
+				if(xMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setXAxisMaximumFeed( Speed.valueOf(xMaxValue, unit));
+				}
+				if(yMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setYAxisMaximumFeed( Speed.valueOf(yMaxValue, unit));
+				}
+				if(zMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setZAxisMaximumFeed( Speed.valueOf(zMaxValue, unit));
+				}
+				if(aMaxValue != null){
+					gcodeExecutionTimeService.getExecutionConstraint().setAAxisMaximumFeed( Speed.valueOf(aMaxValue, unit));
+				}
+			}
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeLineExecutionListener#onLineStateChanged(org.goko.core.gcode.execution.IExecutionToken, java.lang.Integer)
@@ -670,5 +679,19 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	@Override
 	public void resetConfiguration() {
 		setConfiguration( new TinyGConfiguration() );		
+	}
+
+	/**
+	 * @return the gcodeExecutionTimeService
+	 */
+	public IGCodeExecutionTimeService getGcodeExecutionTimeService() {
+		return gcodeExecutionTimeService;
+	}
+
+	/**
+	 * @param gcodeExecutionTimeService the gcodeExecutionTimeService to set
+	 */
+	public void setGcodeExecutionTimeService(IGCodeExecutionTimeService gcodeExecutionTimeService) {
+		this.gcodeExecutionTimeService = gcodeExecutionTimeService;
 	}
 }

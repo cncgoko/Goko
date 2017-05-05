@@ -59,18 +59,17 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.controller.tinyg.controller.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.controller.configuration.TinyGConfiguration)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration)
 	 */
 	@Override
-	public void onConfigurationChanged(TinyGConfiguration configuration) {	
-		if(!updateInProgress.get() &&  configuration.isCompletelyLoaded()){			
+	public void onConfigurationChanged(TinyGConfiguration oldConfig, TinyGConfiguration newConfig) {		
+		if(!updateInProgress.get() &&  newConfig.isCompletelyLoaded()){			
 			
 			List<ITinyGConfigurationFix<TinyGConfiguration>> lstFixToApply = new ArrayList<ITinyGConfigurationFix<TinyGConfiguration>>();
-			TinyGConfiguration tinyGConfiguration = tinygControllerService.getConfiguration();
 			
 			if(CollectionUtils.isNotEmpty(lstConfigurationFix)){
 				for (ITinyGConfigurationFix<TinyGConfiguration> fix : lstConfigurationFix) {
-					if(fix.shouldApply(tinyGConfiguration)){
+					if(fix.shouldApply(newConfig)){
 						lstFixToApply.add(fix);							
 					}
 				}
@@ -128,4 +127,10 @@ public class TinyGConfigurationWatcherHandler implements ITinyGConfigurationList
 		}
 		return null;
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.configuration.ITinyGConfigurationListener#onConfigurationSettingChanged(org.goko.controller.tinyg.commons.configuration.AbstractTinyGConfiguration, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void onConfigurationSettingChanged(TinyGConfiguration oldConfig, TinyGConfiguration newConfig, String groupIdentifier, String settingIdentifier) { }
 }
