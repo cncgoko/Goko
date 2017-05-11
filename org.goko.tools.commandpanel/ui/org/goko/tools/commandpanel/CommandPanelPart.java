@@ -712,18 +712,19 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		getController().bindEnableControlWithAction(btnReset, DefaultControllerAction.HARD_RESET);
 		getController().bindButtonToExecuteAction(btnReset, DefaultControllerAction.HARD_RESET);
 		
-		getController().addSelectionBinding(btnPreciseJog, "preciseJog");		
+		getController().addSelectionBinding(btnPreciseJog, CommandPanelModel.PRECISE_JOG_ENABLED);		
 		if(getDataModel().isPreciseJogForced()){			
 			btnPreciseJog.setEnabled(false);
 		}else{
 			getController().bindEnableControlWithAction(btnPreciseJog, DefaultControllerAction.JOG_START);
 		}
 		
+		//getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);	
+		getController().addEnableBinding(jogStepSpinner, CommandPanelModel.PRECISE_JOG_ENABLED);
+		getController().addStepSpinnerListener(jogStepSpinner, DefaultControllerAction.JOG_START);
 		//getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
-		getController().addEnableBinding(jogStepSpinner, CommandPanelModel.PRECISE_JOG_ENABLED);				
-		getController().bindEnableControlWithAction(jogStepSpinner, DefaultControllerAction.JOG_START);				
 		getController().bindEnableControlWithAction(jogSpeedSpinner, DefaultControllerAction.JOG_START);
-				
+	
 		getController().bindEnableControlWithAction(btnJogYPos, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogYNeg, DefaultControllerAction.JOG_START);
 		getController().bindEnableControlWithAction(btnJogXPos, DefaultControllerAction.JOG_START);

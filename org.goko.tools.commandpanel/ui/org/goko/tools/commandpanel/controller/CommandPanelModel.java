@@ -37,7 +37,7 @@ public class CommandPanelModel extends AbstractModelObject{
 	private WritableMap actionState;
 	private Speed jogSpeed;
 	private Length jogIncrement;
-	private boolean preciseJog;	
+	private boolean preciseJog;
 	private Unit<Length> lengthUnit;
 	private Unit<Speed> speedUnit;
 	private String lengthUnitSymbol;
@@ -96,7 +96,7 @@ public class CommandPanelModel extends AbstractModelObject{
 	public void setPreciseJog(boolean preciseJog) {
 		firePropertyChange(PRECISE_JOG_ENABLED, this.preciseJog, this.preciseJog = preciseJog);
 	}
-
+	
 	public void setLengthUnitSymbol(String symbol) {
 		firePropertyChange("lengthUnitSymbol", this.lengthUnitSymbol, this.lengthUnitSymbol = symbol);
 	}

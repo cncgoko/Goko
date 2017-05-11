@@ -37,6 +37,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Spinner;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.event.EventListener;
 import org.goko.core.common.exception.GkException;
@@ -98,6 +99,24 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			IGkControllerAction action = controllerService.getControllerAction(actionId);
 			getDataModel().setActionEnabled( action.getId(), action.canExecute() );
 		}
+	}
+	
+	public void addStepSpinnerListener(final Spinner jogStepSpinner, final String actionId){
+		getDataModel().addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				try{
+					if(controllerService.isControllerAction(actionId)){
+						IGkControllerAction action = controllerService.getControllerAction(actionId);
+						jogStepSpinner.setEnabled(action.canExecute() && getDataModel().isPreciseJog());
+					}
+				}catch(GkException ex){
+					LOG.error(ex);
+				}
+			}
+		});
+		
 	}
 
 	@EventListener(MachineValueUpdateEvent.class)
@@ -161,35 +180,39 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			@Override
 			public void mouseDown(MouseEvent e) {
 				Length step = null;					
-				boolean isPrecise = getDataModel().isPreciseJog();
+				final boolean isPrecise = getDataModel().isPreciseJog();
 				final Speed feedrate = getDataModel().getJogSpeed();
 				if(isPrecise){
 					step = getDataModel().getJogIncrement();
 				}
 				final Length taskStep = step;
-				timer = new Timer();					
-				timer.schedule(new TimerTask() {
-					
+				timer = new Timer();	
+				
+				timer.schedule(new TimerTask() {						
 					@Override
 					public void run() {
-						try {							
-							jogService.jog(axis, taskStep, feedrate);							
+						try {									
+							jogService.jog(axis, taskStep, feedrate); 
+							if(isPrecise){
+								cancel();
+							}
 						} catch (GkException e) {
 							LOG.error(e);
-						}
-					}
-				}, 0, 100);								
+						}						
+					}					
+				}, 0, 100);
+				
 
 			}
 
 			@Override
 			public void mouseUp(MouseEvent e) {
 				try {
-//					EnumUnit enumUnit = controllerService.getGCodeContext().getUnit();
-//					getDataModel().setLengthUnit(enumUnit.getUnit());
-//					getDataModel().setSpeedUnit(enumUnit.getFeedUnit());
-					timer.cancel();
-					jogService.stopJog();					
+					boolean isPrecise = getDataModel().isPreciseJog();
+					if(!isPrecise){
+						timer.cancel();					
+						jogService.stopJog();
+					}
 				} catch (GkException e1) {
 					LOG.error(e1);
 				}
@@ -203,6 +226,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 			@Override
 			public void focusLost(FocusEvent e) {
 				try {						
+					timer.cancel();
 					jogService.stopJog();					
 				} catch (GkException e1) {
 					LOG.error(e1);
