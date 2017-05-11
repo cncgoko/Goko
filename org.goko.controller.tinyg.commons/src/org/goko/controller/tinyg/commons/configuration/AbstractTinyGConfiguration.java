@@ -167,7 +167,6 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	public <T> void setSetting(String groupIdentifier, String identifier, T value) throws GkException{
 		for(TinyGGroupSettings grpSetting : groups){
 			if(StringUtils.equalsIgnoreCase( grpSetting.getGroupIdentifier(), groupIdentifier ) ){
-				System.err.println("Assignging "+grpSetting.getGroupIdentifier()+"/"+identifier+" = "+value);
 				setSetting(grpSetting, identifier, value);				
 				return;
 			}
@@ -202,7 +201,6 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 	public boolean isCompletelyLoaded(){
 		for (TinyGGroupSettings tinyGGroupSettings : groups) {
 			if(!tinyGGroupSettings.isCompletelyLoaded()){
-				System.err.println(" on group "+tinyGGroupSettings.getGroupIdentifier());
 				return false;
 			}
 		}		

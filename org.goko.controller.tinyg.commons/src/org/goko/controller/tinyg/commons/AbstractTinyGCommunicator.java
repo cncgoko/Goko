@@ -125,7 +125,6 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 		}
 		this.connectionService = connectionService;
 		connectionService.addConnectionListener(this);
-		System.err.println("Adding listener "+this);
 	}
 	
 	/**

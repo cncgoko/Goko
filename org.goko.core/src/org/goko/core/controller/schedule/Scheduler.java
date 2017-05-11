@@ -99,7 +99,6 @@ public class Scheduler<X extends Scheduler<X, T>, T extends IControllerService<?
 	 * Timeout callback
 	 */
 	protected void onTimeout() {
-		System.err.println("Timeout occured");
 		if(timer != null){
 			timer.cancel();
 		}
