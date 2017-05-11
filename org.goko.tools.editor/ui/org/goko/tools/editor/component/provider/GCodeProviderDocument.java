@@ -48,6 +48,7 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 		try {					
 			this.gcodeRepository.addDeleteVetoableListener(this);
 			this.gcodeRepository.addListener(this);
+			getGCodeDocument();
 		} catch (GkException e) {
 			LOG.error(e);
 		}
@@ -97,7 +98,7 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 		GCodeContext context = new GCodeContext();
 		InstructionProvider instructionProvider = gcodeService.getInstructions(context , provider);
 		provider = gcodeService.getGCodeProvider(context , instructionProvider);
-		
+				
 		List<GCodeLine> lines = provider.getLines();		
 		for (GCodeLine gCodeLine : lines) {
 			String strLine = gcodeService.render(gCodeLine);
