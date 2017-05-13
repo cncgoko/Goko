@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.goko.preferences.units;
+package org.goko.preferences.update;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
