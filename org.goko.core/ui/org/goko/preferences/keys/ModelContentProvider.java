@@ -38,7 +38,7 @@ public class ModelContentProvider implements IStructuredContentProvider{
 		if(inputElement instanceof BindingModel){
 			return ((BindingModel)inputElement).getBindings().toArray();	
 		}else if(inputElement instanceof ContextModel){
-			return ((ContextModel)inputElement).getContexts().toArray();
+			return ((ContextModel)inputElement).getSortedContexts().toArray();
 		}
 		return new Object[]{};
 	}
