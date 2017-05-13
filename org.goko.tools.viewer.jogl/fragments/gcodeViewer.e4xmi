@@ -82,7 +82,9 @@
     <elements xsi:type="commands:KeyBinding" xmi:id="_mNFvQAZCEeek6Y_udvCcTA" elementId="org.goko.tools.viewer.jogl.keybinding.6" keySequence="M1+M2+B" command="_w7R1kJ3FEeWUIrBiK8fBLg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_RCqW0A4WEeaGiYxZlMJxsQ" featurename="children" parentElementId="org.eclipse.ui.contexts.dialogAndWindow">
-    <elements xsi:type="commands:BindingContext" xmi:id="_UfPycA4WEeaGiYxZlMJxsQ" elementId="org.goko.tools.viewer.jogl.bindingcontext" name="Jogl Binding context"/>
+    <elements xsi:type="commands:BindingContext" xmi:id="_UfPycA4WEeaGiYxZlMJxsQ" elementId="org.goko.tools.viewer.jogl.bindingcontext" name="Jogl Binding context">
+      <tags>system</tags>
+    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_n_0IIAQ0Eeeci8K8qIYGLg" featurename="categories" parentElementId="goko.application">
     <elements xsi:type="commands:Category" xmi:id="_peXJwAQ0Eeeci8K8qIYGLg" elementId="org.goko.tools.viewer.jogl.category.jogl" name="3D View"/>
