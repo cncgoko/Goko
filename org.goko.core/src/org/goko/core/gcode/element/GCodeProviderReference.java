@@ -170,6 +170,21 @@ public abstract class GCodeProviderReference implements IGCodeProvider{
 		return get().getSource();
 	}
 	
+	/** (inheritDoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return get().equals(obj);
+	}
+	
+	/** (inheritDoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {		
+		return get().hashCode();
+	}
 	
 
 }

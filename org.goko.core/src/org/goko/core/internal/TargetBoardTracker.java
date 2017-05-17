@@ -3,6 +3,7 @@
  */
 package org.goko.core.internal;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -103,6 +104,11 @@ public class TargetBoardTracker {
                             "Restart required",
                             "A restart is required when changing the target board. Would you like to restart now ?");
                     if (restart) {
+                    	try {
+							GokoPreference.getInstance().getPreferenceStore().save();
+						} catch (IOException e) {
+							LOG.error(e);
+						}
                     	workbench.restart();
                     }
 				}

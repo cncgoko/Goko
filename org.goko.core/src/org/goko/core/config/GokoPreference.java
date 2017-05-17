@@ -134,7 +134,7 @@ public class GokoPreference extends GkPreference implements IPropertyChangeListe
 	 * @param targetBoard the target board id to use 
 	 */
 	public void setTargetBoard(String targetBoard){
-		putValue(KEY_TARGET_BOARD, targetBoard);
+		getPreferenceStore().putValue(KEY_TARGET_BOARD, targetBoard);
 	}
 	/**
 	 * @param distanceUnit the distanceUnit to set
