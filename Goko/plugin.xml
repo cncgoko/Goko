@@ -50,13 +50,14 @@
       </page>
       <page
             category="Goko.preferencePages.general"
-            class="org.goko.preferences.units.GokoUpdatesPreferences"
+            class="org.goko.preferences.update.GokoUpdatesPreferences"
             id="Goko.preferencePages.general.updates"
             name="Updates">
       </page>
       <page
+            category="Goko.preferencePages.general"
             class="org.goko.preferences.keys.KeysPreferencePage"
-            id="Goko.page3"
+            id="Goko.preferencePages.general.keys"
             name="Keys">
       </page>
    </extension>

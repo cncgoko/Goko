@@ -2,7 +2,7 @@
 <plugin>
 
    <extension
-         id="id1"
+         id="org.goko.controller.grblv11.model"
          point="org.goko.core.ui.e4.model">
       <fragment
             apply="initial"

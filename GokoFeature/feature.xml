@@ -939,4 +939,18 @@ Public License instead of this License.  But first, please read
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.goko.controller.g2core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.goko.controller.tinyg.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

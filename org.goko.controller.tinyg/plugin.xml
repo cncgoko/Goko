@@ -27,7 +27,7 @@
       </definition>
    </extension>
    <extension
-         id="id1"
+         id="org.goko.controller.tinyg.model"
          point="org.goko.core.ui.e4.model">
       <fragment
             apply="always"
