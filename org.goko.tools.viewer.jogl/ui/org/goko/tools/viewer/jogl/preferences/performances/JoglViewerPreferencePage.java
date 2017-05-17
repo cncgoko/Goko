@@ -52,7 +52,8 @@ public class JoglViewerPreferencePage extends GkFieldEditorPreferencesPage {
 		String[][] lstMultiSampling = new String[][]{{"1x (Fastest)", "1"} ,
 										 			{"2x","2"},
 													{"4x","4"},
-													{"8x (Nicest)","8"}};
+													{"8x","8"},
+													{"16x (Nicest)","16"}};
 		comboFieldEditor.setPreferenceName(JoglViewerPreference.MULTISAMPLING);
 		comboFieldEditor.setEntry(lstMultiSampling);
 		
