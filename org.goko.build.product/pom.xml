@@ -17,6 +17,12 @@
 		<resources>
 			<resource>
 				<directory>./</directory>
+				    <includes>
+			          <include>Goko.product</include>
+			        </includes>
+			        <excludes>
+			          <exclude>**/*</exclude>
+			        </excludes>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
