@@ -40,7 +40,9 @@ public class GrblStatusPoller {
 	 * Stops the polling 
 	 */
 	public void stop(){
-		statusPollingTimer.cancel();
+		if(statusPollingTimer != null){
+			statusPollingTimer.cancel();
+		}
 		running = false;
 	}
 
@@ -48,9 +50,7 @@ public class GrblStatusPoller {
 	 * Starts the polling
 	 */
 	public void start() {
-		if(statusPollingTimer != null){
-			statusPollingTimer.cancel();
-		}
+		stop();
 		statusPollingTimer = new Timer();
 		TimerTask task = new TimerTask(){
 			@Override
