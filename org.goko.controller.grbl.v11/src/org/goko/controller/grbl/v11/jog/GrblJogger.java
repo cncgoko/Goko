@@ -9,6 +9,7 @@ import org.goko.controller.grbl.v11.GrblControllerService;
 import org.goko.controller.grbl.v11.bean.GrblMachineState;
 import org.goko.controller.grbl.v11.configuration.GrblConfiguration;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.log.GkLog;
 
 /**
  * Grbl Jogger for 1.1
@@ -16,7 +17,8 @@ import org.goko.core.common.exception.GkException;
  * @date 5 avr. 2017
  */
 public class GrblJogger extends AbstractGrblJogger<GrblConfiguration, GrblMachineState, GrblControllerService> {
-
+	/** LOG */
+	private static final GkLog LOG = GkLog.getLogger(GrblJogger.class);
 	/**
 	 * Constructor
 	 * @param grblService the targeted Grbl service
@@ -39,7 +41,7 @@ public class GrblJogger extends AbstractGrblJogger<GrblConfiguration, GrblMachin
 	 * @see org.goko.controller.grbl.commons.jog.AbstractGrblJogger#stopJog()
 	 */
 	@Override
-	public void stopJog() throws GkException {
-		getControllerService().getCommunicator().send(String.valueOf(Grbl.Commands.JOG_CANCEL), true);
+	public void stopJog() throws GkException {		
+		getControllerService().getCommunicator().sendImmediately(Grbl.Commands.JOG_CANCEL, true);	
 	}
 }

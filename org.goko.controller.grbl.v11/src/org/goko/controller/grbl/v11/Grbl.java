@@ -71,29 +71,29 @@ public abstract class Grbl implements DefaultControllerValues {
 	public static final String MACHINE_POSITION_Z		= "GrblControllerValue.MachinePositionZ";		
 
 	public static class Commands{
-		 public static final char JOG_CANCEL = 0x85;
+		 public static final byte JOG_CANCEL = (byte) 0x85;
 		 
-		 public static final char FEED_OVERRIDE_100 	= 0x90;
-		 public static final char FEED_OVERRIDE_PLUS_10 = 0x91;		 
-		 public static final char FEED_OVERRIDE_MINUS_10= 0x92;
-		 public static final char FEED_OVERRIDE_PLUS_1 	= 0x93;
-		 public static final char FEED_OVERRIDE_MINUS_1 = 0x94;
+		 public static final byte FEED_OVERRIDE_100 	= (byte) 0x90;
+		 public static final byte FEED_OVERRIDE_PLUS_10 = (byte) 0x91;		 
+		 public static final byte FEED_OVERRIDE_MINUS_10= (byte) 0x92;
+		 public static final byte FEED_OVERRIDE_PLUS_1 	= (byte) 0x93;
+		 public static final byte FEED_OVERRIDE_MINUS_1 = (byte) 0x94;
 		 
-		 public static final char RAPID_OVERRIDE_100 	= 0x95;
-		 public static final char RAPID_OVERRIDE_50 	= 0x96;
-		 public static final char RAPID_OVERRIDE_25 	= 0x97;
+		 public static final byte RAPID_OVERRIDE_100 	= (byte) 0x95;
+		 public static final byte RAPID_OVERRIDE_50 	= (byte) 0x96;
+		 public static final byte RAPID_OVERRIDE_25 	= (byte) 0x97;
 		 
-		 public static final char SPINDLE_OVERRIDE_100 		= 0x99;
-		 public static final char SPINDLE_OVERRIDE_PLUS_10 	= 0x9A;		 
-		 public static final char SPINDLE_OVERRIDE_MINUS_10	= 0x9B;
-		 public static final char SPINDLE_OVERRIDE_PLUS_1 	= 0x9C;
-		 public static final char SPINDLE_OVERRIDE_MINUS_1	= 0x9D;
+		 public static final byte SPINDLE_OVERRIDE_100 		= (byte) 0x99;
+		 public static final byte SPINDLE_OVERRIDE_PLUS_10 	= (byte) 0x9A;		 
+		 public static final byte SPINDLE_OVERRIDE_MINUS_10	= (byte) 0x9B;
+		 public static final byte SPINDLE_OVERRIDE_PLUS_1 	= (byte) 0x9C;
+		 public static final byte SPINDLE_OVERRIDE_MINUS_1	= (byte) 0x9D;
 		 
-		 public static final char TOGGLE_SPINDLE			= 0x9E;
-		 public static final char TOGGLE_FLOOD_COOLANT		= 0xA0;
-		 public static final char TOGGLE_MIST_COOLANT		= 0xA1;
+		 public static final byte TOGGLE_SPINDLE			= (byte) 0x9E;
+		 public static final byte TOGGLE_FLOOD_COOLANT		= (byte) 0xA0;
+		 public static final byte TOGGLE_MIST_COOLANT		= (byte) 0xA1;
 		 
-		 public static final char SAFETY_DOOR				= 0x84;
+		 public static final byte SAFETY_DOOR				= (byte) 0x84;
 	}
 	
 	public static class MachineValue{

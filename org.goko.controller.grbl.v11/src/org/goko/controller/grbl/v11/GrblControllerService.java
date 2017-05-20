@@ -397,7 +397,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void increaseSpindleSpeed1() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.SPINDLE_OVERRIDE_PLUS_1) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.SPINDLE_OVERRIDE_PLUS_1 ,false);
 	}
 
 	/** (inheritDoc)
@@ -405,7 +405,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void increaseSpindleSpeed10() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.SPINDLE_OVERRIDE_PLUS_10) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.SPINDLE_OVERRIDE_PLUS_10 ,false);
 	}
 
 	/** (inheritDoc)
@@ -413,7 +413,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void decreaseSpindleSpeed1() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.SPINDLE_OVERRIDE_MINUS_1) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.SPINDLE_OVERRIDE_MINUS_1 ,false);
 	}
 
 	/** (inheritDoc)
@@ -421,7 +421,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void decreaseSpindleSpeed10() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.SPINDLE_OVERRIDE_MINUS_10) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.SPINDLE_OVERRIDE_MINUS_10 ,false);
 	}
 
 	/** (inheritDoc)
@@ -429,7 +429,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void resetSpindleSpeed() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.SPINDLE_OVERRIDE_100) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.SPINDLE_OVERRIDE_100 ,false);
 	}
 	
 	/** (inheritDoc)
@@ -437,7 +437,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void increaseFeedSpeed1() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.FEED_OVERRIDE_PLUS_1) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.FEED_OVERRIDE_PLUS_1 ,false);
 	}
 
 	/** (inheritDoc)
@@ -445,7 +445,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void increaseFeedSpeed10() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.FEED_OVERRIDE_PLUS_10) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.FEED_OVERRIDE_PLUS_10 ,false);
 	}
 
 	/** (inheritDoc)
@@ -453,7 +453,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void decreaseFeedSpeed1() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.FEED_OVERRIDE_MINUS_1) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.FEED_OVERRIDE_MINUS_1 ,false);
 	}
 
 	/** (inheritDoc)
@@ -461,7 +461,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void decreaseFeedSpeed10() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.FEED_OVERRIDE_MINUS_10) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.FEED_OVERRIDE_MINUS_10 ,false);
 	}
 
 	/** (inheritDoc)
@@ -469,7 +469,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void resetFeedSpeed() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.FEED_OVERRIDE_100) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.FEED_OVERRIDE_100 ,false);
 	}
 	
 	/** (inheritDoc)
@@ -477,7 +477,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void setRapidSpeed25() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.RAPID_OVERRIDE_25) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.RAPID_OVERRIDE_25 ,false);
 	}
 
 	/** (inheritDoc)
@@ -485,7 +485,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void setRapidSpeed50() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.RAPID_OVERRIDE_50) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.RAPID_OVERRIDE_50 ,false);
 	}
 	
 	/**
@@ -493,7 +493,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	 */
 	@Override
 	public void resetRapidSpeed() throws GkException {
-		getCommunicator().sendImmediately(String.valueOf(Grbl.Commands.RAPID_OVERRIDE_100) ,false);
+		getCommunicator().sendImmediately(Grbl.Commands.RAPID_OVERRIDE_100 ,false);
 	}
 
 	/**
