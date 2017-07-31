@@ -4,6 +4,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IInstruction;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.gcode.rs274ngcv3.instruction.visitor.RS274InstructionVisitorAdapter;
 import org.goko.core.log.GkLog;
 
 public abstract class AbstractInstruction implements IInstruction, Cloneable {
@@ -15,7 +16,7 @@ public abstract class AbstractInstruction implements IInstruction, Cloneable {
 	private Integer idGCodeLine;
 	/** The type of the instruction */
 	private InstructionType type;
-	
+
 	/**
 	 * Constructor
 	 * @param type the instruction type
@@ -30,11 +31,7 @@ public abstract class AbstractInstruction implements IInstruction, Cloneable {
 	public InstructionType getType() {
 		return type;
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.IInstruction#getIdGCodeLine()
-	 */
-	@Override
+	
 	public Integer getIdGCodeLine() {		
 		return idGCodeLine;
 	}
@@ -122,5 +119,9 @@ public abstract class AbstractInstruction implements IInstruction, Cloneable {
 			LOG.error(e);
 		}		
 		return clone;
+	}
+
+	public void accept(GCodeContext context, RS274InstructionVisitorAdapter visitor) throws GkException{
+		visitor.visit(context, this);
 	}
 }

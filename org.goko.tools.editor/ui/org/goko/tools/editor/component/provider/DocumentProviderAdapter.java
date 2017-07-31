@@ -8,7 +8,7 @@ package org.goko.tools.editor.component.provider;
  * @date 28 mai 2016
  */
 public class DocumentProviderAdapter implements IDocumentProviderListener{
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.tools.editor.component.provider.IDocumentProviderListener#onDirtyChanged(org.goko.tools.editor.component.provider.IDocumentProvider)
 	 */

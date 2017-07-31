@@ -10,7 +10,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
@@ -22,6 +21,7 @@ import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.gcode.service.IExecutionService;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
@@ -53,10 +53,12 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	private IRS274WorkspaceService rs274WorkspaceService;
 	private IWorkspaceService workspaceService;
 	private IExecutionService<?, ?> executionService;
-	private IStyledLabelProvider labelProvider;
+	private GCodeContainerLabelProvider labelProvider;
 	private EventAdmin eventAdmin;
 	private List<IGCodeProviderContributionItem> lstGCodeProviderContributionItem;
 	private IWorkspaceUIService workspaceUIService;
+	/** Validation service */
+	private IGCodeValidationService<?,?,?> gcodeValidationService;
 	
 	/**
 	 * @param rs274Service
@@ -203,7 +205,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
         MenuManager subMenu = new ModifierSubMenu(rs274Service, rs274WorkspaceService, content.getId());
         
 
-        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, content.getId()));
+        contextMenu.add(new AddExecutionQueueAction(rs274Service, executionService, gcodeValidationService, content.getId()));
         contextMenu.add(new Separator());
         contextMenu.add(new ReloadGCodeProviderAction(rs274Service, content.getId()));
       //  contextMenu.add(new ExternalEditAction(rs274Service, workspaceService, content.getId()));
@@ -355,6 +357,21 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	public void setWorkspaceUIService(IWorkspaceUIService workspaceUIService) throws GkException {
 		this.workspaceUIService = workspaceUIService;
 		this.workspaceUIService.addProjectContainerUiProvider(this);
+	}
+
+	/**
+	 * @return the gcodeValidationService
+	 */
+	public IGCodeValidationService<?, ?, ?> getGcodeValidationService() {
+		return gcodeValidationService;
+	}
+
+	/**
+	 * @param gcodeValidationService the gcodeValidationService to set
+	 */
+	public void setGcodeValidationService(IGCodeValidationService<?, ?, ?> gcodeValidationService) {
+		this.gcodeValidationService = gcodeValidationService;
+		this.labelProvider.setGcodeValidationService(gcodeValidationService);
 	}
 
 }

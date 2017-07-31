@@ -25,7 +25,6 @@ public class StraightProbeTimeCalculator extends AbstractInstructionTimeCalculat
 		GCodeContext postContext = new GCodeContext(context);
 		instruction.apply(postContext);
 		Tuple6b 		positionAfter 	=  postContext.getPosition();
-				//new Tuple6b(instruction.getX(),instruction.getY(),instruction.getZ(),instruction.getA(),instruction.getB(),instruction.getC());
 
 		Tuple6b delta = positionBefore.subtract(positionAfter);
 		

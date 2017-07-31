@@ -27,7 +27,7 @@ public class InstructionUtils {
 		return new Arc3b(startTuple, center, end, getNormalVector(context.getPlane()), clockwise);
 	}
 
-	private static Vector3d getNormalVector(EnumPlane enumGCodeCommandPlane){
+	public static Vector3d getNormalVector(EnumPlane enumGCodeCommandPlane){
 		Vector3d vec = null;
 		if(EnumPlane.XY_PLANE == enumGCodeCommandPlane){
 			vec = new Vector3d(0,0,1);
@@ -39,7 +39,7 @@ public class InstructionUtils {
 		return vec;
 	}
 
-	private static Tuple6b getEndPoint(GCodeContext context, ArcFeedInstruction instruction){		
+	public static Tuple6b getEndPoint(GCodeContext context, ArcFeedInstruction instruction){		
 		Tuple6b startTuple = null;
 		if(context.getDistanceMode() == EnumDistanceMode.ABSOLUTE){
 			startTuple = new Tuple6b(	context.getX(),
@@ -78,7 +78,7 @@ public class InstructionUtils {
 		return resultTuple;
 	}
 
-	private static Tuple6b getCenterPoint(GCodeContext context, ArcFeedInstruction instruction){		
+	public static Tuple6b getCenterPoint(GCodeContext context, ArcFeedInstruction instruction){		
 		Tuple6b startTuple = new Tuple6b(	QuantityUtils.add(context.getX(), instruction.getI()),
 											QuantityUtils.add(context.getY(), instruction.getJ()),
 											QuantityUtils.add(context.getZ(), instruction.getK()),

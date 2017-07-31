@@ -51,18 +51,21 @@ public class GkWarningDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gridLayout = (GridLayout) container.getLayout();
+		gridLayout.numColumns = 2;
 		gridLayout.horizontalSpacing = 10;
 		gridLayout.verticalSpacing = 10;
-		gridLayout.numColumns = 2;
 		
 		Label label = new Label(container, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
 		label.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/Warning.png"));
 		
 		Label lblWarningMessage = new Label(container, SWT.WRAP);
-		lblWarningMessage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
+		lblWarningMessage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 		lblWarningMessage.setText(message);
-		container.pack();	
+		
+		label.pack();
+		lblWarningMessage.pack();
+		container.pack();
+		
 		getShell().setText("Warning");
 		return container;
 	}
@@ -82,7 +85,7 @@ public class GkWarningDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(439, 160);
+		return new Point(858, 263);
 	}
 
 }

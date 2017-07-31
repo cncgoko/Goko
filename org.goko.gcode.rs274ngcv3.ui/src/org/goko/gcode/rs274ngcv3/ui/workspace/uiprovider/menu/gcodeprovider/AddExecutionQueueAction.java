@@ -9,6 +9,7 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.RS274WorkspaceService;
 
@@ -23,6 +24,8 @@ public class AddExecutionQueueAction extends Action{
 	private Integer idGCodeProvider;
 	/** IRS274NGCService */
 	private IGCodeProviderRepository gcodeProviderRepository;
+	/** Validation service */
+	private IGCodeValidationService<?,?,?> gcodeValidationService;
 	/** Target execution service*/
 	private IExecutionService<?, ?> executionService;
 	/**
@@ -30,11 +33,12 @@ public class AddExecutionQueueAction extends Action{
 	 * @param rs274WorkspaceService the {@link RS274WorkspaceService}
 	 * @param idGCodeProvider the target GCodeProvider id
 	 */
-	public AddExecutionQueueAction(IGCodeProviderRepository gcodeProviderRepository, IExecutionService<?, ?> executionService, Integer idGCodeProvider) {
+	public AddExecutionQueueAction(IGCodeProviderRepository gcodeProviderRepository, IExecutionService<?, ?> executionService, IGCodeValidationService<?,?,?> gcodeValidationService, Integer idGCodeProvider) {
 		super("Add to execution queue");
 		this.executionService = executionService;
 		this.idGCodeProvider = idGCodeProvider;
 		this.gcodeProviderRepository = gcodeProviderRepository;		
+		this.gcodeValidationService = gcodeValidationService;
 	}
 	
 	/** (inheritDoc)
@@ -45,7 +49,7 @@ public class AddExecutionQueueAction extends Action{
 		try {
 			IGCodeProvider provider = gcodeProviderRepository.getGCodeProvider(idGCodeProvider);
 			boolean exists = executionService.findExecutionTokenByGCodeProvider(ExecutionQueueType.DEFAULT, provider) != null;
-			return !exists && provider.hasErrors() == false;
+			return !exists && gcodeValidationService.getValidationResult(provider.getId()).hasErrors() == false;
 		} catch (GkException e) {
 			LOG.error(e);
 		}		

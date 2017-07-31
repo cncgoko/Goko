@@ -13,6 +13,7 @@ import org.eclipse.jface.action.IContributionItem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
 import org.goko.core.gcode.service.IGCodeService;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem;
 import org.goko.tools.editor.GCodeEditorTopic;
@@ -32,6 +33,8 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 	private IGCodeProviderRepository gcodeProviderRepository;
 	/** GCode service */
 	private IGCodeService gcodeService;
+	private IGCodeValidationService<?, ?, ?> validationService;
+	
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem#getItem(org.goko.core.gcode.element.IGCodeProvider)
 	 */
@@ -52,7 +55,7 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 			@Override
 			public void run() {
 				Map<String, Object> map = new HashMap<String, Object>();
-				GCodeProviderSourceDocument documentProvider = new GCodeProviderSourceDocument(gcodeProviderRepository, provider);
+				GCodeProviderSourceDocument documentProvider = new GCodeProviderSourceDocument(gcodeProviderRepository, validationService, provider);
 				map.put(IEventBroker.DATA, documentProvider);
 				eventAdmin.sendEvent(new Event(GCodeEditorTopic.TOPIC_OPEN_EDITOR, map));	
 			}
@@ -99,6 +102,20 @@ public class GCodeEditContributionItem implements IGCodeProviderContributionItem
 	 */
 	public void setGCodeService(IGCodeService gcodeService) {
 		this.gcodeService = gcodeService;
+	}
+
+	/**
+	 * @return the validationService
+	 */
+	public IGCodeValidationService<?, ?, ?> getValidationService() {
+		return validationService;
+	}
+
+	/**
+	 * @param validationService the validationService to set
+	 */
+	public void setValidationService(IGCodeValidationService<?, ?, ?> validationService) {
+		this.validationService = validationService;
 	}
 	
 	

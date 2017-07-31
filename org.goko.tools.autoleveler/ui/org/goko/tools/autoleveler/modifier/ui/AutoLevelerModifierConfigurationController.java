@@ -140,8 +140,9 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 							LOG.info("Probe result is null. Probably cancelled.");
 							continue;
 						}
-						int x = probeResult.getProbedPosition().getX().subtract(map.getStart().getX()).divide(map.getStepSizeX()).intValue();
-						int y = probeResult.getProbedPosition().getY().subtract(map.getStart().getY()).divide(map.getStepSizeY()).intValue();
+						
+							int x = probeResult.getProbedPosition().getX().subtract(map.getStart().getX()).divide(map.getStepSizeX()).intValue();
+							int y = probeResult.getProbedPosition().getY().subtract(map.getStart().getY()).divide(map.getStepSizeY()).intValue();
 						if(probeResult.isProbed()){
 							LOG.info("Probed "+probeResult.getProbedPosition().getZ());
 							map.getPoint(x, y).setZ(probeResult.getProbedPosition().getZ());

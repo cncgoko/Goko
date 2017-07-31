@@ -6,6 +6,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
+import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.overlay.MotionModeColorizerOverlay;
 
 public class MotionModeColorizer extends AbstractInstructionColorizer {
 	private static final Color4f DEFAULT_COLOR = new Color4f(0.58f,0.58f,0.58f,0.9f);
@@ -16,6 +17,13 @@ public class MotionModeColorizer extends AbstractInstructionColorizer {
 	private static final Color4f PROBE_COLOR = new Color4f(0.80f,0.40f,1f,0.9f);
 
 	
+	/**
+	 */
+	public MotionModeColorizer() {
+		super(new MotionModeColorizerOverlay());
+	}
+
+
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.IInstructionColorizer#getColor(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IInstruction)
 	 */
@@ -33,5 +41,5 @@ public class MotionModeColorizer extends AbstractInstructionColorizer {
 		}
 		return color;
 	}
-
+	
 }

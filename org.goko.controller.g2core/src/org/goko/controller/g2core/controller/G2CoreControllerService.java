@@ -138,6 +138,22 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 		getCommunicator().requestCoordinateSystemUpdate(current);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#updateCoordinateSystemPosition(org.goko.core.gcode.element.ICoordinateSystem, org.goko.core.math.Tuple6b)
+	 */
+	@Override
+	public void updateCoordinateSystemPosition(ICoordinateSystem coordinateSystem, Tuple6b position) throws GkException {
+		JsonObject xyzPosition = new JsonObject();
+		xyzPosition.add(EnumTinyGAxis.X_POSITIVE.getAxisCode(), getPositionAsDouble(position.getX()));
+		xyzPosition.add(EnumTinyGAxis.Y_POSITIVE.getAxisCode(), getPositionAsDouble(position.getY()));
+		xyzPosition.add(EnumTinyGAxis.Z_POSITIVE.getAxisCode(), getPositionAsDouble(position.getZ()));
+		JsonObject csObject = new JsonObject();
+		csObject.add(coordinateSystem.getCode(), xyzPosition);
+		
+		getCommunicator().send( csObject , true );
+		getCommunicator().requestCoordinateSystemUpdate(coordinateSystem);		
+	}
+	
 	/**
 	 * Returns the given length as a string
 	 * @param q the length

@@ -7,7 +7,6 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
-import org.goko.core.gcode.element.validation.IValidationElement;
 
 public class StackableGCodeProviderModifier extends GCodeProvider implements IGCodeProvider, IStackableGCodeProvider{
 	private IStackableGCodeProvider parent;
@@ -213,42 +212,4 @@ public class StackableGCodeProviderModifier extends GCodeProvider implements IGC
 		this.child = child;
 	}
 	
-	/**
-	 * @return the validationElements
-	 */
-	public List<IValidationElement> getValidationElements() {
-		return parent.getValidationElements();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasErrors()
-	 */
-	@Override
-	public boolean hasErrors() {
-		return parent.hasErrors();
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasWarnings()
-	 */
-	@Override
-	public boolean hasWarnings() {
-		return parent.hasWarnings();
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#clearValidationElements()
-	 */
-	@Override
-	public void clearValidationElements() {
-		parent.clearValidationElements();
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#addValidationElement(org.goko.core.gcode.element.validation.IValidationElement)
-	 */
-	@Override
-	public void addValidationElement(IValidationElement element) {
-		parent.addValidationElement(element);
-	}
 }

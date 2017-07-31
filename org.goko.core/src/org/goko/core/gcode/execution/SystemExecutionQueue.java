@@ -16,30 +16,47 @@
  *******************************************************************************/
 package org.goko.core.gcode.execution;
 
+import java.util.List;
+
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.service.IExecutionService;
 
 /**
  * @author PsyKo
  * @date 18 oct. 2015
  */
 public class SystemExecutionQueue<S extends IExecutionTokenState, T extends IExecutionToken<S>> extends ExecutionQueue<S, T> {
-	private IExecutionService<S, T> executionService;
+
 	/**
 	 * Constructor
 	 */
-	public SystemExecutionQueue(IExecutionService<S, T> executionService) {
+	public SystemExecutionQueue() {
 		super(ExecutionQueueType.SYSTEM);
-		this.executionService = executionService;
+	}
+
+	/**
+	 * Clears the execution queue
+	 * @throws GkException 
+	 */
+	private void clearExecutionQueue() throws GkException{
+		List<T> tokens = getExecutionToken();
+		for (T token : tokens) {
+			delete(token.getId());
+		}
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.execution.ExecutionQueue#endCurrentTokenExecution()
+	 * @see org.goko.core.gcode.execution.ExecutionQueue#onComplete()
 	 */
 	@Override
-	public void endCurrentTokenExecution() throws GkException {
-		executionService.removeFromExecutionQueue(getType(), getCurrentToken());
-		super.endCurrentTokenExecution();
+	public void onComplete() throws GkException {
+		clearExecutionQueue();
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.execution.ExecutionQueue#onCanceled()
+	 */
+	@Override
+	public void onCanceled() throws GkException {
+		clearExecutionQueue();
+	}
 }

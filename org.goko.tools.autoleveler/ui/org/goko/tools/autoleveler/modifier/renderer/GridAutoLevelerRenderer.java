@@ -83,7 +83,7 @@ public class GridAutoLevelerRenderer extends AbstractLineRenderer {
 			gl.glUniform4fv(colorTop, 1, new float[]{1f, 0f, 0f, 0.6f},0);			
 		}
 		if(colorCenter >= 0){			
-			gl.glUniform4fv(colorCenter, 1, new float[]{0f, 1f, 0f, 0.6f},0);
+			gl.glUniform4fv(colorCenter, 1, new float[]{1f, 1f, 1f, 0.6f},0);
 		}		
 		if(colorBottom >= 0){			
 			gl.glUniform4fv(colorBottom, 1, new float[]{0f, 0f, 1f, 0.6f},0);			

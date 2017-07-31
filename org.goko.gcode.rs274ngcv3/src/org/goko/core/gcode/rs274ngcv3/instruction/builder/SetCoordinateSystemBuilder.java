@@ -22,7 +22,8 @@ public class SetCoordinateSystemBuilder extends AbstractInstructionBuilder<SetCo
 	 */
 	@Override
 	public boolean match(GCodeContext context, List<GCodeWord> words) throws GkException {		
-		return GCodeWordUtils.containsWord("G54", words)
+		return GCodeWordUtils.containsWord("G53", words)
+			|| GCodeWordUtils.containsWord("G54", words)
 			|| GCodeWordUtils.containsWord("G55", words)
 			|| GCodeWordUtils.containsWord("G56", words)
 			|| GCodeWordUtils.containsWord("G57", words)
@@ -39,7 +40,10 @@ public class SetCoordinateSystemBuilder extends AbstractInstructionBuilder<SetCo
 	@Override
 	protected SetCoordinateSystemInstruction getInstruction(GCodeContext context, List<GCodeWord> words) throws GkException {
 		CoordinateSystem targetCoordinateSystem = null;
-		if(GCodeWordUtils.findAndRemoveWord("G54", words) != null){
+		if(GCodeWordUtils.findAndRemoveWord("G53", words) != null){
+			targetCoordinateSystem = CoordinateSystem.G53;
+			
+		}else if(GCodeWordUtils.findAndRemoveWord("G54", words) != null){
 			targetCoordinateSystem = CoordinateSystem.G54;
 			
 		}else if(GCodeWordUtils.findAndRemoveWord("G55", words) != null){

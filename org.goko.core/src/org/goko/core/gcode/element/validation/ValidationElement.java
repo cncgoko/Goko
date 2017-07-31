@@ -12,7 +12,7 @@ import org.goko.core.common.utils.Location;
 public class ValidationElement implements IValidationElement {
 	private ValidationSeverity severity;
 	private Location location;
-	private int length;
+	private Integer length;
 	private String description;
 	
 	/**
@@ -21,7 +21,7 @@ public class ValidationElement implements IValidationElement {
 	 * @param description
 	 */
 	public ValidationElement(ValidationSeverity severity, Location location, String description) {
-		this(severity, location, 1, description);
+		this(severity, location, null, description);
 	}
 	/**
 	 * @param severity
@@ -29,7 +29,7 @@ public class ValidationElement implements IValidationElement {
 	 * @param length
 	 * @param description
 	 */
-	public ValidationElement(ValidationSeverity severity, Location location, int length, String description) {
+	public ValidationElement(ValidationSeverity severity, Location location, Integer length, String description) {
 		super();
 		this.severity = severity;
 		this.location = location;
@@ -78,13 +78,13 @@ public class ValidationElement implements IValidationElement {
 	/**
 	 * @return the length
 	 */
-	public int getLength() {
+	public Integer getLength() {
 		return length;
 	}
 	/**
 	 * @param length the length to set
 	 */
-	public void setLength(int length) {
+	public void setLength(Integer length) {
 		this.length = length;
 	}
 	

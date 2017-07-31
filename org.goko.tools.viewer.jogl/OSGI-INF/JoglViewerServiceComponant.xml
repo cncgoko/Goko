@@ -3,6 +3,7 @@
    <implementation class="org.goko.tools.viewer.jogl.service.JoglViewerServiceImpl"/>
    <service>
       <provide interface="org.goko.tools.viewer.jogl.service.IJoglViewerService"/>
+      <provide interface="org.goko.tools.viewer.jogl.service.JoglSceneManager"/>
    </service>
    <reference bind="setJogService" cardinality="0..1" interface="org.goko.core.controller.IJogService" name="IJogService" policy="dynamic"/>
    <reference bind="setControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>

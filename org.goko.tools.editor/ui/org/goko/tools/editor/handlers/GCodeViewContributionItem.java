@@ -13,6 +13,7 @@ import org.eclipse.jface.action.IContributionItem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem;
 import org.goko.tools.editor.GCodeEditorTopic;
@@ -32,6 +33,9 @@ public class GCodeViewContributionItem implements IGCodeProviderContributionItem
 	private IGCodeProviderRepository gcodeProviderRepository;
 	/** GCode service */
 	private IRS274NGCService gcodeService;
+	/** Validation service */
+	private IGCodeValidationService<?, ?, ?> gcodeValidationService;
+	
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.menu.gcodeprovider.IGCodeProviderContributionItem#getItem(org.goko.core.gcode.element.IGCodeProvider)
 	 */
@@ -52,7 +56,7 @@ public class GCodeViewContributionItem implements IGCodeProviderContributionItem
 			@Override
 			public void run() {
 				Map<String, Object> map = new HashMap<String, Object>();								
-				GCodeProviderDocument documentProvider = new GCodeProviderDocument(gcodeProviderRepository, gcodeService, provider);
+				GCodeProviderDocument documentProvider = new GCodeProviderDocument(gcodeProviderRepository, gcodeService, gcodeValidationService, provider);
 				map.put(IEventBroker.DATA, documentProvider);
 				eventAdmin.sendEvent(new Event(GCodeEditorTopic.TOPIC_OPEN_EDITOR, map));	
 			}
@@ -99,6 +103,20 @@ public class GCodeViewContributionItem implements IGCodeProviderContributionItem
 	 */
 	public void setGCodeService(IRS274NGCService gcodeService) {
 		this.gcodeService = gcodeService;
+	}
+
+	/**
+	 * @return the gcodeValidationService
+	 */
+	public IGCodeValidationService<?, ?, ?> getGcodeValidationService() {
+		return gcodeValidationService;
+	}
+
+	/**
+	 * @param gcodeValidationService the gcodeValidationService to set
+	 */
+	public void setGcodeValidationService(IGCodeValidationService<?, ?, ?> gcodeValidationService) {
+		this.gcodeValidationService = gcodeValidationService;
 	}
 	
 	

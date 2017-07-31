@@ -17,6 +17,7 @@
 
 package org.goko.tools.viewer.jogl.service;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
+import javax.vecmath.Point2i;
 import javax.vecmath.Point3f;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -42,6 +44,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
@@ -73,7 +77,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private static final GkLog LOG = GkLog.getLogger(JoglSceneManager.class);
 	/** Flag to enable/disable the render*/
 	private boolean enabled = true;
-	private Overlay overlay;
+	private Overlay overlay; 
 	private int x;
 	private int y;
 	private int width;
@@ -100,13 +104,16 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private Light light1;
 	private Color3f backgroundColor;
 	private boolean updateBackgroundColor;
+	private Point2i mouseCanvasPosition;
+	private boolean displayPositionOverlay = true;
 	
 	public JoglSceneManager() {
 		getRenderers();
 		initLayers();
 		this.renderersToRemove 	= new ArrayList<ICoreJoglRenderer>();
-		this.overlayRenderers = new CacheById<IOverlayRenderer>(new SequentialIdGenerator());
+		this.overlayRenderers = new CacheById<IOverlayRenderer>(new SequentialIdGenerator());		
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
+		displayPositionOverlay = JoglViewerPreference.getInstance().isDisplayPositionOverlay();
 	}
 
 	private void initLayers() {
@@ -120,7 +127,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		if(canvas != null){
 			return canvas;
 		}
-
+		
 		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getDefault();
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
@@ -134,10 +141,10 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		canvas.addGLEventListener(this);
 		proxy 		= new JoglRendererProxy(null);
 
-		addCamera(new PerspectiveCamera(canvas));
-		addCamera(new TopCamera(canvas));
-		addCamera(new LeftCamera(canvas));
-		addCamera(new FrontCamera(canvas));
+		addCamera(new PerspectiveCamera(canvas, this));
+		addCamera(new TopCamera(canvas, this));
+		addCamera(new LeftCamera(canvas, this));
+		addCamera(new FrontCamera(canvas, this));
 		String defaultCamera = JoglViewerPreference.getInstance().getDefaultCamera();
 		
 		if(isSupportedCamera(defaultCamera)){
@@ -149,8 +156,16 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		
 
 		addOverlayRenderer(new CameraNameOverlay(this));
-
+		
+		canvas.addMouseMoveListener(new MouseMoveListener() {
+			
+			@Override
+			public void mouseMove(MouseEvent e) {
+				mouseCanvasPosition = new Point2i(e.x, e.y);
+			}
+		});
 		onCanvasCreated(canvas);
+				
 		return canvas;
 	}
 
@@ -363,10 +378,17 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			if(StringUtils.equals(idCamera, tmpCamera.getId())){
 				if(camera != null){
 					camera.setActivated(false);
+					if(camera.getPositionOverlay() != null){
+						removeOverlayRenderer(camera.getPositionOverlay());
+					}
 				}
 				camera = tmpCamera;
 				camera.updateViewport(x, y, getWidth(), height);
-				camera.setActivated(true);
+				camera.setActivated(true);		
+				if(camera.getPositionOverlay() != null){
+					addOverlayRenderer(camera.getPositionOverlay());
+					camera.getPositionOverlay().setOverlayEnabled(displayPositionOverlay);
+				}
 				return;
 			}
 		}
@@ -388,15 +410,18 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	private void drawOverlay() {
-		overlay.beginRendering();
+		overlay.beginRendering();		
 		Graphics2D g2d = overlay.createGraphics();
-		try{
-			drawOverlayRenderer(g2d);
+		try{		
+			Color transparentColor = new Color(0,0,0,0);
+		    g2d.setBackground(transparentColor);
+			g2d.clearRect(0, 0, width, height);
+			drawOverlayRenderer(g2d);			
 		}catch(GkException e){
 			LOG.error(e);
 		}
 
-		overlay.markDirty(0, 0, getWidth(), height);
+		overlay.markDirty(0, 0, width, height);
 		overlay.drawAll();
 		g2d.dispose();
 		overlay.endRendering();
@@ -410,6 +435,16 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	public void addOverlayRenderer(IOverlayRenderer overlayRenderer) throws GkException{
 		overlayRenderers.add(overlayRenderer);
 	}
+	
+	/**
+	 * Removes the given overlay renderer
+	 * @param overlayRenderer the renderer to register
+	 * @throws GkException GkException
+	 */
+	public void removeOverlayRenderer(IOverlayRenderer overlayRenderer) throws GkException{
+		overlayRenderers.remove(overlayRenderer);
+	}
+	
 	/**
 	 * Draws the registered overlays
 	 * @param g2d the target graphic
@@ -535,5 +570,36 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	public void setBackgroundColor(Color3f backgroundColor) {
 		this.backgroundColor = backgroundColor;
 		this.updateBackgroundColor = true;
+	}
+
+	/**
+	 * @return the mouseCanvasPosition
+	 */
+	public Point2i getMouseCanvasPosition() {
+		return mouseCanvasPosition;
+	}
+
+	/**
+	 * @param mouseCanvasPosition the mouseCanvasPosition to set
+	 */
+	public void setMouseCanvasPosition(Point2i mouseCanvasPosition) {
+		this.mouseCanvasPosition = mouseCanvasPosition;
+	}
+
+	/**
+	 * @return the displayPositionOverlay
+	 */
+	public boolean isDisplayPositionOverlay() {
+		return displayPositionOverlay;
+	}
+
+	/**
+	 * @param displayPositionOverlay the displayPositionOverlay to set
+	 */
+	public void setDisplayPositionOverlay(boolean displayPositionOverlay) {
+		this.displayPositionOverlay = displayPositionOverlay;
+		if(camera.getPositionOverlay() != null){
+			camera.getPositionOverlay().setOverlayEnabled(displayPositionOverlay);
+		}
 	}
 }

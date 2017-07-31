@@ -20,6 +20,7 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.utils.CacheByCode;
 import org.goko.core.common.utils.CacheById;
+import org.goko.core.common.utils.Location;
 import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.common.utils.UniqueCacheByCode;
 import org.goko.core.gcode.element.GCodeLine;
@@ -55,13 +56,15 @@ import org.goko.core.log.GkLog;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.math.Tuple6b;
 
+import PriorizedListener.PriorizedListenerList;
+
 /**
  * @author Psyko
  */
 public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NGCService{
 	private static final GkLog LOG = GkLog.getLogger(RS274NGCServiceImpl.class);
 	/** The list of listener */
-	private List<IGCodeProviderRepositoryListener> listenerList;
+	private PriorizedListenerList<IGCodeProviderRepositoryListener> listenerList;
 	/** The list of modifier listener */
 	private List<IModifierListener> modifierListenerList;
 	/** The list of modifier listener */
@@ -84,14 +87,14 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	/** Constructor */
 	public RS274NGCServiceImpl() {
 		initializeModalGroups();
-		this.listenerList 	= new CopyOnWriteArrayList<IGCodeProviderRepositoryListener>();
-		this.modifierListenerList = new CopyOnWriteArrayList<IModifierListener>();
-		this.cacheRootProviders = new CacheById<StackableGCodeProviderRoot>(new SequentialIdGenerator());
-		this.cacheStackedProviders = new CacheById<IStackableGCodeProvider>();
-		this.cacheStackedProvidersByCode = new UniqueCacheByCode<IStackableGCodeProvider>();
-		this.cacheModifiers = new CacheById<IModifier<GCodeProvider>>(new SequentialIdGenerator());
+		this.listenerList 	= new PriorizedListenerList<>();
+		this.modifierListenerList = new CopyOnWriteArrayList<>();
+		this.cacheRootProviders = new CacheById<>(new SequentialIdGenerator());
+		this.cacheStackedProviders = new CacheById<>();
+		this.cacheStackedProvidersByCode = new UniqueCacheByCode<>();
+		this.cacheModifiers = new CacheById<>(new SequentialIdGenerator());
 		this.gcodeProviderUdateNotificationEnabled = true;
-		this.gcodeProviderDeleteListenerList = new CopyOnWriteArrayList<IGCodeProviderDeleteVetoableListener>();
+		this.gcodeProviderDeleteListenerList = new CopyOnWriteArrayList<>();
 		this.renderingFormat = RenderingFormat.COMPLETE;
 	}
 
@@ -155,41 +158,41 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		provider.clear();
 		provider.setSource(source);		
 		GCodeLexer lexer = new GCodeLexer();
-		InputStream stream = source.openInputStream();
-		List<List<GCodeToken>> tokens = lexer.tokenize(stream, provider);
+		List<List<GCodeToken>> tokens = new ArrayList<>();
 		
-		try {
-			stream.close();
+		try(InputStream stream = source.openInputStream()){
+			 tokens = lexer.tokenize(stream);
 		} catch (IOException e) {
 			throw new GkTechnicalException(e);
 		}
-		if(!provider.hasErrors()){
-			SubMonitor subMonitor = null;
-			if(monitor != null){
-				subMonitor = SubMonitor.convert(monitor,"Reading file", tokens.size());
-			}
-			
-			for (List<GCodeToken> lstToken : tokens) {
-				verifyModality(lstToken);
-				GCodeLine line = buildLine(lstToken);
-				if(line != null){
-					provider.addLine(line);
-				}
-				if(subMonitor != null){
-					subMonitor.worked(1);
-				}
+		
+		SubMonitor subMonitor = null;
+		if(monitor != null){
+			subMonitor = SubMonitor.convert(monitor,"Reading file", tokens.size());
+		}
+		int l = 0;
+		for (List<GCodeToken> lstToken : tokens) {
+			verifyModality(lstToken);
+			GCodeLine line = buildLine(lstToken);
+			line.setLocation(new Location(l, 0));
+			l++;
+			if(line != null){
+				provider.addLine(line);
 			}
 			if(subMonitor != null){
-				subMonitor.done();
+				subMonitor.worked(1);
 			}
-	
-			if(monitor != null){
-				subMonitor = SubMonitor.convert(monitor,"Veryfying file", 1);
-			}
-			getInstructions(new GCodeContext(), provider);
-			if(subMonitor != null){
-				subMonitor.done();
-			}
+		}
+		if(subMonitor != null){
+			subMonitor.done();
+		}
+
+		if(monitor != null){
+			subMonitor = SubMonitor.convert(monitor,"Veryfying file", 1);
+		}
+		getInstructions(new GCodeContext(), provider);
+		if(subMonitor != null){
+			subMonitor.done();
 		}
 	}
 	
@@ -217,16 +220,10 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	private GCodeLine buildLine(List<GCodeToken> lstToken) throws GkException {
-		
 		GCodeLine line = new GCodeLine();		
 		
 		if(CollectionUtils.isNotEmpty(lstToken)){
-			
-
 			for (GCodeToken token : lstToken) {
-	//			if(token.getType() == GCodeTokenType.LINE_NUMBER){
-	//				line.setLineNumber(GCodeTokenUtils.getLineNumber(token));
-	//			}else
 				if(token.getType() == GCodeTokenType.WORD || token.getType() == GCodeTokenType.LINE_NUMBER){
 					line.addWord(new GCodeWord(StringUtils.substring(token.getValue(), 0, 1), StringUtils.substring(token.getValue(), 1)));
 				}else if(token.getType() == GCodeTokenType.SIMPLE_COMMENT
@@ -240,20 +237,16 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		return line;
 	}
 
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.IGCodeService#getInstructions(org.goko.core.gcode.rs274ngcv3.context.GCodeContext, org.goko.core.gcode.element.IGCodeProvider)
-	 */
 	@Override
-	public InstructionProvider getInstructions(final GCodeContext context, IGCodeProvider gcodeProvider) throws GkException {
+	public InstructionProvider getInstructions(final GCodeContext context, IGCodeProvider gcodeProvider) throws GkException {		
 		GCodeContext localContext = null;
 		if(context != null){
 			localContext = new GCodeContext(context);
 		}
-
+				
 		InstructionFactory factory = new InstructionFactory();
 		InstructionProvider instructionProvider = new InstructionProvider();
-
+		int lNumber = 0;
 		for (GCodeLine gCodeLine : gcodeProvider.getLines()) {
 			InstructionSet iSet = new InstructionSet();
 			List<GCodeWord> localWords = new ArrayList<GCodeWord>(gCodeLine.getWords());
@@ -280,8 +273,8 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 			if(CollectionUtils.isNotEmpty(iSet.getInstructions())){
 				instructionProvider.addInstructionSet(iSet);
 			}
+			lNumber++;
 		}
-
 		return instructionProvider;
 	}
 
@@ -925,9 +918,16 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	@Override
 	public void addListener(IGCodeProviderRepositoryListener listener) throws GkException {
-		listenerList.add( listener );
+		addListener(listener, IGCodeProviderRepositoryListener.PRIORITY_STANDARD); 
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#addListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener, int)
+	 */
+	@Override
+	public void addListener(IGCodeProviderRepositoryListener listener, int priority) throws GkException {
+		listenerList.addListener(priority, listener);		
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.IRS274NGCService#addModifierListener(org.goko.core.gcode.rs274ngcv3.modifier.IModifierListener)
 	 */
@@ -986,9 +986,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 */
 	protected void notifyGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
 		if(isGcodeProviderUdateNotificationEnabled()){
-			if (CollectionUtils.isNotEmpty(listenerList)) {
-				for (IGCodeProviderRepositoryListener listener : listenerList) {
+			for (IGCodeProviderRepositoryListener listener : listenerList.getListeners()) {
+				try{
 					listener.onGCodeProviderUpdate(provider);
+				}catch(GkException e){
+					LOG.error(e);
 				}
 			}
 		}
@@ -1000,9 +1002,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	protected void notifyGCodeProviderLocked(IGCodeProvider provider) throws GkException {
-		if (CollectionUtils.isNotEmpty(listenerList)) {
-			for (IGCodeProviderRepositoryListener listener : listenerList) {
+		for (IGCodeProviderRepositoryListener listener : listenerList.getListeners()) {
+			try{
 				listener.onGCodeProviderLocked(provider);
+			}catch(GkException e){
+				LOG.error(e);
 			}
 		}
 	}
@@ -1013,9 +1017,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	protected void notifyGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {
-		if (CollectionUtils.isNotEmpty(listenerList)) {
-			for (IGCodeProviderRepositoryListener listener : listenerList) {
+		for (IGCodeProviderRepositoryListener listener : listenerList.getListeners()) {
+			try{
 				listener.onGCodeProviderUnlocked(provider);
+			}catch(GkException e){
+				LOG.error(e);
 			}
 		}
 	}
@@ -1025,9 +1031,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	protected void notifyGCodeProviderCreate(IGCodeProvider provider) throws GkException {
-		if (CollectionUtils.isNotEmpty(listenerList)) {
-			for (IGCodeProviderRepositoryListener listener : listenerList) {
+		for (IGCodeProviderRepositoryListener listener : listenerList.getListeners()) {
+			try{
 				listener.onGCodeProviderCreate(provider);
+			}catch(GkException e){
+				LOG.error(e);
 			}
 		}
 	}
@@ -1038,9 +1046,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	protected void notifyBeforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {
-		if (CollectionUtils.isNotEmpty(listenerList)) {
-			for (IGCodeProviderRepositoryListener listener : listenerList) {
+		for (IGCodeProviderRepositoryListener listener : listenerList.getListeners()) {
+			try{
 				listener.beforeGCodeProviderDelete(provider);
+			}catch(GkException e){
+				LOG.error(e);
 			}
 		}
 	}
@@ -1051,9 +1061,11 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 	 * @throws GkException GkException
 	 */
 	protected void notifyAfterGCodeProviderDelete(IGCodeProvider provider) throws GkException {
-		if (CollectionUtils.isNotEmpty(listenerList)) {
-			for (IGCodeProviderRepositoryListener listener : listenerList) {
+		for (IGCodeProviderRepositoryListener listener : listenerList.getListeners()) {
+			try{
 				listener.afterGCodeProviderDelete(provider);
+			}catch(GkException e){
+				LOG.error(e);
 			}
 		}
 	}

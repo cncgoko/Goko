@@ -38,7 +38,7 @@ public abstract class UiLabeledFieldEditor<C extends Control> extends UiFieldEdi
 		labelControl = new Label(this, style);    	
     	labelControl.setText(getLabel());
     	labelControl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));		
-		labelControl.pack();
+		labelControl.pack();		
 	}
 	
 	

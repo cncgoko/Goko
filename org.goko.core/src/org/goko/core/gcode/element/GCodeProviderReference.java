@@ -3,7 +3,6 @@ package org.goko.core.gcode.element;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.gcode.element.validation.IValidationElement;
 
 
 /**
@@ -25,47 +24,7 @@ public abstract class GCodeProviderReference implements IGCodeProvider{
 	 * @throws GkException GkException
 	 */
 	public abstract boolean isValid();
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasErrors()
-	 */
-	@Override
-	public boolean hasErrors() {
-		return get().hasErrors();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasWarnings()
-	 */
-	@Override
-	public boolean hasWarnings() {
-		return get().hasWarnings();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#getValidationElements()
-	 */
-	@Override
-	public List<IValidationElement> getValidationElements() {
-		return get().getValidationElements();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#clearValidationElements()
-	 */
-	@Override
-	public void clearValidationElements() {
-		get().clearValidationElements();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#addValidationElement(org.goko.core.gcode.element.validation.IValidationElement)
-	 */
-	@Override
-	public void addValidationElement(IValidationElement element) {
-		get().addValidationElement(element);
-	}
-
+		
 	/** (inheritDoc)
 	 * @see org.goko.core.common.utils.ICodeBean#getCode()
 	 */

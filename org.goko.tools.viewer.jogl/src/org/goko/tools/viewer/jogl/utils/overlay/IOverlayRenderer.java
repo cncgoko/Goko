@@ -21,4 +21,10 @@ public interface IOverlayRenderer extends IIdBean{
 	 * @return <code>true</code> if this overlay should be drawn, <code>false</code> otherwise
 	 */
 	boolean isOverlayEnabled();
+	
+	/**
+	 * Changes the enabled state of the overlay
+	 * @param enabled <code>true</code> if this overlay should be drawn, <code>false</code> otherwise
+	 */
+	void setOverlayEnabled(boolean enabled);
 }

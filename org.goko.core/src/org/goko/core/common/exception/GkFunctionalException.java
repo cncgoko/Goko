@@ -16,9 +16,7 @@
  *******************************************************************************/
 package org.goko.core.common.exception;
 
-import java.text.MessageFormat;
-
-import org.goko.core.common.i18n.MessageResource;
+import org.goko.core.common.i18n.I18n;
 
 /**
  * Goko functional exception
@@ -47,7 +45,8 @@ public class GkFunctionalException extends GkException {
 	 */
 	@Override
 	public String getLocalizedMessage() {		
-		return MessageFormat.format(MessageResource.getMessage(key), (Object[])arguments);	
+		return I18n.get(key, arguments);	
+		//return MessageFormat.format(MessageResource.getMessage(key), (Object[])arguments);	
 	}
 	
 	@Override

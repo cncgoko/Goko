@@ -8,6 +8,7 @@ import org.goko.core.gcode.rs274ngcv3.context.EnumDistanceMode;
 import org.goko.core.gcode.rs274ngcv3.context.EnumMotionMode;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
+import org.goko.core.gcode.rs274ngcv3.instruction.visitor.RS274InstructionVisitorAdapter;
 /**
  * 
  *  Move in a helical arc from the current position at the existing feed rate. The axis of the helix is
@@ -361,5 +362,13 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		if(k != null) instr.k = Length.clone(k);		
 		return instr;
 	}	
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#accept(org.goko.core.gcode.rs274ngcv3.instruction.visitor.RS274InstructionVisitorAdapter)
+	 */
+	@Override
+	public void accept(GCodeContext context, RS274InstructionVisitorAdapter visitor) throws GkException{
+		visitor.visit(context, this);
+	}
 	
 }

@@ -52,6 +52,12 @@ public class KeyboardJogOverlay extends AbstractIdBean implements IOverlayRender
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer#setOverlayEnabled(boolean)
+	 */
+	@Override
+	public void setOverlayEnabled(boolean enabled) {	}
+	
 	/**
 	 * Getter for the canvas 
 	 * @return the canvass

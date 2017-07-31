@@ -62,8 +62,12 @@ public abstract class AbstractGCodeDocumentProvider extends AbstractDocumentProv
 	 */
 	@Override
 	public void saveDocument(ProgressMonitor monitor) throws GkException {		
-		super.saveDocument(monitor);
-		Iterator<Annotation> iter = annotationModel.getAnnotationIterator();
+		super.saveDocument(monitor);	
+		updateAnnotations();
+	}
+	
+	protected void updateAnnotations() throws GkException{
+		Iterator<Annotation> iter = annotationModel.getAnnotationIterator();		
 		while (iter.hasNext()) {
 			Annotation annotation = (Annotation) iter.next();
 			annotationModel.removeAnnotation(annotation);			

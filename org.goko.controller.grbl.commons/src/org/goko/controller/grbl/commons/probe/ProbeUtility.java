@@ -122,7 +122,7 @@ public class ProbeUtility {
 		InstructionProvider instrProvider = new InstructionProvider();
 		// Force distance mode to absolute
 		instrProvider.addInstruction( new SetDistanceModeInstruction(EnumDistanceMode.ABSOLUTE) );
-		for (ProbeRequest probeRequest : lstProbeRequest) {
+		for (ProbeRequest probeRequest : lstProbeRequest) {			
 			Tuple6b clearancePoint 	= getProbeAxisPosition(probeRequest, probeRequest.getClearance());
 			Tuple6b probeStartPoint = getProbeAxisPosition(probeRequest, probeRequest.getProbeStart());
 			Tuple6b probeEndPoint 	= getProbeAxisPosition(probeRequest, probeRequest.getProbeEnd());

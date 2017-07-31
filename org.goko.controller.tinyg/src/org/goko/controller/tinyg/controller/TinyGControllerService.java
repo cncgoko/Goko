@@ -433,6 +433,22 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		getCommunicator().requestCoordinateSystemUpdate(current);
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#updateCoordinateSystemPosition(org.goko.core.gcode.element.ICoordinateSystem, org.goko.core.math.Tuple6b)
+	 */
+	@Override
+	public void updateCoordinateSystemPosition(ICoordinateSystem coordinateSystem, Tuple6b position) throws GkException {
+		JsonObject xyzPosition = new JsonObject();
+		xyzPosition.add(EnumTinyGAxis.X_POSITIVE.getAxisCode(), getPositionAsDouble(position.getX()));
+		xyzPosition.add(EnumTinyGAxis.Y_POSITIVE.getAxisCode(), getPositionAsDouble(position.getY()));
+		xyzPosition.add(EnumTinyGAxis.Z_POSITIVE.getAxisCode(), getPositionAsDouble(position.getZ()));
+		JsonObject csObject = new JsonObject();
+		csObject.add(coordinateSystem.getCode(), xyzPosition);
+		
+		getCommunicator().send( csObject , true );
+		getCommunicator().requestCoordinateSystemUpdate(coordinateSystem);		
+	}
+
 	
 	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.commons.AbstractTinyGControllerService#isPlannerBufferCheck()
@@ -662,7 +678,20 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	 */
 	@Override
 	public void resetTinyG() throws GkException {
-		getCommunicator().resetTinyG();	
+		getInternalState().updateValue(TinyGv097.MESSAGE, "RESETING..."); // Dirty hack
+		schedule().when(TinyGv097.MESSAGE, "SYSTEM READY").execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					getCommunicator().requestConfigurationUpdate();
+				} catch (GkException e) {
+					LOG.error(e);
+				}				
+			}
+		}).timeout(10, TimeUnit.SECOND).begin();
+		getCommunicator().resetTinyG();
+		
 	}
 
 	/** (inheritDoc)

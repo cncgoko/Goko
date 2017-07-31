@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_DbCUUGzGEee1C__pPA8jww">
+  <imports xsi:type="commands:BindingContext" xmi:id="_QoL0QG75EeeUpK319w5nDQ" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
+  <imports xsi:type="commands:Category" xmi:id="_XVgn4G75EeeUpK319w5nDQ" elementId="org.goko.tools.viewer.jogl.category.jogl"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_kawBMGzHEee1C__pPA8jww" featurename="children" parentElementId="org.goko.tools.viewer.jogl.toolbar.0">
+    <elements xsi:type="menu:DirectToolItem" xmi:id="_uTHNcGzHEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.directtoolitem.qsdqs" label="Commands color scheme" iconURI="platform:/plugin/org.goko.gcode.rs274ngcv3.jogl/resources/icons/color.png" tooltip="Commands color scheme">
+      <menu xmi:id="_0MYG4GzHEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.menu.0">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_vcW-AG73EeeUpK319w5nDQ" elementId="org.goko.gcode.rs274ngcv3.jogl.handledmenuitem.showhidelegend" label="Show/hide legend" command="_wlFgoG73EeeUpK319w5nDQ"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_t3NlIG73EeeUpK319w5nDQ" elementId="org.goko.gcode.rs274ngcv3.jogl.menuseparator.0"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_mljZ8GzJEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.handledmenuitem.bymotionmode" label="By motion mode" command="_qt8ysGzJEee1C__pPA8jww"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_HLYnMGzLEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.handledmenuitem.byspindlestate" label="By spindle state" command="_APfzIGzLEee1C__pPA8jww"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_erqaoGzLEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.handledmenuitem.byactiveplane" label="By active plane" command="_f8o6UGzLEee1C__pPA8jww"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_deDFwHChEee6-MO7guWO6w" elementId="org.goko.gcode.rs274ngcv3.jogl.handledmenuitem.byfeedrate" label="By feed rate" command="_fFvcUHChEee6-MO7guWO6w"/>
+      </menu>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pTow0GzJEee1C__pPA8jww" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_qt8ysGzJEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.command.colorizebymotionmodecommand" commandName="Colorize by motion mode command" description="Colorize by motion mode command" category="_XVgn4G75EeeUpK319w5nDQ"/>
+    <elements xsi:type="commands:Command" xmi:id="_APfzIGzLEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.command.colorizebyspindlestatecommand" commandName="Colorize by spindle state command" description="Colorize by spindle state command" category="_XVgn4G75EeeUpK319w5nDQ"/>
+    <elements xsi:type="commands:Command" xmi:id="_f8o6UGzLEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.command.colorizebyactiveplane" commandName="Colorize by active plane" description="Colorize by active plane" category="_XVgn4G75EeeUpK319w5nDQ"/>
+    <elements xsi:type="commands:Command" xmi:id="_wlFgoG73EeeUpK319w5nDQ" elementId="org.goko.gcode.rs274ngcv3.jogl.command.togglecolorizeroverlayvisibility" commandName="Toggle colorizer overlay visibility" description="Toggle colorizer overlay visibility" category="_XVgn4G75EeeUpK319w5nDQ"/>
+    <elements xsi:type="commands:Command" xmi:id="_fFvcUHChEee6-MO7guWO6w" elementId="org.goko.gcode.rs274ngcv3.jogl.command.colorizebyfeedrate" commandName="Colorize by feedrate" description="Colorize by feedrate" category="_XVgn4G75EeeUpK319w5nDQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uWPvEGzJEee1C__pPA8jww" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_wMv9sGzJEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.handler.0" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.jogl/org.goko.gcode.rs274ngcv3.jogl.handlers.MotionModeColorizerHandler" command="_qt8ysGzJEee1C__pPA8jww"/>
+    <elements xsi:type="commands:Handler" xmi:id="__F01UGzKEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.handler.1" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.jogl/org.goko.gcode.rs274ngcv3.jogl.handlers.SpindleStateColorizerHandler" command="_APfzIGzLEee1C__pPA8jww"/>
+    <elements xsi:type="commands:Handler" xmi:id="_ig_tcGzLEee1C__pPA8jww" elementId="org.goko.gcode.rs274ngcv3.jogl.handler.2" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.jogl/org.goko.gcode.rs274ngcv3.jogl.handlers.ActivePlaneColorizerHandler" command="_f8o6UGzLEee1C__pPA8jww"/>
+    <elements xsi:type="commands:Handler" xmi:id="_xCAGIG73EeeUpK319w5nDQ" elementId="org.goko.gcode.rs274ngcv3.jogl.handler.3" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.jogl/org.goko.gcode.rs274ngcv3.jogl.handlers.ColorizerOverlayVisibilityHandler" command="_wlFgoG73EeeUpK319w5nDQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_hZeZgHChEee6-MO7guWO6w" elementId="org.goko.gcode.rs274ngcv3.jogl.handler.4" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.jogl/org.goko.gcode.rs274ngcv3.jogl.handlers.FeedrateColorizerHandler" command="_fFvcUHChEee6-MO7guWO6w"/>
+  </fragments>
+</fragment:ModelFragments>

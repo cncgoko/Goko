@@ -27,6 +27,7 @@ import org.goko.core.controller.action.IGkControllerAction;
 import org.goko.core.controller.bean.MachineValue;
 import org.goko.core.controller.bean.MachineValueDefinition;
 import org.goko.core.controller.event.IGCodeContextListener;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.execution.IExecutionTokenState;
 import org.goko.core.math.Tuple6b;
@@ -40,6 +41,7 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	public static final String CONTROLLER_TOPIC				 = "ControllerEvent";
 	public static final String CONTROLLER_TOPIC_ALL			 = "ControllerEvent/*";
 	public static final String CONTROLLER_TOPIC_STATE_UPDATE = CONTROLLER_TOPIC+"/StateUpdate";
+	
 	/**
 	 * Returns the current position of the machine
 	 * @return a {@link Point3d} describing the current position of the machine
@@ -47,6 +49,21 @@ public interface IControllerService<S extends IExecutionTokenState, G extends IG
 	 */
 	Tuple6b getPosition() throws GkException;
 
+	/**
+	 * Returns the current position of the machine in the given coordinate system
+	 * @return a {@link Point3d} describing the current position of the machine
+	 * @throws GkException an exception
+	 */
+	Tuple6b getPosition(ICoordinateSystem coordinateSystem) throws GkException;
+
+	
+	/**
+	 * Returns the current position of the machine in the machine coordinate system
+	 * @return a {@link Point3d} describing the current position of the machine
+	 * @throws GkException an exception
+	 */
+	Tuple6b getAbsolutePosition() throws GkException;
+	
 	/**
 	 * Determine if the controller is ready to stream a file
 	 * @return <code>true</code> if the controller is ready, <code>false</code> otherwise

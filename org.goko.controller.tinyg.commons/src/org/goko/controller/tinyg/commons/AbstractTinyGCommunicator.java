@@ -341,7 +341,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 */
 	protected EnumUnit findUnits(JsonObject statusReport) throws GkException{
 		JsonValue unitReport = statusReport.get(TinyG.STATUS_REPORT_UNITS);
-		if(unitReport != null){
+		if(unitReport != null && unitReport.isNumber()){
 			int units = unitReport.asInt();
 			if(units == 1){
 				return EnumUnit.MILLIMETERS;
@@ -418,7 +418,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 */
 	protected EnumDistanceMode findDistanceMode(JsonObject statusReport) throws GkException{
 		JsonValue distReport = statusReport.get(TinyG.STATUS_REPORT_DISTANCE_MODE);
-		if(distReport != null){
+		if(distReport != null && distReport.isNumber()){
 			int dist = distReport.asInt();
 			if(dist == 0){
 				return EnumDistanceMode.ABSOLUTE;
@@ -438,7 +438,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 */
 	protected Speed findVelocity(JsonObject statusReport, EnumUnit unit){
 		JsonValue velocityReport = statusReport.get(TinyG.STATUS_REPORT_VELOCITY);
-		if(velocityReport != null){			
+		if(velocityReport != null && velocityReport.isNumber()){			
 			Unit<Speed> speedUnit = SpeedUnit.MILLIMETRE_PER_MINUTE;
 			if(EnumUnit.INCHES.equals(unit)){
 				speedUnit = SpeedUnit.INCH_PER_MINUTE;
@@ -457,7 +457,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 */
 	protected Speed findFeedrate(JsonObject feedrate,  EnumUnit unit){
 		JsonValue feedrateReport = feedrate.get(TinyG.STATUS_REPORT_FEEDRATE);
-		if(feedrateReport != null){
+		if(feedrateReport != null && feedrateReport.isNumber()){
 			Unit<Speed> speedUnit = SpeedUnit.MILLIMETRE_PER_MINUTE;
 			if(EnumUnit.INCHES.equals(unit)){
 				speedUnit = SpeedUnit.INCH_PER_MINUTE;	
@@ -477,7 +477,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	protected CoordinateSystem findCoordinateSystem(JsonObject statusReport){
 		CoordinateSystem coordinateSystem = null;
 		JsonValue coordReport = statusReport.get(TinyG.STATUS_REPORT_COORDINATES);
-		if(coordReport != null){
+		if(coordReport != null && coordReport.isNumber()){
 			int units = coordReport.asInt();
 			switch(units){
 			case 0: coordinateSystem = CoordinateSystem.G53;
@@ -509,7 +509,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	protected EnumPlane findPlane(JsonObject statusReport) {
 		EnumPlane enumPlane = null;
 		JsonValue coordReport = statusReport.get(TinyG.STATUS_REPORT_PLANE);
-		if(coordReport != null){
+		if(coordReport != null && coordReport.isNumber()){
 			int units = coordReport.asInt();
 			switch(units){
 			case 0: enumPlane = EnumPlane.XY_PLANE;
@@ -533,7 +533,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	protected EnumMotionMode findMotionMode(JsonObject statusReport) {
 		EnumMotionMode enumMotionMode = null;
 		JsonValue coordReport = statusReport.get(TinyG.STATUS_REPORT_MOTION_MODE);
-		if(coordReport != null){
+		if(coordReport != null && coordReport.isNumber()){
 			int units = coordReport.asInt();
 			switch(units){
 			case 0: enumMotionMode = EnumMotionMode.RAPID;
@@ -642,6 +642,7 @@ public abstract class AbstractTinyGCommunicator<C extends AbstractTinyGConfigura
 	 * @throws GkException GkException
 	 */
 	public void requestCoordinateSystemUpdate() throws GkException{
+		send(buildJsonQuery("G54"), true);
 		send(buildJsonQuery("G55"), true);
 		send(buildJsonQuery("G56"), true);
 		send(buildJsonQuery("G57"), true);

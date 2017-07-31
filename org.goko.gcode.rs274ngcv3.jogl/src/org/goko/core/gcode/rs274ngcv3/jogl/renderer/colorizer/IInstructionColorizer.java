@@ -22,8 +22,17 @@ import javax.vecmath.Color4f;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeContext;
 import org.goko.core.gcode.element.IInstruction;
+import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
+import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 
 public interface IInstructionColorizer<G extends IGCodeContext, T extends IInstruction> {
 
-	public Color4f getColor(G token, T instruction) throws GkException;
+	public void initialize(GCodeContext context, InstructionProvider instructionSet) throws GkException;
+	
+	public Color4f getColor(G context, T instruction) throws GkException;
+	
+	public void conclude() throws GkException;
+	
+	public IOverlayRenderer getOverlay();
 }

@@ -141,6 +141,24 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 	}
 
 	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getAbsolutePosition()
+	 */
+	@Override
+	public Tuple6b getAbsolutePosition() throws GkException {
+		return getInternalState().getMachinePosition();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getPosition(org.goko.core.gcode.element.ICoordinateSystem)
+	 */
+	@Override
+	public Tuple6b getPosition(ICoordinateSystem coordinateSystem) throws GkException {
+		Tuple6b pos = getAbsolutePosition();
+		pos.subtract(getCoordinateSystemOffset(coordinateSystem));
+		return pos;		
+	}
+	
+	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#isReadyForFileStreaming()
 	 */
 	@Override
@@ -651,8 +669,6 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 			return;
 		}
 		try{	
-			boolean testo = oldConfig.isCompletelyLoaded();
-			boolean testn = newConfig.isCompletelyLoaded();
 			C cfg = oldConfig.getDifferentialConfiguration(newConfig);		
 			List<TinyGGroupSettings> lstGroups = cfg.getGroups();
 			newConfig.isCompletelyLoaded();
@@ -795,6 +811,9 @@ public abstract class AbstractTinyGControllerService<T extends ITinyGControllerS
 		if(this.executionService != null){
 			this.executionService.setExecutor(getExecutor());
 			this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, getExecutor());
+			this.executionService.addExecutionListener(ExecutionQueueType.SYSTEM, getExecutor());
+			this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, this);
+			this.executionService.addExecutionListener(ExecutionQueueType.SYSTEM, this);
 		}
 	}
 

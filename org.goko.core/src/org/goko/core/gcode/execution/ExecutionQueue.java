@@ -124,7 +124,7 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 		remainingExecutionTokens.remove(tokenToRemove);
 		executionTokens.remove(tokenToRemove);		
 	}
-	
+		
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.IExecutionQueue#getExecutionToken()
 	 */
@@ -157,5 +157,22 @@ public class ExecutionQueue<S extends IExecutionTokenState, T extends IExecution
 	public ExecutionQueueType getType() {
 		return type;
 	}
+
+	/**
+	 * Callback for start queue event  
+	 */
+	public void onStart() throws GkException { }
+	
+	/**
+	 * Callback for canceled queue event  
+	 */
+	public void onCanceled() throws GkException { }
+	
+	/**
+	 * Callback for completed queue event  
+	 */
+	public void onComplete() throws GkException { }
+	
+	
 
 }

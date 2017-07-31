@@ -249,6 +249,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 			setUsedGrblBuffer(getUsedGrblBuffer() - amount);			
 		}
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IControllerService#getPosition()
 	 */
@@ -256,7 +257,25 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	public Tuple6b getPosition() throws GkException {
 		return grblState.getWorkPosition();
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getPosition(org.goko.core.gcode.element.ICoordinateSystem)
+	 */
+	@Override
+	public Tuple6b getPosition(ICoordinateSystem coordinateSystem) throws GkException {
+		Tuple6b pos = getAbsolutePosition();
+		pos.subtract(getCoordinateSystemOffset(coordinateSystem));
+		return pos;	
+	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.IControllerService#getAbsolutePosition()
+	 */
+	@Override
+	public Tuple6b getAbsolutePosition() throws GkException {
+		//return grblState.getWorkPosition();
+		throw new GkTechnicalException("TO DO"); // FIXME
+	}
 
 	/** (inheritDoc)
 	 * @see org.goko.core.controller.IThreeAxisControllerAdapter#getX()
@@ -780,6 +799,14 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		cmd += "Z"+getPositionAsString(mPos.getZ());
 		communicator.send( GkUtils.toBytesList( cmd ) );
 		communicator.send( GkUtils.toBytesList( Grbl.VIEW_PARAMETERS ) );
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.controller.ICoordinateSystemAdapter#updateCoordinateSystemPosition(org.goko.core.gcode.element.ICoordinateSystem, org.goko.core.math.Tuple6b)
+	 */
+	@Override
+	public void updateCoordinateSystemPosition(ICoordinateSystem cs, Tuple6b position) throws GkException {
+		throw new GkTechnicalException("TO DO"); // FIXME
 	}
 	
 	/**

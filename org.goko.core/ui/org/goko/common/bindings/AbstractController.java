@@ -639,6 +639,6 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 	
 	public void addFieldEditor(UiFieldEditor<?> fieldEditor) throws GkException{
 		this.lstFieldEditor.add(fieldEditor);
-		bindings.add(fieldEditor.getBinding(bindingContext, dataModel));
+		bindings.addAll(fieldEditor.getBinding(bindingContext, dataModel));
 	}
 }

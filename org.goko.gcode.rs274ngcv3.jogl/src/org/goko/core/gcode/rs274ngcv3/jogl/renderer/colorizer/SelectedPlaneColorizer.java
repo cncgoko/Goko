@@ -6,6 +6,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.context.EnumPlane;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
+import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.overlay.SelectedPlaneColorizerOverlay;
 
 public class SelectedPlaneColorizer extends AbstractInstructionColorizer {	
 	private static final Color4f DEFAULT_COLOR = new Color4f(0.854f,0.854f,0.854f,0.9f);
@@ -13,6 +14,11 @@ public class SelectedPlaneColorizer extends AbstractInstructionColorizer {
 	private static final Color4f XZ_PLANE_COLOR = new Color4f(0.0f,0.8f,0.0f,0.9f);	
 	private static final Color4f YZ_PLANE_COLOR = new Color4f(0.0f,0.0f,0.8f,0.9f);
 
+	/**
+	 */
+	public SelectedPlaneColorizer() {
+		super(new SelectedPlaneColorizerOverlay());
+	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.IInstructionColorizer#getColor(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IInstruction)

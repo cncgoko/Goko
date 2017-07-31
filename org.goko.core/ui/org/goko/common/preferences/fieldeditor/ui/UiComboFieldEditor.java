@@ -1,105 +1,55 @@
 package org.goko.common.preferences.fieldeditor.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.goko.common.bindings.AbstractModelObject;
+import org.goko.common.elements.combo.GkCombo;
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkTechnicalException;
 
 /**
  * Field editor using a combo control
  * @author PsyKo
  */
-public class UiComboFieldEditor extends UiLabeledFieldEditor<Combo> {	
-	/**
-	 * The value (not the name) of the currently selected item in the Combo widget.
-	 */
-	private String fValue;
-	
-	/**
-	 * The names (labels) and underlying values to populate the combo widget.  These should be
-	 * arranged as: { {name1, value1}, {name2, value2}, ...}
-	 */
-	private String[][] fEntryNamesAndValues;
-
+public class UiComboFieldEditor<T> extends UiLabeledFieldEditor<Combo> {	
+	private String inputPropertyName;
+	private GkCombo<LabeledValue<T>> gkCombo;
 
 	public UiComboFieldEditor(Composite parent, int style) {
-		super(parent, style);		
-		createControls(parent, style);
+		super(parent, style);
 	}
 	
-	public void setInput(String[][] entry){
-		setEntry(entry);
+	public void setEntry(List<LabeledValue<T>> entries){
+		gkCombo.setInput(entries);
 	}
-	/**
-	 * @param entry The names (labels) and underlying values to populate the combo widget.  These should be arranged as: { {name1, value1}, {name2, value2}, ...}
-	 */	
-	public void setEntry(String[][] entry){
-		this.fEntryNamesAndValues = entry; 	
-		control.removeAll();
-		for (int i = 0; i < fEntryNamesAndValues.length; i++) {
-			control.add(fEntryNamesAndValues[i][0], i);
-		}
-	}
-	
 	/** (inheritDoc)
 	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {
-		super.createControls(parent, style);		
-		control = new Combo(this, style & SWT.READ_ONLY);    	
-		control.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent evt) {
-				String oldValue = fValue;
-				String name = control.getText();
-				fValue = getValueForName(name);				
-				fireValueChanged(VALUE, oldValue, fValue);					
-			}
-		});
+		super.createControls(parent, style); 
+		gkCombo = new GkCombo<>(this, style | SWT.READ_ONLY);
+		control = gkCombo.getCombo();//new Combo(this, style & SWT.READ_ONLY);    	
+		control.setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, true, false, 1, 1));
     	control.pack();
     	this.pack();
-	}
-		
-	/*
-	 * Given the name (label) of an entry, return the corresponding value.
-	 */
-	protected String getValueForName(String name) {
-		for (int i = 0; i < fEntryNamesAndValues.length; i++) {
-			String[] entry = fEntryNamesAndValues[i];
-			if (name.equals(entry[0])) {
-				return entry[1];
-			}
-		}
-		return fEntryNamesAndValues[0][0];
-	}
-	
-	/*
-	 * Set the name in the combo widget to match the specified value.
-	 */
-	protected void updateComboForValue(String value) {
-		fValue = value;
-		for (int i = 0; i < fEntryNamesAndValues.length; i++) {
-			if (value.equals(fEntryNamesAndValues[i][1])) {
-				control.setText(fEntryNamesAndValues[i][0]);
-				return;
-			}
-		}
-		if (fEntryNamesAndValues.length > 0) {
-			fValue = fEntryNamesAndValues[0][1];
-			control.setText(fEntryNamesAndValues[0][0]);
-		}
-	}
-
-	public String getValue() {
-		return fValue;
 	}
 
 	/** (inheritDoc)
@@ -115,7 +65,46 @@ public class UiComboFieldEditor extends UiLabeledFieldEditor<Combo> {
 	 */
 	@Override
 	protected Binding getFieldEditorBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("Not implemented");
+		throw new GkTechnicalException("Should not be called");
 	}
+
+	/** (inheritDoc)
+	 * @see org.goko.common.preferences.fieldeditor.ui.UiFieldEditor#getBinding(org.eclipse.core.databinding.DataBindingContext, org.goko.common.bindings.AbstractModelObject)
+	 */
+	@Override
+	public List<Binding> getBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException {
+		List<Binding> bindings = new ArrayList<>();
+		// Selection binding
+		IObservableValue target = ViewersObservables.observeSingleSelection(gkCombo);
+		IObservableValue model = BeanProperties.value(propertyName).observe(modelObject);
+		
+		UpdateValueStrategy targetToModelStrategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
+		UpdateValueStrategy modelToTargetStrategy = new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE);
+		
+		bindings.add(bindingContext.bindValue(target, model, targetToModelStrategy, modelToTargetStrategy));
+		
+		// AvailableItems binding
+		if(StringUtils.isNotEmpty(inputPropertyName)){
+			IViewerObservableValue itemsObserveWidget = ViewerProperties.input().observe(gkCombo);
+			IObservableValue bindingsObserveList = BeanProperties.value(inputPropertyName).observe(modelObject);
+			Binding binding = bindingContext.bindValue(itemsObserveWidget, bindingsObserveList, targetToModelStrategy, modelToTargetStrategy );
+			bindings.add(binding);
+		}		
+		return bindings;
+	}
+
+	/**
+	 * @return the inputPropertyName
+	 */
+	public String getInputPropertyName() {
+		return inputPropertyName;
+	}
+
+	/**
+	 * @param inputPropertyName the inputPropertyName to set
+	 */
+	public void setInputPropertyName(String inputPropertyName) {
+		this.inputPropertyName = inputPropertyName;
+	}
+	
 }

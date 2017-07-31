@@ -125,7 +125,7 @@ public class ShaderLoader {
 				}
 				// Second light
 				if(light1 != null){
-					int light1ShaderId 					= gl.glGetUniformLocation(shaderProgram, "iLight1Position"); // Renvoi -1 si le champs n'est pas utilisé dans le shader
+					int light1ShaderId 					= gl.glGetUniformLocation(shaderProgram, "iLight1Position"); // Renvoi -1 si le champs n'est pas utilisï¿½ dans le shader
 					int diffuse1ShaderId			 	= gl.glGetUniformLocation(shaderProgram, "iLight1Diffuse");
 					
 					if(light1ShaderId >= 0){
@@ -142,7 +142,7 @@ public class ShaderLoader {
 	}
 	
 //	a faire :	
-//		- tester la possibilité de changer les features sans les installer/desinstaller
+//		- tester la possibilitï¿½ de changer les features sans les installer/desinstaller
 	
 	protected int loadShader(GL3 gl, InputStream vertexShaderInputStream, InputStream fragmentShaderInputStream){
 		int vertexShader   = gl.glCreateShader(GL3.GL_VERTEX_SHADER);

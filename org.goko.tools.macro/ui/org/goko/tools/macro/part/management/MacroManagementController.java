@@ -16,6 +16,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.rs274ngcv3.element.source.StringGCodeSource;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.tools.editor.GCodeEditorTopic;
 import org.goko.tools.macro.bean.GCodeMacro;
@@ -33,6 +34,8 @@ public class MacroManagementController extends AbstractController<MacroManagemen
 	private static final GkLog LOG = GkLog.getLogger(MacroManagementController.class);
 	@Inject
 	private DefaultGCodeMacroService macroService;
+	@Inject
+	private IGCodeValidationService<?, ?, ?> gcodeValidationService;
 	/** Event admin */
 	@Inject	
 	private EventAdmin eventAdmin;
@@ -134,7 +137,7 @@ public class MacroManagementController extends AbstractController<MacroManagemen
 		if(getDataModel().getSelectedMacro() != null){
 			GCodeMacro macro = getDataModel().getSelectedMacro();
 			Map<String, Object> map = new HashMap<String, Object>();
-			GCodeMacroDocument documentProvider = new GCodeMacroDocument(macroService, macro, macroService.getGCodeProviderByMacro(macro.getId()));
+			GCodeMacroDocument documentProvider = new GCodeMacroDocument(macroService, gcodeValidationService, macro, macroService.getGCodeProviderByMacro(macro.getId()));
 			map.put(IEventBroker.DATA, documentProvider);
 			eventAdmin.sendEvent(new Event(GCodeEditorTopic.TOPIC_OPEN_EDITOR, map));
 		}

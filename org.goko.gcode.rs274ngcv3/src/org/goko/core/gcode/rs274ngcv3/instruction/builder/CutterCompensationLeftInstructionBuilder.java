@@ -40,4 +40,5 @@ public class CutterCompensationLeftInstructionBuilder extends AbstractInstructio
 		instr.setOffset(offset);
 		return instr;
 	}
+		
 }

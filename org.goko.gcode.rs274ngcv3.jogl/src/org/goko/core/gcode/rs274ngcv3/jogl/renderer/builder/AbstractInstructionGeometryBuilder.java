@@ -41,10 +41,13 @@ public abstract class AbstractInstructionGeometryBuilder<T extends IInstruction>
 	 */
 	public List<Point3d> buildGeometry(GCodeContext context, IInstruction instruction) throws GkException{
 		if(type.equals( instruction.getType() )){
-			
-			return buildInstructionGeometry(context, ((T) instruction));
+			//if(instruction.isValid()){
+				return buildInstructionGeometry(context, ((T) instruction));			
+			//}
+		}else{
+			throw new GkTechnicalException("Incompatible instruction type...");
 		}
-		throw new GkTechnicalException("Incompatible instruction type...");
+		//return null;
 	}
 	
 	/**
