@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,7 @@ import org.goko.tools.shuttlxpress.preferences.ShuttleXPressPreferences;
  * @author Psyko
  * @date 23 avr. 2016
  */
+@Singleton
 public class ShuttleXpressHandler {
 	/** Log */
 	private static final GkLog LOG = GkLog.getLogger(ShuttleXpressHandler.class);
