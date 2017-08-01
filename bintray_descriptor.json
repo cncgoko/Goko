@@ -1,20 +1,20 @@
 {
     "package": {
         "name": "goko",
-        "repo": "Goko",
-        "subject": "goko"
+        "repo": "Goko-dev",
+        "subject": "goko-dev"
     },
 
     "version": {
-        "name": "0.3.4",
-        "desc": "Goko v0.3.4",
-        "released": "2017-05-20",
+        "name": "0.3.5",
+        "desc": "Goko v0.3.5",
+        "released": "2017-08-01",
         "gpgSign": false
     },
 
     "files":
         [
-        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(goko-0.3.4.*\.zip)", "uploadPattern": "$1",
+        {"includePattern": "/home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/(goko-0.3.5.*\.zip)", "uploadPattern": "$1",
         "matrixParams": {
             "override": 0 }
         }
