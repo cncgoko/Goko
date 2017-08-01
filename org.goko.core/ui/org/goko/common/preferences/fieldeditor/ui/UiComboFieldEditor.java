@@ -15,6 +15,8 @@ import org.eclipse.jface.databinding.viewers.IViewerObservableValue;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -29,6 +31,15 @@ import org.goko.core.common.exception.GkTechnicalException;
  * @author PsyKo
  */
 public class UiComboFieldEditor<T> extends UiLabeledFieldEditor<Combo> {	
+    /**
+     * Text limit constant (value <code>-1</code>) indicating unlimited
+     * text limit and width.
+     */
+    public static int UNLIMITED = -1;
+    /**
+     * Width of text field in characters; initially unlimited.
+     */
+    private int widthInChars = UNLIMITED;
 	private String inputPropertyName;
 	private GkCombo<LabeledValue<T>> gkCombo;
 
@@ -105,6 +116,36 @@ public class UiComboFieldEditor<T> extends UiLabeledFieldEditor<Combo> {
 	 */
 	public void setInputPropertyName(String inputPropertyName) {
 		this.inputPropertyName = inputPropertyName;
+	}
+	
+	private void updateControlLayout(){
+		GridData gd = (GridData) control.getLayoutData();		
+		if (widthInChars != UNLIMITED) {
+            GC gc = new GC(control);
+            try {
+                Point extent = gc.textExtent("X");//$NON-NLS-1$
+                gd.widthHint = widthInChars * extent.x;
+            } finally {
+                gc.dispose();
+            }
+        } 
+		control.setLayoutData(gd);
+		pack();
+	}
+
+	/**
+	 * @return the widthInChars
+	 */
+	public int getWidthInChars() {
+		return widthInChars;
+	}
+
+	/**
+	 * @param widthInChars the widthInChars to set
+	 */
+	public void setWidthInChars(int widthInChars) {
+		this.widthInChars = widthInChars;
+		updateControlLayout();
 	}
 	
 }

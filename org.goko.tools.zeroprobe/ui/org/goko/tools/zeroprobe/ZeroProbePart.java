@@ -111,6 +111,7 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		grpCompensation.setText("Compensation");
 		
 		UiBooleanFieldEditor booleanFieldEditor = new UiBooleanFieldEditor(grpCompensation, SWT.NONE);
+		booleanFieldEditor.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		booleanFieldEditor.setLabel("Enable tool radius compensation");
 		booleanFieldEditor.setPropertyName(ZeroProbeModel.TOOL_DIAMETER_COMPENSATION);
 		
@@ -124,6 +125,7 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		
 		UiComboFieldEditor<ICoordinateSystem> comboFieldEditor = new UiComboFieldEditor<ICoordinateSystem>(grpProbeSettings, SWT.NONE);
 		comboFieldEditor.setLabelWidthInChar(12);
+		comboFieldEditor.setWidthInChars(6);
 		comboFieldEditor.setPropertyName(ZeroProbeModel.COORDINATE_SYSTEM);
 		comboFieldEditor.setInputPropertyName(ZeroProbeModel.COORDINATE_SYSTEM_LIST);
 		
