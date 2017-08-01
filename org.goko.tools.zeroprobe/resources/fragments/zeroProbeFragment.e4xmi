@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_RvuSUHUTEeesZtZGYK0vtQ">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hbavIHUTEeesZtZGYK0vtQ" featurename="children" parentElementId="goko.partstack.d">
-    <elements xsi:type="basic:Part" xmi:id="_lLnDQHUTEeesZtZGYK0vtQ" elementId="org.goko.tools.zeroprobe.part.probezero" contributionURI="bundleclass://org.goko.tools.zeroprobe/org.goko.tools.zeroprobe.ZeroProbePart" label="Probe Zero"/>
+    <elements xsi:type="basic:Part" xmi:id="_lLnDQHUTEeesZtZGYK0vtQ" elementId="org.goko.tools.zeroprobe.part.probezero" contributionURI="bundleclass://org.goko.tools.zeroprobe/org.goko.tools.zeroprobe.ZeroProbePart" label="Probe Zero">
+      <tags>view</tags>
+    </elements>
   </fragments>
 </fragment:ModelFragments>
