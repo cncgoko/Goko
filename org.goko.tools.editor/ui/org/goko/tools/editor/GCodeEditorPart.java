@@ -117,7 +117,7 @@ public class GCodeEditorPart{
 			IAnnotationAccess access = (IAnnotationAccess) new BasicAnnotationAccess();
 			IOverviewRuler overviewRuler = new OverviewRuler(access, 12, sharedColors);
 			
-			GCodeSourceViewer viewer = new GCodeSourceViewer(mainTabFolder, overviewRuler, access, SWT.V_SCROLL | SWT.H_SCROLL);
+			final GCodeSourceViewer viewer = new GCodeSourceViewer(mainTabFolder, overviewRuler, access, SWT.V_SCROLL | SWT.H_SCROLL);
 			mapSourceViewerByDocumentProvider.put(provider, viewer);
 			IDocument document = provider.getDocument();
 			//viewer.setDocument(document);
