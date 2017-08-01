@@ -5,10 +5,9 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.utils.ICodeBean;
 import org.goko.core.common.utils.IIdBean;
-import org.goko.core.gcode.element.validation.IValidationTarget;
 
 
-public interface IGCodeProvider extends IIdBean, ICodeBean, IValidationTarget{
+public interface IGCodeProvider extends IIdBean, ICodeBean{
 
 	/**
 	 * Getter for the user displayed code of this provider  

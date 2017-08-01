@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.utils.IIdBean;
+import org.goko.core.common.utils.Location;
 
 public class GCodeLine implements IIdBean{
 	/** Internal identifier of this line */
@@ -11,6 +12,7 @@ public class GCodeLine implements IIdBean{
 	private Integer lineNumber;
 	private List<GCodeWord> words;
 	private List<GCodeParameter> parameters;	
+	private Location location;
 	
 	public GCodeLine() {
 		this.words 		= new ArrayList<GCodeWord>();
@@ -72,6 +74,20 @@ public class GCodeLine implements IIdBean{
 	 */
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the location
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 	
 }

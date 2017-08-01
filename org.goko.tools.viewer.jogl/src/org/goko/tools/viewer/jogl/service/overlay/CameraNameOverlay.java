@@ -54,6 +54,10 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 	public void drawOverlayData(Graphics2D g2d, Rectangle s) throws GkException {
 		
 		if(joglSceneManager.getActiveCamera() != null){
+//			g2d.setColor(Color.WHITE);
+//			g2d.drawLine(s.width/2, s.height/2 - 10, s.width/2, s.height/2 + 10);
+//			g2d.drawLine(s.width/2 - 10, s.height/2 , s.width/2 + 10, s.height/2 );
+			
 			g2d.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			FontRenderContext 	frc = g2d.getFontRenderContext();
 			String 				cameraString = joglSceneManager.getActiveCamera().getLabel();
@@ -67,7 +71,6 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 		    Color transparentColor = new Color(0,0,0,0);
 		    g2d.setBackground(transparentColor);
 		    g2d.setColor(overlayColor);
-		    g2d.clearRect(0, 0, s.width, s.height);
 		    if(joglSceneManager.isEnabled()){
 		    	g2d.drawString(cameraString,x,y);
 		    }else{
@@ -102,6 +105,11 @@ public class CameraNameOverlay extends AbstractIdBean implements IOverlayRendere
 		return true;
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer#setOverlayEnabled(boolean)
+	 */
+	@Override
+	public void setOverlayEnabled(boolean enabled) {	}
 	/**
 	 * @return the overlayFont
 	 */

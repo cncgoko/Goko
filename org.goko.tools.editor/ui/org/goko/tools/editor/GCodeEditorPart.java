@@ -163,6 +163,19 @@ public class GCodeEditorPart{
 						}
 					});							
 				}
+				
+				/** (inheritDoc)
+				 * @see org.goko.tools.editor.component.provider.DocumentProviderAdapter#onModified(org.goko.tools.editor.component.provider.IDocumentProvider)
+				 */
+				@Override
+				public void onModified(IDocumentProvider provider) {
+					uiSynchronize.syncExec(new Runnable() {						
+						@Override
+						public void run() {
+							viewer.refresh();							
+						}
+					});
+				}
 			};
 			provider.addDocumentProviderListener(listener);			
 			document.addDocumentListener(new IDocumentListener() {
@@ -172,7 +185,7 @@ public class GCodeEditorPart{
 				 */
 				@Override
 				public void documentChanged(DocumentEvent event) {
-					forceHandlerUpdate();					
+					forceHandlerUpdate();
 				}
 				
 				/** (inheritDoc)

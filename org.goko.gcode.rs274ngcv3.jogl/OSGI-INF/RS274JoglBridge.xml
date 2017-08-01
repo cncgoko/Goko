@@ -7,4 +7,7 @@
    <reference bind="setCoordinateSystemAdapter" cardinality="1..1" interface="org.goko.core.controller.ICoordinateSystemAdapter" name="ICoordinateSystemAdapter" policy="static"/>
    <reference bind="setGCodeContextProvider" cardinality="1..1" interface="org.goko.core.controller.IGCodeContextProvider" name="IGCodeContextProvider" policy="static"/>
    <reference bind="setFourAxisControllerAdapter" cardinality="0..1" interface="org.goko.core.controller.IFourAxisControllerAdapter" name="IFourAxisControllerAdapter" policy="dynamic"/>
+   <service>
+      <provide interface="org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService"/>
+   </service>
 </scr:component>

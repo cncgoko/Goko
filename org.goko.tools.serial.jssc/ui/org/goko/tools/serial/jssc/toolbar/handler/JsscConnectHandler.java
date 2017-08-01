@@ -22,6 +22,7 @@ package org.goko.tools.serial.jssc.toolbar.handler;
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -50,15 +51,18 @@ public class JsscConnectHandler {
 	 * @throws GkException GkException
 	 */
 	@Execute
-	public void execute() throws GkException{		
-		connectionService.connect(SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name()),
-								  SerialConnectionPreference.getInstance().getInt(JsscParameter.BAUDRATE.name()),
-								  SerialConnectionPreference.getInstance().getInt(JsscParameter.DATABITS.name()), 
-								  SerialConnectionPreference.getInstance().getInt(JsscParameter.STOPBITS.name()),
-								  SerialConnectionPreference.getInstance().getInt(JsscParameter.PARITY.name()), 								  
-								  SerialConnectionPreference.getInstance().getInt(JsscParameter.FLOWCONTROL.name()));
-
-		eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+	public void execute() throws GkException{
+		String port = SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name());
+		if(StringUtils.isNotBlank(port)){
+			connectionService.connect(SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name()),
+									  SerialConnectionPreference.getInstance().getInt(JsscParameter.BAUDRATE.name()),
+									  SerialConnectionPreference.getInstance().getInt(JsscParameter.DATABITS.name()), 
+									  SerialConnectionPreference.getInstance().getInt(JsscParameter.STOPBITS.name()),
+									  SerialConnectionPreference.getInstance().getInt(JsscParameter.PARITY.name()), 								  
+									  SerialConnectionPreference.getInstance().getInt(JsscParameter.FLOWCONTROL.name()));
+	
+			eventBroker.send(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
+		}
 	}
 
 	/**
@@ -67,7 +71,8 @@ public class JsscConnectHandler {
 	 */
 	@CanExecute
 	public boolean canExecute() throws GkException{
-		return !connectionService.isConnected() && CollectionUtils.isNotEmpty(connectionService.getAvailableSerialPort());
+		String port = SerialConnectionPreference.getInstance().getString(JsscParameter.PORTNAME.name());
+		return StringUtils.isNotBlank(port) && !connectionService.isConnected() && CollectionUtils.isNotEmpty(connectionService.getAvailableSerialPort());
 	}
 
 }

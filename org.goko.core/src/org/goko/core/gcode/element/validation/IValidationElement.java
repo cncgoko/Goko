@@ -19,7 +19,9 @@ public interface IValidationElement {
 	
 	Location getLocation();
 	
+	void setLocation(Location location);
+	
 	String getDescription();
 	
-	int getLength();
+	Integer getLength();
 }

@@ -22,6 +22,8 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.core.gcode.element.validation.ValidationResult;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.tools.editor.component.annotation.ErrorAnnotation;
 import org.goko.tools.editor.component.provider.AbstractGCodeDocumentProvider;
@@ -34,17 +36,20 @@ public class GCodeMacroDocument extends AbstractGCodeDocumentProvider {
 	private DefaultGCodeMacroService macroService;
 	private GCodeMacro macro;
 	private IGCodeProvider provider;
+	/** Validation service */
+	private IGCodeValidationService<?,?,?> gcodeValidationService;
 	
 	/**
 	 * @param macroService
 	 * @param macro
 	 * @param provider
 	 */
-	public GCodeMacroDocument(DefaultGCodeMacroService macroService, GCodeMacro macro, IGCodeProvider provider) {
+	public GCodeMacroDocument(DefaultGCodeMacroService macroService, IGCodeValidationService<?,?,?> gcodeValidationService, GCodeMacro macro, IGCodeProvider provider) {
 		super();
 		this.macroService = macroService;
 		this.macro = macro;
 		this.provider = provider;
+		this.gcodeValidationService = gcodeValidationService;
 		try {
 			macroService.addDeleteVetoableListener(this);
 		} catch (GkException e) {
@@ -77,7 +82,8 @@ public class GCodeMacroDocument extends AbstractGCodeDocumentProvider {
 	 */
 	@Override
 	protected void addAnnotations(IAnnotationModel annotationModel) throws GkException {
-		List<IValidationElement> elements = provider.getValidationElements();
+		ValidationResult result = gcodeValidationService.getValidationResult(provider.getId());
+		List<IValidationElement> elements = result.getElements();
 		if(CollectionUtils.isNotEmpty(elements)){
 			for (IValidationElement elt : elements) {
 				ErrorAnnotation error = new ErrorAnnotation(elt.getDescription());

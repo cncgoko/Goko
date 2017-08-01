@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
@@ -41,11 +40,8 @@ public class SetCoordinateSystemDataBuilder extends AbstractInstructionBuilder<S
 		GCodeWord pWord = GCodeWordUtils.getAndRemoveWordByLetter("P", words);
 		int coordinateSystemInteger = GCodeWordUtils.intValue(pWord);
 		
-		if(coordinateSystemInteger < 1 || coordinateSystemInteger > 9){
-			throw new GkFunctionalException("GCO-120");
-		}
+		CoordinateSystem targetCoordinateSystem = null;
 		
-		CoordinateSystem targetCoordinateSystem = new CoordinateSystemFactory().get(coordinateSystemInteger);
 		Length x = findWordLength("X", words, null, context.getUnit().getUnit());
 		Length y = findWordLength("Y", words, null, context.getUnit().getUnit());
 		Length z = findWordLength("Z", words, null, context.getUnit().getUnit());
@@ -53,13 +49,18 @@ public class SetCoordinateSystemDataBuilder extends AbstractInstructionBuilder<S
 		Angle b  = findWordAngle("B", words, null, AngleUnit.DEGREE_ANGLE);
 		Angle c  = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
 		
-		Tuple6b currentOffset = context.getCoordinateSystemData(targetCoordinateSystem);
-		if(x == null) x = currentOffset.getX();
-		if(y == null) y = currentOffset.getY();
-		if(z == null) z = currentOffset.getZ();
-		if(a == null) a = currentOffset.getA();
-		if(b == null) b = currentOffset.getB();
-		if(c == null) c = currentOffset.getC();
+		if(coordinateSystemInteger > 0 && coordinateSystemInteger < 10){
+			targetCoordinateSystem = new CoordinateSystemFactory().get(coordinateSystemInteger);
+						
+			Tuple6b currentOffset = context.getCoordinateSystemData(targetCoordinateSystem);
+			if(x == null) x = currentOffset.getX();
+			if(y == null) y = currentOffset.getY();
+			if(z == null) z = currentOffset.getZ();
+			if(a == null) a = currentOffset.getA();
+			if(b == null) b = currentOffset.getB();
+			if(c == null) c = currentOffset.getC();			
+		}
+		
 		
 		return new SetCoordinateSystemDataInstruction(targetCoordinateSystem, x, y, z, a, b, c);
 	}

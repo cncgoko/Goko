@@ -105,13 +105,17 @@ public class ProbeUtility {
 		// Force distance mode to absolute
 		instrProvider.addInstruction( new SetDistanceModeInstruction(EnumDistanceMode.ABSOLUTE) );
 		for (ProbeRequest probeRequest : lstProbeRequest) {
-			Tuple6b clearancePoint 	= getProbeAxisPosition(probeRequest, probeRequest.getClearance());
-			Tuple6b probeStartPoint = getProbeAxisPosition(probeRequest, probeRequest.getProbeStart());
-			Tuple6b probeEndPoint 	= getProbeAxisPosition(probeRequest, probeRequest.getProbeEnd());
+			Tuple6b offset = controllerService.getCoordinateSystemOffset(gcodeContext.getCoordinateSystem());
+			Tuple6b clearancePoint 	= getProbeAxisPosition(probeRequest, probeRequest.getClearance(), null); // This is done in the current WCS
+			Tuple6b probeStartPoint = getProbeAxisPosition(probeRequest, probeRequest.getProbeStart(), null); // This is done in the current WCS
+			Tuple6b probeEndPoint 	= getProbeAxisPosition(probeRequest, probeRequest.getProbeEnd(), offset); //!\ This is done in the MACHINE WCS	 		
 			Tuple6b probePoint	   	= getProbePoint(probeRequest);
+			
 			// Move to clearance coordinate 
-			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
-			instrProvider.addInstruction( new StraightFeedInstruction(clearancePoint.getX(), clearancePoint.getY(), clearancePoint.getZ(), null, null, null) );
+			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );			
+			if(probeRequest.getClearance() != null){				
+				instrProvider.addInstruction( new StraightFeedInstruction(clearancePoint.getX(), clearancePoint.getY(), clearancePoint.getZ(), null, null, null) );
+			}
 			// Move to probe position		
 			instrProvider.addInstruction( new StraightFeedInstruction(probePoint.getX(), probePoint.getY(), probePoint.getZ(), null, null, null) );
 			// Move to probe start position
@@ -119,9 +123,15 @@ public class ProbeUtility {
 			// Actual probe command
 			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getProbeFeedrate()) );
 			instrProvider.addInstruction( new StraightProbeInstruction(probeEndPoint.getX(), probeEndPoint.getY(), probeEndPoint.getZ(), null, null, null) );
-			// Move to clearance coordinate 
+			
+			// Move to clearance coordinate
 			instrProvider.addInstruction( new SetFeedRateInstruction(probeRequest.getMotionFeedrate()) );
-			instrProvider.addInstruction( new StraightFeedInstruction(clearancePoint.getX(), clearancePoint.getY(), clearancePoint.getZ(), null, null, null) );
+			if(probeRequest.getClearance() != null){				
+				instrProvider.addInstruction( new StraightFeedInstruction(clearancePoint.getX(), clearancePoint.getY(), clearancePoint.getZ(), null, null, null) );
+			}else{
+				// Move back to start point
+				instrProvider.addInstruction( new StraightFeedInstruction(probeStartPoint.getX(), probeStartPoint.getY(), probeStartPoint.getZ(), null, null, null) );
+			}
 		}		
 		
 		return getGCodeService().getGCodeProvider(gcodeContext, instrProvider);
@@ -131,21 +141,26 @@ public class ProbeUtility {
 	 * Generates a position along the probing axis 
 	 * @param request the probe request
 	 * @param position the position
+	 * @param offset 
 	 * @return Tuple6b
 	 */
-	private Tuple6b getProbeAxisPosition(ProbeRequest request, Length position){
+	private Tuple6b getProbeAxisPosition(ProbeRequest request, Length position, Tuple6b offset){
 		Tuple6b clearance = new Tuple6b().setNull();
+		Length newPosition = position;
 		if(request.getAxis() == EnumControllerAxis.X_POSITIVE
 		|| request.getAxis() == EnumControllerAxis.X_NEGATIVE){
-			clearance.setX(position);
+			if(offset != null) newPosition = position.add(offset.getX());
+			clearance.setX(newPosition);
 		
 		}else if(request.getAxis() == EnumControllerAxis.Y_POSITIVE
 		|| request.getAxis() == EnumControllerAxis.Y_NEGATIVE){
-			clearance.setY(position);
+			if(offset != null) newPosition = position.add(offset.getY());
+			clearance.setY(newPosition);
 		
 		}else if(request.getAxis() == EnumControllerAxis.Z_POSITIVE
 		|| request.getAxis() == EnumControllerAxis.Z_NEGATIVE){
-			clearance.setZ(position);
+			if(offset != null) newPosition = position.add(offset.getZ());
+			clearance.setZ(newPosition);
 		}
 		return clearance;
 	}

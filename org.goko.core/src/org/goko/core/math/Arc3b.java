@@ -26,6 +26,7 @@ public class Arc3b {
 	private Angle angle;
 	private Length radius;
 	private Unit<Length> unit;
+	private Length error;
 	
 	public Arc3b(Tuple6b start, Tuple6b center, Tuple6b end, Vector3d axis, boolean clockwise) {
 		super();

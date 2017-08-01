@@ -7,13 +7,10 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
-import org.goko.core.gcode.element.validation.IValidationElement;
-import org.goko.core.gcode.element.validation.ValidationTargetAdapter;
 
 public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeProvider, IStackableGCodeProvider{
 	private IGCodeProvider parent;
 	private IStackableGCodeProvider child; 
-	private ValidationTargetAdapter validationTargetAdapter;
 	
 	/**
 	 * Constructor
@@ -155,51 +152,5 @@ public class StackableGCodeProviderRoot extends GCodeProvider implements IGCodeP
 	public void setChild(IStackableGCodeProvider child) {
 		this.child = child;
 	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#getValidationElements()
-	 */
-	@Override
-	public List<IValidationElement> getValidationElements() {		
-		return parent.getValidationElements();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#hasErrors()
-	 */
-	@Override
-	public boolean hasErrors() {		
-		return parent.hasErrors();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#hasWarnings()
-	 */
-	@Override
-	public boolean hasWarnings() {
-		return parent.hasWarnings();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#clearValidationElements()
-	 */
-	@Override
-	public void clearValidationElements() {
-		parent.clearValidationElements();
-	}
-//	voir comment gerer la hierarchie des erreurs.
-//	Pour les modifiers :
-//	 - Ajouter un validation element ne devrait pas l'ajouter au parent
-//	 - Récupérer la liste des validations element ramène les courants + ceux des parents 
-//	 Pour le root 
-//	 - redirection pure ?
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.element.GCodeProvider#addValidationElement(org.goko.core.gcode.element.validation.IValidationElement)
-	 */
-	@Override
-	public void addValidationElement(IValidationElement element) {
-		parent.addValidationElement(element);
-	}
-		
 	
 }

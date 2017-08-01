@@ -1,6 +1,8 @@
 package org.goko.common.preferences.fieldeditor.ui;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.databinding.Binding;
@@ -50,7 +52,7 @@ public abstract class UiFieldEditor<C extends Control> extends Composite impleme
     	GridLayout layout = new GridLayout(2, false);
     	layout.marginHeight = 2;
     	layout.marginWidth = 2;
-    	setLayout(layout);    	
+    	setLayout(layout);
     }
     
     protected void createControls(Composite parent, int style){
@@ -144,11 +146,11 @@ public abstract class UiFieldEditor<C extends Control> extends Composite impleme
 		this.label = label;
 	}
 	
-	public Binding getBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException{
+	public List<Binding> getBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException{
 		verifyGetter(modelObject,propertyName);
 		verifySetter(modelObject,propertyName);
 
-		return getFieldEditorBinding(bindingContext, modelObject);		
+		return Arrays.asList(getFieldEditorBinding(bindingContext, modelObject));		
 	}
 	
 	protected abstract Binding getFieldEditorBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException;

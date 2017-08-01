@@ -3,6 +3,8 @@
  */
 package org.goko.core.execution;
 
+import org.goko.core.common.measure.quantity.Angle;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.QuantityUtils;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.common.measure.quantity.SpeedUnit;
@@ -33,16 +35,24 @@ public class ExecutionConstraint {
 	
 	public Speed getMaximumFeedrate(Speed feedrate, Tuple6b vector){
 		Speed result = feedrate;
-		if(vector == null || vector.getX() != null && xAxisMaximumFeed != null){
+		if(vector == null  
+				|| (vector.getX() != null && vector.getX().abs().greaterThan(Length.ZERO)) 
+					&& xAxisMaximumFeed != null){
 			result = QuantityUtils.min(result, xAxisMaximumFeed);
 		}
-		if(vector == null || vector.getY() != null && yAxisMaximumFeed != null){
+		if(vector == null  
+				|| (vector.getY() != null && vector.getY().abs().greaterThan(Length.ZERO)) 
+					&& yAxisMaximumFeed != null){
 			result = QuantityUtils.min(result, yAxisMaximumFeed);
 		}
-		if(vector == null || vector.getZ() != null && zAxisMaximumFeed != null){
+		if(vector == null 
+				|| (vector.getZ() != null && vector.getZ().abs().greaterThan(Length.ZERO)) 
+					&& zAxisMaximumFeed != null){
 			result = QuantityUtils.min(result, zAxisMaximumFeed);
 		}
-		if(vector == null || vector.getA() != null && aAxisMaximumFeed != null){
+		if(vector == null 
+				|| (vector.getA() != null && vector.getA().abs().greaterThan(Angle.ZERO)) 
+					&& aAxisMaximumFeed != null){
 			result = QuantityUtils.min(result, aAxisMaximumFeed);
 		}
 		return result;

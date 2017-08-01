@@ -53,6 +53,8 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 	private GCodeContext gcodeContext;
 	/** The position stored locally for speed reasons... */
 	private Tuple6b position;
+	/** The position stored locally for speed reasons... */
+	private Tuple6b machinePosition;
 	/** The offsets */
 	private Map<ICoordinateSystem, Tuple6b> offsets;
 	/** Unit in use by TinyG*/
@@ -113,7 +115,7 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		storeValue(DefaultControllerValues.CONTEXT_DISTANCE_MODE, "Distance mode", "The distance motion setting", StringUtils.EMPTY);
 		storeValue(DefaultControllerValues.CONTEXT_PLANE, "Plane", "The current working plane", StringUtils.EMPTY);		
 		storeValue(DefaultControllerValues.CONTEXT_FEEDRATE, "Feedrate", "The current context feedrate", Speed.ZERO);
-		
+				
 		offsets = new HashMap<ICoordinateSystem, Tuple6b>();
 		offsets.put(CoordinateSystem.G53, new Tuple6b());
 		offsets.put(CoordinateSystem.G54, new Tuple6b());
@@ -265,13 +267,15 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 	 * @param position the position to set
 	 * @throws GkException GkException
 	 */
-	public void setMachinePosition(Tuple6b position) throws GkException {				
+	public void setMachinePosition(Tuple6b position) throws GkException {	
+		this.machinePosition = new Tuple6b(position);
 		updateValue(DefaultControllerValues.MACHINE_POSITION_X, position.getX());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Y, position.getY());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Z, position.getZ());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_A, position.getA());
 	}
 
+	
 	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {
 		return offsets.get(cs);
 	}
@@ -295,5 +299,12 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 	 */
 	protected void setCurrentUnit(Unit<Length> currentUnit) {
 		this.currentUnit = currentUnit;
+	}
+
+	/**
+	 * @return the machinePosition
+	 */
+	public Tuple6b getMachinePosition() {
+		return machinePosition;
 	}
 }

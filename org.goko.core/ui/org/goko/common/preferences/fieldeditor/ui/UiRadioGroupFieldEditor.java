@@ -16,6 +16,7 @@ import org.eclipse.core.databinding.observable.value.SelectObservableValue;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -27,8 +28,9 @@ import org.goko.core.common.exception.GkTechnicalException;
  * @author Psyko
  * @date 30 avr. 2016
  */
-public class UiRadioGroupFieldEditor<T> extends UiLabeledFieldEditor<Button> {
+public class UiRadioGroupFieldEditor<T> extends UiLabeledFieldEditor<Composite> {
 	private List<UiRadioGroupFieldEditorOption<T>> options;
+	
 	/**
 	 * @param parent
 	 * @param style
@@ -36,43 +38,60 @@ public class UiRadioGroupFieldEditor<T> extends UiLabeledFieldEditor<Button> {
 	public UiRadioGroupFieldEditor(Composite parent, int style) {
 		super(parent, style);
 		this.options = new ArrayList<UiRadioGroupFieldEditorOption<T>>();
+		setNbColumns(1);
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.eclipse.core.databinding.validation.IValidator#validate(java.lang.Object)
 	 */
 	@Override
 	public IStatus validate(Object value) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/** (inheritDoc)
-	 * @see org.goko.common.preferences.fieldeditor.ui.UiFieldEditor#createLayout(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	protected void createLayout(Composite parent) {
-    	GridLayout layout = new GridLayout(1, false);
-    	layout.marginHeight = 2;
-    	layout.marginWidth = 2;
-    	setLayout(layout);    
-	}
+//	/** (inheritDoc)
+//	 * @see org.goko.common.preferences.fieldeditor.ui.UiFieldEditor#createLayout(org.eclipse.swt.widgets.Composite)
+//	 */
+//	@Override
+//	protected void createLayout(Composite parent) {
+//    	GridLayout layout = new GridLayout(1, false);
+//    	layout.marginHeight = 2;
+//    	layout.marginWidth = 2;
+//    	setLayout(layout);    
+//	}
 	/** (inheritDoc)
 	 * @see org.goko.common.preferences.fieldeditor.ui.UiLabeledFieldEditor#createControls(org.eclipse.swt.widgets.Composite, int)
 	 */
 	@Override
 	protected void createControls(Composite parent, int style) {		
-		super.createControls(parent, style);
+		super.createControls(parent, style);    		
+		control = new Composite(this, SWT.NONE);
+		control.setLayout(new GridLayout(1, false));				
+		control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		GridLayout layout = new GridLayout(2, false);
+    	layout.marginHeight = 2;
+    	layout.marginWidth = 2;
+    	layout.numColumns = 1;
+		control.setLayout(layout);		
+		control.pack();
+		this.pack();
 	}
 	
 	private void createOptions(){
 		if(CollectionUtils.isNotEmpty(options)){
 			for (UiRadioGroupFieldEditorOption<T> option : options) {
-				Button button = new Button(this, SWT.RADIO);
+				Button button = new Button(control, SWT.RADIO);
+				button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+				
 				button.setText(option.getLabel());
 				option.setControl(button);
-			}		
+			}			
 		}
+		GridData gd = (GridData) labelControl.getLayoutData();
+		gd.verticalAlignment = SWT.TOP;
+		//labelControl.pack();
+		control.pack();
+		this.pack();
 	}
 	/** (inheritDoc)
 	 * @see org.goko.common.preferences.fieldeditor.ui.UiFieldEditor#getFieldEditorBinding(org.eclipse.core.databinding.DataBindingContext, org.goko.common.bindings.AbstractModelObject)
@@ -98,6 +117,15 @@ public class UiRadioGroupFieldEditor<T> extends UiLabeledFieldEditor<Button> {
 	public void addOption(String label, T value){
 		this.options.add(new UiRadioGroupFieldEditorOption<T>(label, value));
 	}
+
+	/**
+	 * @param nbColumns the nbColumns to set
+	 */
+	public void setNbColumns(int nbColumns) {
+		((GridLayout)control.getLayout()).numColumns = nbColumns;
+		control.layout();
+	}
+	
 }
 
 /**

@@ -12,6 +12,14 @@ import org.goko.core.gcode.rs274ngcv3.utils.InstructionUtils;
 import org.goko.core.math.Arc3b;
 
 public class ArcAngleColorizer extends AbstractInstructionColorizer {	
+	
+	/**
+	 */
+	public ArcAngleColorizer() {
+		super(null);
+	}
+
+
 	private static final Color4f DEFAULT_COLOR = new Color4f(0.0f,0.0f,0.0f,0.0f);
 
 	

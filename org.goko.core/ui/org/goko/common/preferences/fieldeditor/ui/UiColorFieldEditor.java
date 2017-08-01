@@ -74,7 +74,6 @@ public class UiColorFieldEditor extends UiLabeledFieldEditor<Button>{
 	 */
 	@Override
 	protected Binding getFieldEditorBinding(DataBindingContext bindingContext, AbstractModelObject modelObject) throws GkException {
-		// TODO Auto-generated method stub
 		//IObservableValue targetObserver = JFaceProperties.value(ColorSelector.class, "color3f", ColorSelector.PROP_COLORCHANGE).observe(colorSelector);
 		IObservableValue fgTarget = new JFaceProperty(ColorSelector.PROP_COLORCHANGE, ColorSelector.PROP_COLORCHANGE, UiColorFieldEditor.class).observe(this);
 	

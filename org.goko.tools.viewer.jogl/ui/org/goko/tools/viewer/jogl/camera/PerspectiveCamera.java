@@ -27,6 +27,7 @@ import javax.vecmath.Point2i;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -42,6 +43,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
+import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
@@ -49,6 +51,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 
 public class PerspectiveCamera extends AbstractCamera implements MouseMoveListener,MouseListener,Listener,FocusListener, IPropertyChangeListener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.PerspectiveCamera";
+	private static final Vector4f NORMAL = new Vector4f(0f,0f,1f,0f);
 
 	protected Point2i last;
 	protected Point3f eye;
@@ -82,8 +85,9 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	/**
 	 * Constructor
 	 * @param canvas the canvas
+	 * @param joglSceneManager 
 	 */
-	public PerspectiveCamera(final GLCanvas canvas) {
+	public PerspectiveCamera(final GLCanvas canvas, JoglSceneManager joglSceneManager) {
 		super();
 		this.glCanvas = canvas;
 		fAspect = 0;
@@ -106,6 +110,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		distance 		= 120;
 
 		addPreferenceListener();
+		setPositionOverlay(new PerspectivePositionOverlay(this, joglSceneManager));
 		// Force init of the values 
 		this.propertyChange(null);
 		update();
@@ -528,5 +533,12 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		float zoomSensitivityPref = JoglViewerPreference.getInstance().getCameraZoomSensitivity().floatValue();		
 		this.zoomSensitivity  = (float) (1 + (zoomSensitivityPref - 50) / 100.0);
 	}
-		
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.camera.AbstractCamera#getWorkingPlaneNormal()
+	 */
+	@Override
+	public Vector4f getWorkingPlaneNormal() {
+		return NORMAL;
+	}
 }

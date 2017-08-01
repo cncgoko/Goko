@@ -6,9 +6,9 @@ env:
  global:
    - secure: "DLP7iWpMgK3EhamOQ8SHoAUEJP82xbzzocGPa5c9Li8dTF96ugfFspvKtKKdzPsQelIgggliw2nFktEkN7PODaoee6jbYaXNgSEBkbFHRuYTIy9ZahoIVJ13Zz/FZYi3woDjXd5kKcekGOUPZ8rXeouUNayTd7lPlkdbccPX4nsjVAVObkik9Fh+Qr3nPHA7X8FE3x13FtuiKXHZ73iLzE/OOQkwv2ANv5YuYG6ZYjP7pvA9lBAI8IbUNYJlTZ3QMqVH3arnD3rmGLjBJIx8EGTgTdVBbZMLaT5DwdPi5gWwx0d6bGyTCKdJ6/jnXDmysRpCFzwyM1QGZOqsY0QyskDAxa06sjkHj7xEcBuA5VLbkv+K0bwYy2E48Y/dXf9A3Td15hop1GkvsbU0rT5N9/UL17OoYGuTi2SM08OBOVI66EtEml9rLIlsPJxHuejzwPZeiy33uZ35cO96C4xwC1XlrxqJMhZ/aF/dN+U+9onV0PZ5XDa2UeEoH9llIEDDVyiK2y11xEX04dT6/6h/97y9fwFime4wTNbZ57/R7DP6O54qb8g/aIG5liPJD0ClWYiyRmRnE4RFNuhoY5JzGLJRTwg9X/gr6x06DknNg4b05S16t3lncuIOBwaHi8HpQccTnhIeLpLJPKq23RtiR29wgxP9O8ZYjL0gXdMwWt4="
    - secure: "mxlkRS44IBexYyDHedm8FXfo7CI5nIRbqITfS+ZXwyLNN4tfPJ8CuTJH5aN+W9HFw0mlMzXmRnrN8kXV0zOWRhCYNMrS4k2DuNu8qX5ZiGftg+YxVNhaY+1+U6HVDT7B3+hPdWgBNSvfuBwyQGQSur8tQpLiV0ttIWRn1rzdz7mK/rIzi5WtlN6jqaMSPpwkPJ7j3uA9a8tlmAowMnAcKgGuiwZns/7nbuntQch/1xYet6lQgNBa8EsyOXS8dB215sKLF/1dAifkijLJsiY5zDE91Iw5EVHRjeWXAx8mVJQAK5SHKDHMxNmRpkHK786sEDEwqq7bh2uNCG+8N8sPF17kTEgEaPX8OowGlPTCKXUbI8Z6XtoqwutAcn7cASNMJALATYjx5mYU/NVwAEBxmuvrDI2P7pZ9lUMkvDLHB6k9gKPHo0upFW/5fhKKiU1nXmTUZzTmH6hkoIuVoIl6prPmOvCXurPWvf+1ROusk2RzqVL0vOgaQlbLrS7710S52mbNYihtKK8d+IGUm7ckbxaGz9lNUXZgabaTd4d9+wiGd2Dk8w3J9n+V4O/T5mRw2Viu3CyqOIr3aN6axrHj2NtbRJW0cnEvy+HWK+ZKBQmaVCT2lYWTSNio0YM+Tsal1kpqrhQENc8qwKPyWGl4GZcMMK7aEEp2jtQKNW1TEvk="
-   - TARGET: ftp://ftp.goko.fr//www/download/
+   - TARGET: ftp://ftp.goko.fr//www/
    - UPDATE_FOLDER: update
-   - updateRepository: false
+   - updateRepository: true
    - updateBinaries: true
    - gokoVersion: 0.3.4
 
@@ -31,7 +31,7 @@ deploy:
   provider: bintray
   file: "/home/travis/build/cncgoko/Goko/bintray_descriptor.json"
   on: 
-    branch: dev
+    branch: master
     condition: $updateBinaries = true
   user:
     secure: "G2usVWNBz0jgF94xCLUYS5goZ4Qkalm8nGaJVcbaVgAOnnt1+atCGqVfh7CxTdYOBqD2z0kZOEZ+DEfywo/3Eew8P92I0XAJmw4uXSYhXMCr4N8GED6bUMYCVOnoTHMifK1GiBjznAjIp++Uu6xFD0d+YBskECp+os/ZvA27UYp2OT4iknkDpkPATEJjDHRgzwf+F8E8b6YPXwA2AErVzdJ5kj6PqO9jsbQ8CJJgCNPGp/YxZ+2cFIJzuTcvViWwUjTsBfSRm5NhtnHmkii+INIfFnQSt7wZgcaA0pPuoGb85BCS8OGGrHDcinAVe/eL1wUITdoq876SdwteDQfq4fqThbNvaq/uxi6spURFWkE+5JVwF/XoHlEp+tRL9jKgo2sgHYBfNvI54cPznEae5dB/vgUWPAfm+UYLNiDXsgrll9lONZrAjelqb97VJq8h2G7CpjY3RmXYOR9jVeMKRS06Zpf1RXeL/GIBO5ITK/Omcv3pDG1vJ7lJ+TTScZ46tQ7Eiddnr5CdiVr3ILAJ/s8U1HNPTOV+a90YwmuIGdKYFXXFDObP8MLt0lHhEcECsa2mKMF0Dx1vQ/jX5fPiDHqVxULhLh+upZvaMfg0Va0bSuNkmUfRj/5g56wthvFDk1ZTluc8XwvG64kfBXQueC3w1RItBuPZAdi91l0br8E="
@@ -42,6 +42,3 @@ deploy:
 after_success:
  - chmod a+x ./../deploy.sh
  - ./../deploy.sh
- # - cd /home/travis/build/cncgoko/Goko/org.goko.build.product/target/repository
-# - "find . -type f -exec curl --ftp-create-dirs -T {} -u $VAR1:$VAR2 $TARGET/"
- #- "curl --ftp-create-dirs -T /home/travis/build/cncgoko/Goko/org.goko.build.product/target/products/org.goko-win32.win32.x86_64.zip -u $VAR1:$VAR2 $TARGET/org.goko-win32.win32.x86_64.zip"

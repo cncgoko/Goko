@@ -21,6 +21,7 @@
 		<module>../org.goko.tools.editor</module>
 		<module>../org.goko.tools.viewer.jogl</module>
 		<module>../org.goko.tools.macro</module>
+		<module>../org.goko.tools.zeroprobe</module>
 
 
 		<module>../org.goko.gcode.rs274ngcv3</module>

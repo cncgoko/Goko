@@ -10,8 +10,6 @@ import org.goko.core.common.utils.SequentialIdGenerator;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
-import org.goko.core.gcode.element.validation.IValidationElement;
-import org.goko.core.gcode.element.validation.ValidationTargetAdapter;
 import org.goko.core.gcode.rs274ngcv3.element.source.DefaultGCodeProviderSource;
 
 
@@ -30,8 +28,6 @@ public class GCodeProvider implements IGCodeProvider {
 	private boolean locked;
 	/** This provider source */
 	private IGCodeProviderSource source;
-	/** Validation adapter */
-	private ValidationTargetAdapter validationAdapter;
 	
 	/** Constructor */
 	public GCodeProvider() {
@@ -39,7 +35,6 @@ public class GCodeProvider implements IGCodeProvider {
 		this.linesSequence 	= new ArrayList<Integer>();
 		this.modificationDate = new Date();
 		this.source = new DefaultGCodeProviderSource();
-		this.validationAdapter = new ValidationTargetAdapter();
 	}
 
 	/** (inheritDoc)
@@ -209,46 +204,7 @@ public class GCodeProvider implements IGCodeProvider {
 			return false;
 		return true;
 	}
-
-	/**
-	 * @return the validationElements
-	 */
-	public List<IValidationElement> getValidationElements() {
-		return validationAdapter.getValidationElements();
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasErrors()
-	 */
-	@Override
-	public boolean hasErrors() {
-		return validationAdapter.hasErrors();
-	}
 	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#hasWarnings()
-	 */
-	@Override
-	public boolean hasWarnings() {
-		return validationAdapter.hasWarnings();
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#clearValidationElements()
-	 */
-	@Override
-	public void clearValidationElements() {
-		validationAdapter.clearValidationElements();
-	}
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.element.validation.IValidationTarget#addValidationElement(org.goko.core.gcode.element.validation.IValidationElement)
-	 */
-	@Override
-	public void addValidationElement(IValidationElement element) {
-		validationAdapter.addValidationElement(element);
-	}
-
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.element.IGCodeProvider#lock()
 	 */

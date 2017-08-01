@@ -305,9 +305,16 @@ public class DefaultGCodeMacroService implements IGCodeMacroService {
 	 */
 	@Override
 	public void addListener(IGCodeProviderRepositoryListener listener) throws GkException {
-		gcodeListenerList.add(listener);
+		addListener(listener, IGCodeProviderRepositoryListener.PRIORITY_STANDARD);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#addListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener, int)
+	 */
+	@Override
+	public void addListener(IGCodeProviderRepositoryListener listener, int priority) throws GkException {
+		gcodeListenerList.add(listener);
+	}
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepository#removeListener(org.goko.core.gcode.service.IGCodeProviderRepositoryListener)
 	 */

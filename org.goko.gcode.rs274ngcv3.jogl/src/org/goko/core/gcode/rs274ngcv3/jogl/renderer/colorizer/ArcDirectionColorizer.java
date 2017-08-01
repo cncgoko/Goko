@@ -13,7 +13,11 @@ public class ArcDirectionColorizer extends AbstractInstructionColorizer {
 	private static final Color4f CW_PLANE_COLOR = new Color4f(0.8f,0.0f,0.0f,0.9f);
 	private static final Color4f CCW_PLANE_COLOR = new Color4f(0.0f,0.8f,0.0f,0.9f);
 	
-
+	/**
+	 */
+	public ArcDirectionColorizer() {
+		super(null);
+	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.IInstructionColorizer#getColor(org.goko.core.gcode.element.IGCodeContext, org.goko.core.gcode.element.IInstruction)

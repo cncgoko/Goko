@@ -49,7 +49,7 @@ public class GCodeSourceViewer extends SourceViewer implements IPropertyChangeLi
 		lineRuler.setBackground(SWTResourceManager.getColor(0xFD, 0xFD, 0xFD)); 
 		lineRuler.setForeground(SWTResourceManager.getColor(0xA0, 0xA0, 0xA0)); 		
 						
-		annotationRuler = new AnnotationRulerColumn(12,annotationAccess);
+		annotationRuler = new AnnotationRulerColumn(22,annotationAccess);
 		annotationRuler.addAnnotationType(BulletAnnotation.TYPE);
 		annotationRuler.addAnnotationType(ErrorAnnotation.TYPE);
 		annotationRuler.setHover(new DefaultAnnotationHover());
@@ -85,7 +85,7 @@ public class GCodeSourceViewer extends SourceViewer implements IPropertyChangeLi
 	}
 
 	public void setDocumentProvider(IDocumentProvider provider) throws GkException{
-		setDocument(provider.getDocument(), provider.getAnnotationModel());		
+		setDocument(provider.getDocument(), provider.getAnnotationModel());	
 		setEditable(provider.isModifiable());		
 	}
 
@@ -123,5 +123,4 @@ public class GCodeSourceViewer extends SourceViewer implements IPropertyChangeLi
 		}
 	}
 }
-//http://grepcode.com/file/repository.grepcode.com/java/eclipse.org/4.2/org.eclipse.ui/editors/3.8.0/org/eclipse/ui/texteditor/DefaultMarkerAnnotationAccess.java#DefaultMarkerAnnotationAccess.paint%28org.eclipse.jface.text.source.Annotation%2Corg.eclipse.ui.texteditor.GC%2Corg.eclipse.ui.texteditor.Canvas%2Corg.eclipse.ui.texteditor.Rectangle%29
 

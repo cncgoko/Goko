@@ -18,6 +18,7 @@ package org.goko.tools.viewer.jogl.camera.orthographic;
 
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -26,17 +27,19 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
-import org.goko.tools.viewer.jogl.camera.OrthographicCamera;
+import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.swt.GLCanvas;
 
 public class LeftCamera extends OrthographicCamera implements MouseMoveListener,MouseListener, Listener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.orthographic.left";
-
-	public LeftCamera(final GLCanvas canvas) {
+	public static final Vector4f NORMAL = new Vector4f(1f,0f,0f,0f);
+	
+	public LeftCamera(final GLCanvas canvas, JoglSceneManager manager) {
 		super(canvas);		
 		up 		= new Vector3f(0,0,1);
+		setPositionOverlay(new LeftPositionOverlay(this, manager));
 	}
 
 	/**
@@ -63,7 +66,7 @@ public class LeftCamera extends OrthographicCamera implements MouseMoveListener,
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.camera.OrthographicCamera#updatePosition()
+	 * @see org.goko.tools.viewer.jogl.camera.orthographic.OrthographicCamera#updatePosition()
 	 */
 	@Override
 	public void updatePosition(){
@@ -79,7 +82,7 @@ public class LeftCamera extends OrthographicCamera implements MouseMoveListener,
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.camera.OrthographicCamera#panMouse(org.eclipse.swt.events.MouseEvent)
+	 * @see org.goko.tools.viewer.jogl.camera.orthographic.OrthographicCamera#panMouse(org.eclipse.swt.events.MouseEvent)
 	 */
 	@Override
 	protected void panMouse(MouseEvent e){
@@ -91,7 +94,7 @@ public class LeftCamera extends OrthographicCamera implements MouseMoveListener,
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.camera.OrthographicCamera#mouseScroll(org.eclipse.swt.widgets.Event)
+	 * @see org.goko.tools.viewer.jogl.camera.orthographic.OrthographicCamera#mouseScroll(org.eclipse.swt.widgets.Event)
 	 */
 	@Override
 	protected void mouseScroll(Event event) {
@@ -122,5 +125,13 @@ public class LeftCamera extends OrthographicCamera implements MouseMoveListener,
 		eye.x = (float) -boundCenterX;
 		eye.z = (float) boundCenterZ;
 		zoomOffset = Math.min(targetScaleX, targetScaleZ);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.camera.AbstractCamera#getWorkingPlaneNormal()
+	 */
+	@Override
+	public Vector4f getWorkingPlaneNormal() {		
+		return NORMAL;
 	}
 }

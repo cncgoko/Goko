@@ -81,6 +81,8 @@ public class JoglViewerPreference extends GkPreference{
 	public static final String ZOOM_INVERT_AXIS		= "cameraZoomInvertAxis";
 	public static final String ZOOM_SENSITIVITY 	= "cameraZoomSensitivity";
 	
+	public static final String DISPLAY_POSITION_OVERLAY	= "displayPositionOverlay";
+	
 	private static JoglViewerPreference instance;
 	private Tuple6b rotaryAxisPosition;
 		
@@ -420,5 +422,19 @@ public class JoglViewerPreference extends GkPreference{
 	 */
 	public void setUseWorkVolumeProvider(boolean use) {
 		setValue(GRID_USE_VOLUME_PROVIDER, use);
+	}
+	
+	/**
+	 * @param displayPositionOverlay the displayPositionOverlay to set
+	 */
+	public void setDisplayPositionOverlay(boolean displayPositionOverlay) {
+		setValue(DISPLAY_POSITION_OVERLAY, displayPositionOverlay);
+	}
+
+	/**
+	 * @return the displayPositionOverlay
+	 */
+	public boolean isDisplayPositionOverlay() {
+		return getBoolean(MULTISAMPLING);
 	}
 }

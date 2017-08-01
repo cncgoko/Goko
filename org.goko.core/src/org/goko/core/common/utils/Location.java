@@ -4,7 +4,7 @@
 package org.goko.core.common.utils;
 
 /**
- * Document inside a GCode document 
+ * Location inside a GCode document 
  * @author Psyko
  * @date 12 juin 2016
  */

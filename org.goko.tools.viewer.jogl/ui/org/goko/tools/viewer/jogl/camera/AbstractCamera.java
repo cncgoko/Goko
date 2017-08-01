@@ -19,12 +19,13 @@ package org.goko.tools.viewer.jogl.camera;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector4f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
+import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 
 import com.jogamp.opengl.util.PMVMatrix;
-import com.jogamp.opengl.util.awt.Overlay;
 
 
 public abstract class AbstractCamera implements GLEventListener{
@@ -35,13 +36,15 @@ public abstract class AbstractCamera implements GLEventListener{
 	private boolean activated;
 	private boolean initialized;
 	protected PMVMatrix pmvMatrix;
-	protected Overlay overlay;
+	//protected Overlay overlay;	
+	private IOverlayRenderer positionOverlay;
+	
 	public abstract String getId();
 	public abstract String getLabel();
 	public abstract void setup();
 	public abstract void updatePosition();
 	public abstract void lookAt(Point3d position);
-
+	
 	public AbstractCamera() {
 		activated = false;
 	}
@@ -120,16 +123,22 @@ public abstract class AbstractCamera implements GLEventListener{
 	public void setPmvMatrix(PMVMatrix pmvMatrix) {
 		this.pmvMatrix = pmvMatrix;
 	}
+	
+	/**
+	 * Returns the normal of the working plane of this camera
+	 * @return Vector4f
+	 */
+	public abstract Vector4f getWorkingPlaneNormal();
 	/**
 	 * @return the overlay
 	 */
-	protected Overlay getOverlay() {
-		return overlay;
+	public IOverlayRenderer getPositionOverlay() {
+		return positionOverlay;
 	}
 	/**
 	 * @param overlay the overlay to set
 	 */
-	protected void setOverlay(Overlay overlay) {
-		this.overlay = overlay;
+	public void setPositionOverlay(IOverlayRenderer overlay) {
+		this.positionOverlay = overlay;
 	}
 }

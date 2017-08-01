@@ -21,12 +21,15 @@ package org.goko.controller.tinyg.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goko.controller.tinyg.commons.AbstractTinyGCommunicator;
 import org.goko.controller.tinyg.commons.ITinyGStatus;
+import org.goko.controller.tinyg.commons.TinyG;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfiguration;
 import org.goko.controller.tinyg.controller.configuration.TinyGConfigurationValue;
 import org.goko.core.common.GkUtils;
@@ -77,14 +80,33 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	protected void onConnected() throws GkException {
 		getIncomingBuffer().clear();
 		getConnectionService().addInputDataListener(this);
-		// Force strict JSon mode
-		forceJsonMode();
-		requestStatusReport();
-		requestQueueReport();	
-		requestConfigurationUpdate();
-		requestCoordinateSystemUpdate();
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.submit(new Runnable() {
+			
+			@Override
+			public void run() {
+				// Force strict JSon mode		
+				try {
+					forceJsonMode();
+					Thread.sleep(100); // Dirty hack to give TinyG the time to process commands
+					forceStatusReportFormat();
+					Thread.sleep(500);
+					requestStatusReport();
+					Thread.sleep(100);
+					requestQueueReport();
+					Thread.sleep(100);
+					requestConfigurationUpdate();
+					Thread.sleep(100);
+					requestCoordinateSystemUpdate();
+				} catch (InterruptedException | GkException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		
+				
+			}
+		});		
 	}
-	
+		
 	/** (inheritDoc)
 	 * @see org.goko.controller.tinyg.commons.AbstractTinyGCommunicator#onDisconnected()
 	 */
@@ -188,33 +210,33 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 			JsonObject 	probeReportObject 	= (JsonObject) probeReport;
 			JsonValue 	eProbeResult 		= probeReportObject.get(TinyGv097.PROBE_REPORT_SUCCESS);
 			boolean 	probeSuccess 		= (eProbeResult.asInt() == 1);
-			if(probeSuccess){
-				JsonValue xProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_X);
-				JsonValue yProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_Y);
-				JsonValue zProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_Z);
-				JsonValue aProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_A);
-				JsonValue bProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_B);
-				JsonValue cProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_C);
-				probePosition = new Tuple6b();
-				if(xProbeResult != null){
-					probePosition.setX( Length.valueOf(xProbeResult.asBigDecimal(), getControllerService().getCurrentUnit()) );
-				}
-				if(yProbeResult != null){
-					probePosition.setY( Length.valueOf(yProbeResult.asBigDecimal(), getControllerService().getCurrentUnit()) );
-				}
-				if(zProbeResult != null){
-					probePosition.setZ( Length.valueOf(zProbeResult.asBigDecimal(), getControllerService().getCurrentUnit()) );
-				}
-				if(aProbeResult != null){
-					probePosition.setA( Angle.valueOf(aProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
-				}
-				if(bProbeResult != null){
-					probePosition.setB( Angle.valueOf(bProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
-				}
-				if(cProbeResult != null){
-					probePosition.setC( Angle.valueOf(cProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
-				}
+			
+			JsonValue xProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_X);
+			JsonValue yProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_Y);
+			JsonValue zProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_Z);
+			JsonValue aProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_A);
+			JsonValue bProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_B);
+			JsonValue cProbeResult = probeReportObject.get(TinyGv097.PROBE_REPORT_POSITION_C);
+			probePosition = new Tuple6b();
+			if(xProbeResult != null){
+				probePosition.setX( Length.valueOf(xProbeResult.asBigDecimal(), getControllerService().getCurrentUnit()) );
 			}
+			if(yProbeResult != null){
+				probePosition.setY( Length.valueOf(yProbeResult.asBigDecimal(), getControllerService().getCurrentUnit()) );
+			}
+			if(zProbeResult != null){
+				probePosition.setZ( Length.valueOf(zProbeResult.asBigDecimal(), getControllerService().getCurrentUnit()) );
+			}
+			if(aProbeResult != null){
+				probePosition.setA( Angle.valueOf(aProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
+			}
+			if(bProbeResult != null){
+				probePosition.setB( Angle.valueOf(bProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
+			}
+			if(cProbeResult != null){
+				probePosition.setC( Angle.valueOf(cProbeResult.asBigDecimal(), AngleUnit.DEGREE_ANGLE) );
+			}
+		
 			getControllerService().handleProbeResult(probeSuccess, probePosition);
 		}
 	}
@@ -293,7 +315,7 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	 */
 	private MachineState findState(JsonObject statusReport){
 		JsonValue statReport = statusReport.get(TinyGv097.STATUS_REPORT_STATE);
-		if(statReport != null){
+		if(statReport != null && statReport.isNumber()){
 			return TinyGControllerUtility.getState(statReport.asInt());
 		}
 		return null;
@@ -411,5 +433,44 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 			lstBytes.addAll( GkUtils.toBytesList("X0Y0Z0"));
 		}
 		send(lstBytes, true);
+	}
+	
+	/**
+	 * Sends a JSon command to set the format of the returned status report
+	 * @throws GkException GkException
+	 */
+	public void forceStatusReportFormat() throws GkException{
+		JsonObject statusReportFormat = new JsonObject();		
+		statusReportFormat.add(TinyG.STATUS_REPORT_STATE, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_VELOCITY, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_FEEDRATE, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_UNITS, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_COORDINATES, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_MOTION_MODE, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_PLANE, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_PATH_CONTROL, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_DISTANCE_MODE, true);
+		statusReportFormat.add(TinyG.STATUS_REPORT_FEEDRATE_MODE, true);
+		addPositionReport(TinyG.STATUS_REPORT_MACHINE_POSITION, statusReportFormat);
+		addPositionReport(TinyG.STATUS_REPORT_WORK_POSITION, statusReportFormat);
+		JsonObject statusReportEnveloppe= new JsonObject();
+		statusReportEnveloppe.add("sr", statusReportFormat);
+		//send(statusReportEnveloppe, true);
+		String statusReportEnveloppeStr = statusReportEnveloppe.toString().replaceAll("true", "t"); // Make it shorter
+		send(statusReportEnveloppeStr, true);
+	}
+	
+	/**
+	 * Builds the position report mask based on G2Core preferences
+	 * @param positionPrefix the prefix for the position report (mpos, pos, ...)
+	 * @param statusReportFormat the target json object for SR format
+	 */
+	private void addPositionReport(String positionPrefix, JsonObject statusReportFormat){
+		statusReportFormat.add(positionPrefix+"x", true);
+		statusReportFormat.add(positionPrefix+"y", true);
+		statusReportFormat.add(positionPrefix+"z", true);
+		statusReportFormat.add(positionPrefix+"a", true);
+		statusReportFormat.add(positionPrefix+"b", true);
+		statusReportFormat.add(positionPrefix+"c", true);
 	}
 }

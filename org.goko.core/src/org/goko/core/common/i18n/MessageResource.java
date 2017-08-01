@@ -1,5 +1,6 @@
 package org.goko.core.common.i18n;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -22,8 +23,12 @@ public class MessageResource {
 		return _instance;
 	}
 	
-	public static String getMessage(String key){
+	static String getMessage(String key){
 		return getInstance().getMessageIntern(key);
+	}
+	
+	static String get(String key, String... params){
+		return MessageFormat.format(getInstance().getMessageIntern(key).replaceAll("(?<!')'(?!')", "''"), (Object[])params);
 	}
 	
 	public String getMessageIntern(String key){

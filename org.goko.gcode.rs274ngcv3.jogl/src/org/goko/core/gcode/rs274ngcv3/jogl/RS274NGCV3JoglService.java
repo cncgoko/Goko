@@ -25,6 +25,8 @@ import org.goko.core.gcode.rs274ngcv3.jogl.internal.BaseGCodeContextProvider;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.GCodeContextProviderLinkedList;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.LinkedGCodeContextProvider;
 import org.goko.core.gcode.rs274ngcv3.jogl.renderer.RS274GCodeRenderer;
+import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.AbstractInstructionColorizer;
+import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.MotionModeColorizer;
 import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
@@ -56,14 +58,17 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	private IFourAxisControllerAdapter fourAxisControllerAdapter;
 	/** The linked list of Context provider */
 	private GCodeContextProviderLinkedList lstContextProvider;
+	/** Active command colorizer */
+	private AbstractInstructionColorizer colorizer;
 	
 	/**
 	 * Constructor
+	 * @throws GkException 
 	 */
-	public RS274NGCV3JoglService() {
+	public RS274NGCV3JoglService() throws GkException {
 		this.lstContextProvider = new GCodeContextProviderLinkedList();
 		this.cacheRenderer = new CacheByKey<IGCodeProvider, RS274GCodeRenderer>();
-		this.cacheRendererByExecutionToken = new CacheByKey<IExecutionToken, RS274GCodeRenderer>();
+		this.cacheRendererByExecutionToken = new CacheByKey<IExecutionToken, RS274GCodeRenderer>();		
 	}
 	/** (inheritDoc)
 	 * @see org.goko.core.common.service.IGokoService#getServiceId()
@@ -81,7 +86,8 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 		CoordinateSystemSetRenderer csrenderer = new CoordinateSystemSetRenderer();
 		csrenderer.setAdapter(coordinateSystemAdapter);
 		rs274Service.addListener(this);
-		Activator.getJoglViewerService().addRenderer(csrenderer);		
+		Activator.getJoglViewerService().addRenderer(csrenderer);
+		changeColorizer(new MotionModeColorizer());
 	}
 
 	/** (inheritDoc)
@@ -134,7 +140,8 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 * @throws GkException GkException
 	 */
 	public void createRenderer(IGCodeProvider provider) throws GkException{		
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(provider, gcodeContextProvider, fourAxisControllerAdapter);		
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(provider, gcodeContextProvider, fourAxisControllerAdapter);
+		renderer.setColorizer(colorizer);
 		executionService.addExecutionListener(ExecutionQueueType.DEFAULT, renderer);
 		this.cacheRenderer.add(provider, renderer);
 		Activator.getJoglViewerService().addRenderer(renderer);
@@ -147,7 +154,8 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 * @throws GkException GkException
 	 */
 	public RS274GCodeRenderer createRenderer(IExecutionToken executionToken) throws GkException{		
-		RS274GCodeRenderer renderer = new RS274GCodeRenderer(executionToken.getGCodeProvider(), gcodeContextProvider, fourAxisControllerAdapter);	
+		RS274GCodeRenderer renderer = new RS274GCodeRenderer(executionToken.getGCodeProvider(), gcodeContextProvider, fourAxisControllerAdapter);
+		renderer.setColorizer(colorizer);
 		Activator.getJoglViewerService().addRenderer(renderer);
 		return renderer;
 	}
@@ -460,6 +468,32 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	public void setFourAxisControllerAdapter(IFourAxisControllerAdapter fourAxisControllerAdapter) {
 		this.fourAxisControllerAdapter = fourAxisControllerAdapter;
 	}
+	/**
+	 * @return the colorizer
+	 */
+	public AbstractInstructionColorizer getColorizer() {
+		return colorizer;
+	}
+	/**
+	 * @param colorizer the colorizer to set
+	 */
+	public void setColorizer(AbstractInstructionColorizer colorizer) {
+		this.colorizer = colorizer;
+	}
 
+	public void changeColorizer(AbstractInstructionColorizer newColorizer) throws GkException{		
+		if(this.colorizer != null && this.getColorizer().getOverlay() != null){
+			Activator.getJoglViewerService().removeOverlayRenderer(this.colorizer.getOverlay());
+		}
+		
+		setColorizer(newColorizer);		
+		if(newColorizer.getOverlay() != null){			
+			Activator.getJoglViewerService().addOverlayRenderer(newColorizer.getOverlay());
+		}
+		for (RS274GCodeRenderer cachedRenderer : cacheRenderer.get()) {
+			cachedRenderer.setColorizer(newColorizer);
+			cachedRenderer.updateGeometry();
+		}
+	}
 
 }

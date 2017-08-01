@@ -73,7 +73,7 @@ public class GrblConfigurationOpenHandler {
 		
 		if(result == Dialog.OK){
 			try{				
-				service.setConfiguration(cfg);
+				service.applyConfiguration(cfg);
 			}catch(GkFunctionalException e){
 				LOG.log(e);
 				GkDialog.openDialog(shell, e);				

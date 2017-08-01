@@ -58,6 +58,8 @@ public class JoglViewerPreferenceInitializer extends GkPreferenceInitializer{
 
 		prefs.setDefault(JoglViewerPreference.GRID_GRADUATION_SIZE, "1mm");
 		
+		prefs.setDefault(JoglViewerPreference.DISPLAY_POSITION_OVERLAY, true);
+		
 		Tuple6b position = new Tuple6b();
 		position.setX( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_X)));
 		position.setY( Length.parse(prefs.getString(JoglViewerPreference.ROTARY_AXIS_POSITION_Y)));

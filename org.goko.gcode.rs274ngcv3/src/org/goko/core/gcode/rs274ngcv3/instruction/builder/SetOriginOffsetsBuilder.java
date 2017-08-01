@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
@@ -41,10 +40,7 @@ public class SetOriginOffsetsBuilder extends AbstractInstructionBuilder<SetOrigi
 		Angle a = findWordAngle("A", words, null, AngleUnit.DEGREE_ANGLE);
 		Angle b = findWordAngle("B", words, null, AngleUnit.DEGREE_ANGLE);
 		Angle c = findWordAngle("C", words, null, AngleUnit.DEGREE_ANGLE);
-		
-		if(x == null && y == null && z == null && a == null && b == null && c == null){
-			throw new GkFunctionalException("GCO-110", "G92");			
-		}
+
 		if(x == null) x = context.getX();
 		if(y == null) y = context.getY();
 		if(z == null) z = context.getZ();

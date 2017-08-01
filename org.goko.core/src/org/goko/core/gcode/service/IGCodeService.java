@@ -19,7 +19,7 @@ public interface IGCodeService<I extends IInstruction, T extends IGCodeContext, 
 	IGCodeProvider parse(IGCodeProviderSource source, IProgressMonitor monitor) throws GkException;
 
 	IInstructionProvider<I, S> getInstructions(T context, IGCodeProvider gcodeProvider) throws GkException;
-
+	
 	T update(T baseContext, I instruction) throws GkException;
 
 	T update(T baseContext, S instructionSet) throws GkException;

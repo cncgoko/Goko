@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with Goko.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package org.goko.tools.viewer.jogl.camera;
+package org.goko.tools.viewer.jogl.camera.orthographic;
 
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
+import org.goko.tools.viewer.jogl.camera.AbstractCamera;
+import org.goko.tools.viewer.jogl.camera.CameraMotionMode;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
@@ -283,5 +285,33 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 		this.zoomFactor = JoglViewerPreference.getInstance().isCameraZoomInvertAxis() ? -1 : 1;
 		float zoomSensitivityPref = JoglViewerPreference.getInstance().getCameraZoomSensitivity().floatValue();		
 		this.zoomSensitivity  = (float) (1 + (zoomSensitivityPref - 50) / 100.0);
+	}
+
+	/**
+	 * @return the spaceWidth
+	 */
+	public double getSpaceWidth() {
+		return spaceWidth;
+	}
+
+	/**
+	 * @param spaceWidth the spaceWidth to set
+	 */
+	public void setSpaceWidth(double spaceWidth) {
+		this.spaceWidth = spaceWidth;
+	}
+
+	/**
+	 * @return the spaceHeight
+	 */
+	public double getSpaceHeight() {
+		return spaceHeight;
+	}
+
+	/**
+	 * @param spaceHeight the spaceHeight to set
+	 */
+	public void setSpaceHeight(double spaceHeight) {
+		this.spaceHeight = spaceHeight;
 	}
 }

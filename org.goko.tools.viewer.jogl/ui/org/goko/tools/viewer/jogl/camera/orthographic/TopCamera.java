@@ -17,21 +17,24 @@
 package org.goko.tools.viewer.jogl.camera.orthographic;
 
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector4f;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.goko.tools.viewer.jogl.camera.OrthographicCamera;
+import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 
 import com.jogamp.opengl.swt.GLCanvas;
 
 public class TopCamera extends OrthographicCamera implements MouseMoveListener,MouseListener, Listener {
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.orthographic.top";
-
-	public TopCamera(final GLCanvas canvas) {
+	public static final Vector4f NORMAL = new Vector4f(0f,0f,1f,0f);
+	
+	public TopCamera(final GLCanvas canvas, JoglSceneManager manager) {
 		super(canvas);		
+		setPositionOverlay(new TopPositionOverlay(this, manager));
 	}
 
 	/**
@@ -48,7 +51,7 @@ public class TopCamera extends OrthographicCamera implements MouseMoveListener,M
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.camera.OrthographicCamera#panMouse(org.eclipse.swt.events.MouseEvent)
+	 * @see org.goko.tools.viewer.jogl.camera.orthographic.OrthographicCamera#panMouse(org.eclipse.swt.events.MouseEvent)
 	 */
 	@Override
 	protected void panMouse(MouseEvent e){
@@ -60,7 +63,7 @@ public class TopCamera extends OrthographicCamera implements MouseMoveListener,M
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.tools.viewer.jogl.camera.OrthographicCamera#mouseScroll(org.eclipse.swt.widgets.Event)
+	 * @see org.goko.tools.viewer.jogl.camera.orthographic.OrthographicCamera#mouseScroll(org.eclipse.swt.widgets.Event)
 	 */
 	@Override
 	protected void mouseScroll(Event event) {
@@ -72,5 +75,13 @@ public class TopCamera extends OrthographicCamera implements MouseMoveListener,M
 		zoomOffset = Math.max(0.1, zoomOffset * (1+(event.count*zoomFactor*zoomSensitivity)/30.0) );
 		eye.x = (float) (xWorld - 2*((xMouse - (width / 2)) / zoomOffset));
 		eye.y = (float) (yWorld + 2*((yMouse - (height/ 2)) / zoomOffset));		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.camera.AbstractCamera#getWorkingPlaneNormal()
+	 */
+	@Override
+	public Vector4f getWorkingPlaneNormal() {		
+		return NORMAL;
 	}
 }

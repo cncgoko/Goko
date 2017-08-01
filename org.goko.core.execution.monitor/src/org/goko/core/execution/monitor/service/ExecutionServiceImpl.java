@@ -85,7 +85,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		cacheExecutionQueue 	= new CacheByKey<>();
 		// Creation of the queues
 		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> defaultQueue = new ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>(ExecutionQueueType.DEFAULT);
-		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> systemQueue = new SystemExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>(this);
+		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> systemQueue = new SystemExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>>();
 		cacheExecutionQueue.add(ExecutionQueueType.DEFAULT, defaultQueue);
 		cacheExecutionQueue.add(ExecutionQueueType.SYSTEM, systemQueue);
 		
@@ -287,6 +287,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 				executionListener.onQueueExecutionStart();
 			}
 		}
+		getExecutionQueue(queueType).onStart();
 	}
 
 	/** (inheritDoc)
@@ -300,6 +301,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 			}
 		}
 		unlockGCodeProvider(queueType);
+		getExecutionQueue(queueType).onComplete();
 	}
 
 	/** (inheritDoc)
@@ -313,6 +315,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 			}
 		}
 		unlockGCodeProvider(queueType);
+		getExecutionQueue(queueType).onCanceled();
 	}
 	
 	/** (inheritDoc)

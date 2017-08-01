@@ -26,6 +26,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.viewer.service.IViewer3DService;
 import org.goko.tools.viewer.jogl.GokoJoglCanvas;
 import org.goko.tools.viewer.jogl.camera.AbstractCamera;
+import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 
 /**
  * Interface of the Goko Jogl viewer service
@@ -66,4 +67,8 @@ public interface IJoglViewerService extends IViewer3DService{
 	public void setLayerVisible(int layerId, boolean visible);
 	
 	public boolean isLayerVisible(int layerId);
+	
+	void addOverlayRenderer(IOverlayRenderer overlayRenderer) throws GkException;
+	
+	void removeOverlayRenderer(IOverlayRenderer overlayRenderer) throws GkException;
 }

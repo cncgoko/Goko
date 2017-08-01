@@ -32,5 +32,7 @@ public interface ICoordinateSystemAdapter< T extends ICoordinateSystem> {
 
 	void setCurrentCoordinateSystem(T cs) throws GkException;
 
+	void updateCoordinateSystemPosition(T cs, Tuple6b position) throws GkException;
+	
 	void resetCurrentCoordinateSystem() throws GkException;
 }

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.gcode.element.GCodeWord;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionType;
@@ -34,9 +33,6 @@ public class DwellBuilder extends AbstractInstructionBuilder<DwellInstruction> {
 		GCodeWordUtils.getAndRemoveWordRegex("(G|g)(0?)4", words);
 		GCodeWord pWord = GCodeWordUtils.getAndRemoveWordByLetter("P", words);		
 		BigDecimal seconds = new BigDecimal(pWord.getValue());
-		if(seconds.compareTo(BigDecimal.ZERO) < 0){
-			throw new GkFunctionalException("GCO-140");
-		}
 		return new DwellInstruction(seconds.intValue());
 	}
 

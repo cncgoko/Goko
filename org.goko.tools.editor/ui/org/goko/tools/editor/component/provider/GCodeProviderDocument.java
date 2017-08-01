@@ -19,10 +19,13 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.core.gcode.element.validation.ValidationResult;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
+import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.tools.editor.component.annotation.ErrorAnnotation;
 
@@ -36,15 +39,17 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	private IGCodeProviderRepository gcodeRepository;
 	private IRS274NGCService gcodeService;
 	private Document document;
-	
+	/** Validation service */
+	private IGCodeValidationService<?,?,?> gcodeValidationService;
 	/**
 	 * @param source
 	 */
-	public GCodeProviderDocument(IGCodeProviderRepository gcodeRepository, IRS274NGCService gcodeService, IGCodeProvider provider) {
+	public GCodeProviderDocument(IGCodeProviderRepository gcodeRepository, IRS274NGCService gcodeService, IGCodeValidationService<?,?,?> gcodeValidationService, IGCodeProvider provider) {
 		super();
 		this.provider = provider;
 		this.gcodeRepository = gcodeRepository;
 		this.gcodeService = gcodeService;
+		this.gcodeValidationService = gcodeValidationService;
 		try {					
 			this.gcodeRepository.addDeleteVetoableListener(this);
 			this.gcodeRepository.addListener(this);
@@ -75,16 +80,22 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 	 */
 	@Override
 	protected void addAnnotations(IAnnotationModel annotationModel) throws GkException {
-		List<IValidationElement> elements = provider.getValidationElements();
+		ValidationResult result = gcodeValidationService.getValidationResult(provider.getId());
+		List<IValidationElement> elements = result.getElements();
 		if(CollectionUtils.isNotEmpty(elements)){
 			for (IValidationElement elt : elements) {
 				ErrorAnnotation error = new ErrorAnnotation(elt.getDescription());
 				int lineOffset = 0;
+				Integer length = elt.getLength();
 				try {
 					lineOffset = getDocument().getLineOffset(elt.getLocation().getLine());
-				} catch (BadLocationException e) {					
+					if(length == null){
+						length = getDocument().getLineLength(elt.getLocation().getLine());
+					}
+				} catch (BadLocationException e) {		
+					LOG.error(e);
 				}
-				Position position = new Position(lineOffset + elt.getLocation().getColumn(), elt.getLength());
+				Position position = new Position(lineOffset + elt.getLocation().getColumn(), length);
 				annotationModel.addAnnotation(error, position);
 			}
 		}
@@ -97,9 +108,9 @@ public class GCodeProviderDocument extends AbstractGCodeDocumentProvider {
 		StringBuffer buffer = new StringBuffer();		
 		GCodeContext context = new GCodeContext();
 		InstructionProvider instructionProvider = gcodeService.getInstructions(context , provider);
-		provider = gcodeService.getGCodeProvider(context , instructionProvider);
+		GCodeProvider localProvider = gcodeService.getGCodeProvider(context , instructionProvider); 
 				
-		List<GCodeLine> lines = provider.getLines();		
+		List<GCodeLine> lines = localProvider.getLines();		
 		for (GCodeLine gCodeLine : lines) {
 			String strLine = gcodeService.render(gCodeLine);
 			if(StringUtils.isNotEmpty(strLine)){

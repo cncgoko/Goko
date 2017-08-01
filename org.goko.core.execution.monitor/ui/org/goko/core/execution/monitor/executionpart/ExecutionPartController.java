@@ -22,6 +22,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
 import org.goko.core.execution.IGCodeExecutionTimeService;
+import org.goko.core.gcode.element.validation.ValidationResult;
 import org.goko.core.gcode.execution.ExecutionQueue;
 import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
@@ -31,6 +32,7 @@ import org.goko.core.gcode.execution.IExecutionQueue;
 import org.goko.core.gcode.service.IExecutionQueueListener;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 
 /**
@@ -48,6 +50,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 	@Inject
 	@Optional
 	private IGCodeExecutionTimeService executionTimeService;
+	@Inject
+	private IGCodeValidationService<?, ?, ?> gcodeValidationService;
 	/** Job for execution time estimation */
 	private Job executionUpdater;
 	/** Map of execution time by token id */
@@ -240,7 +244,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			boolean buttonStopEnabled = false;
 			boolean buttonStartEnabled= false;
 			boolean buttonPauseEnabled = false;
-	
+
 			switch(executionService.getExecutionState()){
 			case IDLE:
 			case STOPPED:
@@ -274,7 +278,7 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 			getDataModel().setButtonStopEnabled( true );
 		}
 	}
-	
+
 	/**
 	 * Detects error in the given queue
 	 * @param iExecutionQueue the queue to check
@@ -288,7 +292,8 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		List<ExecutionToken<ExecutionTokenState>> tokens = iExecutionQueue.getExecutionToken();
 		if(CollectionUtils.isNotEmpty(tokens)){
 			for (ExecutionToken<ExecutionTokenState> executionToken : tokens) {
-				if(executionToken.hasErrors()){
+				ValidationResult validationResult = gcodeValidationService.getValidationResult(executionToken.getGCodeProvider().getId());
+				if(validationResult.hasErrors()){
 					return true;
 				}
 			}

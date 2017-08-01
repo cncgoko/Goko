@@ -20,8 +20,8 @@ import javax.inject.Inject;
 
 import org.goko.common.bindings.AbstractController;
 import org.goko.core.common.exception.GkException;
-import org.goko.tools.viewer.jogl.camera.OrthographicCamera;
 import org.goko.tools.viewer.jogl.camera.PerspectiveCamera;
+import org.goko.tools.viewer.jogl.camera.orthographic.OrthographicCamera;
 import org.goko.tools.viewer.jogl.service.IJoglViewerService;
 import org.goko.tools.viewer.jogl.service.Layer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.CoordinateSystemSetRenderer;

@@ -3,7 +3,6 @@ package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
@@ -68,7 +67,7 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		Length k = findWordLength("K", words, null, context.getUnit().getUnit());
 		
 		Integer r = 1;
-		
+		boolean isValid = true;
 		Boolean clockwise = null;
 		if(context.getMotionMode() == EnumMotionMode.ARC_CLOCKWISE){
 			clockwise = true;
@@ -91,41 +90,10 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 			r = Integer.valueOf(rWord.getValue());
 		}
 		
-		ArcFeedInstruction instruction = null;
 		if(plane == null){
 			throw new GkTechnicalException("No plane in GCodeContext ["+plane+"]");
-		}
-		// Words verification
-		switch (plane) {
-		case XY_PLANE:	
-				if(x == null && y == null){
-					throw new GkFunctionalException("GCO-130", "X", "Y");
-				}
-				if(i == null && j == null){
-					throw new GkFunctionalException("GCO-130", "I", "J");
-				}
-			break;
-		case YZ_PLANE:	
-			if(y == null && z == null){
-				throw new GkFunctionalException("GCO-130", "Y", "Z");
-			}
-			if(j == null && k == null){
-				throw new GkFunctionalException("GCO-130", "J", "K");
-			}
-			break;
-		case XZ_PLANE:
-			if(z == null && x == null){
-				throw new GkFunctionalException("GCO-130", "X", "Z");
-			}
-			if(k == null && i == null){
-				throw new GkFunctionalException("GCO-130", "I", "K");
-			}
-			break;
-		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+plane+"]");			
-		}
-		
-		instruction	= new ArcFeedInstruction(x, y, z, i, j, k, a, b, c, r, clockwise);
-		return instruction;
+		}		
+		return new ArcFeedInstruction(x, y, z, i, j, k, a, b, c, r, clockwise);
 	}
-
+	
 }

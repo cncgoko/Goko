@@ -44,8 +44,7 @@ import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.jogl.internal.Activator;
-import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.IInstructionColorizer;
-import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.MotionModeColorizer;
+import org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer.AbstractInstructionColorizer;
 import org.goko.core.gcode.service.IGCodeExecutionListener;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
@@ -85,6 +84,8 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	private IGCodeContextProvider<GCodeContext> gcodeContextProvider;
 	/** The map of stored states (in case line get executed before renderer is initialized) */
 	private Map<Integer, ExecutionTokenState> storedStates;
+	/** Active command colorizer */
+	private AbstractInstructionColorizer colorizer;
 	/**
 	 * Constructor
 	 * @param gcodeProvider the GCodeProvider to render
@@ -133,10 +134,7 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		InstructionProvider instructionSet = Activator.getRS274NGCService().getInstructions(context, gcodeProvider);
 		
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = Activator.getRS274NGCService().getIterator(instructionSet, context);		
-		IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new MotionModeColorizer();
-		//IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new SelectedPlaneColorizer();
-		//IInstructionColorizer<GCodeContext, AbstractInstruction> colorizer = new ArcAngleColorizer(); 
-
+		colorizer.initialize(context, instructionSet);
 		while(iterator.hasNext()){
 			GCodeContext preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();			
@@ -152,9 +150,9 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 				for ( int i = 0; i < vertices.size(); i++) {
 					lstColors.add(color);				
 				}	
-			}
-			
+			}			
 		}
+		colorizer.conclude();
 		setVerticesCount(CollectionUtils.size(lstVertices));
 		
 		stateBuffer = IntBuffer.allocate(getVerticesCount());
@@ -389,6 +387,20 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 	 */
 	public IGCodeProvider getGCodeProvider() {
 		return gcodeProvider;
+	}
+
+	/**
+	 * @return the colorizer
+	 */
+	public AbstractInstructionColorizer getColorizer() {
+		return colorizer;
+	}
+
+	/**
+	 * @param colorizer the colorizer to set
+	 */
+	public void setColorizer(AbstractInstructionColorizer colorizer) {
+		this.colorizer = colorizer;
 	}
 
 

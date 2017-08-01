@@ -22,7 +22,10 @@ import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.IGCodeProviderSource;
 import org.goko.core.gcode.element.validation.IValidationElement;
+import org.goko.core.gcode.element.validation.ValidationResult;
 import org.goko.core.gcode.service.IGCodeProviderRepository;
+import org.goko.core.gcode.service.IGCodeProviderRepositoryListener;
+import org.goko.core.gcode.service.IGCodeValidationService;
 import org.goko.core.log.GkLog;
 import org.goko.tools.editor.component.annotation.ErrorAnnotation;
 
@@ -34,17 +37,20 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 	private static final GkLog LOG = GkLog.getLogger(GCodeProviderSourceDocument.class);
 	private IGCodeProvider provider;
 	private IGCodeProviderRepository gcodeRepository;
+	private IGCodeValidationService<?, ?, ?> validationService;
 	
 	/**
 	 * @param source
 	 */
-	public GCodeProviderSourceDocument(IGCodeProviderRepository gcodeRepository, IGCodeProvider provider) {
+	public GCodeProviderSourceDocument(IGCodeProviderRepository gcodeRepository, IGCodeValidationService<?, ?, ?> validationService, IGCodeProvider provider) {
 		super();
 		this.provider = provider;
 		this.gcodeRepository = gcodeRepository;
+		this.validationService = validationService;
 		try {					
 			this.gcodeRepository.addDeleteVetoableListener(this);
-			this.gcodeRepository.addListener(this);
+			this.gcodeRepository.addListener(this, IGCodeProviderRepositoryListener.PRIORITY_LEAST);
+			
 		} catch (GkException e) {
 			LOG.error(e);
 		}
@@ -73,16 +79,22 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 	 */
 	@Override
 	protected void addAnnotations(IAnnotationModel annotationModel) throws GkException {
-		List<IValidationElement> elements = provider.getValidationElements();
+		ValidationResult validationResult = validationService.getValidationResult(provider.getId());
+		List<IValidationElement> elements = validationResult .getElements();
 		if(CollectionUtils.isNotEmpty(elements)){
 			for (IValidationElement elt : elements) {
 				ErrorAnnotation error = new ErrorAnnotation(elt.getDescription());
 				int lineOffset = 0;
+				Integer length = elt.getLength();
 				try {
 					lineOffset = getDocument().getLineOffset(elt.getLocation().getLine());
-				} catch (BadLocationException e) {					
+					if(length == null){
+						length = getDocument().getLineLength(elt.getLocation().getLine());
+					}
+				} catch (BadLocationException e) {
+					LOG.error(e);
 				}
-				Position position = new Position(lineOffset + elt.getLocation().getColumn(), elt.getLength());
+				Position position = new Position(lineOffset + elt.getLocation().getColumn(), length);
 				annotationModel.addAnnotation(error, position);
 			}
 		}
@@ -165,7 +177,9 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#onGCodeProviderUpdate(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException { }
+	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
+		updateAnnotations();
+	}
 
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
@@ -197,5 +211,5 @@ public class GCodeProviderSourceDocument extends AbstractGCodeDocumentProvider {
 			return false;
 		return true;
 	}
-	
+
 }

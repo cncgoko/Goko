@@ -243,7 +243,7 @@ public abstract class AbstractTinyGConfiguration<C extends AbstractTinyGConfigur
 		if(!isCompletelyLoaded() && otherConfig.isCompletelyLoaded()){
 			// We switch from a partial config to a complete config
 			diffConfig.copyFrom(otherConfig);
-		}else if(!isCompletelyLoaded() && !otherConfig.isCompletelyLoaded()){
+		}else{ // if(!isCompletelyLoaded() && !otherConfig.isCompletelyLoaded()){
 			// Otherwise, let's compute it setting by setting
 			diffConfig.copyFrom(this);
 			

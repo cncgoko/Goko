@@ -62,7 +62,10 @@ public class InstructionGeometryFactory {
 		List<Point3d> lstPoints = new ArrayList<Point3d>();
 		AbstractInstructionGeometryBuilder<? extends AbstractInstruction> builder = findBuilder(instruction);
 		if(builder != null){
-			return builder.buildGeometry(context, instruction);
+			List<Point3d> tmpLst = builder.buildGeometry(context, instruction);
+			if(CollectionUtils.isNotEmpty(tmpLst)){
+				lstPoints.addAll(tmpLst);
+			}
 		}		
 		return lstPoints;
 	}
