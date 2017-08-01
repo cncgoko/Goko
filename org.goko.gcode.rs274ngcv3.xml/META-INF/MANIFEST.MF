@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RS274NGCv3 GCode Xml Bundle
 Bundle-SymbolicName: org.goko.gcode.rs274ngcv3.xml;singleton:=true
-Bundle-Version: 0.3.4.qualifier
+Bundle-Version: 0.3.5.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.goko.core,

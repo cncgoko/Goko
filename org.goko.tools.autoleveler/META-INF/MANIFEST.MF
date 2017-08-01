@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Autoleveller Modifier
 Bundle-SymbolicName: org.goko.tools.autoleveler;singleton:=true
-Bundle-Version: 0.3.4.qualifier
+Bundle-Version: 0.3.5.qualifier
 Bundle-Activator: org.goko.tools.autoleveler.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.ibm.icu.math;version="54.1.1",
