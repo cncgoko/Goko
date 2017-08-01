@@ -28,6 +28,9 @@ public class ZeroProbeModel extends AbstractModelObject{
 	public static final String TOOL_DIAMETER 				= "toolDiameter";
 	public static final String COORDINATE_SYSTEM			= "coordinateSystem";
 	public static final String COORDINATE_SYSTEM_LIST		= "coordinateSystemList";
+	public static final String IS_ERROR						= "error";
+	public static final String ERROR_MESSAGE				= "errorMessage";
+	public static final String INFO_MESSAGE					= "infoMessage";
 	
 	private EnumControllerAxis axis;
 	private Speed feedrate;
@@ -37,7 +40,9 @@ public class ZeroProbeModel extends AbstractModelObject{
 	private Length toolDiameter;
 	private LabeledValue<ICoordinateSystem> coordinateSystem;
 	private List<LabeledValue<ICoordinateSystem>> coordinateSystemList;
-	
+	private boolean error;
+	private String errorMessage;
+	private String infoMessage;
 	/**
 	 * 
 	 */
@@ -156,5 +161,53 @@ public class ZeroProbeModel extends AbstractModelObject{
 	 */
 	public void setCoordinateSystemList(List<LabeledValue<ICoordinateSystem>> coordinateSystemList) {
 		firePropertyChange(COORDINATE_SYSTEM_LIST, this.coordinateSystemList, this.coordinateSystemList = coordinateSystemList);
+	}
+
+
+	/**
+	 * @return the error
+	 */
+	public boolean isError() {
+		return error;
+	}
+
+
+	/**
+	 * @param error the error to set
+	 */
+	public void setError(boolean error) {
+		firePropertyChange(IS_ERROR, this.error, this.error = error);
+	}
+
+
+	/**
+	 * @return the errorMessage
+	 */
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+
+	/**
+	 * @param errorMessage the errorMessage to set
+	 */
+	public void setErrorMessage(String errorMessage) {
+		firePropertyChange(ERROR_MESSAGE, this.errorMessage, this.errorMessage = errorMessage);
+	}
+
+
+	/**
+	 * @return the infoMessage
+	 */
+	public String getInfoMessage() {
+		return infoMessage;
+	}
+
+
+	/**
+	 * @param infoMessage the infoMessage to set
+	 */
+	public void setInfoMessage(String infoMessage) {
+		firePropertyChange(INFO_MESSAGE, this.infoMessage, this.infoMessage = infoMessage);
 	}
 }

@@ -391,6 +391,28 @@ public abstract class AbstractController<T extends AbstractModelObject> extends 
 		Binding binding = bindingContext.bindValue(target, model);
 		bindings.add(binding);
 	}
+	
+	/**
+	 * Enables/disable the source when the property is respectively true/false
+	 * @param source the UI object
+	 * @param property the name of the property
+	 * @throws GkException GkException
+	 */
+	public void addVisibleReverseBinding(Widget source, String property) throws GkException{
+		verifyGetter(dataModel,property);
+		verifySetter(dataModel,property);
+
+
+		IObservableValue target = WidgetProperties.visible().observe(source);
+		IObservableValue model = BeansObservables.observeValue(dataModel, property);
+
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setConverter(new NegateBooleanConverter());
+		
+		Binding binding = bindingContext.bindValue(target, model,new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), strategy);
+		bindings.add(binding);
+	}
+	
 	/**
 	 * Enables/disable the source when the property is respectively true/false
 	 * @param source the UI object

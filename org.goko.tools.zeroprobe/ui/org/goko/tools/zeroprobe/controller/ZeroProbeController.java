@@ -6,7 +6,8 @@ package org.goko.tools.zeroprobe.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
@@ -16,7 +17,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.goko.common.bindings.AbstractController;
 import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Time;
 import org.goko.core.common.measure.quantity.TimeUnit;
@@ -28,6 +28,7 @@ import org.goko.core.controller.bean.ProbeResult;
 import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.service.IExecutionService;
+import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
 
 /**
@@ -35,6 +36,7 @@ import org.goko.core.math.Tuple6b;
  * @date 30 juil. 2017
  */
 public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
+	private static final GkLog LOG = GkLog.getLogger(ZeroProbeController.class);
 	@Inject
 	@Optional
 	private IProbingService probingService;
@@ -73,6 +75,9 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 	}
 	
 	public void executeProbing() throws GkException{
+		getDataModel().setError(false);
+		getDataModel().setInfoMessage(null);
+		getDataModel().setErrorMessage(null);
 		probingService.checkReadyToProbe();
 		
 		Tuple6b position = controllerService.getPosition();
@@ -86,27 +91,43 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 		probeRequest.setProbeStart(getAxisPosition(position, Length.ZERO));
 		probeRequest.setProbeEnd(getAxisPosition(position, getDataModel().getMaxDistance()));
 		
-		CompletionService<ProbeResult> probeCompletionResult = probingService.probe(probeRequest);
-		Time waitTime = getDataModel().getMaxDistance().multiply(2).divide(getDataModel().getFeedrate());
-		int timeout = (int) waitTime.doubleValue(TimeUnit.SECOND);
-		try {
-			Future<ProbeResult> result = probeCompletionResult.poll(timeout, java.util.concurrent.TimeUnit.SECONDS);
-			if(result != null && result.isDone()){
-				ProbeResult probeResult = result.get();
-				if(probeResult.isProbed()){
-					// Compute new position
-					Tuple6b offset = getNewCoordinateSystemOffset(probeResult);
-					
-					coordinateSystemAdapter.updateCoordinateSystemPosition(getDataModel().getCoordinateSystem().getValue(), offset);
-				}				
-			}else{
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.submit(new Runnable(){
+			/** (inheritDoc)
+			 * @see java.lang.Runnable#run()
+			 */
+			@Override
+			public void run() {
+				try {
+					CompletionService<ProbeResult> probeCompletionResult = probingService.probe(probeRequest);
+					Time waitTime = getDataModel().getMaxDistance().multiply(2).divide(getDataModel().getFeedrate());
+					int timeout = (int) waitTime.doubleValue(TimeUnit.SECOND);
 				
+					Future<ProbeResult> result = probeCompletionResult.poll(timeout, java.util.concurrent.TimeUnit.SECONDS);
+					if(result != null && result.isDone()){
+						ProbeResult probeResult = result.get();
+						if(probeResult != null && probeResult.isProbed()){							
+							// Compute new position
+							Tuple6b offset = getNewCoordinateSystemOffset(probeResult);
+							
+							coordinateSystemAdapter.updateCoordinateSystemPosition(getDataModel().getCoordinateSystem().getValue(), offset);
+							
+							getDataModel().setError(false);
+							getDataModel().setInfoMessage("Successfully probed");
+						}else{
+							getDataModel().setError(true);
+							getDataModel().setErrorMessage("Probe did not triggered");
+						}
+					}else{
+						getDataModel().setError(true);
+						getDataModel().setErrorMessage("Probe canceled");
+					}
+				} catch (Exception e) {					
+					LOG.error(e);
+				}
 			}
-		} catch (InterruptedException e) {
-			throw new GkTechnicalException(e);
-		} catch (ExecutionException e) {
-			throw new GkTechnicalException(e);
-		}
+		});
+
 	}
 
 	/**
@@ -119,18 +140,19 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 		if(getDataModel().isToolDiameterCompensation() && getDataModel().getToolDiameter() != null){
 			toolRadius  = getDataModel().getToolDiameter().divide(2);
 		}
+		Length expected = getDataModel().getExpected();
 		switch (getDataModel().getAxis()) {
-		case X_NEGATIVE: offset.setX( probeResult.getProbedPosition().getX().subtract( toolRadius ) );
+		case X_NEGATIVE: offset.setX( probeResult.getProbedPosition().getX().subtract( toolRadius ).subtract(expected));
 			break;
-		case X_POSITIVE: offset.setX( probeResult.getProbedPosition().getX().add( toolRadius ) );
+		case X_POSITIVE: offset.setX( probeResult.getProbedPosition().getX().add( toolRadius ).subtract(expected));
 			break;
-		case Y_NEGATIVE: offset.setY( probeResult.getProbedPosition().getY().subtract( toolRadius ) );
+		case Y_NEGATIVE: offset.setY( probeResult.getProbedPosition().getY().subtract( toolRadius ).subtract(expected));
 			break;
-		case Y_POSITIVE: offset.setY( probeResult.getProbedPosition().getY().add( toolRadius ) );
+		case Y_POSITIVE: offset.setY( probeResult.getProbedPosition().getY().add( toolRadius ).subtract(expected));
 			break;
-		case Z_NEGATIVE: offset.setZ( probeResult.getProbedPosition().getZ().subtract( toolRadius ) );
+		case Z_NEGATIVE: offset.setZ( probeResult.getProbedPosition().getZ().subtract( toolRadius ).subtract(expected));
 		break;
-		case Z_POSITIVE: offset.setZ( probeResult.getProbedPosition().getZ().add( toolRadius ) );
+		case Z_POSITIVE: offset.setZ( probeResult.getProbedPosition().getZ().add( toolRadius ).subtract(expected));
 			break;
 		default:
 			break;

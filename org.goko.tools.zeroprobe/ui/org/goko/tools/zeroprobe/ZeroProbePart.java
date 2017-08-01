@@ -3,11 +3,16 @@
  */
 package org.goko.tools.zeroprobe;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -17,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.GkUiComponent;
 import org.goko.common.dialog.GkDialog;
@@ -27,6 +33,9 @@ import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiRadioGroupFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiSpeedFieldEditor;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.QuantityUtils;
+import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.gcode.element.ICoordinateSystem;
@@ -51,7 +60,7 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 	public void createControls(final Composite parent, MPart part) throws GkException {
 		
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setBounds(0, 0, 448, 402);
+		composite.setBounds(0, 0, 448, 526);
 		composite.setLayout(new GridLayout(1, false));
 		
 		Group grpProbeSettings = new Group(composite, SWT.NONE);
@@ -119,8 +128,17 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		comboFieldEditor.setInputPropertyName(ZeroProbeModel.COORDINATE_SYSTEM_LIST);
 		
 		Composite composite_2 = new Composite(composite, SWT.NONE);
-		composite_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-		composite_2.setLayout(new GridLayout(1, false));
+		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		composite_2.setLayout(new GridLayout(2, false));
+		
+		Label lblError = new Label(composite_2, SWT.CENTER);
+		lblError.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblError.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.NORMAL));
+		lblError.setText("New Label");
+		lblError.setForeground(SWTResourceManager.getColor(255, 0, 0));
+		
+		getController().addVisibleBinding(lblError, ZeroProbeModel.IS_ERROR);
+		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
 		
 		Button btnNewButton = new Button(composite_2, SWT.NONE);
 		btnNewButton.addMouseListener(new MouseAdapter() {
@@ -152,6 +170,39 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		getDataModel().setCoordinateSystem(cs);
 		// End of dirty hack
 		getController().addEnableBinding(toolDiameterEditor, ZeroProbeModel.TOOL_DIAMETER_COMPENSATION);
+		
+		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
 	
+		initFromPersistedState(part);
+	}
+	
+	@PersistState
+	public void persistState(MPart part){
+		if(getDataModel() != null){
+			part.getPersistedState().put(ZeroProbeModel.FEEDRATE, QuantityUtils.format(getDataModel().getFeedrate(), 4, false, true));
+			part.getPersistedState().put(ZeroProbeModel.MAX_DISTANCE, QuantityUtils.format(getDataModel().getMaxDistance(), 4, false, true));
+			part.getPersistedState().put(ZeroProbeModel.TOOL_DIAMETER_COMPENSATION, BooleanUtils.toStringTrueFalse(getDataModel().isToolDiameterCompensation()));
+			part.getPersistedState().put(ZeroProbeModel.TOOL_DIAMETER, QuantityUtils.format(getDataModel().getToolDiameter(), 4, false, true));
+		}
+	}
+	
+	private void initFromPersistedState(MPart part) throws GkException{
+		Map<String, String> state = part.getPersistedState();
+		String feedrate = state.get(ZeroProbeModel.FEEDRATE);
+		if(StringUtils.isNotEmpty(feedrate)){
+			getDataModel().setFeedrate(Speed.parse(feedrate));
+		}
+		String maxDistance = state.get(ZeroProbeModel.MAX_DISTANCE);
+		if(StringUtils.isNotEmpty(maxDistance)){
+			getDataModel().setMaxDistance(Length.parse(maxDistance));
+		}
+		String toolCompensation = state.get(ZeroProbeModel.TOOL_DIAMETER_COMPENSATION);
+		if(StringUtils.isNotEmpty(toolCompensation)){
+			getDataModel().setToolDiameterCompensation(BooleanUtils.toBoolean(toolCompensation));
+		}
+		String toolDiameter = state.get(ZeroProbeModel.TOOL_DIAMETER);
+		if(StringUtils.isNotEmpty(toolDiameter)){
+			getDataModel().setToolDiameter(Length.parse(toolDiameter));
+		}
 	}
 }
