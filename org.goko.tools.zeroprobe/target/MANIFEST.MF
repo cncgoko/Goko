@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.goko.tools.zeroprobe;singleton:=true
+Bundle-Name: ZeropProbe
+Bundle-Version: 0.3.5.201708012217
+Require-Bundle: org.goko.core;bundle-version="0.0.1",org.eclipse.e4.co
+ re.di;bundle-version="1.1.0",org.eclipse.e4.ui.workbench.renderers.sw
+ t;bundle-version="0.10.2",org.eclipse.e4.ui.workbench;bundle-version=
+ "0.10.3",org.eclipse.e4.ui.services;bundle-version="0.10.2",org.eclip
+ se.e4.ui.di;bundle-version="0.10.1",org.eclipse.swt;bundle-version="3
+ .100.1",org.eclipse.core.commands;bundle-version="3.6.2",org.eclipse.
+ jface;bundle-version="3.8.102",javax.inject;bundle-version="1.0.0",or
+ g.eclipse.core.databinding;bundle-version="1.4.1",org.eclipse.core.da
+ tabinding.beans;bundle-version="1.2.200",org.eclipse.core.databinding
+ .observable;bundle-version="1.4.1",org.eclipse.core.databinding.prope
+ rty;bundle-version="1.4.200",org.eclipse.jface.databinding;bundle-ver
+ sion="1.6.200",com.ibm.icu,Goko;bundle-version="0.0.1",org.eclipse.e4
+ .ui.model.workbench,org.eclipse.e4.core.di.extensions,org.eclipse.equ
+ inox.preferences,org.goko.tools.viewer.jogl;bundle-version="0.0.2",or
+ g.jogamp.jogl;bundle-version="2.0.2",org.goko.gcode.rs274ngcv3
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: javax.annotation;version="1.2.0",org.eclipse.core.runt
+ ime;version="3.5.0",org.eclipse.e4.core.contexts,org.osgi.framework;v
+ ersion="1.3.0"
+

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository version='1.1.0'?>
+<artifacts size='1'>
+  <artifact classifier='osgi.bundle' id='org.goko.tools.zeroprobe' version='0.3.5.201708012217'>
+    <properties size='5'>
+      <property name='artifact.size' value='17462'/>
+      <property name='download.size' value='17462'/>
+      <property name='maven-groupId' value='org.goko'/>
+      <property name='maven-artifactId' value='org.goko.tools.zeroprobe'/>
+      <property name='maven-version' value='0.3.5-SNAPSHOT'/>
+    </properties>
+  </artifact>
+</artifacts>
