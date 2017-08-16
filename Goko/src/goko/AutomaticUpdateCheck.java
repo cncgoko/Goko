@@ -47,7 +47,7 @@ public class AutomaticUpdateCheck implements EventHandler{
 	@Override
 	public void handleEvent(Event event) {
 		try{
-			if(GokoPreference.getInstance().isCheckForUpdate()){
+			if(GokoPreference.getInstance().isCheckForUpdate()){				
 				EnumUpdateCheckFrequency frequency = GokoPreference.getInstance().getUpdateCheckFrequency();
 				Date lastCheck = GokoPreference.getInstance().getLastUpdateCheckTimestamp();
 				boolean recheck = false;
@@ -72,7 +72,7 @@ public class AutomaticUpdateCheck implements EventHandler{
 					IStatus result = updateCheck.update(agent, monitor, sync, workbench, true);
 					
 					if(GokoUpdateCheckRunnable.UPDATE_AVAILABLE.equals(result)){
-						sync.syncExec(new Runnable() {        	            
+						sync.asyncExec(new Runnable() {       	            
 	        	            /** (inheritDoc) @see java.lang.Runnable#run() */
 	        	            @Override
 	        	            public void run() {
