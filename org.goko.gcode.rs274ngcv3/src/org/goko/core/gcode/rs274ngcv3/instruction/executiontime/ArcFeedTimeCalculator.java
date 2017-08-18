@@ -31,7 +31,10 @@ public class ArcFeedTimeCalculator extends AbstractInstructionTimeCalculator<Arc
 			return Time.ZERO;
 		}
 		//feedrate = constraint.getMaximumFeedrate(feedrate, null);
-		Arc3b arc = InstructionUtils.getArc(context, instruction);	
-		return constraint.getTravelTime(feedrate, arc);//arc.getLength().divide(feedrate);	
+		if(InstructionUtils.isValidArcFeedInstruction(context, instruction)){
+			Arc3b arc = InstructionUtils.getArc(context, instruction);	
+			return constraint.getTravelTime(feedrate, arc);//arc.getLength().divide(feedrate);
+		}
+		return Time.ZERO;
 	}
 }

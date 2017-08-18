@@ -2,6 +2,7 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="__UlA4Jc3EeWD6osc2lSE8g">
   <imports xsi:type="commands:BindingContext" xmi:id="_Xy8BIKS1EeWtZ4gPa6z3WA" elementId="org.eclipse.ui.contexts.dialogAndWindow"/>
   <imports xsi:type="commands:Category" xmi:id="_XfPNkAQ7Eeeci8K8qIYGLg" elementId="org.goko.core.category.general"/>
+  <imports xsi:type="commands:BindingContext" xmi:id="_6bkgsINHEeec2ttRO0Zinw" elementId="org.goko.core.workspace.bindingcontext.inworkspace"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_BWIo8Jc4EeWD6osc2lSE8g" featurename="children" parentElementId="org.goko.core.open.menu">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_oWq5MKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.handledmenuitem.gcodefile" label="GCode file" iconURI="platform:/plugin/org.goko.gcode.rs274ngcv3.ui/resources/icons/document-attribute-g.png" command="_hmSKgKS1EeWtZ4gPa6z3WA"/>
   </fragments>
@@ -10,8 +11,16 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_eVRswKS1EeWtZ4gPa6z3WA" featurename="handlers" parentElementId="goko.application">
     <elements xsi:type="commands:Handler" xmi:id="_i2a8sKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.handler.0" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.ui/org.goko.gcode.rs274ngcv3.ui.workspace.handler.open.OpenGCodeFileHandler" command="_hmSKgKS1EeWtZ4gPa6z3WA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_hJP9UINGEeec2ttRO0Zinw" elementId="org.goko.gcode.rs274ngcv3.ui.handler.1" contributionURI="bundleclass://org.goko.gcode.rs274ngcv3.ui/org.goko.gcode.rs274ngcv3.ui.workspace.handler.workspace.DeleteHandler" command="_f6jVkINGEeec2ttRO0Zinw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_elbBkKS1EeWtZ4gPa6z3WA" featurename="commands" parentElementId="goko.application">
     <elements xsi:type="commands:Command" xmi:id="_hmSKgKS1EeWtZ4gPa6z3WA" elementId="org.goko.gcode.rs274ngcv3.ui.command.opengcodefile" commandName="Open GCode file" category="_XfPNkAQ7Eeeci8K8qIYGLg"/>
+    <elements xsi:type="commands:Command" xmi:id="_f6jVkINGEeec2ttRO0Zinw" elementId="org.goko.gcode.rs274ngcv3.ui.command." commandName="Delete selected workspace element" description="Delete selected workspace element" category="_7zH-8INGEeec2ttRO0Zinw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_YpxsEINFEeec2ttRO0Zinw" featurename="bindings" parentElementId="org.goko.core.workspace.bindingtable.inworkspace">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_eA-aQINFEeec2ttRO0Zinw" elementId="org.goko.gcode.rs274ngcv3.ui.keybinding.1" keySequence="DEL" command="_f6jVkINGEeec2ttRO0Zinw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6dXs8INGEeec2ttRO0Zinw" featurename="categories" parentElementId="goko.application">
+    <elements xsi:type="commands:Category" xmi:id="_7zH-8INGEeec2ttRO0Zinw" elementId="org.goko.gcode.rs274ngcv3.ui.category.workspace" name="Workspace" description="Workspace related commands"/>
   </fragments>
 </fragment:ModelFragments>

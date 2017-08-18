@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
@@ -101,9 +102,15 @@ public class SegmentizeModifier extends AbstractModifier<GCodeProvider> implemen
 	 * @param context the gcode context
 	 * @param instruction the instruction to modify
 	 * @return a list of instruction set
+	 * @throws GkFunctionalException 
 	 */
-	private List<InstructionSet> applyModifier(GCodeContext context, ArcFeedInstruction instruction) {
+	private List<InstructionSet> applyModifier(GCodeContext context, ArcFeedInstruction instruction) throws GkFunctionalException {
 		List<InstructionSet> result = new ArrayList<>();
+		
+		if(InstructionUtils.isValidArcFeedInstruction(context, instruction)){
+			throw new GkFunctionalException("modifier.segmentize.invalid.arc");
+		}
+		
 		Arc3b arc = InstructionUtils.getArc(context, instruction);
 		
 		int division = 0;

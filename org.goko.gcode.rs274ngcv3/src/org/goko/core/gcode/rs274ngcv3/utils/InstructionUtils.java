@@ -38,6 +38,39 @@ public class InstructionUtils {
 		}
 		return vec;
 	}
+	
+	public static boolean isValidArcFeedInstruction(GCodeContext context, ArcFeedInstruction arcInstruction){
+		boolean valid = true;
+		// Words verification
+		switch (context.getPlane()) {
+		case XY_PLANE:	
+				if(arcInstruction.getX() == null && arcInstruction.getY() == null){
+					valid = false;
+				}
+				if(arcInstruction.getI() == null && arcInstruction.getJ() == null){
+					valid = false;
+				}
+			break;
+		case YZ_PLANE:	
+			if(arcInstruction.getY() == null && arcInstruction.getZ() == null){
+				valid = false;
+			}
+			if(arcInstruction.getJ() == null && arcInstruction.getK() == null){
+				valid = false;
+			}
+			break;
+		case XZ_PLANE:
+			if(arcInstruction.getZ() == null && arcInstruction.getX() == null){
+				valid = false;
+			}
+			if(arcInstruction.getK() == null && arcInstruction.getI() == null){
+				valid = false;
+			}
+			break;
+		default: valid = false;			
+		}
+		return valid;
+	}
 
 	public static Tuple6b getEndPoint(GCodeContext context, ArcFeedInstruction instruction){		
 		Tuple6b startTuple = null;

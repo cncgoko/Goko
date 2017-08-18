@@ -150,7 +150,9 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 	private void rotateArcInstruction(ArcFeedInstruction instr, GCodeContext preContext) throws GkException {
 		// Make sure the arc is in a plane that can be rotated
 		checkRotationPlane(preContext);
-		
+		if(InstructionUtils.isValidArcFeedInstruction(preContext, instr)){
+			throw new GkFunctionalException("modifier.rotate.invalid.arc");
+		}
 		Arc3b arc = InstructionUtils.getArc(preContext, instr);
 		Unit<Length> unit = preContext.getUnit().getUnit();
 		Point3d start = arc.getStart().toPoint3d(unit);

@@ -215,4 +215,16 @@ public class ExecutionQueueContainerUiProvider extends ProjectContainerUiProvide
 		this.workspaceUiService = workspaceUiService;		
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#delete(org.eclipse.jface.viewers.ISelection)
+	 */
+	@Override
+	public boolean delete(ISelection selection) throws GkException {
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		if(content instanceof ExecutionToken){
+			executionService.removeFromExecutionQueue(ExecutionQueueType.DEFAULT, ((ExecutionToken<?>) content).getId());
+		}
+		return false;
+	}
 }

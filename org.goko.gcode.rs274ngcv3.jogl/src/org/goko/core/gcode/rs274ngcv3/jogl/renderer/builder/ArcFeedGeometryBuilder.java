@@ -44,22 +44,24 @@ public class ArcFeedGeometryBuilder extends AbstractInstructionGeometryBuilder<A
 			rotaryAxisOffset = settings.getRotaryAxisPosition().toPoint3d(JoglUtils.JOGL_UNIT);			
 		}
 		
-		Arc3b arc = InstructionUtils.getArc(context, instruction);
-		
-		int nbPoints = 8;
-		// Adaptive points count
-		double arcLength = arc.getLength().doubleValue(JoglUtils.JOGL_UNIT);
-		nbPoints =  2 + (int) (arcLength * 8 ); // At least 2 points
-
-		for(float i = 0; i <= nbPoints; i++){
-			Tuple6b tuple = arc.point( i/nbPoints);
-			Point3d p = tuple.toPoint3d(JoglUtils.JOGL_UNIT);
-			if(settings.isRotaryAxisEnabled()){
-				p.sub(rotaryAxisOffset);
-				rotationMatrix.transform(p);
-				p.add(rotaryAxisOffset);
-				vertices.add(p);
-			}						
+		if(InstructionUtils.isValidArcFeedInstruction(context, instruction)){
+			Arc3b arc = InstructionUtils.getArc(context, instruction);
+			
+			int nbPoints = 8;
+			// Adaptive points count
+			double arcLength = arc.getLength().doubleValue(JoglUtils.JOGL_UNIT);
+			nbPoints =  2 + (int) (arcLength * 8 ); // At least 2 points
+	
+			for(float i = 0; i <= nbPoints; i++){
+				Tuple6b tuple = arc.point( i/nbPoints);
+				Point3d p = tuple.toPoint3d(JoglUtils.JOGL_UNIT);
+				if(settings.isRotaryAxisEnabled()){
+					p.sub(rotaryAxisOffset);
+					rotationMatrix.transform(p);
+					p.add(rotaryAxisOffset);
+					vertices.add(p);
+				}						
+			}
 		}
 		
 		return vertices;

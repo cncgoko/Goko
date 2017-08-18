@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -15,6 +16,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -55,6 +57,7 @@ public class WorkspacePart implements Listener {
 	private ScrolledComposite scrolledComposite;
 	/** Previous selection in the tree */
 	private Object previousSelection;
+	
 	@Inject	
 	public WorkspacePart() {
 
@@ -206,6 +209,35 @@ public class WorkspacePart implements Listener {
 		workspaceTreeViewer.setSelection(new StructuredSelection(data), true);
 	}
 
+	@Inject
+	@Optional
+	private void subscribeWorkspaceDelete(@UIEventTopic(WorkspaceUIEvent.TOPIC_WORKSPACE_DELETE) Object data) throws GkException {		
+		List<ProjectContainerUiProvider> uiProviders = workspaceUiService.getProjectContainerUiProvider();
+		
+		ISelection selection = workspaceTreeViewer.getSelection();
+		
+        if(!selection.isEmpty() && CollectionUtils.isNotEmpty(uiProviders)){
+        	Object selectedObject = ((StructuredSelection)selection).getFirstElement();
+        	GkProjectContentProvider contentProvider = (GkProjectContentProvider) workspaceTreeViewer.getContentProvider();
+        	
+            Object parent = contentProvider.getParent(selectedObject);
+            
+            Object[] childrenBefore = contentProvider.getChildren(parent);
+            int index = ArrayUtils.indexOf(childrenBefore, selectedObject);
+            
+            for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {
+        		if(projectContainerUiProvider.delete(workspaceTreeViewer.getSelection())){
+        			break;
+        		}
+			}
+        	Object[] childrenAfter = contentProvider.getChildren(parent);
+        	if(childrenAfter != null && childrenAfter.length > 0){
+        		int newIndex = Math.max(0, Math.min(childrenAfter.length - 1, index));
+        		workspaceTreeViewer.setSelection(new StructuredSelection(childrenAfter[newIndex]));
+        	}
+        }  
+	}
+	
 	/** (inheritDoc)
 	 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
 	 */

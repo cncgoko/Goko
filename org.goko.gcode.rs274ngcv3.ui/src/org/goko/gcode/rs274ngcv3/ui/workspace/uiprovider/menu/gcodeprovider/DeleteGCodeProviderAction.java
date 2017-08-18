@@ -34,7 +34,8 @@ public class DeleteGCodeProviderAction extends AbstractDeleteAction {
 			locked = gcodeProviderRepository.getGCodeProvider(getIdTarget()).isLocked();
 		} catch (GkException e) {
 			LOG.error(e);			
-		}
+		}		
 		return !locked;
 	}
+	
 }

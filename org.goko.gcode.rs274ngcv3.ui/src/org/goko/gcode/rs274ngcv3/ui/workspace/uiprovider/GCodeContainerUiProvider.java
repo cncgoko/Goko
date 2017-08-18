@@ -373,5 +373,30 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 		this.gcodeValidationService = gcodeValidationService;
 		this.labelProvider.setGcodeValidationService(gcodeValidationService);
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#delete(org.eclipse.jface.viewers.ISelection)
+	 */
+	@Override
+	public boolean delete(ISelection selection) throws GkException {
+		IStructuredSelection strSelection = (IStructuredSelection) selection;
+		Object content = strSelection.getFirstElement();
+		
+		if(content instanceof IGCodeProvider){
+			IGCodeProvider provider = (IGCodeProvider) content;
+			if(!provider.isLocked()){
+				rs274Service.deleteGCodeProvider(provider.getId());
+			}
+			return true;
+		}else if(content instanceof IModifier){
+			IModifier<?> modifier = (IModifier<?>) content;
+			IGCodeProvider provider = rs274Service.getGCodeProvider(modifier.getIdGCodeProvider());
+			if(!provider.isLocked()){
+				rs274Service.deleteModifier(modifier.getId());
+			}
+			return true;
+		}
+		return false;
+	}
 
 }

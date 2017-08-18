@@ -80,15 +80,28 @@ public class GkProjectContentProvider implements ITreeContentProvider {
 	 */
 	@Override
 	public Object getParent(Object element) {
-		if(element instanceof ProjectContainerUiProvider){
-			try {
-				ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider)element;
-				if(uiProvider != null){
-					return uiProvider.getParent(element);
+//		if(element instanceof ProjectContainerUiProvider){
+//			try {
+//				ProjectContainerUiProvider uiProvider = (ProjectContainerUiProvider)element;
+//				if(uiProvider != null){
+//					return uiProvider.getParent(element);
+//				}
+//			} catch (GkException e) {
+//				LOG.error(e);
+//			}
+//		}
+		try {
+			List<ProjectContainerUiProvider> uiProvider = Activator.getWorkspaceUIService().getProjectContainerUiProvider();		
+			if (CollectionUtils.isNotEmpty(uiProvider)) {
+				for (ProjectContainerUiProvider projectContainerUiProvider : uiProvider) {
+					Object parent = projectContainerUiProvider.getParent(element);
+					if(parent != null){
+						return parent;
+					}
 				}
-			} catch (GkException e) {
-				LOG.error(e);
 			}
+		} catch (GkException e) {
+			LOG.error(e);
 		}
 		return null;
 	}
