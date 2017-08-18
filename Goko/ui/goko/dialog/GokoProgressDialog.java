@@ -3,6 +3,7 @@
  */
 package goko.dialog;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class GokoProgressDialog extends Dialog {
 		super((Shell)null);
 		setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.ON_TOP | SWT.MODELESS);
 		setBlockOnOpen(false);		
-		mapProgressElement = new HashMap<Job, JobProgressElement>();
+		mapProgressElement = Collections.synchronizedMap(new HashMap<Job, JobProgressElement>());		
 	}
 
 	/**
