@@ -223,6 +223,8 @@ public class GCodeFindReplaceDialog extends Dialog {
 		 
 		updateButtonState();
 		
+		container.layout(true);
+		container.pack();
 		return container;
 	}
 
@@ -256,7 +258,7 @@ public class GCodeFindReplaceDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(450, 300);
+		return new Point(593, 384);
 	}
 	
 	private void findIndex(int startIndex, boolean wrapped){
