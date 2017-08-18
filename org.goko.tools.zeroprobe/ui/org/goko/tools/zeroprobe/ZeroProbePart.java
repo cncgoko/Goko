@@ -68,6 +68,17 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		grpProbeSettings.setLayout(new GridLayout(1, false));
 		grpProbeSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpProbeSettings.setText("Probe settings");
+		
+		Label lblError = new Label(grpProbeSettings, SWT.CENTER);
+		lblError.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblError.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.NORMAL));
+		lblError.setText("New Label");
+		lblError.setForeground(SWTResourceManager.getColor(255, 0, 0));
+		
+		getController().addVisibleBinding(lblError, ZeroProbeModel.IS_ERROR);
+		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
+		
+		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
 
 		
 		UiRadioGroupFieldEditor<EnumControllerAxis> radioGroupFieldEditor = new UiRadioGroupFieldEditor<EnumControllerAxis>(grpProbeSettings, SWT.NONE);		
@@ -130,19 +141,10 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		comboFieldEditor.setInputPropertyName(ZeroProbeModel.COORDINATE_SYSTEM_LIST);
 		
 		Composite composite_2 = new Composite(composite, SWT.NONE);
-		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		composite_2.setLayout(new GridLayout(2, false));
+		composite_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		composite_2.setLayout(new GridLayout(1, false));
 		
-		Label lblError = new Label(composite_2, SWT.CENTER);
-		lblError.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		lblError.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.NORMAL));
-		lblError.setText("New Label");
-		lblError.setForeground(SWTResourceManager.getColor(255, 0, 0));
-		
-		getController().addVisibleBinding(lblError, ZeroProbeModel.IS_ERROR);
-		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
-		
-		Button btnNewButton = new Button(composite_2, SWT.NONE);
+		Button btnNewButton = new Button(composite_2, SWT.CENTER);
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -153,9 +155,9 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 				}
 			}
 		});
-		btnNewButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		btnNewButton.setAlignment(SWT.RIGHT);
-		btnNewButton.setBounds(0, 0, 105, 35);
+		GridData gd_btnNewButton = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gd_btnNewButton.widthHint = 100;
+		btnNewButton.setLayoutData(gd_btnNewButton);
 		btnNewButton.setText("Probe");
 		
 		
@@ -172,8 +174,6 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		getDataModel().setCoordinateSystem(cs);
 		// End of dirty hack
 		getController().addEnableBinding(toolDiameterEditor, ZeroProbeModel.TOOL_DIAMETER_COMPENSATION);
-		
-		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
 	
 		initFromPersistedState(part);
 	}

@@ -116,7 +116,7 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 							getDataModel().setInfoMessage("Successfully probed");
 						}else{
 							getDataModel().setError(true);
-							getDataModel().setErrorMessage("Probe did not triggered");
+							getDataModel().setErrorMessage("Probe did not trigger");
 						}
 					}else{
 						getDataModel().setError(true);
