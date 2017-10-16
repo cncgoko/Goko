@@ -151,6 +151,7 @@ public class RS274NGCServiceTest {
 															null,
 															null,
 															null,
+															null,
 															1,
 															true);
 		instr.setIdGCodeLine(line.getId());
@@ -196,6 +197,7 @@ public class RS274NGCServiceTest {
 															null,
 															null,
 															null,
+															null,
 															1, 
 															false);
 		instr.setIdGCodeLine(line.getId());
@@ -235,6 +237,7 @@ public class RS274NGCServiceTest {
 															Length.valueOf("42", LengthUnit.MILLIMETRE),
 															Length.valueOf("5", LengthUnit.MILLIMETRE), 
 															Length.valueOf("6", LengthUnit.MILLIMETRE),
+															null,
 															null,
 															null,
 															null,

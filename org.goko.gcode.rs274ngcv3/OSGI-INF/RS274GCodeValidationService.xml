@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" name="org.goko.core.gcode.rs274ngcv3.RS274GCodeValidationServiceImpl">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="start" immediate="true" name="org.goko.core.gcode.rs274ngcv3.RS274GCodeValidationServiceImpl">
    <implementation class="org.goko.core.gcode.rs274ngcv3.RS274GCodeValidationServiceImpl"/>
    <service>
       <provide interface="org.goko.core.gcode.service.IGCodeValidationService"/>
+      <provide interface="org.goko.core.gcode.rs274ngcv3.IRS274GCodeValidationService"/>
    </service>
    <reference bind="setGcodeService" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
 </scr:component>

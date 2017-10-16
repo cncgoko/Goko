@@ -44,6 +44,8 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	private Angle b;
 	/** Raw C coordinate in command, context independent */
 	private Angle c;
+	/** The radius value (instruction in Radius Mode */
+	private Length radius;
 	/** Rotation direction */
 	private boolean clockwise;
 	
@@ -65,7 +67,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	 * @param b
 	 * @param c
 	 */
-	public ArcFeedInstruction(Length x, Length y, Length z, Length i, Length j, Length k, Angle a, Angle b, Angle c, Integer rotation, boolean clockwise) {
+	public ArcFeedInstruction(Length x, Length y, Length z, Length i, Length j, Length k, Angle a, Angle b, Angle c, Length radius, Integer rotation, boolean clockwise) {
 		super(InstructionType.ARC_FEED);
 		this.x = x;
 		this.y = y;
@@ -78,6 +80,7 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		this.c = c;
 		this.rotation = rotation;		
 		this.clockwise = clockwise;
+		this.radius = radius;
 	}
 
 	/** (inheritDoc)
@@ -262,6 +265,133 @@ public class ArcFeedInstruction extends AbstractInstruction {
 	}
 
 
+//	/** (inheritDoc)
+//	 * @see java.lang.Object#hashCode()
+//	 */
+//	@Override
+//	public int hashCode() {
+//		final int prime = 31;
+//		int result = super.hashCode();
+//		result = prime * result + ((a == null) ? 0 : a.hashCode());
+//		result = prime * result + ((b == null) ? 0 : b.hashCode());
+//		result = prime * result + ((c == null) ? 0 : c.hashCode());
+//		result = prime * result + (clockwise ? 1231 : 1237);
+//		result = prime * result + ((i == null) ? 0 : i.hashCode());
+//		result = prime * result + ((j == null) ? 0 : j.hashCode());
+//		result = prime * result + ((k == null) ? 0 : k.hashCode());
+//		result = prime * result + ((x == null) ? 0 : x.hashCode());
+//		result = prime * result + ((y == null) ? 0 : y.hashCode());
+//		result = prime * result + ((z == null) ? 0 : z.hashCode());
+//		return result;
+//	}
+//
+//
+//	/** (inheritDoc)
+//	 * @see java.lang.Object#equals(java.lang.Object)
+//	 */
+//	@Override
+//	public boolean equals(Object obj) {
+//		if (this == obj)
+//			return true;
+//		if (!super.equals(obj))
+//			return false;
+//		if (getClass() != obj.getClass())
+//			return false;
+//		ArcFeedInstruction other = (ArcFeedInstruction) obj;
+//		if (a == null) {
+//			if (other.a != null)
+//				return false;
+//		} else if (!a.equals(other.a))
+//			return false;
+//		if (b == null) {
+//			if (other.b != null)
+//				return false;
+//		} else if (!b.equals(other.b))
+//			return false;
+//		if (c == null) {
+//			if (other.c != null)
+//				return false;
+//		} else if (!c.equals(other.c))
+//			return false;
+//		if (clockwise != other.clockwise)
+//			return false;
+//		if (i == null) {
+//			if (other.i != null)
+//				return false;
+//		} else if (!i.equals(other.i))
+//			return false;
+//		if (j == null) {
+//			if (other.j != null)
+//				return false;
+//		} else if (!j.equals(other.j))
+//			return false;
+//		if (k == null) {
+//			if (other.k != null)
+//				return false;
+//		} else if (!k.equals(other.k))
+//			return false;
+//		if (x == null) {
+//			if (other.x != null)
+//				return false;
+//		} else if (!x.equals(other.x))
+//			return false;
+//		if (y == null) {
+//			if (other.y != null)
+//				return false;
+//		} else if (!y.equals(other.y))
+//			return false;
+//		if (z == null) {
+//			if (other.z != null)
+//				return false;
+//		} else if (!z.equals(other.z))
+//			return false;
+//		return true;
+//	}
+
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#clone()
+	 */
+	@Override
+	public ArcFeedInstruction clone() {		
+		ArcFeedInstruction instr = (ArcFeedInstruction) super.clone();
+		if(x != null) instr.x = Length.clone(x);
+		if(y != null) instr.y = Length.clone(y);
+		if(z != null) instr.z = Length.clone(z);
+		if(a != null) instr.a = Angle.clone(a);
+		if(b != null) instr.b = Angle.clone(b);
+		if(c != null) instr.c = Angle.clone(c);
+		if(i != null) instr.i = Length.clone(i);
+		if(j != null) instr.j = Length.clone(j);
+		if(k != null) instr.k = Length.clone(k);		
+		if(radius != null) instr.radius = Length.clone(radius);		
+		return instr;
+	}	
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#accept(org.goko.core.gcode.rs274ngcv3.instruction.visitor.RS274InstructionVisitorAdapter)
+	 */
+	@Override
+	public void accept(GCodeContext context, RS274InstructionVisitorAdapter visitor) throws GkException{
+		visitor.visit(context, this);
+	}
+
+
+	/**
+	 * @return the radius
+	 */
+	public Length getRadius() {
+		return radius;
+	}
+
+
+	/**
+	 * @param radius the radius to set
+	 */
+	public void setRadius(Length radius) {
+		this.radius = radius;
+	}
+
+
 	/** (inheritDoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -276,6 +406,8 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		result = prime * result + ((i == null) ? 0 : i.hashCode());
 		result = prime * result + ((j == null) ? 0 : j.hashCode());
 		result = prime * result + ((k == null) ? 0 : k.hashCode());
+		result = prime * result + ((radius == null) ? 0 : radius.hashCode());
+		result = prime * result + ((rotation == null) ? 0 : rotation.hashCode());
 		result = prime * result + ((x == null) ? 0 : x.hashCode());
 		result = prime * result + ((y == null) ? 0 : y.hashCode());
 		result = prime * result + ((z == null) ? 0 : z.hashCode());
@@ -327,6 +459,16 @@ public class ArcFeedInstruction extends AbstractInstruction {
 				return false;
 		} else if (!k.equals(other.k))
 			return false;
+		if (radius == null) {
+			if (other.radius != null)
+				return false;
+		} else if (!radius.equals(other.radius))
+			return false;
+		if (rotation == null) {
+			if (other.rotation != null)
+				return false;
+		} else if (!rotation.equals(other.rotation))
+			return false;
 		if (x == null) {
 			if (other.x != null)
 				return false;
@@ -343,32 +485,6 @@ public class ArcFeedInstruction extends AbstractInstruction {
 		} else if (!z.equals(other.z))
 			return false;
 		return true;
-	}
-
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#clone()
-	 */
-	@Override
-	public ArcFeedInstruction clone() {		
-		ArcFeedInstruction instr = (ArcFeedInstruction) super.clone();
-		if(x != null) instr.x = Length.clone(x);
-		if(y != null) instr.y = Length.clone(y);
-		if(z != null) instr.z = Length.clone(z);
-		if(a != null) instr.a = Angle.clone(a);
-		if(b != null) instr.b = Angle.clone(b);
-		if(c != null) instr.c = Angle.clone(c);
-		if(i != null) instr.i = Length.clone(i);
-		if(j != null) instr.j = Length.clone(j);
-		if(k != null) instr.k = Length.clone(k);		
-		return instr;
-	}	
-	
-	/** (inheritDoc)
-	 * @see org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction#accept(org.goko.core.gcode.rs274ngcv3.instruction.visitor.RS274InstructionVisitorAdapter)
-	 */
-	@Override
-	public void accept(GCodeContext context, RS274InstructionVisitorAdapter visitor) throws GkException{
-		visitor.visit(context, this);
 	}
 	
 }

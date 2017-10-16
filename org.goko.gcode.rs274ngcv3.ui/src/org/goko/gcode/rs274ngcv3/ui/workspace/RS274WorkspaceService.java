@@ -12,6 +12,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.gcode.element.IGCodeProvider;
+import org.goko.core.gcode.rs274ngcv3.IRS274GCodeValidationService;
 import org.goko.core.gcode.rs274ngcv3.IRS274NGCService;
 import org.goko.core.gcode.rs274ngcv3.RenderingFormat;
 import org.goko.core.gcode.rs274ngcv3.element.GCodeProvider;
@@ -28,7 +29,7 @@ import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.rotate.RotateModif
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.scale.ScaleModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.segmentize.SegmentizeModifierBuilder;
 import org.goko.gcode.rs274ngcv3.ui.workspace.modifierbuilder.wrap.WrapModifierBuilder;
-import org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat.RenderingFormatPreference;
+import org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat.GCodePreference;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.IModifierUiProvider;
 
 /**
@@ -54,7 +55,9 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	private IRS274NGCService gcodeService;
 	/** The list of existing IModifierUiProvider*/
 	private List<IModifierUiProvider<?>> lstModifierUiProvider;
-
+	/** Validation service */
+	private IRS274GCodeValidationService validationService;
+	
 	/**
 	 * Constructor
 	 */
@@ -78,7 +81,7 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 		//getWorkspaceUIService().addProjectContainerUiProvider(new GCodeContainerUiProvider(getGcodeService(), this, executionService, workspaceService));
 		getGcodeService().addListener(this);		
 		getGcodeService().addModifierListener(this);	
-		RenderingFormatPreference.getInstance().addPropertyChangeListener(this);
+		GCodePreference.getInstance().addPropertyChangeListener(this);
 		initModifierUiProvider();		
 		updateRenderingFormat();
 	}
@@ -273,17 +276,40 @@ public class RS274WorkspaceService extends AbstractGokoService implements IRS274
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		updateRenderingFormat();		
+		updateRenderingFormat();
+		updateValidationService();
 	}
 
 	/**
 	 * Update the rendering format using preferences
 	 */
 	private void updateRenderingFormat(){
-		RenderingFormat format = new RenderingFormat( RenderingFormatPreference.getInstance().isSkipComment(),
-				RenderingFormatPreference.getInstance().isSkipLineNumber(),
-				RenderingFormatPreference.getInstance().isTruncateDecimal(), 
-				RenderingFormatPreference.getInstance().getDecimalDigitCount());
+		RenderingFormat format = new RenderingFormat( GCodePreference.getInstance().isSkipComment(),
+				GCodePreference.getInstance().isSkipLineNumber(),
+				GCodePreference.getInstance().isTruncateDecimal(), 
+				GCodePreference.getInstance().getDecimalDigitCount());
 		gcodeService.setRenderingFormat(format);
+	}
+
+	/**
+	 * Update values of the validation service 
+	 */
+	private void updateValidationService() {
+		validationService.setArcToleranceCheckEnabled( GCodePreference.getInstance().isArcToleranceCheckEnabled());
+		validationService.setArcTolerance( GCodePreference.getInstance().getArcToleranceCheckThreshold());
+	}
+	
+	/**
+	 * @return the validationService
+	 */
+	public IRS274GCodeValidationService getValidationService() {
+		return validationService;
+	}
+	/**
+	 * @param validationService the validationService to set
+	 */
+	public void setValidationService(IRS274GCodeValidationService validationService) {
+		this.validationService = validationService;
+		updateValidationService();
 	}
 }

@@ -254,19 +254,39 @@ public class GrblOverridePart extends GkUiComponent<GrblOverrideController, Grbl
 		composite_2.setLayout(gl_composite_2);
 		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
-		Button btnNewButton_7 = new Button(composite_2, SWT.NONE);
+		Button toggleSpindleButton = new Button(composite_2, SWT.NONE);
 		GridData gd_btnNewButton_7 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButton_7.heightHint = 35;
-		btnNewButton_7.setLayoutData(gd_btnNewButton_7);
-		btnNewButton_7.setText("Toggle spindle");
+		toggleSpindleButton.setLayoutData(gd_btnNewButton_7);
+		toggleSpindleButton.setText("Toggle spindle");
 		
-		Button btnNewButton_8 = new Button(composite_2, SWT.NONE);
-		btnNewButton_8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		btnNewButton_8.setText("Toggle flood coolant");
+		toggleSpindleButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				getController().toggleSpindle();
+			}
+		});
 		
-		Button btnNewButton_9 = new Button(composite_2, SWT.NONE);
-		btnNewButton_9.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		btnNewButton_9.setText("Toggle mist coolant");
+		Button toggleFloodCoolantButton = new Button(composite_2, SWT.NONE);
+		toggleFloodCoolantButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		toggleFloodCoolantButton.setText("Toggle flood coolant");
 		
+		toggleFloodCoolantButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				getController().toggleFloodCoolant();
+			}
+		});
+		
+		Button toggleMistCoolantButton = new Button(composite_2, SWT.NONE);
+		toggleMistCoolantButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		toggleMistCoolantButton.setText("Toggle mist coolant");
+		
+		toggleMistCoolantButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				getController().toggleMistCoolant();
+			}
+		});
 	}
 }

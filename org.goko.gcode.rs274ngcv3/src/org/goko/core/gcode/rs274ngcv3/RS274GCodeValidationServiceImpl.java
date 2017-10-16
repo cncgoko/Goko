@@ -6,6 +6,7 @@ package org.goko.core.gcode.rs274ngcv3;
 import java.util.HashMap;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.validation.ValidationResult;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
@@ -25,7 +26,8 @@ public class RS274GCodeValidationServiceImpl implements IRS274GCodeValidationSer
 	private static final String SERVICE_ID = "org.goko.core.gcode.rs274ngcv3.RS274GCodeValidationServiceImpl";
 	private IRS274NGCService gcodeService;
 	private HashMap<Integer, ValidationResult> validationResultByIdGCodeProvider;
-		
+	private boolean arcToleranceCheckEnabled;	
+	private Length arcTolerance;	
 	/**
 	 * 
 	 */
@@ -63,7 +65,7 @@ public class RS274GCodeValidationServiceImpl implements IRS274GCodeValidationSer
 	public ValidationResult validate(Integer idGCodeProvider) throws GkException {		
 		IGCodeProvider 				provider 	= gcodeService.getGCodeProvider(idGCodeProvider);
 		GCodeContext 				context 	= new GCodeContext();
-		RS274InstructionValidator 	validator 	= new RS274InstructionValidator(provider);
+		RS274InstructionValidator 	validator 	= new RS274InstructionValidator(provider, this);
 		InstructionProvider 		instruction = gcodeService.getInstructions(context, provider);
 		InstructionIterator 		iterator 	= new InstructionIterator(instruction, context, gcodeService);
 		
@@ -151,6 +153,30 @@ public class RS274GCodeValidationServiceImpl implements IRS274GCodeValidationSer
 	public void onGCodeProviderUnlocked(IGCodeProvider provider) throws GkException {
 		// TODO Auto-generated method stub
 		
+	}
+	/**
+	 * @return the arcToleranceCheckEnabled
+	 */
+	public boolean isArcToleranceCheckEnabled() {
+		return arcToleranceCheckEnabled;
+	}
+	/**
+	 * @param arcToleranceCheckEnabled the arcToleranceCheckEnabled to set
+	 */
+	public void setArcToleranceCheckEnabled(boolean arcToleranceCheckEnabled) {
+		this.arcToleranceCheckEnabled = arcToleranceCheckEnabled;
+	}
+	/**
+	 * @return the arcTolerance
+	 */
+	public Length getArcTolerance() {
+		return arcTolerance;
+	}
+	/**
+	 * @param arcTolerance the arcTolerance to set
+	 */
+	public void setArcTolerance(Length arcTolerance) {
+		this.arcTolerance = arcTolerance;
 	}
 
 }

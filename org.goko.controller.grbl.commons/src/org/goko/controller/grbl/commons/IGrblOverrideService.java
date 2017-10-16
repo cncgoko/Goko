@@ -36,4 +36,10 @@ public interface IGrblOverrideService {
 	void setRapidSpeed50() throws GkException;
 	
 	void resetRapidSpeed() throws GkException;
+	
+	void toggleSpindle() throws GkException;
+	
+	void toggleFloodCoolant() throws GkException;
+	
+	void toggleMistCoolant() throws GkException;
 }

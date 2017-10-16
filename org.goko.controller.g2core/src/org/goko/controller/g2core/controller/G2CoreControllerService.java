@@ -219,12 +219,21 @@ public class G2CoreControllerService extends AbstractTinyGControllerService<G2Co
 		getCommunicator().resetG2Core();
 	}
 
+	
 	/** (inheritDoc)
-	 * @see org.goko.controller.g2core.controller.IG2CoreControllerService#turnSpindleOn()
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#turnSpindleOnCw()
 	 */
 	@Override
-	public void turnSpindleOn() throws GkException {
-		getCommunicator().turnSpindleOn();
+	public void turnSpindleOnCw() throws GkException {
+		getCommunicator().turnSpindleOnCw();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#turnSpindleOnCcw()
+	 */
+	@Override
+	public void turnSpindleOnCcw() throws GkException {
+		getCommunicator().turnSpindleOnCcw();
 	}
 
 	/** (inheritDoc)

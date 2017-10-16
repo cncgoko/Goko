@@ -33,9 +33,9 @@ import org.goko.core.controller.action.DefaultControllerAction;
  * @author PsyKo
  *
  */
-public class G2CoreSpindleOnAction extends AbstractTinyGControllerAction<G2CoreConfiguration, G2CoreControllerService> {
+public class G2CoreSpindleOnCwAction extends AbstractTinyGControllerAction<G2CoreConfiguration, G2CoreControllerService> {
 
-	public G2CoreSpindleOnAction(G2CoreControllerService controllerService) {
+	public G2CoreSpindleOnCwAction(G2CoreControllerService controllerService) {
 		super(controllerService);
 	}
 
@@ -52,7 +52,7 @@ public class G2CoreSpindleOnAction extends AbstractTinyGControllerAction<G2CoreC
 	 */
 	@Override
 	public void execute(Object... parameters) throws GkException {
-		getControllerService().turnSpindleOn();
+		getControllerService().turnSpindleOnCw();
 	}
 
 	/** (inheritDoc)
@@ -60,7 +60,7 @@ public class G2CoreSpindleOnAction extends AbstractTinyGControllerAction<G2CoreC
 	 */
 	@Override
 	public String getId() {
-		return DefaultControllerAction.SPINDLE_ON;
+		return DefaultControllerAction.SPINDLE_ON_CW;
 	}
 
 }

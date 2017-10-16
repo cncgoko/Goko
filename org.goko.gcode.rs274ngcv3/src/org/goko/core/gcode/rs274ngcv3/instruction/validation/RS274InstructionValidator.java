@@ -14,6 +14,7 @@ import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.element.validation.IValidationElement.ValidationSeverity;
 import org.goko.core.gcode.element.validation.ValidationElement;
 import org.goko.core.gcode.element.validation.ValidationResult;
+import org.goko.core.gcode.rs274ngcv3.RS274GCodeValidationServiceImpl;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.instruction.AbstractInstruction;
 import org.goko.core.gcode.rs274ngcv3.instruction.ArcFeedInstruction;
@@ -31,13 +32,15 @@ import org.goko.core.math.Tuple6b;
 public class RS274InstructionValidator extends RS274InstructionVisitorAdapter{
 	private ValidationResult validationTarget;
 	private IGCodeProvider provider;
-	
+	private RS274GCodeValidationServiceImpl rs274gCodeValidationService;
 	/**
 	 * Constructor 
+	 * @param rs274gCodeValidationServiceImpl 
 	 */
-	public RS274InstructionValidator(IGCodeProvider provider) {
+	public RS274InstructionValidator(IGCodeProvider provider, RS274GCodeValidationServiceImpl rs274gCodeValidationServiceImpl) {
 		this.validationTarget = new ValidationResult();
 		this.provider = provider;
+		this.rs274gCodeValidationService = rs274gCodeValidationServiceImpl;
 	}
 
 	/**
@@ -65,7 +68,7 @@ public class RS274InstructionValidator extends RS274InstructionVisitorAdapter{
 					//throw new GkFunctionalException("GCO-130", "X", "Y");
 					validationTarget.addElement(new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("GCO-130", "X", "Y")));
 				}
-				if(arcInstruction.getI() == null && arcInstruction.getJ() == null){
+				if(arcInstruction.getI() == null && arcInstruction.getJ() == null && arcInstruction.getRadius() == null){
 					//throw new GkFunctionalException("GCO-130", "I", "J");
 					validationTarget.addElement(new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("GCO-130", "I", "J")));
 				}
@@ -75,7 +78,7 @@ public class RS274InstructionValidator extends RS274InstructionVisitorAdapter{
 				//throw new GkFunctionalException("GCO-130", "Y", "Z");
 				validationTarget.addElement(new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("GCO-130", "Y", "Z")));
 			}
-			if(arcInstruction.getJ() == null && arcInstruction.getK() == null){
+			if(arcInstruction.getJ() == null && arcInstruction.getK() == null && arcInstruction.getRadius() == null){
 				//throw new GkFunctionalException("GCO-130", "J", "K");
 				validationTarget.addElement(new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("GCO-130", "J", "K")));
 			}
@@ -85,7 +88,7 @@ public class RS274InstructionValidator extends RS274InstructionVisitorAdapter{
 				//throw new GkFunctionalException("GCO-130", "X", "Z");
 				validationTarget.addElement(new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("GCO-130", "X", "Z")));
 			}
-			if(arcInstruction.getK() == null && arcInstruction.getI() == null){
+			if(arcInstruction.getK() == null && arcInstruction.getI() == null && arcInstruction.getRadius() == null){
 				//throw new GkFunctionalException("GCO-130", "I", "K");
 				validationTarget.addElement(new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("GCO-130", "I", "K")));
 			}
@@ -93,32 +96,40 @@ public class RS274InstructionValidator extends RS274InstructionVisitorAdapter{
 		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+context.getPlane()+"]");			
 		}
 		
-		// Test arc specification error
-		Tuple6b start = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
-		// Apply coordinate system offset
-		Tuple6b offset = context.getCoordinateSystemData(context.getCoordinateSystem());
-		start = start.add(offset);
-
-		Tuple6b center 	= InstructionUtils.getCenterPoint(context, arcInstruction);
-		Tuple6b end 	= InstructionUtils.getEndPoint(context, arcInstruction);
-
-		switch (context.getPlane()) { // Just ignore the dimension along the normal of the plane
-		case XY_PLANE: end.setZ( center.getZ() );
-			break;
-		case YZ_PLANE: end.setX( center.getX() );
-			break;
-		case XZ_PLANE: end.setY( center.getY() );
-			break;
+		if(rs274gCodeValidationService.isArcToleranceCheckEnabled()){
+			// Test arc specification error
+			Tuple6b start = new Tuple6b(context.getX(), context.getY(), context.getZ(), context.getA(), context.getB(), context.getC());
+			// Apply coordinate system offset
+			Tuple6b offset = context.getCoordinateSystemData(context.getCoordinateSystem());
+			start = start.add(offset);
+	
+			Tuple6b center 	= InstructionUtils.getCenterPoint(context, arcInstruction);
+			Tuple6b end 	= InstructionUtils.getEndPoint(context, arcInstruction);
+	
+			switch (context.getPlane()) { // Just ignore the dimension along the normal of the plane
+			case XY_PLANE: 
+						end.setZ( center.getZ() );
+						start.setZ( center.getZ() );
+				break;
+			case YZ_PLANE: 
+					end.setX( center.getX() );
+					start.setX( center.getX() );
+				break;
+			case XZ_PLANE: 
+					end.setY( center.getY() );
+					start.setY( center.getY() );
+				break;
+			}
+			Length startCenterDistance 	= start.distance(center);
+			Length endCenterDistance 	= end.distance(center);
+			Length error = startCenterDistance.subtract(endCenterDistance).abs();
+			Length errorMax = rs274gCodeValidationService.getArcTolerance();
+			if(error.greaterThan(errorMax)){			
+				validationTarget.addElement( new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("gcode.error.arc.radius", GokoPreference.getInstance().format(error), GokoPreference.getInstance().format(errorMax))));
+	//					la validation doit être faite sur l'instruction
+	//					transformée en affichage uniquement dans l'editeur ?
+			}
 		}
-		Length startCenterDistance 	= start.distance(center);
-		Length endCenterDistance 	= end.distance(center);
-		Length error = startCenterDistance.subtract(endCenterDistance).abs();
-		Length errorMax = Length.valueOf("0.002", context.getUnit().getUnit());
-		if(error.greaterThan(errorMax)){			
-			validationTarget.addElement( new ValidationElement(ValidationSeverity.ERROR, location, I18n.get("gcode.error.arc.radius", GokoPreference.getInstance().format(error), GokoPreference.getInstance().format(errorMax))));
-//					la validation doit être faite sur l'instruction
-//					transformée en affichage uniquement dans l'editeur ?
-		} 
 	}
 	
 	/** (inheritDoc)

@@ -9,4 +9,5 @@
    <service>
       <provide interface="org.goko.gcode.rs274ngcv3.ui.workspace.IRS274WorkspaceService"/>
    </service>
+   <reference bind="setValidationService" cardinality="0..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274GCodeValidationService" name="IRS274GCodeValidationService" policy="dynamic"/>
 </scr:component>

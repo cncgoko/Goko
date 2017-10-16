@@ -49,6 +49,13 @@ import org.goko.core.math.Tuple6b;
 public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfiguration<C>, M extends MachineState, S extends IGrblControllerService<C, M>> implements IConnectionDataListener, IConnectionListener {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(AbstractGrblCommunicator.class);
+	/** GCode for turning spindle on CW */
+    public static final String TURN_SPINDLE_ON_CW_GCODE = "M3";
+    /** GCode for turning spindle on CCW */
+    public static final String TURN_SPINDLE_ON_CCW_GCODE = "M4";
+    /** GCode for turning spindle off */
+    public static final String TURN_SPINDLE_OFF_GCODE = "M5";
+    
 	/** The target Grbl service */
 	private S controllerService;
 	/** Buffer for incoming data	 */
@@ -320,6 +327,17 @@ public abstract class AbstractGrblCommunicator<C extends AbstractGrblConfigurati
 		return identifier;
 	}
 	
+	public void turnSpindleOnCw() throws GkException{
+		sendImmediately(TURN_SPINDLE_ON_CW_GCODE, true);
+	}
+	
+	public void turnSpindleOnCcw() throws GkException{
+		sendImmediately(TURN_SPINDLE_ON_CCW_GCODE, true);
+	}
+	
+	public void turnSpindleOff() throws GkException{
+		sendImmediately(TURN_SPINDLE_OFF_GCODE, true);
+	}
 	/**
 	 * Add the end line character at the end of the given list
 	 * @param list the list

@@ -137,4 +137,29 @@ public class GrblOverrideController extends AbstractController<GrblOverrideModel
 			LOG.error(e);
 		}
 	}
+	
+	public void toggleSpindle(){
+		try{
+			grblOverrideService.toggleSpindle();
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
+	public void toggleMistCoolant(){
+		try{
+			grblOverrideService.toggleMistCoolant();
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
+	public void toggleFloodCoolant(){
+		try{
+			grblOverrideService.toggleFloodCoolant();
+		}catch(GkException e){
+			LOG.error(e);
+		}
+	}
+	
 }

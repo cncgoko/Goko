@@ -37,7 +37,7 @@ public class G2CoreActionFactory extends ControllerActionFactory {
 		add(new G2CoreResetAction(controllerService));
 		add(new G2CoreResetZeroAction(controllerService));
 		add(new G2CoreSpindleOffAction(controllerService));
-		add(new G2CoreSpindleOnAction(controllerService));
+		add(new G2CoreSpindleOnCwAction(controllerService));
 		add(new G2CoreStartJogAction(controllerService));
 		add(new G2CoreStopAction(controllerService));
 		add(new G2CoreStopJogAction(controllerService));

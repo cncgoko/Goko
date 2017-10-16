@@ -128,7 +128,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			return canvas;
 		}
 		
-		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getDefault();
+		GLProfile profile = GLProfile.getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
 		
@@ -331,7 +331,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		// Line smooth
 	    gl.glEnable(GL.GL_LINE_SMOOTH);
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
-
+	    
 	    int shaderProgram = ShaderLoader.loadShader(new DebugGL3(gl.getGL3()), EnumGokoShaderProgram.LINE_SHADER);
 	    gl.glBindAttribLocation(shaderProgram, 0, "vertexPosition_modelspace");
 	    gl.glUseProgram(shaderProgram);

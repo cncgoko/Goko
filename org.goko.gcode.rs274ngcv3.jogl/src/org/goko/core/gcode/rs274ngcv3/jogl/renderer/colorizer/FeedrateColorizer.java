@@ -51,7 +51,7 @@ public class FeedrateColorizer extends AbstractInstructionColorizer {
 		mapColorByFeed = new HashMap<>();
 		
 	}
-
+ 
 	public void initialize(GCodeContext context, InstructionProvider instructionSet) throws GkException {
 		minFeedrate = Speed.valueOf(100000, SpeedUnit.MILLIMETRE_PER_MINUTE);
 		maxFeedrate = Speed.ZERO;

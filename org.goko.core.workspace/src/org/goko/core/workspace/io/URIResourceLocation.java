@@ -6,6 +6,7 @@ package org.goko.core.workspace.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -78,6 +79,8 @@ public class URIResourceLocation implements IResourceLocation {
 		try {
 			Files.write(Paths.get(absoluteUri), IOUtils.toByteArray(input), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			notifyChange();
+		} catch (AccessDeniedException e) {
+			throw new GkTechnicalException("Cannot write to the target file '"+Paths.get(absoluteUri).toAbsolutePath()+"'. Make sure it is not a read only file.");
 		} catch (IOException e) {
 			throw new GkTechnicalException(e);
 		}

@@ -268,6 +268,7 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		}
 		if(statusReport.getSpindleSpeed() != null){
 			getInternalState().setSpindleSpeed(statusReport.getSpindleSpeed());
+			getInternalState().setSpindleEnabled(statusReport.getSpindleSpeed() > 0);
 		}		
 		if(StringUtils.isNotBlank(statusReport.getSpindleDirection())){
 			getInternalState().setSpindleDirection(statusReport.getSpindleDirection());
@@ -496,6 +497,30 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		getCommunicator().sendImmediately(Grbl.Commands.RAPID_OVERRIDE_100 ,false);
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.IGrblOverrideService#toggleSpindle()
+	 */
+	@Override
+	public void toggleSpindle() throws GkException {
+		getCommunicator().sendImmediately(Grbl.Commands.TOGGLE_SPINDLE ,false);		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.IGrblOverrideService#toggleFloodCoolant()
+	 */
+	@Override
+	public void toggleFloodCoolant() throws GkException {
+		getCommunicator().sendImmediately(Grbl.Commands.TOGGLE_FLOOD_COOLANT ,false);
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.IGrblOverrideService#toggleMistCoolant()
+	 */
+	@Override
+	public void toggleMistCoolant() throws GkException {
+		getCommunicator().sendImmediately(Grbl.Commands.TOGGLE_MIST_COOLANT ,false);		
+	}
+	
 	/**
 	 * @return the gcodeExecutionTimeService
 	 */

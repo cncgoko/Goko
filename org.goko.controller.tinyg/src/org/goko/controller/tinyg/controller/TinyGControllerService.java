@@ -298,11 +298,6 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		}
 				
 		getExecutionService().stopQueueExecution();
-		
-		//communicator.send(GkUtils.toBytesList(TinyG.QUEUE_FLUSH));
-		// Force a queue report update
-		//	updateQueueReport();
-		//	this.resetAvailableBuffer();
 	}
 
 	public void resetZero(List<String> axes) throws GkException{
@@ -317,14 +312,30 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		getCommunicator().send(lstBytes, true);
 	}
 
-	public void turnSpindleOn() throws GkException{
-		getCommunicator().turnSpindleOn();
-	}
-
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#turnSpindleOff()
+	 */
+	@Override
 	public void turnSpindleOff() throws GkException{
 		getCommunicator().turnSpindleOff();
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#turnSpindleOnCw()
+	 */
+	@Override
+	public void turnSpindleOnCw() throws GkException {
+		getCommunicator().turnSpindleOnCw();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.tinyg.commons.ITinyGControllerService#turnSpindleOnCcw()
+	 */
+	@Override
+	public void turnSpindleOnCcw() throws GkException {
+		getCommunicator().turnSpindleOnCcw();		
+	}
+	
 	/**
 	 * @return the availableBuffer
 	 * @throws GkException

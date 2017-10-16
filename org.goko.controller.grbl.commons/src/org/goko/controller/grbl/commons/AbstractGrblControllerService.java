@@ -1047,4 +1047,16 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
 		
 	}
+	
+	public void turnSpindleOnCw() throws GkException{
+		getCommunicator().turnSpindleOnCw();
+	}
+	
+	public void turnSpindleOnCcw() throws GkException{
+		getCommunicator().turnSpindleOnCcw();
+	}
+
+	public void turnSpindleOff() throws GkException{
+		getCommunicator().turnSpindleOff();
+	}
 }

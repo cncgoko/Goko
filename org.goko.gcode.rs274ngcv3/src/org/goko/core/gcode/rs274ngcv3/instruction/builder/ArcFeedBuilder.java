@@ -2,6 +2,7 @@ package org.goko.core.gcode.rs274ngcv3.instruction.builder;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.quantity.Angle;
@@ -66,8 +67,9 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 		Length j = findWordLength("J", words, null, context.getUnit().getUnit());
 		Length k = findWordLength("K", words, null, context.getUnit().getUnit());
 		
-		Integer r = 1;
-		boolean isValid = true;
+		Length r = findWordLength("R", words, null, context.getUnit().getUnit()); // radius 
+		Integer p = 1; // rotation count
+
 		Boolean clockwise = null;
 		if(context.getMotionMode() == EnumMotionMode.ARC_CLOCKWISE){
 			clockwise = true;
@@ -85,15 +87,18 @@ public class ArcFeedBuilder extends AbstractInstructionBuilder<ArcFeedInstructio
 			clockwise = true;
 		}
 		
-		GCodeWord rWord = GCodeWordUtils.findAndRemoveWordByLetter("R", words);
-		if( rWord != null ){
-			r = Integer.valueOf(rWord.getValue());
+		GCodeWord pWord = GCodeWordUtils.findAndRemoveWordByLetter("P", words);
+		if( pWord != null ){
+			if(!StringUtils.isNumeric(pWord.getValue())){
+				throw new GkTechnicalException("Parameter P of arc motion (G2/G3) should be an integer. Got '"+pWord.getValue()+"'");	
+			}
+			p = Integer.valueOf(pWord.getValue());
 		}
 		
 		if(plane == null){
 			throw new GkTechnicalException("No plane in GCodeContext ["+plane+"]");
 		}		
-		return new ArcFeedInstruction(x, y, z, i, j, k, a, b, c, r, clockwise);
+		return new ArcFeedInstruction(x, y, z, i, j, k, a, b, c, r, p, clockwise);
 	}
 	
 }

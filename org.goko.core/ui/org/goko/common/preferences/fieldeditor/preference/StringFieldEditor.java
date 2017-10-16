@@ -283,4 +283,13 @@ public class StringFieldEditor extends LabeledFieldEditor<Text> {
 	public void setValidator(IStringValidator validator) {
 		this.validator = validator;
 	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.common.preferences.fieldeditor.preference.PreferenceFieldEditor#setEnabled(boolean)
+	 */
+	@Override
+	public void setEnabled(boolean enabled) {		
+		super.setEnabled(enabled);
+		getControl().setEnabled(enabled);
+	}
 }

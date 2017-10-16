@@ -24,6 +24,8 @@ public class ArcFeedExporter extends AbstractInstructionExporter<ArcFeedInstruct
 	 */
 	@Override
 	protected List<GCodeWord> getWords(GCodeContext context, ArcFeedInstruction instruction, RenderingFormat format) throws GkException {
+		Length radius = instruction.getRadius();
+		
 		Length x = instruction.getX();
 		Length y = instruction.getY();
 		Length z = instruction.getZ();
@@ -35,6 +37,8 @@ public class ArcFeedExporter extends AbstractInstructionExporter<ArcFeedInstruct
 		Angle a = instruction.getA();
 		Angle b = instruction.getB();
 		Angle c = instruction.getC();
+		
+		Integer rotation = instruction.getRotation();
 		
 		List<GCodeWord> result = null;
 		if(instruction.isClockwise()){
@@ -71,6 +75,14 @@ public class ArcFeedExporter extends AbstractInstructionExporter<ArcFeedInstruct
 		}
 		if(c != null){
 			result.add(new GCodeWord("C", format.format(c, AngleUnit.DEGREE_ANGLE)));
+		}
+		
+		if(radius != null){
+			result.add(new GCodeWord("R", format.format(radius, unit)));
+		}
+		
+		if(rotation != null){
+			result.add(new GCodeWord("P", String.valueOf(rotation)));
 		}
 		
 		return result;

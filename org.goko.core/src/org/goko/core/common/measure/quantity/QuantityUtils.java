@@ -1,5 +1,6 @@
 package org.goko.core.common.measure.quantity;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -49,6 +50,20 @@ public final class QuantityUtils {
 	 * @return the sum of the two values 
 	 */
 	public static <Q extends Quantity<Q>> Q multiply(Q a, int factor){
+		if(a == null){
+			return null;
+		}
+		return a.multiply(factor);
+	}
+	
+	/**
+	 * Performs the multiplication of the given quantity and the given factor and make sure the type of quantity remains the same 
+	 * Unit conversion is used to make sure the sum is made in the corresponding units
+	 * @param a quantity A
+	 * @param factor multiply factor
+	 * @return the sum of the two values 
+	 */
+	public static <Q extends Quantity<Q>> Q multiply(Q a, BigDecimal factor){
 		if(a == null){
 			return null;
 		}

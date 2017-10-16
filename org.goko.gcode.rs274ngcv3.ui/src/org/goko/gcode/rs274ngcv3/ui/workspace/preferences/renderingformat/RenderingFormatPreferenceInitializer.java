@@ -4,6 +4,8 @@
 package org.goko.gcode.rs274ngcv3.ui.workspace.preferences.renderingformat;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.config.GkPreferenceInitializer;
 
 /**
@@ -17,12 +19,14 @@ public class RenderingFormatPreferenceInitializer extends GkPreferenceInitialize
 	 */
 	@Override
 	protected void initializeDefaultGkPreferences() throws GkException {
-		RenderingFormatPreference prefs = RenderingFormatPreference.getInstance();
-		prefs.setDefault(RenderingFormatPreference.SKIP_COMMENT, true);
-		prefs.setDefault(RenderingFormatPreference.SKIP_LINE_NUMBER, true);
-		prefs.setDefault(RenderingFormatPreference.TRUNCATE_DECIMAL, true);
-		prefs.setDefault(RenderingFormatPreference.DECIMAL_DIGIT_COUNT, 5);
-
+		GCodePreference prefs = GCodePreference.getInstance();
+		prefs.setDefault(GCodePreference.SKIP_COMMENT, true);
+		prefs.setDefault(GCodePreference.SKIP_LINE_NUMBER, true);
+		prefs.setDefault(GCodePreference.TRUNCATE_DECIMAL, true);
+		prefs.setDefault(GCodePreference.DECIMAL_DIGIT_COUNT, 5);
+		prefs.setDefault(GCodePreference.DECIMAL_DIGIT_COUNT, 5);
+		prefs.setDefault(GCodePreference.ARC_TOLERANCE_CHECK_ENABLED, true);
+		prefs.setDefault(GCodePreference.ARC_TOLERANCE_THRESHOLD, Length.valueOf("0.002", LengthUnit.MILLIMETRE));
 	}
 
 }

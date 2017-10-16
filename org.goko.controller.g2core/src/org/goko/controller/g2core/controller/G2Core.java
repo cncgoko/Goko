@@ -30,7 +30,9 @@ public class G2Core extends TinyG {
     /** Kill alarm header */
     public static final String KILL_ALARM_HEADER = "clear";
     /** GCode for turning spindle on */
-    public static final String TURN_SPINDLE_ON_GCODE = "M3";
+    public static final String TURN_SPINDLE_ON_CW_GCODE = "M3";
+    /** GCode for turning spindle on */
+    public static final String TURN_SPINDLE_ON_CCW_GCODE = "M4";
     /** GCode for turning spindle off */
     public static final String TURN_SPINDLE_OFF_GCODE = "M5";
     

@@ -1,6 +1,8 @@
 package org.goko.core.gcode.rs274ngcv3.jogl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
@@ -277,8 +279,9 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	@Override
 	public void onGCodeProviderCreate(IGCodeProvider provider) throws GkException {		
+		updateColorizer();
 		createRenderer(provider);
-		updateContentBounds();
+		updateContentBounds();		
 	}
 
 	/** (inheritDoc)
@@ -288,6 +291,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	public void onGCodeProviderUpdate(IGCodeProvider provider) throws GkException {
 		RS274GCodeRenderer renderer = findRendererByGCodeProvider(provider);
 		if(renderer != null){
+			updateColorizer();
 			renderer.setBounds(null); // Force update by setting bounds to null
 			updateRenderer(provider);
 			updateContentBounds();
@@ -300,15 +304,16 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	@Override
 	public void afterGCodeProviderDelete(IGCodeProvider provider) throws GkException {
 		// Nothing yet
+		updateColorizer();
 	}
 	
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeProviderRepositoryListener#beforeGCodeProviderDelete(org.goko.core.gcode.element.IGCodeProvider)
 	 */
 	@Override
-	public void beforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {
+	public void beforeGCodeProviderDelete(IGCodeProvider provider) throws GkException {		
 		removeRenderer(provider);
-		updateContentBounds();
+		updateContentBounds();		
 	}
 
 	/** (inheritDoc)
@@ -479,6 +484,11 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	public void setColorizer(AbstractInstructionColorizer colorizer) {
 		this.colorizer = colorizer;
+		try {
+			this.updateColorizer();
+		} catch (GkException e) {
+			LOG.error(e);
+		}
 	}
 
 	public void changeColorizer(AbstractInstructionColorizer newColorizer) throws GkException{		
@@ -495,5 +505,30 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 			cachedRenderer.updateGeometry();
 		}
 	}
-
+	
+	protected void updateColorizer() throws GkException{
+		List<IGCodeProvider> providers = rs274Service.getGCodeProvider();		
+		List<Supplier<InstructionProvider>> instrProvs = new ArrayList<>();
+		
+		final GCodeContext context = new GCodeContext();
+		
+		for (final IGCodeProvider gcodeProvider : providers) {
+			instrProvs.add(new Supplier<InstructionProvider>() {
+				/** (inheritDoc)
+				 * @see java.util.function.Supplier#get()
+				 */
+				@Override
+				public InstructionProvider get() {					
+					try {
+						return rs274Service.getInstructions(context, gcodeProvider);
+					} catch (GkException e) {
+						LOG.error(e);
+						return null;
+					}
+				}
+			});
+		}
+		colorizer.initialize(context, instrProvs);
+	}
+	
 }

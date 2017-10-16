@@ -17,6 +17,9 @@
 
 package org.goko.core.gcode.rs274ngcv3.jogl.renderer.colorizer;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import javax.vecmath.Color4f;
 
 import org.goko.core.common.exception.GkException;
@@ -30,9 +33,17 @@ public interface IInstructionColorizer<G extends IGCodeContext, T extends IInstr
 
 	public void initialize(GCodeContext context, InstructionProvider instructionSet) throws GkException;
 	
+	public void initialize(GCodeContext context, List<Supplier<InstructionProvider>> instructionSet) throws GkException;
+	
 	public Color4f getColor(G context, T instruction) throws GkException;
 	
 	public void conclude() throws GkException;
 	
 	public IOverlayRenderer getOverlay();
+	
+//	public void onGCodeProviderCreated(IGCodeProvider provider, Supplier<InstructionProvider> instructionSetSupplier);
+//	
+//	public void onGCodeProviderDeleted(IGCodeProvider provider, Supplier<InstructionProvider> instructionSetSupplier);
+//	
+//	public void onGCodeProviderUpdated(IGCodeProvider provider, Supplier<InstructionProvider> instructionSetSupplier);
 }

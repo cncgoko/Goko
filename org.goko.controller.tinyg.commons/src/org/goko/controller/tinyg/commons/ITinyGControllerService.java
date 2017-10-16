@@ -166,7 +166,13 @@ public interface ITinyGControllerService<C extends AbstractTinyGConfiguration<C>
 	 * Entry point for Turn Spindle On action
 	 * @throws GkException GkException
 	 */
-	void turnSpindleOn() throws GkException;
+	void turnSpindleOnCw() throws GkException;
+	
+	/**
+	 * Entry point for Turn Spindle On action
+	 * @throws GkException GkException
+	 */
+	void turnSpindleOnCcw() throws GkException;
 	
 	/**
 	 * Entry point for Turn Spindle Off action

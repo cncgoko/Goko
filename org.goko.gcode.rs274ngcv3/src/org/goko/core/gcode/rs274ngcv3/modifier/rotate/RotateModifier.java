@@ -72,7 +72,7 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 		IInstructionSetIterator<GCodeContext, AbstractInstruction> iterator = getRS274NGCService().getIterator(sourceInstructionSet, localContext);
 	
 		while(iterator.hasNext()){
-			GCodeContext preContext = iterator.getContext();
+			GCodeContext preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instr = iterator.next();
 			
 			if(instr.getType() == InstructionType.STRAIGHT_FEED
@@ -150,7 +150,7 @@ public class RotateModifier extends AbstractModifier<GCodeProvider> implements I
 	private void rotateArcInstruction(ArcFeedInstruction instr, GCodeContext preContext) throws GkException {
 		// Make sure the arc is in a plane that can be rotated
 		checkRotationPlane(preContext);
-		if(InstructionUtils.isValidArcFeedInstruction(preContext, instr)){
+		if(!InstructionUtils.isValidArcFeedInstruction(preContext, instr)){
 			throw new GkFunctionalException("modifier.rotate.invalid.arc");
 		}
 		Arc3b arc = InstructionUtils.getArc(preContext, instr);

@@ -407,8 +407,16 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 	 * Entry point for Turn Spindle On action
 	 * @throws GkException GkException
 	 */
-	public void turnSpindleOn() throws GkException{
-		send(TinyGv097.TURN_SPINDLE_ON_GCODE, true);
+	public void turnSpindleOnCw() throws GkException{
+		send(TinyGv097.TURN_SPINDLE_ON_CW_GCODE, true);
+	}
+	
+	/**
+	 * Entry point for Turn Spindle On action
+	 * @throws GkException GkException
+	 */
+	public void turnSpindleOnCcw() throws GkException{
+		send(TinyGv097.TURN_SPINDLE_ON_CCW_GCODE, true);
 	}
 	
 	/**
@@ -473,4 +481,5 @@ public class TinyGCommunicator extends AbstractTinyGCommunicator<TinyGConfigurat
 		statusReportFormat.add(positionPrefix+"b", true);
 		statusReportFormat.add(positionPrefix+"c", true);
 	}
+	
 }

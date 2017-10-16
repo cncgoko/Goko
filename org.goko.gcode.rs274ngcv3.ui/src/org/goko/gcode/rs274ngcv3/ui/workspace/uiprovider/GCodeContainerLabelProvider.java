@@ -29,6 +29,7 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 	private final ImageDescriptor errorImageDescriptor;
 	/** Validation service */
 	private IGCodeValidationService<?,?,?> gcodeValidationService;
+	
 	/**
 	 * 
 	 */
@@ -43,8 +44,8 @@ public class GCodeContainerLabelProvider extends LabelProvider implements IStyle
 	 * @see org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider#getStyledText(java.lang.Object)
 	 */
 	@Override
-	public StyledString getStyledText(Object element) {
-		if(element instanceof IGCodeProvider){
+	public StyledString getStyledText(Object element) {		 
+		if(element instanceof IGCodeProvider){			
 			return new StyledString(((IGCodeProvider) element).getCode());
 		}else if(element instanceof GCodeContainerUiProvider){
 			StyledString styleString = new StyledString();

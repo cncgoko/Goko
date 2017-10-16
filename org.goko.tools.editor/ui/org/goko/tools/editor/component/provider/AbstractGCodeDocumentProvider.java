@@ -67,7 +67,7 @@ public abstract class AbstractGCodeDocumentProvider extends AbstractDocumentProv
 	}
 	
 	protected void updateAnnotations() throws GkException{
-		Iterator<Annotation> iter = annotationModel.getAnnotationIterator();		
+		Iterator<Annotation> iter = getAnnotationModel().getAnnotationIterator();		
 		while (iter.hasNext()) {
 			Annotation annotation = (Annotation) iter.next();
 			annotationModel.removeAnnotation(annotation);			

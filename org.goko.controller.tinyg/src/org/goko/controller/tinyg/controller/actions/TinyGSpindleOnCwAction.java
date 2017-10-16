@@ -31,9 +31,9 @@ import org.goko.core.controller.bean.MachineState;
  * @author PsyKo
  *
  */
-public class TinyGSpindleOnAction extends AbstractTinyGControllerAction {
+public class TinyGSpindleOnCwAction extends AbstractTinyGControllerAction {
 
-	public TinyGSpindleOnAction(TinyGControllerService controllerService) {
+	public TinyGSpindleOnCwAction(TinyGControllerService controllerService) {
 		super(controllerService);
 	}
 
@@ -50,7 +50,7 @@ public class TinyGSpindleOnAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public void execute(Object... parameters) throws GkException {
-		getControllerService().turnSpindleOn();
+		getControllerService().turnSpindleOnCw();
 	}
 
 	/** (inheritDoc)
@@ -58,7 +58,7 @@ public class TinyGSpindleOnAction extends AbstractTinyGControllerAction {
 	 */
 	@Override
 	public String getId() {
-		return DefaultControllerAction.SPINDLE_ON;
+		return DefaultControllerAction.SPINDLE_ON_CW;
 	}
 
 }

@@ -37,7 +37,7 @@ public class CacheByKey<K, T> {
 	}
 
 	/**
-	 * Returns the full content of this cache. Order is not guaranted
+	 * Returns the full content of this cache. Order is not guaranteed
 	 * @return a list of element T
 	 * @throws GkException GkException
 	 */
@@ -45,6 +45,15 @@ public class CacheByKey<K, T> {
 		return new ArrayList<T>(cacheByKey.values());
 	}
 
+	/**
+	 * Returns the full list of keys of this cache. Order is not guaranteed
+	 * @return a list of element K
+	 * @throws GkException GkException
+	 */
+	public List<K> getKeys(){
+		return new ArrayList<>(cacheByKey.keySet());
+	}
+	
 	/**
 	 * Return the element with the given id in this cache if it exists
 	 * @param id the id of the element to retrieve

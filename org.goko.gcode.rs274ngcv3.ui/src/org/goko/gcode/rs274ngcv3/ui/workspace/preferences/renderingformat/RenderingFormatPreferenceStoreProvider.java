@@ -10,7 +10,7 @@ public class RenderingFormatPreferenceStoreProvider implements IPreferenceStoreP
 	 */
 	@Override
 	public IPreferenceStore getPreferenceStore() {		 
-		return RenderingFormatPreference.getInstance();
+		return GCodePreference.getInstance();
 	}
 
 }

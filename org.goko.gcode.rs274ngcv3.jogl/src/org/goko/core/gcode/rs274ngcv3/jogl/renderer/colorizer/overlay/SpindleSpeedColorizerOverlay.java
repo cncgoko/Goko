@@ -11,37 +11,37 @@ import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.RoundRectangle2D;
+import java.math.BigDecimal;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.quantity.Speed;
-import org.goko.core.common.measure.quantity.SpeedUnit;
-import org.goko.core.config.GokoPreference;
 import org.goko.tools.viewer.jogl.service.overlay.AbstractOverlayRenderer;
 
 /**
  * @author Psyko
  * @date 24 juil. 2017
  */
-public class FeedrateColorizerOverlay extends AbstractOverlayRenderer {
-
+public class SpindleSpeedColorizerOverlay extends AbstractOverlayRenderer {
 	private static final Color MIN_COLOR = new Color(32,34,151);
 	private static final Color MED_COLOR_3 = new Color(255,255,0);
 	private static final Color MED_COLOR_2 = new Color(10,250,40);
 	private static final Color MED_COLOR_1 = new Color(0,250,255);
 	private static final Color MAX_COLOR = new Color(254,37,0);
-	private Speed minFeedrate = Speed.ZERO;	
-	private Speed maxFeedrate = Speed.valueOf(1000, SpeedUnit.MILLIMETRE_PER_MINUTE);
+	
+	private BigDecimal minSpeed = BigDecimal.ZERO;	
+	private BigDecimal maxSpeed = new BigDecimal("100000");
 	private Font titleFont;	
 	private Font smallFont;	
 	private String title;
+	
 	/**
 	 * 
 	 */
-	public FeedrateColorizerOverlay(String title) {
+	public SpindleSpeedColorizerOverlay(String title) {
 		this.titleFont = new Font("SansSerif", Font.BOLD, 20);
 		this.smallFont = new Font("SansSerif", Font.BOLD, 16);
 		this.title = title;
 	}
+	
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer#drawOverlayData(java.awt.Graphics2D, java.awt.Rectangle)
 	 */
@@ -50,8 +50,8 @@ public class FeedrateColorizerOverlay extends AbstractOverlayRenderer {
 		if(isOverlayEnabled()){			
 			// Draw a big red warning saying jog is enabled
 			FontRenderContext 	frc = graphics2d.getFontRenderContext();
-			String minLabel = GokoPreference.getInstance().format(minFeedrate, false, false);
-			String maxLabel = GokoPreference.getInstance().format(maxFeedrate, false, false);
+			String minLabel = minSpeed.setScale(0).toString();
+			String maxLabel = maxSpeed.setScale(0).toString();
 			GlyphVector titleFontGv = titleFont.createGlyphVector(frc, title);		
 		    Rectangle 	titleBounds = titleFontGv.getPixelBounds(frc, 0, 0);
 		    
@@ -79,7 +79,7 @@ public class FeedrateColorizerOverlay extends AbstractOverlayRenderer {
 	    	
 	    	yPointer += 1.5 * smallBounds.getHeight();
 	    	graphics2d.setFont(smallFont);	    	
-	    	graphics2d.drawString(GokoPreference.getInstance().getSpeedUnit().getSymbol() ,(int) (x + xOffset), yPointer);
+	    	graphics2d.drawString("RPM" ,(int) (x + xOffset), yPointer);
 	    	
 	    	yPointer += 2 * smallBounds.getHeight();		    
 	    	GradientPaint gradient1 = new GradientPaint(0,	yPointer	,MAX_COLOR,0, yPointer + 25 ,MED_COLOR_3);
@@ -117,32 +117,33 @@ public class FeedrateColorizerOverlay extends AbstractOverlayRenderer {
 //			}
 		}
 	}
+
 	/**
-	 * @return the minFeedrate
+	 * @return the maxSpeed
 	 */
-	public Speed getMinFeedrate() {
-		return minFeedrate;
+	public BigDecimal getMaxSpeed() {
+		return maxSpeed;
 	}
 
 	/**
-	 * @param minFeedrate the minFeedrate to set
+	 * @param maxSpeed the maxSpeed to set
 	 */
-	public void setMinFeedrate(Speed minFeedrate) {
-		this.minFeedrate = minFeedrate;
+	public void setMaxSpeed(BigDecimal maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 
 	/**
-	 * @return the maxFeedrate
+	 * @return the minSpeed
 	 */
-	public Speed getMaxFeedrate() {
-		return maxFeedrate;
+	public BigDecimal getMinSpeed() {
+		return minSpeed;
 	}
 
 	/**
-	 * @param maxFeedrate the maxFeedrate to set
+	 * @param minSpeed the minSpeed to set
 	 */
-	public void setMaxFeedrate(Speed maxFeedrate) {
-		this.maxFeedrate = maxFeedrate;
+	public void setMinSpeed(BigDecimal minSpeed) {
+		this.minSpeed = minSpeed;
 	}
-
+	
 }

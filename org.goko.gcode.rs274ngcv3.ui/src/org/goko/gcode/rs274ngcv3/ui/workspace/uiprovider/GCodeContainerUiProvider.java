@@ -375,10 +375,10 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	}
 	
 	/** (inheritDoc)
-	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#delete(org.eclipse.jface.viewers.ISelection)
+	 * @see org.goko.core.workspace.bean.ProjectContainerUiProvider#handleDelete(org.eclipse.jface.viewers.ISelection)
 	 */
 	@Override
-	public boolean delete(ISelection selection) throws GkException {
+	public boolean handleDelete(ISelection selection) throws GkException {
 		IStructuredSelection strSelection = (IStructuredSelection) selection;
 		Object content = strSelection.getFirstElement();
 		

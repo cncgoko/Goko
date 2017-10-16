@@ -11,11 +11,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.EventUtils;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -43,6 +46,7 @@ import org.goko.core.workspace.service.IWorkspaceUIService;
 import org.goko.core.workspace.service.WorkspaceUIEvent;
 import org.goko.core.workspace.tree.GkProjectContentProvider;
 import org.goko.core.workspace.tree.GkProjectLabelProvider;
+import org.osgi.service.event.EventAdmin;
 
 public class WorkspacePart implements Listener {
 	private static final GkLog LOG = GkLog.getLogger(WorkspacePart.class);
@@ -57,6 +61,8 @@ public class WorkspacePart implements Listener {
 	private ScrolledComposite scrolledComposite;
 	/** Previous selection in the tree */
 	private Object previousSelection;
+	@Inject
+	private EventAdmin eventAdmin;
 	
 	@Inject	
 	public WorkspacePart() {
@@ -116,8 +122,7 @@ public class WorkspacePart implements Listener {
 	}
 
 	private void createSelectionListener() {
-		workspaceTreeViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
-
+		workspaceTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				try{
@@ -153,7 +158,9 @@ public class WorkspacePart implements Listener {
 		            configurationComposite.getParent().layout();
 		            
 		    		scrolledComposite.setMinSize(configurationComposite.computeSize(280, SWT.DEFAULT));		    		
-		    		scrolledComposite.layout(true);		    		
+		    		scrolledComposite.layout(true);	
+		    		//workspaceUiService.select(newSelection);
+		    		EventUtils.post(eventAdmin, WorkspaceUIEvent.TOPIC_WORKSPACE_UI_SELECT, newSelection);
 	        	}catch(GkException e){
 	        		LOG.error(e);
 	        	}
@@ -205,8 +212,9 @@ public class WorkspacePart implements Listener {
 	@Inject
 	@Optional
 	private void subscribeWorkspaceSelect(@UIEventTopic(WorkspaceUIEvent.TOPIC_WORKSPACE_SELECT) Object data) {
-		workspaceTreeViewer.expandAll();
+		workspaceTreeViewer.expandAll();		
 		workspaceTreeViewer.setSelection(new StructuredSelection(data), true);
+		
 	}
 
 	@Inject
@@ -226,7 +234,7 @@ public class WorkspacePart implements Listener {
             int index = ArrayUtils.indexOf(childrenBefore, selectedObject);
             
             for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {
-        		if(projectContainerUiProvider.delete(workspaceTreeViewer.getSelection())){
+        		if(projectContainerUiProvider.handleDelete(workspaceTreeViewer.getSelection())){
         			break;
         		}
 			}

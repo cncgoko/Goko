@@ -26,6 +26,10 @@ import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.goko.common.preferences.ScopedPreferenceStore;
+import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.AbstractQuantity;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.QuantityUtils;
 
 public abstract class GkPreference implements IPreferenceStore, IPersistentPreferenceStore{
 	private ScopedPreferenceStore store;
@@ -156,6 +160,16 @@ public abstract class GkPreference implements IPreferenceStore, IPersistentPrefe
 	public String getDefaultString(String name) {
 		return store.getDefaultString(name);
 	}
+	
+	/**
+	 * @param name
+	 * @return
+	 * @throws GkException 
+	 * @see org.goko.common.preferences.ScopedPreferenceStore#getDefaultString(java.lang.String)
+	 */
+	public Length getDefaultLength(String name) throws GkException {
+		return Length.parse(store.getDefaultString(name));
+	}
 
 	/**
 	 * @param name
@@ -202,6 +216,17 @@ public abstract class GkPreference implements IPreferenceStore, IPersistentPrefe
 		return store.getString(name);
 	}
 
+	/**
+	 * @param name
+	 * @return
+	 * @throws GkException 
+	 * @see org.goko.common.preferences.ScopedPreferenceStore#getString(java.lang.String)
+	 */
+	public Length getLength(String name) throws GkException {
+		return Length.parse(store.getString(name));
+	}
+
+	
 	/**
 	 * @return
 	 * @see java.lang.Object#hashCode()
@@ -288,6 +313,15 @@ public abstract class GkPreference implements IPreferenceStore, IPersistentPrefe
 	public void setDefault(String name, String defaultObject) {
 		store.setDefault(name, defaultObject);
 	}
+	
+	/**
+	 * @param name
+	 * @param defaultObject
+	 * @see org.goko.common.preferences.ScopedPreferenceStore#setDefault(java.lang.String, java.lang.String)
+	 */
+	public void setDefault(String name, Length defaultObject) {
+		store.setDefault(name, QuantityUtils.format(defaultObject, null, true, true));
+	}
 
 	/**
 	 * @param name
@@ -360,6 +394,15 @@ public abstract class GkPreference implements IPreferenceStore, IPersistentPrefe
 		store.setValue(name, value);
 	}
 
+	/**
+	 * @param name
+	 * @param value
+	 * @see org.goko.common.preferences.ScopedPreferenceStore#setValue(java.lang.String, boolean)
+	 */
+	public <Q extends AbstractQuantity<Q>> void setValue(String name, Q value) {
+		store.setValue(name, QuantityUtils.format(value, null, true, true));
+	}
+	
 	/** (inheritDoc)
 	 * @see org.eclipse.jface.preference.IPersistentPreferenceStore#save()
 	 */

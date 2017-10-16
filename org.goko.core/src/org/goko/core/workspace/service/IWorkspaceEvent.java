@@ -7,6 +7,8 @@ public interface IWorkspaceEvent {
 	public static final String ACTION_DELETE = "workspace.action.delete";
 	/** Update action */
 	public static final String ACTION_UPDATE = "workspace.action.update";
+	/** Select action */
+	public static final String ACTION_SELECT = "workspace.action.select";
 	
 	/**
 	 * The type of the event 

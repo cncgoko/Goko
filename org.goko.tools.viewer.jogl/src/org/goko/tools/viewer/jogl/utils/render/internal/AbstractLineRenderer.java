@@ -17,7 +17,7 @@ public abstract class AbstractLineRenderer extends AbstractVboJoglRenderer {
 	 */
 	protected AbstractLineRenderer(int renderPrimitive, int usedBuffers) {		
 		super(renderPrimitive, usedBuffers);	
-		this.lineWidth = 1;
+		this.lineWidth = 2;
 	}
 
 	/** (inheritDoc)

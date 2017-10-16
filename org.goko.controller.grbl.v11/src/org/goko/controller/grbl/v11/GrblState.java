@@ -55,7 +55,7 @@ public class GrblState extends AbstractGrblState<GrblMachineState> {
 		storeValue(Grbl.MachineValue.WCO_Z, "WCO Z", "The current Z work coordinate offset",  Length.ZERO);
 		
 		storeValue(Grbl.MachineValue.SPINDLE_DIRECTION, "Spindle dir.", "The current spindle direction",  StringUtils.EMPTY);
-		storeValue(Grbl.MachineValue.MIST_COOLANT_STATE, "Mist", "The current state of the mist coolant",  new OnOffBoolean(false));
+		storeValue(Grbl.MachineValue.MIST_COOLANT_STATE, "Mist", "The current state of the mist coolant",  new OnOffBoolean(false));		
 		storeValue(Grbl.MachineValue.FLOOD_COOLANT_STATE, "Flood", "The current state of the flood coolant",  new OnOffBoolean(false));
 		
 		storeValue(Grbl.MachineValue.MESSAGE, "Message", "The last received message",  StringUtils.EMPTY);
@@ -154,6 +154,14 @@ public class GrblState extends AbstractGrblState<GrblMachineState> {
 	 */
 	public void setSpindleDirection(String direction) throws GkException {
 		updateValue(Grbl.MachineValue.SPINDLE_DIRECTION, direction);
+	}
+	
+	/**
+	 * @param direction the spindle direction
+	 * @throws GkException
+	 */
+	public void setSpindleEnabled(boolean state) throws GkException {
+		updateValue(DefaultControllerValues.SPINDLE_STATE, new OnOffBoolean(state));
 	}
 	
 	/**

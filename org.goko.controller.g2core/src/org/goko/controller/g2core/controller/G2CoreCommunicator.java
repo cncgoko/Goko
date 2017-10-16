@@ -373,8 +373,16 @@ public class G2CoreCommunicator extends AbstractTinyGCommunicator<G2CoreConfigur
 	 * Entry point for Turn Spindle On action
 	 * @throws GkException GkException
 	 */
-	public void turnSpindleOn() throws GkException{
-		send(G2Core.TURN_SPINDLE_ON_GCODE, true);
+	public void turnSpindleOnCw() throws GkException{
+		send(G2Core.TURN_SPINDLE_ON_CW_GCODE, true);
+	}
+	
+	/**
+	 * Entry point for Turn Spindle On action
+	 * @throws GkException GkException
+	 */
+	public void turnSpindleOnCcw() throws GkException{
+		send(G2Core.TURN_SPINDLE_ON_CCW_GCODE, true);
 	}
 	
 	/**

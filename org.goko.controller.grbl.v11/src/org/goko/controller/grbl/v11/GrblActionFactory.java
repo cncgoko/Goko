@@ -10,6 +10,9 @@ import org.goko.controller.grbl.v11.actions.GrblJogStopAction;
 import org.goko.controller.grbl.v11.actions.GrblKillAlarmAction;
 import org.goko.controller.grbl.v11.actions.GrblResetAction;
 import org.goko.controller.grbl.v11.actions.GrblResetZeroAction;
+import org.goko.controller.grbl.v11.actions.GrblSpindleOffAction;
+import org.goko.controller.grbl.v11.actions.GrblSpindleOnCcwAction;
+import org.goko.controller.grbl.v11.actions.GrblSpindleOnCwAction;
 import org.goko.controller.grbl.v11.actions.GrblStartAction;
 import org.goko.controller.grbl.v11.actions.GrblStopAction;
 import org.goko.core.common.exception.GkException;
@@ -45,6 +48,9 @@ public class GrblActionFactory extends ControllerActionFactory {
 		add( new GrblResetZeroAction(grblControllerService));
 		add( new GrblStartAction(grblControllerService));
 		add( new GrblStopAction(grblControllerService));
+		add( new GrblSpindleOnCwAction(grblControllerService));
+		add( new GrblSpindleOnCcwAction(grblControllerService));
+		add( new GrblSpindleOffAction(grblControllerService));
 	}
 
 }

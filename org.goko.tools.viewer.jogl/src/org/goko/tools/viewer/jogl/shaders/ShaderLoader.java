@@ -65,7 +65,9 @@ public class ShaderLoader {
 		if(mapShaderByType.containsKey(enumGokoShaderProgram)){
 			shaderProgram = mapShaderByType.get(enumGokoShaderProgram);
 		}else{
-			shaderProgram = loadShader(gl, getClass().getResourceAsStream(enumGokoShaderProgram.getVertexShaderPath()), getClass().getResourceAsStream(enumGokoShaderProgram.getFragmentShaderPath()));
+			shaderProgram = loadShader(gl, getClass().getResourceAsStream(enumGokoShaderProgram.getVertexShaderPath()),
+											enumGokoShaderProgram.getGeometryShaderPath() == null ? null:getClass().getResourceAsStream(enumGokoShaderProgram.getGeometryShaderPath()),
+										    getClass().getResourceAsStream(enumGokoShaderProgram.getFragmentShaderPath()));
 			mapShaderByType.put(enumGokoShaderProgram, shaderProgram);
 		}
 		return shaderProgram;
@@ -144,10 +146,13 @@ public class ShaderLoader {
 //	a faire :	
 //		- tester la possibilit� de changer les features sans les installer/desinstaller
 	
-	protected int loadShader(GL3 gl, InputStream vertexShaderInputStream, InputStream fragmentShaderInputStream){
+	protected int loadShader(GL3 gl, InputStream vertexShaderInputStream, InputStream geometryShaderInputStream, InputStream fragmentShaderInputStream){		
 		int vertexShader   = gl.glCreateShader(GL3.GL_VERTEX_SHADER);
 		int fragmentShader = gl.glCreateShader(GL3.GL_FRAGMENT_SHADER);
-
+		int geometryShader = -1;
+		
+		boolean isGeometrySahder = geometryShaderInputStream != null;
+		
 		String vertexShaderSource = getStringFromInputStream(vertexShaderInputStream);
 
 		gl.glShaderSource(vertexShader, 1, new String[]{vertexShaderSource}, (int[])null, 0);
@@ -158,9 +163,19 @@ public class ShaderLoader {
 		gl.glShaderSource(fragmentShader, 1, new String[]{fragmentShaderSource}, (int[])null, 0);
 		gl.glCompileShader(fragmentShader);
 
+		if(isGeometrySahder){
+			geometryShader = gl.glCreateShader(GL3.GL_GEOMETRY_SHADER);
+			String geometryShaderSource = getStringFromInputStream(geometryShaderInputStream);
+
+			gl.glShaderSource(geometryShader, 1, new String[]{geometryShaderSource}, (int[])null, 0);
+			gl.glCompileShader(geometryShader);
+		}
 		int shaderProgram = gl.glCreateProgram();
 		gl.glAttachShader(shaderProgram, vertexShader);
 		gl.glAttachShader(shaderProgram, fragmentShader);
+		if(isGeometrySahder){
+			gl.glAttachShader(shaderProgram, geometryShader);
+		}
 		gl.glLinkProgram(shaderProgram);
 		checkGlError("Link :", gl);
 		checkLinkProgramm(gl, shaderProgram);

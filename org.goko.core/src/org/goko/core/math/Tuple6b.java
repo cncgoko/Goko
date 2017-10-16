@@ -489,4 +489,19 @@ public class Tuple6b {
 		return true;
 	}
 
+	/**
+	 * @param d
+	 * @return
+	 */
+	public Tuple6b scale(BigDecimal factor) {
+		Tuple6b result = new Tuple6b(this);
+		result.x = QuantityUtils.multiply(x, factor);
+		result.y = QuantityUtils.multiply(y, factor);
+		result.z = QuantityUtils.multiply(z, factor);
+		result.a = QuantityUtils.multiply(a, factor);
+		result.b = QuantityUtils.multiply(b, factor);
+		result.c = QuantityUtils.multiply(c, factor);
+		return result;
+	}
+
 }

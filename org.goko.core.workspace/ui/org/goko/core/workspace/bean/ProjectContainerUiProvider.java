@@ -83,7 +83,7 @@ public abstract class ProjectContainerUiProvider {
 	
 	public abstract void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException;
 
-	public abstract boolean delete(ISelection selection) throws GkException;
+	public abstract boolean handleDelete(ISelection selection) throws GkException;
 	
 	/**
 	 * @return the order

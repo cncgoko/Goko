@@ -50,4 +50,5 @@ public class TinyG {
 	public static final String STATUS_REPORT_FEEDRATE_MODE = "frmo";
 	public static final String STATUS_REPORT_MACHINE_POSITION = "mpo";
 	public static final String STATUS_REPORT_WORK_POSITION = "pos";
+	
 }

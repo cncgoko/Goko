@@ -31,6 +31,7 @@ public class ArcFeedInstructionTest {
 														 	null,
 														 	null,
 														 	null,
+														 	null,
 														 	1,														 	
 														 	true);
 		
@@ -57,6 +58,7 @@ public class ArcFeedInstructionTest {
 														 	null,
 														 	Length.valueOf("5", LengthUnit.MILLIMETRE),
 														 	Length.valueOf("6", LengthUnit.MILLIMETRE),														 	
+														 	null,
 														 	null,
 														 	null,
 														 	null,
@@ -87,6 +89,7 @@ public class ArcFeedInstructionTest {
 														 	Length.valueOf("6", LengthUnit.MILLIMETRE),
 														 	null,														 	
 														 	Length.valueOf("5", LengthUnit.MILLIMETRE),														 	
+														 	null,
 														 	null,
 														 	null,
 														 	null,

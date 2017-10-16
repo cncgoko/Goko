@@ -117,27 +117,6 @@ public class TranslateModifier extends AbstractModifier<GCodeProvider> implement
 		if(instr.getC() != null){
 			instr.setC(instr.getC().add(translationC));
 		}
-//		switch (preContext.getPlane()) {
-//		case XY_PLANE:	instr.setFirstEnd( instr.getFirstEnd().add(translationX));
-//						instr.setSecondEnd( instr.getSecondEnd().add(translationY));
-//						instr.setFirstAxis( instr.getFirstAxis().add(translationX));
-//						instr.setSecondAxis( instr.getSecondAxis().add(translationY));
-//						instr.setAxisEndPoint( instr.getAxisEndPoint().add(translationZ));
-//			break;
-//		case XZ_PLANE:	instr.setFirstEnd( instr.getFirstEnd().add(translationZ));
-//						instr.setSecondEnd( instr.getSecondEnd().add(translationX));
-//						instr.setFirstAxis( instr.getFirstAxis().add(translationZ));
-//						instr.setSecondAxis( instr.getSecondAxis().add(translationX));
-//						instr.setAxisEndPoint( instr.getAxisEndPoint().add(translationY));
-//			break;
-//		case YZ_PLANE:	instr.setFirstEnd( instr.getFirstEnd().add(translationY));
-//						instr.setSecondEnd( instr.getSecondEnd().add(translationZ));
-//						instr.setFirstAxis( instr.getFirstAxis().add(translationY));
-//						instr.setSecondAxis( instr.getSecondAxis().add(translationZ));
-//						instr.setAxisEndPoint( instr.getAxisEndPoint().add(translationX));
-//			break;
-//		default: throw new GkTechnicalException("Not a valid plane in GCodeContext ["+preContext.getPlane()+"]");
-//		}
 	}
 
 	/**

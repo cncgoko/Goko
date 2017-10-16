@@ -50,7 +50,7 @@ public class GrblCommunicator extends AbstractGrblCommunicator<GrblConfiguration
 	/** Pattern for decoding feed only in status report */
 	private static Pattern PATTERN_F = Pattern.compile(".*F:"+INTEGER_PATTERN+".*");
 	/** Pattern for decoding feed only in status report */
-	private static Pattern PATTERN_A = Pattern.compile(".*F:[A-Z]+.*");
+	private static Pattern PATTERN_A = Pattern.compile(".*A:([A-Z]+).*");
 	/** Pattern for decoding tool length offset */
 	private static Pattern PATTERN_TLO = Pattern.compile(".*TLO:"+NUMBER_PATTERN+".*");
 	/** Pattern for decoding probe result */
@@ -131,6 +131,9 @@ public class GrblCommunicator extends AbstractGrblCommunicator<GrblConfiguration
 		GrblMachineState grblState = getGrblStateFromString(state);
 		result.setState(grblState);
 
+		// Indicate a tool state report (if override is present, then the report also report tools state)
+		boolean toolStateReport = false;
+		
 		Tuple6b machinePosition = null;
 		Tuple6b workPosition = null;
 		// Looking for MPosition
@@ -177,6 +180,7 @@ public class GrblCommunicator extends AbstractGrblCommunicator<GrblConfiguration
 		// Looking for override values		
 		Matcher overrideMatcher = PATTERN_OV.matcher(strStatusReport);
 		if(overrideMatcher.matches()){
+			toolStateReport = true;
 			Integer overrideFeed 	=  NumberUtils.parseIntegerOrNull(overrideMatcher.group(1));
 			Integer overrideRapid 	=  NumberUtils.parseIntegerOrNull(overrideMatcher.group(2));
 			Integer overrideSpindle =  NumberUtils.parseIntegerOrNull(overrideMatcher.group(3));
@@ -211,9 +215,13 @@ public class GrblCommunicator extends AbstractGrblCommunicator<GrblConfiguration
 		}
 		
 		// Looking for accessory state
+		if(toolStateReport){
+			result.setFloodCoolantState(false);
+			result.setMistCoolantState(false);
+		}
 		
 		Matcher aMatcher = PATTERN_A.matcher(strStatusReport);
-		if(aMatcher.matches()){
+		if(aMatcher.matches()){			
 			String states = aMatcher.group(1);
 			result.setMistCoolantState(false);
 			result.setFloodCoolantState(false);
