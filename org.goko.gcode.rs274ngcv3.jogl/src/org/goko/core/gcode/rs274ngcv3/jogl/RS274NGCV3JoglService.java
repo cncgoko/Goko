@@ -188,7 +188,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 	 */
 	public RS274GCodeRenderer getRendererByGCodeProvider(IGCodeProvider gcodeProvider) throws GkException{
 		RS274GCodeRenderer renderer = findRendererByGCodeProvider(gcodeProvider);
-		if(renderer == null){
+		if(renderer == null){			
 			throw new GkTechnicalException("Renderer for GCodeProvider with internal id ["+gcodeProvider.getId()+"] does not exist");
 		}
 		return renderer;

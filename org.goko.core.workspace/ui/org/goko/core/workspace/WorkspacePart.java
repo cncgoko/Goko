@@ -17,8 +17,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -40,6 +38,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.log.GkLog;
+import org.goko.core.workspace.bean.IProjectMenuProvider;
 import org.goko.core.workspace.bean.IPropertiesPanel;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.core.workspace.service.IWorkspaceUIService;
@@ -183,9 +182,17 @@ public class WorkspacePart implements Listener {
 		            	for (ProjectContainerUiProvider projectContainerUiProvider : uiProviders) {
 		            		if(projectContainerUiProvider.providesMenuFor(workspaceTreeViewer.getSelection())){
 		            			projectContainerUiProvider.createMenuFor(mgr, workspaceTreeViewer.getSelection());
+		            			
+		            			String type = projectContainerUiProvider.getType();
+		            			List<IProjectMenuProvider> lstMenuProvider = workspaceUiService.getProjectMenuProvider(type);
+		            			for (IProjectMenuProvider menuProvider : lstMenuProvider) {
+									if(menuProvider.providesMenuFor(workspaceTreeViewer.getSelection())){
+										menuProvider.createMenuFor(mgr, workspaceTreeViewer.getSelection());
+									}
+								}
 		            		}
 						}
-		            }
+		            }          
 	        	}catch(GkException e){
 	        		LOG.error(e);
 	        	}

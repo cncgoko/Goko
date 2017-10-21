@@ -48,6 +48,7 @@ import org.osgi.service.event.EventAdmin;
 public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	/** LOG */
 	private static final GkLog LOG = GkLog.getLogger(GCodeContainerUiProvider.class);
+	public static final String TYPE = "GCodeContainerUiProvider";
 	/** GCode service */
 	private IRS274NGCService rs274Service;
 	private IRS274WorkspaceService rs274WorkspaceService;
@@ -65,7 +66,7 @@ public class GCodeContainerUiProvider extends ProjectContainerUiProvider {
 	 * @param type
 	 */
 	public GCodeContainerUiProvider() {		
-		super("GCodeContainerUiProvider", 10);
+		super(TYPE, 10);
 		this.labelProvider = new GCodeContainerLabelProvider();
 		this.lstGCodeProviderContributionItem = new CopyOnWriteArrayList<IGCodeProviderContributionItem>();
 		LOG.info("Creating GCodeContainerUiProvider");

@@ -178,7 +178,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		jogStepSpinner.setMinimum(1);
 		jogStepSpinner.setDigits(GokoPreference.getInstance().getDigitCount());
 		GridData gd_jogSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpinner.widthHint = 30;
+		gd_jogSpinner.widthHint = 60;
 		jogStepSpinner.setLayoutData(gd_jogSpinner);
 		
 		
@@ -197,7 +197,7 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 		jogSpeedSpinner = new Spinner(composite_5, SWT.BORDER);
 		jogSpeedSpinner.setMaximum(10000);
 		GridData gd_jogSpeedSpinner = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_jogSpeedSpinner.widthHint = 30;
+		gd_jogSpeedSpinner.widthHint = 60;
 		jogSpeedSpinner.setLayoutData(gd_jogSpeedSpinner);
 		
 		lblSpeedUnit = new Label(composite_5, SWT.NONE);

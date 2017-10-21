@@ -403,7 +403,6 @@ public class RS274GCodeRenderer extends AbstractLineRenderer implements ICoreJog
 		this.colorizer = colorizer;
 	}
 
-
 }
 
 /**

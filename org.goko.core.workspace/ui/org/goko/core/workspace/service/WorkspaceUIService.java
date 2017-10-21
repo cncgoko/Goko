@@ -14,6 +14,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.AbstractGokoService;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.workspace.bean.IProjectMenuProvider;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 import org.goko.core.workspace.bean.ProjectContainerUiProviderComparator;
 import org.osgi.service.event.Event;
@@ -28,6 +29,8 @@ public class WorkspaceUIService extends AbstractGokoService implements IGokoServ
 	private static final String SERVICE_ID ="org.goko.core.workspace.WorkspaceUIService";
 	/** The map of registered UI providers */
 	private Map<String, ProjectContainerUiProvider> mapProjectContainerUiProvider;
+	/** The map of registered UI providers */
+	private Map<String, List<IProjectMenuProvider>> mapProjectMenuProvider;
 	/** Event admin for notification to the UI */
 	private EventAdmin eventAdmin;
 	/** The workspace service */
@@ -53,6 +56,7 @@ public class WorkspaceUIService extends AbstractGokoService implements IGokoServ
 	@Override
 	public void startService() throws GkException {		
 		this.mapProjectContainerUiProvider = new HashMap<String, ProjectContainerUiProvider>();		
+		this.mapProjectMenuProvider = new HashMap<String, List<IProjectMenuProvider>>();		
 	}
 
 	/** (inheritDoc)
@@ -81,6 +85,29 @@ public class WorkspaceUIService extends AbstractGokoService implements IGokoServ
 			throw new GkTechnicalException("ProjectContainerUiProvider not found for type ["+type+"]");
 		}
 		return result;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceUIService#getProjectMenuProvider(java.lang.String)
+	 */
+	@Override
+	public List<IProjectMenuProvider> getProjectMenuProvider(String type) throws GkTechnicalException {
+		List<IProjectMenuProvider> result = new ArrayList<>();
+		if(mapProjectMenuProvider.containsKey(type)){
+			result.addAll(mapProjectMenuProvider.get(type));
+		}
+		return result;
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.core.workspace.service.IWorkspaceUIService#addProjectMenuProvider(java.lang.String, org.goko.core.workspace.bean.IProjectMenuProvider)
+	 */
+	@Override
+	public void addProjectMenuProvider(String type, IProjectMenuProvider menuProvider) throws GkTechnicalException {
+		if(!mapProjectMenuProvider.containsKey(type)){
+			mapProjectMenuProvider.put(type, new ArrayList<IProjectMenuProvider>());
+		}
+		mapProjectMenuProvider.get(type).add(menuProvider);
 	}
 
 	/** (inheritDoc)

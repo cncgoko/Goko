@@ -5,14 +5,14 @@
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_wyCDw9wYEeKC274TynxXSA" elementId="goko.perspectivestack.main">
       <children xsi:type="advanced:Perspective" xmi:id="_wyCDxNwYEeKC274TynxXSA" elementId="goko.perspective.main" label="Test">
         <children xsi:type="basic:PartSashContainer" xmi:id="_wyCDxdwYEeKC274TynxXSA" elementId="goko.partsashcontainer.main">
-          <children xsi:type="basic:PartSashContainer" xmi:id="_3IxXQHg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.0" containerData="60" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_3IxXQHg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.0" containerData="70" horizontal="true">
             <children xsi:type="basic:PartStack" xmi:id="_4pvawHg6EeaDZe-MYeyetw" elementId="goko.partstack.a" containerData="20"/>
             <children xsi:type="basic:PartSashContainer" xmi:id="_5FPD8Hg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.1" containerData="80" horizontal="true">
               <children xsi:type="basic:PartStack" xmi:id="_5a-DYHg6EeaDZe-MYeyetw" elementId="goko.application.partstack" containerData="75"/>
               <children xsi:type="basic:PartStack" xmi:id="_50jBAHg6EeaDZe-MYeyetw" elementId="goko.partstack.c" containerData="25"/>
             </children>
           </children>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_8mTW8Hg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.2" containerData="40" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_8mTW8Hg6EeaDZe-MYeyetw" elementId="goko.partsashcontainer.2" containerData="30" horizontal="true">
             <children xsi:type="basic:PartSashContainer" xmi:id="_A3EokHg7EeaDZe-MYeyetw" elementId="goko.partsashcontainer.3" containerData="80" horizontal="true">
               <children xsi:type="basic:PartStack" xmi:id="_CDibsHg7EeaDZe-MYeyetw" elementId="goko.partstack.d" containerData="65"/>
               <children xsi:type="basic:PartStack" xmi:id="_CU3cQHg7EeaDZe-MYeyetw" elementId="goko.partstack.e" containerData="35"/>

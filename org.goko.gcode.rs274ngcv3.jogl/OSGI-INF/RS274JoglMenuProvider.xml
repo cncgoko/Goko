@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.goko.gcode.rs274ngcv3.jogl.RS274JoglMenuProvider">
+   <implementation class="org.goko.gcode.rs274ngcv3.jogl.RS274JoglMenuProvider"/>
+   <reference bind="setRs274JoglService" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.jogl.RS274NGCV3JoglService" name="RS274NGCV3JoglService" policy="static"/>
+   <reference bind="setRs274Service" cardinality="1..1" interface="org.goko.core.gcode.rs274ngcv3.IRS274NGCService" name="IRS274NGCService" policy="static"/>
+   <reference bind="setWorkspaceUIService" cardinality="1..1" interface="org.goko.core.workspace.service.IWorkspaceUIService" name="IWorkspaceUIService" policy="static"/>
+</scr:component>

@@ -128,7 +128,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			return canvas;
 		}
 		
-		GLProfile profile = GLProfile.getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
+		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
 		
@@ -184,7 +184,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	@Override
 	public void display(GLAutoDrawable gLAutoDrawable) {
-		GL3 gl = new DebugGL3( gLAutoDrawable.getGL().getGL3());
+		GL3 gl = new DebugGL3( gLAutoDrawable.getGL().getGL3() );
 		if(updateBackgroundColor){
 			gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); // reset background (clear) color
 			updateBackgroundColor = false;
@@ -332,7 +332,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	    gl.glEnable(GL.GL_LINE_SMOOTH);
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
 	    
-	    int shaderProgram = ShaderLoader.loadShader(new DebugGL3(gl.getGL3()), EnumGokoShaderProgram.LINE_SHADER);
+	    int shaderProgram = ShaderLoader.loadShader(new DebugGL3(gl), EnumGokoShaderProgram.LINE_SHADER);
 	    gl.glBindAttribLocation(shaderProgram, 0, "vertexPosition_modelspace");
 	    gl.glUseProgram(shaderProgram);
 

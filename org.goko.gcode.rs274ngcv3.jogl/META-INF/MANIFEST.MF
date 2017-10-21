@@ -13,12 +13,16 @@ Require-Bundle: org.goko.core;bundle-version="0.0.2",
  javax.inject,
  org.goko.gcode.rs274ngcv3.ui;bundle-version="0.3.5",
  org.eclipse.e4.ui.di,
- org.goko.core.workspace
+ org.goko.core.workspace,
+ org.eclipse.jface;bundle-version="3.11.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Service-Component: OSGI-INF/RS274JoglBridge.xml
+Service-Component: OSGI-INF/RS274JoglBridge.xml,
+ OSGI-INF/RS274JoglMenuProvider.xml
 Import-Package: com.google.common.base,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.core.services.events,
  org.osgi.framework,
  org.osgi.service.event;version="1.3.1"
 Bundle-ActivationPolicy: lazy
+Export-Package: org.goko.core.gcode.rs274ngcv3.jogl,
+ org.goko.core.gcode.rs274ngcv3.jogl.renderer

@@ -8,6 +8,7 @@ import java.util.List;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.service.IGokoService;
+import org.goko.core.workspace.bean.IProjectMenuProvider;
 import org.goko.core.workspace.bean.ProjectContainerUiProvider;
 
 /**
@@ -22,6 +23,10 @@ public interface IWorkspaceUIService extends IGokoService {
 
 	List<ProjectContainerUiProvider> getProjectContainerUiProvider() throws GkTechnicalException;
 
+	List<IProjectMenuProvider> getProjectMenuProvider(String type) throws GkTechnicalException;
+	
+	void addProjectMenuProvider(String type, IProjectMenuProvider menuProvider) throws GkTechnicalException;
+	
 	boolean existProjectContainerUiProvider(String type) throws GkTechnicalException;
 
 	void addProjectContainerUiProvider(ProjectContainerUiProvider provider) throws GkTechnicalException;

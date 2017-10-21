@@ -3,7 +3,6 @@
  */
 package org.goko.core.workspace.bean;
 
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
@@ -14,7 +13,7 @@ import org.goko.core.common.exception.GkException;
  * @author PsyKo
  * @date 31 oct. 2015
  */
-public abstract class ProjectContainerUiProvider {
+public abstract class ProjectContainerUiProvider implements IProjectMenuProvider{
 	/** The type of supported container */
 	private String type;
 	/** The display order */
@@ -79,10 +78,6 @@ public abstract class ProjectContainerUiProvider {
 
 	public abstract Object getParent(Object content) throws GkException;
 	
-	public abstract boolean providesMenuFor(ISelection selection) throws GkException;
-	
-	public abstract void createMenuFor(IMenuManager contextMenu, ISelection selection) throws GkException;
-
 	public abstract boolean handleDelete(ISelection selection) throws GkException;
 	
 	/**
