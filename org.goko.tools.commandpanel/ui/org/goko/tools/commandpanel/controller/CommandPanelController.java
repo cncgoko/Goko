@@ -109,6 +109,7 @@ public class CommandPanelController  extends AbstractController<CommandPanelMode
 				try{
 					if(controllerService.isControllerAction(actionId)){
 						IGkControllerAction action = controllerService.getControllerAction(actionId);
+						
 						jogStepSpinner.setEnabled(action.canExecute() && getDataModel().isPreciseJog());
 					}
 				}catch(GkException ex){

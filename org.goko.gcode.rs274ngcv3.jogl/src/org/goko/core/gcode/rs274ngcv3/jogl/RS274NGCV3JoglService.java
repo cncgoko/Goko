@@ -111,8 +111,7 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 		
 		if(contentBoundsRenderer != null){
 			contentBoundsRenderer.destroy();
-			LOG.info("Ivoking destroy on ["+contentBoundsRenderer.toString()+"]");
-			//Activator.getJoglViewerService().removeRenderer(contentBoundsRenderer);
+			LOG.info("Invoking destroy on ["+contentBoundsRenderer.toString()+"]");
 		}
 
 		if(CollectionUtils.isNotEmpty(lstRenderer)){
