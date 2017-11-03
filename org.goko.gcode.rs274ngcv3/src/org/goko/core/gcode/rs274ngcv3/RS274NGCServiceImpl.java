@@ -465,8 +465,7 @@ public class RS274NGCServiceImpl extends AbstractGokoService implements IRS274NG
 		while (iterator.hasNext()) {
 			preContext = new GCodeContext(iterator.getContext());
 			AbstractInstruction instruction = iterator.next();
-
-			Tuple6b endpoint = iterator.getContext().getPosition();//new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
+			Tuple6b endpoint = iterator.getContext().getPosition().add(preContext.getActiveCoordinateSystemData());//new Tuple6b(straightInstruction.getX(),straightInstruction.getY(),straightInstruction.getZ(),straightInstruction.getA(),straightInstruction.getB(),straightInstruction.getC());
 			min = min.min(endpoint);
 			max = max.max(endpoint);
 //			FIXME : add bound support for Arcs

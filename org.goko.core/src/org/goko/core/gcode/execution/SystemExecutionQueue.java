@@ -51,7 +51,7 @@ public class SystemExecutionQueue<S extends IExecutionTokenState, T extends IExe
 	public void onComplete() throws GkException {
 		clearExecutionQueue();
 	}
-	
+		
 	/** (inheritDoc)
 	 * @see org.goko.core.gcode.execution.ExecutionQueue#onCanceled()
 	 */

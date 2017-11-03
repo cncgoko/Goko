@@ -37,6 +37,8 @@ import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.gcode.execution.ExecutionQueueType;
 import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.execution.ExecutionTokenState;
+import org.goko.core.gcode.execution.IExecutionToken;
 import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.gcode.rs274ngcv3.element.InstructionProvider;
 import org.goko.core.log.GkLog;
@@ -82,9 +84,9 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		String oldValue = configuration.getSettingStringValue(identifier);
 		getConfiguration().setValue(identifier, value);		
 		notifyConfigurationSettingChanged(identifier, oldValue, value);
-		
 	}
 
+	
 	/** (inheritDoc)
 	 * @see org.goko.controller.grbl.commons.IGrblControllerService#getReportUnit()
 	 */
@@ -231,8 +233,17 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		getInternalState().setToolLengthOffset(toolLengthOffset);
 	}
 	
-	protected void handleStatusReport(StatusReport statusReport) throws GkException {
+	protected void handleStatusReport(StatusReport statusReport) throws GkException {		
 		getInternalState().setState(statusReport.getState());
+		
+		if ( getPlannerBufferCapacity() == null
+				&& statusReport.getState() == GrblMachineState.IDLE
+				&& statusReport.getAvailablePlannerBuffer() != null) {
+			setPlannerBufferCapacity( statusReport.getAvailablePlannerBuffer() );
+		}
+		if (statusReport.getState() != GrblMachineState.ALARM) {
+			getInternalState().setAlarmMessage(StringUtils.EMPTY);
+		}
 		if(statusReport.getCurrentWorkCoordinateOffset() != null){
 			getInternalState().setCurrentWorkCoordinateOffset(statusReport.getCurrentWorkCoordinateOffset());
 		}
@@ -282,10 +293,31 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	}
 
 	protected void handleAlarm(GrblMachineState alarmState) throws GkException{
-		setState(alarmState);
+		setState(GrblMachineState.ALARM);
+		getInternalState().setAlarmMessage(alarmState.getLabel());
+		
 		if(getExecutionService().getExecutionState() != ExecutionState.IDLE){
 			stopMotion();
 		}		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.AbstractGrblControllerService#stopMotion()
+	 */
+	@Override
+	public void stopMotion() throws GkException {		
+		super.stopMotion();
+		
+		if(probeUtility != null && probeUtility.isProbingInProgress()){
+			probeUtility.cancelActiveProbing();			
+			probeUtility.clearProbingGCode();
+		}
+//				la queue system n'est pas bien vidée ?
+//				Protocole :
+//					- faire un probe zero qui ne trigger pas
+//					- charger un GCode et l'ajouter à la queue
+//					- voir si les boutons de controle de la queue sont actifs ou non
+		getExecutionService().stopQueueExecution();
 	}
 	
 	protected void handleProbeResult(boolean probeSuccess, Tuple6b probePosition) throws GkException {
@@ -572,17 +604,6 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 	}
 
 	/** (inheritDoc)
-	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionComplete()
-	 */
-	@Override
-	public void onQueueExecutionComplete() throws GkException {
-		super.onQueueExecutionComplete();
-		if(probeUtility != null){
-			probeUtility.clearProbingGCode();
-		}
-	}
-
-	/** (inheritDoc)
 	 * @see org.goko.core.gcode.service.IGCodeTokenExecutionListener#onQueueExecutionCanceled()
 	 */
 	@Override
@@ -612,4 +633,25 @@ public class GrblControllerService extends AbstractGrblControllerService<GrblMac
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.AbstractGrblControllerService#onExecutionComplete(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionComplete(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		if(probeUtility != null){
+			probeUtility.clearProbingGCode();			
+		}		
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.AbstractGrblControllerService#onExecutionCanceled(org.goko.core.gcode.execution.IExecutionToken)
+	 */
+	@Override
+	public void onExecutionCanceled(IExecutionToken<ExecutionTokenState> token) throws GkException {
+		if(probeUtility != null){
+			probeUtility.clearProbingGCode();
+			probeUtility.cancelActiveProbing();
+			probeUtility = null;
+		}
+	}
 }

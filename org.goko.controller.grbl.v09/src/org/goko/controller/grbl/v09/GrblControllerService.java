@@ -855,7 +855,31 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 	 */
 	@Override
 	public void updateCoordinateSystemPosition(ICoordinateSystem cs, Tuple6b position) throws GkException {
-		throw new GkTechnicalException("TO DO"); // FIXME
+		String cmd = "G10";
+		switch (cs.getCode()) {
+		case "G54": cmd +="P1";
+		break;
+		case "G55": cmd +="P2";
+		break;
+		case "G56": cmd +="P3";
+		break;
+		case "G57": cmd +="P4";
+		break;
+		case "G58": cmd +="P5";
+		break;
+		case "G59": cmd +="P6";
+		break;
+		default: throw new GkFunctionalException("GRBL-002", cs.getCode());
+		}
+		Tuple6b offsets = getCoordinateSystemOffset(getCurrentCoordinateSystem());
+		Tuple6b mPos = new Tuple6b(getPosition());
+		mPos = mPos.add(offsets);
+		cmd += "L2";
+		cmd += "X"+getPositionAsString(mPos.getX());
+		cmd += "Y"+getPositionAsString(mPos.getY());
+		cmd += "Z"+getPositionAsString(mPos.getZ());
+		communicator.send(GkUtils.toBytesList(cmd));
+		communicator.send(GkUtils.toBytesList(Grbl.VIEW_PARAMETERS));
 	}
 	
 	/**
@@ -1030,11 +1054,12 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		}
 		
 		probeGCodeProvider = getZProbingCode(lstProbeRequest, getGCodeContext());
-		probeGCodeProvider.setCode("TinyG probing");
+		probeGCodeProvider.setCode("Grbl probing");
 		gcodeService.addGCodeProvider(probeGCodeProvider);
 		probeGCodeProvider = gcodeService.getGCodeProvider(probeGCodeProvider.getId());// Required since internally the provider is a new one
-		executionService.addToExecutionQueue(probeGCodeProvider);
-		executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
+		executionService.clearExecutionQueue(ExecutionQueueType.SYSTEM);
+		executionService.addToExecutionQueue(ExecutionQueueType.SYSTEM, probeGCodeProvider);		
+		executionService.beginQueueExecution(ExecutionQueueType.SYSTEM); 
 		
 		return completionService;
 	}

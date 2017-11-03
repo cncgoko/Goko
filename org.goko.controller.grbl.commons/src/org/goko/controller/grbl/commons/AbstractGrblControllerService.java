@@ -119,6 +119,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	/** Jog runnable */
 	private J jogger;
 	public AtomicInteger pendingCommandsCount;
+	public Integer plannerBufferCapacity;
 	
 	/**
 	 * Constructor
@@ -485,7 +486,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 		communicator.send( startResumeCommand, false );
 		if(executionService.getExecutionState() == ExecutionState.PAUSED){
 			executionService.resumeQueueExecution();
-		}else{
+		}else if(executionService.getExecutionState() == ExecutionState.RUNNING){
 			executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
 		}
 	}
@@ -548,6 +549,14 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	@Override
 	public int getAvailablePlannerBuffer() throws GkException {		
 		return grblState.getAvailablePlannerBuffer();
+	}
+	
+	/** (inheritDoc)
+	 * @see org.goko.controller.grbl.commons.IGrblControllerService#isPlannerBufferEmpty()
+	 */
+	@Override
+	public boolean isPlannerBufferEmpty() throws GkException {
+		return getAvailablePlannerBuffer() >= plannerBufferCapacity;
 	}
 	
 	/**
@@ -715,7 +724,29 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	 */
 	@Override
 	public void updateCoordinateSystemPosition(ICoordinateSystem cs, Tuple6b position) throws GkException {
-		throw new GkTechnicalException("TO DO"); // FIXME
+		String cmd = "G10";
+		switch (cs.getCode()) {
+		case "G54": cmd +="P1";
+		break;
+		case "G55": cmd +="P2";
+		break;
+		case "G56": cmd +="P3";
+		break;
+		case "G57": cmd +="P4";
+		break;
+		case "G58": cmd +="P5";
+		break;
+		case "G59": cmd +="P6";
+		break;
+		default: throw new GkFunctionalException("GRBL-002", cs.getCode());
+		}
+		Tuple6b mPos = new Tuple6b(position);
+		cmd += "L2";
+		cmd += "X"+getPositionAsString(mPos.getX());
+		cmd += "Y"+getPositionAsString(mPos.getY());
+		cmd += "Z"+getPositionAsString(mPos.getZ());
+		communicator.send(cmd, true);
+		communicator.send(Grbl.VIEW_PARAMETERS, true );
 	}
 	
 	/**
@@ -770,6 +801,10 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	public void setExecutionService(IExecutionService<ExecutionTokenState, IExecutionToken<ExecutionTokenState>> executionService) throws GkException {
 		this.executionService = executionService;
 		this.executor.setExecutionService(executionService);
+		this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, getExecutor());
+		this.executionService.addExecutionListener(ExecutionQueueType.SYSTEM, getExecutor());
+		this.executionService.addExecutionListener(ExecutionQueueType.DEFAULT, this);
+		this.executionService.addExecutionListener(ExecutionQueueType.SYSTEM, this);
 		this.executionService.setExecutor(executor);//new GrblDebugExecutor(gcodeService));
 	}
 
@@ -959,6 +994,7 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 	@Override
 	public void onDisconnected() throws GkException {
 		getStatusPoller().stop();
+		plannerBufferCapacity = null;
 	}
 
 	/**
@@ -1058,5 +1094,19 @@ public abstract class AbstractGrblControllerService <M extends MachineState,
 
 	public void turnSpindleOff() throws GkException{
 		getCommunicator().turnSpindleOff();
+	}
+
+	/**
+	 * @return the plannerBufferCapacity
+	 */
+	public Integer getPlannerBufferCapacity() {
+		return plannerBufferCapacity;
+	}
+
+	/**
+	 * @param plannerBufferCapacity the plannerBufferCapacity to set
+	 */
+	public void setPlannerBufferCapacity(Integer plannerBufferCapacity) {
+		this.plannerBufferCapacity = plannerBufferCapacity;
 	}
 }

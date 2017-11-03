@@ -159,6 +159,13 @@ public interface IGrblControllerService<C extends AbstractGrblConfiguration<C>, 
 	 * @throws GkException GkException
 	 */
 	int getAvailablePlannerBuffer() throws GkException;
+	
+	/**
+	 * Returns <code>true</code> if the planner buffer is completely empty (no motion running)
+	 * @return an integer
+	 * @throws GkException GkException
+	 */
+	boolean isPlannerBufferEmpty() throws GkException;
 
 	/**
 	 * Sends the given GCode line

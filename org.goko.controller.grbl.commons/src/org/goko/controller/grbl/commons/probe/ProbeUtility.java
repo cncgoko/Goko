@@ -64,7 +64,7 @@ public class ProbeUtility {
 		for (int i = 0; i < lstProbeRequest.size(); i++) {
 			ProbeCallable probeCallable = new ProbeCallable();
 			this.lstProbeCallable.add(probeCallable);
-			completionService.submit(probeCallable);
+			this.completionService.submit(probeCallable);
 		}
 		
 		probeGCodeProvider = getProbingCode(lstProbeRequest, gcodeContextProvider.getGCodeContext());
@@ -92,14 +92,14 @@ public class ProbeUtility {
 	 * @throws GkException GkException
 	 */
 	public void handleProbeResult(boolean probed, Tuple6b position) throws GkException{
-		if(CollectionUtils.isNotEmpty(lstProbeCallable)){
+		if(isProbingInProgress()){
 			ProbeResult probeResult = new ProbeResult();
 			probeResult.setProbed(probed);
 			probeResult.setProbedPosition(position);
 			
 			ProbeCallable callable = lstProbeCallable.remove(0);
 			callable.setProbeResult(probeResult);
-		}		
+		}
 	}
 	
 	public void cancelActiveProbing() throws GkException{

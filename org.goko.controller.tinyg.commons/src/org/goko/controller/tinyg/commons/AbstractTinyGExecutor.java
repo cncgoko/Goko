@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
+import org.goko.core.controller.bean.MachineState;
 import org.goko.core.execution.monitor.executor.AbstractStreamingExecutor;
 import org.goko.core.gcode.element.GCodeLine;
 import org.goko.core.gcode.element.IGCodeProvider;
@@ -127,11 +128,18 @@ public class AbstractTinyGExecutor<T extends ITinyGControllerService<?>> extends
 	 * @throws GkException GkException
 	 */
 	private void notifyTokenCompleteIfRequired() throws GkException {
-		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0 && pendingCommandCount.get() <= 0 && getRemainingCommands() <= 0){			
+		if(getToken().getLineCountByState(ExecutionTokenState.SENT) == 0 && pendingCommandCount.get() <= 0 && getRemainingCommands() <= 0){
 			notifyTokenComplete();
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#isTokenComplete()
+	 */
+	@Override
+	public boolean isTokenComplete() throws GkException {
+		return super.isTokenComplete() && (tinygService.getState() == MachineState.PROGRAM_END || tinygService.getState() == MachineState.PROGRAM_STOP); // Experimental
+	}
 	/**
 	 * Handles any TinyG Status that is not TG_OK
 	 * @param status the received status or <code>null</code> if unknown

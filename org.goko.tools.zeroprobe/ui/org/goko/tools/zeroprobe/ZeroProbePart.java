@@ -69,6 +69,12 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		grpProbeSettings.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpProbeSettings.setText("Probe settings");
 		
+		Label lblInfo = new Label(grpProbeSettings, SWT.CENTER);
+		lblInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblInfo.setText("New Label");
+		lblInfo.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
+		lblInfo.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.NORMAL));
+		
 		Label lblError = new Label(grpProbeSettings, SWT.CENTER);
 		lblError.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		lblError.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.NORMAL));
@@ -78,8 +84,8 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		getController().addVisibleBinding(lblError, ZeroProbeModel.IS_ERROR);
 		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
 		
-		getController().addTextDisplayBinding(lblError, ZeroProbeModel.ERROR_MESSAGE);
-
+		getController().addVisibleReverseBinding(lblInfo, ZeroProbeModel.IS_ERROR);
+		getController().addTextDisplayBinding(lblInfo, ZeroProbeModel.INFO_MESSAGE);
 		
 		UiRadioGroupFieldEditor<EnumControllerAxis> radioGroupFieldEditor = new UiRadioGroupFieldEditor<EnumControllerAxis>(grpProbeSettings, SWT.NONE);		
 		radioGroupFieldEditor.setNbColumns(2);		

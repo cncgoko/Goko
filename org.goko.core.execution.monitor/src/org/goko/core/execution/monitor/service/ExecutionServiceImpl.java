@@ -287,7 +287,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 				executionListener.onQueueExecutionStart();
 			}
 		}
-		getExecutionQueue(queueType).onStart();
+		getExecutionQueue(queueType).onStart();		
 	}
 
 	/** (inheritDoc)
@@ -302,6 +302,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		}
 		unlockGCodeProvider(queueType);
 		getExecutionQueue(queueType).onComplete();
+		this.executionQueueRunnable = null;
 	}
 
 	/** (inheritDoc)
@@ -316,6 +317,7 @@ public class ExecutionServiceImpl extends AbstractGokoService implements IExecut
 		}
 		unlockGCodeProvider(queueType);
 		getExecutionQueue(queueType).onCanceled();
+		this.executionQueueRunnable = null;
 	}
 	
 	/** (inheritDoc)

@@ -96,6 +96,13 @@ public abstract class AbstractGrblExecutor<T extends IGrblControllerService<?, ?
 		}
 	}
 
+	/** (inheritDoc)
+	 * @see org.goko.core.execution.monitor.executor.AbstractStreamingExecutor#isTokenComplete()
+	 */
+	@Override
+	public boolean isTokenComplete() throws GkException {
+		return super.isTokenComplete() && grblService.isPlannerBufferEmpty();
+	}
 	/**
 	 * Notify the parent executor if the conditions are met
 	 * @throws GkException GkException

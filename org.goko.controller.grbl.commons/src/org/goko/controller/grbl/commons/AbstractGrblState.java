@@ -257,11 +257,11 @@ public abstract class AbstractGrblState<S extends MachineState> extends MachineV
 	}
 
 	public Tuple6b getCoordinateSystemOffset(ICoordinateSystem cs) throws GkException {
-		return offsets.get(cs);
+		return offsets.get(cs) == null ? new Tuple6b() : new Tuple6b( offsets.get(cs) );
 	}
 
 	public void setCoordinateSystemOffset(ICoordinateSystem cs, Tuple6b offset) throws GkException {
-		offsets.put(cs, offset);
+		offsets.put(cs, new Tuple6b( offset ));
 		if(gcodeContext != null){
 			gcodeContext.setCoordinateSystemData(cs, offset);
 		}

@@ -86,7 +86,7 @@ public class GrblCommunicator extends AbstractGrblCommunicator<GrblConfiguration
 	protected void handleProbeResult(String trimmedData) throws GkException {
 		Matcher probeMatcher = PATTERN_PRB.matcher(trimmedData);
 		if(probeMatcher.matches()){
-			boolean probeSuccess = BooleanUtils.toBoolean(probeMatcher.group(4));
+			boolean probeSuccess = BooleanUtils.toBoolean(probeMatcher.group(4),"1", "0");
 			Tuple6b probePosition = new Tuple6b();
 			parseTuple(probePosition, probeMatcher.group(1), probeMatcher.group(2), probeMatcher.group(3));
 			getControllerService().handleProbeResult(probeSuccess, probePosition);

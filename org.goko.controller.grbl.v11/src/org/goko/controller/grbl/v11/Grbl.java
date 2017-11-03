@@ -110,6 +110,8 @@ public abstract class Grbl implements DefaultControllerValues {
 		static final String FLOOD_COOLANT_STATE	= "Grbl.v1.1.flood.state";
 		
 		static final String MESSAGE	= "Grbl.v1.1.message";
+		
+		static final String ALARM_MESSAGE	= "Grbl.v1.1.alarm.message";
 	}
 	
 	public static class Configuration{

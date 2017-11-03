@@ -59,6 +59,8 @@ public class GrblState extends AbstractGrblState<GrblMachineState> {
 		storeValue(Grbl.MachineValue.FLOOD_COOLANT_STATE, "Flood", "The current state of the flood coolant",  new OnOffBoolean(false));
 		
 		storeValue(Grbl.MachineValue.MESSAGE, "Message", "The last received message",  StringUtils.EMPTY);
+		
+		storeValue(Grbl.MachineValue.ALARM_MESSAGE, "Alarm description", "The description of last alarm",  StringUtils.EMPTY);
 	}
 
 	/**
@@ -198,5 +200,13 @@ public class GrblState extends AbstractGrblState<GrblMachineState> {
 	
 	public void setMessage(String message) throws GkException {
 		updateValue(Grbl.MachineValue.MESSAGE, StringUtils.defaultString(message));
+	}
+
+	/**
+	 * @param message the description of the alarm
+	 * @throws GkException 
+	 */
+	public void setAlarmMessage(String message) throws GkException {
+		updateValue(Grbl.MachineValue.ALARM_MESSAGE, StringUtils.defaultString(message));
 	}
 }

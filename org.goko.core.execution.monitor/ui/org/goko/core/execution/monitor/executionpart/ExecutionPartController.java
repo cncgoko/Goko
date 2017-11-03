@@ -200,29 +200,29 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 		}
 	}
 
-	/**
-	 * Start or resume the execution queue
-	 * @throws GkException GkException
-	 */
-	public void startResumeQueueExecution() throws GkException {
-		if(executionService.getExecutionState() == ExecutionState.PAUSED){
-			executionService.resumeQueueExecution();
-		}else{
-			executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
-		}
-	}
+//	/**
+//	 * Start or resume the execution queue
+//	 * @throws GkException GkException
+//	 */
+//	public void startResumeQueueExecution() throws GkException {
+//		if(executionService.getExecutionState() == ExecutionState.PAUSED){
+//			executionService.resumeQueueExecution();
+//		}else{
+//			executionService.beginQueueExecution(ExecutionQueueType.DEFAULT);
+//		}
+//	}
 	
-	/**
-	 * Start or resume the execution queue
-	 * @throws GkException GkException
-	 */
-	public void pauseStopQueueExecution() throws GkException {
-		if(executionService.getExecutionState() == ExecutionState.PAUSED){
-			executionService.stopQueueExecution();
-		}else if(executionService.getExecutionState() == ExecutionState.RUNNING){
-			executionService.pauseQueueExecution();
-		}
-	}
+//	/**
+//	 * Start or resume the execution queue
+//	 * @throws GkException GkException
+//	 */
+//	public void pauseStopQueueExecution() throws GkException {
+//		if(executionService.getExecutionState() == ExecutionState.PAUSED){
+//			executionService.stopQueueExecution();
+//		}else if(executionService.getExecutionState() == ExecutionState.RUNNING){
+//			executionService.pauseQueueExecution();
+//		}
+//	}
 	
 	/**
 	 * Stops the execution queue
@@ -260,14 +260,16 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 						  buttonStopEnabled = true;
 					break;
 			}
-				
-			if(getCurrentExecutionQueue() != null){
-				if(CollectionUtils.isEmpty(getCurrentExecutionQueue().getExecutionToken())){
+			
+			if(buttonStartEnabled){ // If button is enabled, make sure the queue is not empty and contains no error
+				ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> defaultQueue = executionService.getExecutionQueue(ExecutionQueueType.DEFAULT);
+				if (CollectionUtils.isEmpty(defaultQueue.getExecutionToken())) {
 					buttonStartEnabled = false;
 				}else{
 					buttonStartEnabled = !isErrorInQueue(getCurrentExecutionQueue());
 				}
 			}
+				
 			getDataModel().setButtonStartEnabled(buttonStartEnabled);
 			getDataModel().setButtonPauseEnabled(buttonPauseEnabled);
 			getDataModel().setButtonStopEnabled( buttonStopEnabled);
@@ -407,7 +409,9 @@ public class ExecutionPartController extends AbstractController<ExecutionPartMod
 
 	private ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> getCurrentExecutionQueue() throws GkException{
 		ExecutionQueue<ExecutionTokenState, ExecutionToken<ExecutionTokenState>> currentQueue = executionService.findRunningExecutionQueue();
-		if(executionService.getExecutionState() == ExecutionState.COMPLETE || executionService.getExecutionState() == ExecutionState.IDLE || currentQueue == null){
+		if (executionService.getExecutionState() == ExecutionState.COMPLETE
+		|| executionService.getExecutionState() == ExecutionState.IDLE 
+		|| currentQueue == null) {
 			currentQueue = executionService.getExecutionQueue(ExecutionQueueType.DEFAULT);
 		}
 		return currentQueue;

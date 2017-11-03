@@ -290,6 +290,7 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 		
 		if(probeUtility != null && probeUtility.isProbingInProgress()){
 			probeUtility.cancelActiveProbing();
+			
 			// Probe active, let's hack over a TinyG bug
 			getCommunicator().sendImmediately(GkUtils.toBytesList(TinyGv097.FEED_HOLD), true);
 			schedule().send(TinyGv097.QUEUE_FLUSH).whenState(MachineState.MOTION_HOLDING).timeout(10, TimeUnit.SECOND).begin();			
@@ -621,6 +622,7 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	public void onQueueExecutionComplete() throws GkException {
 		if(probeUtility != null){
 			probeUtility.clearProbingGCode();
+			probeUtility = null;
 		}
 	}
 
@@ -631,6 +633,7 @@ public class TinyGControllerService extends AbstractTinyGControllerService<TinyG
 	public void onQueueExecutionCanceled() throws GkException {
 		if(probeUtility != null){
 			probeUtility.clearProbingGCode();
+			probeUtility = null;
 		}
 	}
 	

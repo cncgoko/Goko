@@ -98,13 +98,14 @@ public abstract class AbstractStreamingExecutor<S extends IExecutionTokenState, 
 				tokenCompleteLock.unlock();
 			}
 		}
+		LOG.info("!!! Token complete !!!");
 	}
 
 	/**
 	 * Notify this object that the token is completely executed
 	 */
 	protected final void notifyTokenComplete(){
-		LOG.info("!!! Token complete !!!");
+		LOG.info("Token complete set to true");
 		tokenCompleteLock.lock();
 		try{			
 			setTokenComplete(true);

@@ -76,7 +76,7 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 	
 	public void executeProbing() throws GkException{
 		getDataModel().setError(false);
-		getDataModel().setInfoMessage(null);
+		getDataModel().setInfoMessage("Probing...");
 		getDataModel().setErrorMessage(null);
 		probingService.checkReadyToProbe();
 		
@@ -102,7 +102,7 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 					CompletionService<ProbeResult> probeCompletionResult = probingService.probe(probeRequest);
 					Time waitTime = getDataModel().getMaxDistance().multiply(2).divide(getDataModel().getFeedrate());
 					int timeout = (int) waitTime.doubleValue(TimeUnit.SECOND);
-				
+									
 					Future<ProbeResult> result = probeCompletionResult.poll(timeout, java.util.concurrent.TimeUnit.SECONDS);
 					if(result != null && result.isDone()){
 						ProbeResult probeResult = result.get();

@@ -27,7 +27,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onQueueExecutionStart() throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -36,7 +35,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onExecutionStart(IExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -45,7 +43,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onExecutionCanceled(IExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -54,7 +51,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onExecutionPause(IExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -63,7 +59,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onExecutionResume(IExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -72,7 +67,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onExecutionComplete(IExecutionToken<ExecutionTokenState> token) throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -81,7 +75,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onQueueExecutionComplete() throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -90,7 +83,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onQueueExecutionCanceled() throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -99,7 +91,6 @@ public class GrblExecutor extends AbstractGrblExecutor<GrblControllerService> {
 	 */
 	@Override
 	public void onLineStateChanged(IExecutionToken<ExecutionTokenState> token, Integer idLine) throws GkException {
-		// TODO Auto-generated method stub
 		
 	}
 }
