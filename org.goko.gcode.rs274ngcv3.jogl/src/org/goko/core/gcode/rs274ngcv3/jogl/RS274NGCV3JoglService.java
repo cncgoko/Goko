@@ -119,8 +119,8 @@ public class RS274NGCV3JoglService extends AbstractGokoService implements IGokoS
 			for (RS274GCodeRenderer renderer : lstRenderer) {
 				if(renderer.getBounds() == null){  // Only update if bound is null
 					IGCodeProvider provider = renderer.getGCodeProvider();
-					InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(new GCodeContext(), provider);
-					BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(new GCodeContext(), instructionProvider);
+					InstructionProvider instructionProvider = Activator.getRS274NGCService().getInstructions(gcodeContextProvider.getGCodeContext(), provider);
+					BoundingTuple6b bounds = Activator.getRS274NGCService().getBounds(gcodeContextProvider.getGCodeContext(), instructionProvider);
 					renderer.setBounds(bounds);				
 				}
 				if(result == null){
