@@ -138,12 +138,12 @@ public class ZeroProbePart extends GkUiComponent<ZeroProbeController, ZeroProbeM
 		toolDiameterEditor.setLabel("Tool diameter");
 		toolDiameterEditor.setPropertyName(ZeroProbeModel.TOOL_DIAMETER);
 		toolDiameterEditor.setUnit(GokoPreference.getInstance().getLengthUnit());
-
 		
 		UiComboFieldEditor<ICoordinateSystem> comboFieldEditor = new UiComboFieldEditor<ICoordinateSystem>(grpProbeSettings, SWT.NONE);
 		comboFieldEditor.setLabelWidthInChar(12);
 		comboFieldEditor.setWidthInChars(6);
 		comboFieldEditor.setPropertyName(ZeroProbeModel.COORDINATE_SYSTEM);
+		comboFieldEditor.setLabel("Target CS");
 		comboFieldEditor.setInputPropertyName(ZeroProbeModel.COORDINATE_SYSTEM_LIST);
 		
 		Composite composite_2 = new Composite(composite, SWT.NONE);
