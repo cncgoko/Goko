@@ -87,7 +87,6 @@ public class ZeroProbeController extends AbstractController<ZeroProbeModel>{
 		probeRequest.setMotionFeedrate(getDataModel().getFeedrate());
 		probeRequest.setProbeFeedrate(getDataModel().getFeedrate());
 		probeRequest.setProbeCoordinate(position);
-		//probeRequest.setClearance(getAxisPosition(position, Length.ZERO));
 		probeRequest.setProbeStart(getAxisPosition(position, Length.ZERO));
 		probeRequest.setProbeEnd(getAxisPosition(position, getDataModel().getMaxDistance()));
 		

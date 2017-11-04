@@ -822,9 +822,7 @@ public class GrblControllerService extends EventDispatcher implements IGrblContr
 		break;
 		default: throw new GkFunctionalException("GRBL-002", cs.getCode());
 		}
-		Tuple6b offsets = getCoordinateSystemOffset(getCurrentCoordinateSystem());
-		Tuple6b mPos = new Tuple6b(getPosition());
-		mPos = mPos.add(offsets);
+		Tuple6b mPos = new Tuple6b(position);
 		cmd += "L2";
 		cmd += "X"+getPositionAsString(mPos.getX());
 		cmd += "Y"+getPositionAsString(mPos.getY());
