@@ -36,8 +36,7 @@ import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
  * @author PsyKo
  *
  */
-public class CoordinateSystemRenderer extends AbstractCoreJoglMultipleRenderer{
-
+public class CoordinateSystemRenderer extends AbstractCoreJoglMultipleRenderer{	
 	/**
 	 * Constructor
 	 * @param enumCoordinateSystem the coordinate system enum
@@ -46,14 +45,18 @@ public class CoordinateSystemRenderer extends AbstractCoreJoglMultipleRenderer{
 	 * @param colorY the Y axis color
 	 * @param colorZ the Z axis color
 	 */
-	public CoordinateSystemRenderer(ICoordinateSystem enumCoordinateSystem, float scale, Color3f colorX, Color3f colorY, Color3f colorZ, Color3f textColor) {
+	public CoordinateSystemRenderer(ICoordinateSystem enumCoordinateSystem, float scale, Color3f colorX, Color3f colorY, Color3f colorZ, Color3f textColor, double textSize) {
 		super();
 		addRenderer(new ThreeAxisRenderer(scale, colorX, colorY, colorZ));
-		TextRenderer textRenderer = new TextRenderer(enumCoordinateSystem.getCode(), 2, new Point3d(), TextRenderer.BOTTOM | TextRenderer.LEFT);
+		TextRenderer textRenderer = new TextRenderer(enumCoordinateSystem.getCode(), textSize, new Point3d(), TextRenderer.BOTTOM | TextRenderer.LEFT);
 		textRenderer.setColor(textColor.x, textColor.y, textColor.z, 1);
 		textRenderer.setPadding(Length.valueOf("0.2", JoglUtils.JOGL_UNIT));
 		addRenderer( textRenderer );
 	}	
+	
+	public void createActiveRenderer(){
+		
+	}
 	/** (inheritDoc)
 	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer#performInitialize(javax.media.opengl.GL3)
 	 */

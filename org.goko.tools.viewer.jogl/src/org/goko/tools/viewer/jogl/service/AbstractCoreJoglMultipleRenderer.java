@@ -93,6 +93,7 @@ public abstract class AbstractCoreJoglMultipleRenderer extends AbstractCoreJoglR
 	public void removeRenderer(AbstractCoreJoglRenderer renderer){
 		this.renderers.remove(renderer);
 	}
+	
 	/**
 	 * Set the id of the used
 	 * @param shaderProgram

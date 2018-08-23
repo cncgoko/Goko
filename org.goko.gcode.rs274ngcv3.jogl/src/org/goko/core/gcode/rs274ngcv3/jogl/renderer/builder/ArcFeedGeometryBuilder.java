@@ -40,8 +40,8 @@ public class ArcFeedGeometryBuilder extends AbstractInstructionGeometryBuilder<A
 		if(settings.isRotaryAxisEnabled() && context.getA() != null){
 			rotationMatrix = new Matrix4d();
 			rotateMatrix(rotationMatrix, context.getA().doubleValue(AngleUnit.RADIAN));
-
-			rotaryAxisOffset = settings.getRotaryAxisPosition().toPoint3d(JoglUtils.JOGL_UNIT);			
+			Tuple6b coordinateSystemOffset = context.getActiveCoordinateSystemData();
+			rotaryAxisOffset = settings.getRotaryAxisPosition().add(coordinateSystemOffset).toPoint3d(JoglUtils.JOGL_UNIT);			
 		}
 		
 		if(InstructionUtils.isValidArcFeedInstruction(context, instruction)){

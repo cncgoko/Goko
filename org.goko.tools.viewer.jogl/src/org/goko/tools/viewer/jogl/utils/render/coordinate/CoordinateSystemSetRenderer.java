@@ -44,11 +44,13 @@ import com.jogamp.opengl.util.PMVMatrix;
 public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRenderer{
 	public static final String CODE = "org.goko.viewer.jogl.utils.render.CoordinateSystemRenderer";
 	private ICoordinateSystemAdapter<ICoordinateSystem> adapter;
-	private Map<ICoordinateSystem, AbstractCoreJoglRenderer> coordinateSystemRenderer;
+	private Map<ICoordinateSystem, CoordinateSystemRenderer> coordinateSystemRenderer;
+	private Map<ICoordinateSystem, CoordinateSystemRenderer> activeCoordinateSystemRenderer;
 
 	public CoordinateSystemSetRenderer() {
 		super();
-		coordinateSystemRenderer = new HashMap<ICoordinateSystem, AbstractCoreJoglRenderer>();
+		coordinateSystemRenderer = new HashMap<ICoordinateSystem, CoordinateSystemRenderer>();
+		activeCoordinateSystemRenderer = new HashMap<ICoordinateSystem, CoordinateSystemRenderer>();
 	}
 
 	/**
@@ -69,11 +71,17 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 		if(!isEnabled() || shouldDestroy()){
 			return;
 		}
+		// Deactivate all renderers
+		//getRenderers().forEach(r -> r.setEnabled(false));
+		for (AbstractCoreJoglRenderer r : getRenderers()) {
+			r.setEnabled(false);
+		}
 		if(adapter != null){
-			Tuple6b machineOrigin 	= new Tuple6b().setZero();//.subtract(new Tuple6b(offsets));
+			Tuple6b machineOrigin 	= new Tuple6b().setZero();
 
 			for (ICoordinateSystem cs : adapter.getCoordinateSystem()) {
 				AbstractCoreJoglRenderer renderer = getCoordinateSystemRenderer(cs);
+				renderer.setEnabled(true);
 				Tuple6b csOffset = adapter.getCoordinateSystemOffset(cs);
 				if(csOffset != null){
 					csOffset = csOffset.add(machineOrigin);
@@ -99,14 +107,22 @@ public class CoordinateSystemSetRenderer extends AbstractCoreJoglMultipleRendere
 
 	}
 
-	protected AbstractCoreJoglRenderer getCoordinateSystemRenderer(ICoordinateSystem cs){
+	protected CoordinateSystemRenderer getCoordinateSystemRenderer(ICoordinateSystem cs) throws GkException{
 		if(!coordinateSystemRenderer.containsKey(cs)){
-			//ThreeAxisRenderer axisRenderer = new ThreeAxisRenderer(4, new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f));
-			CoordinateSystemRenderer axisRenderer = new CoordinateSystemRenderer(cs, 4, new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(1f,0.77f,0.04f));
+			// Create default renderer
+			CoordinateSystemRenderer axisRenderer = new CoordinateSystemRenderer(cs, 4, new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(0.4f,0.4f,0.4f), new Color3f(1f,0.77f,0.04f), 2);
 			coordinateSystemRenderer.put(cs, axisRenderer);
 			addRenderer(axisRenderer);
+			// Create active renderer
+			CoordinateSystemRenderer activeAxisRenderer = new CoordinateSystemRenderer(cs, 10, new Color3f(1f,0.4f,0.4f), new Color3f(0.4f,1f,0.4f), new Color3f(0.4f,0.4f,1f), new Color3f(1f,1f,1f), 4);
+			activeCoordinateSystemRenderer.put(cs, activeAxisRenderer);
+			addRenderer(activeAxisRenderer);
+			
 		}
-		return coordinateSystemRenderer.get(cs);
+		boolean isCurrent = cs.equals(adapter.getCurrentCoordinateSystem());
+		return isCurrent 
+				? activeCoordinateSystemRenderer.get(cs) 
+				: coordinateSystemRenderer.get(cs);
 	}
 
 	/**
