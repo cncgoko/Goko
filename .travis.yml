@@ -28,6 +28,7 @@ after_failure:
   #TODO add surefire report exports
 
 deploy:
+  skip_cleanup: true
   provider: bintray
   file: "/home/travis/build/cncgoko/Goko/bintray_descriptor.json"
   on:
