@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ZeropProbe
 Bundle-SymbolicName: org.goko.tools.zeroprobe;singleton:=true
-Bundle-Version: 0.3.5.qualifier
+Bundle-Version: 0.3.6.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.di;bundle-version="1.1.0",

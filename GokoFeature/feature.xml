@@ -2,7 +2,7 @@
 <feature
       id="org.goko.feature"
       label="Goko Feature"
-      version="0.3.5.qualifier"
+      version="0.3.6.qualifier"
       provider-name="Goko">
 
    <license url="http://www.gnu.org/licenses/gpl-3.0.en.html">

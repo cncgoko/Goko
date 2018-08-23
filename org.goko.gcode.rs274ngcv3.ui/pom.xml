@@ -5,13 +5,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.goko</groupId>
 	<artifactId>org.goko.gcode.rs274ngcv3.ui</artifactId>
-	<version>0.3.5-SNAPSHOT</version>
+	<version>0.3.6-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 
 	<parent>
 		<groupId>org.goko</groupId>
 		<artifactId>org.goko.build.parent</artifactId>
-		<version>0.3.5-SNAPSHOT</version>
+		<version>0.3.6-SNAPSHOT</version>
 		<relativePath>../org.goko.build.parent</relativePath>
 	</parent>
 </project>
