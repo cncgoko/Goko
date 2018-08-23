@@ -114,7 +114,7 @@ public abstract class AbstractTinyGJogger<F extends AbstractTinyGConfiguration<F
 	 * @param pPreviousDistanceMode the previous distance mode
 	 * @return Runnable
 	 */
-	protected Runnable getRestoreDistanceModeRunnable(EnumDistanceMode pPreviousDistanceMode){
+	protected Runnable getRestoreDistanceModeRunnable(final EnumDistanceMode pPreviousDistanceMode){
 		return new Runnable() {				
 			@Override
 			public void run() {
