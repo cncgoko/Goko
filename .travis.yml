@@ -27,8 +27,7 @@ after_failure:
   #- "cat ../org.goko.build.parent/target/site/surefire-report.html"
   #TODO add surefire report exports
 
-deploy:
-  skip_cleanup: true
+deploy:  
   provider: bintray
   file: "/home/travis/build/cncgoko/Goko/bintray_descriptor.json"
   on:
@@ -39,6 +38,7 @@ deploy:
   key:
     secure: "aovA/OwB1eJ/qtj6xagkb2hk+vgCkobPRFl9bP+fWOmKZ1riWOZvXYAraG8lpIjqKQQPZUiCv/R0nJuJjnp5jk22GhiXF7KhlDG+SlaN3gLd2lTEXYbHYGdUo06OceN5BfcW/AlEY9w10NDGvl7O1t9Wt0HAHei+OdPljN/xeqgbldK+1eN31ouqmnLhDJw/KA7ljYAoFkJNisq4qba7WaglwlFeqDaq5H5uYqs29y+aJyoOYS9/3zAvPuV5j/x/TdInUgOa+KUuCHI6W49sU6b2mTzBMgW5RaaqGLjPwttfSg6qVxjOYBNQsWpFwsde8siNMon536AHZjW7a+pJS+UugtnknAy8nL+/856nIWNjqI6Ihk30B7SVDtE/19WnbsfGu57JE4QaofppFL4zmFgK0iiAmY5c4NfPe2C9pEECQbH3bKGgJLZSXQqq1aocEXEhdUoiJlMZwlGxe6dT/AEOiEdmsXe3sH5ntIaZDbcAmVkGO/j1Z6oLmiOo9s4RrquBkFBM+YJKLZWJPE1/cVtcvPUvauv/76nxqGCA8V+jQ2iUQUXWx72xKMmqUDorHForIBONv0/YY7wNCdy9I+u63659S5k2MH84vtReEtUQuGWrUTjlVO7X/K6oxP5Zsza+J1Wy64xr4Jl/BIqdSlM1wvF4EH6eEhdEelgy3Pw="
   dry-run: false
+  skip_cleanup: true
 
 after_success:
  - chmod a+x ./../deploy.sh
