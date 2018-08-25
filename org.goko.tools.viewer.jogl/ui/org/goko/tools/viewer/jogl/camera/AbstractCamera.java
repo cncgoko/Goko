@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl.camera;
 
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector4f;
 
@@ -25,6 +23,8 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
 import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
 
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.util.PMVMatrix;
 
 

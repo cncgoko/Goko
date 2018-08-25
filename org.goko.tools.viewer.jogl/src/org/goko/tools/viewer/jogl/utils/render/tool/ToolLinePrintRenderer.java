@@ -6,8 +6,6 @@ package org.goko.tools.viewer.jogl.utils.render.tool;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point4f;
 
@@ -18,6 +16,9 @@ import org.goko.core.gcode.rs274ngcv3.context.GCodeContext;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 /**
  * @author PsyKo

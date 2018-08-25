@@ -1,6 +1,5 @@
 package org.goko.tools.viewer.jogl.utils.render.coordinate;
 
-import javax.media.opengl.GL3;
 import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
@@ -12,6 +11,8 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxi
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.measurement.ArrowRenderer;
 import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
+
+import com.jogamp.opengl.GL3;
 
 public class FourAxisOriginRenderer extends AbstractCoreJoglMultipleRenderer {
 

@@ -25,7 +25,7 @@ Require-Bundle: org.goko.core;bundle-version="0.0.1",
  org.eclipse.e4.core.di.extensions,
  org.eclipse.equinox.preferences,
  org.goko.tools.viewer.jogl;bundle-version="0.0.2",
- org.jogamp.jogl;bundle-version="2.0.2"
+ org.jogamp.jogl;bundle-version="2.3.2"
 Import-Package: javax.annotation;version="1.2.0",
  org.eclipse.core.runtime,
  org.eclipse.e4.core.contexts,

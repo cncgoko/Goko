@@ -19,8 +19,6 @@
  */
 package org.goko.tools.viewer.jogl.utils.render;
 
-import javax.media.opengl.GL3;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.viewer.renderer.IViewer3DRenderer;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer;
@@ -28,6 +26,7 @@ import org.goko.tools.viewer.jogl.service.JoglRendererProxy;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.PMVMatrix;
 
 public class JoglRendererWrapper extends AbstractCoreJoglRenderer {

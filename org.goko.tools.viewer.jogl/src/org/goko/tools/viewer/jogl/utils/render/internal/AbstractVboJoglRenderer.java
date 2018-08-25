@@ -20,15 +20,14 @@ package org.goko.tools.viewer.jogl.utils.render.internal;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractVboJoglRenderer extends AbstractCoreJoglRenderer{
 	protected static final int VERTICES = 1 << 1;

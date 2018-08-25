@@ -21,8 +21,6 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 
@@ -31,6 +29,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 /**
  * A simple polyline render

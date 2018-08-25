@@ -19,10 +19,6 @@ package org.goko.tools.viewer.jogl.camera;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point2i;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
@@ -46,6 +42,10 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 

@@ -16,7 +16,6 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl.camera.orthographic;
 
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
@@ -30,6 +29,7 @@ import org.goko.core.math.BoundingTuple6b;
 import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.swt.GLCanvas;
 
 public class LeftCamera extends OrthographicCamera implements MouseMoveListener,MouseListener, Listener {

@@ -21,8 +21,6 @@ package org.goko.tools.viewer.jogl.utils.render.coordinate;
 
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 
@@ -31,6 +29,9 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference.EnumRotaryAxi
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 /**
  * Draw the XYZ axis

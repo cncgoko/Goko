@@ -3,7 +3,6 @@ package org.goko.tools.viewer.jogl.service;
 import java.nio.FloatBuffer;
 import java.util.List;
 
-import javax.media.opengl.GL2;
 import javax.vecmath.Color4f;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
@@ -27,6 +26,8 @@ import org.goko.core.math.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
 import org.goko.tools.viewer.jogl.utils.render.grid.GraduatedGridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
+
+import com.jogamp.opengl.GL2;
 
 /**
  * Utility class for Jogl rendering

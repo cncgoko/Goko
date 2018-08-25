@@ -19,7 +19,6 @@
  */
 package org.goko.tools.viewer.jogl.utils.render.coordinate;
 
-import javax.media.opengl.GL3;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
@@ -29,6 +28,8 @@ import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
+
+import com.jogamp.opengl.GL3;
 
 /**
  * Draw the XYZ axis

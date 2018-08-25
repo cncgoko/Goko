@@ -17,7 +17,6 @@
 
 package org.goko.tools.viewer.jogl.utils.render.coordinate.measurement;
 
-import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -32,6 +31,8 @@ import org.goko.tools.viewer.jogl.utils.render.basic.CircleRenderer;
 import org.goko.tools.viewer.jogl.utils.render.basic.PointRenderer;
 import org.goko.tools.viewer.jogl.utils.render.basic.PolylineRenderer;
 import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
+
+import com.jogamp.opengl.GL3;
 
 public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 	/** The center of the diameter*/

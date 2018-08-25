@@ -1,7 +1,5 @@
 package org.goko.tools.viewer.jogl.service;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -9,6 +7,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.gcode.element.IGCodeProvider;
 import org.goko.core.math.Tuple6b;
 import org.goko.core.viewer.renderer.IRendererProxy;
+
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
 
 public class JoglRendererProxy implements IRendererProxy {
 	private GL3 gl;

@@ -19,8 +19,6 @@ package org.goko.tools.viewer.jogl.utils.render.coordinate.measurement;
 
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -29,6 +27,9 @@ import org.goko.core.common.exception.GkException;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public class ArrowRenderer extends AbstractVboJoglRenderer{
 	private Point3d position;

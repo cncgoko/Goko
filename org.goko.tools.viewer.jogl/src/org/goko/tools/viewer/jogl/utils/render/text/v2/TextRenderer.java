@@ -3,8 +3,6 @@ package org.goko.tools.viewer.jogl.utils.render.text.v2;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4f;
@@ -18,6 +16,8 @@ import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.texture.Texture;
 
 public class TextRenderer extends AbstractVboJoglRenderer {

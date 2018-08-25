@@ -7,8 +7,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
 import javax.vecmath.Point4d;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -21,6 +19,9 @@ import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractLineRenderer;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 /**
  * @author PsyKo

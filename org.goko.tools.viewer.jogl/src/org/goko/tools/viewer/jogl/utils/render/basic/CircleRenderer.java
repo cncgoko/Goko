@@ -20,7 +20,6 @@ package org.goko.tools.viewer.jogl.utils.render.basic;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -29,6 +28,8 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
+
+import com.jogamp.opengl.GL;
 
 public class CircleRenderer extends PolylineRenderer{
 	/** The center of the circle*/

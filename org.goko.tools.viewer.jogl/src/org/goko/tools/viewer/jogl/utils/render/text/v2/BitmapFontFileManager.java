@@ -20,11 +20,10 @@ package org.goko.tools.viewer.jogl.utils.render.text.v2;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
-
 import org.apache.commons.lang3.StringUtils;
 import org.goko.core.common.exception.GkException;
 
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.texture.Texture;
 
 public class BitmapFontFileManager {

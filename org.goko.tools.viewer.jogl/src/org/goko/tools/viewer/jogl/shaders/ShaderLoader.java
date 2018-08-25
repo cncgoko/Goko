@@ -26,10 +26,6 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.media.opengl.glu.GLU;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3f;
 
@@ -39,6 +35,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.goko.core.log.GkLog;
 import org.goko.tools.viewer.jogl.utils.light.Light;
 
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.PMVMatrix;
 
 public class ShaderLoader {

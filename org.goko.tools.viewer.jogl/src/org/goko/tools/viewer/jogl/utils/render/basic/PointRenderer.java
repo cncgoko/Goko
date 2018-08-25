@@ -20,12 +20,13 @@ package org.goko.tools.viewer.jogl.utils.render.basic;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
+
+import com.jogamp.opengl.GL;
 
 public class PointRenderer extends PolylineRenderer{
 	private Tuple6b position;

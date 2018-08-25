@@ -22,7 +22,6 @@ package org.goko.tools.viewer.jogl.utils.render.coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
 import javax.vecmath.Color3f;
 
 import org.goko.core.common.exception.GkException;
@@ -33,6 +32,7 @@ import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.PMVMatrix;
 
 /**

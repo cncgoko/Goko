@@ -1,10 +1,10 @@
 package org.goko.tools.viewer.jogl.utils.render.internal;
 
-import javax.media.opengl.GL3;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
+
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractLineRenderer extends AbstractVboJoglRenderer {
 	/** Line width */

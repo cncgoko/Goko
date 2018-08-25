@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl.service;
 
-import javax.media.opengl.GLAutoDrawable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -43,6 +41,8 @@ import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer
 import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
+
+import com.jogamp.opengl.GLAutoDrawable;
 
 /**
  * Jogl implementation of the viewer service

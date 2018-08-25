@@ -16,10 +16,9 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl;
 
-import javax.media.opengl.GLCapabilities;
-
 import org.eclipse.swt.widgets.Composite;
 
+import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.swt.GLCanvas;
 
 /**
@@ -38,7 +37,7 @@ public class GokoJoglCanvas extends GLCanvas{
 	 * @param data
 	 */
 	public GokoJoglCanvas(Composite parent, int style,GLCapabilities caps) {
-		super(parent, style, caps, null, null);
+		super(parent, style, caps, null);
 	}
 	/**
 	 * @return the keyboardJogEnabled

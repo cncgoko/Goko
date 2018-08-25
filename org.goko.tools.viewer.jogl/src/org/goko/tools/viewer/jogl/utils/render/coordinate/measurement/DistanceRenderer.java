@@ -19,7 +19,6 @@ package org.goko.tools.viewer.jogl.utils.render.coordinate.measurement;
 
 import java.math.BigDecimal;
 
-import javax.media.opengl.GL3;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -34,6 +33,8 @@ import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.basic.PolylineRenderer;
 import org.goko.tools.viewer.jogl.utils.render.text.v2.TextRenderer;
+
+import com.jogamp.opengl.GL3;
 
 /**
  * Simple rule display

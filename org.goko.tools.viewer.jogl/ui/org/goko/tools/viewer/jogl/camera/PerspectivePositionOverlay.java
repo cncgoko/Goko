@@ -6,7 +6,6 @@ package org.goko.tools.viewer.jogl.camera;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point2i;
 import javax.vecmath.Point4f;
@@ -16,6 +15,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 import org.goko.tools.viewer.jogl.service.overlay.AbstractPositionOverlay;
 
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.PMVMatrix;
 
 /**

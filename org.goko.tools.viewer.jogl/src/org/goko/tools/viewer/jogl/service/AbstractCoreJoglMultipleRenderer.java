@@ -20,12 +20,11 @@ package org.goko.tools.viewer.jogl.service;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.media.opengl.GL3;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.goko.core.common.exception.GkException;
 
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.PMVMatrix;
 
 public abstract class AbstractCoreJoglMultipleRenderer extends AbstractCoreJoglRenderer {

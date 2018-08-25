@@ -1,12 +1,13 @@
 package org.goko.tools.viewer.jogl.utils.render.internal;
 
-import javax.media.opengl.GL3;
 import javax.vecmath.Color3f;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.material.Material;
+
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractShadedRenderer extends AbstractVboJoglRenderer{
 	private Material material;

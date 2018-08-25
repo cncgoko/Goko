@@ -17,11 +17,10 @@
 
 package org.goko.tools.viewer.jogl.service;
 
-import javax.media.opengl.GL3;
-
 import org.goko.core.common.exception.GkException;
 import org.goko.core.math.BoundingTuple6b;
 
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.PMVMatrix;
 
 public interface ICoreJoglRenderer {
