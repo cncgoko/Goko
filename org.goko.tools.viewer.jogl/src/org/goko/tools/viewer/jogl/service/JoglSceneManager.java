@@ -335,7 +335,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		// Enable blending
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
+		LOG.info("gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);");
 		// Enable ZBuffer
 
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -343,7 +343,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		gl.glDepthFunc(GL.GL_LEQUAL);
 		// Perspective correction
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
-
+		LOG.info("gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);");
 		// Line smooth
 	    gl.glEnable(GL.GL_LINE_SMOOTH);
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
@@ -353,9 +353,12 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	    gl.glUseProgram(shaderProgram);
 
 	    initLights();
-
+	    LOG.info("initLights();");
+	    
 		overlay = new Overlay(gLAutoDrawable);
 		overlay.createGraphics();
+		LOG.info("public void init(GLAutoDrawable gLAutoDrawable) ended");
+		
 	}
 
 	/** (inheritDoc)
