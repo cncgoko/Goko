@@ -183,9 +183,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
-	public void display(GLAutoDrawable gLAutoDrawable) {
-		GLProfile.getMaxProgrammable(true);
-		System.err.println(gLAutoDrawable.getGL().glGetString(GL.GL_VERSION));
+	public void display(GLAutoDrawable gLAutoDrawable) {		
+		LOG.info("GL Profile: "+gLAutoDrawable.getGL().glGetString(GL.GL_VERSION));
 		GL3 gl = getSupportedGL(gLAutoDrawable);//gLAutoDrawable.getGL().getGL4();
 		if(updateBackgroundColor){
 			gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); // reset background (clear) color
