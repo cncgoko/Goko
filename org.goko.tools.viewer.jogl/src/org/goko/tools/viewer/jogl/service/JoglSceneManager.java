@@ -219,7 +219,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		drawOverlay();
 	}
 
-	private GL3 getSupportedGL(GLAutoDrawable gLAutoDrawable){		
+	private GL3 getSupportedGL(GLAutoDrawable gLAutoDrawable){
+		LOG.info("GL Profile: "+gLAutoDrawable.getGL().glGetString(GL.GL_VERSION));
 		if(gLAutoDrawable.getGL().isGL4()){
 			LOG.info("Using GL4: gLAutoDrawable.getGL().getGL4()");
 			return gLAutoDrawable.getGL().getGL4();
