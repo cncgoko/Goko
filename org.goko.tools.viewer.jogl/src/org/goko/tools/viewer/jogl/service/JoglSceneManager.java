@@ -322,7 +322,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	@Override
 	public void init(GLAutoDrawable gLAutoDrawable) {
-		GL3 gl = gLAutoDrawable.getGL().getGL3(); // get the OpenGL graphics context
+		GL3 gl = getSupportedGL(gLAutoDrawable); // get the OpenGL graphics context
 		//gl.glClearColor(.19f, .19f, .23f, 1.0f); // set background (clear) color
 		backgroundColor = JoglViewerPreference.getInstance().getBackgroundColor();
 		gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); 
