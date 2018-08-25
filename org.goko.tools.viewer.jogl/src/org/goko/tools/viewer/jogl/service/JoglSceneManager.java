@@ -124,11 +124,13 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	public GokoJoglCanvas createCanvas(Composite parent) throws GkException {
+		LOG.info("GokoJoglCanvas createCanvas(Composite parent) throws GkException");
 		if(canvas != null){
 			return canvas;
 		}
 		
 		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
+		LOG.info("GLProfile.getMaxFixedFunc(true)");
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
 		
@@ -139,6 +141,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 		canvas 		= new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);
 		canvas.addGLEventListener(this);
+		LOG.info(" new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);");
 		proxy 		= new JoglRendererProxy(null);
 
 		addCamera(new PerspectiveCamera(canvas, this));
@@ -146,7 +149,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		addCamera(new LeftCamera(canvas, this));
 		addCamera(new FrontCamera(canvas, this));
 		String defaultCamera = JoglViewerPreference.getInstance().getDefaultCamera();
-		
+		LOG.info("defaultCamera is "+defaultCamera);
 		if(isSupportedCamera(defaultCamera)){
 			setActiveCamera(defaultCamera);	
 		}else{
