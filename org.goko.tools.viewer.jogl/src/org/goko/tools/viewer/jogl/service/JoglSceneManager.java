@@ -221,9 +221,11 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 	private GL3 getSupportedGL(GLAutoDrawable gLAutoDrawable){		
 		if(gLAutoDrawable.getGL().isGL4()){
+			LOG.info("Using GL4: gLAutoDrawable.getGL().getGL4()");
 			return gLAutoDrawable.getGL().getGL4();
 		}
 		if(gLAutoDrawable.getGL().isGL3()){
+			LOG.info("Using GL3: gLAutoDrawable.getGL().getGL3()");
 			return gLAutoDrawable.getGL().getGL3();
 		}
 		throw new RuntimeException("Could not identify a compatible GL version");
@@ -322,6 +324,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	@Override
 	public void init(GLAutoDrawable gLAutoDrawable) {
+		LOG.info("public void init(GLAutoDrawable gLAutoDrawable)");
 		GL3 gl = getSupportedGL(gLAutoDrawable); // get the OpenGL graphics context
 		//gl.glClearColor(.19f, .19f, .23f, 1.0f); // set background (clear) color
 		backgroundColor = JoglViewerPreference.getInstance().getBackgroundColor();
