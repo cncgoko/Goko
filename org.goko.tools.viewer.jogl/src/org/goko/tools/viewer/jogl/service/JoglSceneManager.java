@@ -129,7 +129,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			return canvas;
 		}
 		
-		GLProfile profile = GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
+		GLProfile profile = GLProfile.getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
 		LOG.info("GLProfile.getMaxFixedFunc(true)");
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
