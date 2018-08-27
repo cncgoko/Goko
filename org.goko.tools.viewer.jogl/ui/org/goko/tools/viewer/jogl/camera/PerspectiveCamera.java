@@ -43,6 +43,7 @@ import org.goko.tools.viewer.jogl.service.JoglSceneManager;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
@@ -451,7 +452,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		super.reshape(drawable, x, y, width, height);
-		GL2 gl = drawable.getGL().getGL2();
+		GL3 gl = JoglUtils.getSupportedGL(drawable);
 
 		if (height == 0) {
 			height = 1; // prevent divide by zero

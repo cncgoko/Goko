@@ -28,6 +28,8 @@ import org.goko.tools.viewer.jogl.utils.render.grid.GraduatedGridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
 
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GLAutoDrawable;
 
 /**
  * Utility class for Jogl rendering
@@ -334,5 +336,15 @@ public class JoglUtils {
 			buffer.put(1);
 		}
 		return buffer;
+	}
+	
+	public static GL3 getSupportedGL(GLAutoDrawable gLAutoDrawable){		
+		if(gLAutoDrawable.getGL().isGL4()){			
+			return gLAutoDrawable.getGL().getGL4();
+		}
+		if(gLAutoDrawable.getGL().isGL3()){			
+			return gLAutoDrawable.getGL().getGL3();
+		}
+		throw new RuntimeException("Could not identify a compatible GL version");
 	}
 }
