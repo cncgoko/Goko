@@ -59,11 +59,9 @@ import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.light.Light;
 import org.goko.tools.viewer.jogl.utils.overlay.IOverlayRenderer;
-import org.goko.tools.viewer.jogl.utils.render.JoglRendererWrapper;
 
 import com.jogamp.opengl.DebugGL3;
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -88,9 +86,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/** The list of supported camera */
 	private List<AbstractCamera> supportedCamera;
 	/** Display canvas */
-	private GokoJoglCanvas canvas;
-	/** Rendering proxy */
-	private JoglRendererProxy proxy;
+	private GokoJoglCanvas canvas;	
 	/** The list of renderer */
 	private List<ICoreJoglRenderer> renderers;
 	/** The list of renderer to remove */
@@ -142,8 +138,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		canvas 		= new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);
 		canvas.addGLEventListener(this);
 		LOG.info(" new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);");
-		proxy 		= new JoglRendererProxy(null);
-
+		
 		addCamera(new PerspectiveCamera(canvas, this));
 		addCamera(new TopCamera(canvas, this));
 		addCamera(new LeftCamera(canvas, this));
@@ -208,8 +203,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 		ShaderLoader.getInstance().updateLightData(gl, light0, light1);
 
-		proxy.setGl(gl);
-
 		try {
 			displayRenderers(gl);
 		} catch (GkException e) {
@@ -222,7 +215,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	
 	/**
 	 * Display the registered renderers
-	 * @param gl the GL2 to draw on
+	 * @param gl the GL to draw on
 	 * @throws GkException GkException
 	 */
 	private void displayRenderers(GL3 gl) throws GkException{
@@ -256,7 +249,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	public void addRenderer(IViewer3DRenderer renderer) throws GkException {
-		addRenderer(new JoglRendererWrapper(renderer));
+		addRenderer(renderer);
 	}
 
 	public void addRenderer(ICoreJoglRenderer renderer) throws GkException {
@@ -332,8 +325,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		// Accept fragment if it closer to the camera than the former one
 		gl.glDepthFunc(GL.GL_LEQUAL);
 		// Perspective correction
-		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
-		LOG.info("gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);");
+		//gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
+		//LOG.info("gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);");
 		// Line smooth
 	    gl.glEnable(GL.GL_LINE_SMOOTH);
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
@@ -406,7 +399,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	/**
 	 * Update the camera informations
 	 * @param gLAutoDrawable the drawable
-	 * @param gl the GL2
+	 * @param gl the GL3
 	 */
 	private void updateCamera(GLAutoDrawable gLAutoDrawable, GL3 gl){
 		if(!camera.isInitialized()){
