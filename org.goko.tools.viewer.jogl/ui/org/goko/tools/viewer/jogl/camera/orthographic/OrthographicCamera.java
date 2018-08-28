@@ -40,7 +40,6 @@ import org.goko.tools.viewer.jogl.service.JoglUtils;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -48,8 +47,7 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 	public static final String ID = "org.goko.tools.viewer.jogl.camera.OrthographicCamera";
 	protected Point2i last;
 	protected Point3f eye;
-	protected Vector3f up;
-	protected GLU glu;
+	protected Vector3f up;	
 	protected GLCanvas glCanvas;
 	protected double zoomOffset;
 	protected double spaceWidth;
@@ -72,7 +70,7 @@ public abstract class OrthographicCamera extends AbstractCamera implements Mouse
 
 
 		last 	= new Point2i();
-		glu = new GLU();
+		
 		eye 	= new Point3f(0,0,0);
 		up 		= new Vector3f(0,1,0);
 		zoomOffset = 1;

@@ -46,7 +46,6 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.swt.GLCanvas;
 import com.jogamp.opengl.util.PMVMatrix;
 
@@ -64,8 +63,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	private double angleHorizontal;
 	private double maxAngleLimit = Math.PI/300;
 	private double distance;
-	private GLCanvas glCanvas;
-	private GLU glu;
+	private GLCanvas glCanvas;	
 	private float fAspect;
 
 	public Point2i screenMin;
@@ -98,7 +96,6 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		glCanvas.addListener(SWT.MouseWheel, this);
 		pmvMatrix = new PMVMatrix();
 
-		glu 	= new GLU();
 		last 	= new Point2i();
 		eye 	= new Point3f(0,0,15);
 		at 		= new Point3f(0,0,0);
@@ -135,8 +132,7 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 		}
 		glCanvas.getGL().getGL2().glMatrixMode(GL2.GL_MODELVIEW);  // choose projection matrix
 		glCanvas.getGL().getGL2().glLoadIdentity();             // reset projection matrix
-		glu.gluPerspective(45.0f, fAspect, 0.5f, 10000.0f);
-
+		
 		pmvMatrix.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 		pmvMatrix.glLoadIdentity();
 
@@ -175,9 +171,6 @@ public class PerspectiveCamera extends AbstractCamera implements MouseMoveListen
 	 */
 	@Override
 	public void updatePosition(){
-        glu.gluLookAt(eye.x, eye.y, eye.z,
-      			target.x, target.y, target.z,
-      			up.x, up.y, up.z);
         updatePMVMatrix();
 	}
 
