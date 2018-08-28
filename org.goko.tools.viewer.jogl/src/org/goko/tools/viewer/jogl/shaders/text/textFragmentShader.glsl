@@ -13,7 +13,7 @@ vec4 tmpColor;
 uniform sampler2D fontTextureSampler;
 
 void main(){
-	tmpColor = vec4(vCharChannel * texture2D( fontTextureSampler, UV ).rgb, 1);
+	tmpColor = vec4(vCharChannel * texture( fontTextureSampler, UV ).rgb, 1);
 	tmpColor.a = tmpColor.r + tmpColor.g + tmpColor.b; 	
 	
 	if(tmpColor.a < 0.01){		
