@@ -209,7 +209,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			LOG.error(e);
 		}
 		gl.glUseProgram(0);
-		drawOverlay();
+		//drawOverlay();
 	}
 
 	
