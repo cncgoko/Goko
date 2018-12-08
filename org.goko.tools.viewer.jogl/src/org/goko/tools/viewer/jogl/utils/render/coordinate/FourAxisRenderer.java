@@ -151,7 +151,7 @@ class FourAxisRenderer extends AbstractLineRenderer {
 			vertex.z = (float) (scale/2 * (Math.sin(i * rotationAngle)));
 			axisVertices.put(new float[]{vertex.x,vertex.y,vertex.z,1f});
 			axisColors.put(new float[]{aColor.x,aColor.y,aColor.z,1f});
-		}
+		}		
 	}
 
 	private void buildRotaryAxisArcAroundY(FloatBuffer axisVertices, FloatBuffer axisColors){
@@ -210,5 +210,61 @@ class FourAxisRenderer extends AbstractLineRenderer {
 	 */
 	public void setDisplayRotaryAxis(boolean displayRotaryAxis) {
 		this.displayRotaryAxis = displayRotaryAxis;
+	}
+
+	/**
+	 * @return the xColor
+	 */
+	public Color3f getXColor() {
+		return xColor;
+	}
+
+	/**
+	 * @param xColor the xColor to set
+	 */
+	public void setXColor(Color3f xColor) {
+		this.xColor = xColor;
+	}
+
+	/**
+	 * @return the yColor
+	 */
+	public Color3f getYColor() {
+		return yColor;
+	}
+
+	/**
+	 * @param yColor the yColor to set
+	 */
+	public void setYColor(Color3f yColor) {
+		this.yColor = yColor;
+	}
+
+	/**
+	 * @return the zColor
+	 */
+	public Color3f getZColor() {
+		return zColor;
+	}
+
+	/**
+	 * @param zColor the zColor to set
+	 */
+	public void setZColor(Color3f zColor) {
+		this.zColor = zColor;
+	}
+
+	/**
+	 * @return the aColor
+	 */
+	public Color3f getAColor() {
+		return aColor;
+	}
+
+	/**
+	 * @param aColor the aColor to set
+	 */
+	public void setAColor(Color3f aColor) {
+		this.aColor = aColor;
 	}
 }

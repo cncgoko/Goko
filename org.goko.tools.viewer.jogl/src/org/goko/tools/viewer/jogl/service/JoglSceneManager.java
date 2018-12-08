@@ -119,14 +119,12 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		this.layerVisibility.put(Layer.LAYER_DEFAULT, true);
 	}
 
-	public GokoJoglCanvas createCanvas(Composite parent) throws GkException {
-		LOG.info("GokoJoglCanvas createCanvas(Composite parent) throws GkException");
+	public GokoJoglCanvas createCanvas(Composite parent) throws GkException {		
 		if(canvas != null){
 			return canvas;
 		}
 		
-		GLProfile profile = GLProfile.getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();
-		LOG.info("GLProfile.getMaxFixedFunc(true)");
+		GLProfile profile = GLProfile.getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();		
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
 		
@@ -137,14 +135,13 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 
 		canvas 		= new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);
 		canvas.addGLEventListener(this);
-		LOG.info(" new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);");
-		
+				
 		addCamera(new PerspectiveCamera(canvas, this));
 		addCamera(new TopCamera(canvas, this));
 		addCamera(new LeftCamera(canvas, this));
 		addCamera(new FrontCamera(canvas, this));
 		String defaultCamera = JoglViewerPreference.getInstance().getDefaultCamera();
-		LOG.info("defaultCamera is "+defaultCamera);
+		
 		if(isSupportedCamera(defaultCamera)){
 			setActiveCamera(defaultCamera);	
 		}else{
@@ -181,8 +178,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
-	public void display(GLAutoDrawable gLAutoDrawable) {		
-		LOG.info("GL Profile: "+gLAutoDrawable.getGL().glGetString(GL.GL_VERSION));
+	public void display(GLAutoDrawable gLAutoDrawable) {
 		GL3 gl = JoglUtils.getSupportedGL(gLAutoDrawable);//gLAutoDrawable.getGL().getGL4();
 		if(updateBackgroundColor){
 			gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); // reset background (clear) color
@@ -209,7 +205,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			LOG.error(e);
 		}
 		gl.glUseProgram(0);
-		//drawOverlay();
+		drawOverlay();
 	}
 
 	
@@ -306,8 +302,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 * @see javax.media.opengl.GLEventListener#init(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
-	public void init(GLAutoDrawable gLAutoDrawable) {
-		LOG.info("public void init(GLAutoDrawable gLAutoDrawable)");
+	public void init(GLAutoDrawable gLAutoDrawable) {		
 		GL3 gl = JoglUtils.getSupportedGL(gLAutoDrawable); // get the OpenGL graphics context
 		//gl.glClearColor(.19f, .19f, .23f, 1.0f); // set background (clear) color
 		backgroundColor = JoglViewerPreference.getInstance().getBackgroundColor();
@@ -317,8 +312,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		
 		// Enable blending
 		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		LOG.info("gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);");
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);		
 		// Enable ZBuffer
 
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -336,12 +330,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	    gl.glUseProgram(shaderProgram);
 
 	    initLights();
-	    LOG.info("initLights();");
 	    
 		overlay = new Overlay(gLAutoDrawable);
-		overlay.createGraphics();
-		LOG.info("public void init(GLAutoDrawable gLAutoDrawable) ended");
-		
+		overlay.createGraphics();		
 	}
 
 	/** (inheritDoc)
@@ -412,7 +403,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	private void drawOverlay() {
-		//overlay.beginRendering();		
+		overlay.beginRendering();		
 		Graphics2D g2d = overlay.createGraphics();
 		try{		
 			Color transparentColor = new Color(0,0,0,0);
@@ -426,7 +417,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		overlay.markDirty(0, 0, width, height);
 		overlay.drawAll();
 		g2d.dispose();
-		//overlay.endRendering();
+		overlay.endRendering();
 	}
 
 	/**

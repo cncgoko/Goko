@@ -17,6 +17,7 @@ import com.jogamp.opengl.GL3;
 public class FourAxisOriginRenderer extends AbstractCoreJoglMultipleRenderer {
 
 	private FourAxisRenderer axisRenderer;
+	private ArrowRenderer rotaryAxisArrow;
 
 	public FourAxisOriginRenderer(boolean displayRotaryAxis) {
 		super();
@@ -33,8 +34,36 @@ public class FourAxisOriginRenderer extends AbstractCoreJoglMultipleRenderer {
 		addRenderer(yTextRenderer);
 		addRenderer(zTextRenderer);
 		axisRenderer = new FourAxisRenderer(10, JoglViewerPreference.getInstance().getRotaryAxisDirection(), new Color3f(1,0,0), new Color3f(0,1,0), new Color3f(0,0,1), new Color3f(1,1,0));
-		axisRenderer.setDisplayRotaryAxis(displayRotaryAxis);
+		axisRenderer.setDisplayRotaryAxis(displayRotaryAxis);		
 		addRenderer(axisRenderer);	
+		addRotaryAxisArrow();
+	}
+	
+	/**
+	 * 
+	 */
+	private void addRotaryAxisArrow() {
+		EnumRotaryAxisDirection rotaryAxisDirection = axisRenderer.getRotationAxis();
+		if(rotaryAxisDirection == EnumRotaryAxisDirection.X){
+			rotaryAxisArrow = new ArrowRenderer(new Point3d(0,5,0), new Vector3d(0,0,-1), new Vector3d(0,1,0), new Color4f(1,1,0,1), 0.75f, 0.35f);
+			
+		} else if(rotaryAxisDirection == EnumRotaryAxisDirection.Y){
+			rotaryAxisArrow = new ArrowRenderer(new Point3d(5,0,0), new Vector3d(0,0,-1), new Vector3d(1,0,0), new Color4f(1,1,0,1), 0.75f, 0.35f);
+			
+		} else if(rotaryAxisDirection == EnumRotaryAxisDirection.Z){
+			rotaryAxisArrow = new ArrowRenderer(new Point3d(5,0,0), new Vector3d(0,-1,0), new Vector3d(1,0,0), new Color4f(1,1,0,1), 0.75f, 0.35f);	
+		}
+		addRenderer(rotaryAxisArrow);
+	}
+
+	/** (inheritDoc)
+	 * @see org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer#update()
+	 */
+	@Override
+	public void update() {
+		removeRenderer(rotaryAxisArrow);
+		addRotaryAxisArrow();
+		super.update();
 	}
 	
 	/** (inheritDoc)

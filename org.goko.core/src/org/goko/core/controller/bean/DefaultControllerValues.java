@@ -24,11 +24,15 @@ public interface DefaultControllerValues {
 	static final String POSITION_Y			= "GkDefaultControllerValue.PositionY";
 	static final String POSITION_Z			= "GkDefaultControllerValue.PositionZ";
 	static final String POSITION_A			= "GkDefaultControllerValue.PositionA";
+	static final String POSITION_B			= "GkDefaultControllerValue.PositionB";
+	static final String POSITION_C			= "GkDefaultControllerValue.PositionC";
 	static final String MACHINE_POSITION 	= "GkDefaultControllerValue.MachinePosition";
 	static final String MACHINE_POSITION_X 	= "GkDefaultControllerValue.MachinePositionX";	
 	static final String MACHINE_POSITION_Y	= "GkDefaultControllerValue.MachinePositionY";
 	static final String MACHINE_POSITION_Z	= "GkDefaultControllerValue.MachinePositionZ";
 	static final String MACHINE_POSITION_A	= "GkDefaultControllerValue.MachinePositionA";
+	static final String MACHINE_POSITION_B	= "GkDefaultControllerValue.MachinePositionB";
+	static final String MACHINE_POSITION_C	= "GkDefaultControllerValue.MachinePositionC";
 	static final String VELOCITY			= "GkDefaultControllerValue.Velocity";
 	static final String SPINDLE_STATE		= "GkDefaultControllerValue.SpindleState";
 	static final String SPINDLE_SPEED		= "GkDefaultControllerValue.SpindleSpeed";

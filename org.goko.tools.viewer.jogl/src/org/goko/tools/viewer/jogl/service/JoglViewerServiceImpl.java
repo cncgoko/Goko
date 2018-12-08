@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.goko.tools.viewer.jogl.service;
 
+import javax.vecmath.Color4f;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -38,6 +40,7 @@ import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.overlay.KeyboardJogOverlay;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
+import org.goko.tools.viewer.jogl.utils.render.coordinate.OriginRenderer;
 import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
@@ -100,6 +103,7 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(toolRenderer);
 		addRenderer(new ToolLinePrintRenderer(controllerAdapter, gcodeContextProvider));
 		
+		addRenderer(new OriginRenderer(5, new Color4f(1,0,0,1), new Tuple6b()));
 		
 		updateGridRenderer(xyGridRenderer);
 		updateGridRenderer(xzGridRenderer);

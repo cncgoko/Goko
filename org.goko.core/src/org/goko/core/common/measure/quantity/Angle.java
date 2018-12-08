@@ -7,6 +7,8 @@ import org.goko.core.common.measure.units.Unit;
 
 public class Angle extends AbstractQuantity<Angle>{
 	public static final Angle ZERO = new Angle(BigDecimal.ZERO, AngleUnit.DEGREE_ANGLE);
+	public static final Angle PI = new Angle(new BigDecimal(Math.PI), AngleUnit.RADIAN);
+	public static final Angle TWO_PI = PI.multiply(2);
 	
 	/**
 	 * Constructor

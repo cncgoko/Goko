@@ -102,11 +102,15 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		storeValue(DefaultControllerValues.POSITION_Y, "Y", "The Y work position",  Length.ZERO);
 		storeValue(DefaultControllerValues.POSITION_Z, "Z", "The Z work position",  Length.ZERO);
 		storeValue(DefaultControllerValues.POSITION_A, "A", "The A work position", Angle.ZERO);
+		storeValue(DefaultControllerValues.POSITION_B, "B", "The B work position", Angle.ZERO);
+		storeValue(DefaultControllerValues.POSITION_C, "C", "The C work position", Angle.ZERO);
 		
 		storeValue(DefaultControllerValues.MACHINE_POSITION_X, "Machine X", "The X machine position in absolute coord system",  Length.ZERO);
 		storeValue(DefaultControllerValues.MACHINE_POSITION_Y, "Machine Y", "The Y machine position in absolute coord system",  Length.ZERO);
 		storeValue(DefaultControllerValues.MACHINE_POSITION_Z, "Machine Z", "The Z machine position in absolute coord system",  Length.ZERO);
 		storeValue(DefaultControllerValues.MACHINE_POSITION_A, "Machine A", "The A machine position in absolute coord system",  Angle.ZERO);
+		storeValue(DefaultControllerValues.MACHINE_POSITION_B, "Machine B", "The B machine position in absolute coord system",  Angle.ZERO);
+		storeValue(DefaultControllerValues.MACHINE_POSITION_C, "Machine C", "The C machine position in absolute coord system",  Angle.ZERO);
 				
 		storeValue(DefaultControllerValues.VELOCITY				, "Velocity", "The current velocity of the machine", Speed.ZERO);
 		storeValue(DefaultControllerValues.SPINDLE_STATE		, "Spindle", "The current state of the spindle", "false");
@@ -260,6 +264,8 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		updateValue(DefaultControllerValues.POSITION_Y, position.getY());
 		updateValue(DefaultControllerValues.POSITION_Z, position.getZ());
 		updateValue(DefaultControllerValues.POSITION_A, position.getA());
+		updateValue(DefaultControllerValues.POSITION_B, position.getB());
+		updateValue(DefaultControllerValues.POSITION_C, position.getC());
 	}
 	
 	/**
@@ -273,6 +279,8 @@ public abstract class AbstractTinyGState extends MachineValueStore{
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Y, position.getY());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_Z, position.getZ());
 		updateValue(DefaultControllerValues.MACHINE_POSITION_A, position.getA());
+		updateValue(DefaultControllerValues.MACHINE_POSITION_B, position.getB());
+		updateValue(DefaultControllerValues.MACHINE_POSITION_C, position.getC());
 	}
 
 	
