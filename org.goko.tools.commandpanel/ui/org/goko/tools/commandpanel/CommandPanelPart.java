@@ -854,10 +854,8 @@ public class CommandPanelPart extends GkUiComponent<CommandPanelController, Comm
 	public void persistState(MPart part) {
 		if (getDataModel() != null) {
 			part.getPersistedState().put(JOG_PRECISE, String.valueOf(getDataModel().isPreciseJog()));
-			part.getPersistedState().put(JOG_STEP,
-					QuantityUtils.format(getDataModel().getJogIncrement(), 4, false, true));
-			part.getPersistedState().put(JOG_FEEDRATE,
-					QuantityUtils.format(getDataModel().getJogSpeed(), 4, false, true));
+			part.getPersistedState().put(JOG_STEP, QuantityUtils.format(getDataModel().getJogIncrement(), 4, false, true));
+			part.getPersistedState().put(JOG_FEEDRATE, QuantityUtils.format(getDataModel().getJogSpeed(), 4, false, true));
 		}
 	}
 
