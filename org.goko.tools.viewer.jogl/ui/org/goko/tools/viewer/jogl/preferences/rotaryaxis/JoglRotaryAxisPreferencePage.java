@@ -118,6 +118,15 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 		GkUiUtils.setEnabled(grpSettings, booleanFieldEditor.getControl().getSelection());
 	}
 	
+	/** (inheritDoc)
+	 * @see org.goko.common.preferences.GkFieldEditorPreferencesPage#performOk()
+	 */
+	@Override
+	public boolean performOk() {
+		JoglViewerPreference.getInstance().setRotaryAxisPosition(null);
+		return super.performOk();
+	}
+	
 	@Inject	
 	public void onUnitPreferenceChange(@Preference(nodePath = GokoPreference.NODE_ID, value = GokoPreference.KEY_DISTANCE_UNIT) String unit) throws GkException{			
 		Unit<Length> lengthUnit = GokoPreference.getInstance().getLengthUnit();

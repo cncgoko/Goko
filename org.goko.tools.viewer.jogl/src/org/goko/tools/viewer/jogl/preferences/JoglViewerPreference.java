@@ -118,9 +118,18 @@ public class JoglViewerPreference extends GkPreference{
 
 	/**
 	 * @return the rotaryAxisPosition
+	 * @throws GkException 
 	 */
-	public Tuple6b getRotaryAxisPosition() {
-		return rotaryAxisPosition;
+	public Tuple6b getRotaryAxisPosition() throws GkException {
+		if (rotaryAxisPosition == null) {
+			rotaryAxisPosition = new Tuple6b(
+					Length.parse(getString(ROTARY_AXIS_POSITION_X)),
+					Length.parse(getString(ROTARY_AXIS_POSITION_Y)),
+					Length.parse(getString(ROTARY_AXIS_POSITION_Z))
+			);
+		}
+		return rotaryAxisPosition;		
+		//return rotaryAxisPosition;
 	}
 	/**
 	 * @param rotaryAxisPosition the rotaryAxisPosition to set
