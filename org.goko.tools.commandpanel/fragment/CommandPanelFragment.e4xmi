@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_nqKJkC60EeOmU_SY2Ov9KA">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_nqKJkC60EeOmU_SY2Ov9KA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-_Cv4C61EeOmU_SY2Ov9KA" featurename="children" parentElementId="goko.partstack.e">
     <elements xsi:type="basic:Part" xmi:id="_AVJAIC62EeOmU_SY2Ov9KA" elementId="goko.application.parts.base.commandpanel" contributionURI="bundleclass://org.goko.tools.commandpanel/org.goko.tools.commandpanel.CommandPanelPart" label="Command panel" iconURI="platform:/plugin/org.goko.tools.commandpanel/icons/joystick.png" closeable="true">
       <persistedState key="org.goko.tools.commandpanel.jog.feedrate" value="1000"/>
       <tags>view</tags>
+      <toolbar xmi:id="_LLvIoPv6EeitCra5nRT7Qg" elementId="org.goko.tools.commandpanel.toolbar.0">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_Lyip8Pv6EeitCra5nRT7Qg" elementId="org.goko.tools.commandpanel.handledtoolitem.settings" label="Settings" iconURI="platform:/plugin/org.goko.core/icons/gear_20.png" command="_4fP0UPv5EeitCra5nRT7Qg">
+          <parameters xmi:id="_W2AXYPv6EeitCra5nRT7Qg" elementId="org.goko.tools.commandpanel.parameter.0" name="goko.org.ui.page.id" value="org.goko.tools.commandpanel"/>
+        </children>
+      </toolbar>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_17do8Pv5EeitCra5nRT7Qg" featurename="commands" parentElementId="goko.application">
+    <elements xsi:type="commands:Command" xmi:id="_4fP0UPv5EeitCra5nRT7Qg" elementId="org.goko.tools.commandpanel.settings" commandName="Command Panel settings">
+      <parameters xmi:id="_8g66APv5EeitCra5nRT7Qg" elementId="goko.org.ui.page.id" name="goko.org.ui.page.id"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__FBOcPv5EeitCra5nRT7Qg" featurename="handlers" parentElementId="goko.application">
+    <elements xsi:type="commands:Handler" xmi:id="_ApmmoPv6EeitCra5nRT7Qg" elementId="org.goko.tools.commandpanel.handler.0" contributionURI="bundleclass://org.goko.core/org.goko.common.preferences.E4PreferencesHandler" command="_4fP0UPv5EeitCra5nRT7Qg"/>
   </fragments>
 </fragment:ModelFragments>
