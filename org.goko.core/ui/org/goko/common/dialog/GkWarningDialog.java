@@ -85,7 +85,7 @@ public class GkWarningDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(858, 263);
+		return new Point(850, 275);
 	}
 
 }

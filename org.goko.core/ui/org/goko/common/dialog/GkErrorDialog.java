@@ -49,9 +49,9 @@ public class GkErrorDialog extends Dialog {
 		gridLayout.verticalSpacing = 10;
 		gridLayout.numColumns = 2;
 		
-		Label label = new Label(container, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
-		label.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/errorCross.png"));
+		Label lblQsdqsd = new Label(container, SWT.NONE);
+		lblQsdqsd.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 1));
+		lblQsdqsd.setImage(ResourceManager.getPluginImage("org.goko.core", "icons/errorCross.png"));
 		
 		Label lblWarningMessage = new Label(container, SWT.WRAP);
 		lblWarningMessage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
@@ -68,7 +68,6 @@ public class GkErrorDialog extends Dialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-	//	createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 
 	/**
@@ -76,7 +75,7 @@ public class GkErrorDialog extends Dialog {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(439, 160);
+		return new Point(850, 275);
 	}
 
 }
