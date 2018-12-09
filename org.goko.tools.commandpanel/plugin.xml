@@ -9,5 +9,26 @@
             uri="fragment/CommandPanelFragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferencePage">
+      <page
+            class="org.goko.tools.commandpanel.preferences.CommandPanelPreferencePage"
+            id="org.goko.tools.commandpanel"
+            name="Command panel">
+      </page>
+   </extension>
+   <extension
+         point="Goko.org.goko.ui.gkPreferenceStoreProvider">
+      <provider
+            class="org.goko.tools.commandpanel.preferences.CommandPanelPreferenceStoreProvider"
+            id="org.goko.tools.commandpanel.provider">
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.equinox.preferences.preferences">
+      <initializer
+            class="org.goko.tools.commandpanel.preferences.CommandPanelPreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>
