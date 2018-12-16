@@ -23,6 +23,7 @@ import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
@@ -104,9 +105,9 @@ public class DiameterRenderer extends AbstractCoreJoglMultipleRenderer{
 		addRenderer(new PolylineRenderer(false, color, p2, p3));
 
 		// Draw arrows
-		addRenderer(new ArrowRenderer(p1, direction, base, color));
+		addRenderer(new ArrowRenderer(new Tuple6b(p1, JoglUtils.JOGL_UNIT), direction, base, color));
 		direction.negate();
-		addRenderer(new ArrowRenderer(p2, direction, base, color));
+		addRenderer(new ArrowRenderer(new Tuple6b(p2, JoglUtils.JOGL_UNIT), direction, base, color));
 
 		Vector3d txtHeight = new Vector3d();
 		direction.normalize();

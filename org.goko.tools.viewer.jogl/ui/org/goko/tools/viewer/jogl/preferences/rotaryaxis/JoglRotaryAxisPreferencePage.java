@@ -71,7 +71,7 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 		comboFieldEditor.setEntry(axisDirection);
 		
 		Composite composite = new Composite(grpSettings, SWT.NONE);
-		GridLayout gl_composite = new GridLayout(2, false);
+		GridLayout gl_composite = new GridLayout(1, false);
 		gl_composite.verticalSpacing = 0;
 		gl_composite.marginWidth = 0;
 		gl_composite.marginHeight = 0;
@@ -79,19 +79,18 @@ public class JoglRotaryAxisPreferencePage extends GkFieldEditorPreferencesPage{
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		
 		Label lblNewLabel = new Label(composite, SWT.NONE);
-		lblNewLabel.setText("Rotary axis position");
+		lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel.setText("Rotary axis position (in machine coordinate system)");
 		
 		xPositionField = new LengthFieldEditor(composite, SWT.NONE);
 		xPositionField.setPreferenceName("rotaryAxisPositionX");
 		xPositionField.setWidthInChars(6);
 		xPositionField.setLabel("X");
-		new Label(composite, SWT.NONE);
-		
+				
 		yPositionField = new LengthFieldEditor(composite, SWT.NONE);
 		yPositionField.setPreferenceName("rotaryAxisPositionY");
 		yPositionField.setWidthInChars(6);
 		yPositionField.setLabel("Y");
-		new Label(composite, SWT.NONE);
 		
 		zPositionField = new LengthFieldEditor(composite, SWT.NONE);
 		zPositionField.setPreferenceName("rotaryAxisPositionZ");

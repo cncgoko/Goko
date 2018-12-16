@@ -25,7 +25,6 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.measure.quantity.Length;
-import org.goko.core.common.measure.quantity.Quantity;
 import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 
@@ -35,11 +34,11 @@ public class CircleRenderer extends PolylineRenderer{
 	/** The center of the circle*/
 	private Tuple6b center;
 	/** The radius of the circle */
-	private Quantity<Length> radius;
+	private Length radius;
 	/** The normal of the plan in which the circle lies*/
 	private Vector3d normal;
 
-	public CircleRenderer(Tuple6b center, Quantity<Length> radius, Color4f color, Vector3d normal) {
+	public CircleRenderer(Tuple6b center, Length radius, Color4f color, Vector3d normal) {
 		super();
 		super.setClosed(true);
 		super.setColor(color);
@@ -88,14 +87,14 @@ public class CircleRenderer extends PolylineRenderer{
 	/**
 	 * @return the radius
 	 */
-	public Quantity<Length> getRadius() {
+	public Length getRadius() {
 		return radius;
 	}
 
 	/**
 	 * @param radius the radius to set
 	 */
-	public void setRadius(Quantity<Length> radius) {
+	public void setRadius(Length radius) {
 		this.radius = radius;
 	}
 

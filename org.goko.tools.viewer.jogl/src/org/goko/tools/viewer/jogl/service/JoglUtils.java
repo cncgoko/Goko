@@ -9,6 +9,7 @@ import javax.vecmath.Tuple3d;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Tuple4d;
 import javax.vecmath.Tuple4f;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -41,6 +42,12 @@ public class JoglUtils {
 	public static final Vector3f X_AXIS_NEGATIVE = new Vector3f(-1f,0f,0f);
 	public static final Vector3f Y_AXIS_NEGATIVE = new Vector3f(0f,-1f,0f);
 	public static final Vector3f Z_AXIS_NEGATIVE = new Vector3f(0f,0f,-1f);
+	public static final Vector3d X_AXIS_D = new Vector3d(1f,0f,0f);
+	public static final Vector3d Y_AXIS_D = new Vector3d(0f,1f,0f);
+	public static final Vector3d Z_AXIS_D = new Vector3d(0f,0f,1f);
+	public static final Vector3d X_AXIS_NEGATIVE_D = new Vector3d(-1f,0f,0f);
+	public static final Vector3d Y_AXIS_NEGATIVE_D = new Vector3d(0f,-1f,0f);
+	public static final Vector3d Z_AXIS_NEGATIVE_D = new Vector3d(0f,0f,-1f);
 	public static final Color4f X_COLOR = new Color4f(1f,0f,0f,1f);
 	public static final Color4f Y_COLOR = new Color4f(0f,1f,0f,1f);
 	public static final Color4f Z_COLOR = new Color4f(0f,0f,1f,1f);

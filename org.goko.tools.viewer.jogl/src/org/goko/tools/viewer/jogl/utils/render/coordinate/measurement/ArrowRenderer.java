@@ -24,6 +24,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.math.Tuple6b;
+import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
 import org.goko.tools.viewer.jogl.utils.render.internal.AbstractVboJoglRenderer;
@@ -32,20 +34,20 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 public class ArrowRenderer extends AbstractVboJoglRenderer{
-	private Point3d position;
+	private Tuple6b position;
 	private Vector3d direction;
 	private Vector3d base;
 	private Color4f color;
 	private float directionScale;
 	private float baseScale;
 
-	public ArrowRenderer(Point3d position, Vector3d direction, Vector3d base, Color4f color) {
+	public ArrowRenderer(Tuple6b position, Vector3d direction, Vector3d base, Color4f color) {
 		this(position, direction, base, color, 2, 0.5f);
 	}
 
-	public ArrowRenderer(Point3d position, Vector3d direction, Vector3d base,Color4f color, float directionScale, float baseScale) {
+	public ArrowRenderer(Tuple6b position, Vector3d direction, Vector3d base,Color4f color, float directionScale, float baseScale) {
 		super(GL.GL_TRIANGLES, VERTICES | COLORS);
-		this.position  = new Point3d(position);
+		this.position  = new Tuple6b(position);
 		this.direction = new Vector3d(direction);
 		this.direction.normalize();
 		this.base  	   = new Vector3d(base);
@@ -62,17 +64,17 @@ public class ArrowRenderer extends AbstractVboJoglRenderer{
 		setVerticesCount(3);
 		FloatBuffer vertices = FloatBuffer.allocate(getVerticesCount() * 4);
 		FloatBuffer colors 	 = FloatBuffer.allocate(getVerticesCount() * 4);
-
+		Point3d pPosition = position.toPoint3d(JoglUtils.JOGL_UNIT);
 		// Head of the arrow
-		vertices.put(new float[]{(float) position.x,(float) position.y,(float) position.z,1});
+		vertices.put(new float[]{(float) pPosition.x, (float) pPosition.y, (float) pPosition.z, 1});
 
-		vertices.put(new float[]{(float) (position.x - directionScale * direction.x - baseScale * base.x),
-								 (float) (position.y - directionScale * direction.y - baseScale * base.y),
-								 (float) (position.z - directionScale * direction.z - baseScale * base.z),
+		vertices.put(new float[]{(float) (pPosition.x - directionScale * direction.x - baseScale * base.x),
+								 (float) (pPosition.y - directionScale * direction.y - baseScale * base.y),
+								 (float) (pPosition.z - directionScale * direction.z - baseScale * base.z),
 								 1});
-		vertices.put(new float[]{(float) (position.x - directionScale * direction.x + baseScale * base.x),
-								 (float) (position.y - directionScale * direction.y + baseScale * base.y),
-								 (float) (position.z - directionScale * direction.z + baseScale * base.z),
+		vertices.put(new float[]{(float) (pPosition.x - directionScale * direction.x + baseScale * base.x),
+								 (float) (pPosition.y - directionScale * direction.y + baseScale * base.y),
+								 (float) (pPosition.z - directionScale * direction.z + baseScale * base.z),
 								 1});
 
 		colors.put(new float[]{color.x,color.y,color.z,color.w});

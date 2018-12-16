@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3d;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.measure.SIPrefix;
@@ -94,6 +96,18 @@ public class Tuple6b {
 		this.y = Length.valueOf(new BigDecimal(String.valueOf(y)), unit);
 		this.z = Length.valueOf(new BigDecimal(String.valueOf(z)), unit);
 	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public Tuple6b(Number x, Number y, Number z, Unit<Length> unit) {
+		super();
+		this.x = Length.valueOf(new BigDecimal(String.valueOf(x)), unit);
+		this.y = Length.valueOf(new BigDecimal(String.valueOf(y)), unit);
+		this.z = Length.valueOf(new BigDecimal(String.valueOf(z)), unit);
+	}
 	/**
 	 * @param x
 	 * @param y
@@ -104,6 +118,30 @@ public class Tuple6b {
 		this.x = Length.valueOf(x, unit);
 		this.y = Length.valueOf(y, unit);
 		this.z = Length.valueOf(z, unit);
+	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public Tuple6b(Tuple3f t, Unit<Length> unit) {
+		super();
+		this.x = Length.valueOf(new BigDecimal(String.valueOf(t.x)), unit);
+		this.y = Length.valueOf(new BigDecimal(String.valueOf(t.y)), unit);
+		this.z = Length.valueOf(new BigDecimal(String.valueOf(t.z)), unit);
+	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public Tuple6b(Tuple3d t, Unit<Length> unit) {
+		super();
+		this.x = Length.valueOf(new BigDecimal(String.valueOf(t.x)), unit);
+		this.y = Length.valueOf(new BigDecimal(String.valueOf(t.y)), unit);
+		this.z = Length.valueOf(new BigDecimal(String.valueOf(t.z)), unit);
 	}
 
 	/**

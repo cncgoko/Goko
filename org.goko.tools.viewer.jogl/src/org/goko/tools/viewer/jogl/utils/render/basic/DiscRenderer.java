@@ -6,13 +6,13 @@ package org.goko.tools.viewer.jogl.utils.render.basic;
 import java.nio.FloatBuffer;
 
 import javax.vecmath.Color4f;
-import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Angle;
 import org.goko.core.common.measure.quantity.AngleUnit;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
@@ -26,7 +26,7 @@ import com.jogamp.opengl.GL3;
  * @date 7 déc. 2018
  */
 public class DiscRenderer extends AbstractVboJoglRenderer{
-	private Point3d position;
+	private Tuple6b position;
 	private Vector3d normal;
 	private Vector3d side;
 	private Color4f color;	
@@ -34,9 +34,9 @@ public class DiscRenderer extends AbstractVboJoglRenderer{
 	private Angle startAngle;
 	private Angle endAngle;
 
-	public DiscRenderer(Point3d position, Color4f color, Vector3d normal, Length scale, Angle startAngle, Angle endAngle, Vector3d side) {
+	public DiscRenderer(Tuple6b position, Color4f color, Vector3d normal, Length scale, Angle startAngle, Angle endAngle, Vector3d side) {
 		super(GL.GL_TRIANGLE_FAN, VERTICES | COLORS);
-		this.position  = new Point3d(position);				
+		this.position  = position;				
 		this.color = color;
 		this.normal = normal;
 		this.scale = scale;
@@ -61,8 +61,9 @@ public class DiscRenderer extends AbstractVboJoglRenderer{
 		FloatBuffer vertices = FloatBuffer.allocate(getVerticesCount() * 4);
 		FloatBuffer colors 	 = FloatBuffer.allocate(getVerticesCount() * 4);
 		
+		Vector3d vPosition = position.toVector3d(JoglUtils.JOGL_UNIT);		
 		// Central point
-		vertices.put(new float[]{(float) position.x,(float) position.y,(float) position.z,1});
+		vertices.put(new float[]{(float) vPosition.x,(float) vPosition.y,(float) vPosition.z, 1});
 		colors.put(new float[]{color.x,color.y,color.z,color.w});
 		
 		Vector3d a = new Vector3d(side);
@@ -71,9 +72,9 @@ public class DiscRenderer extends AbstractVboJoglRenderer{
 		
 		for (int i = 0; i <= nbPoints; i++) {
 			vertices.put(new float[]{
-					(float) (position.x + dScale * Math.cos(dStartAngle + i*dAngleStep)*a.x + dScale * Math.sin(dStartAngle + i * dAngleStep) * b.x),
-					(float) (position.y + dScale * Math.cos(dStartAngle + i*dAngleStep)*a.y + dScale * Math.sin(dStartAngle + i * dAngleStep) * b.y),
-					(float) (position.z + dScale * Math.cos(dStartAngle + i*dAngleStep)*a.z + dScale * Math.sin(dStartAngle + i * dAngleStep) * b.z),
+					(float) (vPosition.x + dScale * Math.cos(dStartAngle + i*dAngleStep)*a.x + dScale * Math.sin(dStartAngle + i * dAngleStep) * b.x),
+					(float) (vPosition.y + dScale * Math.cos(dStartAngle + i*dAngleStep)*a.y + dScale * Math.sin(dStartAngle + i * dAngleStep) * b.y),
+					(float) (vPosition.z + dScale * Math.cos(dStartAngle + i*dAngleStep)*a.z + dScale * Math.sin(dStartAngle + i * dAngleStep) * b.z),
 					 1});
 			colors.put(new float[]{color.x,color.y,color.z,color.w});			
 		}		

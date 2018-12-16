@@ -17,12 +17,15 @@
 package org.goko.tools.viewer.jogl.service;
 
 import javax.vecmath.Color4f;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.quantity.LengthUnit;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.controller.IFourAxisControllerAdapter;
 import org.goko.core.controller.IGCodeContextProvider;
@@ -41,6 +44,7 @@ import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
 import org.goko.tools.viewer.jogl.service.overlay.KeyboardJogOverlay;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.FourAxisOriginRenderer;
 import org.goko.tools.viewer.jogl.utils.render.coordinate.OriginRenderer;
+import org.goko.tools.viewer.jogl.utils.render.coordinate.RotaryAxisRenderer;
 import org.goko.tools.viewer.jogl.utils.render.grid.IGridRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolLinePrintRenderer;
 import org.goko.tools.viewer.jogl.utils.render.tool.ToolRenderer;
@@ -68,7 +72,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 	private IGridRenderer xyGridRenderer;
 	private IGridRenderer xzGridRenderer;
 	private IGridRenderer yzGridRenderer;
-	private FourAxisOriginRenderer zeroRenderer;	
+	private FourAxisOriginRenderer zeroRenderer;
+	private RotaryAxisRenderer rotaryAxisRenderer;
 	private KeyboardJogAdatper keyboardJogAdapter;
 	private ToolRenderer toolRenderer;	
 	private IFourAxisControllerAdapter controllerAdapter;
@@ -103,14 +108,17 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 		addRenderer(toolRenderer);
 		addRenderer(new ToolLinePrintRenderer(controllerAdapter, gcodeContextProvider));
 		
-		addRenderer(new OriginRenderer(5, new Color4f(1,0,0,1), new Tuple6b()));
+		addRenderer(new OriginRenderer(Length.valueOf(1, LengthUnit.MILLIMETRE), new Color4f(1,1,1,1), new Tuple6b()));
 		
 		updateGridRenderer(xyGridRenderer);
 		updateGridRenderer(xzGridRenderer);
 		updateGridRenderer(yzGridRenderer);
 		addRenderer(xyGridRenderer);
 		addRenderer(xzGridRenderer);
-		addRenderer(yzGridRenderer);		
+		addRenderer(yzGridRenderer);
+		
+		createRotaryAxisRenderer();
+		
 		if(workVolumeProvider != null){
 			workVolumeProvider.addUpdateListener(this);
 		}
@@ -191,6 +199,8 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 			zeroRenderer.setDisplayRotaryAxis(JoglViewerPreference.getInstance().isRotaryAxisEnabled());
 			zeroRenderer.setRotationAxis(JoglViewerPreference.getInstance().getRotaryAxisDirection());
 			zeroRenderer.update();
+			
+			createRotaryAxisRenderer();
 			// Update the grid
 			if(StringUtils.startsWith(event.getProperty(), JoglViewerPreference.GROUP_GRID)
 				|| StringUtils.startsWith(event.getProperty(), GokoPreference.KEY_DISTANCE_UNIT)){
@@ -327,7 +337,18 @@ public class JoglViewerServiceImpl extends JoglSceneManager implements IJoglView
 			updateGridRenderer(yzGridRenderer);
 		}catch(GkException e){
 			LOG.error(e);
-		}
-		
+		}		
 	}	
+	
+	public void createRotaryAxisRenderer() throws GkException {
+		if (rotaryAxisRenderer != null) {
+			removeRenderer(rotaryAxisRenderer);
+		}
+		if (JoglViewerPreference.getInstance().isRotaryAxisEnabled()) {
+			Vector3f d = JoglViewerPreference.getInstance().getRotaryAxisDirectionVector();
+			Tuple6b p = JoglViewerPreference.getInstance().getRotaryAxisPosition();
+			rotaryAxisRenderer = new RotaryAxisRenderer(new Vector3d(d.x, d.y, d.z), p, Length.valueOf(2, LengthUnit.MILLIMETRE), new Color4f(1, 1, 0, 1));			
+			addRenderer(rotaryAxisRenderer);
+		}
+	}
 }

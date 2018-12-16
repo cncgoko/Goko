@@ -19,11 +19,13 @@
  */
 package org.goko.tools.viewer.jogl.utils.render.basic;
 
-import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
+import org.goko.core.common.measure.quantity.Length;
+import org.goko.core.common.measure.units.Unit;
 import org.goko.core.math.BoundingTuple6b;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.service.Layer;
@@ -58,12 +60,14 @@ public class BoundsRenderer extends AbstractCoreJoglMultipleRenderer{
 	@Override
 	protected void performInitialize(GL3 gl) throws GkException {
 		if(renderedBounds != null && renderedBounds.getMin() != null && renderedBounds.getMax() != null){
-			Point3d ptMin = renderedBounds.getMin().toPoint3d(JoglUtils.JOGL_UNIT);
-			Point3d ptMax = renderedBounds.getMax().toPoint3d(JoglUtils.JOGL_UNIT);
-
-			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMax.x,(float)ptMin.y-1,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
-			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMax.y,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y,(float)ptMin.z), new Vector3d(0,0,1), TextRenderer.TOP) );
-			addRenderer( new DistanceRenderer(new Point3d((float)ptMin.x-1,(float)ptMin.y-1,(float)ptMin.z), new Point3d((float)ptMin.x-1,(float)ptMin.y-1,(float)ptMax.z), new Vector3d(1,-1,0), TextRenderer.BOTTOM) );
+			Tuple6b ptMin = renderedBounds.getMin();
+			Tuple6b ptMax = renderedBounds.getMax();
+			Length offset = Length.valueOf(1, JoglUtils.JOGL_UNIT);
+			
+			Unit<Length> u = JoglUtils.JOGL_UNIT;
+			addRenderer( new DistanceRenderer(new Tuple6b(ptMin.getX(), ptMin.getY().subtract(offset), ptMin.getZ()), new Tuple6b( ptMax.getX(), ptMin.getY().subtract(offset), ptMin.getZ()), new Vector3d(0,0,1), TextRenderer.TOP) );
+			addRenderer( new DistanceRenderer(new Tuple6b(ptMin.getX().subtract(offset), ptMax.getY(), ptMin.getZ()), new Tuple6b( ptMin.getX().subtract(offset), ptMin.getY(), ptMin.getZ()), new Vector3d(0,0,1), TextRenderer.TOP) );
+			addRenderer( new DistanceRenderer(new Tuple6b(ptMin.getX().subtract(offset), ptMin.getY().subtract(offset), ptMin.getZ()), new Tuple6b(ptMin.getX().subtract(offset), ptMin.getY().subtract(offset), ptMax.getZ()), new Vector3d(1,-1,0), TextRenderer.BOTTOM) );
 		}
 	}
 

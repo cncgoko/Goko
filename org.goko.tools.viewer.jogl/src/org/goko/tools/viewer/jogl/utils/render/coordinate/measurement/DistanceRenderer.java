@@ -17,18 +17,15 @@
 
 package org.goko.tools.viewer.jogl.utils.render.coordinate.measurement;
 
-import java.math.BigDecimal;
-
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.goko.core.common.exception.GkException;
-import org.goko.core.common.measure.SIPrefix;
-import org.goko.core.common.measure.Units;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.config.GokoPreference;
 import org.goko.core.log.GkLog;
+import org.goko.core.math.Tuple6b;
 import org.goko.tools.viewer.jogl.service.AbstractCoreJoglMultipleRenderer;
 import org.goko.tools.viewer.jogl.service.JoglUtils;
 import org.goko.tools.viewer.jogl.utils.render.basic.PolylineRenderer;
@@ -44,8 +41,8 @@ import com.jogamp.opengl.GL3;
  */
 public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 	static GkLog LOG = GkLog.getLogger(DistanceRenderer.class);
-	private Point3d startPoint;
-	private Point3d endPoint;
+	private Tuple6b startPoint;
+	private Tuple6b endPoint;
 	private Vector3d normal;
 	private Vector3d direction;
 	private Length length;
@@ -55,26 +52,29 @@ public class DistanceRenderer extends AbstractCoreJoglMultipleRenderer{
 	private ArrowRenderer endArrowRenderer;
 	private TextRenderer textRenderer;
 
-	public DistanceRenderer(Point3d pStartPoint, Point3d pEndPoint, Vector3d pNormal , int verticalAlignement) throws GkException {
+	public DistanceRenderer(Tuple6b pStartPoint, Tuple6b pEndPoint, Vector3d pNormal , int verticalAlignement) throws GkException {
 		super();
-		this.startPoint = new Point3d(pStartPoint);
-		this.endPoint = new Point3d(pEndPoint);
+		this.startPoint = new Tuple6b(pStartPoint);
+		this.endPoint = new Tuple6b(pEndPoint);
+		this.length = startPoint.distance(endPoint);
+		
 		this.direction = new Vector3d();
-		this.direction.sub(endPoint, startPoint);
-		this.length = Length.valueOf(BigDecimal.valueOf(this.direction.length()), SIPrefix.MILLI(Units.METRE));
+		this.direction.sub(endPoint.toPoint3d(JoglUtils.JOGL_UNIT), startPoint.toPoint3d(JoglUtils.JOGL_UNIT));		
 		this.direction.normalize();
 		this.normal = new Vector3d(pNormal);
 		normal.normalize();
 		Vector3d baseDirection = new Vector3d();
 		baseDirection.cross(direction, normal);
 
-		lineRenderer = new PolylineRenderer(false, new Color4f(1,1,1,1), startPoint, endPoint);
+		lineRenderer = new PolylineRenderer(false, new Color4f(1,1,1,1), startPoint.toPoint3d(JoglUtils.JOGL_UNIT), endPoint.toPoint3d(JoglUtils.JOGL_UNIT));
 		endArrowRenderer = new ArrowRenderer(endPoint, new Vector3d(direction.x,direction.y,direction.z), baseDirection, new Color4f(1,1,1,1));
 		startArrowRenderer = new ArrowRenderer(startPoint, new Vector3d(-direction.x,-direction.y,-direction.z), baseDirection, new Color4f(1,1,1,1));
 
 		String sLength = GokoPreference.getInstance().format(length);
 		double dLength = length.doubleValue(JoglUtils.JOGL_UNIT);
-		textRenderer = new TextRenderer(sLength, 3, new Point3d(startPoint.x + direction.x * dLength/2,startPoint.y + direction.y * dLength/2,startPoint.z + direction.z * dLength/2), this.direction, new Vector3d(-baseDirection.x,-baseDirection.y,-baseDirection.z), TextRenderer.CENTER | verticalAlignement);
+		Point3d sPoint = startPoint.toPoint3d(JoglUtils.JOGL_UNIT);
+				
+		textRenderer = new TextRenderer(sLength, 3, new Point3d(sPoint.x + direction.x * dLength/2, sPoint.y + direction.y * dLength/2, sPoint.z + direction.z * dLength/2), this.direction, new Vector3d(-baseDirection.x,-baseDirection.y,-baseDirection.z), TextRenderer.CENTER | verticalAlignement);
 		textRenderer.setPadding(Length.valueOf("0.2", JoglUtils.JOGL_UNIT));
 		addRenderer(lineRenderer);
 		addRenderer(endArrowRenderer);
