@@ -403,7 +403,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	}
 
 	private void drawOverlay() {
-		overlay.beginRendering();		
+		//overlay.beginRendering();		
 		Graphics2D g2d = overlay.createGraphics();
 		try{		
 			Color transparentColor = new Color(0,0,0,0);
@@ -417,7 +417,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		overlay.markDirty(0, 0, width, height);
 		overlay.drawAll();
 		g2d.dispose();
-		overlay.endRendering();
+		//overlay.endRendering();
 	}
 
 	/**
