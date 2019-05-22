@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkTechnicalException;
 import org.goko.core.common.measure.Units;
@@ -19,6 +20,8 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 	private int[][] vertices;
 	/** The indexed list of position */
 	private List<Tuple6b> offsets;
+	/** The list of invalid locations */
+	private List<Pair<Integer, Integer>> invalidLocations;
 	/** The start point of this map */
 	private Tuple6b start;
 	/** The end point of this map */
@@ -49,6 +52,7 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 		super();
 		this.vertices = vertices;
 		this.offsets = offsets;
+		this.invalidLocations = new ArrayList<>();
 		this.xDivisionCount = vertices.length - 1;
 		this.yDivisionCount = vertices[0].length - 1;
 		this.start = offsets.get( vertices[0][0]);
@@ -283,7 +287,7 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 		}
 		return null;
 	}
-	
+		
 	public void build() throws GkException{
 		if(xDivisionCount <= 0 || yDivisionCount <= 0){
 			throw new GkTechnicalException("X/Y division count should be positive");
@@ -300,6 +304,16 @@ public class GridHeightMap extends AbstractIdBean implements IHeightMap {
 				offsets.add(new Tuple6b(xCoord, start.getY().add(dy.multiply(y)), Length.ZERO));
 			}
 		}			
+	}
+	
+	public void setInvalidProbe(int x, int y) {
+		if (!this.invalidLocations.contains(Pair.of(x, y))) {
+			this.invalidLocations.add(Pair.of(x, y));
+		}
+	}
+	
+	public boolean isValidProbe(int x, int y) {
+		return !invalidLocations.contains(Pair.of(x, y));
 	}
 	/**
 	 * @param offsets the offsets to set

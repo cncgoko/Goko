@@ -58,11 +58,9 @@ public class ArcFeedGeometryBuilder extends AbstractInstructionGeometryBuilder<A
 				if(settings.isRotaryAxisEnabled()){
 					p.sub(rotaryAxisOffset);
 					rotationMatrix.transform(p);
-					p.add(rotaryAxisOffset);
-					vertices.add(p);
-				} else {
-					vertices.add(p);
+					p.add(rotaryAxisOffset);					
 				}
+				vertices.add(p);				
 			}
 		}
 		

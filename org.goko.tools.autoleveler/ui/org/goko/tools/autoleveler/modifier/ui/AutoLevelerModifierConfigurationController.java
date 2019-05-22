@@ -10,16 +10,21 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.LengthUnit;
+import org.goko.core.controller.ICoordinateSystemAdapter;
 import org.goko.core.controller.IProbingService;
 import org.goko.core.controller.bean.EnumControllerAxis;
 import org.goko.core.controller.bean.ProbeRequest;
 import org.goko.core.controller.bean.ProbeResult;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.execution.ExecutionState;
+import org.goko.core.gcode.rs274ngcv3.context.CoordinateSystem;
 import org.goko.core.gcode.service.IExecutionService;
 import org.goko.core.log.GkLog;
 import org.goko.core.math.Tuple6b;
@@ -34,16 +39,31 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 	private IProbingService probingService;
 	@Inject	
 	private IExecutionService executionService;
+	@Inject	
+	private ICoordinateSystemAdapter<ICoordinateSystem> coordinateSystemAdapter;
 	
 	public AutoLevelerModifierConfigurationController() {
 		super(new AutoLevelerModifierConfigurationModel());	
 	}
-
+	
 	/** (inheritDoc)
 	 * @see org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierPanelController#initializeFromModifier()
 	 */
 	@Override
-	public void initializeFromModifier() throws GkException {
+	public void initializeFromModifier() throws GkException {		
+		List<ICoordinateSystem> lstCoordinateSystem = coordinateSystemAdapter.getCoordinateSystem();
+		List<LabeledValue<ICoordinateSystem>> values = new ArrayList<>();
+		for (ICoordinateSystem iCoordinateSystem : lstCoordinateSystem) {
+			if(!StringUtils.equalsIgnoreCase(iCoordinateSystem.getCode(), CoordinateSystem.G53.getCode())){ // Kind of dirty, but...
+				LabeledValue<ICoordinateSystem> labeledValue = new LabeledValue<ICoordinateSystem>(iCoordinateSystem, iCoordinateSystem.getCode());
+				values.add( labeledValue );
+				if(getDataModel().getCoordinateSystem() == null){
+					getDataModel().setCoordinateSystem(labeledValue);
+				}
+			}
+		}
+		getDataModel().setCoordinateSystemList(values);
+		
 		getDataModel().setExpectedHeight(getModifier().getTheoricHeight());
 		getDataModel().setStartCoordinateX(getModifier().getHeightMap().getStart().getX());
 		getDataModel().setStartCoordinateY(getModifier().getHeightMap().getStart().getY());
@@ -148,7 +168,8 @@ public class AutoLevelerModifierConfigurationController extends AbstractModifier
 							map.getPoint(x, y).setZ(probeResult.getProbedPosition().getZ());
 						}else{
 							LOG.info("Could not find the probed position within range");
-							map.getPoint(x, y).setZ(Length.valueOf(BigDecimal.valueOf(Math.random()*5-2), LengthUnit.MILLIMETRE));
+							map.setInvalidProbe(x, y);
+							map.getPoint(x, y).setZ(Length.valueOf(0, LengthUnit.MILLIMETRE));
 						}
 						i++;
 					}

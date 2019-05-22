@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.goko.common.dialog.GkErrorDialog;
 import org.goko.common.preferences.fieldeditor.ui.UiBigDecimalFieldEditor;
+import org.goko.common.preferences.fieldeditor.ui.UiComboFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiLengthFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiQuantityFieldEditor;
 import org.goko.common.preferences.fieldeditor.ui.UiSpeedFieldEditor;
@@ -20,6 +21,7 @@ import org.goko.core.common.exception.GkException;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
 import org.goko.core.config.GokoPreference;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.core.gcode.rs274ngcv3.element.IModifier;
 import org.goko.core.log.GkLog;
 import org.goko.core.workspace.bean.IPropertiesPanel;
@@ -96,6 +98,13 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		grpArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		grpArea.setLayout(new GridLayout(1, false));
 
+		UiComboFieldEditor<ICoordinateSystem> csFieldEditor = new UiComboFieldEditor<ICoordinateSystem>(grpArea, SWT.NONE);
+		csFieldEditor.setLabelWidthInChar(15);
+		csFieldEditor.setWidthInChars(6);
+		csFieldEditor.setPropertyName(AutoLevelerModifierConfigurationModel.COORDINATE_SYSTEM);
+		csFieldEditor.setLabel("Coordinate System");
+		csFieldEditor.setInputPropertyName(AutoLevelerModifierConfigurationModel.COORDINATE_SYSTEM_LIST);
+		
 		Composite composite_1 = new Composite(grpArea, SWT.NONE);
 		composite_1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		GridLayout gl_composite_1 = new GridLayout(3, false);
@@ -209,6 +218,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		moveFeedrate.setWidthInChars(6);
 		moveFeedrate.setUnit(GokoPreference.getInstance().getSpeedUnit());
 		
+		getController().addEnableBinding(csFieldEditor, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(xStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(yStartCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		getController().addEnableBinding(xEndCoordinate, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
@@ -227,7 +237,7 @@ public class AutoLevelerModifierConfigurationPanel extends AbstractModifierPrope
 		
 		getController().addEnableReverseBinding(btnClearProbedData, AutoLevelerModifierConfigurationModel.MODIFICATION_ALLOWED);
 		
-		
+		getController().addFieldEditor(csFieldEditor); 
 		getController().addFieldEditor(xStartCoordinate);
 		getController().addFieldEditor(yStartCoordinate);
 		getController().addFieldEditor(xEndCoordinate);

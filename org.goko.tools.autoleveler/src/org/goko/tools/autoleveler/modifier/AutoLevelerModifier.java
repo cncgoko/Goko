@@ -89,11 +89,13 @@ public abstract class AutoLevelerModifier<T extends IHeightMap> extends Abstract
 	 * @throws GkException GkException
 	 */
 	private List<InstructionSet> applyModifier(GCodeContext localContext, AbstractStraightInstruction source) throws GkException{
-		Tuple6b start = new Tuple6b(Units.MILLIMETRE, localContext.getX(), localContext.getY(), localContext.getZ() );
-		//Tuple6b end   = new Tuple6b(Units.MILLIMETRE, source.getX(), source.getY(), source.getZ() );
+		Tuple6b start = new Tuple6b(Units.MILLIMETRE, localContext.getX(), localContext.getY(), localContext.getZ() );		
 		GCodeContext postContext = new GCodeContext(localContext);
 		source.apply(postContext);
 		Tuple6b end	=  postContext.getPosition();
+		
+		start.add(localContext.getActiveCoordinateSystemData());
+		end.add(localContext.getActiveCoordinateSystemData());
 		
 		List<InstructionSet> sets = new ArrayList<InstructionSet>();
 		List<Tuple6b> lstPoints = heightMap.splitSegment(start, end);
@@ -117,7 +119,8 @@ public abstract class AutoLevelerModifier<T extends IHeightMap> extends Abstract
 
 			// Now we can apply the computed offset to the interpolated height
 			Length fixedHeight 	= interpolatedHeight.subtract( theoricHeight.subtract(probedHeight));
-
+			
+			target.subtract(localContext.getActiveCoordinateSystemData());
 			if( source.getType() == InstructionType.STRAIGHT_TRAVERSE ){
 				instructionSet.addInstruction(new StraightTraverseInstruction(target.getX(), target.getY(), fixedHeight, source.getA(), source.getB(), source.getC()));
 			}else if(source.getType() == InstructionType.STRAIGHT_FEED){

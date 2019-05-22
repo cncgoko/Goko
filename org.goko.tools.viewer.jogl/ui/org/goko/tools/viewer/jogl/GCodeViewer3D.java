@@ -47,7 +47,8 @@ import org.goko.tools.viewer.jogl.model.GCodeViewer3DModel;
 import org.goko.tools.viewer.jogl.service.IJoglViewerService;
 import org.osgi.service.event.EventHandler;
 
-import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.AnimatorBase;
 
 public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeViewer3DModel> implements EventHandler {
 	@Inject
@@ -59,7 +60,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 	/** Widget that displays OpenGL content. */
 	private GokoJoglCanvas glcanvas;
-	private FPSAnimator animator;
+	private AnimatorBase animator;
 	private static final String VIEWER_ENABLED = "org.goko.tools.viewer.jogl.enabled";
 	private static final String VIEWER_GRID_ENABLED = "org.goko.tools.viewer.jogl.gridEnabled";
 	private static final String VIEWER_BOUNDS_ENABLED = "org.goko.tools.viewer.jogl.boundsEnabled";
@@ -82,7 +83,7 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 	@PostConstruct
 	public void createPartControl(Composite superCompositeParent, IEclipseContext context, MPart part) throws GkException {
-		Composite compositeParent = new Composite(superCompositeParent, SWT.NONE);
+		Composite compositeParent = new Composite(superCompositeParent, SWT.NO_BACKGROUND);
 		GLData gldata = new GLData();
 		gldata.doubleBuffer = true;
 		GridLayout gl_compositeParent = new GridLayout(1, false);
@@ -90,10 +91,9 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 		gl_compositeParent.marginWidth = 0;
 		gl_compositeParent.marginHeight = 0;
 		compositeParent.setLayout(gl_compositeParent);
-
-		//final ToolBar toolBar = new ToolBar(compositeParent, SWT.FLAT | SWT.RIGHT);
-
+				
 		glcanvas = viewerService.createCanvas(compositeParent);
+		
 		context.getParent().set(GokoJoglCanvas.class, glcanvas);
 		glcanvas.addMouseListener(new MouseAdapter() {
 			/** (inheritDoc)
@@ -107,7 +107,6 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 			}
 		});
 		glcanvas.addFocusListener(new FocusListener() {
-
 			@Override
 			public void focusLost(FocusEvent e) {
 				glcanvas.setKeyboardJogEnabled(false);				
@@ -121,9 +120,9 @@ public class GCodeViewer3D extends GkUiComponent<GCodeViewer3DController, GCodeV
 
 		glcanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		animator = new FPSAnimator(30);
-
-		animator.add(glcanvas);
+		animator = new Animator();
+		animator.setModeBits(false, AnimatorBase.MODE_EXPECT_AWT_RENDERING_THREAD);
+		animator.add(glcanvas);		
 		animator.start();
 
 		ContextInjectionFactory.inject(glcanvas, context);

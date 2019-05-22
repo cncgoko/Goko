@@ -38,7 +38,7 @@ public class GokoJoglCanvas extends GLCanvas{
 	 */
 	public GokoJoglCanvas(Composite parent, int style,GLCapabilities caps) {
 		super(parent, style, caps, null);
-	}
+	}	
 	/**
 	 * @return the keyboardJogEnabled
 	 */
@@ -50,5 +50,6 @@ public class GokoJoglCanvas extends GLCanvas{
 	 */
 	public void setKeyboardJogEnabled(boolean keyboardJogEnabled) {
 		this.keyboardJogEnabled = keyboardJogEnabled;
-	}
+	}	
+
 }

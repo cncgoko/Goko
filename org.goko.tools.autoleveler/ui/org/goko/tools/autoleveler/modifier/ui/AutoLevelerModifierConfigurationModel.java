@@ -1,12 +1,18 @@
 package org.goko.tools.autoleveler.modifier.ui;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.goko.common.elements.combo.LabeledValue;
 import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.measure.quantity.Speed;
+import org.goko.core.gcode.element.ICoordinateSystem;
 import org.goko.gcode.rs274ngcv3.ui.workspace.uiprovider.panel.AbstractModifierModelObject;
 
 public class AutoLevelerModifierConfigurationModel extends AbstractModifierModelObject{
+	protected static final String COORDINATE_SYSTEM_LIST = "coordinateSystemList";
+	protected static final String COORDINATE_SYSTEM = "coordinateSystem";	
 	protected static final String X_START_COORDINATE = "startCoordinateX";
 	protected static final String Y_START_COORDINATE = "startCoordinateY";
 	protected static final String X_END_COORDINATE   = "endCoordinateX";
@@ -34,6 +40,15 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	private Speed probeFeedrate;
 	private Speed moveFeedrate;
 	private boolean modificationAllowed;
+	private LabeledValue<ICoordinateSystem> coordinateSystem;
+	private List<LabeledValue<ICoordinateSystem>> coordinateSystemList;
+	
+	/**
+	 * 
+	 */
+	public AutoLevelerModifierConfigurationModel() {
+		coordinateSystemList = new ArrayList<>();
+	}
 	/**
 	 * @return the startCoordinateX
 	 */
@@ -184,10 +199,42 @@ public class AutoLevelerModifierConfigurationModel extends AbstractModifierModel
 	public Speed getMoveFeedrate() {
 		return moveFeedrate;
 	}
+	
 	/**
 	 * @param moveFeedrate the moveFeedrate to set
 	 */
 	public void setMoveFeedrate(Speed moveFeedrate) {
 		firePropertyChange(MOVE_FEEDRATE, this.moveFeedrate, this.moveFeedrate = moveFeedrate);
-	}	
+	}
+
+	/**
+	 * @return the coordinateSystem
+	 */
+	public LabeledValue<ICoordinateSystem> getCoordinateSystem() {
+		return coordinateSystem;
+	}
+
+
+	/**
+	 * @param coordinateSystem the coordinateSystem to set
+	 */
+	public void setCoordinateSystem(LabeledValue<ICoordinateSystem> coordinateSystem) {
+		firePropertyChange(COORDINATE_SYSTEM, this.coordinateSystem, this.coordinateSystem = coordinateSystem);
+	}
+
+
+	/**
+	 * @return the coordinateSystemList
+	 */
+	public List<LabeledValue<ICoordinateSystem>> getCoordinateSystemList() {
+		return coordinateSystemList;
+	}
+
+
+	/**
+	 * @param coordinateSystemList the coordinateSystemList to set
+	 */
+	public void setCoordinateSystemList(List<LabeledValue<ICoordinateSystem>> coordinateSystemList) {
+		firePropertyChange(COORDINATE_SYSTEM_LIST, this.coordinateSystemList, this.coordinateSystemList = coordinateSystemList);
+	}
 }

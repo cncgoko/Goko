@@ -39,6 +39,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.goko.core.common.exception.GkException;
 import org.goko.core.common.exception.GkFunctionalException;
 import org.goko.core.common.utils.CacheById;
@@ -53,7 +54,8 @@ import org.goko.tools.viewer.jogl.camera.orthographic.FrontCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.LeftCamera;
 import org.goko.tools.viewer.jogl.camera.orthographic.TopCamera;
 import org.goko.tools.viewer.jogl.preferences.JoglViewerPreference;
-import org.goko.tools.viewer.jogl.service.overlay.CameraNameOverlay;
+import org.goko.tools.viewer.jogl.service.overlay.SWTOverlay;
+import org.goko.tools.viewer.jogl.service.overlay.SwtCameraNameOverlay;
 import org.goko.tools.viewer.jogl.service.utils.CoreJoglRendererAlphaComparator;
 import org.goko.tools.viewer.jogl.shaders.EnumGokoShaderProgram;
 import org.goko.tools.viewer.jogl.shaders.ShaderLoader;
@@ -87,6 +89,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	private List<AbstractCamera> supportedCamera;
 	/** Display canvas */
 	private GokoJoglCanvas canvas;	
+	/** The overlay */
+	private SWTOverlay swtOverlay;
 	/** The list of renderer */
 	private List<ICoreJoglRenderer> renderers;
 	/** The list of renderer to remove */
@@ -107,7 +111,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		getRenderers();
 		initLayers();
 		this.renderersToRemove 	= new ArrayList<ICoreJoglRenderer>();
-		this.overlayRenderers = new CacheById<IOverlayRenderer>(new SequentialIdGenerator());		
+		this.overlayRenderers = new CacheById<IOverlayRenderer>(new SequentialIdGenerator());
+		this.swtOverlay = new SWTOverlay();
 		JoglViewerPreference.getInstance().addPropertyChangeListener(this);
 		displayPositionOverlay = JoglViewerPreference.getInstance().isDisplayPositionOverlay();
 	}
@@ -124,18 +129,19 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			return canvas;
 		}
 		
-		GLProfile profile = GLProfile.getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getMaxProgrammable(true);//GLProfile.getMaxFixedFunc(true);//getDefault();		
+		GLProfile profile = GLProfile.getMaxProgrammable(true);		
 		canvasCapabilities = new GLCapabilities(profile);
 		canvasCapabilities.setSampleBuffers(true);
 		
-		
 	    canvasCapabilities.setNumSamples(JoglViewerPreference.getInstance().getMultisampling());
 	    canvasCapabilities.setHardwareAccelerated(true);
-	    canvasCapabilities.setDoubleBuffered(true);
-
-		canvas 		= new GokoJoglCanvas(parent, SWT.NO_BACKGROUND, canvasCapabilities);
+	    canvasCapabilities.setDoubleBuffered(false);
+	    
+		canvas = new GokoJoglCanvas(parent, SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED, canvasCapabilities);
 		canvas.addGLEventListener(this);
-				
+		canvas.addPaintListener(swtOverlay);
+		//canvas.setBackgroundMode(SWT.INHERIT_FORCE);	
+		canvas.setAutoSwapBufferMode(false);
 		addCamera(new PerspectiveCamera(canvas, this));
 		addCamera(new TopCamera(canvas, this));
 		addCamera(new LeftCamera(canvas, this));
@@ -149,11 +155,9 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 			JoglViewerPreference.getInstance().setDefaultCamera(PerspectiveCamera.ID);
 		}
 		
-
-		addOverlayRenderer(new CameraNameOverlay(this));
+		addOverlayRenderer(new SwtCameraNameOverlay(this));
 		
-		canvas.addMouseMoveListener(new MouseMoveListener() {
-			
+		canvas.addMouseMoveListener(new MouseMoveListener() {			
 			@Override
 			public void mouseMove(MouseEvent e) {
 				mouseCanvasPosition = new Point2i(e.x, e.y);
@@ -178,7 +182,8 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 * @see javax.media.opengl.GLEventListener#display(javax.media.opengl.GLAutoDrawable)
 	 */
 	@Override
-	public void display(GLAutoDrawable gLAutoDrawable) {
+	public void display(GLAutoDrawable gLAutoDrawable) {		
+		System.out.println("JoglSceneManager.display()");
 		GL3 gl = JoglUtils.getSupportedGL(gLAutoDrawable);//gLAutoDrawable.getGL().getGL4();
 		if(updateBackgroundColor){
 			gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); // reset background (clear) color
@@ -204,11 +209,26 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		} catch (GkException e) {
 			LOG.error(e);
 		}
-		gl.glUseProgram(0);
-		drawOverlay();
-	}
+		gl.glUseProgram(0);		
+		//drawOverlay();
+		System.out.println(Thread.currentThread());
+		
+		//System.out.println("gLAutoDrawable.swapBuffers()");
+		//gLAutoDrawable.swapBuffers();
+		if (!canvas.isDisposed()) {
+			Display.getDefault().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					if (!canvas.isDisposed()){
+						canvas.redraw();						
+					}
+					System.out.println(Thread.currentThread());
+				}
+			});
+		}
+	}	
 
-	
 	/**
 	 * Display the registered renderers
 	 * @param gl the GL to draw on
@@ -295,7 +315,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	@Override
 	public void dispose(GLAutoDrawable gLAutoDrawable) {
-
+		canvas.removePaintListener(swtOverlay);				
 	}
 
 	/** (inheritDoc)
@@ -309,6 +329,7 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		gl.glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f); 
 		gl.glClearDepth(1.0f); // set clear depth value to farthest
 		gl.getMaxRenderbufferSamples();
+		gl.setSwapInterval(1);
 		
 		// Enable blending
 		gl.glEnable(GL.GL_BLEND);
@@ -318,9 +339,6 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		// Accept fragment if it closer to the camera than the former one
 		gl.glDepthFunc(GL.GL_LEQUAL);
-		// Perspective correction
-		//gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST); // best perspective correction
-		//LOG.info("gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);");
 		// Line smooth
 	    gl.glEnable(GL.GL_LINE_SMOOTH);
 	    gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_DONT_CARE);
@@ -427,6 +445,15 @@ public abstract class JoglSceneManager implements GLEventListener, IPropertyChan
 	 */
 	public void addOverlayRenderer(IOverlayRenderer overlayRenderer) throws GkException{
 		overlayRenderers.add(overlayRenderer);
+	}
+	
+	/**
+	 * Registers the given overlay renderer
+	 * @param overlayRenderer the renderer to register
+	 * @throws GkException GkException
+	 */
+	public void addOverlayRenderer(org.goko.tools.viewer.jogl.utils.overlay.swt.IOverlayRenderer overlayRenderer) throws GkException{
+		swtOverlay.addOverlayRenderer(overlayRenderer);
 	}
 	
 	/**

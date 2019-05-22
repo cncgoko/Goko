@@ -7,8 +7,15 @@ import org.goko.core.common.measure.quantity.Length;
 import org.goko.core.common.utils.IIdBean;
 import org.goko.core.math.Tuple6b;
 
+/**
+ * Describes a probed height map for the auto leveler modifier.
+ * By convention, the map is always expressed in machine coordinates system
+ * 
+ * @author Psyko
+ * @date 17 janv. 2019
+ */
 public interface IHeightMap extends IIdBean{
-
+	
 	/**
 	 * Indicates if this map has already been probed against real surface
 	 * @return <code>true</code> if it was probed, <code>false</code> otherwise
